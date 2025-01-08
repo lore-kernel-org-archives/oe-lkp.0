@@ -1,370 +1,352 @@
-Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCD50199939
-	for <oe-lkp@lists.linux.dev>; Wed,  8 Jan 2025 05:55:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.53
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736315727; cv=none; b=XWKTUTP+ROjiVoyk2WkNL/cHDf7vfihBXJIeodeiwVEsJCPyYeQP7UKiS8QFgkBY1BXl5/OV9JJ8fXI3d2Kur2Bh34YwNd4k88mLUDKynPabFF4h58NkOgZRDHKUd0uPSmKxvQlcFlpM8EyhrdHrRD8m7klUYduchD/somruKk8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736315727; c=relaxed/simple;
-	bh=eE7GgMSLxcUONupKH79it53pzbiSfXAM4YEvgMKaEi4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=kr6lce/vDvalyjOd6U5L+toGpsam6QTmzFrRhpFW787FiDENKeJSUErZApx6UIzr4kKL9L2KTWzSa4eNK4Fvt1kEA7Ux/1oNaozEfjUOTDeu5uuz+i/ZW9W69YwjhXzTwWkCXonf1vgCK66Zjj8hnUyeX0mlOSQ7pl/+kggpgCg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jgZvO2qe; arc=none smtp.client-ip=209.85.216.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C6CB1A9B48
+	for <oe-lkp@lists.linux.dev>; Wed,  8 Jan 2025 07:04:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.17
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1736319866; cv=fail; b=FvMMSS55lwyYXyLROFBJY49+M3EssxfmUk41gKC7555szNmC5jM+COl65XDkxUltfkbfF+XXDhJdHZwHHVpmTr8GzaUe6eqvwFY0mlRWvakc3zzTZsnZ7rHLJLDXT6O04VEEKOFXzxnWB2HBXcumtEY+96NQAXlfrMou0om9t28=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1736319866; c=relaxed/simple;
+	bh=g31TnoWA2OE0HpeuZypk9Z9vtI8KdroE8W64YGCLhq4=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:MIME-Version; b=Fmr1OvIPo1MXFsidpRhNrLtCGWKj9LZmRRaz0FXukRXY9DyRZLkial2OMUeE5kYo2RxA5r1IGqju3XQIrqUtu6fW1eoFBtGbsUy7Akih6RzaQWGAFu+vkUVzNt0z1QjK8FT54Ghe7JkFewTJlFXk9oWqD89ikrgya/IJfIstZ7k=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cgTdzUsi; arc=fail smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jgZvO2qe"
-Received: by mail-pj1-f53.google.com with SMTP id 98e67ed59e1d1-2ee709715d9so19407291a91.3
-        for <oe-lkp@lists.linux.dev>; Tue, 07 Jan 2025 21:55:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1736315724; x=1736920524; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=FQSJ11IoSUfmDf5KPai78jYHu2q3QicPc5oqNip3Nns=;
-        b=jgZvO2qexLB5IJOSVmvd8XVWrGieuuiS0rj4UM9z3BsAIS1faqi5gaIuj0qg5xCToW
-         5CgNH6pHjfdCjBIRnaLti5lcD6JRqXhiiAEKhvqypHAJZaayrVPbzqFaxCCLF5UCk1jF
-         CwvXF0JlzRdNL9jt08M7OUncbxcSqk3WGNH45iaw4Maw3pStxYktAXiSIa24mlhDOpj2
-         ZW16bg3yCSuXARQm76kJmBgUWeJ4AMxwyvbrnPbHZf+TrwMoCcjBMTkCw7esrsP8d+aL
-         SwEvQ5ri4myZvOdC5LIFurBEPN9OUr1GijKZIJp4nA81RD4SU9rStOb3inY0he+ftW12
-         6hkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736315724; x=1736920524;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=FQSJ11IoSUfmDf5KPai78jYHu2q3QicPc5oqNip3Nns=;
-        b=SlvBTIz6wzTN7zHb2wBWOzn/6VCPKeI+eHsQ788/s7IfhNdTpCEzC/OYGc1Ky4klA7
-         4RpNVzPgX1w60feXJRy5avNPOHJID1f+LLteu6mbq+NoLbs463YpYOEQbQikgsZ2DP0x
-         vHCp1j6OnLNid3SNqClJM9or9VDEIaW7DjQZTw9TuHtvBTg6EvMtLbtAdp8/qPa7OIW4
-         f3WkWBGtxamuJvw62MFb8t7qH8B9vqRhxdirQHNG+xx9roud0lgW1IeXcBA+5mA/FdqV
-         Z29YPiQCIweFrJ5o7AZuaEO1yG9szsUFmXeGWZ6bh0R/o6ufrtRhnjDzT34UwHO3vL65
-         iDAQ==
-X-Forwarded-Encrypted: i=1; AJvYcCU8LucVeTuZg72jF8fX46LjRX0jUCNvGkNAepR5LQ0m1Rbzuc0Y3aa/gFM9HE4BcwDO2VAE/OA=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw+xhEYV8cCk7UEEnp8fkVAj23t0zvJjlw1g3Fenqw4ahzHfTC5
-	gE7LGkGWXyRlDQMR+LCoNVfGScq8Xghgu8GX6jk1YTPnMNzsrt/qBax6fIkpTLx3MQ/rPc+24Za
-	ZZdjvmlfJArlwSGkxixafm9WEfXM=
-X-Gm-Gg: ASbGnctFr9EZACVdftf+6ZbWB4T6FXlCTX7muGye3HcPbZqnpyAUf5yistGszJqy8R1
-	u7v23iMGNj3fYI/KZWbU6bwGRMaYtpengmpCefQI=
-X-Google-Smtp-Source: AGHT+IE+FZ4gbsSay0K91p0HStbo0Bw7epj3yF+ri3Juaa/1DYTKXoObqB+oBWgIos2ayYQKQRsYr91HQfx7VT69/m0=
-X-Received: by 2002:a05:6a00:4485:b0:71e:16b3:e5dc with SMTP id
- d2e1a72fcca58-72d21fd8b84mr2501860b3a.19.1736315723936; Tue, 07 Jan 2025
- 21:55:23 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cgTdzUsi"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1736319865; x=1767855865;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=g31TnoWA2OE0HpeuZypk9Z9vtI8KdroE8W64YGCLhq4=;
+  b=cgTdzUsixocbl+xZtVqWGWunVaYfRoEyQpUSZQqgpAgKmI6kUjsUJCAT
+   WfGL6lieiFriS/A/Eaxh3+C7ChwvhHdAhqXN+7X6V43YrZE/TCOEChrMN
+   zv/3aWdZXLuc6cMcJ1dNlG26GevNLI7lApHtcwIP17l3NOwGZCP0ZkHH5
+   aiSIfxL/pwob1/zX8n/N0XNXObQPLPcvwEtcLIEqKgM1TmPsMhxNBonvk
+   2A+vRh2W53tOWSBVkhNCov4MLCeDgTOHrJoPe3oiPHudXHlOa252nsox5
+   T7FfuMZikTZU9lhcIoEv7HRZzDoJFwKoLoYJ0SEVH5IPB0DF/ZWYxQiv7
+   w==;
+X-CSE-ConnectionGUID: S62n6vrRQ8u0g9m2Yh/2WA==
+X-CSE-MsgGUID: jw36o6oLQZWE9+5uu7N94A==
+X-IronPort-AV: E=McAfee;i="6700,10204,11308"; a="36552910"
+X-IronPort-AV: E=Sophos;i="6.12,297,1728975600"; 
+   d="scan'208";a="36552910"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2025 23:04:24 -0800
+X-CSE-ConnectionGUID: 3gtnNn+FRlmzjd59wZBvjg==
+X-CSE-MsgGUID: mld1vos3STufW8mjKHyUuA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
+   d="scan'208";a="107628686"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmviesa005.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 07 Jan 2025 23:04:23 -0800
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.44; Tue, 7 Jan 2025 23:04:22 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.44 via Frontend Transport; Tue, 7 Jan 2025 23:04:22 -0800
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.173)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.44; Tue, 7 Jan 2025 23:04:21 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=xG8TBovWTx3e8PqtVDI/WBwnNl3E3wKZI27OLNLp8+s2JwoGWQS51LL9SgH2tjzNIRomlWWa8qlHugjoUq3rxKfd4X/t9mjrOnXx2X/H3bQITlGQSRCtZ5Hdznny4O7batOlGwlIH7bhpn4h9cbLEAYOxZh3MAWQyh30DppRuva45mE988PAdz9cX8aRxxSuSvm8sKdeBruKfE9DQzSOFCVZ6rGALggFgTl0hiPg3fl7CXiNde0q3Xyf1asXYUne/qpK071FAV33FDh5TJkFGZF3Nn40LxGYgBCMA+TsLuaS0j+cJ4tFly1ocFe/IaMdFnoYj0nNfCeXbuI8JX+TIQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SJvqAE7bHrUE1WRtE3hfmeGNsVNOlr6ScKxBxfO0+a0=;
+ b=I+50/jC8La9ovJncZgs5QDsF+JEomT2rkn64hhYpNLUSLYPxSp5yhkWDPQ1Gx+ajx8TN2Gi57sc2P2gF1dePLSGux2reH7gmLuJm8t1kLQeRFABf8cZyQKHON/TEzM7muNtJmYiMQ8Hw0LbCZ00zpRzw9Oj68Il+nNeQXxOPxPuIFWOaLOzbK33Wlkdk//kwkr4+UtAR6LUXdUG/SCl/ozO3O+7uS6yC39gRK75hVOeOINcykMfIhcWHp9diuWMzXmrqTS4NumBU+uYWE+bknZy4vMUpvhz3pZQ7buJZZ+L/kKMUaZ4VVEWyYrtOhxfCnBg0Bd8dkVD2zN56f1D+eQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by PH0PR11MB5879.namprd11.prod.outlook.com (2603:10b6:510:142::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8314.17; Wed, 8 Jan
+ 2025 07:04:01 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%3]) with mapi id 15.20.8335.010; Wed, 8 Jan 2025
+ 07:04:01 +0000
+Date: Wed, 8 Jan 2025 15:03:52 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Nihar Chaithanya <niharchaithanya@gmail.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>, Andrey Konovalov
+	<andreyknvl@gmail.com>, Andrey Ryabinin <ryabinin.a.a@gmail.com>, "Dmitry
+ Vyukov" <dvyukov@google.com>, Shuah Khan <skhan@linuxfoundation.org>,
+	<kasan-dev@googlegroups.com>, <oliver.sang@intel.com>
+Subject: [linus:master] [kasan]  3738290bfc: kunit.kasan.fail
+Message-ID: <202501081209.b7d8b735-lkp@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+X-ClientProxiedBy: SG2PR02CA0129.apcprd02.prod.outlook.com
+ (2603:1096:4:188::19) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202412311203.ca7bddba-lkp@intel.com> <CALm+0cWOxUm_hrNe4UP4Z-vyr4RCOw+dc=kCBTgsyjHFHiHDsg@mail.gmail.com>
- <949f6251-d411-45ef-9f85-d5d069b90b0e@paulmck-laptop> <Z3Ym/DDtGOPamGjZ@xsang-OptiPlex-9020>
- <c8c4c6d6-ad52-4cd2-ba1f-c442da4432af@paulmck-laptop> <CALm+0cVbaJuMWMkU4g_6inCKiBVaVD3iixvBrfMJTqZ-3OUCvg@mail.gmail.com>
- <c2561f0c-9bc1-4492-b9dd-655502f101f7@paulmck-laptop> <CALm+0cWoK_+xMxZ1xddZGt9KxuUqkW13fqwtOm9NtBEd+LqBFQ@mail.gmail.com>
- <8f42f7ac-3d5d-43c7-a646-fe46576397ff@paulmck-laptop> <CALm+0cXXe86aAeyBYnb6z3xBFvLeGxD+yjg_uzBB5PHCG9f3QQ@mail.gmail.com>
- <6fbe434b-f08f-48b1-b536-5ee788603e76@paulmck-laptop>
-In-Reply-To: <6fbe434b-f08f-48b1-b536-5ee788603e76@paulmck-laptop>
-From: Z qiang <qiang.zhang1211@gmail.com>
-Date: Wed, 8 Jan 2025 13:55:12 +0800
-X-Gm-Features: AbW1kvaM4Ui2gJAuAQ8ROPNe8ID2XYNcuMA8Vb-ulQ0fKwNjlcbsyDYLgo-xPq0
-Message-ID: <CALm+0cXhttGGKR46h5QtZkvo_p166+R74O+BEr_uVou-RFV=1Q@mail.gmail.com>
-Subject: Re: [paulmckrcu:dev.2024.12.24a] [srcu] 9216c28c6a: BUG:unable_to_handle_page_fault_for_address
-To: paulmck@kernel.org
-Cc: Oliver Sang <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	rcu@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|PH0PR11MB5879:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5346d774-6982-4714-fe67-08dd2fb2a175
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?8U5uvxZuX/ak7uskAquMrg33ObVL1OORL8Ippd+tXUJEBiYf/pqBYEtNFSGL?=
+ =?us-ascii?Q?fBkvv17JyP5EG29yKlJ2RUMjlMps17Lu11TlXIv37Aokt+tO1vfEyWG/yp15?=
+ =?us-ascii?Q?DrGn0C1d3yfIdKkifGuyChAkcM3Nv5Ukgjee3QvPvuSueGSau2asA/yskB3U?=
+ =?us-ascii?Q?ZyoON9ZmYrwl6FZSo/r7GAm7OxI5FIFV9I6xPx65V68x/1mb3JjjqzfpWnS7?=
+ =?us-ascii?Q?sUfD37w9wJYjhCco2ovI7UTg3BPYBOqlRk1V1B3GJf5UwQvBFIeMw2PZjhCI?=
+ =?us-ascii?Q?Mo6PQj+U9e6W4m5VOgjL5IMs4SqNEXGjOgmlBkH9x57zsLi4x5ubwT5XNGzH?=
+ =?us-ascii?Q?WnF7LXevGJT8tD8vuorm6SWnZcp3mB0Aaun/6FhrqTSUxc1tyQv7aL+A1JGa?=
+ =?us-ascii?Q?w0fJDL1BhiBcXPUpfRRmHpeYEOXwhcddv9wjkpJ2ldbNLuMMZLeF94pphgqJ?=
+ =?us-ascii?Q?u+5ebVWn4eyJxsb2M/di/7vbust3J/fQg2cWzZ9Fst/GH0cRf6/YOX2cF3xe?=
+ =?us-ascii?Q?/TiOTsr6c4tX6UrIXgAOzHD3G+zkjZeKjZMVyo6wX/CnKhC85Y9+Sv1z7p9b?=
+ =?us-ascii?Q?MvD8kCqHOCkopxsUdqZxugBDoDTqyw0nqzx0+JhKmXhbXvoWkgRGDaR8eEUw?=
+ =?us-ascii?Q?Wx0RKkZy3juC+i1mw1RM804kMx9Fz5B6GCJUmo/4DRx1RYUmeYT4e1FiUiZf?=
+ =?us-ascii?Q?hsJcXFxiQiI4ErlnNgQ5/23XbA+3S4NVwDQq6ijlsNkRoqOWgma5NmLhbUj+?=
+ =?us-ascii?Q?48zbayROIcwDL5lYm5oGy7Wp6A7PfXr5TR2n8d4EW7yJeblThj0oKNFtuHD4?=
+ =?us-ascii?Q?hvb6p9wH7WOgsB5Xmaan5wkp+TLapvfzO6SJj3vWDwmLjDHdqe6pCEcnc3kM?=
+ =?us-ascii?Q?E/xY6SV9uqFDS5w2Yl2v00E7keMNnAaKYmtNTBhdZZDPib5eCmY4CAn0tpvt?=
+ =?us-ascii?Q?EZTHWLohTGbLPFp1Cj0jVperB74SkEJlkJC9CI6EPcZy32w5prQmYZdWeKPE?=
+ =?us-ascii?Q?aHVudVzUfrM089hoK7BQ4PMr6uTXWli3M0gYlL/x+fs66TUYMC+CrwfZ4lw1?=
+ =?us-ascii?Q?eS/DuoPLXZ7ikLpn7RVeZLaXrLXdsK3bZ13r5M90DEZCFaXC4pp5pB0iRxQP?=
+ =?us-ascii?Q?hrkmM1tQinrri43nUcJwF0nvLYR2KjBByu5l2beahSCHoxxu5Zy4958QNt9H?=
+ =?us-ascii?Q?DpQwcd6WTbo5C8f95uuEq+MbodEJnOawoIOlNhhDGheGTNAAO/cWTBd8M0fk?=
+ =?us-ascii?Q?+ZYQbq+CCeTWoyLlOvGNyPG3Ibfzox2KQWMPGufW+qmrkgSL2SbcmZK5oZDz?=
+ =?us-ascii?Q?HDVpUqM+gTiwjUXSeEBvC+IZY01G7zdsao/1nDyYDeyNwA=3D=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fs8JIT7miI459ZV7JzyJXCXV3LXsZWWckcosexzjXMFPtAgn57vtUpCOfNwQ?=
+ =?us-ascii?Q?WSE1RV0LtqDVWmY4aTinhn4QVts7FLchamDqBR6YsNlJ89d5Nq3c2bsJ9Ozj?=
+ =?us-ascii?Q?ElmFIqudXtGESzKtg8TA3Ues+GE2id23nmOfVpz/BaqdLwit3NtlhmDQ8bAU?=
+ =?us-ascii?Q?DeZCw7i0N8eb1OcZ4VI+hSwJ3BgcP2cXPgS6ZvbeLCpHs6vArrpydsAML33A?=
+ =?us-ascii?Q?GqpPcTu32PIeFXK6diFJrDpFxTZmBrO+V6Ad9z0HAuZmrydcrt3C9265ugvi?=
+ =?us-ascii?Q?hmHtAya29AgG8f/VyxL+/LnB4TJXkThaD+Au2jqmLKXec5SNh3Bv3q0+7bF9?=
+ =?us-ascii?Q?hUemz6RdORsPcK+y3UagywFUTGHOhivVNqdGlfuvEh9/3Tk+CLw3AdcUfq0M?=
+ =?us-ascii?Q?3twUTq/6SM2JVolT6rC/reZvC0H8q0U8d1Ix7pgwTTDyTs8p8grGOXA0MZwy?=
+ =?us-ascii?Q?PSWH0JFTO/mWSLAUgXrNZXJ2ck35jYvYSEhaGnOqexIwTmFB2vPGLkbbTL3+?=
+ =?us-ascii?Q?sAmve1LXSkqfEWBbTP4TcMD04a5xIRL9iTDG5Dd76I0kIhurH/M3aH1quM8D?=
+ =?us-ascii?Q?D2B/dTbAmowOJIvueHfyPCx0XhQEw0ZepnEMSWLVM54f33r3YQORkzeDurmQ?=
+ =?us-ascii?Q?fnPZHSAqUWgBRTX1tMhq3bT0vPMcDn8SIZ0mCWSkCopdxpZyG+bc/A2JQ5fs?=
+ =?us-ascii?Q?YbFQz076n/R3M9X80xZr00GixQiDceRdfoFkN0Mfj96lFZ5b8L1rgXZaPrTW?=
+ =?us-ascii?Q?12nbKwWWLdPCstrSo4Je78CQuD3RQpPth9y/mJjeUJqIk1HOES8yAufOAhtH?=
+ =?us-ascii?Q?MdAPL7mmFPPM5kdCeONHcIZIMvqYcaSS4pDFX1PAc9wogWEgSh6BzBMINgDX?=
+ =?us-ascii?Q?Z+2UKCVLwHaG39eJupfusJvAn4DkL0+I7za3O8xRBcKh4KnSoIIrI9J1+RXS?=
+ =?us-ascii?Q?oCqRdVLWJ/xMffyOhbSn2RJEf9NtjHiZBGRQCvAhRipIUeRFn1Pgab3qkCtD?=
+ =?us-ascii?Q?fNdcW0jIHU521GleXbOfpiUsc7ozC+Vg6BVNnI9chqYSkrYoryr4cQYKKZbb?=
+ =?us-ascii?Q?Nb5Y5MbivhLLEI7srtpk7HuM7VftQsqUkIj5tSlJFbEJm1q6ilXY+J9GyigF?=
+ =?us-ascii?Q?6ES0FhMOwI1LPl6ck5cMYRL/4Kfpigve+YJGBRdKNNw/xWs32k1LmTOw/Orx?=
+ =?us-ascii?Q?R5IOJZUIChaR8TY26YfD4OAa2N5vRKzR5Ptouyn5XlWSSIlbvkB8tS1/ihz9?=
+ =?us-ascii?Q?pcdAjL6paWbJHbD8nJmmpNhjAbNjspeJQs7jF87khB6iN5sKnf/ukQEvtvty?=
+ =?us-ascii?Q?4QlgiE7U8sZy05Wt+YGTrbtkPfGrEf6g3z08f9Us2QA3OFJk/oljri+pbaQ8?=
+ =?us-ascii?Q?wPjwGEuKnzyGWi0xgndZoRm3bF4mhyR8OrHFC6uxF7+jHoLidXsIQuYfjCrL?=
+ =?us-ascii?Q?XNSDuQyKHH/v3eu7Oz61QYxGF+utN0GPPO0qP8RbCuaKpk1XNIPViiJcCknS?=
+ =?us-ascii?Q?/ugAtf4GkM2KbHGyLxyevcINETvJhBFJrjhgE/efUrMRxsfTQMPgswyIpR5G?=
+ =?us-ascii?Q?5k01DFJoDo903HZinMsl8PM7jG4GWhIhNysYIQYsR2DoXxlJeDEw2x5gI2Ff?=
+ =?us-ascii?Q?Ng=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5346d774-6982-4714-fe67-08dd2fb2a175
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jan 2025 07:04:01.7744
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lDiGfYN3vS81hNBPRH1I7D7I2A7QOqB+UQAOGaASUfnlaNLnczTlZ69sURkLxPLnhtgQFarhW6C5LaTQt6FdHg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5879
+X-OriginatorOrg: intel.com
 
->
-> On Tue, Jan 07, 2025 at 05:49:42PM +0800, Z qiang wrote:
-> > >
-> > > On Mon, Jan 06, 2025 at 11:24:54AM +0800, Z qiang wrote:
-> > > > >
-> > > > > On Fri, Jan 03, 2025 at 01:50:50PM +0800, Z qiang wrote:
-> > > > > > >
-> > > > > > > On Thu, Jan 02, 2025 at 01:41:16PM +0800, Oliver Sang wrote:
-> > > > > > > > hi, Zqiang, hi, Paul,
-> > > > > > > >
-> > > > > > > > On Tue, Dec 31, 2024 at 08:19:44AM -0800, Paul E. McKenney wrote:
-> > > > > > > > > On Tue, Dec 31, 2024 at 03:16:25PM +0800, Z qiang wrote:
-> > > > > > > >
-> > > > > > > > [...]
-> > > > > > > >
-> > > > > > > > > > >
-> > > > > > > > > > > If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> > > > > > > > > > > the same patch/commit), kindly add following tags
-> > > > > > > > > > > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> > > > > > > > > > > | Closes: https://lore.kernel.org/oe-lkp/202412311203.ca7bddba-lkp@intel.com
-> > > > > > > > > > >
-> > > > > > > > > >
-> > > > > > > > > > Please try the following modifications:
-> > > > > > > >
-> > > > > > > > yes, the following modifications fix the issues we found for 9216c28c6a. thanks!
-> > > > > > > >
-> > > > > > > > Tested-by: kernel test robot <oliver.sang@intel.com>
-> > > > > > >
-> > > > > > > Thank you, and I will apply this during my next rebase.
-> > > > > > >
-> > > > > > > Zqiang, unless you tell me otherwise, I will add your Co-developed-by
-> > > > > > > and Signed-off-by.
-> > > > > > >
-> > > > > > > Either way, Happy Square New Year!
-> > > > > >
-> > > > > > Thank you,  Happy New Year!  :)
-> > > > >
-> > > > > And here you go!  Please let me know of anything I missed.
-> > > > >
-> > > > > And thank you for saving me the time it would have taken to track
-> > > > > this one down.  ;-)
-> > > > >
-> > > > >                                                         Thanx, Paul
-> > > > >
-> > > > > ------------------------------------------------------------------------
-> > > > >
-> > > > > commit 71c893e6d1857d1e4ea37aec557d734a560fdb39
-> > > > > Author: Paul E. McKenney <paulmck@kernel.org>
-> > > > > Date:   Thu Dec 19 16:08:54 2024 -0800
-> > > > >
-> > > > >     srcu: Make SRCU readers use ->srcu_ctrs for counter selection
-> > > > >
-> > > > >     This commit causes SRCU readers to use ->srcu_ctrs for counter
-> > > > >     selection instead of ->srcu_idx.  This takes another step towards
-> > > > >     array-indexing-free SRCU readers.
-> > > > >
-> > > > >     [ paulmck: Apply kernel test robot feedback. ]
-> > > > >
-> > > > >     Co-developed-by: Z qiang <qiang.zhang1211@gmail.com>
-> > > > >     Signed-off-by: Z qiang <qiang.zhang1211@gmail.com>
-> > > > >     Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-> > > > >     Tested-by: kernel test robot <oliver.sang@intel.com>
-> > > > >
-> > > > > diff --git a/include/linux/srcutree.h b/include/linux/srcutree.h
-> > > > > index c794d599db5c1..1b01ced61a45b 100644
-> > > > > --- a/include/linux/srcutree.h
-> > > > > +++ b/include/linux/srcutree.h
-> > > > > @@ -101,6 +101,7 @@ struct srcu_usage {
-> > > > >   */
-> > > > >  struct srcu_struct {
-> > > > >         unsigned int srcu_idx;                  /* Current rdr array element. */
-> > > > > +       struct srcu_ctr __percpu *srcu_ctrp;
-> > > > >         struct srcu_data __percpu *sda;         /* Per-CPU srcu_data array. */
-> > > > >         struct lockdep_map dep_map;
-> > > > >         struct srcu_usage *srcu_sup;            /* Update-side data. */
-> > > > > @@ -167,6 +168,7 @@ struct srcu_struct {
-> > > > >  #define __SRCU_STRUCT_INIT(name, usage_name, pcpu_name)                                                \
-> > > > >  {                                                                                              \
-> > > > >         .sda = &pcpu_name,                                                                      \
-> > > > > +       .srcu_ctrp = &pcpu_name.srcu_ctrs[0],                                                   \
-> > > > >         __SRCU_STRUCT_INIT_COMMON(name, usage_name)                                             \
-> > > > >  }
-> > > > >
-> > > > > @@ -222,13 +224,12 @@ void srcu_torture_stats_print(struct srcu_struct *ssp, char *tt, char *tf);
-> > > > >   */
-> > > > >  static inline int __srcu_read_lock_lite(struct srcu_struct *ssp)
-> > > > >  {
-> > > > > -       int idx;
-> > > > > +       struct srcu_ctr __percpu *scp = READ_ONCE(ssp->srcu_ctrp);
-> > > > >
-> > > > >         RCU_LOCKDEP_WARN(!rcu_is_watching(), "RCU must be watching srcu_read_lock_lite().");
-> > > > > -       idx = READ_ONCE(ssp->srcu_idx) & 0x1;
-> > > > > -       this_cpu_inc(ssp->sda->srcu_ctrs[idx].srcu_locks.counter); /* Y */
-> > > > > +       this_cpu_inc(scp->srcu_locks.counter); /* Y */
-> > > > >         barrier(); /* Avoid leaking the critical section. */
-> > > > > -       return idx;
-> > > > > +       return scp - &ssp->sda->srcu_ctrs[0];
-> > > > >  }
-> > > > >
-> > > > >  /*
-> > > > > diff --git a/kernel/rcu/srcutree.c b/kernel/rcu/srcutree.c
-> > > > > index d7ee2f345e192..3bf7f41ad72b8 100644
-> > > > > --- a/kernel/rcu/srcutree.c
-> > > > > +++ b/kernel/rcu/srcutree.c
-> > > > > @@ -253,8 +253,10 @@ static int init_srcu_struct_fields(struct srcu_struct *ssp, bool is_static)
-> > > > >         atomic_set(&ssp->srcu_sup->srcu_barrier_cpu_cnt, 0);
-> > > > >         INIT_DELAYED_WORK(&ssp->srcu_sup->work, process_srcu);
-> > > > >         ssp->srcu_sup->sda_is_static = is_static;
-> > > > > -       if (!is_static)
-> > > > > +       if (!is_static) {
-> > > > >                 ssp->sda = alloc_percpu(struct srcu_data);
-> > > > > +               ssp->srcu_ctrp = &ssp->sda->srcu_ctrs[0];
-> > > > > +       }
-> > > > >         if (!ssp->sda)
-> > > > >                 goto err_free_sup;
-> > > >
-> > > > ssp->srcu_ctrp should be assigned a value under the condition that
-> > > > ssp->sda is  allocated successfully.
-> > > >
-> > > > -       if (!is_static) {
-> > > > +       if (!is_static)
-> > > >                 ssp->sda = alloc_percpu(struct srcu_data);
-> > > > -               ssp->srcu_ctrp = &ssp->sda->srcu_ctrs[0];
-> > > > -       }
-> > > >         if (!ssp->sda)
-> > > >                 goto err_free_sup;
-> > > > +       if (!is_static)
-> > > > +               ssp->srcu_ctrp = &ssp->sda->srcu_ctrs[0];
-> > >
-> > > It doesn't hurt to assign NULL to ssp->srcu_ctrp on allocation failure.
-> > >
-> > > Or am I missing something here?
-> >
-> > No, I just think in case of failed allocation, there is no need to set
-> > srcu_ctrp. :)
->
-> True enough, but you are adding an extra "if", which is not free
-> from either an execution-time viewpoint (not an issue here) or from a
-> complexity viewpoint.  I am not ruling your change out, but neither am
-> I convinced.
->
-> Please see below for the current state, which passes light testing even
-> given proper testing of _nmisafe().  Which I was failing to do before.
->
-> Thoughts?
->
->                                                         Thanx, Paul
->
-> ------------------------------------------------------------------------
->
-> commit e8964cf2179673adc54aae38b62361fd0fdf89ff
-> Author: Paul E. McKenney <paulmck@kernel.org>
-> Date:   Thu Dec 19 16:08:54 2024 -0800
->
->     srcu: Make SRCU readers use ->srcu_ctrs for counter selection
->
->     This commit causes SRCU readers to use ->srcu_ctrs for counter
->     selection instead of ->srcu_idx.  This takes another step towards
->     array-indexing-free SRCU readers.
->
->     [ paulmck: Apply kernel test robot feedback. ]
->
->     Co-developed-by: Z qiang <qiang.zhang1211@gmail.com>
->     Signed-off-by: Z qiang <qiang.zhang1211@gmail.com>
->     Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
->     Tested-by: kernel test robot <oliver.sang@intel.com>
->
-> diff --git a/include/linux/srcutree.h b/include/linux/srcutree.h
-> index c794d599db5c1..1b01ced61a45b 100644
-> --- a/include/linux/srcutree.h
-> +++ b/include/linux/srcutree.h
-> @@ -101,6 +101,7 @@ struct srcu_usage {
->   */
->  struct srcu_struct {
->         unsigned int srcu_idx;                  /* Current rdr array element. */
-> +       struct srcu_ctr __percpu *srcu_ctrp;
->         struct srcu_data __percpu *sda;         /* Per-CPU srcu_data array. */
->         struct lockdep_map dep_map;
->         struct srcu_usage *srcu_sup;            /* Update-side data. */
-> @@ -167,6 +168,7 @@ struct srcu_struct {
->  #define __SRCU_STRUCT_INIT(name, usage_name, pcpu_name)                                                \
->  {                                                                                              \
->         .sda = &pcpu_name,                                                                      \
-> +       .srcu_ctrp = &pcpu_name.srcu_ctrs[0],                                                   \
->         __SRCU_STRUCT_INIT_COMMON(name, usage_name)                                             \
->  }
->
-> @@ -222,13 +224,12 @@ void srcu_torture_stats_print(struct srcu_struct *ssp, char *tt, char *tf);
->   */
->  static inline int __srcu_read_lock_lite(struct srcu_struct *ssp)
->  {
-> -       int idx;
-> +       struct srcu_ctr __percpu *scp = READ_ONCE(ssp->srcu_ctrp);
->
->         RCU_LOCKDEP_WARN(!rcu_is_watching(), "RCU must be watching srcu_read_lock_lite().");
-> -       idx = READ_ONCE(ssp->srcu_idx) & 0x1;
-> -       this_cpu_inc(ssp->sda->srcu_ctrs[idx].srcu_locks.counter); /* Y */
-> +       this_cpu_inc(scp->srcu_locks.counter); /* Y */
->         barrier(); /* Avoid leaking the critical section. */
-> -       return idx;
-> +       return scp - &ssp->sda->srcu_ctrs[0];
->  }
->
->  /*
-> diff --git a/kernel/rcu/srcutree.c b/kernel/rcu/srcutree.c
-> index d7ee2f345e192..308cc7b5098c5 100644
-> --- a/kernel/rcu/srcutree.c
-> +++ b/kernel/rcu/srcutree.c
-> @@ -253,8 +253,10 @@ static int init_srcu_struct_fields(struct srcu_struct *ssp, bool is_static)
->         atomic_set(&ssp->srcu_sup->srcu_barrier_cpu_cnt, 0);
->         INIT_DELAYED_WORK(&ssp->srcu_sup->work, process_srcu);
->         ssp->srcu_sup->sda_is_static = is_static;
-> -       if (!is_static)
-> +       if (!is_static) {
->                 ssp->sda = alloc_percpu(struct srcu_data);
-> +               ssp->srcu_ctrp = &ssp->sda->srcu_ctrs[0];
-> +       }
->         if (!ssp->sda)
->                 goto err_free_sup;
->         init_srcu_struct_data(ssp);
-> @@ -742,12 +744,11 @@ EXPORT_SYMBOL_GPL(__srcu_check_read_flavor);
->   */
->  int __srcu_read_lock(struct srcu_struct *ssp)
->  {
-> -       int idx;
-> +       struct srcu_ctr __percpu *scp = READ_ONCE(ssp->srcu_ctrp);
->
-> -       idx = READ_ONCE(ssp->srcu_idx) & 0x1;
-> -       this_cpu_inc(ssp->sda->srcu_ctrs[idx].srcu_locks.counter);
-> +       this_cpu_inc(scp->srcu_locks.counter);
->         smp_mb(); /* B */  /* Avoid leaking the critical section. */
-> -       return idx;
-> +       return scp - &ssp->sda->srcu_ctrs[0];
->  }
->  EXPORT_SYMBOL_GPL(__srcu_read_lock);
->
-> @@ -772,13 +773,12 @@ EXPORT_SYMBOL_GPL(__srcu_read_unlock);
->   */
->  int __srcu_read_lock_nmisafe(struct srcu_struct *ssp)
->  {
-> -       int idx;
-> -       struct srcu_data *sdp = raw_cpu_ptr(ssp->sda);
-> +       struct srcu_ctr __percpu *scpp = READ_ONCE(ssp->srcu_ctrp);
-> +       struct srcu_ctr *scp = this_cpu_ptr(scpp);
 
-Whether raw_cpu_ptr() should be used, otherwise it will appear:
 
-BUG: using smp_processor_id() in preemptible [00000000] code: init/1
-[    7.324304][    T1] caller is debug_smp_processor_id+0x1b/0x30
-[    7.324308][    T1] CPU: 0 UID: 0 PID: 1 Comm: init Not tainted
-6.13.0-rc2-yoctodev-standard+ #99
-10b660623b999b402f7cd2198fe7d4ebd36ef1d0
-[    7.324311][    T1] Hardware name: QEMU Standard PC (Q35 + ICH9,
-2009), BIOS rel-1.16.2-0-gea1b7a073390-prebuilt.qemu.org 04/01/2014
-[    7.324314][    T1] Call Trace:
-[    7.324315][    T1]  <TASK>
-[    7.324319][    T1]  dump_stack_lvl+0xbb/0xd0
-[    7.324326][    T1]  dump_stack+0x14/0x20
-[    7.324330][    T1]  check_preemption_disabled+0xc7/0xf0
-[    7.324340][    T1]  debug_smp_processor_id+0x1b/0x30
-[    7.324343][    T1]  __srcu_read_lock_nmisafe+0x39/0xd0
-[    7.324353][    T1]  console_flush_all+0x18c/0xbf0
-........
+Hello,
 
-Thanks
-Zqiang
 
->
-> -       idx = READ_ONCE(ssp->srcu_idx) & 0x1;
-> -       atomic_long_inc(&sdp->srcu_ctrs[idx].srcu_locks);
-> +       atomic_long_inc(&scp->srcu_locks);
->         smp_mb__after_atomic(); /* B */  /* Avoid leaking the critical section. */
-> -       return idx;
-> +       return scpp - &ssp->sda->srcu_ctrs[0];
->  }
->  EXPORT_SYMBOL_GPL(__srcu_read_lock_nmisafe);
->
-> @@ -1152,6 +1152,8 @@ static void srcu_flip(struct srcu_struct *ssp)
->         smp_mb(); /* E */  /* Pairs with B and C. */
->
->         WRITE_ONCE(ssp->srcu_idx, ssp->srcu_idx + 1); // Flip the counter.
-> +       WRITE_ONCE(ssp->srcu_ctrp,
-> +                  &ssp->sda->srcu_ctrs[!(ssp->srcu_ctrp - &ssp->sda->srcu_ctrs[0])]);
->
->         /*
->          * Ensure that if the updater misses an __srcu_read_unlock()
-> @@ -2000,6 +2002,7 @@ static int srcu_module_coming(struct module *mod)
->                 ssp->sda = alloc_percpu(struct srcu_data);
->                 if (WARN_ON_ONCE(!ssp->sda))
->                         return -ENOMEM;
-> +               ssp->srcu_ctrp = &ssp->sda->srcu_ctrs[0];
->         }
->         return 0;
->  }
+we found the new added test kmalloc_track_caller_oob_right randomly failed
+(10 out of 30 runs) which seems due to below (1)
+
+1857099c18e16a72 3738290bfc99606787f515a4590
+---------------- ---------------------------
+       fail:runs  %reproduction    fail:runs
+           |             |             |
+           :30          33%          10:30    kunit.kasan.fail
+           :30          33%          10:30    dmesg.BUG:KFENCE:memory_corruption_in_kmalloc_track_caller_oob_right <-- (1)
+
+below are details.
+
+
+kernel test robot noticed "kunit.kasan.fail" on:
+
+commit: 3738290bfc99606787f515a4590ad38dc4f79ca4 ("kasan: add kunit tests for kmalloc_track_caller, kmalloc_node_track_caller")
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+
+[test failed on linus/master      0bc21e701a6ffacfdde7f04f87d664d82e8a13bf]
+[test failed on linux-next/master 8155b4ef3466f0e289e8fcc9e6e62f3f4dceeac2]
+
+in testcase: kunit
+version: 
+with following parameters:
+
+	group: group-03
+
+
+
+config: x86_64-rhel-9.4-kunit
+compiler: gcc-12
+test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-7700 CPU @ 3.60GHz (Kaby Lake) with 32G memory
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202501081209.b7d8b735-lkp@intel.com
+
+
+
+[  117.724741]     ok 3 kmalloc_node_oob_right
+[  117.724849] ==================================================================
+[  117.737591] BUG: KASAN: slab-out-of-bounds in kmalloc_track_caller_oob_right+0x4ca/0x530 [kasan_test]
+[  117.747467] Write of size 1 at addr ffff888165906078 by task kunit_try_catch/3613
+
+[  117.757782] CPU: 7 UID: 0 PID: 3613 Comm: kunit_try_catch Tainted: G    B   W        N 6.12.0-rc6-00221-g3738290bfc99 #1
+[  117.769291] Tainted: [B]=BAD_PAGE, [W]=WARN, [N]=TEST
+[  117.775007] Hardware name: Dell Inc. OptiPlex 7050/062KRH, BIOS 1.2.0 12/22/2016
+[  117.783056] Call Trace:
+[  117.786185]  <TASK>
+[  117.788966]  dump_stack_lvl+0x4f/0x70
+[  117.793307]  print_address_description.constprop.0+0x2c/0x3a0
+[  117.799721]  ? kmalloc_track_caller_oob_right+0x4ca/0x530 [kasan_test]
+[  117.806918]  print_report+0xb9/0x280
+[  117.811183]  ? kasan_addr_to_slab+0x9/0x90
+[  117.815961]  ? kmalloc_track_caller_oob_right+0x4ca/0x530 [kasan_test]
+[  117.823154]  kasan_report+0xcb/0x100
+[  117.827408]  ? kmalloc_track_caller_oob_right+0x4ca/0x530 [kasan_test]
+[  117.834602]  kmalloc_track_caller_oob_right+0x4ca/0x530 [kasan_test]
+[  117.841626]  ? __pfx_kmalloc_track_caller_oob_right+0x10/0x10 [kasan_test]
+[  117.849166]  ? __schedule+0x716/0x15e0
+[  117.853589]  ? ktime_get_ts64+0x7f/0x240
+[  117.858186]  kunit_try_run_case+0x173/0x440
+[  117.863043]  ? try_to_wake_up+0x913/0x1580
+[  117.867813]  ? __pfx_kunit_try_run_case+0x10/0x10
+[  117.873187]  ? __pfx__raw_spin_lock_irqsave+0x10/0x10
+[  117.878915]  ? set_cpus_allowed_ptr+0x81/0xb0
+[  117.883956]  ? __pfx_set_cpus_allowed_ptr+0x10/0x10
+[  117.889502]  ? __pfx_kunit_try_run_case+0x10/0x10
+[  117.894876]  ? __pfx_kunit_generic_run_threadfn_adapter+0x10/0x10
+[  117.901633]  kunit_generic_run_threadfn_adapter+0x79/0xe0
+[  117.907698]  kthread+0x2d4/0x3c0
+[  117.911604]  ? __pfx_kthread+0x10/0x10
+[  117.916032]  ret_from_fork+0x2d/0x70
+[  117.920291]  ? __pfx_kthread+0x10/0x10
+[  117.924718]  ret_from_fork_asm+0x1a/0x30
+[  117.929324]  </TASK>
+
+[  117.934373] Allocated by task 3613:
+[  117.938544]  kasan_save_stack+0x1c/0x40
+[  117.943062]  kasan_save_track+0x10/0x30
+[  117.947574]  __kasan_kmalloc+0xa6/0xb0
+[  117.951998]  __kmalloc_node_track_caller_noprof+0x1bd/0x470
+[  117.958239]  kmalloc_track_caller_oob_right+0x8c/0x530 [kasan_test]
+[  117.965176]  kunit_try_run_case+0x173/0x440
+[  117.970031]  kunit_generic_run_threadfn_adapter+0x79/0xe0
+[  117.976097]  kthread+0x2d4/0x3c0
+[  117.980000]  ret_from_fork+0x2d/0x70
+[  117.984251]  ret_from_fork_asm+0x1a/0x30
+
+[  117.991022] The buggy address belongs to the object at ffff888165906000
+                which belongs to the cache kmalloc-128 of size 128
+[  118.004873] The buggy address is located 0 bytes to the right of
+                allocated 120-byte region [ffff888165906000, ffff888165906078)
+
+[  118.021331] The buggy address belongs to the physical page:
+[  118.027566] page: refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x165906
+[  118.036221] head: order:1 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+[  118.044530] ksm flags: 0x17ffffc0000040(head|node=0|zone=2|lastcpupid=0x1fffff)
+[  118.052494] page_type: f5(slab)
+[  118.056314] raw: 0017ffffc0000040 ffff888100042a00 ffffea00202bd080 0000000000000003
+[  118.064708] raw: 0000000000000000 0000000080200020 00000001f5000000 0000000000000000
+[  118.073102] head: 0017ffffc0000040 ffff888100042a00 ffffea00202bd080 0000000000000003
+[  118.081581] head: 0000000000000000 0000000080200020 00000001f5000000 0000000000000000
+[  118.090061] head: 0017ffffc0000001 ffffea0005964181 ffffffffffffffff 0000000000000000
+[  118.098541] head: 0000000000000002 0000000000000000 00000000ffffffff 0000000000000000
+[  118.107021] page dumped because: kasan: bad access detected
+
+[  118.115431] Memory state around the buggy address:
+[  118.120904]  ffff888165905f00: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  118.128782]  ffff888165905f80: fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc fc
+[  118.136658] >ffff888165906000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 fc
+[  118.144535]                                                                 ^
+[  118.152323]  ffff888165906080: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[  118.160211]  ffff888165906100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 fc fc
+[  118.168100] ==================================================================
+[  118.176059]     # kmalloc_track_caller_oob_right: EXPECTATION FAILED at mm/kasan/kasan_test_c.c:243
+                   KASAN failure expected in "ptr[size] = 'y'", but none occurred
+[  118.176103] ==================================================================
+[  118.201544] BUG: KFENCE: memory corruption in kmalloc_track_caller_oob_right+0x27b/0x530 [kasan_test]
+
+[  118.213582] Corrupted memory at 0x00000000e59a4b3f [ ! . . . . . . . . . . . . . . . ] (in kfence-#20):
+[  118.223645]  kmalloc_track_caller_oob_right+0x27b/0x530 [kasan_test]
+[  118.230667]  kunit_try_run_case+0x173/0x440
+[  118.235525]  kunit_generic_run_threadfn_adapter+0x79/0xe0
+[  118.241590]  kthread+0x2d4/0x3c0
+[  118.245497]  ret_from_fork+0x2d/0x70
+[  118.249748]  ret_from_fork_asm+0x1a/0x30
+
+[  118.256520] kfence-#20: 0x0000000036299d7e-0x000000000c1813d3, size=120, cache=kmalloc-128
+
+[  118.267597] allocated by task 3613 on cpu 7 at 118.176015s (0.091581s ago):
+[  118.275220]  kmalloc_track_caller_oob_right+0x190/0x530 [kasan_test]
+[  118.282241]  kunit_try_run_case+0x173/0x440
+[  118.287100]  kunit_generic_run_threadfn_adapter+0x79/0xe0
+[  118.293166]  kthread+0x2d4/0x3c0
+[  118.297071]  ret_from_fork+0x2d/0x70
+[  118.301322]  ret_from_fork_asm+0x1a/0x30
+
+[  118.308107] freed by task 3613 on cpu 7 at 118.176094s (0.132012s ago):
+[  118.315381]  kmalloc_track_caller_oob_right+0x27b/0x530 [kasan_test]
+[  118.322403]  kunit_try_run_case+0x173/0x440
+[  118.327260]  kunit_generic_run_threadfn_adapter+0x79/0xe0
+[  118.333327]  kthread+0x2d4/0x3c0
+[  118.337233]  ret_from_fork+0x2d/0x70
+[  118.341482]  ret_from_fork_asm+0x1a/0x30
+
+[  118.348258] CPU: 7 UID: 0 PID: 3613 Comm: kunit_try_catch Tainted: G    B   W        N 6.12.0-rc6-00221-g3738290bfc99 #1
+[  118.359770] Tainted: [B]=BAD_PAGE, [W]=WARN, [N]=TEST
+[  118.365490] Hardware name: Dell Inc. OptiPlex 7050/062KRH, BIOS 1.2.0 12/22/2016
+[  118.373542] ==================================================================
+[  118.381677]     not ok 4 kmalloc_track_caller_oob_right
+[  118.381777] ==================================================================
+
+...
+
+[  183.260210]     ok 75 copy_user_test_oob
+[  183.279934] # kasan: pass:50 fail:1 skip:24 total:75
+[  183.284696] # Totals: pass:50 fail:1 skip:24 total:75
+[  183.290383] not ok 1 kasan
+
+
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20250108/202501081209.b7d8b735-lkp@intel.com
+
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
