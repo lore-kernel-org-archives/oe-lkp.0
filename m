@@ -1,202 +1,334 @@
-Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46B0C768FD
-	for <oe-lkp@lists.linux.dev>; Thu,  9 Jan 2025 22:02:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736460123; cv=none; b=jVmqXz28nKKnxEyxQh/gbSnY2VSyXiRpYMyk0SRTUGs2ATiqh/DVMJI7C/jt0uK2DZC1T06zdSDglg52uZZYdeTYWjadReG+Jje26f0VYz2YxIIX87xdLoBrwZImwW/zs08EzBlg1o50nguUC+lG1bJNS1FqOJvEP530etLbUEU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736460123; c=relaxed/simple;
-	bh=I84WSSh6DQ9a2mtoAMAdJUgHoCQtDE3yDVIXOTBFj8Q=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=guGq9APPBx6pNH4C9p4nmvqSlFSFgLrvLUFkhrXSctjPY2v9E9miSgDPcQTR2l+xsvNBaFA/XXOA7IimvldPqhyGu3DsGftTTvcy1F/WuKpUPI8XzwR4Qydp6YAieiBlqroVHCnM4vGELvL9T4QZPmb9dbSRXh/6w7nmkiVRDfM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DpWHY4Jv; arc=none smtp.client-ip=209.85.208.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 444D5200B8C
+	for <oe-lkp@lists.linux.dev>; Fri, 10 Jan 2025 02:44:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1736477044; cv=fail; b=PuSFtNRF066LtY3kMNLv//foJUiihYOIsYo1LKywL2WyiTNMqLB6myk2F0DfVhRP4zbrGtq7xAFLyQRPGYgaw8FQudPVHJeKLXB3J2Ljd3EXhmRG7cPJKfPEbtM7nBgg6Gwv0I4Qwf/DR034ImmLqBzhUK/Zt/EP2MdKaW3v+EU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1736477044; c=relaxed/simple;
+	bh=jmpKf+VJxs5ddpJPFU1KTH9hza9JfPSg9iKN7Bsa4Gc=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:MIME-Version; b=Qjv7GvfYHJu630fLG11y1fBaooFs7DzCbXDxcRTXv/jywcT/ZvlZo4b28/WuKE66Kw+uncClIVIgaOnqy+K9uVKEykSXH3DtjB8ZrJ2IzePP4BSv7Y5/OgCG2mqVS96lUYDZ/EdNgVqfH87+vpp8nyljvjPTCDyLwYfImCe7Zx0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RQc/43L5; arc=fail smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DpWHY4Jv"
-Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-5d7e3f1fc01so2722168a12.2
-        for <oe-lkp@lists.linux.dev>; Thu, 09 Jan 2025 14:02:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1736460120; x=1737064920; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=d14TMngvOZ6r/5tUkuVtbSF7X2ZIEAXABzVrVVasdpI=;
-        b=DpWHY4JvG5kGOUD/qK8rODRK6RYlDGH8NGAZgN1pwN40GaT+N88gluVMIkEZOE0G6d
-         eEOH2Y8P5b9U2htObnFcmQhWRf0dB2Ff4RIYlKy9OM6rIJdXxVQ8XIu3ED55DMl62bSu
-         rtnqy3s8l+9FVea3yO7Ze/LIFqGSyAnEtV3zi74eHI7yWn+m+SPv6qvH2qBzRuXK4SwG
-         FWoh90e0wd0TRO61QNopyD10/zvdJBejvIpqssxU21N/9USho5zjCXLZZDcPYVoQcWT9
-         llG/zEO+Fq30IDBiiMm93jwUNT6NNkL91II5f4a4iOyXQr4PqU9O4tbwOpR3Cc9357gR
-         lwVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736460120; x=1737064920;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=d14TMngvOZ6r/5tUkuVtbSF7X2ZIEAXABzVrVVasdpI=;
-        b=qfRw6iNn58CJn2vH2XKdDbWs50HMvWZzTi29ycvuFw1Z1whg2a9HbjD/BF6oELSUDV
-         wNvzfcnN0HOiuBisLbD9QtYspfkhHQlwQo1nWmmuSlv18CAZsvj0PSS7HsOjroqj6Prr
-         aO7Dm/ZAKtoYwwoyIRfdjVTCJaTGiZHYisvktiUPUuooUEhd1iDbb3+BWNSfYhAICS2J
-         TuGgY1+kNy3wyuNrLXyLttUXBZUn0MLkZoionJW+Q+bDmlmf42LjMMsURgtFF8nbDTqi
-         yC6H8aVfBxzPhdehX6VFTyiOMwYzexEb0NOc8Ayz1LHIRNrPGxMJg4RvCT/Ctsoa+kQj
-         ktfA==
-X-Forwarded-Encrypted: i=1; AJvYcCWa+7ucewO7T9gvNcc21VD3xx2oJt4X16G6WUxoYm9iI/UvSi/DQKZS+QdQ8wCDG7JS/ojbm5I=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzzcGLpYue6PC5pRrlUSV+44snBgLNQgfADkQwJXLx3+jfqaTzH
-	vN+7bgKsrKj4I+R5I80ovM5rY9DE8PSl6slgZeIGCiSNRrj/VWwtjPpPDE6U4RVI8jyOoDLrGNH
-	YOhEw//8BRYISHWu/Sp0hfakeVcY=
-X-Gm-Gg: ASbGnct2/IC5P22PjXTwf5bBSXC4v3DbpNFLpX/kaWRV70zNcbaQI/Y+CbGGlLtRiGI
-	vZaoulJrhthd4LkSbB0UVf02YAPA5p7QRmpRA
-X-Google-Smtp-Source: AGHT+IEBcXj6j3UVSZHDL/otibFrqiFc0eg7Iey+Qp31QVFCMqkK98awPyQfFstWEFBTtT3YfIpDptbUHFWln66vPdE=
-X-Received: by 2002:a05:6402:4402:b0:5d3:ba42:e9d5 with SMTP id
- 4fb4d7f45d1cf-5d972e06b36mr7194493a12.9.1736460119398; Thu, 09 Jan 2025
- 14:01:59 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RQc/43L5"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1736477042; x=1768013042;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=jmpKf+VJxs5ddpJPFU1KTH9hza9JfPSg9iKN7Bsa4Gc=;
+  b=RQc/43L5OiAYWQkNX6+4PyslbjK1msUiOeR5+YaBKnE+9g7EPjq61xX1
+   dVl/O3ewTkKtzlTZT0khjtp/63GdHiCyHUp8L9qNFm/YRrOcdYsSDHXp/
+   9XhVP45/Ww7a1prA1XOxtti1n7qma416udgN5lD7XhHA6fEr4J0xta4aE
+   M72vehzz00kSW7Q77ygXc8VcrrAz5Y+0SRSUBnjcNEXXXN25RT1N7Q2ep
+   u9H10Q9I02NMjBqvGb6Rzm7B4fSmJ2ZAWTV4u4WJS4b7J9/O/V8KMqy0l
+   /pQfcoh1meCC4jkakpP4u0/t6mmtY4The41BllxTc8JDSDybXLeAMQDhu
+   w==;
+X-CSE-ConnectionGUID: BVzIhNiqTlyeb0qN6oUl+Q==
+X-CSE-MsgGUID: eq2wMveKQqGNeQBEoEzIVg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11310"; a="36872610"
+X-IronPort-AV: E=Sophos;i="6.12,302,1728975600"; 
+   d="scan'208";a="36872610"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2025 18:44:02 -0800
+X-CSE-ConnectionGUID: ELp7xjVBSPuiriZMNbNrrg==
+X-CSE-MsgGUID: khI6rIdFT0eSeaQ6oc+UhA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
+   d="scan'208";a="140908611"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orviesa001.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 09 Jan 2025 18:44:02 -0800
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.44; Thu, 9 Jan 2025 18:44:01 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.44 via Frontend Transport; Thu, 9 Jan 2025 18:44:01 -0800
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.176)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.44; Thu, 9 Jan 2025 18:44:00 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=KXEIGlbaw99HOobLL2ybgObyRig38Cx+ilWmGCDjuT6dwIADEgWoDpSK16n7+ZKVYEoVY24jGi1QRJhr61fr6KXD3W7857Eyxv22noj5VUIXbZEW0jX8spaGURUEKhyIp8h4Y8B4E/Sfa3kXCMMgwjhpbbI42zVXB1wnpY0w4FgJYhmGSWJZ5EdYRkE90InhUk+Wga3M0NP4SIfs83htDxeRAazMOuEPcxODBpFPipYXifl2dfall2QqCNlaEKc9p1oEX+rKPQOnvDZBWYPUSeH+Y70FlL6IEjfDrOjbeXXTMi14PL2YiUwiMQ0R+EdqgYgI7smMQ84u1k6BNWDbSw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=OFSoUiKqrIlUWteC7xulRu534FDvVhpeYXpYDnlQ11Y=;
+ b=GpjDq7XTPhOvEd0aNIGF+bC7XFk01NeJmcJ3TpmMyCDa4GYXTUIavNWE5EMaLig3vnZXzrRqhQz96gU6MXJ+pI/8j8c+BB4exRaE8o2u8rFHXsbGplazBlhoIl+j//wBCAAo1YUFgQIaotgjLJW44QFXW+TV2HuNlK6lPQGtgH8WbWPV7+WjU6EhqvPnj5reyewvPcM+Bj45i6xr0XA68MgDaKzLtAvgc9yMCUnKt3NHdTGCM8fWGe24BeHg1tSeI4OBEfErPqil8qYAbV2tyzEXFbrWClgVG+ENC4tSu7YIRwXykmtoqVT26Mvu8oQzJxJ3LDOAbIRQSA8tLYkxQQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by MW3PR11MB4620.namprd11.prod.outlook.com (2603:10b6:303:54::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8335.12; Fri, 10 Jan
+ 2025 02:43:52 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%3]) with mapi id 15.20.8335.012; Fri, 10 Jan 2025
+ 02:43:52 +0000
+Date: Fri, 10 Jan 2025 10:43:44 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Johannes Berg <johannes.berg@intel.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>, Geert Uytterhoeven <geert@linux-m68k.org>,
+	<linux-fsdevel@vger.kernel.org>, <oliver.sang@intel.com>
+Subject: [linux-next:master] [fs]  f8f25893a4:
+ WARNING:at_fs/debugfs/file.c:#open_proxy_open
+Message-ID: <202501101055.bb8bf3e7-lkp@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+X-ClientProxiedBy: SI2P153CA0017.APCP153.PROD.OUTLOOK.COM
+ (2603:1096:4:140::10) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202501091405.a1fcb1ed-lkp@intel.com> <202501090850.F23EBEBC5B@keescook>
- <202501091236.E3EDA2188@keescook> <pep7tppcmd77ejaa47bhajc3uoy2q2n3cladgc4btdri4mth65@dqjulq2hx4l2>
- <202501091256.4F3B2E8@keescook>
-In-Reply-To: <202501091256.4F3B2E8@keescook>
-From: Mateusz Guzik <mjguzik@gmail.com>
-Date: Thu, 9 Jan 2025 23:01:47 +0100
-X-Gm-Features: AbW1kvZbu9Z69Ril0ATvJrswk7c186FhcLSmmyUnMYPJNqTnJBlTxUBM8DqvV9I
-Message-ID: <CAGudoHHymwdk9ChLK=JcPtRD8BSTRDG9B78yOzcRoBGWFzumng@mail.gmail.com>
-Subject: Re: [linus:master] [fortify] 239d87327d: vm-scalability.throughput
- 17.3% improvement
-To: Kees Cook <kees@kernel.org>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	linux-kernel@vger.kernel.org, =?UTF-8?Q?Thomas_Wei=C3=9Fschuh?= <linux@weissschuh.net>, 
-	Nilay Shroff <nilay@linux.ibm.com>, Yury Norov <yury.norov@gmail.com>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-hardening@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|MW3PR11MB4620:EE_
+X-MS-Office365-Filtering-Correlation-Id: 86df8a67-67f2-4f15-1d5a-08dd31209e9d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?FbC06Mxyaog0IGG94l73JSMzP9k5D3QPAOOdxWVrdWfNZcRvr9A5vUVFp6cz?=
+ =?us-ascii?Q?h+5QAGX/+mJEhnjrFOdUb8jNzcBjUXKNUo061+2W23fcZO+xReqCvgSzVFf2?=
+ =?us-ascii?Q?Gpv8ssDUvf64xpiGmGZ/bkjYqrPcuPW1BjQtBOm3mAW7mXtJKWZNKqLvwk9t?=
+ =?us-ascii?Q?kf/kEBtfZuTH4cYi+sAfCsNFX1n/gxoiConUi4iHB6CfjFVhV/Gb0w6SJOva?=
+ =?us-ascii?Q?+QJIZ95QLkcRovyQeGL6Sygjni5jTA7NtGMvmJl2Q3fVseGtf8zgs+ZGMMUI?=
+ =?us-ascii?Q?ZpvSWzW2ENEDbPGAlGJr5MDkVDxpPwXQMy3dX1B7GS+FY+weH11m5TM8GmKU?=
+ =?us-ascii?Q?itkIFcuWrzYirAjSwQOp9W/uYHpQRLQAInNw1zu8fIAbhFSmAZGIinFZa7XA?=
+ =?us-ascii?Q?Vj10nlnZTkWlkVzxuBPis8a0acp+fg+sPPEOxKFm4y2Wo7uj4/D7tUGUufc1?=
+ =?us-ascii?Q?3GKa7lexD/2lDqyXS7ELCyaSjmy4dKusewuCIqLC1fWS3LSPz9538KFmDdJW?=
+ =?us-ascii?Q?1/oE1Cmo7ARV6bkQlpTur1eE4ftSSq+2qYs5JEJLKkPsrQ+23tWzZHmJX0Tj?=
+ =?us-ascii?Q?QlZ1jk1aFkRrcx5P0J+u48Bdd2E6Acyo/XIVdyX3TvkJ37CHH+gD4kE4iqib?=
+ =?us-ascii?Q?gKwtt5ABvzYEYbuM9uS8JzKKHO4GwlSTQSoWdgjpE6SU72bsWmTRYG19jjK7?=
+ =?us-ascii?Q?PqCylO5Six7hiVu0WmIpgreZ4OlrR4HQHGN3CtQt3kFgBgxni0R9DuhCe4kZ?=
+ =?us-ascii?Q?CZlZBKT9FwSaXIaaBl5AuoV/EoMQejx97syR9RQfKL1Q4Rd23euhgl73wQZM?=
+ =?us-ascii?Q?zAkiYm6AJRUgJG6QWInfiN4CRwsJLeFpNRcUOfWqN5Nmhc0nSRZ+9c2+ELdk?=
+ =?us-ascii?Q?mJ7uyqGBKiD4e1eY2hK3j5wH2NtAhoagHKJ48QA017iV6T7MS53DRNvtXFJQ?=
+ =?us-ascii?Q?GyCAyPiXsVdQ6ZAHbxVK82QDFE9GKMwVcUq3pBgx4APQC3Lf1KSoCwY+921R?=
+ =?us-ascii?Q?xLvsz3pU/3LEnNjIxHpWbdZrZuvnt9OD9o5x9X/xhxfc/BTZJDgW0+ueti2c?=
+ =?us-ascii?Q?X2586EDSefuwEdn9dWebaSuoCZRK/6U4iVYOtOm9bftXnv9qEdy05rafWz0Y?=
+ =?us-ascii?Q?qeN7sfXvQsfQ4z7XHgyqRF+McAEVOSQz3c6UBsc+0W5UBKyg1YJb2LrKQlrN?=
+ =?us-ascii?Q?Nh9P3KhMfYUg++8J1WHceJCgm5YUvhPkD6j/r8NE0OnsGF3ZEAuc30vX5Su8?=
+ =?us-ascii?Q?U9frqk+wkRG3jvXIK7OInGRXDIedTMgMmbePqKxQNVrQKqmOosba17hJErdq?=
+ =?us-ascii?Q?RcCPqf6kRzr369LSipcyD2UGX3d1t/zqgvSvsAbjOo9jNA=3D=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tDHcTm248LhADL8gNqLN/Ecgqa2fsC9yYqD62GMsGgr6RwqwlJq3KbheHuo4?=
+ =?us-ascii?Q?vnWc+JZl0NiwFWftVgWn2qYwJVvpcM1O/om9MP/Y0GH+4OWnf7Ham7JgilrM?=
+ =?us-ascii?Q?C4SnkK354RfyjmHEyAefLCSYm4dQO6j6aeIC+/pKemuSDtyPbDsc3ZtZh3D4?=
+ =?us-ascii?Q?jtnEnafoy6YdMn4tLRQlFPuND1wlKEPmVTzlR7bS6U5F0SmctRyuQY6khnkJ?=
+ =?us-ascii?Q?u6aw6bm2hrCXJQjxW1kXq44uDNkOV7K6cHq+oTcEibjs1ztmbcGHj6SeiA+G?=
+ =?us-ascii?Q?0KfOqKLVDvXEEJn/GbR9hBToZ0AIAruyZXJRnd9B4qoPBBXdsL/5JK6Wen92?=
+ =?us-ascii?Q?+sdmPy9Jr63ooPWVA2rmepOwEYl4ifebUXVezZbVweKmyKpSwpEUyY7fZ+no?=
+ =?us-ascii?Q?F1kap0dfyrN96pvu6SowXE2SxTXMe1fCfItWGfzvxs7NqYbU+XbfbqstK6hk?=
+ =?us-ascii?Q?PLaHwGUI2sJnClRGhXScUVQfxyQM2VCYYJ1nvrKknW+CVg3ZNc0/sFckT5bW?=
+ =?us-ascii?Q?wA0xnjZbaY8/D88sFMwROnHvgh1wtaGR5bkZHLlC60Y2cHpn/Hn7+PngkbLQ?=
+ =?us-ascii?Q?eUEwP5euXwLTBOF4w1HrtN3xAIp/pVX95X1p4VEhh8kARYIkiBFz1UdvJVZC?=
+ =?us-ascii?Q?PEXR2mFksGcV6RPK/l9z2AYtffzPXyiuvLzChmYAHbjgf13QF7Wzi1AWHfju?=
+ =?us-ascii?Q?MK4r/nJMBMRNml5w1/bO+51jvwXN3kLrDWwwMAashh2xOQPgh127xk9YtAwl?=
+ =?us-ascii?Q?GlUdv0fPfLII3lfiqPjTV37VxLHZGfgVfEHHGn5ms+4MBB6GtZ8is4bkCUcz?=
+ =?us-ascii?Q?22GctKOTypCJfKmTp11Q9uBlxKck1uBPOc/rMHDl/5UvF9n8+CZUi5dj8acN?=
+ =?us-ascii?Q?BsNx0+Pj7zKaeISY86tNn7La+ahfoezR3SknyzkhRIVq/6zGmTQtOOK3fY1m?=
+ =?us-ascii?Q?yAZDVApSpc5TNfN1hZdhxzWzX0RGC+GCxVd8T0aZW/y6cOVOD+onNkGJs0+S?=
+ =?us-ascii?Q?MYLLLvLj2x5q7sCPMaHugQ7ZOAJvaBw1s13pFrgy//IaylbmmGair9E0TU0l?=
+ =?us-ascii?Q?XP10cB4unTm5Qlprtj/vHIsMhPPWbrxSOciiFLtSUOUAM3GhfxLZu7vlRp8q?=
+ =?us-ascii?Q?KQWS17I6QEjii2imISdXFOEl8aFxqXcCIoLrYwEgNWFl15IQkiDGL/lcZ4lZ?=
+ =?us-ascii?Q?8YzcmqC7tnkYRCq9k9H+EVqE5TdV3GPqnkEEWvLnL2Al5ujK2/EQEOcXzplT?=
+ =?us-ascii?Q?xm/5hUMuTIdgJZKgmXvPT/xdgspxOXRm/l5fN0kYEVIKeSbLElR1Pgo7u7ge?=
+ =?us-ascii?Q?Xu28LE0oLUE3eHAd+n5tSh+hmEm5iWTn9zZqwZcnRfuffZcScdVvXH372Y4n?=
+ =?us-ascii?Q?YiG8/St5aPrzGsDWBT6g0OtDdSu1ZHUo31xuLKrD91XsWrdez7ImiaFWNq+R?=
+ =?us-ascii?Q?o8VVnFU0AMfmg7XO4nUr5XojNGAFnBk5JYWFtF7gapRMP+E21o+bYZwe9U2y?=
+ =?us-ascii?Q?ObJo5kL09ZrouDa9t5EKWiYJJewkbe5ILNFYpgkzuh+GdsFh48GSjy2/HTWS?=
+ =?us-ascii?Q?NLIM+FKlzQ8/b0Wwdm/tS69hJN90I41QwMz8gUU//8mv9CA/ogscpni/CdPz?=
+ =?us-ascii?Q?zA=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 86df8a67-67f2-4f15-1d5a-08dd31209e9d
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jan 2025 02:43:52.7193
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Tf7bSrM+e9fhFUNU3wxIZKquoyPl9EHOix+5xJqWwBCrW9Q6jSYl0nErLGgVIs0njuBW40mw8v3tpkgmpmZcmQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4620
+X-OriginatorOrg: intel.com
 
-On Thu, Jan 9, 2025 at 10:12=E2=80=AFPM Kees Cook <kees@kernel.org> wrote:
->
-> On Thu, Jan 09, 2025 at 09:52:31PM +0100, Mateusz Guzik wrote:
-> > On Thu, Jan 09, 2025 at 12:38:04PM -0800, Kees Cook wrote:
-> > > On Thu, Jan 09, 2025 at 08:51:44AM -0800, Kees Cook wrote:
-> > > > On Thu, Jan 09, 2025 at 02:57:58PM +0800, kernel test robot wrote:
-> > > > > kernel test robot noticed a 17.3% improvement of vm-scalability.t=
-hroughput on:
-> > > > >
-> > > > > commit: 239d87327dcd361b0098038995f8908f3296864f ("fortify: Hide =
-run-time copy size from value range tracking")
-> > > > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git m=
-aster
-> > > >
-> > > > Well that is unexpected. There should be no binary output differenc=
-e
-> > > > with that patch. I will investigate...
-> > >
-> > > It looks like hiding the size value from GCC has the side-effect of
-> > > breaking memcpy inlining in many places. I would expect this to make
-> > > things _slower_, though. O_o
->
-> I think it's disabling value-range-based inlining, I'm trying to
-> construct some tests...
->
-> > This depends on what was emitted in place and what CPU is executing it.
-> >
-> > Notably if gcc elected to emit rep movs{q,b}, the CPU at hand does
-> > not have FSRM and the size is low enough, then such code can indeed be
-> > slower than suffering a call to memcpy (which does not issue rep mov).
-> >
-> > I had seen gcc go to great pains to align a buffer for rep movsq even
-> > when it was guaranteed to not be necessary for example.
-> >
-> > Can you disasm an example affected spot?
->
-> I tried to find the most self-contained example I could, and I ended up
-> with:
->
-> static void ipv6_rpl_addr_decompress(struct in6_addr *dst,
->                                      const struct in6_addr *daddr,
->                                      const void *post, unsigned char pfx)
-> {
->         memcpy(dst, daddr, pfx);
->         memcpy(&dst->s6_addr[pfx], post, IPV6_PFXTAIL_LEN(pfx));
-> }
->
 
-Well I did what I should have from the get go and took the liberty of
-looking at the profile.
 
-         %stddev     %change         %stddev
-             \          |                \
-[snip]
-      0.00            +6.5        6.54 =C2=B1 66%
-perf-profile.calltrace.cycles-pp.memcpy_orig.copy_page_from_iter_atomic.gen=
-eric_perform_write.shmem_file_write_iter.do_iter_readv_writev
+Hello,
 
-Disassembling copy_page_from_iter_atomic *prior* to the change indeed
-reveals rep movsq as I suspected (second to last instruction):
+kernel test robot noticed "WARNING:at_fs/debugfs/file.c:#open_proxy_open" on:
 
-<+919>:   mov    (%rax),%rdx
-<+922>:   lea    0x8(%rsi),%rdi
-<+926>:   and    $0xfffffffffffffff8,%rdi
-<+930>:   mov    %rdx,(%rsi)
-<+933>:   mov    %r8d,%edx
-<+936>:   mov    -0x8(%rax,%rdx,1),%rcx
-<+941>:   mov    %rcx,-0x8(%rsi,%rdx,1)
-<+946>:   sub    %rdi,%rsi
-<+949>:   mov    %rsi,%rdx
-<+952>:   sub    %rsi,%rax
-<+955>:   lea    (%r8,%rdx,1),%ecx
-<+959>:   mov    %rax,%rsi
-<+962>:   shr    $0x3,%ecx
-<+965>:   rep movsq %ds:(%rsi),%es:(%rdi)
-<+968>:   jmp    0xffffffff819157c5 <copy_page_from_iter_atomic+869>
+commit: f8f25893a477a4da4414c3e40ddd51d77fac9cfc ("fs: debugfs: differentiate short fops with proxy ops")
+https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 
-With the reported patch this is a call to memcpy.
+[test failed on linux-next/master 6ecd20965bdc21b265a0671ccf36d9ad8043f5ab]
 
-This is the guy:
-static __always_inline
-size_t memcpy_from_iter(void *iter_from, size_t progress,
-                        size_t len, void *to, void *priv2)
-{
-        memcpy(to + progress, iter_from, len);
-        return 0;
-}
+in testcase: boot
 
-I don't know what the specific bench is doing, I'm assuming passed
-values were low enough that the overhead of spinning up rep movsq took
-over.
+config: i386-randconfig-054-20250108
+compiler: clang-19
+test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 
-gcc should retain the ability to optimize this, except it needs to be
-convinced to not emit rep movsq for variable sizes (and instead call
-memcpy).
+(please refer to attached dmesg/kmsg for entire log/backtrace)
 
-For user memory access there is a bunch of hackery to inline rep mov
-for CPUs where it does not suck for small sizes (see
-rep_movs_alternative). Someone(tm) should port it over to memcpy
-handling as well.
 
-The expected state would be that for sizes known at compilation time
-it rolls with movs as needed (no rep), otherwise emits the magic rep
-movs/memcpy invocation, except for when it would be tail-called.
++-------------------------------------------------------------------------+-----------+------------+
+|                                                                         | v6.13-rc3 | f8f25893a4 |
++-------------------------------------------------------------------------+-----------+------------+
+| WARNING:at_fs/debugfs/file.c:#open_proxy_open                           | 0         | 24         |
+| EIP:open_proxy_open                                                     | 0         | 24         |
++-------------------------------------------------------------------------+-----------+------------+
 
-In your ipv6_rpl_addr_decompress example gcc went a little crazy,
-which I mentioned does happen. However, most of the time it is doing a
-good job instead and a now generated call to memcpy should make things
-slower. I presume these spots are merely not being benchmarked here.
-Note that going from inline movs (no rep) to a call to memcpy which
-does movs (again no rep) comes with a "mere" function call overhead,
-which is a different beast than spinning up rep movs on CPUs without
-FSRM.
 
-That is to say, contrary to the report above, I believe the change is
-in fact a regression which just so happened to make things faster for
-a specific case. The unintended speed up can be achieved without
-regressing anything else by taming the craziness.
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202501101055.bb8bf3e7-lkp@intel.com
 
-Reading the commit log I don't know what the way out is, perhaps you
-could rope in some gcc folk to ask? Screwing with optimization to not
-see a warning is definitely not the best option.
---=20
-Mateusz Guzik <mjguzik gmail.com>
+
+[   26.402607][  T279] ------------[ cut here ]------------
+[ 26.403497][ T279] WARNING: CPU: 1 PID: 279 at fs/debugfs/file.c:90 open_proxy_open (fs/debugfs/file.c:90 (discriminator 10))
+[   26.405856][  T279] Modules linked in: crc32_pclmul floppy i2c_piix4 i2c_smbus bochs i6300esb intel_agp intel_gtt tiny_power_button qemu_fw_cfg button
+[   26.407586][  T279] CPU: 1 UID: 0 PID: 279 Comm: run-lkp Tainted: G                T  6.13.0-rc3-00001-gf8f25893a477 #1 1ddff3390d23c70538fc5495354291f300c5b61c
+[   26.409304][  T279] Tainted: [T]=RANDSTRUCT
+[   26.409883][  T279] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+[ 26.411181][ T279] EIP: open_proxy_open (fs/debugfs/file.c:90 (discriminator 10))
+[ 26.411815][ T279] Code: 8b 71 08 83 c1 08 85 f6 89 45 f0 74 39 8d 7e 01 89 f0 f0 0f b1 39 89 c7 8b 45 f0 74 2b 89 fe 85 ff 75 ea 31 f6 8b 45 f0 eb 1e <0f> 0b be ea ff ff ff e9 47 01 00 00 be fe ff ff ff 39 5b 28 0f 85
+All code
+========
+   0:	8b 71 08             	mov    0x8(%rcx),%esi
+   3:	83 c1 08             	add    $0x8,%ecx
+   6:	85 f6                	test   %esi,%esi
+   8:	89 45 f0             	mov    %eax,-0x10(%rbp)
+   b:	74 39                	je     0x46
+   d:	8d 7e 01             	lea    0x1(%rsi),%edi
+  10:	89 f0                	mov    %esi,%eax
+  12:	f0 0f b1 39          	lock cmpxchg %edi,(%rcx)
+  16:	89 c7                	mov    %eax,%edi
+  18:	8b 45 f0             	mov    -0x10(%rbp),%eax
+  1b:	74 2b                	je     0x48
+  1d:	89 fe                	mov    %edi,%esi
+  1f:	85 ff                	test   %edi,%edi
+  21:	75 ea                	jne    0xd
+  23:	31 f6                	xor    %esi,%esi
+  25:	8b 45 f0             	mov    -0x10(%rbp),%eax
+  28:	eb 1e                	jmp    0x48
+  2a:*	0f 0b                	ud2		<-- trapping instruction
+  2c:	be ea ff ff ff       	mov    $0xffffffea,%esi
+  31:	e9 47 01 00 00       	jmp    0x17d
+  36:	be fe ff ff ff       	mov    $0xfffffffe,%esi
+  3b:	39 5b 28             	cmp    %ebx,0x28(%rbx)
+  3e:	0f                   	.byte 0xf
+  3f:	85                   	.byte 0x85
+
+Code starting with the faulting instruction
+===========================================
+   0:	0f 0b                	ud2
+   2:	be ea ff ff ff       	mov    $0xffffffea,%esi
+   7:	e9 47 01 00 00       	jmp    0x153
+   c:	be fe ff ff ff       	mov    $0xfffffffe,%esi
+  11:	39 5b 28             	cmp    %ebx,0x28(%rbx)
+  14:	0f                   	.byte 0xf
+  15:	85                   	.byte 0x85
+[   26.414405][  T279] EAX: c406c2f0 EBX: c4004008 ECX: c2599185 EDX: ec4bedc0
+[   26.415331][  T279] ESI: ec4bedc0 EDI: c144fde0 EBP: edf3dd0c ESP: edf3dcf8
+[   26.416318][  T279] DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0068 EFLAGS: 00010202
+[   26.417258][  T279] CR0: 80050033 CR2: 004e1a10 CR3: 2c4b7000 CR4: 000406d0
+[   26.418217][  T279] Call Trace:
+[ 26.418680][ T279] ? show_regs (arch/x86/kernel/dumpstack.c:478 (discriminator 1))
+[ 26.419395][ T279] ? open_proxy_open (fs/debugfs/file.c:90 (discriminator 10))
+[ 26.420080][ T279] ? __warn (kernel/panic.c:242)
+[ 26.420669][ T279] ? open_proxy_open (fs/debugfs/file.c:90 (discriminator 10))
+[ 26.421369][ T279] ? open_proxy_open (fs/debugfs/file.c:90 (discriminator 10))
+[ 26.422017][ T279] ? report_bug (lib/bug.c:199 (discriminator 2))
+[ 26.422798][ T279] ? exc_overflow (arch/x86/kernel/traps.c:301)
+[ 26.423456][ T279] ? handle_bug (arch/x86/kernel/traps.c:?)
+[ 26.424048][ T279] ? exc_invalid_op (arch/x86/kernel/traps.c:309 (discriminator 1))
+[ 26.424725][ T279] ? handle_exception (arch/x86/entry/entry_32.S:1055)
+[ 26.425536][ T279] ? debugfs_leave_cancellation (fs/debugfs/file.c:278)
+[ 26.426343][ T279] ? exc_overflow (arch/x86/kernel/traps.c:301)
+[ 26.426977][ T279] ? open_proxy_open (fs/debugfs/file.c:90 (discriminator 10))
+[ 26.427665][ T279] ? exc_overflow (arch/x86/kernel/traps.c:301)
+[ 26.428307][ T279] ? open_proxy_open (fs/debugfs/file.c:90 (discriminator 10))
+[ 26.429504][ T279] ? debugfs_leave_cancellation (fs/debugfs/file.c:278)
+[ 26.430226][ T279] do_dentry_open (fs/open.c:946)
+[ 26.430821][ T279] vfs_open (fs/open.c:1076)
+[ 26.431374][ T279] path_openat (fs/namei.c:3829)
+[ 26.432010][ T279] ? stack_depot_save (lib/stackdepot.c:686)
+[ 26.432760][ T279] ? set_track_prepare (mm/slub.c:937)
+[ 26.433483][ T279] ? getname_flags (fs/namei.c:?)
+[ 26.434155][ T279] ? do_sys_openat2 (fs/open.c:1396)
+[ 26.434795][ T279] ? __ia32_sys_openat (fs/open.c:1417 fs/open.c:1433 fs/open.c:1428 fs/open.c:1428)
+[ 26.435544][ T279] ? ia32_sys_call (kbuild/obj/consumer/i386-randconfig-054-20250108/./arch/x86/include/generated/asm/syscalls_32.h:317 (discriminator 1141047296))
+[ 26.436271][ T279] do_filp_open (fs/namei.c:4014)
+[ 26.436934][ T279] do_sys_openat2 (fs/open.c:1402)
+[ 26.437559][ T279] __ia32_sys_openat (fs/open.c:1417 fs/open.c:1433 fs/open.c:1428 fs/open.c:1428)
+[ 26.438228][ T279] ia32_sys_call (kbuild/obj/consumer/i386-randconfig-054-20250108/./arch/x86/include/generated/asm/syscalls_32.h:317 (discriminator 1141047296))
+[ 26.438978][ T279] do_int80_syscall_32 (arch/x86/entry/common.c:?)
+[ 26.439688][ T279] ? handle_mm_fault (mm/memory.c:5817)
+[ 26.440403][ T279] ? lock_release (kernel/locking/lockdep.c:?)
+[ 26.441403][ T279] ? do_user_addr_fault (arch/x86/mm/fault.c:1419)
+[ 26.442202][ T279] ? irqentry_exit_to_user_mode (kernel/entry/common.c:234)
+[ 26.443014][ T279] ? irqentry_exit (kernel/entry/common.c:367)
+[ 26.443673][ T279] ? exc_page_fault (arch/x86/mm/fault.c:1543 (discriminator 1))
+[ 26.444279][ T279] entry_INT80_32 (arch/x86/entry/entry_32.S:945)
+[   26.444945][  T279] EIP: 0xb7f77092
+[ 26.445472][ T279] Code: 00 00 00 e9 90 ff ff ff ff a3 24 00 00 00 68 30 00 00 00 e9 80 ff ff ff ff a3 f8 ff ff ff 66 90 00 00 00 00 00 00 00 00 cd 80 <c3> 8d b4 26 00 00 00 00 8d b6 00 00 00 00 8b 1c 24 c3 8d b4 26 00
+All code
+========
+   0:	00 00                	add    %al,(%rax)
+   2:	00 e9                	add    %ch,%cl
+   4:	90                   	nop
+   5:	ff                   	(bad)
+   6:	ff                   	(bad)
+   7:	ff                   	(bad)
+   8:	ff a3 24 00 00 00    	jmp    *0x24(%rbx)
+   e:	68 30 00 00 00       	push   $0x30
+  13:	e9 80 ff ff ff       	jmp    0xffffffffffffff98
+  18:	ff a3 f8 ff ff ff    	jmp    *-0x8(%rbx)
+  1e:	66 90                	xchg   %ax,%ax
+	...
+  28:	cd 80                	int    $0x80
+  2a:*	c3                   	ret		<-- trapping instruction
+  2b:	8d b4 26 00 00 00 00 	lea    0x0(%rsi,%riz,1),%esi
+  32:	8d b6 00 00 00 00    	lea    0x0(%rsi),%esi
+  38:	8b 1c 24             	mov    (%rsp),%ebx
+  3b:	c3                   	ret
+  3c:	8d                   	.byte 0x8d
+  3d:	b4 26                	mov    $0x26,%ah
+	...
+
+Code starting with the faulting instruction
+===========================================
+   0:	c3                   	ret
+   1:	8d b4 26 00 00 00 00 	lea    0x0(%rsi,%riz,1),%esi
+   8:	8d b6 00 00 00 00    	lea    0x0(%rsi),%esi
+   e:	8b 1c 24             	mov    (%rsp),%ebx
+  11:	c3                   	ret
+  12:	8d                   	.byte 0x8d
+  13:	b4 26                	mov    $0x26,%ah
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20250110/202501101055.bb8bf3e7-lkp@intel.com
+
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
