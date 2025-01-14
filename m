@@ -1,338 +1,171 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0DD6243327;
-	Tue, 14 Jan 2025 06:45:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.18
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736837146; cv=fail; b=qhkbWHWemXTUfWc1HDIqnnqZm+HJETFgYafc0GFjVn2DXrIYXekb/oCnq1a+vTqYptWz9zOISkdbKHgUyuooAJla8FiiIV2gH1wjOC1kNGadWzeXuyxMEvOwheVV6ODi83KOoDFhkhia+ZUbULB1HxH5U/FfuaJUeC4GfxN1m+Y=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736837146; c=relaxed/simple;
-	bh=G3Z3jM9u2oXxP94TQc0+kwrXYOY2jXkccdOojDPJUOE=;
-	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=IkdImBqyJE90L69zZtr7tmvhzF3md5RGLGSRhqNODbmtFLxfUiweXdMgxiev8G7yf3EmALtdQD5I1q4viDPgrJrQj25RYgPSdooFiEGm3cru3mozK6uX4G7vf+v18wZEJn6GiHgBtTAIAOBuDP0Mn8ztEeYoPe8hGiBxzZpqpz4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FeOmmTTw; arc=fail smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74A4019149F
+	for <oe-lkp@lists.linux.dev>; Tue, 14 Jan 2025 19:47:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.74
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1736884034; cv=none; b=N+Y0NED65/VkjmBSEpYThSdx3nW3X6hooObU4rxxkstj6tukJuKzpnC+r2bMBT25GRYT88bXifilHagJSiKPJUAqzbH4/r+0la1gHilTOZR1BgG8TsJD073bNKjoxTkmkVw8nJYVKRj4lNc5gRu6d7BGah3TmZlT/LIcdS/WOCY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1736884034; c=relaxed/simple;
+	bh=0r22/yP8EDC+GPu7ApSIg2mBAi+7oVSaXlZefWFc0Gc=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=imIVXr1KD5g5oys0Xlm7BwEtFBZaop3yBi3oTU/Wmvhdh/2z+OLawnnR6ipnbuTLp4VSi6nFoZzyM4XJuU5/0kUbJhsuB0ay4Ja03FUHPMKp7BVNo8rps/Qll+zU1F7Ziqjmhn/BS0D3jZnZE1WOncj/8ckh0qHD44mgSroM5ZQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=x9tqkFVn; arc=none smtp.client-ip=209.85.216.74
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FeOmmTTw"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1736837145; x=1768373145;
-  h=date:from:to:cc:subject:message-id:references:
-   content-transfer-encoding:in-reply-to:mime-version;
-  bh=G3Z3jM9u2oXxP94TQc0+kwrXYOY2jXkccdOojDPJUOE=;
-  b=FeOmmTTwBaJyURWjv3OVNJ08rh3RQsVOn1vOFLJu7pw++lTOwv7kyPAL
-   ubAZxoSmBOg/u8Dnb1KybrcKpA6dgmIJh8tst8pXMuG6ZYSX1NUp3d/S9
-   TGg7c8GeOp6vs1jADAH0r4WnuhSkFDiwgfKNFgMzFBVppgyNnzWAtAybK
-   a20dv/z6VcpJjKDzqWVIdblN7ggjHKfQVNViAgD/eSRR7z7ZdftS6fvFB
-   wOeJLEpM7a2E6CEjhTnRgw+cNoPaNmc+emY7/SFDzy2Go8gEQZqzziA9R
-   X/kLvUo4l3SHqB+3HipXqrU+mDWnY9jgAXzJA1wv4GAPmJRDKJq0I2YzR
-   g==;
-X-CSE-ConnectionGUID: tZbpDo15RZGomsG1YH6j+w==
-X-CSE-MsgGUID: WG5qamzhSY6bXqU4ysHUsQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11314"; a="37233447"
-X-IronPort-AV: E=Sophos;i="6.12,310,1728975600"; 
-   d="scan'208";a="37233447"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2025 22:45:42 -0800
-X-CSE-ConnectionGUID: LSdR8CPjRWWkmzgF1UQhTA==
-X-CSE-MsgGUID: ehaGWJjISWOe/BzvXlQXxA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,313,1728975600"; 
-   d="scan'208";a="104534137"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by fmviesa006.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 13 Jan 2025 22:45:41 -0800
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.44; Mon, 13 Jan 2025 22:45:40 -0800
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.44 via Frontend Transport; Mon, 13 Jan 2025 22:45:40 -0800
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.175)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.44; Mon, 13 Jan 2025 22:45:40 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=biLbtOqR3UtDeHSPXzuCm31PmZcqN/F8Hp0BC/TvGoEtCFlbwNhnz3/iTT80rZsT5FJE36MEETSPcO9w9/qkeUjcdHg0y6e6IrvqoKM5xcTjjEUeVTebqc9W/kvbOFvlKwpqP687JLE+/SCG1p7HTlWWjREovEM4ZWVn8wjQ3TdjQG4yV4WPh9SUbTGy7z8wYNA9G2VSsLyhY82HWiCbAR2w8NTd4bl19KW4ETipP4eHofnaJ8nZq2lGF54PQ1EXx+p7hsueRX2oTkeFJwktjTvRsbTYrsTRoiFnXG2ea2Ha1vua6J/ge2oOl4R/U5otxrgKYQ2c3j5iyn23iISzFQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yRxyI4SossMXe+zkrYLhCHKbzviLDtXQCHUfUn9e5/A=;
- b=EVIR7m94lPr/4Sjxlp07BlA3jz4az2+4CgIHmc+uJ9aN93UpLmzcfzNZtA+o5D66xfb+xUpjbQSTJhnCCW+jYtKwkSwzd2QZAtqFaPpB7gQsJx4X/evMUr9bmFeByXJtKxJG3w1su1Us1RKIdFigLT/bKyQAkXlcDdUp4X7IraK/2KXnfetpUKalPmX43/lTqe38IFxCPUhAXgyMRlHD4JCVBaGR9E0yJrMNWUtxsDBRTLu02fyKBIWknwb3kD0H1BE/jqnczet3QgAO6ZkL9mYBPWuJuc9U24+7Ntu6HR1VCA4QV2yNL1XJ2k3PZ8ce1xNHRf4g9NEOcTdVQ2VGvg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by SA0PR11MB4573.namprd11.prod.outlook.com (2603:10b6:806:98::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8335.18; Tue, 14 Jan
- 2025 06:45:33 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%3]) with mapi id 15.20.8335.015; Tue, 14 Jan 2025
- 06:45:33 +0000
-Date: Tue, 14 Jan 2025 14:45:22 +0800
-From: Oliver Sang <oliver.sang@intel.com>
-To: Niklas Cassel <cassel@kernel.org>
-CC: Christoph Hellwig <hch@lst.de>, <oe-lkp@lists.linux.dev>, <lkp@intel.com>,
-	<linux-kernel@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>,
-	<linux-block@vger.kernel.org>, <virtualization@lists.linux.dev>,
-	<linux-nvme@lists.infradead.org>, Damien Le Moal <dlemoal@kernel.org>,
-	<linux-btrfs@vger.kernel.org>, <linux-aio@kvack.org>, <oliver.sang@intel.com>
-Subject: Re: [linus:master] [block]  e70c301fae: stress-ng.aiol.ops_per_sec
- 49.6% regression
-Message-ID: <Z4YIAqonpBNuB9nJ@xsang-OptiPlex-9020>
-References: <202412122112.ca47bcec-lkp@intel.com>
- <20241213143224.GA16111@lst.de>
- <20241217045527.GA16091@lst.de>
- <Z2EgW8/WNfzZ28mn@xsang-OptiPlex-9020>
- <20241217065614.GA19113@lst.de>
- <Z3ZhNYHKZPMpv8Cz@ryzen>
- <20250103064925.GB27984@lst.de>
- <Z3epOlVGDBqj72xC@ryzen>
- <Z3zlgBB3ZrGApew7@xsang-OptiPlex-9020>
- <Z35VVvuT0nl0iDfd@ryzen>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Z35VVvuT0nl0iDfd@ryzen>
-X-ClientProxiedBy: SG2PR01CA0163.apcprd01.prod.exchangelabs.com
- (2603:1096:4:28::19) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="x9tqkFVn"
+Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-2f550d28f7dso10245551a91.3
+        for <oe-lkp@lists.linux.dev>; Tue, 14 Jan 2025 11:47:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1736884032; x=1737488832; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=7QgeLrF1bLrbc+AIFcXOLXxQpEAwrbVqsM1G8R/4B2E=;
+        b=x9tqkFVneWckxuT7J6FYyTFT+tQCXXY30zHwgNqAqC3pPZ97ftG77x61ulMzJJIbpu
+         MIl4YTPqxvREkh0zG4yE6gEyvvr6PL3zaFUzh19rSTWahQ6yX7ALqzsnd7franmfhR+W
+         dGyjEMphuA/j63XIoxffwECTlrg9SNQ0V1KWlCGtHi3Uy6gOO0B5w4FZhPdpSpRuWA6k
+         osLibKfBKclQfVsBh2TPl482cx7l+vtgDV5MMz0/CGzCUYIJzHYycvplr3LrkDtCaSth
+         wNgtXsnQ3nnUOasLigzieN/Qb6U4G9IDk62jIjwomWcrBVW2zc4h/Mg+RsyiXxbHAgSo
+         MHMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1736884032; x=1737488832;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=7QgeLrF1bLrbc+AIFcXOLXxQpEAwrbVqsM1G8R/4B2E=;
+        b=caz4xzmqOjsZiaMQOLL65gIwGjaAuyYla1oPMXqPINJwph0NUDJA/w2mHqLK9Cx5Yc
+         FqrFizWsX0GIsS44oNI2FD/9lC/rND68k9QQ9s6BCJppJ69ZmEIG6wsd4bI6SqtqEbfX
+         26rNFsga+vDOiTN1gY6YsmPx7Eq8CHGe7IFK6dfDlBxNznh4tMgjZJfXDbpSk4EFUUk0
+         dpZOkjQ4WKXE0+UiVT1d//B5qQc5QH9PdNv/pYLs9GRXfyK+6V/6OQlYehIhpT+99X6Q
+         GuKDx/VSMCDObHFGOCrfZn2H9utYqQh/bnPKebqSfswHaIGZd5zAzhp7XrXJmilKwCRd
+         mf9w==
+X-Gm-Message-State: AOJu0YzMcPUtpttbxfrSAOmb4AVvYoI8X0AxM+y3kXQxmaV0hU36LwAL
+	yXaXym0SlTIXqZFIDj9bswoTvS3fMm0xgogFDML0lPMjbMyVtxJo0v8UmwDx4lKEGl2U3zPgqfk
+	Lyg==
+X-Google-Smtp-Source: AGHT+IGWN1EXcp4hxYKitTkSTxEbPE6icBlOkjTlttxwOdA/3n/RHhDzlF8WrMqOV7l6tXusbzN9f2dTBG4=
+X-Received: from pjbqa1.prod.google.com ([2002:a17:90b:4fc1:b0:2ef:8c7e:239b])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:5208:b0:2ef:33a4:ae6e
+ with SMTP id 98e67ed59e1d1-2f548eba9c4mr44906337a91.12.1736884031592; Tue, 14
+ Jan 2025 11:47:11 -0800 (PST)
+Date: Tue, 14 Jan 2025 11:47:10 -0800
+In-Reply-To: <202501141009.30c629b4-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SA0PR11MB4573:EE_
-X-MS-Office365-Filtering-Correlation-Id: bcdcceab-7894-47b4-e9c1-08dd34670b5f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024|7416014;
-X-Microsoft-Antispam-Message-Info: =?iso-8859-1?Q?xoBS0kVUlqZFprjhBGz+1Ylbqd03uVDaj5rLyKDXVbu3eS6rrSWT45oHED?=
- =?iso-8859-1?Q?EMdGGq8Dgd2tq83knH5KRlUYmdbrKAbtzPOZ2Be4InTd3AnGOJOc4cUZAN?=
- =?iso-8859-1?Q?c5HiCSKgSYBOpIZ8voyQF/9bAP97I3P2n7nJzUGqrQ3VhdPtQChbBUItPT?=
- =?iso-8859-1?Q?X3D3pXkONKYdB17oZ2MYO2zagOKVLT1yjZFO+2GcabOHGbm+QZCoDjfN2i?=
- =?iso-8859-1?Q?85jMMxe/FLihKKe3RNSyjOZGJm2umpxY5ot0rUd7h9tBFSv/X34we7X861?=
- =?iso-8859-1?Q?1+T/JJ2+puZsZBF/pfpwJrfCkZjZWOrNxWmcS5fmXzIcuANERTBNAQbTon?=
- =?iso-8859-1?Q?8TJLbLqyFFp96Qf+xh/viacNnImfnkhgWwqYJRD6Ja28s6DQv9hHU7NPG4?=
- =?iso-8859-1?Q?pyv5zARZTRytw0C5qgkoJzZhdUrkx22utK8eWByCRQvCa0GNGp7y+4CNM5?=
- =?iso-8859-1?Q?ZsZcFZCL+W5Aj6UODy9WzIdlhbHyXZ7+9J7NGzYc5MJ8E8I2DEtvDuVNvR?=
- =?iso-8859-1?Q?EY9h0cVcbqHbfXDpRN7e/Qn+ZleVqhpXI+8mhgIynPLPD/AKtdBTz5+/C3?=
- =?iso-8859-1?Q?R8lfD1ywrBNcPB9RmnKe52afsGNnCfsmIdXCJmH24ukpDQ8Ul3wI0C8Eng?=
- =?iso-8859-1?Q?z+F63hFBkeV8bu2U/2czUs6tAKV80d3IPMUDowQzQ5eheWIiHoejhox79R?=
- =?iso-8859-1?Q?0ps8u+QCsc88w12GqvjjXbK/837guN+g2zKooYQskqMv3efsPkpE5XKtQW?=
- =?iso-8859-1?Q?GFty2aWiZmiJgvGvAfmHhIjmwju7upKidASYIJKt8yb9f3K/jY75US9sXB?=
- =?iso-8859-1?Q?7MsVG86Y+YT68YLFp6WkTxiNZkSKj3MTGkAzMqEGAX1aop2yFoJPvXK+FC?=
- =?iso-8859-1?Q?6IW29roWKB6qfw/sSNHbBs3em3iXM/LEzHgTYwk5JqIHLViwN2L7YDPhHK?=
- =?iso-8859-1?Q?4oc9o2cq3mhSxsxYuw9PXmorEAPjbJcywN+TMweyjKOf0bm3TUP7XYRSaT?=
- =?iso-8859-1?Q?+y/nRnLB40XaW+fHZHaCkfvXhm96CRCKn/7anhr91Y2EK2oOj6b+s5ILz4?=
- =?iso-8859-1?Q?/kdfBQ4NsBhnBz/jcwqvuKl8gPjMMuRL94hWonzXJveRp7bKsoLMGLWZ3a?=
- =?iso-8859-1?Q?rtbMMgRDQPUn8U8NPqfeevMSctq164PdfjTcMJYzAXZb4DuoolDfSHZZ+f?=
- =?iso-8859-1?Q?qUtLjIoTN9+SaGGJz56kUumj1w2cMBSb6UCrvxiPoy1Ze/P1ftv5lSQvfD?=
- =?iso-8859-1?Q?02yLVXKRzzMbCpJ09oCAMg2HFKDqaPTCEWTTFvn0+u5ThyXYcp3gie5tzL?=
- =?iso-8859-1?Q?uR2oGM3PRgG7qRD3KlQRWpKt0n58ekbpmDTA7F0wmHe267fo6NxEXZFqMv?=
- =?iso-8859-1?Q?uheynAjW9UxnWQwWxZQWgs/17rODkdzVj0c7v0MQxCuAF4sxDYPpqzaE4c?=
- =?iso-8859-1?Q?5eL/FVCATrEBt9i/?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(7416014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?YED/rtmlwVcFAZ2uXGEfPF7xWiQk8mi4chWlsEbCjY0j0lXbce7gTChE0j?=
- =?iso-8859-1?Q?I7GVG9C42o+jC89arEFKxG6Idh8S9eu49vkZn2chtm2ROO4KMo9fdVmKpC?=
- =?iso-8859-1?Q?CwnPlEs/9gfNkmI/+uJnrvX0F0FgdFJqStT53RpD4zt2QngC4oiQzuywY3?=
- =?iso-8859-1?Q?yi7E43x/V2+Nc877Z+BxoxqlbZsA3oG6X/7xMdgFVhMAbiVEPiCYiI30YA?=
- =?iso-8859-1?Q?47oF3G74dzhSheMKAYm6LIEHNUZjpAYDbFWalZ9STIu5u+wfN0YhHa3HSR?=
- =?iso-8859-1?Q?QP94N0ByccixTMrv07lt8d7J36LHnJvLvdA/We5TGOuZlGWKVfIajS6JI+?=
- =?iso-8859-1?Q?Ogd/Tkubfp7eH3uz+03F2ssCbaCy0RQb7GRkI3kaY5YzbEF/Dgbc5+8HIF?=
- =?iso-8859-1?Q?SeLuuR2DWmDX0q5ucfuDcTXPLZ+209iVxgosLj0ORGgifWF03RhN3i7aF9?=
- =?iso-8859-1?Q?5dd/BOUXPD+T78GT6VEd2DjIpbsH/95yK5qt2N42/2eRJlrPV3MhS9xCXf?=
- =?iso-8859-1?Q?XBavBewKkyB52YKbUx851U89xGWvBuGFBAfMOMezkonHzwO6N8l8SuL/Ad?=
- =?iso-8859-1?Q?XbtqH2YuhDCHpcz/CcvlPEX/P7O5/CpOxRhBeF7l23H55BnSC5AJMWJPqo?=
- =?iso-8859-1?Q?Tfs6Mkn1t1SVwO4p29ijPndSOpBy6nUqXfJxRe+WYBtxs6898IWeXVmUZM?=
- =?iso-8859-1?Q?QE9+yZqmSiA/sc7dFfhXXLZh7+GNa3H4QtrRqOgXK4eeolaV83rnQLmFnJ?=
- =?iso-8859-1?Q?wGutDDC+tdCoQUKXVjbpmY9LihmhzhqATbr4qVGz+NZAj6LC1GzmrRH2ad?=
- =?iso-8859-1?Q?y1LMVexligEZkjFCZwqJpBK9VsSMqzQLrh27xvOM0gSZU5PmqrQwViSHCu?=
- =?iso-8859-1?Q?WBGY7La4QAOsxHq+H7FLJ0A9Uukq2rYsJucaQ1g2r+J2hHn2Ozo1ipvT4M?=
- =?iso-8859-1?Q?EdglosfLJABQXyj8jmXJcj2aRS6tuxTl8pQ1F2XNyh1X9/ZoaVLwOroJek?=
- =?iso-8859-1?Q?KjyQO1PaqzdSvh9K/geDQKsShbaALtfTWWXI4WXPJp7jHLoFSzXuzS0ZJK?=
- =?iso-8859-1?Q?xKJt6dkppdY/ARjevxf2Co8wMOtvcMv+xxefPlkmlTFFrWK4WjFiQGajRN?=
- =?iso-8859-1?Q?NEqBRAwy+vOO61LyP5d5fb4SH4zWbNc/rBG6gG97ZoY2Qr7xbzo3YaBEpG?=
- =?iso-8859-1?Q?sJC1chhuNvcVXjxE1ZiTo1RYOqot1Hh7uGYl7oFw1AY5ZAXNv7UAtjKm3p?=
- =?iso-8859-1?Q?jbNoXqbn0avISWnMqQypsW93rHL33ETN73Ao79Fic3fDGsVgG9fpicW0rg?=
- =?iso-8859-1?Q?fGr+gCYdPIlLEU39YxbAtweeB+aK8lwnDAZe1KLi7jHnYyk6bFMpO3mq/S?=
- =?iso-8859-1?Q?T+OPctLv67mo7rv8QENf4CgWDG7LcJJqph7ww5+pRkmxORq6+Hl6qUWcHV?=
- =?iso-8859-1?Q?QdcIFZH/lOc67rxOzWBtwlxHBKzJqmSVBjVix2pK3b2nowS4+bJkMvuXha?=
- =?iso-8859-1?Q?AUDUyqN5nY0/ifRowhCdKbBCSh6Kzd4TQ7GJprXDfnvxecwzfb6XRnR2Sy?=
- =?iso-8859-1?Q?uoGpUPsaAXtzdL56wqDNYDtO64/ftow3ULpR1beyR68EXj/gNsVGlnk/ov?=
- =?iso-8859-1?Q?jZj2YwEpTrnyfapH7T/V9fuzszUWkomyDlGggq7yKHdIFnlZqWxK7L5A?=
- =?iso-8859-1?Q?=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: bcdcceab-7894-47b4-e9c1-08dd34670b5f
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jan 2025 06:45:33.4495
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lyBaGB0ve7OzszMPf8SFp0rn+GvaQtf1iS7+YiI+nvh3PUJzSj6KexMM2wTcYnzE1NuSj4wBkOlwmx9Kp5FlgA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB4573
-X-OriginatorOrg: intel.com
+Mime-Version: 1.0
+References: <202501141009.30c629b4-lkp@intel.com>
+Message-ID: <Z4a_PmUVVmUtOd4p@google.com>
+Subject: Re: [linux-next:master] [KVM]  7803339fa9: kernel-selftests.kvm.pmu_counters_test.fail
+From: Sean Christopherson <seanjc@google.com>
+To: kernel test robot <oliver.sang@intel.com>, g@google.com
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, 
+	Maxim Levitsky <mlevitsk@redhat.com>, kvm@vger.kernel.org, xudong.hao@intel.com, 
+	Dapeng Mi <dapeng1.mi@linux.intel.com>
+Content-Type: text/plain; charset="us-ascii"
 
-hi, Niklas,
++Dapeng
 
-On Wed, Jan 08, 2025 at 11:39:28AM +0100, Niklas Cassel wrote:
-> On Tue, Jan 07, 2025 at 04:27:44PM +0800, Oliver Sang wrote:
-> > hi, Niklas,
-> > 
-> > On Fri, Jan 03, 2025 at 10:09:14AM +0100, Niklas Cassel wrote:
-> > > On Fri, Jan 03, 2025 at 07:49:25AM +0100, Christoph Hellwig wrote:
-> > > > On Thu, Jan 02, 2025 at 10:49:41AM +0100, Niklas Cassel wrote:
-> > > > > > > from below information, it seems an 'ahci' to me. but since I have limited
-> > > > > > > knowledge about storage driver, maybe I'm wrong. if you want more information,
-> > > > > > > please let us know. thanks a lot!
-> > > > > > 
-> > > > > > Yes, this looks like ahci.  Thanks a lot!
-> > > > > 
-> > > > > Did this ever get resolved?
-> > > > > 
-> > > > > I haven't seen a patch that seems to address this.
-> > > > > 
-> > > > > AHCI (ata_scsi_queuecmd()) only issues a single command, so if there is any
-> > > > > reordering when issuing a batch of commands, my guess is that the problem
-> > > > > also affects SCSI / the problem is in upper layers above AHCI, i.e. SCSI lib
-> > > > > or block layer.
-> > > > 
-> > > > I started looking into this before the holidays.  blktrace shows perfectly
-> > > > sequential writes without any reordering using ahci, directly on the
-> > > > block device or using xfs and btrfs when using dd.  I also started
-> > > > looking into what the test does and got as far as checking out the
-> > > > stress-ng source tree and looking at stress-aiol.c.  AFAICS the default
-> > > > submission does simple reads and writes using increasing offsets.
-> > > > So if the test result isn't a fluke either the aio code does some
-> > > > weird reordering or btrfs does.
-> > > > 
-> > > > Oliver, did the test also show any interesting results on non-btrfs
-> > > > setups?
-> > > > 
-> > > 
-> > > One thing that came to mind.
-> > > Some distros (e.g. Fedora and openSUSE) ship with an udev rule that sets
-> > > the I/O scheduler to BFQ for single-queue HDDs.
-> > > 
-> > > It could very well be the I/O scheduler that reorders.
-> > > 
-> > > Oliver, which I/O scheduler are you using?
-> > > $ cat /sys/block/sdb/queue/scheduler 
-> > > none mq-deadline kyber [bfq]
-> > 
-> > while our test running:
-> > 
-> > # cat /sys/block/sdb/queue/scheduler
-> > none [mq-deadline] kyber bfq
-> 
-> The stddev numbers you showed is all over the place, so are we certain
-> if this is a regression caused by commit e70c301faece ("block:
-> don't reorder requests in blk_add_rq_to_plug") ?
-> 
-> Do you know if the stddev has such big variation for this test even before
-> the commit?
+On Tue, Jan 14, 2025, kernel test robot wrote:
+> we fould the test failed on a Cooper Lake, not sure if this is expected.
+> below full report FYI.
 > 
 > 
-> If it is not too much to ask... It might be interesting to know if we see
-> a regression when comparing before/after e70c301faece with scheduler none
-> instead of mq-deadline.
-
-we also finished the test for scheduler none, run v6.12-rc4, before/after
-e70c301faece 15 times for each. it seems the data is not stable enough under
-scheduler none, only can say there is a regression trend if comparing
-e70c301faece to its parent.
-
-=========================================================================================
-compiler/cpufreq_governor/debug-setup/disk/fs/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
-  gcc-12/performance/none-scheduler/1HDD/btrfs/x86_64-rhel-9.4/100%/debian-12-x86_64-20240206.cgz/lkp-icl-2sp8/aiol/stress-ng/60s
-
-commit:
-  v6.12-rc4
-  a3396b9999 ("block: add a rq_list type")
-  e70c301fae ("block: don't reorder requests in blk_add_rq_to_plug")
-
-       v6.12-rc4 a3396b99990d8b4e5797e7b16fd e70c301faece15b618e54b613b1
----------------- --------------------------- ---------------------------
-         %stddev     %change         %stddev     %change         %stddev
-             \          |                \          |                \
-    114.62 ± 19%      -1.9%     112.49 ± 17%     -32.4%      77.47 ± 21%  stress-ng.aiol.ops_per_sec
-
-
-raw data is as below:
-
-v6.12-rc4/matrix.json:  "stress-ng.aiol.ops_per_sec": [
-v6.12-rc4/matrix.json-    108.03,
-v6.12-rc4/matrix.json-    108.4,
-v6.12-rc4/matrix.json-    109.11,
-v6.12-rc4/matrix.json-    109.58,
-v6.12-rc4/matrix.json-    194.21,
-v6.12-rc4/matrix.json-    111.53,
-v6.12-rc4/matrix.json-    107.99,
-v6.12-rc4/matrix.json-    115.29,
-v6.12-rc4/matrix.json-    105.75,
-v6.12-rc4/matrix.json-    113.62,
-v6.12-rc4/matrix.json-    96.51,
-v6.12-rc4/matrix.json-    110.53,
-v6.12-rc4/matrix.json-    108.71,
-v6.12-rc4/matrix.json-    98.06,
-v6.12-rc4/matrix.json-    121.95
-v6.12-rc4/matrix.json-  ],
-
-
-a3396b99990d8b4e5797e7b16fdeb64c15ae97bb/matrix.json:  "stress-ng.aiol.ops_per_sec": [
-a3396b99990d8b4e5797e7b16fdeb64c15ae97bb/matrix.json-    116.65,
-a3396b99990d8b4e5797e7b16fdeb64c15ae97bb/matrix.json-    106.51,
-a3396b99990d8b4e5797e7b16fdeb64c15ae97bb/matrix.json-    119.23,
-a3396b99990d8b4e5797e7b16fdeb64c15ae97bb/matrix.json-    108.91,
-a3396b99990d8b4e5797e7b16fdeb64c15ae97bb/matrix.json-    111.79,
-a3396b99990d8b4e5797e7b16fdeb64c15ae97bb/matrix.json-    111.81,
-a3396b99990d8b4e5797e7b16fdeb64c15ae97bb/matrix.json-    114.94,
-a3396b99990d8b4e5797e7b16fdeb64c15ae97bb/matrix.json-    99.49,
-a3396b99990d8b4e5797e7b16fdeb64c15ae97bb/matrix.json-    106.13,
-a3396b99990d8b4e5797e7b16fdeb64c15ae97bb/matrix.json-    124.99,
-a3396b99990d8b4e5797e7b16fdeb64c15ae97bb/matrix.json-    174.15,
-a3396b99990d8b4e5797e7b16fdeb64c15ae97bb/matrix.json-    92.65,
-a3396b99990d8b4e5797e7b16fdeb64c15ae97bb/matrix.json-    113.05,
-a3396b99990d8b4e5797e7b16fdeb64c15ae97bb/matrix.json-    75.97,
-a3396b99990d8b4e5797e7b16fdeb64c15ae97bb/matrix.json-    111.05
-a3396b99990d8b4e5797e7b16fdeb64c15ae97bb/matrix.json-  ],
-
-
-e70c301faece15b618e54b613b1fd6ece3dd05b4/matrix.json:  "stress-ng.aiol.ops_per_sec": [
-e70c301faece15b618e54b613b1fd6ece3dd05b4/matrix.json-    85.2,
-e70c301faece15b618e54b613b1fd6ece3dd05b4/matrix.json-    72.6,
-e70c301faece15b618e54b613b1fd6ece3dd05b4/matrix.json-    73.49,
-e70c301faece15b618e54b613b1fd6ece3dd05b4/matrix.json-    69.03,
-e70c301faece15b618e54b613b1fd6ece3dd05b4/matrix.json-    66.9,
-e70c301faece15b618e54b613b1fd6ece3dd05b4/matrix.json-    90.24,
-e70c301faece15b618e54b613b1fd6ece3dd05b4/matrix.json-    66.88,
-e70c301faece15b618e54b613b1fd6ece3dd05b4/matrix.json-    71.53,
-e70c301faece15b618e54b613b1fd6ece3dd05b4/matrix.json-    56.86,
-e70c301faece15b618e54b613b1fd6ece3dd05b4/matrix.json-    63.49,
-e70c301faece15b618e54b613b1fd6ece3dd05b4/matrix.json-    97.99,
-e70c301faece15b618e54b613b1fd6ece3dd05b4/matrix.json-    69.28,
-e70c301faece15b618e54b613b1fd6ece3dd05b4/matrix.json-    58.52,
-e70c301faece15b618e54b613b1fd6ece3dd05b4/matrix.json-    114.23,
-e70c301faece15b618e54b613b1fd6ece3dd05b4/matrix.json-    105.79
-e70c301faece15b618e54b613b1fd6ece3dd05b4/matrix.json-  ],
-
-
-since not sure if it's valuable, I didn't list the full comparison table here.
-if you want it, please let us know. thanks!
-
+> kernel test robot noticed "kernel-selftests.kvm.pmu_counters_test.fail" on:
 > 
+> commit: 7803339fa929387bbc66479532afbaf8cbebb41b ("KVM: selftests: Use data load to trigger LLC references/misses in Intel PMU")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 > 
-> Kind regards,
-> Niklas
+> [test failed on linux-next/master 37136bf5c3a6f6b686d74f41837a6406bec6b7bc]
 > 
+> in testcase: kernel-selftests
+> version: kernel-selftests-x86_64-7503345ac5f5-1_20241208
+> with following parameters:
+> 
+> 	group: kvm
+> 
+> config: x86_64-rhel-9.4-kselftests
+> compiler: gcc-12
+> test machine: 224 threads 4 sockets Intel(R) Xeon(R) Platinum 8380H CPU @ 2.90GHz (Cooper Lake) with 192G memory
+
+*sigh*
+
+This fails on our Skylake and Cascade Lake systems, but I only tested an Emerald
+Rapids.
+
+> # Testing fixed counters, PMU version 0, perf_caps = 2000
+> # Testing arch events, PMU version 1, perf_caps = 0
+> # ==== Test Assertion Failure ====
+> #   x86/pmu_counters_test.c:129: count >= (10 * 4 + 5)
+> #   pid=6278 tid=6278 errno=4 - Interrupted system call
+> #      1	0x0000000000411281: assert_on_unhandled_exception at processor.c:625
+> #      2	0x00000000004075d4: _vcpu_run at kvm_util.c:1652
+> #      3	 (inlined by) vcpu_run at kvm_util.c:1663
+> #      4	0x0000000000402c5e: run_vcpu at pmu_counters_test.c:62
+> #      5	0x0000000000402e4d: test_arch_events at pmu_counters_test.c:315
+> #      6	0x0000000000402663: test_arch_events at pmu_counters_test.c:304
+> #      7	 (inlined by) test_intel_counters at pmu_counters_test.c:609
+> #      8	 (inlined by) main at pmu_counters_test.c:642
+> #      9	0x00007f3b134f9249: ?? ??:0
+> #     10	0x00007f3b134f9304: ?? ??:0
+> #     11	0x0000000000402900: _start at ??:?
+> #   count >= NUM_INSNS_RETIRED
+
+The failure is on top-down slots.  I modified the assert to actually print the
+count (I'll make sure to post a patch regardless of where this goes), and based
+on the count for failing vs. passing, I'm pretty sure the issue is not the extra
+instruction, but instead is due to changing the target of the CLFUSH from the
+address of the code to the address of kvm_pmu_version.
+
+However, I think the blame lies with the assertion itself, i.e. with commit
+4a447b135e45 ("KVM: selftests: Test top-down slots event in x86's pmu_counters_test").
+Either that or top-down slots is broken on the Lakes.
+
+By my rudimentary measurements, tying the number of available slots to the number
+of instructions *retired* is fundamentally flawed.  E.g. on the Lakes (SKX is more
+or less identical to CLX), omitting the CLFLUSHOPT entirely results in *more*
+slots being available throughout the lifetime of the measured section.
+
+My best guess is that flushing the cache line use for the data load causes the
+backend to saturate its slots with prefetching data, and as a result the number
+of slots that are available goes down.
+
+        CLFLUSHOPT .    | CLFLUSHOPT [%m]       | NOP
+CLX     350-100         | 20-60[*]              | 135-150  
+SPR     49000-57000     | 32500-41000           | 6760-6830
+
+[*] CLX had a few outliers in the 200-400 range, but the majority of runs were
+    in the 20-60 range.
+
+Reading through more (and more and more) of the TMA documentation, I don't think
+we can assume anything about the number of available slots, beyond a very basic
+assertion that it's practically impossible for there to never be an available
+slot.  IIUC, retiring an instruction does NOT require an available slot, rather
+it requires the opposite: an occupied slot for the uop(s).
+
+I'm mildly curious as to why the counts for SPR are orders of magnitude higher
+that CLX (simple accounting differences?), but I don't think it changes anything
+in the test itself.
+
+Unless someone has a better idea, my plan is to post a patch to assert that the
+top-down slots count is non-zero, not that it's >= instructions retired.  E.g.
+
+diff --git a/tools/testing/selftests/kvm/x86/pmu_counters_test.c b/tools/testing/selftests/kvm/x86/pmu_counters_test.c
+index accd7ecd3e5f..21acedcd46cd 100644
+--- a/tools/testing/selftests/kvm/x86/pmu_counters_test.c
++++ b/tools/testing/selftests/kvm/x86/pmu_counters_test.c
+@@ -123,10 +123,8 @@ static void guest_assert_event_count(uint8_t idx,
+                fallthrough;
+        case INTEL_ARCH_CPU_CYCLES_INDEX:
+        case INTEL_ARCH_REFERENCE_CYCLES_INDEX:
+-               GUEST_ASSERT_NE(count, 0);
+-               break;
+        case INTEL_ARCH_TOPDOWN_SLOTS_INDEX:
+-               GUEST_ASSERT(count >= NUM_INSNS_RETIRED);
++               GUEST_ASSERT_NE(count, 0);
+                break;
+        default:
+                break;
+
