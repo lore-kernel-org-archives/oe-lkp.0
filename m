@@ -1,49 +1,49 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B26EE1DFE14
-	for <oe-lkp@lists.linux.dev>; Mon, 20 Jan 2025 12:42:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66FB91E3770
+	for <oe-lkp@lists.linux.dev>; Mon, 20 Jan 2025 14:44:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737376968; cv=none; b=NHsDA1msGk8p2AVHanJiuvQWK3D1/x20rfTC/wlj4ckiRjFoykZCCMsYrKrrVd4ZWlfA97YdTv7eZmgJxjd3tTA/AGDzzGqxENqkUfeeoYWBtayEpDmiclBs0QUsvwn6vk8rFmVrXYEkMbfFdHdXPuIgDpAHENo1jTNsg6cysxg=
+	t=1737384257; cv=none; b=on28xagml3raRPQuypxrytX+DvItWb1ljl1XrvQVcpmkfuckE62zKbFmwhQ9lruHKgu4C/TQqhv5mIt738xZNmgUhQDnf6rAYAJViJETY5PB5ZtlHoQ+8IK/Rgd/PEZ7YTZ6hxnXHMRDvIASsh5l8Y/c8Wa4oU2ldJ7fNZyys1E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737376968; c=relaxed/simple;
-	bh=ljOvUhnQMd/bR+2NO4+rfciOdIOy6YM2mR6nKravZng=;
+	s=arc-20240116; t=1737384257; c=relaxed/simple;
+	bh=gROTbni+M8gwxpHDPaPMyGoaAQV5BZl3k8BCVpraGt0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CAailMqose12NSn16YWCwmCjPOaQCSVoTxPIkwmRyPaJTdvN1nio7VlizayfuOLo2/W0/PGD8EQYFChJP4se1Bx1Q1YI6bzDCDKL5IQG3TJjk1E4PliJbp/AReHDvX1+VCPozV067m98YzwgMUypyFr8odAizLwgsBl47FqqC0Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=PNGhTxmx; arc=none smtp.client-ip=170.10.133.124
+	 Content-Type:Content-Disposition:In-Reply-To; b=QlRvSaL9QfbZMw+6UvRHOdUA3u3Y5AS88gJx2exzh99UqnS1S5jak7OIkPPS8wud3GxMtfZbJ9Mjl+OrJUj2ZoH18FhFh7ZWYM153MmqoD0XMqU1VLyvTVjKBKdd34dJh3KLR34aJwZuBv1F+qVhTKF5PsaRtMrehYiJX0/puiM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=SGTzAExv; arc=none smtp.client-ip=170.10.129.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="PNGhTxmx"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="SGTzAExv"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1737376965;
+	s=mimecast20190719; t=1737384254;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=ljOvUhnQMd/bR+2NO4+rfciOdIOy6YM2mR6nKravZng=;
-	b=PNGhTxmxP85l1J7flMh015Y90N7K5smbxye/9ivzAV6X5bNtdIFeWS+1EjVsqCAxbMelWc
-	wUogcSm26qCFybY4ELJt+XTy1Wz3hWtSVP+gpUk5RI5q08+YJJLorfam+ApfxpMM9afEAP
-	EjiL2pawU0kTy0HJjMvhSO+YWnMkqLU=
-Received: from mx-prod-mc-02.mail-002.prod.us-west-2.aws.redhat.com
+	bh=+C9wHaY+wGka9yWDgVpMApTjF3kwH8GQpQyEqhleVdM=;
+	b=SGTzAExvA6QMqzHHPAtMTQ4odLVGzOrdPtg4v9WvoY1svjXpofJCTpFCWDhwQ5yISJvkWT
+	eAXIM6cc8+a5s7jaVQtUrNSJaNWJlXT6Wa49hi/qs9dmYKsv+CJLVWqajnrdzBwNz3HTF6
+	F8OUmfWql/AVZMcuPx7XAeK/gl5Un+0=
+Received: from mx-prod-mc-01.mail-002.prod.us-west-2.aws.redhat.com
  (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
  relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-250-DuTuzjEFNteS6GqyxJJMrg-1; Mon,
- 20 Jan 2025 07:42:42 -0500
-X-MC-Unique: DuTuzjEFNteS6GqyxJJMrg-1
-X-Mimecast-MFC-AGG-ID: DuTuzjEFNteS6GqyxJJMrg
-Received: from mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.12])
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-497-L3EBYPfuN1mAsMpQ9T1AJA-1; Mon,
+ 20 Jan 2025 09:44:10 -0500
+X-MC-Unique: L3EBYPfuN1mAsMpQ9T1AJA-1
+X-Mimecast-MFC-AGG-ID: L3EBYPfuN1mAsMpQ9T1AJA
+Received: from mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.40])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mx-prod-mc-02.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 2BAD21955D89;
-	Mon, 20 Jan 2025 12:42:40 +0000 (UTC)
+	by mx-prod-mc-01.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 38F941955D97;
+	Mon, 20 Jan 2025 14:44:09 +0000 (UTC)
 Received: from dhcp-27-174.brq.redhat.com (unknown [10.45.225.104])
-	by mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with SMTP id 220E019560A3;
-	Mon, 20 Jan 2025 12:42:35 +0000 (UTC)
+	by mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with SMTP id 361911956053;
+	Mon, 20 Jan 2025 14:44:05 +0000 (UTC)
 Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
-	oleg@redhat.com; Mon, 20 Jan 2025 13:42:15 +0100 (CET)
-Date: Mon, 20 Jan 2025 13:42:10 +0100
+	oleg@redhat.com; Mon, 20 Jan 2025 15:43:44 +0100 (CET)
+Date: Mon, 20 Jan 2025 15:43:39 +0100
 From: Oleg Nesterov <oleg@redhat.com>
 To: Mateusz Guzik <mjguzik@gmail.com>
 Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
@@ -51,10 +51,11 @@ Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
 	WangYuli <wangyuli@uniontech.com>, linux-fsdevel@vger.kernel.org
 Subject: Re: [linux-next:master] [pipe_read]  aaec5a95d5:
  stress-ng.poll.ops_per_sec 11.1% regression
-Message-ID: <20250120124209.GB7432@redhat.com>
+Message-ID: <20250120144338.GC7432@redhat.com>
 References: <202501201311.6d25a0b9-lkp@intel.com>
  <leot53sdd6es2xsnljub4rr4n3xgusft6huntr437wmaoo5rob@hhbtzrwgxel2>
  <20250120121928.GA7432@redhat.com>
+ <20250120124209.GB7432@redhat.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -63,37 +64,90 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250120121928.GA7432@redhat.com>
+In-Reply-To: <20250120124209.GB7432@redhat.com>
 User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Scanned-By: MIMEDefang 3.0 on 10.30.177.12
-
-Forgot to mention...
+X-Scanned-By: MIMEDefang 3.0 on 10.30.177.40
 
 On 01/20, Oleg Nesterov wrote:
 >
-> On 01/20, Mateusz Guzik wrote:
-> >
-> > Whatever the long term fate of the patch I think it would be prudent to
-> > skip it in this merge window.
->
-> Perhaps... I'll try to take another look tomorrow.
->
-> Just one note right now.
->
-> > First two notes:
-> > 1. the change only considers performing a wake up if the current
-> > source buf got depleted -- if there is a blocked writer and there is at
-> > least one byte in the current buf nothing happens, which is where the
-> > difference in results is coming from
->
-> Sorry I don't understand. Unless this patch is buggy, pipe_read() must
-> always wakeup a blocked writer if the writer can write at least one byte.
->
-> The writer can't write to "current" buf = pipe->bufs[tail & mask] if
-> pipe_full() is still true.
+> But I'll recheck this logic once again tomorrow, perhaps I misread
+> pipe_write() when I made this patch.
 
-But I'll recheck this logic once again tomorrow, perhaps I misread
-pipe_write() when I made this patch.
+Meanwhile I wrote a stupid test-case below.
+
+Without the patch
+
+	State:	S (sleeping)
+	voluntary_ctxt_switches:	74
+	nonvoluntary_ctxt_switches:	5
+	State:	S (sleeping)
+	voluntary_ctxt_switches:	4169
+	nonvoluntary_ctxt_switches:	5
+	finally release the buffer
+	wrote next char!
+
+With the patch
+
+	State:	S (sleeping)
+	voluntary_ctxt_switches:	74
+	nonvoluntary_ctxt_switches:	3
+	State:	S (sleeping)
+	voluntary_ctxt_switches:	74
+	nonvoluntary_ctxt_switches:	3
+	finally release the buffer
+	wrote next char!
+
+As you can see, without this patch pipe_read() wakes the writer up
+4095 times for no reason, the writer burns a bit of CPU and blocks
+again after wakeup until the last read(fd[0], &c, 1).
 
 Oleg.
+
+-------------------------------------------------------------------------------
+#include <stdlib.h>
+#include <unistd.h>
+#include <assert.h>
+#include <sys/ioctl.h>
+#include <stdio.h>
+#include <errno.h>
+
+int main(void)
+{
+	int fd[2], nb, cnt;
+	char cmd[1024], c;
+
+	assert(pipe(fd) == 0);
+
+	nb = 1; assert(ioctl(fd[1], FIONBIO, &nb) == 0);
+	while (write(fd[1], &c, 1) == 1);
+	assert(errno = -EAGAIN);
+	nb = 0; assert(ioctl(fd[1], FIONBIO, &nb) == 0);
+
+	// The pipe is full, the next write() will block.
+
+	sprintf(cmd, "grep -e State -e ctxt_switches /proc/%d/status", getpid());
+
+	if (!fork()) {
+		// wait until the parent sleeps in pipe_write()
+		usleep(10000);
+
+		system(cmd);
+		// trigger 4095 unnecessary wakeups
+		for (cnt = 0; cnt < 4095; ++cnt) {
+			assert(read(fd[0], &c, 1) == 1);
+			usleep(1000);
+		}
+		system(cmd);
+
+		// this should actually wake the writer
+		printf("finally release the buffer\n");
+		assert(read(fd[0], &c, 1) == 1);
+		return 0;
+	}
+
+	assert(write(fd[1], &c, 1) == 1);
+	printf("wrote next char!\n");
+
+	return 0;
+}
 
