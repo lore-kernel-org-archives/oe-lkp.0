@@ -1,123 +1,183 @@
-Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0E411EC00F
-	for <oe-lkp@lists.linux.dev>; Mon, 20 Jan 2025 16:56:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 357231494CC
+	for <oe-lkp@lists.linux.dev>; Mon, 20 Jan 2025 17:08:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737392200; cv=none; b=Y/bQPH+dicdYlEu5cGNpm0n0VZ4jSdXt/36oWS9KJPZjC0GIJM64+AkeRzwor33EdseosFN7FDeH9HK6VpFk6gZ2aeyrPtK7MZfiqNHHWRGOBeWe8fSZpNXuH9oQwzOziALwp1YXweWXTghwnS7A1BsazIbh1gbYvarA8Tb8ipE=
+	t=1737392924; cv=none; b=dl5JSdzopfUkyv5Kso7UR0o51kDePrSmJJaJspBGaq6VJ+48sFrwdKqTbtNnC8BzLj+p9D/jnVGcDe9YmJKWKplWqksNIEJ8SF+/PJf55dIbnphqdMio2bahOHEhyUetO48e6JsHIArOPwZTAHWvO7tFfneYeqGzOrFhJuwL/Gk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737392200; c=relaxed/simple;
-	bh=4CvVSY5hWxosVkVreTkBr9Yrr92TsfK5tAEGgE4motY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=j2P8TPXGpIKjvybybcctrbmu8BA4kydxFvL9viRmZCU/uy1MVZS9ni7i7KIFhRNsr6Q8E8pVSixPfxE8ZKLzBvUx1F7afCOfTFvPwI9RqGalkfBq2UmODFEe7wbRS7dFdErcOhrKq5G4IkIZgMZnYbAfAiX5vQZl0Gu/Rx7QIPs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cNyh+eo5; arc=none smtp.client-ip=209.85.208.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1737392924; c=relaxed/simple;
+	bh=rqBoB5tvgFfXxsD+JHKDhaELw5d1ExdCb7js9dbP1NE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=VUaZLv3H9Df9mFzL/H+5mV8JVmXh5h+xgZtqho7Ee6CmJqC+WZyP2HxZcVDtm4A+LP2Gks9hQM4J8z0zMHQDchxqfzUSJgx7nrUQWwcGo63SabRJv9hqA1ri3coIfKy09NmWnuG+DIB2E3j6IHfn02LH5XmcDAHzV9f6xnkqCQk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=3IB8R0qS; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=iz42NLoL; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cNyh+eo5"
-Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-5db689a87cbso9148333a12.3
-        for <oe-lkp@lists.linux.dev>; Mon, 20 Jan 2025 08:56:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1737392197; x=1737996997; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4CvVSY5hWxosVkVreTkBr9Yrr92TsfK5tAEGgE4motY=;
-        b=cNyh+eo5oppf6Li1SLjSavzl1wows8VtERfIcy4QYpDKwZ5EWjSyhpoiSWaHrqMwL/
-         GzdhHWiZ73fnA1Dgi1G+PT5xo8SZPA2/B0wn+kHzCpTc8hyMZyffk7Z52uDuQXphB2HV
-         XRzyzzeIYcalepMOFhwEJXBvSnzgvHw9xdidFI5yRwnujsjeLtn/9vjpQyfqEk49Bt/9
-         yo4Xdolehfp65Mp4Sv6ZYJ6xzE5l/3Q9fHd2cp37ti2CDpgSbaIbxVXE0b0HcvLjJFHt
-         aglIP2sIva6lvRPP7XJqzvIwypZG9ZIRkJOn/Us+5QA4mdsRcAPXO6IUhVVoh20hylm8
-         LMEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737392197; x=1737996997;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=4CvVSY5hWxosVkVreTkBr9Yrr92TsfK5tAEGgE4motY=;
-        b=DdPm/7zp9c2OOLht8dou+MgAP3r9P+R/lmxU3uW9OuNbp5AgSf+7LRVlg0xlwg53RA
-         23dm5NeYzut598uA7PW8jOXGvOAQKWF9ijl3JJB7UefLfpvmTm7ofmGQirHjgpqCqpBy
-         t/yARVHmJdsEwX3wQg7tWgtSmw83Tk5dsQKYbssW/BYw3H21uxqOIIo+QW7GqRdjepIz
-         kcf8bqDljsyoQ6T0gCRMeMrR4QEwx1L10gzbBuiW0W49J8JI+H08gOrkjmi/UWToe1to
-         pGBcXhVLDAK5g3q55sHHYFG+zKe2kAjWceDrxQt76hu9/80FEp/PAmBDRClsI5IAn2DA
-         x28w==
-X-Forwarded-Encrypted: i=1; AJvYcCXJhfk+NrfQ1+nvfMCNgWqJpDtbw97TzSJ99vod4Ke403f1yYKvbFJbtj0naYlOTdQMdt/mlKs=@lists.linux.dev
-X-Gm-Message-State: AOJu0YxOXY8cJoPQEbWbiWH1BqAX4Ue9CnuFwM1qVhZesF+M2Fn3uqr4
-	sw79N4nQ9s3R31HXIjVBMI6ZUC0RAGOySfYay4oYrJELrQTSZP9Ia5XHt7XPhxHW7sYCq05wWVE
-	JmkmjVGHKZrGBAf2OupYXlg+HES4=
-X-Gm-Gg: ASbGncu/q+MGsvH6vEWG4Ai+0dQLPJa7fZKoLYqYbKFgVsPPu1kkw1TPwUlbrMuDXjE
-	XJBb6xROGeNson6H/oIMmvJf8icSL1RCJRBM334ff+f+gWc2QNwA=
-X-Google-Smtp-Source: AGHT+IF14A19T+Gx11YlcY8v4DNdzLQUA+vTHCkjLeQUh/0qf2OWi8InoQ9ihBBc7ztM+Gi8v/put8sMIX0NOyq3PLw=
-X-Received: by 2002:a05:6402:3509:b0:5d0:cfdd:2ac1 with SMTP id
- 4fb4d7f45d1cf-5db7d2d9958mr13973390a12.6.1737392197031; Mon, 20 Jan 2025
- 08:56:37 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="3IB8R0qS";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="iz42NLoL"
+Date: Mon, 20 Jan 2025 18:08:37 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1737392919;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=pUmGTEjQCTD/ZbTu3dQvCJ7DZwlUdxErixTsdcw9sTY=;
+	b=3IB8R0qSbb9kJCkSO92EemVYr7kwb5gFprAzT011R5UVQkd4C7f4vbbkYKs+81EOsi0U5B
+	eoa/cJ+k3UHwjo5U5wRiMXIJk/gNj5ONR/XQD3LsfdHSGC3QPjQZl30YWBZ9mgLUJaSRGG
+	OBhAQse9HCAOYAkki+sabVMWR2k3snDLHt5D9ydw79TPHC7jVKoaduTZZlYABZEVvqj8ds
+	yVDbRKTVicfRIwOofCJKRGuArBy50wScxlsgZw0Jk0kth6jn7iuP/tfHkGZDPR1PohxOEo
+	Oawd5s38Gqp7KjEfaDAFOWI1Yew1fcSKBBXYLjJWrMpD1GxblBFgraLHN1uyfA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1737392919;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=pUmGTEjQCTD/ZbTu3dQvCJ7DZwlUdxErixTsdcw9sTY=;
+	b=iz42NLoLPWojUsupGVFZW55nC/EHYgLBnfwVEvL6uisXJrno/fT0EunjDddCIoNyDs4qsl
+	BJC+Hrg2LhMMxRBA==
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: Peter Zijlstra <peterz@infradead.org>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, kernel test robot <oliver.sang@intel.com>
+Subject: Re: [bigeasy-staging:futex_local_v6] [futex]  865221325b:
+ WARNING:at_lib/rcuref.c:#rcuref_put_slowpath
+Message-ID: <20250120170837.6L_h7LNK@linutronix.de>
+References: <202412311453.9d7636a2-lkp@intel.com>
+ <20250116233137.v8s-FDdH@linutronix.de>
+ <87r051akps.ffs@tglx>
+ <87o705ahad.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202501201311.6d25a0b9-lkp@intel.com> <leot53sdd6es2xsnljub4rr4n3xgusft6huntr437wmaoo5rob@hhbtzrwgxel2>
- <20250120121928.GA7432@redhat.com> <20250120124209.GB7432@redhat.com>
-In-Reply-To: <20250120124209.GB7432@redhat.com>
-From: Mateusz Guzik <mjguzik@gmail.com>
-Date: Mon, 20 Jan 2025 17:56:24 +0100
-X-Gm-Features: AbW1kvbaXg9VK4NnspF3WjlWEwZ0pL-tI_NNyxvLDripmfqOiy7OOAZAjI8A9k8
-Message-ID: <CAGudoHFOsRWT0nKRKqFwgHdAhs0NOEO4y-q7Gg4cjm9KBxQc9A@mail.gmail.com>
-Subject: Re: [linux-next:master] [pipe_read] aaec5a95d5: stress-ng.poll.ops_per_sec
- 11.1% regression
-To: Oleg Nesterov <oleg@redhat.com>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	Christian Brauner <brauner@kernel.org>, WangYuli <wangyuli@uniontech.com>, 
-	linux-fsdevel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <87o705ahad.ffs@tglx>
 
-On Mon, Jan 20, 2025 at 1:42=E2=80=AFPM Oleg Nesterov <oleg@redhat.com> wro=
-te:
->
-> Forgot to mention...
->
-> On 01/20, Oleg Nesterov wrote:
+On 2025-01-17 11:03:38 [+0100], Thomas Gleixner wrote:
 > >
-> > On 01/20, Mateusz Guzik wrote:
-> > >
-> > > Whatever the long term fate of the patch I think it would be prudent =
-to
-> > > skip it in this merge window.
-> >
-> > Perhaps... I'll try to take another look tomorrow.
-> >
-> > Just one note right now.
-> >
-> > > First two notes:
-> > > 1. the change only considers performing a wake up if the current
-> > > source buf got depleted -- if there is a blocked writer and there is =
-at
-> > > least one byte in the current buf nothing happens, which is where the
-> > > difference in results is coming from
-> >
-> > Sorry I don't understand. Unless this patch is buggy, pipe_read() must
-> > always wakeup a blocked writer if the writer can write at least one byt=
-e.
-> >
-> > The writer can't write to "current" buf =3D pipe->bufs[tail & mask] if
-> > pipe_full() is still true.
->
-> But I'll recheck this logic once again tomorrow, perhaps I misread
-> pipe_write() when I made this patch.
->
+> > That's a nasty one. Let me think about it.
+> 
+> The problem is the disconnect between the decrement and the read in the
+> slow path. The untested below should plug that hole. It results in two
+> extra instructions:
 
-While I'm too tired to dig into the code at the momen, I did manage to
-grab an extra data point for hackerbench. Note on my setup (24-way) it
-takes way longer to execute with your patch.
+This works, I'm going to reset it with the futex patches so the bot does
+not choke on it again.
 
-I checked how often the sucker goess off cpu, like so: bpftrace -e
-'kprobe:schedule { @[kstack()] =3D count(); }'
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Sun, 19 Jan 2025 00:55:32 +0100
+Subject: [PATCH] rcuref: Avoid false positive "imbalanced put" report.
 
-With your patch I reliably get about 38 mln calls from pipe_read.
-Without your patch this drops to about 17 mln, as in less than half.
+The kernel test robot reported an "imbalanced put" which turned out to
+be false positive. Consider the following race:
 
---
-Mateusz Guzik <mjguzik gmail.com>
+            ref  = 0 (via rcuref_init(ref, 1))
+ T1                                      T2
+ rcuref_put(ref)
+ -> atomic_add_negative_release(-1, ref)                                         # ref -> 0xffffffff
+ -> rcuref_put_slowpath(ref)
+                                         rcuref_get(ref)
+                                         -> atomic_add_negative_relaxed(1, &ref->refcnt)
+                                           -> return true;                       # ref -> 0
+
+                                         rcuref_put(ref)
+                                         -> atomic_add_negative_release(-1, ref) # ref -> 0xffffffff
+                                         -> rcuref_put_slowpath()
+
+    -> cnt = atomic_read(&ref->refcnt);                                          # cnt -> 0xffffffff / RCUREF_NOREF
+    -> atomic_try_cmpxchg_release(&ref->refcnt, &cnt, RCUREF_DEAD))              # ref -> 0xe0000000 / RCUREF_DEAD
+       -> return true
+                                           -> cnt = atomic_read(&ref->refcnt);   # cnt -> 0xe0000000 / RCUREF_DEAD
+                                           -> if (cnt > RCUREF_RELEASED)         # 0xe0000000 > 0xc0000000
+                                             -> WARN_ONCE(cnt >= RCUREF_RELEASED, "rcuref - imbalanced put()")
+
+The problem is the additional read in the slow path (after it
+decremented to RCUREF_NOREF) which can happen after the counter has been
+marked RCUREF_DEAD.
+
+Avoid the false positive by reusing the returning value from the
+decrement. Now every "final" put uses RCUREF_NOREF in the slow path and
+attempts the final cmpxchg() to RCUREF_DEAD.
+
+Fixes: ee1ee6db07795 ("atomics: Provide rcuref - scalable reference counting")
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Closes: https://lore.kernel.org/oe-lkp/202412311453.9d7636a2-lkp@intel.com
+Debugged-by:: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/rcuref.h | 9 ++++++---
+ lib/rcuref.c           | 5 ++---
+ 2 files changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/include/linux/rcuref.h b/include/linux/rcuref.h
+index 2c8bfd0f1b6b3..6322d8c1c6b42 100644
+--- a/include/linux/rcuref.h
++++ b/include/linux/rcuref.h
+@@ -71,27 +71,30 @@ static inline __must_check bool rcuref_get(rcuref_t *ref)
+ 	return rcuref_get_slowpath(ref);
+ }
+ 
+-extern __must_check bool rcuref_put_slowpath(rcuref_t *ref);
++extern __must_check bool rcuref_put_slowpath(rcuref_t *ref, unsigned int cnt);
+ 
+ /*
+  * Internal helper. Do not invoke directly.
+  */
+ static __always_inline __must_check bool __rcuref_put(rcuref_t *ref)
+ {
++	int cnt;
++
+ 	RCU_LOCKDEP_WARN(!rcu_read_lock_held() && preemptible(),
+ 			 "suspicious rcuref_put_rcusafe() usage");
+ 	/*
+ 	 * Unconditionally decrease the reference count. The saturation and
+ 	 * dead zones provide enough tolerance for this.
+ 	 */
+-	if (likely(!atomic_add_negative_release(-1, &ref->refcnt)))
++	cnt = atomic_sub_return_release(1, &ref->refcnt);
++	if (likely(cnt >= 0))
+ 		return false;
+ 
+ 	/*
+ 	 * Handle the last reference drop and cases inside the saturation
+ 	 * and dead zones.
+ 	 */
+-	return rcuref_put_slowpath(ref);
++	return rcuref_put_slowpath(ref, cnt);
+ }
+ 
+ /**
+diff --git a/lib/rcuref.c b/lib/rcuref.c
+index 97f300eca927c..5bd726b71e393 100644
+--- a/lib/rcuref.c
++++ b/lib/rcuref.c
+@@ -220,6 +220,7 @@ EXPORT_SYMBOL_GPL(rcuref_get_slowpath);
+ /**
+  * rcuref_put_slowpath - Slowpath of __rcuref_put()
+  * @ref:	Pointer to the reference count
++ * @cnt:	The resulting value of the fastpath decrement
+  *
+  * Invoked when the reference count is outside of the valid zone.
+  *
+@@ -233,10 +234,8 @@ EXPORT_SYMBOL_GPL(rcuref_get_slowpath);
+  *	with a concurrent get()/put() pair. Caller is not allowed to
+  *	deconstruct the protected object.
+  */
+-bool rcuref_put_slowpath(rcuref_t *ref)
++bool rcuref_put_slowpath(rcuref_t *ref, unsigned int cnt)
+ {
+-	unsigned int cnt = atomic_read(&ref->refcnt);
+-
+ 	/* Did this drop the last reference? */
+ 	if (likely(cnt == RCUREF_NOREF)) {
+ 		/*
+-- 
+2.47.1
+
