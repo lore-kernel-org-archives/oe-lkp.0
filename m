@@ -1,153 +1,108 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66FB91E3770
-	for <oe-lkp@lists.linux.dev>; Mon, 20 Jan 2025 14:44:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A66281E9B3F
+	for <oe-lkp@lists.linux.dev>; Mon, 20 Jan 2025 15:50:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737384257; cv=none; b=on28xagml3raRPQuypxrytX+DvItWb1ljl1XrvQVcpmkfuckE62zKbFmwhQ9lruHKgu4C/TQqhv5mIt738xZNmgUhQDnf6rAYAJViJETY5PB5ZtlHoQ+8IK/Rgd/PEZ7YTZ6hxnXHMRDvIASsh5l8Y/c8Wa4oU2ldJ7fNZyys1E=
+	t=1737388250; cv=none; b=ZpGTaV42cSTOyjm/hmMI6IxBgXTj6Q6GtN208lfHqggiC3j1YezuLz624GfwzOX854GvwzavvaqS5oDVp1lKBF0aSKMInVEoDG5GddIUAa/CpQF4TC5qiiSMwaYHddJgshCgdvH5L+ew0QdvaWT1iwT74gsf0Ym4bthhcwOGcxo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737384257; c=relaxed/simple;
-	bh=gROTbni+M8gwxpHDPaPMyGoaAQV5BZl3k8BCVpraGt0=;
+	s=arc-20240116; t=1737388250; c=relaxed/simple;
+	bh=t1WUxRy4eGnpes0GZimQAD8XyfAQn+Z3KwMgxXq72QU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QlRvSaL9QfbZMw+6UvRHOdUA3u3Y5AS88gJx2exzh99UqnS1S5jak7OIkPPS8wud3GxMtfZbJ9Mjl+OrJUj2ZoH18FhFh7ZWYM153MmqoD0XMqU1VLyvTVjKBKdd34dJh3KLR34aJwZuBv1F+qVhTKF5PsaRtMrehYiJX0/puiM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=SGTzAExv; arc=none smtp.client-ip=170.10.129.124
+	 Content-Type:Content-Disposition:In-Reply-To; b=HBSMtdLiYwKfE1Dym20/cFPHQ2HLoz7Zu1O6A3b2onq021nftkrVN3ZQzNxs8KQ9inMtyVCCnW2gW1mpKW/5CWh4uhl8kXs0iKBcns51mfv8Z69/XwWbEElHhVFA78Dn2AtD8WRUc/aXuzHLAerAdM9kEM8NkUiw+uuoPPc009w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=EK7cM/gL; arc=none smtp.client-ip=170.10.133.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="SGTzAExv"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="EK7cM/gL"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1737384254;
+	s=mimecast20190719; t=1737388247;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=+C9wHaY+wGka9yWDgVpMApTjF3kwH8GQpQyEqhleVdM=;
-	b=SGTzAExvA6QMqzHHPAtMTQ4odLVGzOrdPtg4v9WvoY1svjXpofJCTpFCWDhwQ5yISJvkWT
-	eAXIM6cc8+a5s7jaVQtUrNSJaNWJlXT6Wa49hi/qs9dmYKsv+CJLVWqajnrdzBwNz3HTF6
-	F8OUmfWql/AVZMcuPx7XAeK/gl5Un+0=
-Received: from mx-prod-mc-01.mail-002.prod.us-west-2.aws.redhat.com
+	bh=tMAkoPEbp1X/1fbqmcjUBuRkyr/p8lqtKYU91SycHTM=;
+	b=EK7cM/gLBs3sUc6is5VZQNMohwjfgUoQMMjdokuxks62gWGiI8Qf51un0HqiplRwH1twPC
+	Yl/oenFsvKWlLcoPiZqlwVMDxpTttg0i6EvB5+Z6BeUgI1AOW017co+05d7DbyYiXLdlhZ
+	X7+eILo3hD+PTekn98qt1jyBUQXvUnI=
+Received: from mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com
  (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
  relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-497-L3EBYPfuN1mAsMpQ9T1AJA-1; Mon,
- 20 Jan 2025 09:44:10 -0500
-X-MC-Unique: L3EBYPfuN1mAsMpQ9T1AJA-1
-X-Mimecast-MFC-AGG-ID: L3EBYPfuN1mAsMpQ9T1AJA
-Received: from mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.40])
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-668-4zMjq5AaN9eRpyYE_hzzbQ-1; Mon,
+ 20 Jan 2025 10:50:41 -0500
+X-MC-Unique: 4zMjq5AaN9eRpyYE_hzzbQ-1
+X-Mimecast-MFC-AGG-ID: 4zMjq5AaN9eRpyYE_hzzbQ
+Received: from mx-prod-int-02.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-02.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.15])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mx-prod-mc-01.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 38F941955D97;
-	Mon, 20 Jan 2025 14:44:09 +0000 (UTC)
+	by mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id BB80E1956062;
+	Mon, 20 Jan 2025 15:50:39 +0000 (UTC)
 Received: from dhcp-27-174.brq.redhat.com (unknown [10.45.225.104])
-	by mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with SMTP id 361911956053;
-	Mon, 20 Jan 2025 14:44:05 +0000 (UTC)
+	by mx-prod-int-02.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with SMTP id 48A181956094;
+	Mon, 20 Jan 2025 15:50:35 +0000 (UTC)
 Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
-	oleg@redhat.com; Mon, 20 Jan 2025 15:43:44 +0100 (CET)
-Date: Mon, 20 Jan 2025 15:43:39 +0100
+	oleg@redhat.com; Mon, 20 Jan 2025 16:50:14 +0100 (CET)
+Date: Mon, 20 Jan 2025 16:50:10 +0100
 From: Oleg Nesterov <oleg@redhat.com>
-To: Mateusz Guzik <mjguzik@gmail.com>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, Christian Brauner <brauner@kernel.org>,
-	WangYuli <wangyuli@uniontech.com>, linux-fsdevel@vger.kernel.org
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
+	Christian Brauner <brauner@kernel.org>,
+	WangYuli <wangyuli@uniontech.com>, linux-fsdevel@vger.kernel.org,
+	Mateusz Guzik <mjguzik@gmail.com>
 Subject: Re: [linux-next:master] [pipe_read]  aaec5a95d5:
  stress-ng.poll.ops_per_sec 11.1% regression
-Message-ID: <20250120144338.GC7432@redhat.com>
+Message-ID: <20250120155009.GD7432@redhat.com>
 References: <202501201311.6d25a0b9-lkp@intel.com>
- <leot53sdd6es2xsnljub4rr4n3xgusft6huntr437wmaoo5rob@hhbtzrwgxel2>
- <20250120121928.GA7432@redhat.com>
- <20250120124209.GB7432@redhat.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20250120124209.GB7432@redhat.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <202501201311.6d25a0b9-lkp@intel.com>
 User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Scanned-By: MIMEDefang 3.0 on 10.30.177.40
+X-Scanned-By: MIMEDefang 3.0 on 10.30.177.15
 
-On 01/20, Oleg Nesterov wrote:
+Again, I'll try to take another look tomorrow. Not sure I will find the
+explanation though...
+
+But can you help? I know nothing about stress-ng.
+
+Google finds a lot of stress-ng repositories, I've clone the 1st one
+https://github.com/ColinIanKing/stress-ng/blob/master/stress-poll.c
+hopefully this is what you used.
+
+On 01/20, kernel test robot wrote:
 >
-> But I'll recheck this logic once again tomorrow, perhaps I misread
-> pipe_write() when I made this patch.
+>       9.45            -6.3        3.13 ±  9%  perf-profile.calltrace.cycles-pp.pipe_read.vfs_read.ksys_read.do_syscall_64.entry_SYSCALL_64_after_hwframe
+> ...
+>      10.00            -6.5        3.53 ±  9%  perf-profile.children.cycles-pp.pipe_read
+>       2.34            -1.3        1.07 ±  9%  perf-profile.children.cycles-pp.pipe_poll
 
-Meanwhile I wrote a stupid test-case below.
+Could you explain what do these numbers mean and how there are calculated?
 
-Without the patch
+"git-grep cycles-pp" find nothing in stress-ng/ and tools/perf/
 
-	State:	S (sleeping)
-	voluntary_ctxt_switches:	74
-	nonvoluntary_ctxt_switches:	5
-	State:	S (sleeping)
-	voluntary_ctxt_switches:	4169
-	nonvoluntary_ctxt_switches:	5
-	finally release the buffer
-	wrote next char!
+> kernel test robot noticed a 11.1% regression of stress-ng.poll.ops_per_sec on:
 
-With the patch
+same for ops_per_sec
 
-	State:	S (sleeping)
-	voluntary_ctxt_switches:	74
-	nonvoluntary_ctxt_switches:	3
-	State:	S (sleeping)
-	voluntary_ctxt_switches:	74
-	nonvoluntary_ctxt_switches:	3
-	finally release the buffer
-	wrote next char!
+>       6150           -47.8%       3208        stress-ng.time.percent_of_cpu_this_job_got
 
-As you can see, without this patch pipe_read() wakes the writer up
-4095 times for no reason, the writer burns a bit of CPU and blocks
-again after wakeup until the last read(fd[0], &c, 1).
+same for percent_of_cpu_this_job_got
+
+>       2993           -50.6%       1477        stress-ng.time.system_time
+>     711.20           -36.0%     454.85        stress-ng.time.user_time
+
+Is that what I think it is?? Does it run faster?
+
+Or it exits after some timeout and the decrease in system/user_time can be
+explained by the change in the mysterious 'percent_of_cpu_this_job_got' above?
 
 Oleg.
-
--------------------------------------------------------------------------------
-#include <stdlib.h>
-#include <unistd.h>
-#include <assert.h>
-#include <sys/ioctl.h>
-#include <stdio.h>
-#include <errno.h>
-
-int main(void)
-{
-	int fd[2], nb, cnt;
-	char cmd[1024], c;
-
-	assert(pipe(fd) == 0);
-
-	nb = 1; assert(ioctl(fd[1], FIONBIO, &nb) == 0);
-	while (write(fd[1], &c, 1) == 1);
-	assert(errno = -EAGAIN);
-	nb = 0; assert(ioctl(fd[1], FIONBIO, &nb) == 0);
-
-	// The pipe is full, the next write() will block.
-
-	sprintf(cmd, "grep -e State -e ctxt_switches /proc/%d/status", getpid());
-
-	if (!fork()) {
-		// wait until the parent sleeps in pipe_write()
-		usleep(10000);
-
-		system(cmd);
-		// trigger 4095 unnecessary wakeups
-		for (cnt = 0; cnt < 4095; ++cnt) {
-			assert(read(fd[0], &c, 1) == 1);
-			usleep(1000);
-		}
-		system(cmd);
-
-		// this should actually wake the writer
-		printf("finally release the buffer\n");
-		assert(read(fd[0], &c, 1) == 1);
-		return 0;
-	}
-
-	assert(write(fd[1], &c, 1) == 1);
-	printf("wrote next char!\n");
-
-	return 0;
-}
 
