@@ -1,65 +1,65 @@
-Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com [209.85.216.52])
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A5131B4223
-	for <oe-lkp@lists.linux.dev>; Tue, 28 Jan 2025 15:59:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB3021DE4D2
+	for <oe-lkp@lists.linux.dev>; Tue, 28 Jan 2025 17:07:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738079960; cv=none; b=Y9cdYiVh3EtSfnv/nSGruT+5I5/Yz1++DQnP7I4x3P0TEF6ZgBrtR0GpDE++ALnkdx4JpvCd3y2nykniG6khp6kRxcO5X1ExYgkGJ/0qU3p9ornZCmk/CdHi3LwxllNF9S3hbOYWiB7dLvRaipqYjxrHehAgY8e6jWCp0+E4oWk=
+	t=1738084028; cv=none; b=HIQ5048HxPwTeyc8wlQJHnrf27zuvcvyMc01r9U3RWFYfi5UygF9bqUVxju8nwuoSXihgSwd2zUayISp9JGBVn0MsDPeQkLoZkJ6aLwQgKsqwWrkZyw6dSPH9/HJ2Qin9kObW49AJ+5lYGKmqYsk4UDJzfJgo4OjfvkQX9svIwk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738079960; c=relaxed/simple;
-	bh=6H17ebZieFuo8QRO1abKL/98wl9AEiIGn6X6pZ1rrAE=;
+	s=arc-20240116; t=1738084028; c=relaxed/simple;
+	bh=yjbwgdDgUpo90MQR6AL2JaXuNXEK5cuM1WJeDCstHzo=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=sTmlzQVRm9T6cyXbw776ETV8WbBqGvjQvMyLeMrm9hmu1abNvkyJWLkLXLQwuI1HS7rEbqZatprkDQa87Z+neNCyi2zRGE9rXeH75M3btSJyhE/9eilHxJsSkeAxkk6v7bM3n+2jqA14515j008AQ8ySMPvTlylK9NUyI42T5wo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=hnaHfzNk; arc=none smtp.client-ip=209.85.216.52
+	 In-Reply-To:Content-Type; b=I2Uqkpq0P2j+R0yq+cXWSbWBzz3R40vJ6sfOfwd8yR/N93xgEzPjHCDo73ZHj4QRcwV8x2w/1ISBeiAYpmatz4DZX9kC2xPA8o3l53hGC0OsTxr/LWn9hwnNogphcj+O0hKmHEsedQGXC3euBa2dyurD5to33JicKaGbuJplCwg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=Z+AViAFj; arc=none smtp.client-ip=209.85.214.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="hnaHfzNk"
-Received: by mail-pj1-f52.google.com with SMTP id 98e67ed59e1d1-2ef87d24c2dso7818945a91.1
-        for <oe-lkp@lists.linux.dev>; Tue, 28 Jan 2025 07:59:17 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="Z+AViAFj"
+Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-216401de828so109469115ad.3
+        for <oe-lkp@lists.linux.dev>; Tue, 28 Jan 2025 09:07:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1738079957; x=1738684757; darn=lists.linux.dev;
+        d=bytedance.com; s=google; t=1738084025; x=1738688825; darn=lists.linux.dev;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=FcFXVmpeWLaOTbMBFSx1K5RCNZo8yu2zdYEka+TaMpU=;
-        b=hnaHfzNkVH4ID3MqiE7cte7ywAtaCGCTWrCxbgheq91DpiANSQhQctkzt90hFJXPgr
-         URHCbUNBReBJuTYsxOxUSFCOuLOxRIt0hEOVPiot3fvwXETDm+nZCAeyNqOBD4h8y8rB
-         vH9bW3bfeG6XiBn4bHrUTvR292J9NeO3zNXpFHkFyNQg0vifGJyMtzMcI6V43HKNeoUk
-         7dRMTBw9uds2+vJA0QRiQigQTuWATN8nikepcglejdSp/oL/1clYVh9Uz6gR/wp6T2LJ
-         CESktZ5HrZQyve8m0SpwU12NXA3fttrwUaopSyEud9bT4cOtRdXG5u2tWcSamg0lKfr3
-         4Dyw==
+        bh=4aLdluYBQG3NHEUoAm0lTl3WFmZVvtCZOFSLgG2q5V8=;
+        b=Z+AViAFjCfe+LWTlxs0DIDG5yEda4YDW6qP6xTyPu2MGZYYueZGir2+t80VX/wkItG
+         DEIMWn5tlIrXpN6OtZHdgfeIZsMO5iYH2ecfnp9Tgs6wbESr/xERr4FiYo+SXcSvFFTq
+         ENxEoyIYCnPUQUUGtkUdivObw4OJzINRo1sa7cCz/qCo9LCFm1aabOFiymsKg49MUrkc
+         43ZUMOamqqtNqaixhe+DVR8moYMGPYMiEI33Fxmqz0m61V+6TatCv7CdWSsEvVGtsTKf
+         UDwq3UWmnmGGNZHasan4u4c2j5p/4kLzVixOAjr/yfvp+pD/ilxXVu7TGUs55VkhXOib
+         hD1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738079957; x=1738684757;
+        d=1e100.net; s=20230601; t=1738084025; x=1738688825;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=FcFXVmpeWLaOTbMBFSx1K5RCNZo8yu2zdYEka+TaMpU=;
-        b=UO++ehH72d6Lxae5+hjUFsix9AtXAuGuzSfCCgCzYawxXuRE0st2pkL6cajvVRCYXj
-         gatKuJIU86IknDRInUdSkh2K6HiP6DIKtg7NnjEthWv/+qTOfTbKNANAXTVKMx2Vsvxv
-         b0fUfPR94txR28+d+sWAdIJZoRxtDGdNOGPOqmZsAEdkYOGb8QXj38HdAFX4gMseZIWj
-         uSjUhksF1aEUAcRdb/l2iJzeig98ld3Yds7MDMky3kN3ZNe7p34uZunEeM8QZl48tMUe
-         ivG1M6rz3P+rEBruCa1fDIBnml4BO88Z+WG2Mg8gLaKCLfUIE6Xed1mqg4RRFMVlx0TH
-         JLwA==
-X-Forwarded-Encrypted: i=1; AJvYcCWQ9lSfHETmSp2HLxzTv5wXc02m2LmebqtJO0GRmiOfG/3mvFkGoCtrmjM/WRgqKNQGAI0FNkE=@lists.linux.dev
-X-Gm-Message-State: AOJu0YxV7fvw6W4C/oLrMngVtlVMY9IfulX8A9rF+AH/DRFLzNtYj5uQ
-	wlBs4QxkMD6c/GwiiVj7CcHm+ZJZ8JeoMTPQAC+fSDbqrRXLVq2H/sB4gBr4/Bk=
-X-Gm-Gg: ASbGnctTqepNmBHe/EXOAFu1LstqwfSR5Fp1CzbaDUzpIfZ9Oe92A074NYg6297FAcb
-	OVmP8bhvpPMoGDmgXHx4qHOEvHYLZusYJfqstLk8cFsKzYXLbJkqyJD/XVEa3C0s2xJddkPbOo4
-	Y9NsOWzwaqqpDUEFpAWh3ZAscg0R5ZSAi2KKuC6oCMV0L2kQr6v+ZGQg4oEFZRJHfCRl8gBsBNt
-	ZUZOVsN0NAVCo3L4O9uoFoPYWmoK856BMS1bPV1kcblPmBKjinSVYSK75hJvvbUeleNX/A7/66K
-	iWHbiAPJW1b15kxvJjPtwu+CApeJ9v1+Rw6w4lSG66DZKRk+so1T9AC76fkUaWEMDSaRdpCsn9O
-	Dag606O6j3Drjwj4=
-X-Google-Smtp-Source: AGHT+IFngimGxynW5tJ16OrcamQhczwTsyiGYTXixNAlpl9qZTUVAJ5KgMSNtzunxmn1CEnIaPIhxA==
-X-Received: by 2002:a05:6a00:84f:b0:725:df1a:288 with SMTP id d2e1a72fcca58-72dafaf8ab3mr74335171b3a.24.1738079957442;
-        Tue, 28 Jan 2025 07:59:17 -0800 (PST)
+        bh=4aLdluYBQG3NHEUoAm0lTl3WFmZVvtCZOFSLgG2q5V8=;
+        b=TwPB2gcIRDWVu5/fULAZz6H+E+qOpBi3r7AlkviV50qlBpTcCirSsWqF8aMbyTgNPZ
+         Lt8W/GN6o0oLhzwzsggWwPCLykmrK47/jW4qvmWHXuZsMKxpwCzh+7RzRMzEV69Frc6Z
+         0rbQ1oOaEtGTDGh8/sKHSewqgxyq/LQsD0iccOOq3lGlcEbXATBYAbRqNKcg2LhPeKlM
+         GdrijwbVtSHovlaSLAV3FYzDU9V8+WRsCQ+FcmhlPMcNt0dEXlhAKiPOKKxIoZgB/RZ/
+         PO0k018qIt3WCpjY3XqaVblakyeQo+gMKYwRDTv/DwofN6mkMuhFf4jdT4FL5PvLiJDd
+         pINw==
+X-Forwarded-Encrypted: i=1; AJvYcCUKikhQ88cUZGKDvl7e9ai47R740lI2Npi460RGSCvNcY9vdothdcC8aR2AMOlrKJ+GJzwpkOY=@lists.linux.dev
+X-Gm-Message-State: AOJu0YzIBRdp0UfGs3EaREnAr6Y/k/O7o4vIxajzmL31opAbn7pSoikq
+	4YHiORbRfZqNFo1/+3AYeqVSfKs9ux370p3FBpW16uO/1qFNQP/JomYceBS4n00=
+X-Gm-Gg: ASbGncuV2FZ0/c0q6VkdlZD1dk9GJErNUyBiGltETGg2kvY3vXgAo2r/moLSbKarizm
+	iC0k/Der8fm0HvSh7+lQCRMpbaD36X8SVDKfi0T2ZWDqQttsEX9tv6taXseV6sQFXjEaxXpi1zz
+	B4evKk7JP8wzKhKnF4XacJ+UfsglsaApVZ32r1o9R8dIOXPFNhzfqZ8vUlJ29zA6hLrVJES5TyN
+	l1S5FbpXFhVte2LcV/tgGdjwNPNs50U2oqgI368j71JHASa0DgOsZYq1DKs4dm4b9OClBwWBHD6
+	7pzoYNtzCIxjMe67+VczmwnfigkVmZXSQAY8oMW9iFeA6NR+bvC/YfxoHqgjXmreRBqdZkKRzD9
+	9wtEqrOoJkX1VC/U=
+X-Google-Smtp-Source: AGHT+IEHJ+yvRm9/dI3EKJujOyu9fMrTbPLV5NN8NzRJ8t2YbBq7WU1UqvWPdbJXbOL6J5IEzRPvgA==
+X-Received: by 2002:a17:902:ea11:b0:216:3889:6f6f with SMTP id d9443c01a7336-21c353ef827mr617597005ad.17.1738084024877;
+        Tue, 28 Jan 2025 09:07:04 -0800 (PST)
 Received: from ?IPV6:240e:370:8b13:97f0:154c:a6ff:49c9:f239? ([240e:370:8b13:97f0:154c:a6ff:49c9:f239])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-72f8a6b3f86sm9708981b3a.67.2025.01.28.07.59.10
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-21da3faab7csm83853185ad.103.2025.01.28.09.06.58
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Jan 2025 07:59:16 -0800 (PST)
-Message-ID: <e0c0dd89-ca82-4423-aae5-eb8ec60b31da@bytedance.com>
-Date: Tue, 28 Jan 2025 23:59:07 +0800
+        Tue, 28 Jan 2025 09:07:04 -0800 (PST)
+Message-ID: <8b661116-0a85-4928-91ed-3c01ebbf8d39@bytedance.com>
+Date: Wed, 29 Jan 2025 01:06:55 +0800
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -94,7 +94,7 @@ In-Reply-To: <18172465-37e3-48a9-9d67-0d44fdcb93bd@redhat.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-
+Hi,
 
 On 2025/1/28 21:42, David Hildenbrand wrote:
 > On 28.01.25 14:28, Peter Zijlstra wrote:
@@ -126,19 +126,150 @@ On 2025/1/28 21:42, David Hildenbrand wrote:
 > Ah, right. Most distros will just have it enabled either way.
 > 
 > But that would then mean that MMU_GATHER_RCU_TABLE_FREE is not the cause 
-
-In addition, commit 718b13861d22 ("x86: mm: free page table pages by RCU 
-instead of semi RCU")
-also made a change, that is, when freeing a single page table pages, use
-RCU to free the page table page instead of sending the IPI.
-
-But in theory this should not cause performance regression, and I have
-tested the performance of munmap with bpftrace and found no regression.
-
 > for the regression here, and something else is going wrong.
+> 
 
-It looks like it, I will investigate it carefully.
+I did reproduce the performance regression using the following test
+program:
+
+stress-ng --timeout 60 --times --verify --metrics --no-rand-seed 
+--mmapaddr 64
+
+The results are as follows:
+
+1) Enable CONFIG_PT_RECLAIM
+
+stress-ng: info:  [826] dispatching hogs: 64 mmapaddr
+stress-ng: info:  [826] successful run completed in 60.29s (1 min, 0.29 
+secs)
+stress-ng: info:  [826] stressor       bogo ops real time  usr time  sys 
+time   bogo ops/s   bogo ops/s
+stress-ng: info:  [826]                           (secs)    (secs) 
+(secs)   (real time) (usr+sys time)
+stress-ng: info:  [826] mmapaddr       17233711     60.01    238.47 
+1128.46    287178.92     12607.60
+stress-ng: info:  [826] for a 60.29s run time:
+stress-ng: info:  [826]    1447.07s available CPU time
+stress-ng: info:  [826]     238.85s user time   ( 16.51%)
+stress-ng: info:  [826]    1128.87s system time ( 78.01%)
+stress-ng: info:  [826]    1367.72s total time  ( 94.52%)
+stress-ng: info:  [826] load average: 48.64 20.73 7.82
+
+2) Disable CONFIG_PT_RECLAIM
+
+stress-ng: info:  [704] dispatching hogs: 64 mmapaddr
+stress-ng: info:  [704] successful run completed in 60.05s (1 min, 0.05 
+secs)
+stress-ng: info:  [704] stressor       bogo ops real time  usr time  sys 
+time   bogo ops/s   bogo ops/s
+stress-ng: info:  [704]                           (secs)    (secs) 
+(secs)   (real time) (usr+sys time)
+stress-ng: info:  [704] mmapaddr       28440843     60.02    343.93 
+1090.70    473882.98     19824.51
+stress-ng: info:  [704] for a 60.05s run time:
+stress-ng: info:  [704]    1441.23s available CPU time
+stress-ng: info:  [704]     344.30s user time   ( 23.89%)
+stress-ng: info:  [704]    1091.12s system time ( 75.71%)
+stress-ng: info:  [704]    1435.42s total time  ( 99.60%)
+stress-ng: info:  [704] load average: 40.03 11.51 3.96
+
+Then I found that after enabling CONFIG_PT_RECLAIM, there was an
+additional perf hotspot function:
+
+   16.35%  [kernel]  [k] _raw_spin_unlock_irqrestore
+    9.09%  [kernel]  [k] clear_page_rep
+    6.92%  [kernel]  [k] do_syscall_64
+    3.76%  [kernel]  [k] _raw_spin_lock
+    3.27%  [kernel]  [k] __slab_free
+    2.07%  [kernel]  [k] rcu_cblist_dequeue
+    1.94%  [kernel]  [k] flush_tlb_mm_range
+    1.87%  [kernel]  [k] lruvec_stat_mod_folio.part.130
+    1.79%  [kernel]  [k] get_page_from_freelist
+    1.61%  [kernel]  [k] tlb_remove_table_rcu
+    1.58%  [kernel]  [k] kmem_cache_alloc_noprof
+    1.43%  [kernel]  [k] mtree_range_walk
+
+And its call stack is as follows:
+
+bpftrace -e 'k:_raw_spin_unlock_irqrestore {@[kstack,comm]=count();} 
+interval:s:1 {exit();}'
+
+@[
+_raw_spin_unlock_irqrestore+5
+free_one_page+85
+rcu_do_batch+424
+rcu_core+401
+handle_softirqs+204
+irq_exit_rcu+208
+sysvec_apic_timer_interrupt+113
+asm_sysvec_apic_timer_interrupt+26
+_raw_spin_unlock_irqrestore+29
+get_page_from_freelist+2014
+__alloc_frozen_pages_noprof+364
+alloc_pages_mpol+123
+alloc_pages_noprof+14
+get_free_pages_noprof+17
+__x64_sys_mincore+141
+do_syscall_64+98
+entry_SYSCALL_64_after_hwframe+118
+, stress-ng-mmapa]: 2283
+@[
+_raw_spin_unlock_irqrestore+5
+get_page_from_freelist+2014
+__alloc_frozen_pages_noprof+364
+alloc_pages_mpol+123
+alloc_pages_noprof+14
+pte_alloc_one+30
+__pte_alloc+42
+do_pte_missing+2499
+__handle_mm_fault+1862
+handle_mm_fault+195
+__get_user_pages+690
+populate_vma_page_range+127
+__mm_populate+159
+vm_mmap_pgoff+329
+do_syscall_64+98
+entry_SYSCALL_64_after_hwframe+118
+, stress-ng-mmapa]: 2443
+@[
+_raw_spin_unlock_irqrestore+5
+get_page_from_freelist+2014
+__alloc_frozen_pages_noprof+364
+alloc_pages_mpol+123
+alloc_pages_noprof+14
+get_free_pages_noprof+17
+__x64_sys_mincore+141
+do_syscall_64+98
+entry_SYSCALL_64_after_hwframe+118
+, stress-ng-mmapa]: 5184
+@[
+_raw_spin_unlock_irqrestore+5
+free_one_page+85
+tlb_remove_table_rcu+140
+rcu_do_batch+424
+rcu_core+401
+handle_softirqs+204
+irq_exit_rcu+208
+sysvec_apic_timer_interrupt+113
+asm_sysvec_apic_timer_interrupt+26
+_raw_spin_unlock_irqrestore+29
+get_page_from_freelist+2014
+__alloc_frozen_pages_noprof+364
+alloc_pages_mpol+123
+alloc_pages_noprof+14
+get_free_pages_noprof+17
+__x64_sys_mincore+141
+do_syscall_64+98
+entry_SYSCALL_64_after_hwframe+118
+, stress-ng-mmapa]: 5301
+@Error looking up stack id 4294967279 (pid -1): -1
+[, stress-ng-mmapa]: 53366
+
+It seems to be related to CONFIG_MMU_GATHER_RCU_TABLE_FREE?
+
+I will continue to investigate further.
 
 Thanks!
 
-> 
+
+
