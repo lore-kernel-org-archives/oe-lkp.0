@@ -1,80 +1,79 @@
-Received: from sipsolutions.net (s3.sipsolutions.net [168.119.38.16])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D26F422D7A3;
-	Fri, 14 Feb 2025 09:51:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=168.119.38.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9225158870;
+	Fri, 14 Feb 2025 21:20:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739526672; cv=none; b=lBNj4Punfdc7NLwUYBhgwqEvqrvVgNVsv3BD7i3DOCYefAx7C1J1/SdU2nUrXOLLFGAbF7v8UvyrPOAr6mscVXusznqoLSJEISQcezKOcMJXkL65mQ6VgCDnwvEU91l43emS6+5kziltsrv1YH8aCDPnJdssHu8ccxVM/NiP8Cc=
+	t=1739568010; cv=none; b=BLGQ6RKlQyewtVN4BfRddDMT4birJzNCxxNLZdYhrMmfqTLz1bb+UxXnkGRymJOUxOLUSIJzn0/7ke+uE+TnPVok4OJ4f6dk40mrdUMsWRJOhH2tywvObvjiYe+C66xSNljMPXI/LwcXeBuNbBk75XatLVC5/RV/Z+JJ3WO35c4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739526672; c=relaxed/simple;
-	bh=0ljqkkvPMjt89Plm5FVW13hb2JKBJSlP4wsUOkHb2CU=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=jFtiZNPe3nARm5ZT9dmNC3BJMeqr7mXTp/Khjg6Hioitm3/gKkwlrGbBcAO0fgz3IQFxAIozzB0P3LjYtXsPuAs0/ZT4H/JssQBQjjyaG+bnU2GAUm9PjCDjd6rJsb5VEDGxid2h2MiAjE8UiWNBCWX7A2jAAV7Hy7UsDTyiFVA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sipsolutions.net; spf=pass smtp.mailfrom=sipsolutions.net; dkim=pass (2048-bit key) header.d=sipsolutions.net header.i=@sipsolutions.net header.b=hlnjwVag; arc=none smtp.client-ip=168.119.38.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sipsolutions.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sipsolutions.net
+	s=arc-20240116; t=1739568010; c=relaxed/simple;
+	bh=7Bz6zsV8G0KelhMQC/n7HDA0e50TvIelUa+YzRPtv0I=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=NZFhxVCVyAA3j5gVOOTw8Sd9ictRJUN8ibUC9/9f4gQeAHyVKj8zgDpoNJZo4eGHFzieTjCQv36XcVHVVxHqKubX6T6HT8h0J5RM7myuYUsqJrtJnlNJz6CzqFYNVfBm81iUxS4j4Nv1tg87+Msd1KWa5AxMz98yEXf35DL//gE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aU7Z9YgL; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sipsolutions.net header.i=@sipsolutions.net header.b="hlnjwVag"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-	Resent-Cc:Resent-Message-ID; bh=x9ZZzvHk2TN4NuoUgSp0fpU2hQ1B8WaMdLF7eMb7v60=;
-	t=1739526671; x=1740736271; b=hlnjwVagZTt92nLFUfcmIEGECMk3ui0ycPhzvvf6o1AiFi/
-	NS5HzFWbKb9cUNJ+CpCAaDFOsBROvWNgfxseU2ZwvSvDBXGDmohpWiyBXrZgDoF039kvgTDIDrukl
-	SYeA8JiepFM4R2Il+pLDIBZ3+jOjTYGw1fTpnkVB+Hx2boYh59e3P5n7GX8DYxZRPuUjQE+5Ho3Mt
-	NZpsTkvg+OTISqWwy+j6lGb5eKh3/OQtvd1yaTH1ACaO27hpc6hiJGN3DdEwhsKvjahtcBI2Ryy6l
-	kulKVEPMFDc3s7IyBZtZcw2ZTtOZ5xJOTxOXz8vk69jsAPNu150fAoG8ils2Xx4g==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-	(Exim 4.98)
-	(envelope-from <johannes@sipsolutions.net>)
-	id 1tisLh-0000000EQ5I-2RZS;
-	Fri, 14 Feb 2025 10:51:06 +0100
-Message-ID: <3f259b89ab1d2c37f6449a21608c48d1ee4bc542.camel@sipsolutions.net>
-Subject: Re: [linux-next:master] [wifi] be22179cfb:
- hwsim.monitor_iface_multi_bss.fail
-From: Johannes Berg <johannes@sipsolutions.net>
-To: Alexander Wetzel <alexander@wetzel-home.de>, kernel test robot
-	 <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-wireless@vger.kernel.org
-Date: Fri, 14 Feb 2025 10:51:04 +0100
-In-Reply-To: <ae3d7e06-2ce0-443b-9de9-9b3e814f4deb@wetzel-home.de>
-References: <202502141548.e1f3f465-lkp@intel.com>
-	 <ae3d7e06-2ce0-443b-9de9-9b3e814f4deb@wetzel-home.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.54.3 (3.54.3-1.fc41) 
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aU7Z9YgL"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F521C4CED1;
+	Fri, 14 Feb 2025 21:20:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1739568009;
+	bh=7Bz6zsV8G0KelhMQC/n7HDA0e50TvIelUa+YzRPtv0I=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=aU7Z9YgL9uMd/MjkiSsN8zEGiS0VtEtagk1gc9XSw4PWDNWmBO6fxCcwKhFfzgPYe
+	 +GVfdbsFkPv8SKkarkA/jl8Ptpsbwx3ySIH6nBqGAYKFQM1riqNe+QClmM4sDtUqYh
+	 1jGGwYWusdwaykuFAnjP5jbG82ev90j5j9EsVv4aNtYu2h1nAYn51nWfSL/v71rAQ3
+	 Eefvo666R2zoWOFCEVwxnnQP4qrXOp1fzNuWvbO5RU6v1W2ZQTObz6DNjGtqRiYCWt
+	 X8Oqh4rFDOQyLOzW7hvS66sH4ekLua2Lla3+hohMJKVIoLjoEkZ1pnWvEW8Cs29CSw
+	 9bzyQ0a5gtS+A==
+Date: Fri, 14 Feb 2025 13:20:07 -0800
+From: Jakub Kicinski <kuba@kernel.org>
+To: Martin KaFai Lau <martin.lau@linux.dev>
+Cc: zhangmingyi <zhangmingyi5@huawei.com>, kernel test robot
+ <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, Xin Liu
+ <liuxin350@huawei.com>, netdev@vger.kernel.org, bpf@vger.kernel.org,
+ mptcp@lists.linux.dev, ast@kernel.org, daniel@iogearbox.net,
+ andrii@kernel.org, song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
+ kpsingh@kernel.org, sdf@google.com, haoluo@google.com, jolsa@kernel.org,
+ linux-kernel@vger.kernel.org, yanan@huawei.com, wuchangye@huawei.com,
+ xiesongyang@huawei.com, liwei883@huawei.com, tianmuyang@huawei.com
+Subject: Re: [PATCH v2 1/2] bpf-next: Introduced to support the ULP to get
+ or set sockets
+Message-ID: <20250214132007.54dd0693@kernel.org>
+In-Reply-To: <62294c30-ca75-4075-8d4b-3801194bd92c@linux.dev>
+References: <202502140959.f66e2ba6-lkp@intel.com>
+	<62294c30-ca75-4075-8d4b-3801194bd92c@linux.dev>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, 2025-02-14 at 10:49 +0100, Alexander Wetzel wrote:
-> > in testcase: hwsim
-> > version: hwsim-x86_64-c8c7d56a3-1_20250209
-> > with following parameters:
-> >=20
-> > 	test: monitor_iface_multi_bss
->=20
-> I was expecting something like that:-)
->=20
-> Cooked monitor interfaces were required for hostapd versions less than=
-=20
-> 1.0 (released May 2012) for running an AP. Starting with v1.0 hostapd=20
-> prefers the cfg80211/nl80211 API, while still be able to use the old one.
->=20
-> This patch here now drops cooked monitor interface support, preventing=
-=20
-> hostapd to be able to use the old cooked monitor method.
->=20
-> Any kernel with this patch must fail this and any other test using=20
-> cooked monitor mode (driver_params =3D "use_monitor=3D1").
+On Thu, 13 Feb 2025 22:23:39 -0800 Martin KaFai Lau wrote:
+> On 2/13/25 6:13 PM, kernel test robot wrote:
+> > [ 71.196846][ T3759] ? tls_init (net/tls/tls_main.c:934 net/tls/tls_main.c:993)
+> > [ 71.196856][ T3759] ? __schedule (kernel/sched/core.c:5380)
+> > [ 71.196866][ T3759] __mutex_lock (kernel/locking/mutex.c:587 kernel/locking/mutex.c:730)
+> > [ 71.196872][ T3759] ? tls_init (net/tls/tls_main.c:934 net/tls/tls_main.c:993)
+> > [ 71.196878][ T3759] ? rcu_read_unlock (include/linux/rcupdate.h:335)
+> > [ 71.196885][ T3759] ? mark_held_locks (kernel/locking/lockdep.c:4323)
+> > [ 71.196889][ T3759] ? lock_sock_nested (net/core/sock.c:3653)
+> > [ 71.196898][ T3759] mutex_lock_nested (kernel/locking/mutex.c:783)  
+> 
+> This is probably because __tcp_set_ulp is now under the rcu_read_lock() in patch 1.
+> 
+> Even fixing patch 1 will not be enough. The bpf cgrp prog (e.g. sockops) cannot 
+> sleep now, so it still cannot call bpf_setsockopt(TCP_ULP, "tls") which will 
+> take a mutex. This is a blocker :(
 
-I already sent patches to hostap to fix all that up and clean out the
-code, so it'll be fixed in time.
+Oh, kbuild bot was nice enough to CC netdev, it wasn't CCed on 
+the submission.
 
-johannes
+I'd really rather we didn't allow setting ULP from BPF unless there 
+is a strong and clear use case. The ULP configuration and stacking
+is a source of many bugs. And the use case here AFAIU is to allow
+attaching some ULP from an OOT module to a socket, which I think
+won't make core BPF folks happy either, right?
