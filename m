@@ -1,142 +1,110 @@
-Received: from frasgout12.his.huawei.com (frasgout12.his.huawei.com [14.137.139.154])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7178619994F
-	for <oe-lkp@lists.linux.dev>; Mon, 17 Feb 2025 10:14:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=14.137.139.154
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D989194AD1
+	for <oe-lkp@lists.linux.dev>; Mon, 17 Feb 2025 13:30:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739787297; cv=none; b=XaQjyMV/Hj2cZuWi2cGOoJPQAFQGS210WXDOoB5I9Gxh9uGBQ7l4mXUO/3+iaBI+0VN4jAnn52ew+Sm4KlBegYRkiY/L/UxAkl1eUwK85bNOjKKVdt22uXmxcvsKf5GTh3aMHLcQ4rx4RMSipjfyGt6/z/jsTJPEslVDuoNWTh8=
+	t=1739799059; cv=none; b=QVudBZtw3ddKk6IWOUAdQJzsSsmJkgSj4/Nr+IRQ7tzUBNcsjTxpZQpnumrvUCIhrZC9uP2/KanquFV5fdjCSztYsPVl9hJSONdkkN8SXnobwKedPR1yFg3woQ/LAs8heWEZAFmhqyWuwHVUQmcvCHgOom+mVWZncK7hXC4E2Kw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739787297; c=relaxed/simple;
-	bh=kyvrv2U17INe4b6lSkUpltwHcLKqxONKQtWDij4ttQ4=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=oGxM0gP+YMD4KTE+a9iF3MW1xKyYpv0ldO8s2Ep23eaHZF0FLYKVMbe0Wirs+kJqxwn/1UtDTkfui09OrP/07nlxvDgvPzn+OlKgh5mlM1wDblJk1evhoMIZ96ZMcE4UT2M+2O+RpP5NniO8mlG1U4G+Q5ChqrPLSSOl36MaOM8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com; spf=pass smtp.mailfrom=huaweicloud.com; arc=none smtp.client-ip=14.137.139.154
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huaweicloud.com
-Received: from mail.maildlp.com (unknown [172.18.186.51])
-	by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4YxHR54HzVz9v7JP
-	for <oe-lkp@lists.linux.dev>; Mon, 17 Feb 2025 17:29:05 +0800 (CST)
-Received: from mail02.huawei.com (unknown [7.182.16.27])
-	by mail.maildlp.com (Postfix) with ESMTP id A11D1140B30
-	for <oe-lkp@lists.linux.dev>; Mon, 17 Feb 2025 17:58:48 +0800 (CST)
-Received: from [127.0.0.1] (unknown [10.204.63.22])
-	by APP2 (Coremail) with SMTP id GxC2BwCnXeBRCLNnCrGkAg--.53884S2;
-	Mon, 17 Feb 2025 10:58:48 +0100 (CET)
-Message-ID: <9c5936be68bfbc4930a8e02e2ed99616626db187.camel@huaweicloud.com>
-Subject: Re: [robertosassu:evm-iint-ptr-v1-devel-v3] [evm]  e38e699a42:
- will-it-scale.per_process_ops 160.4% improvement
-From: Roberto Sassu <roberto.sassu@huaweicloud.com>
-To: Mateusz Guzik <mjguzik@gmail.com>, Roberto Sassu
- <roberto.sassu@huawei.com>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, 
-	lkp@intel.com, linux-integrity@vger.kernel.org
-Date: Mon, 17 Feb 2025 10:58:38 +0100
-In-Reply-To: <33ac5nnu2mte56mrrm62fqsyqozdifll63wdohjp2ywcnizwrd@2besd5mxagjg>
-References: <202502171412.ec2e5b88-lkp@intel.com>
-	 <33ac5nnu2mte56mrrm62fqsyqozdifll63wdohjp2ywcnizwrd@2besd5mxagjg>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4-0ubuntu2 
+	s=arc-20240116; t=1739799059; c=relaxed/simple;
+	bh=Ci1COuX6Tex2zAyW3UWO2Ew42J/7mVCWOO5StT0eol4=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=FvYVWj+k0U/CddvPOavSTbtJcEKY/A5zMWIM+jB7y62e9EUcLA5vsVsRCBi8xR3EWvuJQse8mstgSNGhNrQNOH1l5CvG2Nd2v45JsT6FUuuqT+hITWRM1yq2rkWVw175F2I01b5GMDDtfn4f9WncRWA0g3D26SuLztinfdemWJ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NGsUIfCi; arc=none smtp.client-ip=209.85.160.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NGsUIfCi"
+Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-471bb02fc88so37775381cf.3
+        for <oe-lkp@lists.linux.dev>; Mon, 17 Feb 2025 05:30:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1739799056; x=1740403856; darn=lists.linux.dev;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=fOEexKTjiuD42jQvv3hpmelca47VqT1a18N1JHI7NKg=;
+        b=NGsUIfCi+PtUt4eXV6bKkrXxdgukw83tyTaIlQP7PcxXXF5QxXjT1EFFs1WVSvzjoD
+         5Foov83WXTRAUoHFMcW6CntH5M7wDbrV6SnOx+cTCoZPKabl4QFjoNS8FeyCmXw0BN1C
+         57b2Lz709f6nMUAAoaLoLxJi9RlcYCLgqJTGfMKdU56PvaF0qSHUYk5tiZIBfm4RrZoF
+         SLE3YqUlFITZn9/+dR/EtrdHc7uTAZRA0bdbwX+ro9dEjKLJ/e6jXfjo3CT3ifMkJThK
+         UbXfcv9FpVIw/hpdqUmscrcWMFV2bkgT+UMwWEhtnEuTgyXkQoXUVLLIv9CcasQvdbSM
+         Rc+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1739799056; x=1740403856;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=fOEexKTjiuD42jQvv3hpmelca47VqT1a18N1JHI7NKg=;
+        b=ZVo9vFEoyt9hcngfg8kYHRHh7bUHcIuJQkIS7wsKxn1fVJslOXwi9SPetUlE7I1wJG
+         M3kE5ztqcFZjMYDtIgusrQBPsxS27qjNYkoT1QTszxb43GCsxIDpRzcBPG+wYZy0vx6d
+         uVLA7KHc+ktOjn4OSr9vApcJha2G/bljWyfjgcB+yyrtm48cMCU5ta2Sj3KE9kxW7uja
+         ILl5PX03vWpKrjMonhRbpx+wIytSP9Z81aXM7EEf5t1KE/gRAURDRzoAtMfV3Sdf1t3r
+         /HUAOyl4Zw7AzbmfAYrUmCvnVdehJAqTxsZ8mdaCNgb25SFftAZaOzO2f+nwg9lp4psS
+         cSbg==
+X-Forwarded-Encrypted: i=1; AJvYcCWO8r7GgLVVgVuP0hXXX2rVFCA9lEy+d2m/Jn2qCzzA4mEjo5K23YYA+A8OV0G31NBaxbsUHzA=@lists.linux.dev
+X-Gm-Message-State: AOJu0YwNbn502rmKWdINLuOdUVXdRn13XbkguE9O7T6+OgjSkE611a2E
+	8nB7xLv+XPJSZp8p4R1S4N1uHOsYKtGFZPGEHIrHWeSdKQu4eHmN
+X-Gm-Gg: ASbGncvZQ69QxFiGeG6d1LydWauIgZjheCQ9qaTsmKCQFylTK4nndro6VuT5kx9OG11
+	qsLRksDloW+2xGGxszSZ5j5kc5ZFeznmERqjSkubYPxLlLY0TFXDJLWnntQ9xr0+vKXeVQRoTKB
+	B2pMADeA6m0iIuOdpWDknKVP8GNxZYCkm6pqGEvDQRrXe0+324lzzLIYkOxqrq8uIc2sNeB+Q5K
+	gVyocH3CyRgvRp9UBYQ8mIMnB3a9gXG1KRhtCGySUUnROt3t/BSUayoge04ymV0hzylMcZYydeS
+	BxyKKvRvMW750fOWnrD4r3+uFFLkYJzQHrpEdQ==
+X-Google-Smtp-Source: AGHT+IEkw/9PhCElM+wJh8NDgNHcMXUDbkc1rj0rJlwgZQWlmQuqZS5NCUWmW4yM2EuXqdVXAhgkwQ==
+X-Received: by 2002:ac8:574f:0:b0:471:ac91:966b with SMTP id d75a77b69052e-471dbcc1cfdmr158394571cf.2.1739799056010;
+        Mon, 17 Feb 2025 05:30:56 -0800 (PST)
+Received: from [192.168.1.159] ([2600:4041:5be7:7c00:a82e:ca05:346d:c94f])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-471c2af3722sm47732511cf.49.2025.02.17.05.30.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Feb 2025 05:30:55 -0800 (PST)
+From: Tamir Duberstein <tamird@gmail.com>
+Date: Mon, 17 Feb 2025 08:30:44 -0500
+Subject: [PATCH] selftets: lib: remove reference to prime_numbers
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-CM-TRANSID:GxC2BwCnXeBRCLNnCrGkAg--.53884S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxGF45ur43XF1DZw4Utw45trb_yoW5AryDpF
-	WrGw15Jrs8A3s8Cw12va1jgFyFk3y0qFWYqwnYgry8Cr90gFyktF40gw4Y9FyvkrZaga12
-	qayYva4YyF1DZaDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUymb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k2
-	6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
-	vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7Cj
-	xVAFwI0_Jr0_Gr1l84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxV
-	AFwI0_Gr0_Gr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40E
-	x7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x
-	0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lc7CjxVAaw2AFwI0_JF0_Jw1l42xK82IYc2Ij64vI
-	r41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8Gjc
-	xK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0
-	cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8V
-	AvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E
-	14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x07UK2NtUUUUU=
-X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/1tbiAgACBGey39YBrgAAs3
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20250217-fix-prime-numbers-v1-1-eb0ca7235e60@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAAQ6s2cC/x2MSwqAMAwFryJZG7CBKngVceEn1SxaJUURinc3u
+ BzevCmQWYUz9FUB5VuyHMnA1RUs+5Q2RlmNgRryDbkOgzx4qkTGdMWZNWPwNjrvZ6IW7Hcqm/Q
+ 3h/F9P133EwRjAAAA
+X-Change-ID: 20250217-fix-prime-numbers-f5202155b226
+To: Shuah Khan <shuah@kernel.org>, Kees Cook <kees@kernel.org>
+Cc: linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ oliver.sang@intel.com, oe-lkp@lists.linux.dev, lkp@intel.com, 
+ Tamir Duberstein <tamird@gmail.com>
+X-Mailer: b4 0.15-dev
 
-On Mon, 2025-02-17 at 08:58 +0100, Mateusz Guzik wrote:
-> On Mon, Feb 17, 2025 at 02:45:23PM +0800, kernel test robot wrote:
-> > kernel test robot noticed a 160.4% improvement of will-it-scale.per_pro=
-cess_ops on:
-> >=20
-> >=20
-> > commit: e38e699a42b4db5daf7dac453759fdc8ba0dab31 ("evm: Move metadata i=
-n the inode security blob to a pointer")
-> > https://github.com/robertosassu/linux evm-iint-ptr-v1-devel-v3
-> >=20
-> >      24.57           +72.2       96.76        perf-profile.children.cyc=
-les-pp.__fput
-> >      24.63           +72.4       97.02        perf-profile.children.cyc=
-les-pp.__x64_sys_close
-> >      24.67           +72.5       97.17        perf-profile.children.cyc=
-les-pp.__close
-> >       0.00           +95.2       95.17        perf-profile.children.cyc=
-les-pp.osq_lock
-> >       0.00           +95.5       95.53        perf-profile.children.cyc=
-les-pp.__mutex_lock
-> >       0.00           +95.7       95.71        perf-profile.children.cyc=
-les-pp.evm_file_release
-> >       0.00           +95.9       95.87        perf-profile.children.cyc=
-les-pp.security_file_release
-> >      98.69           -98.7        0.00        perf-profile.self.cycles-=
-pp.native_queued_spin_lock_slowpath
->=20
-> Contrary to what's indicated in the report, this change is in fact a
-> significant slowdown (or rather, will be when other problems get fixed).
->=20
-> The open3 microbenchmark issues open + close in a loop on the same file.
->=20
-> On the stock kernel the some of the problem is false-sharing within
-> struct inode.
->=20
-> The biggest bottleneck is lockref manipulation:
-> - there is lockref acquire and release happening *twice* instead of just
->   once
-> - the lockref facility is prone to degrading to operation under a
->   spinlock and staying there when microbenchmarked. you can see on the
->   profile this does happen here
->=20
-> evm also used to pop up, which I patched away in 699ae6241920b0fa ("evm:
-> stop avoidably reading i_writecount in evm_file_release")
->=20
-> Your patch adds a mutex which adds 2 atomics to the fast path (so slows
-> down single-threaded operation) and more importantly adds a
-> serialization point for multithreaded operation.
->=20
-> In this case the resulting contention helps decrease the loss of
-> performance in lockref and that's how there is an apparent win.
+Remove a leftover shell script reference from commit 313b38a6ecb4
+("lib/prime_numbers: convert self-test to KUnit").
 
-Hi Mateusz
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Closes: https://lore.kernel.org/oe-lkp/202502171110.708d965a-lkp@intel.com
+Fixes: 313b38a6ecb4 ("lib/prime_numbers: convert self-test to KUnit")
+Signed-off-by: Tamir Duberstein <tamird@gmail.com>
+---
+ tools/testing/selftests/lib/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-thanks for the explanation!
+diff --git a/tools/testing/selftests/lib/Makefile b/tools/testing/selftests/lib/Makefile
+index c52fe3ad8e98..66dcbe2e39fa 100644
+--- a/tools/testing/selftests/lib/Makefile
++++ b/tools/testing/selftests/lib/Makefile
+@@ -4,5 +4,5 @@
+ # No binaries, but make sure arg-less "make" doesn't trigger "run_tests"
+ all:
+ 
+-TEST_PROGS := printf.sh bitmap.sh prime_numbers.sh scanf.sh
++TEST_PROGS := printf.sh bitmap.sh scanf.sh
+ include ../lib.mk
 
-> I have a WIP patch to move dentries away from using lockref, which will
-> in turn avoid the degradation. Should it land, the mutex added here will
-> be the new bottleneck.
->=20
-> It needs to be avoided by default. Do you *need* to test the condition
-> in evm_file_release() with the lock held? Perhaps initial test can be
-> done without and redone after acquiring it?
+---
+base-commit: 0ae0fa3bf0b44c8611d114a9f69985bf451010c3
+change-id: 20250217-fix-prime-numbers-f5202155b226
 
-This patch was more an explorative work to see what challenges we
-encounter to move away from embedding the structure in the inode
-security blob, and just use a pointer.
-
-Currently, there is no gain in switching, since the requested blob size
-remains 40 bytes (due to adding the mutex).
-
-Certainly it is possible to do a test without a mutex and then redoing
-it. If the EVM_NEW_FILE flag is not set, we can avoid to take the lock.
-
-Thanks
-
-Roberto
+Best regards,
+-- 
+Tamir Duberstein <tamird@gmail.com>
 
