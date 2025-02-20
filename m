@@ -1,256 +1,273 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A84BF1E3780
-	for <oe-lkp@lists.linux.dev>; Thu, 20 Feb 2025 07:05:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.12
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740035116; cv=fail; b=nSITHYUCK0avs5i1kIsQdIBgTCb7tOZTVXSf2jL77WJZODxh/aKvFuSS/5zkYEboumExbYXwjE5t0J9f79pw/8JnS80gxJV6T8L/SjwpSE5kFIDssrhVppD2Sd51aMtUWCYoBGnDFln3k6fhBiTwU3rzRMIcT/6Rwypz+TVxfuw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740035116; c=relaxed/simple;
-	bh=kVyxDsXFRYt0vZUYfvbqP7Z6bokDlafESe+IBSEwlJM=;
-	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=DygRWEwNDCrXwpIOJaydrAMLjsYoE5g4Tu/iJmDTyFDIO89g8TbQevgwtXZzEkXR0OR+RbgpjK4UW+k3BI3uvtNyu2zN5KUQUmW6dMnlYBnPOtGKxlG2iWBNhxAt2DJomiVDCxz1WfK1knkxOeUQ672HB4XNRQUxfoVI0Bc9w38=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bbl6YRn/; arc=fail smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F63C1DF75D
+	for <oe-lkp@lists.linux.dev>; Thu, 20 Feb 2025 15:57:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1740067048; cv=none; b=pYdgvllA/r4RipnpfMmdxNcsNfqppVef/Ec6Z26vGF3PHaue/W53HGT+MIlsJr0SIDJTXtqBsR3piFgWYi5EHKcFCwd7A7b3nbiuWljPfxy0iXDp3HLaiPRtUnnvYiZhPmYhWW31Pvnvu+83mzGRiSBZ12n058/Nej1fpgHW2Qw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1740067048; c=relaxed/simple;
+	bh=CpYsGqHtn0E0TROwwhqeRxs7muVqX2BBmFbCFHP7OWU=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=hvVfaLzrr7CHzKLrA2lgQirkHXjwP1x1nN7fRThrst7y7Ey+YInGMrUY15XXuyQ4h9VwUxKR4G3kS2ifEqG8QegtLJCDtBqZvutyx8wptd7NtV1WGXUsKs9BTTEGKzEEV7T6YrxbMPuK56IgtPFX7u1VvsDnKgOLMtL+9qAWeBY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=W/1NciUT; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=Nz3TbVgT; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bbl6YRn/"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1740035114; x=1771571114;
-  h=date:from:to:cc:subject:message-id:references:
-   content-transfer-encoding:in-reply-to:mime-version;
-  bh=kVyxDsXFRYt0vZUYfvbqP7Z6bokDlafESe+IBSEwlJM=;
-  b=bbl6YRn/tjMLgEdxg08py2/9XmOVFj6e8PJhVayQyRkpkhgJ7HSiIMMs
-   S5nbQ82W7I/LV3iMRqO4qFmAcnnXrp6mpIuMF5Vl3DI9LKx1HS+UXzD6S
-   qv1Hv7n35jzWwtmdwifstCnmjYAl8T05o0kyNAIckQ2bh6gsU+Y/2vu+g
-   c0j5zj152WQLUD0HFExlAyT2WuzHXJo/BZYbmCzeR9cHwZ5RFZ8JS+ci2
-   FV0+4oLCMxuBvotnmxVMZri7KucN0yAtZadOquHW7dq1etLVNIJRSzlbM
-   U7t4MiSeSyuLhhMfSnb00MQqLds7GXxYah1j3sgfrIYFHVSA9v1iLyRaA
-   Q==;
-X-CSE-ConnectionGUID: dzCnKz7bRoGWdG5OGNYlJA==
-X-CSE-MsgGUID: 4qRZPbEMQ7yzfUHPxJ7tgw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11350"; a="44719057"
-X-IronPort-AV: E=Sophos;i="6.13,301,1732608000"; 
-   d="scan'208";a="44719057"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2025 23:05:13 -0800
-X-CSE-ConnectionGUID: ehgXiwVwRrGN+SPnn7xiEw==
-X-CSE-MsgGUID: WgrhHr8sQ6mFrl6cWSwQxg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="115853984"
-Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
-  by orviesa008.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2025 23:05:13 -0800
-Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
- ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.14; Wed, 19 Feb 2025 23:05:12 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.14 via Frontend Transport; Wed, 19 Feb 2025 23:05:12 -0800
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.46) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.44; Wed, 19 Feb 2025 23:05:11 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=nZMY47Fqk2vtwwHmBzEE8FCK2aX5KkTUWsELpw45pUfHRwAxv77fO93PiycsbtAnA27ZaDX1BVZPaiksHJC8xHhHzZZT3S1Tw5cQeXVpmcHmnlvNW268fHaY19T9TlGYC0mp3ml0Ssl3td64bw0zzGsvmbZSz3PYSkuy7TaW8vsdGrArLtKYhZIb4JShLW3qiMzYWz4WUIN3C+gGpO+gE3w/jZEDzOEV4PjkFS586K1XovrjVoQExVB6fotPt7lcfTfpAfbXuH10M59e4gvz11damXGTQZLLohodQwJUWk/mCDlm2BCj6sZKv/cJBHZxuWpa9WPozrYG1RuNPMMh0w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uZ5gaK0m/kpMJAXS1Ba0hKPRRMEL6FVntuDQxmt0x4o=;
- b=ZYCuF1oisk1jieVW1LrM+4qxm14nrTN7AXyJXUvONU0la/lvD1BBvJwtPS75fXgKJtZdiB6Jur/Jl60foF7YIS5FHfIFOZLA4hdhbEp08FSfwHICDC+sKNLc//TSAccwXL49aF79uB7mY2l19QpEMSFia1NV7/EpvC2EmPg5oF74PPVHIMXrFQ9PQtSffuMZ1GsXQulEc+gyJqhkRMPov5yxsDXxEAjntPe/iR4BX+BSTg/q69VO7X4/fFISncZWSIbglqIuoVn2B4E/UTy0/0CDRkSuHj/cODYXRszz51qWB2WqeGsXwMJcOVQHrspALnnebNzX+EGY7CrESp1dXw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by DM4PR11MB7759.namprd11.prod.outlook.com (2603:10b6:8:10e::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8466.15; Thu, 20 Feb
- 2025 07:05:05 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%3]) with mapi id 15.20.8445.019; Thu, 20 Feb 2025
- 07:05:05 +0000
-Date: Thu, 20 Feb 2025 15:04:43 +0800
-From: Oliver Sang <oliver.sang@intel.com>
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Petr Pavlu
-	<petr.pavlu@suse.com>, "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov
-	<bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, Ingo Molnar
-	<mingo@redhat.com>, Josh Poimboeuf <jpoimboe@kernel.org>, Peter Zijlstra
-	<peterz@infradead.org>, Thomas Gleixner <tglx@linutronix.de>,
-	<linux-kernel@vger.kernel.org>, <oliver.sang@intel.com>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="W/1NciUT";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Nz3TbVgT"
+Date: Thu, 20 Feb 2025 16:57:22 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1740067043;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:  in-reply-to:in-reply-to;
+	bh=wH1m/nQDxdTsgKnO7n/1Ar9PnOVnrrN+8IoQkhMntlU=;
+	b=W/1NciUTYXaN4rJT/RcXXdqXaE2/NbrS6DN+U65v2eGth4omfm69LHroohFFPoU6zZIzSK
+	7kG04jX9kS4A783W3FAl42T7dXRZ3rf7eUAjPqmIjcfWSUd3cd6DCCq2VIOz0343E1cw6u
+	BRaJBhXpzOX2nWrNsCSZTxQypgGnrv8+eWlC5ZxlCI7y/UzHhrzqkkrfnL+RXfz4F0PrbH
+	4crMDoiDvWUmouT7ub/+1pkYpu9CHnP/C2pUHuOH5cR1Egvgf4itR01i9xNEzPCkbkR1Up
+	wQPaGYNVqKqsqRTiA7DwPaXk8eTrMBJ2Dr7cetCPVtVq0sU25hMHUJMIqmBIlw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1740067043;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:  in-reply-to:in-reply-to;
+	bh=wH1m/nQDxdTsgKnO7n/1Ar9PnOVnrrN+8IoQkhMntlU=;
+	b=Nz3TbVgTI5KJVYGEKreH2vy2/nKSBQIOl4iGxHHgvsAwUtvPXz1nee7SWr7PbT4YKxBdjc
+	1/tS0Zwz//bUZuBQ==
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, Petr Pavlu <petr.pavlu@suse.com>,
+	"H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	Ingo Molnar <mingo@redhat.com>,
+	Josh Poimboeuf <jpoimboe@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+	kasan-dev@googlegroups.com, linux-hardening@vger.kernel.org,
+	Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+	Kees Cook <kees@kernel.org>,
+	Alexander Potapenko <glider@google.com>,
+	Andrey Konovalov <andreyknvl@gmail.com>,
+	Dmitry Vyukov <dvyukov@google.com>, Marco Elver <elver@google.com>,
+	Vincenzo Frascino <vincenzo.frascino@arm.com>
 Subject: Re: [linux-next:master] [x86]  66fbf67705:
  kernel-selftests.kvm.hardware_disable_test.fail
-Message-ID: <Z7bUC9QY815Cv6nb@xsang-OptiPlex-9020>
-References: <202502140800.ebac2328-lkp@intel.com>
- <20250218144918.Rl33HhXh@linutronix.de>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20250218144918.Rl33HhXh@linutronix.de>
-X-ClientProxiedBy: SI2PR02CA0053.apcprd02.prod.outlook.com
- (2603:1096:4:196::16) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+Message-ID: <20250220155722.2Z2a-3z0@linutronix.de>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|DM4PR11MB7759:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9fab45c8-0cb9-42af-4611-08dd517ce72f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|7416014|376014;
-X-Microsoft-Antispam-Message-Info: =?iso-8859-1?Q?w3h/aF8ZhrxMfpBtZ5rTSmu5d0csn16OzYM8S18EBbvKIhVjusgauHKdbU?=
- =?iso-8859-1?Q?BFRGGs44BvsArKdiOQd8TIW89HLCn+9CITyG2DoneRNh8RbpkjpScewqO5?=
- =?iso-8859-1?Q?o5fXgXfVXHbIEssfmobIoNwb1KudXGiyOT2+h8u8kM75CGl3IkAJtqfJmV?=
- =?iso-8859-1?Q?sn1FMUaSKVxv0jofIvCxuD7FXyx9K5tAeyiQHTQHN/Y1BxpbOkcbjmwPrt?=
- =?iso-8859-1?Q?6N6M4U3C2nSpm6Y1JCNjq2s4OG6k9WMZs4vE8J7qEKtiqDhwuadmF3ccUK?=
- =?iso-8859-1?Q?EvVx4Oul7+ejs4DyRV8RQGsgTKDZjDOi9E5A1dXi2zxT7CgyOOoBwK8x7/?=
- =?iso-8859-1?Q?sWoT7Z/tr24L2HZzehPZ5cXYRFYd9fUs3hQ0DHhSvhZlsD2G8EdUTH/ywJ?=
- =?iso-8859-1?Q?KKxuknj+7I44LQd6BwJp9TYOBVYDYXxZrVjiS6OgL7Oo4knFhUJ1qiPCGZ?=
- =?iso-8859-1?Q?w0F0kCxf/lI5tugpRXoyxokSl12x1r/KwWSW0G2m4Uga5lQw7CoaGR4pXB?=
- =?iso-8859-1?Q?30Otklq8QyCVPO4OZluHXO8TShzr276rnUdTVAzqxZZ/1O96z6IOCplNNM?=
- =?iso-8859-1?Q?PCYMcJ0N/ZB/sAlltAQTKGRiptK717oe+26ybeeJpQr4WOe5VvRj6fQYJB?=
- =?iso-8859-1?Q?wPDeIIh2O4uxn6guhvX/1I81egG9NNcuGOHoCHg0h4iCW2jIGJcxCyKedi?=
- =?iso-8859-1?Q?ZEVJ9tapCNQmMIaQ0XbWpwlWV70FomojU8StnvxDQUA3ese3Nu8pdb+RWf?=
- =?iso-8859-1?Q?P2oq9vhLHZ0GkrzxKbL4UyJP9OKKXlf9zOtgusleeSH17qKwQKHEdNQ5t2?=
- =?iso-8859-1?Q?vd7LN7xiFiSSljNln3j7Ac4M75NRPtVmmQ+XkdLyRh1i1WDZ3GjjihEEFT?=
- =?iso-8859-1?Q?mGr4z3pIBo1pQhSwttWT3y/Ey10EYXh8Ojcg3e8kr2wj90cFLZOUWLfnZ7?=
- =?iso-8859-1?Q?aGhtuFU+AWGKL24IPhyBErvguxV2YMOQSO4wy1QLpDO0vUYsd2V8b9KHZ4?=
- =?iso-8859-1?Q?IvwAbVzPZ51XOfV2/fokWsa3X+iCIQdaGqjkzXyICEorBW4II4ocGHAjP8?=
- =?iso-8859-1?Q?KfLbPukj4bIm3vRzJOr4hz5LyNhdOJi9KwfO7SSMcX5PgOjVT4E/5MLGYS?=
- =?iso-8859-1?Q?KWbN3MjQVML3hyufIt6wDWJPYzwSWolscG95P9/5jGuGf24g1+wzsx0QSC?=
- =?iso-8859-1?Q?Q4qBBLLzPDDyUOa20XkLVKhTVF+evDhPkOu7MRPQ7BjKm7+TDK/6d4EKDh?=
- =?iso-8859-1?Q?Tn+JeiTL17+XGXGFDohnmDyDxpECEKWmhO7q1z923TOMKxWRNErdMEjSvr?=
- =?iso-8859-1?Q?zYMMfVKz81AglmWxe323dfvLeeeVm7RQ97PqszJ/l+nx98ULyvulzHUJlx?=
- =?iso-8859-1?Q?L1NMRraFkVDVtNGeH5ZP6W+fU2ouuK8p5yYxE7F2lUk2woJu9KW6iRA1z+?=
- =?iso-8859-1?Q?vVsQ8ydRdRwPTXGL?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?MNhnaVuwePSbmW3hoBGjb5X2IdIh1v0uwOhaWgtgd4WkF5oW2ewrRXi1Gq?=
- =?iso-8859-1?Q?wWxV21ZXkaF9v69ExKs83Ul3VgV0tn7a2+ek/D1Ft1ERShLu+km3QpUzzW?=
- =?iso-8859-1?Q?Jwck+pDLagbxdAkk7X+JiU/oAh3sV5+549Uwsnjr7Ug6xIgxeWOVAC80vn?=
- =?iso-8859-1?Q?g7boo8WLXCNCDQfv1W7Ce+1byMM9Fq4SegdOFrJsBotR70t41UnPMiG/uL?=
- =?iso-8859-1?Q?2+PIV00ZEHHc/IfF0IYqv2CLvlQhdCj5Vbp71WDrp152dQucNEXa+tQJcA?=
- =?iso-8859-1?Q?EpGZHw4qoRUSH4A8gjIBqO1sEcZh58KuPBqIkzmMJzJ/cCf+8sY7rtXTJ1?=
- =?iso-8859-1?Q?AMCAvmZEJ1oALRX43IDQvEWI+ZwkcpG1slh1hF9XdrGNxWY2WiN2roXcV8?=
- =?iso-8859-1?Q?T+Tf6Ko9ZUQIOh/wl/SYsfHEtXrd2ekM4uCuODQh4XqtUbIiUvlYMI8H7c?=
- =?iso-8859-1?Q?sFZt2sSpiwFXb/nH34I6qsj9zx+2RdCP84eCdfek6MkWZHutscnoXf5zyc?=
- =?iso-8859-1?Q?UylaXoQ8tLMiWcT2f5CWNKWNHg44XAtraixkHWGIoLputdKc+vxrIyGuVI?=
- =?iso-8859-1?Q?XoWlGNNq2HNGCKaaCCxRtnEIV46yob+1/wuypL32WKkukZNk1aIqtkSnhz?=
- =?iso-8859-1?Q?iTHKjIUiXnRt6IhMvVFzoedG/Oxw3cmiPFRH+8r+m2WKb8vox/jGTymIVm?=
- =?iso-8859-1?Q?5Q9Amo+4x0KEywUK3GUwxnz81gfJTZzLCSfcsZ6IN/5/AL23+8YkF+JnHI?=
- =?iso-8859-1?Q?ECyWowj72Bnxlt1hkM7yhN+0oKRzdHGkwt6vDuZG9Ya+VlqAs+PDZfIe5B?=
- =?iso-8859-1?Q?zslNlep1f9O3NnoK7jBLeTyq2y3ZOxFBPhb+U3zmwVLndrDK3QfnyRjuBZ?=
- =?iso-8859-1?Q?4LLrDooVadWqzS0xyb7zsEmvvE/UeN6EFrJfKKE1abOidpxUyBiUvFRK0b?=
- =?iso-8859-1?Q?er9Ecf35r5o4rmOPbYxNHUAjtivXZ8YVItMxBD+L7jqBBHzLYeL2HVx3gE?=
- =?iso-8859-1?Q?LfKQmawStLatrLfIQG/YdXCV9ud1sV19GQe9nQlLrMIukkFhntjf0WrYMz?=
- =?iso-8859-1?Q?LXnj3UoM/4S76NFHezICZwSFPFg2bsQNXjGlbg30n+yBuUHXwnHhgF+28f?=
- =?iso-8859-1?Q?rANoj1Uc+BeJ3WKbIBTAi5wKHtQE5P/pT0zktRKlD4gCoP6o9vc5W8Q+U/?=
- =?iso-8859-1?Q?T2uNpFRCp0B6bP0vIROg8ThyQjEyGBxzWUk4eRjmKL1I0ZJHSrNpdYRcNs?=
- =?iso-8859-1?Q?3aAaysfK381lQdEQgyl13N/3CE5gb31FijZXEcmQBWDwjTveQl5m2duk2l?=
- =?iso-8859-1?Q?OuBA0stxnzAeAPWe/iQRbwCW7/BUybOvUYRmvRlFSCO+GRdVGCPf5Hr0qI?=
- =?iso-8859-1?Q?eFhcDDMKXbT5z3+4tan0vvTdJXPZEXg1IGKgv+JTomIE3gANIDZ3TdE3aQ?=
- =?iso-8859-1?Q?XTGqjWzJhlD7hybjuSTljw6HpHytc30r9Z0eB7wh3Wv+qNlb1NJUa2CQ8X?=
- =?iso-8859-1?Q?LYzcPWGO/JabOdulC23INnubTxc11+AfgrXk+l3IpaD08KjOsyqy4KBfSd?=
- =?iso-8859-1?Q?fJ9D85BRFZ5+/u05A59hAum5lFzCgwWJqS2A8U/okl/1HDwztUi6Innb/D?=
- =?iso-8859-1?Q?pOLHhZ0WVwg3EBTG+mlaRuVebUc/CqB/X1kHlb7lR5FpwHpuRMjLcScg?=
- =?iso-8859-1?Q?=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9fab45c8-0cb9-42af-4611-08dd517ce72f
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Feb 2025 07:05:05.4360
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: G6GuRrOkkpFVxj8AAtwkvwAMeFHcD+7UpLU5RVXZGN8iLBN/zlubnFxluuWpAv95uSUo3ZiwitJvetR9PvGaeQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB7759
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <Z7bUC9QY815Cv6nb@xsang-OptiPlex-9020>
 
-hi, Sebastian,
+On 2025-02-20 15:04:43 [+0800], Oliver Sang wrote:
+> hi, Sebastian,
+Hi Oliver,
 
-On Tue, Feb 18, 2025 at 03:49:18PM +0100, Sebastian Andrzej Siewior wrote:
-> On 2025-02-14 10:03:18 [+0800], kernel test robot wrote:
-> > kernel test robot noticed "kernel-selftests.kvm.hardware_disable_test.fail" on:
-> > 
-> > commit: 66fbf677051818b9b5339fa8bfeac1b2e288efa5 ("x86: Use RCU in all users of __module_address().")
-> > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> > 
-> > [test failed on linux-next/master df5d6180169ae06a2eac57e33b077ad6f6252440]
-> > 
-> > # timeout set to 120
-> > # selftests: kvm: hardware_disable_test
-> > # Random seed: 0x6b8b4567
-> > #
-> > not ok 73 selftests: kvm: hardware_disable_test # TIMEOUT 120 seconds
-> 
-> I've been playing with that. It completed after ~45secs. The linked
-> dmesg had also mmu_stress_test timed out but it completed here, too.
-> I had a timeout in access_tracking_perf_test and memslot_perf_test.
-> 
-> The box is very sluggish. LOCKDEP, KASAN and maybe UBSAN cause that. I
-> would say the commit in question is innocent.
++ UBSAN & KASAN + STACK unwind people. The commit question is
+    e9d25b42bde5a ("x86: Use RCU in all users of __module_address().")
+  in -next.
 
-just FYI. we rebuild the kernel, and run the tests more times upon this commit
-and its parent, still see the issue persistent:
+> just FYI. we rebuild the kernel, and run the tests more times upon this c=
+ommit
+> and its parent, still see the issue persistent:
+>=20
+=E2=80=A6
+>=20
+> f985e39203090cc6 66fbf677051818b9b5339fa8bfe
+> ---------------- ---------------------------
+>        fail:runs  %reproduction    fail:runs
+>            |             |             |
+>            :20         105%          20:20    kernel-selftests.kvm.hardwa=
+re_disable_test.fail
+>          %stddev     %change         %stddev
+>              \          |                \
+>     580.92           +17.4%     682.06        kernel-selftests.time.elaps=
+ed_time
+>     580.92           +17.4%     682.06        kernel-selftests.time.elaps=
+ed_time.max
+>     550.23           +13.1%     622.20        kernel-selftests.time.syste=
+m_time
 
-=========================================================================================
-tbox_group/testcase/rootfs/kconfig/compiler/group:
-  lkp-skl-d06/kernel-selftests/debian-12-x86_64-20240206.cgz/x86_64-rhel-9.4-kselftests/gcc-12/kvm
+this is +~100 secs?
 
-f985e39203090cc6 66fbf677051818b9b5339fa8bfe
----------------- ---------------------------
-       fail:runs  %reproduction    fail:runs
-           |             |             |
-           :20         105%          20:20    kernel-selftests.kvm.hardware_disable_test.fail
-         %stddev     %change         %stddev
-             \          |                \
-    580.92           +17.4%     682.06        kernel-selftests.time.elapsed_time
-    580.92           +17.4%     682.06        kernel-selftests.time.elapsed_time.max
-    550.23           +13.1%     622.20        kernel-selftests.time.system_time
+> as above, the time spent is also longer, though it's not only for
+> kvm.hardware_disable_test (the time is for whole kernel-selftests.kvm)
+=E2=80=A6
+> it seems to us that the commit really causes some slow down and it happen=
+s to
+> make kvm.hardware_disable_test timeout on the older machine for our origi=
+nal
 
-as above, the time spent is also longer, though it's not only for
-kvm.hardware_disable_test (the time is for whole kernel-selftests.kvm)
+I made it slower, why is that so, let me look. On my HW
+#1 patched (as of 66fbf677051818b9b5339fa8bfe)
+| ~# time ./hardware_disable_test
+| Random seed: 0x6b8b4567
+|=20
+| real    0m43.242s
+| user    0m0.635s
+| sys     0m18.292s
 
-it seems to us that the commit really causes some slow down and it happens to
-make kvm.hardware_disable_test timeout on the older machine for our original
-report:
+#2 use preempt_disable instead of rcu_read_lock() in unwind_orc.c (=3Drever=
+t)
+| ~# time ./hardware_disable_test
+| Random seed: 0x6b8b4567
+|=20
+| real    0m30.212s
+| user    0m0.448s
+| sys     0m12.939s
 
-4 threads Intel(R) Xeon(R) CPU E3-1225 v5 @ 3.30GHz (Skylake) with 16G memory
+#3 replace preempt_disable with __rcu_read_lock() [slim without debug]
+| ~# time ./hardware_disable_test
+| Random seed: 0x6b8b4567
+|
+| real    0m29.953s
+| user    0m0.436s
+| sys     0m12.789s
+
+#4 replace preempt_disable with __rcu_read_lock() + lockdep [RCU watching
+  test is missing]
+| ~# time ./hardware_disable_test
+| Random seed: 0x6b8b4567
+|=20
+| real    0m41.497s
+| user    0m0.639s
+| sys     0m17.112s
+
+#5 Using rcu_read_lock() only if orc_module_find() is invoked.
+Lost the output but it was more or less at #2 level meaning it does not
+lookup modules to the point that it matters.
+
+#6 CONFIG_UBSAN -CONFIG_KASAN +revert
+| ~# time ./hardware_disable_test
+| Random seed: 0x6b8b4567
+|
+| real    0m9.318s
+| user    0m0.207s
+| sys     0m3.395s
+
+#7 -CONFIG_UBSAN -CONFIG_KASAN with RCU
+| ~# time ./hardware_disable_test
+| Random seed: 0x6b8b4567
+|=20
+| real    0m9.249s
+| user    0m0.196s
+| sys     0m3.332s
+
+#8 -CONFIG_UBSAN -CONFIG_KASAN -LOCKDEP
+| ~# time ./hardware_disable_test
+| Random seed: 0x6b8b4567
+| ^[[A
+|=20
+| real    0m4.416s
+| user    0m0.120s
+| sys     0m1.426s
+
+#9 -CONFIG_UBSAN -CONFIG_KASAN -LOCKDEP +revert
+| ~# time ./hardware_disable_test
+| Random seed: 0x6b8b4567
+|=20
+| real    0m4.391s
+| user    0m0.137s
+| sys     0m1.415s
 
 
-then we make same tests on another newer platform:
+Now. Based on this:
+The RCU read section increased the runtime (on my hardware) for the test
+=66rom 30 to 43 seconds which is roughly 43%.
+This is due to the lockdep annotation within rcu_read_lock() and
+unlock() which is not existing in preempt_disable(). After disabling
+UBSAN + KASAN  the lockdep annotation has no effect. My guess that
+UBSAN/ KASAN is in charge of countless backtraces while enabled. Those
+backtraces seem to be limited to the core kernel.
 
-224 threads Intel(R) Xeon(R) Platinum 8480+ with 256G memory
+How much do we care here? Is this something that makes UBSAN + KASAN
+folks uncomfortable? Or is lockdep slowing things down anyway?
 
+If so, we could either move the RCU section down (as in #5) so it is not
+used that often or go the other direction and move it up. I got this:
+| ~# time ./hardware_disable_test
+| Random seed: 0x6b8b4567
+|=20
+| real    0m32.618s
+| user    0m0.537s
+| sys     0m13.942s
 
-we see the test pass on both this commit and its parent. but the time spent is
-still longer (again, for full kernel-selftests.kvm)
+which is almost the pre-level with the hunk below after figuring out
+that most callers are from arch_stack_walk().=20
 
-=========================================================================================
-compiler/group/kconfig/rootfs/tbox_group/testcase:
-  gcc-12/kvm/x86_64-rhel-9.4-kselftests/debian-12-x86_64-20240206.cgz/lkp-spr-2sp1/kernel-selftests
+diff --git a/arch/x86/include/asm/unwind.h b/arch/x86/include/asm/unwind.h
+index 7cede4dc21f0..f20e3613942f 100644
+--- a/arch/x86/include/asm/unwind.h
++++ b/arch/x86/include/asm/unwind.h
+@@ -42,6 +42,7 @@ struct unwind_state {
+ void __unwind_start(struct unwind_state *state, struct task_struct *task,
+ 		    struct pt_regs *regs, unsigned long *first_frame);
+ bool unwind_next_frame(struct unwind_state *state);
++bool unwind_next_frame_unlocked(struct unwind_state *state);
+ unsigned long unwind_get_return_address(struct unwind_state *state);
+ unsigned long *unwind_get_return_address_ptr(struct unwind_state *state);
+=20
+diff --git a/arch/x86/kernel/stacktrace.c b/arch/x86/kernel/stacktrace.c
+index ee117fcf46ed..4df346b11f1e 100644
+--- a/arch/x86/kernel/stacktrace.c
++++ b/arch/x86/kernel/stacktrace.c
+@@ -21,8 +21,9 @@ void arch_stack_walk(stack_trace_consume_fn consume_entry=
+, void *cookie,
+ 	if (regs && !consume_entry(cookie, regs->ip))
+ 		return;
+=20
++	guard(rcu)();
+ 	for (unwind_start(&state, task, regs, NULL); !unwind_done(&state);
+-	     unwind_next_frame(&state)) {
++	     unwind_next_frame_unlocked(&state)) {
+ 		addr =3D unwind_get_return_address(&state);
+ 		if (!addr || !consume_entry(cookie, addr))
+ 			break;
+diff --git a/arch/x86/kernel/unwind_orc.c b/arch/x86/kernel/unwind_orc.c
+index 977ee75e047c..402779b3e90a 100644
+--- a/arch/x86/kernel/unwind_orc.c
++++ b/arch/x86/kernel/unwind_orc.c
+@@ -465,7 +465,7 @@ static bool get_reg(struct unwind_state *state, unsigne=
+d int reg_off,
+ 	return false;
+ }
+=20
+-bool unwind_next_frame(struct unwind_state *state)
++bool unwind_next_frame_unlocked(struct unwind_state *state)
+ {
+ 	unsigned long ip_p, sp, tmp, orig_ip =3D state->ip, prev_sp =3D state->sp;
+ 	enum stack_type prev_type =3D state->stack_info.type;
+@@ -475,9 +475,6 @@ bool unwind_next_frame(struct unwind_state *state)
+ 	if (unwind_done(state))
+ 		return false;
+=20
+-	/* Don't let modules unload while we're reading their ORC data. */
+-	guard(rcu)();
+-
+ 	/* End-of-stack check for user tasks: */
+ 	if (state->regs && user_mode(state->regs))
+ 		goto the_end;
+@@ -678,6 +675,13 @@ bool unwind_next_frame(struct unwind_state *state)
+ 	state->stack_info.type =3D STACK_TYPE_UNKNOWN;
+ 	return false;
+ }
++
++bool unwind_next_frame(struct unwind_state *state)
++{
++	/* Don't let modules unload while we're reading their ORC data. */
++	guard(rcu)();
++	return unwind_next_frame_unlocked(state);
++}
+ EXPORT_SYMBOL_GPL(unwind_next_frame);
+=20
+ void __unwind_start(struct unwind_state *state, struct task_struct *task,
 
-f985e39203090cc6 66fbf677051818b9b5339fa8bfe
----------------- ---------------------------
-       fail:runs  %reproduction    fail:runs
-           |             |             |
-         10:10           0%          10:10    kernel-selftests.kvm.hardware_disable_test.pass
-         %stddev     %change         %stddev
-             \          |                \
-    238.99 ±  2%      +7.1%     255.89 ±  5%  kernel-selftests.time.elapsed_time
-    238.99 ±  2%      +7.1%     255.89 ±  5%  kernel-selftests.time.elapsed_time.max
-      1130 ±  2%     +31.4%       1486 ± 68%  kernel-selftests.time.system_time
-
-> 
-> Sebastian
+Sebastian
