@@ -1,236 +1,187 @@
-Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
+Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0F551A3160
-	for <oe-lkp@lists.linux.dev>; Mon, 24 Feb 2025 04:40:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A1CF1A23AA
+	for <oe-lkp@lists.linux.dev>; Mon, 24 Feb 2025 04:43:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740372024; cv=none; b=U5wyapDGLj2GIrh/XA3NT3oUS+jpTuoNaRTRRixmAoXxBDNuRcbNXAObzIdt3owk9DUUwwrJLawFjQDz1qQqcwdIiajAV0Io2c0myvAYyWeWs4SPrOA8e8fpeZ03GJjLNKtbl0eT1i/3IdReyuPdmd20737rtH6siPB94EonlXM=
+	t=1740372199; cv=none; b=FEfUAg43n2zEIDxsoYfg3vI3/+KcCYZ0xNBrYMpXtggZdhoqbGc+LNfZyybPEROhrQidLINYYeoJqmvkcz3jsVSh4BQwsa3Noc7ttrnDXbhyTuLOAMeRlFMcgeC/RaiD2WRh863VyPw9N2/hWs0DE7Gx+s4Pl8Q5jLrHNh2ifB0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740372024; c=relaxed/simple;
-	bh=7aOn/n9ydfblSdbbERb2pYl6zATx2cIjSiLxOM7O9Sg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RQ5HLdo1uDMwm03tgyU6hNxTO9WTjjHdJa7PnciAaf4nJ5hZrevjLVY3CD4BagUK7xzswGvbvx6WSjEkeO8rfsNrA+XP8LxC0++TXmDj2z41Ub1D4+8P+sDcX100B2cYpYItEVD8q49Szi1LsYwgMXfIVZT3pb8HVz6/N08lyGw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jVy1eQux; arc=none smtp.client-ip=209.85.222.169
+	s=arc-20240116; t=1740372199; c=relaxed/simple;
+	bh=wWzZAmRR4kWrwyMPYjkUlV/8tv0FxjZZSfATo39C9fE=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=QkwVCwKmfUBC57tbuyjErOIYDKpCfdVp/6XvDR+G3hihB2n0oYHVhMxISqlo4WpUFWyO8yPKCSYjpgNthq+pDSb7TKbCEjrpFDyOBC6yPa54zQqOeQ+P1s2lE2ztU8qFFMggvrXK08OTQoAoJmY5co71KToYmR3lzq6zDFEZYiM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eNpb3buV; arc=none smtp.client-ip=209.85.160.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jVy1eQux"
-Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-7c0c5682c41so268352385a.2
-        for <oe-lkp@lists.linux.dev>; Sun, 23 Feb 2025 20:40:22 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eNpb3buV"
+Received: by mail-qt1-f176.google.com with SMTP id d75a77b69052e-471fe5e0a80so34767281cf.1
+        for <oe-lkp@lists.linux.dev>; Sun, 23 Feb 2025 20:43:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1740372022; x=1740976822; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:feedback-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=z0o+mSdoO6usP7w4Zy/wg4+VbHOO8CmvBrRjZXQYt6U=;
-        b=jVy1eQux5Gw/QMD6ibsaGnBdxOqwjCK9K4bbnMlXfhSzA6QofIgU9hgD1EegpBiac/
-         kCyDFUQJwyV2jSl33otScHAFk0GFrDMKNyLAVvXvv2DccRXCySiDpQDmR9wvsiTvoXIN
-         XcfHgE4n1M49pDoQhyB5vRKUxWv/i8AXsGs0B6/Nxdk2YqiHEtcg46vhIO5kJqSx5C49
-         RjC8Kw8yE1tgos0ohcHNSGsl0akOFq9mUwYQWAK9Dfun02qmT3/u47gY9LEmq2uNXuGA
-         GxD+zzbOzS65ZQookdGEm6vvxsaJ0oiM1yVZdAf82gnT+rNjPcY9vKxsjGOilpuvq6x/
-         xEpg==
+        d=gmail.com; s=20230601; t=1740372194; x=1740976994; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:feedback-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=TCu7u98k6eSO2x3h8Jk7eAX/GSVZfduiAYOujt8ShbY=;
+        b=eNpb3buVcEZ2KR9EweDTtBxLAU9+q5vT9DB222eexAQIBJSanfA351RVAHbQDWamxk
+         oTxvcEb2IvXueTEui4LeoNap4VeKU4zxzg3ZBoPrgFU6TJ4Z+w8HEIFkojdGidYt9V9C
+         wnWWSwDUB7K1acb8rteLCHh3L2LbUG2mlPnGMrKDvW+w9O1ndPLA+S+ATasyXaFBXcZ2
+         FAEHWwdzwPthT1viIh4+lo2gm7ixETbR3stIRlO03i3myIfMm8NzamH3xvV6HbdhJaKd
+         uuu2WzGD0qc3aIL8VaEdMUqKSCSIBnrZ6p8sN+10VLRjAZks1WQpI+1rqVxE6mx0BLpX
+         2LDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740372022; x=1740976822;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:feedback-id:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=z0o+mSdoO6usP7w4Zy/wg4+VbHOO8CmvBrRjZXQYt6U=;
-        b=ahowK5RE2/T8GPouKEYshkG6qPf9Y7+73IfetdFjIsrmIDIlmWp5p4uQgMqhrxzd7n
-         ZD8R2AWmxT9PD55SvXQ3vYxdvGbIUIu33GNgJWcfSAkD3tfMnHXP0l2tfrfYlShcqmIN
-         w+sI2Qsrwzfnk78zceeyXmwnSxRwik0mJX4nly6+nCgCF9aBo9FShcaGYsfGA6SZfmB/
-         EFjeh5lZNPQFXexJ+VDRJJQoCu3y60B/V6O08W5BUfgj5Tl4xo7kut35vYRNnZe8r0CC
-         lCH7piPNQVwE+4JjR88x4shhc5b+KFcvAiMxEKkGAAVX8kwC7NEbHeuy+YE8AY50A5LH
-         IDHA==
-X-Forwarded-Encrypted: i=1; AJvYcCUsWSmKg7PnZmi0V6D8rY+CKdci2eqFS0xgxwGSk3goe6TTTaZ+fbDpgdOymGEtunt8ogRvXPM=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzdzP07GoJhLt8xbWiC6brXxsjZyYgOnrRhbqVa0qKGiPGUTfWQ
-	p6XDIJNWZI4pFWlPT0QYDq9U2vbM5AUNhZw+/kBCwKR4vWzYBEbx
-X-Gm-Gg: ASbGncuK1R3i59Rj/1Su2XjqXVB1hapKA/63sx7Fr5nfR4jBeFISvLioypoOAXbQssg
-	qnSNCk7a5iG7t/qOUscn4rCtL+nH1ve16BgrbEMyFBJp6AMoeC0pt4sCrVr7/DDBnOgLb92lcj/
-	Z+Q/sBphoXerQEGWeMNRYpxJzxUHFyerN7KM/yXaew8U5PJOgAfkZeez4pNOzuJbwwi+ySB4DPX
-	tsKm1n6YnNp++fQQ9P53ccEteWxl9YSoTn36Gg2fPf/VSgUoMb9v7MpIo3tGf/lJ0CNW2K0t7qB
-	jJb+NpvzmFQbmDWZSV6OMmktOTTp+HNDb/MC90NJRKOv1fUVMOSKLxOY17AboD/jf/3sXHtSo/Y
-	Tarpw/0LQbCCvIQAI
-X-Google-Smtp-Source: AGHT+IFRc07AA7Z7laLAli64j6wQl2yXaXyNFQuy6nLDkttwtei6GdMMgQviFMx62jjYAIFEbkyvJA==
-X-Received: by 2002:a05:620a:3916:b0:7c0:bc63:7b76 with SMTP id af79cd13be357-7c0cf9504bamr2172811285a.36.1740372021630;
-        Sun, 23 Feb 2025 20:40:21 -0800 (PST)
+        d=1e100.net; s=20230601; t=1740372194; x=1740976994;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:feedback-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=TCu7u98k6eSO2x3h8Jk7eAX/GSVZfduiAYOujt8ShbY=;
+        b=IIDJK+3CJ067rYJ3NxIuPlW7SUdXF+lEVl7K5AJ1D5R+AIx2WQpJAu7xODmhO+PWzp
+         CHudQXFr97sCl3uFr+kHzfepg0zpLqkuHsDbtUTrCkxfTVgfCQWRURN57D+EYx1WhF+B
+         WGj0zovc59Nr7IcHrjmM5Cml4Uk76Ir10Y6eS4c1O268VRy6QwAaZouNc/zMKL0/XlP5
+         tBmEH473uXLOSWWQcV47oJ67OTyJXaJce7zlRzYXNKTqy9HWK/c5Ioe2ZHurSW5OqQJq
+         2yPAM3cwjqeB5sDrOWkb+BwM386YXoHZqsfhpjSfaUyD+3ON63/cOveeARDbNm5McsfV
+         uAdw==
+X-Forwarded-Encrypted: i=1; AJvYcCUcWj+vCQ9lEJSPpL2oaHTOoYmDhJFISQ1eVZLqSD5RArJqO6txoLQ++Z+FRH9eJCEjy+aDeFo=@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxu0f0G8TjGeA18zUHspud3tjZHd1XKFmODEIOA1Bp6ejxwenYh
+	AoK+GimvxROwFKx+QXskW1lG/IkQTbdcXRUdnvBeaZRxTWK1jl2q
+X-Gm-Gg: ASbGncsO/blBoxp4vrO6vYav4SYTBRJUsacooIy4hmUoq2LG8e8AA5R/b4fZxPLifZq
+	9JWRskCT/swM6smTCCTZHkeicecgWfy1OyhJliwrJZNjA6A9WWdS7BoENco7NF6xbnJS8oLUNpw
+	NAUCmkcAwtxNKaAf8SEITL9zjApYdLlrt6e0B+2oFnQfMgXeMyUhc1WhyHcKBC2iqk2Zw3qhV4I
+	qIaF8m78mWe6xtD5ObUwvp4Q70t2C4G9dpow8KL6hNp8wlGEr8pbZIcr6SFs7DUh10X6dLikzYe
+	2q0KYVJb6gKNilazmSgGWEWnkObVpnxzSvPXJoMQEyZ5lCOoExow8Zd7TohA4YBBhIsxbuxLDyT
+	I87TlJyJQspAD9ES/
+X-Google-Smtp-Source: AGHT+IHuLivU+/6K+5NgpAn4ukWUm2u3d7P3jIpzJlCVSJmjVBGKc/zkgBvjgALEBM8NXY8R8hsp4A==
+X-Received: by 2002:ac8:5a04:0:b0:472:58b:463d with SMTP id d75a77b69052e-47224716682mr159802281cf.5.1740372194078;
+        Sun, 23 Feb 2025 20:43:14 -0800 (PST)
 Received: from fauth-a1-smtp.messagingengine.com (fauth-a1-smtp.messagingengine.com. [103.168.172.200])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c0a4b4908esm886184085a.80.2025.02.23.20.40.20
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-471f33415e5sm88185561cf.41.2025.02.23.20.43.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Feb 2025 20:40:21 -0800 (PST)
-Received: from phl-compute-09.internal (phl-compute-09.phl.internal [10.202.2.49])
-	by mailfauth.phl.internal (Postfix) with ESMTP id AB8371200068;
-	Sun, 23 Feb 2025 23:40:20 -0500 (EST)
+        Sun, 23 Feb 2025 20:43:13 -0800 (PST)
+Received: from phl-compute-01.internal (phl-compute-01.phl.internal [10.202.2.41])
+	by mailfauth.phl.internal (Postfix) with ESMTP id 2C6D3120006A;
+	Sun, 23 Feb 2025 23:43:13 -0500 (EST)
 Received: from phl-mailfrontend-01 ([10.202.2.162])
-  by phl-compute-09.internal (MEProxy); Sun, 23 Feb 2025 23:40:20 -0500
-X-ME-Sender: <xms:NPi7Z4mxG5xHLrUcESuep8BMBMIW3kWFjgTGq_-TVViEClxMqFNADQ>
-    <xme:NPi7Z33JjRki4SMZcnKl8wyrpJUCWTzHWMIbgK6uJFw_BsAyVfkpwmpO0IvybEDY1
-    zNu8p2QHmM9jImb1Q>
-X-ME-Received: <xmr:NPi7Z2pwAWETfr10tTI4c9HYjz2zoUWkfFbtFbxX-mzq1stTuaSvXhDADw>
+  by phl-compute-01.internal (MEProxy); Sun, 23 Feb 2025 23:43:13 -0500
+X-ME-Sender: <xms:4fi7Z7sw_N3Xs1MC51S63Ug0hzXE5Rs6Xv1Xs4AU6duB8RNuVG0nCQ>
+    <xme:4fi7Z8fdgnbwsO-1sU3lze8aeSxzKhzx66hMj1UXoNXrKqm1lyyKbmG1KyIvtb6sN
+    oVRXK46muYrNnNtbA>
+X-ME-Received: <xmr:4fi7Z-yPzQWYhkNDpVBMiy9qXMBvH0M2Qzsn9U6UwTBKxRUa8AJ6TR3z4A>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgdejjeekfecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpggftfghnshhusghstghrihgsvgdp
     uffrtefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivg
-    hnthhsucdlqddutddtmdenucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddv
+    hnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddt
     necuhfhrohhmpeeuohhquhhnucfhvghnghcuoegsohhquhhnrdhfvghnghesghhmrghilh
-    drtghomheqnecuggftrfgrthhtvghrnhepvdevkeegkeeggfevkeetjedvhfekieekudfg
-    ueeghfekgeduvddulefgteegudelnecuffhomhgrihhnpedtuddrohhrghenucevlhhush
-    htvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegsohhquhhnodhmvghs
-    mhhtphgruhhthhhpvghrshhonhgrlhhithihqdeiledvgeehtdeigedqudejjeekheehhe
-    dvqdgsohhquhhnrdhfvghngheppehgmhgrihhlrdgtohhmsehfihigmhgvrdhnrghmvgdp
-    nhgspghrtghpthhtohepledpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtohepohhlih
-    hvvghrrdhsrghnghesihhnthgvlhdrtghomhdprhgtphhtthhopehprghulhhmtghksehk
-    vghrnhgvlhdrohhrghdprhgtphhtthhopegrnhhkuhhrrdgrrdgrrhhorhgrsehorhgrtg
-    hlvgdrtghomhdprhgtphhtthhopehovgdqlhhkpheslhhishhtshdrlhhinhhugidruggv
-    vhdprhgtphhtthhopehlkhhpsehinhhtvghlrdgtohhmpdhrtghpthhtohepphgvthgvrh
-    iisehinhhfrhgruggvrggurdhorhhgpdhrtghpthhtohepfhhrvgguvghrihgtsehkvghr
-    nhgvlhdrohhrghdprhgtphhtthhopehrtghusehvghgvrhdrkhgvrhhnvghlrdhorhhgpd
-    hrtghpthhtohepsghoqhhunhesfhhigihmvgdrnhgrmhgv
-X-ME-Proxy: <xmx:NPi7Z0mFN2vtSKsnoej2LLjkmRE4q3K-o7ubYTZAm4fo8kMLaO_YDw>
-    <xmx:NPi7Z20a8_EWkY63G-trpAOvCikqaP6b1z8mujNH1AjbAe5D3atFOQ>
-    <xmx:NPi7Z7vKotH15n284d7Q4ekibmclzP0SgWAZvqGiXH7xXLqmHLeBLw>
-    <xmx:NPi7ZyXldQVbZSK2hYXZY_40_g-AUkM6FpzHqq9I05-LdKmXoxURzA>
-    <xmx:NPi7Z52b3psLUitBkmOve-TSD87rkh8kUDj3liYa4rMOS_n5_6qrWG8Z>
+    drtghomheqnecuggftrfgrthhtvghrnhepgffhffevhffhvdfgjefgkedvlefgkeegveeu
+    heelhfeivdegffejgfetuefgheeinecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenuc
+    evlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegsohhquhhn
+    odhmvghsmhhtphgruhhthhhpvghrshhonhgrlhhithihqdeiledvgeehtdeigedqudejje
+    ekheehhedvqdgsohhquhhnrdhfvghngheppehgmhgrihhlrdgtohhmsehfihigmhgvrdhn
+    rghmvgdpnhgspghrtghpthhtohepuddtpdhmohguvgepshhmthhpohhuthdprhgtphhtth
+    hopeholhhivhgvrhdrshgrnhhgsehinhhtvghlrdgtohhmpdhrtghpthhtohepphgruhhl
+    mhgtkheskhgvrhhnvghlrdhorhhgpdhrtghpthhtoheprghnkhhurhdrrgdrrghrohhrrg
+    esohhrrggtlhgvrdgtohhmpdhrtghpthhtohepohgvqdhlkhhpsehlihhsthhsrdhlihhn
+    uhigrdguvghvpdhrtghpthhtoheplhhkphesihhnthgvlhdrtghomhdprhgtphhtthhope
+    hpvghtvghriiesihhnfhhrrgguvggrugdrohhrghdprhgtphhtthhopehfrhgvuggvrhhi
+    tgeskhgvrhhnvghlrdhorhhgpdhrtghpthhtoheprhgtuhesvhhgvghrrdhkvghrnhgvlh
+    drohhrghdprhgtphhtthhopegsohhquhhnrdhfvghnghesghhmrghilhdrtghomh
+X-ME-Proxy: <xmx:4fi7Z6O7R8ImAhyOSJOcH7PKonGqoMVSlE2CbiCdQ5dFsp3YHfn8lg>
+    <xmx:4fi7Z78ap7vWDwEfeLGLQ39przRAEflmndmdgk6crVrYkk96P2PCLA>
+    <xmx:4fi7Z6WZKNOm_i6XWFK4Rn35Oka0el7xx684sMh7Ie8TNM32Rg81PQ>
+    <xmx:4fi7Z8c6DY_tZzVf-PUZt3hEgyp961o3Hh_6fnBqqMCnzRWNYlIBEA>
+    <xmx:4fi7Z5edlZWmvzyqoDVfXNQRa8b5RJzyL7ZXZ-q8T5mPCd9tGsNi01ma>
 Feedback-ID: iad51458e:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 23 Feb 2025 23:40:20 -0500 (EST)
-Date: Sun, 23 Feb 2025 20:40:19 -0800
+ 23 Feb 2025 23:43:12 -0500 (EST)
 From: Boqun Feng <boqun.feng@gmail.com>
 To: Oliver Sang <oliver.sang@intel.com>
 Cc: "Paul E. McKenney" <paulmck@kernel.org>,
-	Ankur Arora <ankur.a.arora@oracle.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, Peter Zijlstra <peterz@infradead.org>,
-	Frederic Weisbecker <frederic@kernel.org>, rcu@vger.kernel.org
-Subject: Re: [linux-next:master] [rcu]  c9b55f9da0:
- WARNING:at_kernel/rcu/rcutorture.c:#rcutorture_one_extend_check[rcutorture]
-Message-ID: <Z7v4MytjhhBZkG4S@Mac.home>
-References: <202502171415.8ec87c87-lkp@intel.com>
- <08e755d1-9f7d-4238-ac2d-1869d68a8ddc@paulmck-laptop>
- <Z7gkXQMxTc2J4KQ9@xsang-OptiPlex-9020>
- <64d58e80-3601-4f9b-ae46-756dd124345f@paulmck-laptop>
- <Z7vXylQt2yR6HCa6@xsang-OptiPlex-9020>
- <Z7vltauHgdSdo7Ui@Mac.home>
+	Ankur Arora <ankur.a.arora@oracle.com>,
+	oe-lkp@lists.linux.dev,
+	lkp@intel.com,
+	Peter Zijlstra <peterz@infradead.org>,
+	Frederic Weisbecker <frederic@kernel.org>,
+	rcu@vger.kernel.org,
+	Boqun Feng <boqun.feng@gmail.com>,
+	Joel Fernandes <joelagnelf@nvidia.com>
+Subject: [PATCH v2 1/2] rcutorture: Update rcutorture_one_extend_check() for lazy preemption
+Date: Sun, 23 Feb 2025 20:43:09 -0800
+Message-Id: <20250224044310.14373-1-boqun.feng@gmail.com>
+X-Mailer: git-send-email 2.39.5 (Apple Git-154)
+In-Reply-To: <Z7v4MytjhhBZkG4S@Mac.home>
+References: <Z7v4MytjhhBZkG4S@Mac.home>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Z7vltauHgdSdo7Ui@Mac.home>
+Content-Transfer-Encoding: 8bit
 
-On Sun, Feb 23, 2025 at 07:21:25PM -0800, Boqun Feng wrote:
-> I finally find why I cannot reproduce this, I accidentally used
-> next.2025.02.10a to build the kernel first, which has commit
-> ("rcutorture: Move RCU_TORTURE_TEST_{CHK_RDR_STATE,LOG_CPU} to bool"),
-> which changes Kconfig RCU_TORTURE_TEST_CHK_DRD_STATE into a bool and
-> that disabled the test... (because config from you has it as =m).
-> 
-> On Mon, Feb 24, 2025 at 10:22:02AM +0800, Oliver Sang wrote:
-> > hi, Paul,
-> > 
-> > On Fri, Feb 21, 2025 at 05:02:51PM -0800, Paul E. McKenney wrote:
-> > 
-> > [...]
-> > 
-> > > > > 
-> > > > > And rcutorture's WARN_ON() has a bug that is exposed by that change
-> > > > > in Kconfig option.  Does the patch shown below help?
-> > > > 
-> > > > the patch does not fix the WARNING in our tests. attached one dmesg FYI.
-> > > 
-> > > Just to make sure that I understand, this patch was applied against this
-> > > commit, correct?
-> > > 
-> > > c9b55f9da0d2 ("rcu: limit PREEMPT_RCU configurations")
-> > > 
-> > > I am guessing this based on this dmesg line:
-> > > 
-> > >  [  109.553307][  T781] CPU: 1 UID: 0 PID: 781 Comm: rcu_torture_rea Tainted: G                T  6.14.0-rc1-00007-gc9b55f9da0d2 #1
-> > 
-> > above line is not from the dmesg I attached in last mail. it's from
-> > https://download.01.org/0day-ci/archive/20250217/202502171415.8ec87c87-lkp@intel.com/dmesg.xz
-> > which is for our original report.
-> > 
-> > > 
-> > > Is this really the case, or am I confused?
-> > 
-> > we applied your patch as:
-> > 
-> > 89519085afdf2 fix for c9b55f9da0 from Paul
-> > c9b55f9da0d2c rcu: limit PREEMPT_RCU configurations
-> > f001b7165def8 osnoise: provide quiescent states
-> > 
-> > so in the dmesg I attached in last mail (I attached it again in this mail):
-> > 
-> > [    0.000000][    T0] Linux version 6.14.0-rc1-00008-g89519085afdf (kbuild@9871be4fdbcc) (gcc-12 (Debian 12.2.0-14) 12.2.0, GNU ld (GNU Binutils for Debian) 2.40) #1 SMP PREEMPT Fri Feb 21 00:34:02 CST 2025
-> > ...
-> > [  117.463907][  T812] CPU: 1 UID: 0 PID: 812 Comm: rcu_torture_rea Tainted: G                T  6.14.0-rc1-00008-g89519085afdf #1
-> > 
-> > the change of this 89519085afdf2 is as [1]
-> > 
-> > I'm not sure if it's better to upload dmesg for fix patch to
-> > https://download.01.org/0day-ci/archive/20250217/202502171415.8ec87c87-lkp@intel.com
-> > again, so I did not do that. sorry if this causes confusion.
-> > 
-> > not sure if this is the correct applyment? thanks
-> > 
-> > [1]
-> > diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
-> > index d26fb1d33ed9a..de85a88810cf6 100644
-> > --- a/kernel/rcu/rcutorture.c
-> > +++ b/kernel/rcu/rcutorture.c
-> > @@ -1873,6 +1873,8 @@ static void rcu_torture_reader_do_mbchk(long myid, struct rcu_torture *rtp,
-> >  #define ROEC_ARGS "%s %s: Current %#x  To add %#x  To remove %#x  preempt_count() %#x\n", __func__, s, curstate, new, old, preempt_count()
-> >  static void rcutorture_one_extend_check(char *s, int curstate, int new, int old, bool insoftirq)
-> >  {
-> > +       int mask;
-> > +
-> >         if (!IS_ENABLED(CONFIG_RCU_TORTURE_TEST_CHK_RDR_STATE))
-> >                 return;
-> > 
-> > @@ -1902,8 +1904,10 @@ static void rcutorture_one_extend_check(char *s, int curstate, int new, int old,
-> >         WARN_ONCE(cur_ops->extendables &&
-> >                   !(curstate & (RCUTORTURE_RDR_PREEMPT | RCUTORTURE_RDR_SCHED)) &&
-> >                   (preempt_count() & PREEMPT_MASK), ROEC_ARGS);
+From: "Paul E. McKenney" <paulmck@kernel.org>
 
-And we need another fix for the WARN_ONCE() above because in
-non-preemptible RCU on a preemptible kernel, rcu_read_lock() is just
-preempt_disable(). Sending both really quick.
+The rcutorture_one_extend_check() function's last check assumes that
+if cur_ops->readlock_nesting() returns greater than zero, either the
+RCUTORTURE_RDR_RCU_1 or the RCUTORTURE_RDR_RCU_2 bit must be set, that
+is, there must be at least one rcu_read_lock() in effect.
 
-Regards,
-Boqun
+This works for preemptible RCU and for non-preemptible RCU running in
+a non-preemptible kernel.  But it fails for non-preemptible RCU running
+in a preemptible kernel because then RCU's cur_ops->readlock_nesting()
+function, which is rcu_torture_readlock_nesting(), will return
+the PREEMPT_MASK mask bits from preempt_count().  The result will
+be greater than zero if preemption is disabled, including by the
+RCUTORTURE_RDR_PREEMPT and RCUTORTURE_RDR_SCHED bits.
 
-> > -       WARN_ONCE(cur_ops->readlock_nesting &&
-> > -                 !(curstate & (RCUTORTURE_RDR_RCU_1 | RCUTORTURE_RDR_RCU_2)) &&
-> > +       mask = RCUTORTURE_RDR_RCU_1 | RCUTORTURE_RDR_RCU_2;
-> > +       if (IS_ENABLED(CONFIG_PREEMPT_RCU))
-> 
-> Now look into this, I think this should be:
-> 
-> 	if (!IS_ENABLED(CONFIG_PREEMPT_RCU))
-> 
-> because:
-> 
-> *	For preemptible RCU, ->readlock_nesting() will return 
-> 	rcu_preempt_depth()
-> 
-> *	For non-preemptible RCU, ->readlock_nesting() will return
-> 	preempt count.
-> 
-> , which means if RCUTORTURE_RDR_PREEMPT or RCUTORTURE_RDR_SCHED is in
-> the curstate for *non-preemption RCU*, ->readlock_nesting() will be >0.
-> That is, the "mask" needs to consider _PREEMPT and _SCHED for
-> *non-preemption RCU*, not preemptible RCU.
-> 
-> Paul? Did I get it right?
-> 
-> Regards,
-> Boqun
-> 
-> > +               mask |= RCUTORTURE_RDR_PREEMPT | RCUTORTURE_RDR_SCHED;
-> > +       WARN_ONCE(cur_ops->readlock_nesting && !(curstate & mask) &&
-> >                   cur_ops->readlock_nesting() > 0, ROEC_ARGS);
-> >  }
-> > 
-[...]
+This commit therefore adjusts this check to take into account the case
+fo non-preemptible RCU running in a preemptible kernel.
+
+[boqun: Fix the if condition and add comment]
+
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Closes: https://lore.kernel.org/oe-lkp/202502171415.8ec87c87-lkp@intel.com
+Co-developed-by: Boqun Feng <boqun.feng@gmail.com>
+Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+Co-developed-by: Joel Fernandes <joelagnelf@nvidia.com>
+Signed-off-by: Joel Fernandes <joelagnelf@nvidia.com>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+---
+ kernel/rcu/rcutorture.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
+index d26fb1d33ed9..280bff706017 100644
+--- a/kernel/rcu/rcutorture.c
++++ b/kernel/rcu/rcutorture.c
+@@ -1873,6 +1873,8 @@ static void rcu_torture_reader_do_mbchk(long myid, struct rcu_torture *rtp,
+ #define ROEC_ARGS "%s %s: Current %#x  To add %#x  To remove %#x  preempt_count() %#x\n", __func__, s, curstate, new, old, preempt_count()
+ static void rcutorture_one_extend_check(char *s, int curstate, int new, int old, bool insoftirq)
+ {
++	int mask;
++
+ 	if (!IS_ENABLED(CONFIG_RCU_TORTURE_TEST_CHK_RDR_STATE))
+ 		return;
+ 
+@@ -1902,8 +1904,16 @@ static void rcutorture_one_extend_check(char *s, int curstate, int new, int old,
+ 	WARN_ONCE(cur_ops->extendables &&
+ 		  !(curstate & (RCUTORTURE_RDR_PREEMPT | RCUTORTURE_RDR_SCHED)) &&
+ 		  (preempt_count() & PREEMPT_MASK), ROEC_ARGS);
+-	WARN_ONCE(cur_ops->readlock_nesting &&
+-		  !(curstate & (RCUTORTURE_RDR_RCU_1 | RCUTORTURE_RDR_RCU_2)) &&
++
++	/*
++	 * non-preemptible RCU in a preemptible kernel uses "preempt_count() &
++	 * PREEMPT_MASK" as ->readlock_nesting().
++	 */
++	mask = RCUTORTURE_RDR_RCU_1 | RCUTORTURE_RDR_RCU_2;
++	if (!IS_ENABLED(CONFIG_PREEMPT_RCU))
++		mask |= RCUTORTURE_RDR_PREEMPT | RCUTORTURE_RDR_SCHED;
++
++	WARN_ONCE(cur_ops->readlock_nesting && !(curstate & mask) &&
+ 		  cur_ops->readlock_nesting() > 0, ROEC_ARGS);
+ }
+ 
+-- 
+2.39.5 (Apple Git-154)
+
