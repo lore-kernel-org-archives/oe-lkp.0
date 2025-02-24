@@ -1,47 +1,42 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D20318B482;
-	Mon, 24 Feb 2025 17:07:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4F571FDE0B
+	for <oe-lkp@lists.linux.dev>; Mon, 24 Feb 2025 20:43:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740416874; cv=none; b=GnKqIVXiZKH1YZgThPk7jDE64y74j5/4whJo5b9tsA8x1B1lrnQZ3JFg2c+39OB6Y7ozwEgt9fHiMQjZmgilI4gRiSf1ogdWg+f6SN4/LkTO3DwvcNw5VcYaadGlVmeNH83+cDWFs/B3tZlUqLoT9+53/TzVtqCO2sGrjt5Nsy4=
+	t=1740429823; cv=none; b=mgL1QyBVAJJM3DS2D6YAfWUq7w4dn0K0enDb1h3Xe4yTFgBR+TC2C+PynCvhqXJs2suBXEVRsELmVR5Stf/szidhyBYE7WQUnChsRPUViauGXHW9z88E+4/IUF9zWi2OPLx2BBUuLi1iIJkyEznmqawnqsCTmuP0uFcWBTdnM5w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740416874; c=relaxed/simple;
-	bh=cEYAY+iSio8M0SXczMwaWtZ7QZYtbIkXjLE/+/NOXqs=;
+	s=arc-20240116; t=1740429823; c=relaxed/simple;
+	bh=xbeCjIzdZwoUQu81m3I+CszesRgDATdPcchkdvIJ3do=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RpJyWvBecLj15XXC/xrYo6m6R7SN00vUkLP+KhWTvF6ucYsZeE/YjMbxwncHn2qHxngu1+K4JsW/2dFdajpYrXSpQSUUkXWfs+Ut4ecwK7vI55PwhFbxcBPJP7iyylYtnsjq7eXDkjra4yXfWCMrB5MoVxt0D8ku4aV8elfQuPA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XAbsISiy; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=qJijQ5Zom570fK8uN10zpyMMrDV9qAD5THEbMEY8f1uDXPolaaN1GzYkOJr3ZYkSe+40ReLaLTxo99JGjhsDdnD9Ts/7oJt9GElBxRZLzvBkzEV1ajkl0LLc05exSnFMSmNb8etXPcanssaoBz5o1GaYUORKUgR/1LxTTOw1qaw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=kymP/Q9G; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XAbsISiy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46185C4CED6;
-	Mon, 24 Feb 2025 17:07:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1740416873;
-	bh=cEYAY+iSio8M0SXczMwaWtZ7QZYtbIkXjLE/+/NOXqs=;
-	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-	b=XAbsISiyxjMmCJOnCbEriub41yNiEf7rAJHLD9FUOhN7tvD5m7zbS33EGXWsAInJs
-	 n2ySvoRFSPRAfBpOZ4EFCAgcXnRjzHiSuTqQgsW6zf9236aSJlyOudcBwBiElNCBDf
-	 ZUe/OGDE4s8EzlwMOsYdM5kPV2/OIzHKh1S17jzAumFFjSvKPyO4b3eOaOl2pl7SXw
-	 s9yL97sLp6zFFwbzyXx3kdRyVXFRg8qph2AmavJ2Q68YqoLJd8WC6hb8eKgLkyy8cz
-	 vFAYdtROxVteJwDMoprLjzZNIBj8IVaqfG9z4QUUt9W8+jIGtW38dBC5ISBmydPxOS
-	 aAMvr4aIQhIng==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-	id D7D61CE0B34; Mon, 24 Feb 2025 09:07:52 -0800 (PST)
-Date: Mon, 24 Feb 2025 09:07:52 -0800
-From: "Paul E. McKenney" <paulmck@kernel.org>
-To: Boqun Feng <boqun.feng@gmail.com>
-Cc: Oliver Sang <oliver.sang@intel.com>,
-	Ankur Arora <ankur.a.arora@oracle.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, Peter Zijlstra <peterz@infradead.org>,
-	Frederic Weisbecker <frederic@kernel.org>, rcu@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] rcutorture: Update ->extendables check for lazy
- preemption
-Message-ID: <d43d929a-d17c-4f11-9048-b9ddf08f713c@paulmck-laptop>
-Reply-To: paulmck@kernel.org
-References: <Z7v4MytjhhBZkG4S@Mac.home>
- <20250224044310.14373-1-boqun.feng@gmail.com>
- <20250224044310.14373-2-boqun.feng@gmail.com>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="kymP/Q9G"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=tgk4JKj+YEgXbJK1wxxb7iVt+szSntfQ7j8rTOcSjdk=; b=kymP/Q9GsGocCop8CEpGaaKjTj
+	if8hMkMRN0azcHb5GMczOw1BgDiyAV7AAE2050P22lP8GB14PfZsWZIEA1yn1KbqnoIWkjb4G3COk
+	TUoVs9B2YRNC4o2dSHszk75Q9mapHkn2D2FeHPbT5xUUWbzffFUrOzWGPPG0s16ziEuz5SJ5p6ABO
+	FICZwOtaOkK0cCwHEgEqVYV+swMYSLK3FOukl9MzBEiZZa0avzQx5NhPv/27BxQiuxX6VXSWNAI7J
+	OHl90sID+eFPpnpwpWqPdhsuTfgxFnKr/H4y1GOf+tAKJkrRQXbh06DGboDtROR16yq2fRoPXoVi7
+	gGT0XF+Q==;
+Received: from willy by casper.infradead.org with local (Exim 4.98 #2 (Red Hat Linux))
+	id 1tmfIh-00000008ZPB-1Rqk;
+	Mon, 24 Feb 2025 20:43:39 +0000
+Date: Mon, 24 Feb 2025 20:43:39 +0000
+From: Matthew Wilcox <willy@infradead.org>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com
+Subject: Re: [willy-pagecache:folio-mk-pte] [x86]  1c336f2de2:
+ WARNING:at_arch/x86/include/asm/pgtable.h:#pfn_pte
+Message-ID: <Z7zZ-_0hIyK2SFU7@casper.infradead.org>
+References: <202502241646.719f4651-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -50,52 +45,51 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250224044310.14373-2-boqun.feng@gmail.com>
+In-Reply-To: <202502241646.719f4651-lkp@intel.com>
 
-On Sun, Feb 23, 2025 at 08:43:10PM -0800, Boqun Feng wrote:
-> The rcutorture_one_extend_check() function's second last check assumes
-> that "preempt_count() & PREEMPT_MASK" is non-zero only if
-> RCUTORTURE_RDR_PREEMPT or RCUTORTURE_RDR_SCHED bit is set.
-> 
-> This works for preemptible RCU and for non-preemptible RCU running in
-> a non-preemptible kernel.  But it fails for non-preemptible RCU running
-> in a preemptible kernel because then rcu_read_lock() is just
-> preempt_disable(), which increases preempt count.
-> 
-> This commit therefore adjusts this check to take into account the case
-> fo non-preemptible RCU running in a preemptible kernel.
-> 
-> Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+On Mon, Feb 24, 2025 at 04:36:17PM +0800, kernel test robot wrote:
+> [ 13.732954][ T6] WARNING: CPU: 0 PID: 6 at arch/x86/include/asm/pgtable.h:788 pfn_pte (arch/x86/include/asm/pgtable.h:788 (discriminator 1)) 
 
-Reviewed-by: Paul E. McKenney <paulmck@kernel.org>
+Oh, fun, this is the
+        WARN_ON_ONCE((pgprot_val(pgprot) & (_PAGE_DIRTY | _PAGE_RW)) ==
+                        _PAGE_DIRTY);
+which I moved from mk_pte() to pfn_pte().  So it's warning us that we're
+creating a shadow stack entry.
 
-> ---
->  kernel/rcu/rcutorture.c | 12 ++++++++++--
->  1 file changed, 10 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
-> index 280bff706017..4cae119dece8 100644
-> --- a/kernel/rcu/rcutorture.c
-> +++ b/kernel/rcu/rcutorture.c
-> @@ -1901,8 +1901,16 @@ static void rcutorture_one_extend_check(char *s, int curstate, int new, int old,
->  	WARN_ONCE(cur_ops->extendables &&
->  		  !(curstate & (RCUTORTURE_RDR_BH | RCUTORTURE_RDR_RBH)) &&
->  		  (preempt_count() & SOFTIRQ_MASK), ROEC_ARGS);
-> -	WARN_ONCE(cur_ops->extendables &&
-> -		  !(curstate & (RCUTORTURE_RDR_PREEMPT | RCUTORTURE_RDR_SCHED)) &&
-> +
-> +	/*
-> +	 * non-preemptible RCU in a preemptible kernel uses preempt_disable()
-> +	 * as rcu_read_lock().
-> +	 */
-> +	mask = RCUTORTURE_RDR_PREEMPT | RCUTORTURE_RDR_SCHED;
-> +	if (!IS_ENABLED(CONFIG_PREEMPT_RCU))
-> +		mask |= RCUTORTURE_RDR_RCU_1 | RCUTORTURE_RDR_RCU_2;
-> +
-> +	WARN_ONCE(cur_ops->extendables && !(curstate & mask) &&
->  		  (preempt_count() & PREEMPT_MASK), ROEC_ARGS);
->  
->  	/*
-> -- 
-> 2.39.5 (Apple Git-154)
-> 
+> [ 13.746937][ T6] ? asm_exc_invalid_op (arch/x86/include/asm/idtentry.h:574) 
+> [ 13.747271][ T6] ? pfn_pte (arch/x86/include/asm/pgtable.h:788 (discriminator 1)) 
+> [ 13.747532][ T6] __change_page_attr (arch/x86/mm/pat/set_memory.c:1673) 
+> [ 13.747850][ T6] __change_page_attr_set_clr (include/linux/spinlock.h:391 arch/x86/mm/pat/set_memory.c:1808) 
+> [ 13.748200][ T6] ? set_pages_rw (arch/x86/mm/pat/set_memory.c:2437) 
+> [ 13.748482][ T6] __set_pages_np (arch/x86/mm/pat/set_memory.c:2433) 
+> [ 13.748770][ T6] set_area_direct_map (mm/vmalloc.c:3255 (discriminator 2)) 
+> [ 13.749085][ T6] vfree (mm/vmalloc.c:3293 mm/vmalloc.c:3372 mm/vmalloc.c:3347) 
+
+... from vfree().  So somebody has marked the PTE dirty and then we
+remove the RW permission to it.  Which ends up being the pattern of bits
+which denote shadow stack.
+
+This should fix it:
+
+diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+index ef4514d64c05..59f0a2729060 100644
+--- a/arch/x86/mm/pat/set_memory.c
++++ b/arch/x86/mm/pat/set_memory.c
+@@ -2420,7 +2420,7 @@ static int __set_pages_np(struct page *page, int numpages)
+ 				.pgd = NULL,
+ 				.numpages = numpages,
+ 				.mask_set = __pgprot(0),
+-				.mask_clr = __pgprot(_PAGE_PRESENT | _PAGE_RW),
++				.mask_clr = __pgprot(_PAGE_PRESENT | _PAGE_RW | _PAGE_DIRTY),
+ 				.flags = CPA_NO_CHECK_ALIAS };
+ 
+ 	/*
+@@ -2550,7 +2550,7 @@ int __init kernel_unmap_pages_in_pgd(pgd_t *pgd, unsigned long address,
+ 		.pgd		= pgd,
+ 		.numpages	= numpages,
+ 		.mask_set	= __pgprot(0),
+-		.mask_clr	= __pgprot(_PAGE_PRESENT | _PAGE_RW),
++		.mask_clr	= __pgprot(_PAGE_PRESENT | _PAGE_RW | _PAGE_DIRTY),
+ 		.flags		= CPA_NO_CHECK_ALIAS,
+ 	};
+ 
