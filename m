@@ -1,40 +1,51 @@
-Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
+Received: from out203-205-221-239.mail.qq.com (out203-205-221-239.mail.qq.com [203.205.221.239])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0968219309E;
-	Tue, 25 Feb 2025 12:27:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.92.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1F3024EF92
+	for <oe-lkp@lists.linux.dev>; Tue, 25 Feb 2025 13:33:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.205.221.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740486437; cv=none; b=do0lmxPNezR/rrwFmxLsMoqMHRwn1KxK5wlMeY0WNeed+JF0/LilCSW9es2MTibu03QiLEY8qw8oHuGLe4DO8WboJ+N8QBCOnsti+psjKBY3aMZg5UAkCcelGjl6JQR4ADQab2Ja+jU+MuPhyg65WAhXpnk/qG0JCUPSFDQd0XY=
+	t=1740490388; cv=none; b=lxnwv878OUmVPD1Qmqc7Wewc4HbofVTNVU9zdfjhVyCgxSA5yH7xR9BnbgHk8SGu/FkaM9q1Iu3lJFwnToYAuUbPwMr751ZE648bNWmjBGclHYHIMlbaHqiqmagjkf5XxXT3EB3P+6ElA4yhyMQBiUdk5Zy1iRK39qlHQ8079sQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740486437; c=relaxed/simple;
-	bh=pxCy5QokWzOZjy10KJV2L0KzovnRJn7WqWlTe1KvyGE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nFmAlvkkciDls1ay6itVBIx5i1+RekRTCQJgC+Cpgn4h9tvYp9OdL6C+7mlXbSXSP7q33RmSlDS+7tGwVIwqj6ZuZ85kFiI7YZXILLo1pzHbslA9K82U8TJMrSPp/o77PZvWHf7dN9DPikv4+2vGG/Baa9aL9fbCAdE+2UBL99I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=BzRwIjJP; arc=none smtp.client-ip=90.155.92.199
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	s=arc-20240116; t=1740490388; c=relaxed/simple;
+	bh=u3yEwLudzQn5Appg1EKIWuwC8eP34YxzNljiK7UUCCg=;
+	h=Message-ID:Date:From:To:Cc:Subject:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=VwKOffa1ePQDx4ExnNv7eSRndNAcMXt2fCRYHizAqyOPemiWdiHUZeEioSVBabiOX93hBZkCuqUkdtsW5TrWKPMnWLkLji6II0IAUDY5HaVe/bh+MZvty8Mz27l1UVpVBIurBqwev3e2+e8w6AXPRAsbXFZGEzBf7rt82GTkNUg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com; spf=pass smtp.mailfrom=foxmail.com; dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b=EVBlO9z+; arc=none smtp.client-ip=203.205.221.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foxmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="BzRwIjJP"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=eqAF4IrhnEXUU95nYquBlfNI3NOb7emcGTojdjYK/50=; b=BzRwIjJPKF33moI+3IBUwQqZd0
-	YRCWQnVqi2ddNokTj4Hs6c7I/9iB2QEyubU50+EBg19vWK/KX5LlyLR4dlJKsPxCwLVwUv9aNgwMX
-	rz1ZiYvKUTD+4V6fVbp5epknb4PasTg9z5tqqHRA2Yy+elQpJWI9/hGNnab248zsyrAyQ2zIpiP4m
-	apOSp4VQjg1mgXGyWB9fPrT0NCOZ+BK7Mpby6timNY+IeYn9fy+uEvW+uZPweAWNbFZ5GeVoGOrPh
-	NoPpMsfUihdLwk2LRHxAHeHWwCeJ4PtkAIMQwyEQsBcmnoSgbfQB4XX4MjLK3KK4qZzc2rz+QLqNY
-	5e9+FWJQ==;
-Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
-	by desiato.infradead.org with esmtpsa (Exim 4.98 #2 (Red Hat Linux))
-	id 1tmu1i-00000003L98-1PAL;
-	Tue, 25 Feb 2025 12:27:06 +0000
-Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
-	id A1AAF300472; Tue, 25 Feb 2025 13:27:05 +0100 (CET)
-Date: Tue, 25 Feb 2025 13:27:05 +0100
-From: Peter Zijlstra <peterz@infradead.org>
-To: Chen Yu <yu.chen.surf@foxmail.com>
+	dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b="EVBlO9z+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+	s=s201512; t=1740490382;
+	bh=+oQG0kubNNcrUEyDC0x1SXjD6cJ/muvA92NEGb9rnSs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=EVBlO9z+HF/66cG0WcdV9mH7qUYarNQ4iXDohek2BqgxRExdzdNaxCSguVMU/i5kS
+	 6zN3kjOuYNwvVFQBFLCYCXPSQJTOoxO01I1+7RAii+0nrzuTUhcRNRyi6v2qNvvDbq
+	 V+8q44hfVOD8QysH/XsWUasy2gBAu61QP+dbV8uA=
+Received: from chenyu5-mobl2 ([118.114.56.201])
+	by newxmesmtplogicsvrszb21-0.qq.com (NewEsmtp) with SMTP
+	id 3D80A29F; Tue, 25 Feb 2025 21:15:24 +0800
+X-QQ-mid: xmsmtpt1740489324ty7p96lgy
+Message-ID: <tencent_CC411B43EAD996961A06366F606C96DD0406@qq.com>
+X-QQ-XMAILINFO: NyTsQ4JOu2J2E6enTI6knP98gdgIednHXvZvEccsRAn9oe1QGR85OzNNIkaslU
+	 Q+h5S9Q1+2jjv1ibfUEDZ8WjHmIsJuCdBSokzipwjIAldc3a8CrJTh6bhbQCGqg8ZIzGWQE46gy2
+	 6kr5DGGTUMwBtLiHN++HGGETiGq/ScptKEOPD0v3ewPGqNV/fcXbUw8q1lNN+oQ7g1c2hVshM910
+	 ciRiT7BsPcTBREqtrGnRRXmFO6ghcxSZI8pvbR0tiKm5WvhPtmFCRbL798g4eMP4xkZE/CeTp+GX
+	 MAfEXVCBdZ15TtEr2/Lr1nQcfDvXdZPLxHWRo6yAzMXZsLy6P6Pm1YcSOZeJeHF5KI1oq9MdaVFE
+	 Ab0Ayfx4eUwN3YgSuUB2IR1Js10SPUmKFZGg+yuDXUq44VS/BQkJLN7KeugpQdwK/1WoFjwy410P
+	 VCzckYVh1FYCQ54DqqkEm/Ht6mjba/PIFuDYYwk2rJRNBVvoj9xzeHELV8UCmvyhokdOsTeKXyRJ
+	 rwsK6JnlEdWSNjcpovR2tIUOHT0pYzvBUS8sOA87WYR/BKTOZNqB1nEuQ4J5Zj8/hyQJTP0FyWhg
+	 C/yeTC92fyzKuwSIiJtNJFDHTqSc+ojmsUYKApwwLlPecGg0wkLSPQ02BPlcBPJ4o1iIdpF0nnJu
+	 QV6WICJ1ChGZYJZpavGvm3yEEOYdxDoxF9qKl2HJEO8j18W0z69EOnFTKV9nLjtC/go3hLGad2t+
+	 1pe/HbNuE7qs3vjXz3EyJ3jEhtYZQu9LCPvY/qBFWuC3ZOtli0StsOzHaKX7ofDXX0hh9GSZT2er
+	 8V/Wp3v1E44dO0Pfb14rWQYWfcZHaCgnKVX+Ief4tBOVE5Cs7QQuombY+EPmx/iJzKooqC19v0cg
+	 /+wTonDgeIUgMDTrb/RqTKJlh0WJXkikKstYBmkqOaApQjzR0rXNisFPa2gRi8LsW6h/6QiMY8Nr
+	 bZPfmQjgNXppMuDnjMoF+5toFXjbEOqcuaB53IaM/IcRd1NKfhxA==
+X-QQ-XMRINFO: NS+P29fieYNw95Bth2bWPxk=
+Date: Tue, 25 Feb 2025 21:15:56 +0800
+From: Chen Yu <yu.chen.surf@foxmail.com>
+To: Peter Zijlstra <peterz@infradead.org>
 Cc: zihan zhou <15645113830zzh@gmail.com>, oe-lkp@lists.linux.dev,
 	kernel test robot <oliver.sang@intel.com>, lkp@intel.com,
 	linux-kernel@vger.kernel.org, x86@kernel.org,
@@ -42,9 +53,10 @@ Cc: zihan zhou <15645113830zzh@gmail.com>, oe-lkp@lists.linux.dev,
 	aubrey.li@linux.intel.com, yu.c.chen@intel.com
 Subject: Re: [tip:sched/core] [sched]  2ae891b826:  hackbench.throughput 6.2%
  regression
-Message-ID: <20250225122705.GD34233@noisy.programming.kicks-ass.net>
+X-OQ-MSGID: <Z73CjBppcf/zhrOW@chenyu5-mobl2>
 References: <202502251026.bb927780-lkp@intel.com>
  <tencent_6D9B516AFF16965A3BB652A049D6CA847706@qq.com>
+ <20250225122705.GD34233@noisy.programming.kicks-ass.net>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -53,17 +65,24 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <tencent_6D9B516AFF16965A3BB652A049D6CA847706@qq.com>
+In-Reply-To: <20250225122705.GD34233@noisy.programming.kicks-ass.net>
 
-On Tue, Feb 25, 2025 at 05:31:34PM +0800, Chen Yu wrote:
-
+On 2025-02-25 at 13:27:05 +0100, Peter Zijlstra wrote:
+> On Tue, Feb 25, 2025 at 05:31:34PM +0800, Chen Yu wrote:
 > 
-> But consider that the 6% regression is not that high, and the user might customize
-> base_slice via debugfs on-demand, we can keep an eye on this and revist it in the
-> future(we have encountered some SPECjbb regression due to over-preemption).
+> > 
+> > But consider that the 6% regression is not that high, and the user might customize
+> > base_slice via debugfs on-demand, we can keep an eye on this and revist it in the
+> > future(we have encountered some SPECjbb regression due to over-preemption).
+> 
+> You can specify a per-task slice using sched_attr::sched_runtime. Also
+> see commit 857b158dc5e8 ("sched/eevdf: Use sched_attr::sched_runtime to
+> set request/slice suggestion")
+> 
+>
 
-You can specify a per-task slice using sched_attr::sched_runtime. Also
-see commit 857b158dc5e8 ("sched/eevdf: Use sched_attr::sched_runtime to
-set request/slice suggestion")
+Thanks, we'll have a try during the next test cycle.
 
+thanks,
+Chenyu
 
