@@ -1,94 +1,92 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D07B23AD
-	for <oe-lkp@lists.linux.dev>; Wed, 26 Feb 2025 07:15:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E81782135B1
+	for <oe-lkp@lists.linux.dev>; Mon,  3 Mar 2025 14:03:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.13
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740554134; cv=fail; b=QnamkKy1l0CfGj/79Gum7DQt15YmSFYwxqBLKXii8uYIGC4hiQBylOAbIqoRDCQAw/4W/YeGjjuO+eD1Y7ruPlBrA1V0eVlmUTQV4rd5eNHXjPBA+l2GzFX/ZEG2kHMZufp11JMXAiWxn0I6Y0L8ARlRLh9/UyFeJPkQwPrYoKs=
+	t=1741010603; cv=fail; b=dO2t+07rkUMdFbJe31Ua67k9b8AWmFWnkKF7F2m21i7WcBHbbu3w7sBKJvC2Sav9MKzmTe3Fex0iQZlSMKx9OfFIobmDCIIyCyarGf4OXoLt1/tZstQH5sk9h9A/h7oZlk6aIPqZkQufoX2EuUcOj0by7T2dFnCXZyJlEu4XKhI=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740554134; c=relaxed/simple;
-	bh=VC88HXE5HRC77rO7ggO9yFAyvZCU2cg9Dx1d17e3gPE=;
+	s=arc-20240116; t=1741010603; c=relaxed/simple;
+	bh=7cSfLgCX1+jyH/wMYUmjkKh0F3q1IpngnxrGVnyrmb8=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=CYxiXcjXUxyNmdgKeV5YZHr0qcKEndnqWL8ZId3Nc01OIuVPMveItkraC8CX9tdORMK6kXRV+xQMNyRKbnz4cI3lz2LnBrnZnw14d/x6Ngkz8CcRI+4rCrXikdgKMgG9IQEmsese3Z71aSaPRwn/WVETuO27vIfk7M6mFRQcc94=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MvZl3+SO; arc=fail smtp.client-ip=198.175.65.18
+	 Content-Disposition:MIME-Version; b=RXj6uQ0Xkg9nj7WeQfM+U+S+Yr+bH0nPCXxC9bFBie63MyVDARPT8bavZqr4Fk2PgJ5RLIQnSKMyG3nz6tL+r1NQrvizrbC3r4BeC34CLPZWMFvMJaLvIGPextLWwv/htXLtE/+ecVeiB4tBa82QO1+Mei5YTr7vAM3fl/0C0KQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XIjqL4YW; arc=fail smtp.client-ip=198.175.65.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MvZl3+SO"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XIjqL4YW"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1740554133; x=1772090133;
-  h=date:from:to:cc:subject:message-id:
-   content-transfer-encoding:mime-version;
-  bh=VC88HXE5HRC77rO7ggO9yFAyvZCU2cg9Dx1d17e3gPE=;
-  b=MvZl3+SOFVgcZuZSsQ19nzvFfVdGujQ7o+6TlYKvKqUlJvOn+tnBWybx
-   m7Q8uS+0+hTC8YRtNUTHCNRgfQAASZW9DEPX2d4xKf0e9Wdb2GFguae/9
-   tS/TYsFFHCn1de3cwYXGfK7PEuVkE3SXVimgtha5FJxO4GyKhKghPWuQA
-   Epi3TFP07KWdzeJoCXCOdiXe2rvggP5Uv3ZHQ/hXhD6ShVE0gGz7SI4F6
-   NCzc8NW/rlXw6OuoED6xbqyD3v68GV0LMvlXe8LDdKxZud6rNbtUtQhcy
-   mR/SRz0bLWoDTq5K0uUO17TmQlGPb2r1Hd40/0oXsaoq2qxPwKdubd0tZ
-   Q==;
-X-CSE-ConnectionGUID: JY2p5VpPSOKRZZAljsC1ig==
-X-CSE-MsgGUID: 8dsDBjalQJ+AMmigoCTMKQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11314"; a="41586199"
-X-IronPort-AV: E=Sophos;i="6.12,310,1728975600"; 
-   d="scan'208";a="41586199"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2025 23:15:32 -0800
-X-CSE-ConnectionGUID: RJWZIqHLTYGzyNHmmOcHGw==
-X-CSE-MsgGUID: 7HKZvox8R6WtEp+sYKkfhQ==
+  t=1741010602; x=1772546602;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=7cSfLgCX1+jyH/wMYUmjkKh0F3q1IpngnxrGVnyrmb8=;
+  b=XIjqL4YWQGi/LWAKfNCy8v6gpc3RExp5AQqMCEjyB8dUE3EUEwSvnGVO
+   0AxXCbvmC+50DqyZs2dKYkVbI1bsrcA4nuuW6oEgK52EHiJgoGHduWOae
+   FdbOAu4afECmpNCVdmAnwgTJLcLhX0xJNLdwmvX8IeNHyqSsV+pi+yBPA
+   TSf//sy0ocgNDj+AR+uROrM0AUwMVKhZCrjZNzWW38wjRE9qzW9dATkwJ
+   hvIDAS8/oivk3qtrq73gB5MSqYJMojE88iO5wT5evlyXkusmt5YCfOpWV
+   ZvGfBUn0KCzqXEfv0MAu0nI44J3ivu074ci16TFNdC0CWW0/Pzuxg/e8r
+   w==;
+X-CSE-ConnectionGUID: 06XiisVYQemaGXnbAeySJA==
+X-CSE-MsgGUID: vt97Ie6rRBS1CEX/eXPF+Q==
+X-IronPort-AV: E=McAfee;i="6700,10204,11362"; a="52863599"
+X-IronPort-AV: E=Sophos;i="6.13,329,1732608000"; 
+   d="log'?scan'208";a="52863599"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2025 06:03:21 -0800
+X-CSE-ConnectionGUID: pLQ4YfdxQu6HQtYbYW97PQ==
+X-CSE-MsgGUID: +vJZZYg3RuyDVMuw16vj5w==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.13,316,1732608000"; 
-   d="scan'208";a="117106983"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by fmviesa010.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 25 Feb 2025 23:15:32 -0800
-Received: from ORSMSX903.amr.corp.intel.com (10.22.229.25) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.44; Tue, 25 Feb 2025 23:15:31 -0800
+X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
+   d="log'?scan'208";a="123235645"
+Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
+  by orviesa005.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2025 06:03:20 -0800
+Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14; Mon, 3 Mar 2025 06:03:19 -0800
 Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.14 via Frontend Transport; Tue, 25 Feb 2025 23:15:31 -0800
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.46) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ 15.2.1544.14 via Frontend Transport; Mon, 3 Mar 2025 06:03:19 -0800
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.168)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.44; Tue, 25 Feb 2025 23:15:30 -0800
+ 15.1.2507.44; Mon, 3 Mar 2025 06:03:19 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ZV+RJBlOoXa1NZ7Ctw7jOJwQ/0i+YcG5+CdYmn/37nE0BogriygC/h6xKFSqleLo3BFBIQQQ/SV2o8xe8xE8jpcUu8ftJLsgx9pGfYDm6oLn+rHnjuk0rPaGe6nHVyUiLyU8SRAX26KZxIIoenl34AfTZFadoQmC0ItNLMfoVum60fH8jIoSMaH+McS7gvOu89VIk+vg49oGGu3gRMjkzAC/yDthjzUa0DYDGaUdRXSPW8EGs589Z9koZFpzK3TspwRQkAHRhFjt4zt2r8kuctRhxgqR7M9mykyjo/nXp0e1HgyweR93BptO3eNSYc+ugsbx1ie7Mb6zTd8DQZ/IBw==
+ b=xNUUEdsMPvrmO+av4dP9Kt9Q2fzLNzIsXQomTQCG2uWweU9WHsX2Qzw7vacO5qVbfUeUreyw1epcqt/H1SjP178B9wfZ1Ow6q6JP+K58P17bxkYdJMacG/yGfKfit2g3VS73YHEviaoXgZcEVX+XSv5oltoNxrLJTbqgYK2xRkS85kSfhh0O9vZyU37BxWstg7WH0Q3S68clqq7sxuiW7FIbpKx6CSckws3XHVBnf1YzjZGxRpfr3e5LyilqwNais/S9+g+n+YYjMHZ9eb0OYS3Gw+MLEfsSILCNq+6zC2N9O4HCcgH3lc+qD4vj4siZ2KJ8lQcCQiqknOmfTjYj1g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=he84NAFrLa2Ab1ZO7ZBELg8xOHTuL/PcEGSNzxzuQFs=;
- b=qeMYCyvD8hroPAdFt0J6DESd+u7vnbBTrD7gfCNIxyT2YO52SXZAgjpH/qFhxeYOx/gPHWot0KoyPmkS2gDK6bp6fSyvBV5lYBV5N8T5p5pNEzTmaRE9QTDdjE4aC+BQx92rXkiO8JDG0mPZdemwns71msvAuuId4pub/E+RCJ1/EUpVzAQCzEZV7NhKbClU4f6sX6JWnf+1irMHgAE+IjRKR8gV0duBhVZikWcUp8muYF7pSyNA2YVP4T/qrZOVgmKh5MBYIDzM8/VJVU0sTGke4zTyttVkwaiXhdmo+dbBKtLOVApntl6JCDpchSTqz/ENUPYr/cI1NWckG/owbg==
+ bh=pglIU2kGn03iOnLshxU2J6q6fL/2NGlchIw0ut/xwcI=;
+ b=TWDRxBj8sDr8xouLPN0q4cwPaeW9N3DWIUd3XOWf+ZD1GvReDoYFDALLFys3kZt8U1nuzePFv5jLIWYBUBCtMrqOqYpX099SyaD/AS6Fdhi9Afg+9FeNkq3tAGRfz5GhLcVbCJtwv9x8Bwjqb3clHHxgHNlyNnea134wGPDGEX71iodiigsSSXd+dFoSYqvV6hGxpxx0EHl4dUAV2ebE4OqC7IsJgGE+wFUl5GG6MpYa+ZPXVzZkYKqBkd3gKH1fayHpOtkxmSLxGQtuW1qC4AhK0SEhPCe06hlIMLGw74HVmrnbL4HEClz6xCUx+alssYM5XeXBgY7FAoYbONzVQA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by LV8PR11MB8509.namprd11.prod.outlook.com (2603:10b6:408:1e6::15) with
+ by CH3PR11MB7675.namprd11.prod.outlook.com (2603:10b6:610:122::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8466.20; Wed, 26 Feb
- 2025 07:15:13 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8489.26; Mon, 3 Mar
+ 2025 14:03:03 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%3]) with mapi id 15.20.8466.020; Wed, 26 Feb 2025
- 07:15:13 +0000
-Date: Wed, 26 Feb 2025 15:15:04 +0800
+ ([fe80::4622:29cf:32b:7e5c%4]) with mapi id 15.20.8489.025; Mon, 3 Mar 2025
+ 14:03:02 +0000
+Date: Mon, 3 Mar 2025 22:02:54 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Christian Brauner <brauner@kernel.org>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	Jeff Layton <jlayton@kernel.org>, <oliver.sang@intel.com>
-Subject: [linus:master] [selftests]  d3238e8944:
- kernel-selftests.pidfd.make.fail
-Message-ID: <202502261412.2a25ee21-lkp@intel.com>
-Content-Type: text/plain; charset="utf-8"
+To: Liam Ni <zhiguangni01@gmail.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Sean Christopherson
+	<seanjc@google.com>, <kvm@vger.kernel.org>, <oliver.sang@intel.com>
+Subject: [linux-next:master] [KVM]  4cad9f8787:
+ kvm-unit-tests.vmx_apic_passthrough_tpr_threshold_test.fail
+Message-ID: <202502271500.28201544-lkp@intel.com>
+Content-Type: multipart/mixed; boundary="XmqCeNDaaVDiBrg5"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SI2PR01CA0008.apcprd01.prod.exchangelabs.com
- (2603:1096:4:191::10) To LV3PR11MB8603.namprd11.prod.outlook.com
+X-ClientProxiedBy: SI2PR01CA0018.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:191::7) To LV3PR11MB8603.namprd11.prod.outlook.com
  (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -97,194 +95,240 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|LV8PR11MB8509:EE_
-X-MS-Office365-Filtering-Correlation-Id: e20e860a-a6d7-4c89-93aa-08dd56354fc0
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|CH3PR11MB7675:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7bbd703d-590a-442c-ac9e-08dd5a5c1cf3
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
-X-Microsoft-Antispam-Message-Info: =?utf-8?B?SGJXMGV4NUZXeVZUc1pJZm1NREJnUDQwYzduNmorZ1lCaFc0Y2g3c3BvUmtm?=
- =?utf-8?B?dnJYY3pRT2F4Yk1xSlpEbWVpL01xRTNmcXJQTGdUdlpCdVVIT0h2ZmpWaWJR?=
- =?utf-8?B?SElCUmZVY29ydkZjdHVjUy9ML3U0SXZQeEFPR3V4SEt3ZXI3ZHVJNmlCMlBV?=
- =?utf-8?B?QmtaOXlhdmo2ZEdEcjFUYVJ1TGk4a2RERFhzRHJ0NW1yYmk5VWZIU1ZZSm5k?=
- =?utf-8?B?b1RCZGFkYU85ZnViRTRGVmVXTDRXYnVKNTljbjRTL0NNbVFBVlQ5NUE5a3Fk?=
- =?utf-8?B?QmIvYUJnNUNJS3VGNUJKbndhUWE4eVAxek9qL2RXMmx0V1Y4U2txRk4xanY1?=
- =?utf-8?B?cnMwWDVmWWx6ZWQySXpMN3M3Zy9BbnREakoyd2R6S2U1QTFCRHhVM0xvMzMx?=
- =?utf-8?B?ZlVzL1hycG0zejBBWCs4SjZuRllvN3Y5R1lSL0cydEE3YS8zQWdXTHphcFlz?=
- =?utf-8?B?amxWa2hzbTJnZ2FLb1laY0FrekV5SFlkQVpKa1llb0RRNGxBczZaNzVuK2tE?=
- =?utf-8?B?OHp4bG13ekdxRFFjSTB5ZFRsZ2x3bVRaUnNyU3ErbkphaXk4NnBxTDRoaWJK?=
- =?utf-8?B?bjVmak1sTGRnTzJuQTBhRUZ0c3Q4MGxiT1JaQ2x2NmdXdXFEMmRvd3hFUDdx?=
- =?utf-8?B?aHQ5eHNVSEVtWkc3TTk1WnJnQlY3TCtaWnhzSldldXA0dW44R1FPMWtvKzlj?=
- =?utf-8?B?WXdDa3U1U2pIZmtCcE82cXZDVllnRGZOZDdDMDNBZjBsam1nSDJDOEFJUG1S?=
- =?utf-8?B?aHR3cjBLbDc2d25Ra3BWcXZCMllMbE5KZGZyeE02YW5UdEJSOXJHZ2tBSHh0?=
- =?utf-8?B?SlFWcFptVFgxZm1KKzhLSngrRHV4MzRyakdtU21Sd25RdTA2SGJ6TEthbWly?=
- =?utf-8?B?Z0hEZEhMMmpuSEo3ZmwrZWNVYkVIbXhVb2tYTFNvODlFRGpySVE2OGFvUkJy?=
- =?utf-8?B?YUdkcHp6Rm44ZTdTZzhHQkNEZUUyNWZDWkwrWFhvc01ZNXA4Vlo2bzdsS0Jl?=
- =?utf-8?B?bDIyUWdoc2JlWU02blI2OXd0RnVqS3YyWDR5bTZNYTNxS1pURnhpaXR3S1Jr?=
- =?utf-8?B?VG1pU2p2RDZQTWlHUjNWVGZyMWk5OTZJZlJub2YyMm53Mys3c1JOaE9vMnVq?=
- =?utf-8?B?L01RM2JJdEtVWVI1V25maHN6WE9yeWJDQzlORFRWREtPMGtwU01YUDRiSVZv?=
- =?utf-8?B?Y1IvSUNSaUlDNHdPRno4eFk2UDZ5YXVPd3hWVCtmQXB4REk0Ujh0bkphRmZY?=
- =?utf-8?B?dmRCbjd2Ky8yTUtURVJwSmJINXVzYlhETTJ6VGd0UFp0bEN4VTBUZzNmbG1R?=
- =?utf-8?B?RDFWaUcrQU83eUtFUUFjVjJFTmlSVENtcHYyVUkzdkdmT0tNL3hsa2FBd05i?=
- =?utf-8?B?SVUrdUZkR1hxdVVQcVBIM1krWTRzWHZtR0J6NXhSN1NwM0lxYjJkQlZyR3Rp?=
- =?utf-8?B?bER2WnRaa08zeUhLZ1JJNnJyYmMyTkFldnZXNWZkYVhwc05BOUtoOXlTRm8z?=
- =?utf-8?B?KzF0V3RuNUI2VHlLeURqeHVKdkJRODRVM2hZTEhZU2NuUzd5M2pWWXNJUTI4?=
- =?utf-8?B?M1d3YUx0SndkakVhYm1jL2t2WVBrSEp0ZEN1VFgyWW1HQVZqN2Q1SThxUktN?=
- =?utf-8?B?cmErOHBBMXdYTVl4YlFYZTVCOWZBOFlmM1hRd3hGVW5iU3FRQ2NzOE1SbDFM?=
- =?utf-8?B?WDZidnlMTnppcUVoNkpTRGd6UnhvSVg3K3hzbGVwcEpLZTI0bDcva3R3N2JL?=
- =?utf-8?B?SHc1TTBlQ0RHaENYb2Z5WW1aZFN4SVVMbGVjTUZJUVViRFQwQ0FkM0xwZWdP?=
- =?utf-8?B?Z2JlSTBKcCs1Zm10UEY2QT09?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016|4053099003;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?ptoSEmSr9JFLgFz+ymbpEVXecvXFeaVlWBDgjbj2hcOBxBfJeGrIONVvhlLa?=
+ =?us-ascii?Q?LF4voEAb0tHFlrNrOMJ86yaDMclDBqIqSjhaSj5aPUuybkGciy7fdKnvBy01?=
+ =?us-ascii?Q?E7j6SJiuffs0wMpnfgfC1cmAnsQoMxZYo9v9/f5Bd26UhrENSB/7V+opc3Cw?=
+ =?us-ascii?Q?ydaUR7e8btFzYIjIeY+HV8U9C2Bg7nuDCqrPi6F19eTSlJEfXz4cZr7wkBOu?=
+ =?us-ascii?Q?TghK/d90vpdqdvupGEMzgXDxJgJGuD6QRPJBidBzyq5cGyhrB3tD7Zo5rYo4?=
+ =?us-ascii?Q?G3v0Q1stEIpozJv9n70E7xQENjN9x1PO3p1YfyOS/RrU+1Bh72geX3fpn3b+?=
+ =?us-ascii?Q?Ks/wcRu27sL7spgWReY8JyWAKpCoywfmzxGM9EPPLcKx8Hq0LJyFxEgbJMWY?=
+ =?us-ascii?Q?rlowipg1x2patSimW4gSSyfJ/9TmdsnHbfXGSQ+C6xQSfNS+Xz/asMeIklWa?=
+ =?us-ascii?Q?y20wTkJjGUnUsDQrEVBjfd4V9FzIRLRu1xfaPQatMdApIAjGHWNK2B9RzBEP?=
+ =?us-ascii?Q?89OQ3tPkofigN2tsYQyaVgBHGuokdNFT22iqeFGGgR9z+UF1eSCpsCTjZahU?=
+ =?us-ascii?Q?DvKf6TPTdS6Hj2w0/o1KKUNnx+P8e9a0p82Sof73dl6GB294liojehzF83wZ?=
+ =?us-ascii?Q?yLi4pRFktGG0YmQiT2+7JhIpbwHTiZEK8jCb5zjqcH8Zvf99G9DfzpwFsQ6Y?=
+ =?us-ascii?Q?o1Yn6DkiBeGFPX/aHbkA2PjWhP7BoUBCWOZtBflQ3PDCKDbS6zeGpVsX9+p8?=
+ =?us-ascii?Q?3zsfxMtgHLRAxWWIKCpQ+Iq9jnYstq9l7HaUZ0/i/wHGQIBicEcktbhaOLR4?=
+ =?us-ascii?Q?kTIynBeGf3sqxs0YmJph5FaEKj0/YXT9DqlvnWWzVjwJ4/RUkMPfC6uOtJ1T?=
+ =?us-ascii?Q?3MwNLf8dfjK5YDgPRytfT5HGJXAXzgpSxTh7ePto04MxET80f7rsD9SedqoY?=
+ =?us-ascii?Q?oPWaaYPRc4Qexz5TXHo4sSKkRMMXC7irG77Jv3W5EMDTWXVHawoQXg08AvW5?=
+ =?us-ascii?Q?GvJ5ZYOPg92DKJinaQuFdufsvELDvFpSfJPm+AOd4h7TZvDOATdUb5vwB+Ac?=
+ =?us-ascii?Q?2w7mVkQJCFJmI05DJDgdRRYN6qJmxvm8S2rrDCxLW1e4IG++S7vg7CNBDY2L?=
+ =?us-ascii?Q?a14GeGKL6LT2XnEf9q/qpoC9JyFIeiE/vZhqoo0S8HDzYXFFHpV1wxrL7HOa?=
+ =?us-ascii?Q?bTT+K2Kw7AOUmeJ3AA2LQvOqRLsfqjWjSXXNJgbwPdaQIgrOwK1eIjxZWuMG?=
+ =?us-ascii?Q?iQJlHPJoaEuomkyYWZ3NXdMXT2rAfdb9tTi55zc4GCMj+2bmWgZhHGQASJ3m?=
+ =?us-ascii?Q?7cRf4fddTEJykflYNUYUYOkq7oPoR8HzJ8xhX+lNHOApwg=3D=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(4053099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?N1pqUHUvUDNjOVFZanBLNzNQQnQ4cHBlbUpLa3paVkVpaDhJU0RGeU81dXg0?=
- =?utf-8?B?L042QXN1dUUybWdGLytLZnM3ZzF6dTVENWdCRFBSUnM1YXhGSUlhSnhmNzNC?=
- =?utf-8?B?WUR4NTZXS2JlWGNpYXlSWFA3cWdkUFh0ODkrbjNSV0tWcVNsK0w4b09CelpK?=
- =?utf-8?B?RVB4WFhQUnhkME13MVVCaXhGNGp5cnNHN25SUWkxTCtPdG0vcllGcm03d3B5?=
- =?utf-8?B?Z1NKVEtMT3dHNlhyWmdJN2JrblhSVkZjK3FoK2pMODB3WEJLSWxpbjgwdlFF?=
- =?utf-8?B?OWhiTnVRSTJXb0hSemtCNlJ4N01WNkk5YkxzeDdxanhHSkw3WVFaSm1XLzdV?=
- =?utf-8?B?cGxLUzUxWkVUdjNWcTd2d0JoYzUybU9jMVhvZjVsSjFZb0RONmRtZmJ4REg1?=
- =?utf-8?B?N2YrQlBvcnJ6NmFlMzZkUTJNR00xeUk2UFFJVml6NjRNVm9kSkg4M0tha2xp?=
- =?utf-8?B?Wkdxd1hFLytLWm5jYWJQaVhBY0xaa1BjS2UvUWg5aE00a2JLYjkrR2VmY3NX?=
- =?utf-8?B?RTQrQnQ3ZHVrTndkVkJDYWFKNGwyeis2SEVCYll4V0FJdVAyS21BN3M0U2M0?=
- =?utf-8?B?dk9ObnpteFp4aWg3RGFrRjVRak5JU0NBdXZ0anN4ZmNTbXIzRi9USXVVenJ3?=
- =?utf-8?B?VzgzQVN4b2ZMYWZLT3dnd0dFTitxbkhyTUFlYUNDcGcvRkdBVUVXSjNBeVV0?=
- =?utf-8?B?S0FJZTV4RTdsd01NN3NYWTY0d0dJWC83UktCMVhkWUpMZ2F6ZWw5cTRhUzY1?=
- =?utf-8?B?OXFXSnladFlha1JpWlpkeDJVZHpOeFBXcWtsWVpWbjRVcFN2Rlh5YTJKWWs1?=
- =?utf-8?B?L1h5QkVXbFpDclZIK3JobGg2YkxJMkFYUEFycFQvZjR4Y2F3enl0SC84aERn?=
- =?utf-8?B?aGtLNU9Xbm9DZ3dZQmtoRTBFQm1hSS92Q01FOVN6TU1JenVQVjVUTi8rQUE2?=
- =?utf-8?B?czE1eGM2bCs2UW1zeURMU3ZOaDJHaXVKV1Qwa0FhZ3hvZmR3dkxaaUN1SHg0?=
- =?utf-8?B?KzBoTGxvUVdocFBCMVRaWWZZNzR4WldZdkVKL3ZyOGNHaTR4cjdnSVZjdjJS?=
- =?utf-8?B?c3RHMXBUOHVTSjYza040V0toTllPWWQzRWVKMTJJOTE5S0k4czV5dlNwQ1da?=
- =?utf-8?B?ZThzK2JOcUdHZ2dveU5wWnE3bmR0WGlMTVJreGZ1M1E2ZDRUTm1ESXFQOHZ0?=
- =?utf-8?B?K0lrNDZYaWJJLy9QRDBSMXkrS2RUc29mbS9SZElabGFyVWY3clptNnVFOERo?=
- =?utf-8?B?bXdIdmtzcCtKNDl0L2JkS0tYbmhCazBUR0NDT1Y1cGdTUlo2bWYyTDVUaEtD?=
- =?utf-8?B?ekxXUSttWDY2aWM3cFNJMkt4dEsrOVdTSFp6azRKZ2J3TnBrMTgxbVpGVkgv?=
- =?utf-8?B?a2xlWmFJN1RvdWU5NlNBUWE4Z2Z4R21JUmppTFIyNERNWkkwWVdHTkFnL2dm?=
- =?utf-8?B?eGRINmU5KzA2blh0bWdJMU9DcVZJZzVQQm4ycnFHU0YxQmJFdE1VQjBDaTYz?=
- =?utf-8?B?OHAwMSszNUo3d1JhNlAvOGRXR0lkaEgzMER4emNxem1BdTRORDltZVFnUC9V?=
- =?utf-8?B?cDg5NDZ1NFJvMGdiY3NjZ0IyMkREMU9MSkQxeE1MekFnaTFLTFV6UzlhZmlj?=
- =?utf-8?B?SmVRZDAzUkFEVTN5RFJGOUxVendjYU1DYVlBb3I3eFpJRFJqUVgrNUxVRXJl?=
- =?utf-8?B?ZjdiVHhGSDk5UWx2VGdQQThScXorblN0MGRDd3VJVGVuek1CakU4S0x5b3VP?=
- =?utf-8?B?L0pIdDBzQ2tMdVNKZlY3cktmU1pUcDc3ejNsbFd0NkU2emRVNlMwVmtjeCtD?=
- =?utf-8?B?RmZUTGsxWFMvTHkyY1I1MDhBUkkxVC82VzhUQndRV1BPWDJjR0N6Y0FRWU1j?=
- =?utf-8?B?bForVHRzdngyNFpuRUNybEc5SUFMbnlhRkRmbTNpNGRXcUFKQzhYaUQwSmth?=
- =?utf-8?B?K0V4TFl1UUYyN0E5RWEwL1ZEZTVxV0VPWk5IODBzelhrYWpGbTl4WElIVW8x?=
- =?utf-8?B?b0p5dkJaQWxudUVicGVwNS9iZ2VDU1o3eVdtanpRdmJZclBPY1dGalFUUHdH?=
- =?utf-8?B?SlNyOE52T25pdlpTd2RWRHZ2bUdvNkxJSWdjM1J6L0VJOWRpK05Tc2JUbEJz?=
- =?utf-8?B?OWJseVhlbEF1RDFMeDVwZXpZNTFqaURGaWJHMVhybnIxTTRodmtwR2UxR25q?=
- =?utf-8?B?REE9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: e20e860a-a6d7-4c89-93aa-08dd56354fc0
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tt/fwYwrGE6vMGeq7ZcNXPhGns6Hc4MRl8KTnyillhoqWiC035U6MSM9v8CR?=
+ =?us-ascii?Q?7xtJ3l2CeWn09EilCkUXHfNhVXNIfDD7CbVHgD7oxTNsrIyF4ff7e1Wn6rfs?=
+ =?us-ascii?Q?YTBxlFCHCnc7ks54LRfINXBYZ4MDQY2WAV2NMzPCxSgbkkuhWzN6bC9bSey9?=
+ =?us-ascii?Q?WdOG73dZ9Gw6XPOlvyq0cD3ygvB/oOWSMvMgaU0sqbfgI26dWZ3bk0VHdV60?=
+ =?us-ascii?Q?j+dFHhSmRWvJuRSqJkUf4eAY0pboGLyct+NaEnifZ4Oo8NjZ2op9BN7jHsJA?=
+ =?us-ascii?Q?iS1HGSeqFsxedPX+lMLiaJaQHaXcvsF09WA3OJCcipgV2Lp7VV8/ZOHwSTOi?=
+ =?us-ascii?Q?/KDSarcu7noXj/TzwUhiM2Fxx1LEWhdh6U8cv2Z6DUr2yOS5JGtz5W2P89dl?=
+ =?us-ascii?Q?tcseEZRKbQvbxVKURtcOpXuL00seXRlj1kxTp4j9WTWYJyxAkYS01oq06wKf?=
+ =?us-ascii?Q?NrKlRZl2w70HcupVialmXmqZNzEYxRcNvE6hFtvxtKjKmb1pWR55/A1+xxQ+?=
+ =?us-ascii?Q?fnV0RkV3kg9AH5cvziWqm7Jh9RB2tx4LWkNc0vLZRZXcU/T6PjsSp62eb44s?=
+ =?us-ascii?Q?uyLsyMctfhT9BafByzmVD637iF1IgvrxGhjJ9zSkTVW5v6dEVtz/seEioUqR?=
+ =?us-ascii?Q?Hbc6qhcvA0qZGgEfdkX9o+El6jDSQUOqiek9LAkk7Nkjux4neXmZSmV+X+JP?=
+ =?us-ascii?Q?KB7MEHfxZ67Ab9h4aiWz6fPQ+bIkZlNvTEhUJRTjfv2njFnuITBOc8FOiavu?=
+ =?us-ascii?Q?fs1xPAQ7mNr6EArNI1MHLGs+sKDCoRUFtwjliKpWrmd4iOx9bwnbUyMJ7BE8?=
+ =?us-ascii?Q?ZZAjbLhKjRGQhFVgNTCd84d1Z9biBoNebxCijQmxDhxsO18QNYvQ2nN/6s2s?=
+ =?us-ascii?Q?/naTMowDJsouF4lVjQkOs/8QbY2DqcVDAEu/EmfbX3JckCwSdCsbPHC9vJit?=
+ =?us-ascii?Q?3Ph+FXohRYkhQcq0jzlHf2kgdLHLbSWIZ5FbcDMhVbOWu+6XKfKsKFwHF9Zz?=
+ =?us-ascii?Q?M3TWL6PhdA8gi7AolWej4JJQcC3HrzEhbu/9TGUYEFSs4kZMM6o0Rh4GvS1L?=
+ =?us-ascii?Q?awDKAedQp3Qac+tJLKcbqyQplQVVZWINC+l97/OryBgYCAZ6Nrg/VMTYYkrE?=
+ =?us-ascii?Q?e1p2E4LYhMjkoaHRGNMs7dIkLXN2IorzbtA0Cd7m/suL5ubuYtetUd46xlcK?=
+ =?us-ascii?Q?XSoIkqzRgxK2EKpM2O8BgqxLI3tZT3FNGYOpYXS2dmbj54jiYhzU0LMKJPaw?=
+ =?us-ascii?Q?d4TEQzwpVXiWwVlFxjTeTbU4emrQX7QrPHMlkjrwY3wcYMwgiMBcA/gerZ2j?=
+ =?us-ascii?Q?dAtjWiTvk2KEvlj1/4PNzYyrfqgwzNQ+35WxGyFQ013TPWDxayX0eEGggIrI?=
+ =?us-ascii?Q?idIYYevrWiAWpgzAwqoLg5fdF3gRDWhBFhED57fZm8vv/1PZJ7gnkPvEygRB?=
+ =?us-ascii?Q?KLG21R3UecHhCCwfTz/lTy2GgWp1jGpYy9JKAVpNlGYoerWGkL/Ze86ZA1P2?=
+ =?us-ascii?Q?+I1icYmqjACg1ktMdqBa7UQjkvBdKusKgf+4+7I8z6TmTKM3tWuusdazkGjl?=
+ =?us-ascii?Q?p4r7sQ2otVB6d13s7c7CXCSL1NyEgDV93L01YL+x?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7bbd703d-590a-442c-ac9e-08dd5a5c1cf3
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Feb 2025 07:15:13.0788
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2025 14:03:02.7154
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Vej+V8wYBWh3pj0vmWeJO0SMu0bWvnbujZSCrg6i8fiT7meyp9LIpCUaaPXAu1uWnwva69kQONRKHYN6eByBIA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR11MB8509
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4dm4GTLV9e8yPttll4WkgOhdx2YU/X68W1bPun+O8f45aGwd7mf9p+c4Hr1nLohI5zlnoh8HlaGxyqE7q+FDJA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB7675
 X-OriginatorOrg: intel.com
+
+--XmqCeNDaaVDiBrg5
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
 
 
 
 Hello,
 
-kernel test robot noticed "kernel-selftests.pidfd.make.fail" on:
+kernel test robot noticed "kvm-unit-tests.vmx_apic_passthrough_tpr_threshold_test.fail" on:
 
-commit: d3238e8944e2bd1d6a006d35850e86fa80469751 ("selftests: remove unneeded include")
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+commit: 4cad9f87876a943d018ad73ec3919215fb756d2d ("KVM: x86: Wake vCPU for PIC interrupt injection iff a valid IRQ was found")
+https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 
-in testcase: kernel-selftests
-version: kernel-selftests-x86_64-7ff71e6d9239-1_20250215
+in testcase: kvm-unit-tests
+version: kvm-unit-tests-x86_64-f77fb696-1_20250207
 with following parameters:
 
-	group: pidfd
 
 
 
-config: x86_64-dcg_x86_64_defconfig-kselftests
+config: x86_64-rhel-9.4-func
 compiler: gcc-12
-test machine: 36 threads 1 sockets Intel(R) Core(TM) i9-10980XE CPU @ 3.00GHz (Cascade Lake) with 32G memory
+test machine: 4 threads 1 sockets Intel(R) Core(TM) i3-3220 CPU @ 3.30GHz (Ivy Bridge) with 8G memory
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
-
 
 
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202502261412.2a25ee21-lkp@intel.com
-
-KERNEL SELFTESTS: linux_headers_dir is /usr/src/linux-headers-x86_64-dcg_x86_64_defconfig-kselftests-d3238e8944e2bd1d6a006d35850e86fa80469751
-2025-02-23 19:26:51 sed -i s/default_timeout=45/default_timeout=300/ kselftest/runner.sh
-2025-02-23 19:26:51 make -j36 -C pidfd
-make: Entering directory '/usr/src/perf_selftests-x86_64-dcg_x86_64_defconfig-kselftests-d3238e8944e2bd1d6a006d35850e86fa80469751/tools/testing/selftests/pidfd'
-  CC       pidfd_fdinfo_test
-  CC       pidfd_test
-  CC       pidfd_open_test
-  CC       pidfd_poll_test
-  CC       pidfd_wait
-  CC       pidfd_setns_test
-  CC       pidfd_getfd_test
-pidfd_fdinfo_test.c: In function ‘child_fdinfo_nspid_test’:
-pidfd_fdinfo_test.c:230:13: warning: implicit declaration of function ‘mount’ [-Wimplicit-function-declaration]
-  230 |         r = mount(NULL, "/", NULL, MS_REC | MS_PRIVATE, 0);
-      |             ^~~~~
-pidfd_fdinfo_test.c:230:36: error: ‘MS_REC’ undeclared (first use in this function)
-  230 |         r = mount(NULL, "/", NULL, MS_REC | MS_PRIVATE, 0);
-      |                                    ^~~~~~
-pidfd_fdinfo_test.c:230:36: note: each undeclared identifier is reported only once for each function it appears in
-pidfd_fdinfo_test.c:230:45: error: ‘MS_PRIVATE’ undeclared (first use in this function); did you mean ‘MAP_PRIVATE’?
-  230 |         r = mount(NULL, "/", NULL, MS_REC | MS_PRIVATE, 0);
-      |                                             ^~~~~~~~~~
-      |                                             MAP_PRIVATE
-pidfd_fdinfo_test.c:236:15: warning: implicit declaration of function ‘umount2’; did you mean ‘SYS_umount2’? [-Wimplicit-function-declaration]
-  236 |         (void)umount2("/proc", MNT_DETACH);
-      |               ^~~~~~~
-      |               SYS_umount2
-pidfd_fdinfo_test.c:236:32: error: ‘MNT_DETACH’ undeclared (first use in this function)
-  236 |         (void)umount2("/proc", MNT_DETACH);
-      |                                ^~~~~~~~~~
-make: *** [../lib.mk:222: /usr/src/perf_selftests-x86_64-dcg_x86_64_defconfig-kselftests-d3238e8944e2bd1d6a006d35850e86fa80469751/tools/testing/selftests/pidfd/pidfd_fdinfo_test] Error 1
-make: *** Waiting for unfinished jobs....
-pidfd_setns_test.c: In function ‘current_nsset_setup’:
-pidfd_setns_test.c:211:54: warning: implicit declaration of function ‘ioctl’ [-Wimplicit-function-declaration]
-  211 |                 self->child_pidfd_derived_nsfds[i] = ioctl(self->pidfd, info->pidfd_ioctl, 0);
-      |                                                      ^~~~~
-make: Leaving directory '/usr/src/perf_selftests-x86_64-dcg_x86_64_defconfig-kselftests-d3238e8944e2bd1d6a006d35850e86fa80469751/tools/testing/selftests/pidfd'
-2025-02-23 19:26:51 make quicktest=1 run_tests -C pidfd
-make: Entering directory '/usr/src/perf_selftests-x86_64-dcg_x86_64_defconfig-kselftests-d3238e8944e2bd1d6a006d35850e86fa80469751/tools/testing/selftests/pidfd'
-  CC       pidfd_fdinfo_test
-pidfd_fdinfo_test.c: In function ‘child_fdinfo_nspid_test’:
-pidfd_fdinfo_test.c:230:13: warning: implicit declaration of function ‘mount’ [-Wimplicit-function-declaration]
-  230 |         r = mount(NULL, "/", NULL, MS_REC | MS_PRIVATE, 0);
-      |             ^~~~~
-pidfd_fdinfo_test.c:230:36: error: ‘MS_REC’ undeclared (first use in this function)
-  230 |         r = mount(NULL, "/", NULL, MS_REC | MS_PRIVATE, 0);
-      |                                    ^~~~~~
-pidfd_fdinfo_test.c:230:36: note: each undeclared identifier is reported only once for each function it appears in
-pidfd_fdinfo_test.c:230:45: error: ‘MS_PRIVATE’ undeclared (first use in this function); did you mean ‘MAP_PRIVATE’?
-  230 |         r = mount(NULL, "/", NULL, MS_REC | MS_PRIVATE, 0);
-      |                                             ^~~~~~~~~~
-      |                                             MAP_PRIVATE
-pidfd_fdinfo_test.c:236:15: warning: implicit declaration of function ‘umount2’; did you mean ‘SYS_umount2’? [-Wimplicit-function-declaration]
-  236 |         (void)umount2("/proc", MNT_DETACH);
-      |               ^~~~~~~
-      |               SYS_umount2
-pidfd_fdinfo_test.c:236:32: error: ‘MNT_DETACH’ undeclared (first use in this function)
-  236 |         (void)umount2("/proc", MNT_DETACH);
-      |                                ^~~~~~~~~~
-make: *** [../lib.mk:222: /usr/src/perf_selftests-x86_64-dcg_x86_64_defconfig-kselftests-d3238e8944e2bd1d6a006d35850e86fa80469751/tools/testing/selftests/pidfd/pidfd_fdinfo_test] Error 1
-make: Leaving directory '/usr/src/perf_selftests-x86_64-dcg_x86_64_defconfig-kselftests-d3238e8944e2bd1d6a006d35850e86fa80469751/tools/testing/selftests/pidfd'
+| Closes: https://lore.kernel.org/oe-lkp/202502271500.28201544-lkp@intel.com
 
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20250226/202502261412.2a25ee21-lkp@intel.com
+https://download.01.org/0day-ci/archive/20250227/202502271500.28201544-lkp@intel.com
 
+
+[FAIL] vmx_apic_passthrough_tpr_threshold_test (6 tests, 1 unexpected failures)
+
+
+also attached a log
 
 
 -- 
 0-DAY CI Kernel Test Service
 https://github.com/intel/lkp-tests/wiki
 
+
+--XmqCeNDaaVDiBrg5
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: attachment;
+	filename="vmx_apic_passthrough_tpr_threshold_test.log"
+
+timeout -k 1s --foreground 10 /usr/bin/qemu-system-x86_64 --no-reboot -nodefaults -device pc-testdev -device isa-debug-exit,iobase=0xf4,iosize=0x4 -vnc none -serial stdio -device pci-testdev -machine accel=kvm -kernel x86/vmx.flat -smp 1 -cpu max,+vmx -m 2048 -append vmx_apic_passthrough_tpr_threshold_test # -initrd /tmp/tmp.VfFmc6Myze
+enabling apic
+smp: waiting for 0 APs
+paging enabled
+cr0 = 80010011
+cr3 = 107f000
+cr4 = 20
+filter = vmx_apic_passthrough_tpr_threshold_test, test = test_vmx_feature_control
+filter = vmx_apic_passthrough_tpr_threshold_test, test = test_vmxon
+filter = vmx_apic_passthrough_tpr_threshold_test, test = test_vmptrld
+filter = vmx_apic_passthrough_tpr_threshold_test, test = test_vmclear
+filter = vmx_apic_passthrough_tpr_threshold_test, test = test_vmptrst
+filter = vmx_apic_passthrough_tpr_threshold_test, test = test_vmwrite_vmread
+filter = vmx_apic_passthrough_tpr_threshold_test, test = test_vmcs_high
+filter = vmx_apic_passthrough_tpr_threshold_test, test = test_vmcs_lifecycle
+filter = vmx_apic_passthrough_tpr_threshold_test, test = test_vmx_caps
+filter = vmx_apic_passthrough_tpr_threshold_test, test = test_vmread_flags_touch
+filter = vmx_apic_passthrough_tpr_threshold_test, test = test_vmwrite_flags_touch
+filter = vmx_apic_passthrough_tpr_threshold_test, test = null
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmenter
+filter = vmx_apic_passthrough_tpr_threshold_test, test = preemption timer
+filter = vmx_apic_passthrough_tpr_threshold_test, test = control field PAT
+filter = vmx_apic_passthrough_tpr_threshold_test, test = control field EFER
+filter = vmx_apic_passthrough_tpr_threshold_test, test = CR shadowing
+filter = vmx_apic_passthrough_tpr_threshold_test, test = I/O bitmap
+filter = vmx_apic_passthrough_tpr_threshold_test, test = instruction intercept
+filter = vmx_apic_passthrough_tpr_threshold_test, test = EPT A/D disabled
+filter = vmx_apic_passthrough_tpr_threshold_test, test = EPT A/D enabled
+filter = vmx_apic_passthrough_tpr_threshold_test, test = PML
+filter = vmx_apic_passthrough_tpr_threshold_test, test = interrupt
+filter = vmx_apic_passthrough_tpr_threshold_test, test = nmi_hlt
+filter = vmx_apic_passthrough_tpr_threshold_test, test = debug controls
+filter = vmx_apic_passthrough_tpr_threshold_test, test = MSR switch
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmmcall
+filter = vmx_apic_passthrough_tpr_threshold_test, test = disable RDTSCP
+filter = vmx_apic_passthrough_tpr_threshold_test, test = exit_monitor_from_l2_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = invalid_msr
+filter = vmx_apic_passthrough_tpr_threshold_test, test = v2_null_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = v2_multiple_entries_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = fixture_test_case1
+filter = vmx_apic_passthrough_tpr_threshold_test, test = fixture_test_case2
+filter = vmx_apic_passthrough_tpr_threshold_test, test = invvpid_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_controls_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_host_state_area_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_guest_state_area_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmentry_movss_shadow_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmentry_unrestricted_guest_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_eoi_bitmap_ioapic_scan_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_hlt_with_rvi_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = apic_reg_virt_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = virt_x2apic_mode_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_basic_vid_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_eoi_virt_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_posted_interrupts_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_apic_passthrough_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_apic_passthrough_thread_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_apic_passthrough_tpr_threshold_test
+
+Test suite: vmx_apic_passthrough_tpr_threshold_test
+PASS: TPR was zero by guest
+FAIL: self-IPI fired
+PASS: vmx_apic_passthrough_tpr_threshold_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_init_signal_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_sipi_signal_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_vmcs_shadow_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_ldtr_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_cr_load_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_cr4_osxsave_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_no_nm_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_db_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_nmi_window_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_intr_window_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_pending_event_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_pending_event_hlt_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_store_tsc_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_preemption_timer_zero_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_preemption_timer_tf_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_preemption_timer_expiry_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = ept_access_test_not_present
+filter = vmx_apic_passthrough_tpr_threshold_test, test = ept_access_test_read_only
+filter = vmx_apic_passthrough_tpr_threshold_test, test = ept_access_test_write_only
+filter = vmx_apic_passthrough_tpr_threshold_test, test = ept_access_test_read_write
+filter = vmx_apic_passthrough_tpr_threshold_test, test = ept_access_test_execute_only
+filter = vmx_apic_passthrough_tpr_threshold_test, test = ept_access_test_read_execute
+filter = vmx_apic_passthrough_tpr_threshold_test, test = ept_access_test_write_execute
+filter = vmx_apic_passthrough_tpr_threshold_test, test = ept_access_test_read_write_execute
+filter = vmx_apic_passthrough_tpr_threshold_test, test = ept_access_test_reserved_bits
+filter = vmx_apic_passthrough_tpr_threshold_test, test = ept_access_test_ignored_bits
+filter = vmx_apic_passthrough_tpr_threshold_test, test = ept_access_test_paddr_not_present_ad_disabled
+filter = vmx_apic_passthrough_tpr_threshold_test, test = ept_access_test_paddr_not_present_ad_enabled
+filter = vmx_apic_passthrough_tpr_threshold_test, test = ept_access_test_paddr_read_only_ad_disabled
+filter = vmx_apic_passthrough_tpr_threshold_test, test = ept_access_test_paddr_read_only_ad_enabled
+filter = vmx_apic_passthrough_tpr_threshold_test, test = ept_access_test_paddr_read_write
+filter = vmx_apic_passthrough_tpr_threshold_test, test = ept_access_test_paddr_read_write_execute
+filter = vmx_apic_passthrough_tpr_threshold_test, test = ept_access_test_paddr_read_execute_ad_disabled
+filter = vmx_apic_passthrough_tpr_threshold_test, test = ept_access_test_paddr_read_execute_ad_enabled
+filter = vmx_apic_passthrough_tpr_threshold_test, test = ept_access_test_paddr_not_present_page_fault
+filter = vmx_apic_passthrough_tpr_threshold_test, test = ept_access_test_force_2m_page
+filter = vmx_apic_passthrough_tpr_threshold_test, test = atomic_switch_max_msrs_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = atomic_switch_overflow_msrs_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = rdtsc_vmexit_diff_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_mtf_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_mtf_pdpte_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_pf_exception_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_pf_exception_forced_emulation_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_pf_no_vpid_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_pf_invvpid_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_pf_vpid_test
+filter = vmx_apic_passthrough_tpr_threshold_test, test = vmx_exception_test
+SUMMARY: 6 tests, 1 unexpected failures
+
+
+--XmqCeNDaaVDiBrg5--
