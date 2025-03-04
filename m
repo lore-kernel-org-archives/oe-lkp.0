@@ -1,150 +1,208 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0A1C33998
-	for <oe-lkp@lists.linux.dev>; Tue,  4 Mar 2025 08:07:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CA3C1DFD8B;
+	Tue,  4 Mar 2025 08:32:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741075627; cv=none; b=k4aIh4JmzT0P8cUv60NEeqJj9tWWI+x7FMqAeTzmxy56bHNcEtUWNXh6zD5qKaojdaRfI/+4XKfzxcziurwsrM84s6RYs7fy/PiOrtaINH9i/Rivkg6ifwld3wR+NIRZbsgrK8KKqOQ3N19CNBFhbMVHBqodFyHzszM0sOYR0AA=
+	t=1741077150; cv=none; b=PVLywjDrFWTDX8xgk8Bj0mgnCEuePhJ0PfOIXfUceySM+PBh0fawkc0h3ZdUymn7jXEEiUKLHsmSMOcfOuyzgcVFP8QOVBmbfsoAntH6m6Tfq7dCWFce8kjPhIRqcPgZqZSWRVoBDdfhgec0uO9dln0eV/jO185UsmTgVtmyLXE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741075627; c=relaxed/simple;
-	bh=6aNL42DWMh9CZ3QEsxgfMG8yL5+ldkOJylZSLJdAIyc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=CtkjVa8bl+8640d7EgO9i1RXSEKbdx1+wH+5CfuAU0L4GXXkUAlFOfevJq/CjBWQO2p2orQXdYPqXNeEd4y2D+8j+TUd/BuTAx+M85m770yvhMKsmpZocTASeHO4cDx3zg0AUvqJ3AlCM/hJwN/iE2iYtZpA+xWeFErR85hDKwk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=kmPLqm8Z; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	s=arc-20240116; t=1741077150; c=relaxed/simple;
+	bh=AhRwnYjlX63aHPHhlDNV54hbir6Fu4Bo4vRLL7/oSSs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ajgw8aktO/lvtGYsm4WKQCxdwoDiJKlKHnqILAPiZGbuDh0uscFEtm+TA+iVTYQlvFU4w8HelqudWSFFfv767LTqLlm2/lHPj9PjtEGkuPg2fQxp+Jc5z6JKk7FIP1zVyGHQXfdU9S1R0JVzlc1c9VwtKVzf/jYWASsrFoa5aUY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=o5QLYN0/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="kmPLqm8Z"
-Received: from pps.filterd (m0360083.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5243jibx021554;
-	Tue, 4 Mar 2025 08:07:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=w+t+MF
-	rkX0h/lUj1N1OvUCVfE0zwgyCqmUjX5NAs+KM=; b=kmPLqm8ZDuZ8bKlHwJ1cn5
-	GVrGvxjORKFbrlTxU7qe/UYm2avimVDI6ZHM638/DCAOM+LQKWNQXbxnf7Vc/dyZ
-	vFxxY79a2i0fVHgNSS8IW024f7/TpFI9fBgd9nUnD3JTWlJcFvWNhH3UI6MsC/+p
-	L7XQPVj1cZOC9L204UtQCvVds2A9dW1qb0upD127LAMYphwS6+ns5AQCAT66+4uo
-	090QKLoHaFTPRQDa90DUqKZqmMTe4Cc4EH230arhF7fyX8diTtoPdc5lx19MXafa
-	M0uKLnkv2yM67wEgWOJlGevlExosdaYLMdVhglboc7/I62XmS5WP8ZxjpqSAil8w
-	==
-Received: from ppma21.wdc07v.mail.ibm.com (5b.69.3da9.ip4.static.sl-reverse.com [169.61.105.91])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 455sw7h4fq-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 04 Mar 2025 08:07:00 +0000 (GMT)
-Received: from pps.filterd (ppma21.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma21.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 5247kPIt020841;
-	Tue, 4 Mar 2025 08:06:59 GMT
-Received: from smtprelay05.wdc07v.mail.ibm.com ([172.16.1.72])
-	by ppma21.wdc07v.mail.ibm.com (PPS) with ESMTPS id 454djnccgp-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 04 Mar 2025 08:06:59 +0000
-Received: from smtpav01.wdc07v.mail.ibm.com (smtpav01.wdc07v.mail.ibm.com [10.39.53.228])
-	by smtprelay05.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 52486xfH30999050
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 4 Mar 2025 08:06:59 GMT
-Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 0882258065;
-	Tue,  4 Mar 2025 08:06:59 +0000 (GMT)
-Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 566AE58059;
-	Tue,  4 Mar 2025 08:06:55 +0000 (GMT)
-Received: from [9.109.198.149] (unknown [9.109.198.149])
-	by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Tue,  4 Mar 2025 08:06:54 +0000 (GMT)
-Message-ID: <0d440eb5-93f5-4f6c-a3a6-c255e73d9e56@linux.ibm.com>
-Date: Tue, 4 Mar 2025 13:36:53 +0530
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="o5QLYN0/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53D79C4CEE5;
+	Tue,  4 Mar 2025 08:32:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1741077149;
+	bh=AhRwnYjlX63aHPHhlDNV54hbir6Fu4Bo4vRLL7/oSSs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=o5QLYN0/buTIEByPYTiPubUp0hbrIFlusENjpNcb9dnuRraUbP28UwbagILic3jnj
+	 lDR5w9CVBTl27AdZIV3ERdS4Sclka7EQvJQ2qhA8uv6jRi28Nfw6lNBEw7Iq4eXsen
+	 b05xMn6wGh853ZkK2y2OxvcZL5/q9/SmEeFCegoTx5d/x/CBvUqYE17pIGE6SahTuB
+	 TlHzvlFVyzrjkKVcBfOlD6AqTUjKewXqXqRqpXvIK9KhWuynF1dH5YzJBlricYfadR
+	 /8/GfF/LDvyvLIO511Ah1JjwG4S4Q1I9eAiBQTgTzmDabiLQmtaIsof5cKhkzx0V+3
+	 nWUG3/yb1pv4g==
+Date: Tue, 4 Mar 2025 09:32:25 +0100
+From: Christian Brauner <brauner@kernel.org>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-fsdevel@vger.kernel.org
+Subject: Re: [linux-next:master] [fs]  becb2cae42:
+ BUG:kernel_NULL_pointer_dereference,address
+Message-ID: <20250304-beiwerk-gefischt-89dcf567973b@brauner>
+References: <202503041421.38b0d0c-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCHv5 6/7] block: protect wbt_lat_usec using q->elevator_lock
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, Hannes Reinecke <hare@suse.de>,
-        cgroups@vger.kernel.org, linux-block@vger.kernel.org, hch@lst.de,
-        ming.lei@redhat.com, dlemoal@kernel.org, axboe@kernel.dk,
-        gjoyce@ibm.com
-References: <202503041413.872983bd-lkp@intel.com>
-Content-Language: en-US
-From: Nilay Shroff <nilay@linux.ibm.com>
-In-Reply-To: <202503041413.872983bd-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 5O2U86l-RoKFikCMpyKAu600onfJjz8W
-X-Proofpoint-GUID: 5O2U86l-RoKFikCMpyKAu600onfJjz8W
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-03-04_04,2025-03-03_04,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- phishscore=0 mlxlogscore=999 mlxscore=0 adultscore=0 bulkscore=0
- malwarescore=0 lowpriorityscore=0 suspectscore=0 clxscore=1011 spamscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2502100000 definitions=main-2503040067
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <202503041421.38b0d0c-lkp@intel.com>
 
-
-
-On 3/4/25 11:48 AM, kernel test robot wrote:
+On Tue, Mar 04, 2025 at 02:14:55PM +0800, kernel test robot wrote:
 > 
 > 
 > Hello,
 > 
-> kernel test robot noticed "sysfs:cannot_create_duplicate_filename" on:
+> kernel test robot noticed "BUG:kernel_NULL_pointer_dereference,address" on:
 > 
-> commit: 2951441c42530952368c2bae7190ea8779b2385f ("[PATCHv5 6/7] block: protect wbt_lat_usec using q->elevator_lock")
-> url: https://github.com/intel-lab-lkp/linux/commits/Nilay-Shroff/block-acquire-q-limits_lock-while-reading-sysfs-attributes/20250226-204836
-> base: https://git.kernel.org/cgit/linux/kernel/git/axboe/linux-block.git for-next
-> patch link: https://lore.kernel.org/all/20250226124006.1593985-7-nilay@linux.ibm.com/
-> patch subject: [PATCHv5 6/7] block: protect wbt_lat_usec using q->elevator_lock
+> commit: becb2cae42ea9092ad4fca06c85328e1f7f7312b ("fs: record sequence number of origin mount namespace")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+
+Should now be fixed, thanks!
+
 > 
-> in testcase: boot
+> [test failed on linux-next/master c0eb65494e59d9834af7cbad983629e9017b25a1]
 > 
-> config: x86_64-randconfig-074-20250228
-> compiler: gcc-12
+> in testcase: trinity
+> version: trinity-x86_64-ba2360ed-1_20241228
+> with following parameters:
+> 
+> 	runtime: 300s
+> 	group: group-00
+> 	nr_groups: 5
+> 
+> 
+> 
+> config: x86_64-randconfig-075-20250228
+> compiler: clang-19
 > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 > 
 > (please refer to attached dmesg/kmsg for entire log/backtrace)
 > 
 > 
-> +----------------------------------------+------------+------------+
-> |                                        | 96ec4f2440 | 2951441c42 |
-> +----------------------------------------+------------+------------+
-> | sysfs:cannot_create_duplicate_filename | 0          | 12         |
-> +----------------------------------------+------------+------------+
+> +---------------------------------------------------------------------------+------------+------------+
+> |                                                                           | 822c115925 | becb2cae42 |
+> +---------------------------------------------------------------------------+------------+------------+
+> | BUG:kernel_NULL_pointer_dereference,address                               | 0          | 6          |
+> | Oops                                                                      | 0          | 6          |
+> | RIP:__se_sys_open_tree                                                    | 0          | 6          |
+> | Kernel_panic-not_syncing:Fatal_exception                                  | 0          | 6          |
+> +---------------------------------------------------------------------------+------------+------------+
 > 
 > 
 > If you fix the issue in a separate patch/commit (i.e. not just a new version of
 > the same patch/commit), kindly add following tags
 > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202503041413.872983bd-lkp@intel.com
+> | Closes: https://lore.kernel.org/oe-lkp/202503041421.38b0d0c-lkp@intel.com
 > 
 > 
-> [   14.648633][    T1] Non-volatile memory driver v1.3
-> [   14.649743][    T1] telclk_interrupt = 0xf non-mcpbl0010 hw.
-> [   14.650659][    T1] usbcore: registered new interface driver xillyusb
-> [   14.658940][    T1] zram: Added device: zram0
-> [   14.659758][   T11] Floppy drive(s): fd0 is 2.88M AMI BIOS
-> [   14.662273][    T1] sysfs: cannot create duplicate filename '/devices/virtual/block/nullb0/queue/wbt_lat_usec'
-> [   14.663506][    T1] CPU: 0 UID: 0 PID: 1 Comm: swapper Not tainted 6.14.0-rc3-00270-g2951441c4253 #1 adcfde6e4f1dd47f52d455fb462243a4f271be2a
-> [   14.664847][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> [   14.665952][    T1] Call Trace:
-> [   14.666355][    T1]  <TASK>
-> [ 14.666473][ T1] dump_stack_lvl (kbuild/src/consumer/lib/dump_stack.c:123 (discriminator 1)) 
-> [ 14.666473][ T1] dump_stack (kbuild/src/consumer/lib/dump_stack.c:130) 
-> [ 14.666473][ T1] sysfs_warn_dup (kbuild/src/consumer/fs/sysfs/dir.c:32) 
-> [ 14.666473][ T1] sysfs_add_file_mode_ns (kbuild/src/consumer/fs/sysfs/file.c:318) 
+> [  133.969970][ T4356] BUG: kernel NULL pointer dereference, address: 0000000000000000
+> [  133.971269][ T4356] #PF: supervisor read access in kernel mode
+> [  133.972087][ T4356] #PF: error_code(0x0000) - not-present page
+> [  133.972943][ T4356] PGD 800000016ebda067 P4D 800000016ebda067 PUD 0
+> [  133.973896][ T4356] Oops: Oops: 0000 [#1] PREEMPT SMP PTI
+> [  133.974732][ T4356] CPU: 1 UID: 65534 PID: 4356 Comm: trinity-c2 Tainted: G                T  6.14.0-rc1-00005-gbecb2cae42ea #1
+> [  133.976486][ T4356] Tainted: [T]=RANDSTRUCT
+> [  133.977174][ T4356] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> [ 133.978731][ T4356] RIP: 0010:__se_sys_open_tree (fs/mount.h:152 fs/namespace.c:2873 fs/namespace.c:2943 fs/namespace.c:2905) 
+> [ 133.979644][ T4356] Code: 01 f0 ff ff 72 0a e8 62 8a c4 ff e9 59 02 00 00 4c 89 64 24 10 48 c7 c7 78 e5 6e 84 e8 8c c8 82 01 48 8b 44 24 08 4c 8b 68 d0 <4d> 8b 65 00 31 ff 4c 89 e6 e8 f5 8f c4 ff 4d 85 e4 74 07 e8 2b 8a
+> All code
+> ========
+>    0:	01 f0                	add    %esi,%eax
+>    2:	ff                   	(bad)
+>    3:	ff 72 0a             	push   0xa(%rdx)
+>    6:	e8 62 8a c4 ff       	call   0xffffffffffc48a6d
+>    b:	e9 59 02 00 00       	jmp    0x269
+>   10:	4c 89 64 24 10       	mov    %r12,0x10(%rsp)
+>   15:	48 c7 c7 78 e5 6e 84 	mov    $0xffffffff846ee578,%rdi
+>   1c:	e8 8c c8 82 01       	call   0x182c8ad
+>   21:	48 8b 44 24 08       	mov    0x8(%rsp),%rax
+>   26:	4c 8b 68 d0          	mov    -0x30(%rax),%r13
+>   2a:*	4d 8b 65 00          	mov    0x0(%r13),%r12		<-- trapping instruction
+>   2e:	31 ff                	xor    %edi,%edi
+>   30:	4c 89 e6             	mov    %r12,%rsi
+>   33:	e8 f5 8f c4 ff       	call   0xffffffffffc4902d
+>   38:	4d 85 e4             	test   %r12,%r12
+>   3b:	74 07                	je     0x44
+>   3d:	e8                   	.byte 0xe8
+>   3e:	2b                   	.byte 0x2b
+>   3f:	8a                   	.byte 0x8a
+> 
+> Code starting with the faulting instruction
+> ===========================================
+>    0:	4d 8b 65 00          	mov    0x0(%r13),%r12
+>    4:	31 ff                	xor    %edi,%edi
+>    6:	4c 89 e6             	mov    %r12,%rsi
+>    9:	e8 f5 8f c4 ff       	call   0xffffffffffc49003
+>    e:	4d 85 e4             	test   %r12,%r12
+>   11:	74 07                	je     0x1a
+>   13:	e8                   	.byte 0xe8
+>   14:	2b                   	.byte 0x2b
+>   15:	8a                   	.byte 0x8a
+> [  133.982199][ T4356] RSP: 0018:ffff88819bff7eb8 EFLAGS: 00010202
+> [  133.983064][ T4356] RAX: ffff88819a47c338 RBX: 00000000000001b7 RCX: 0000000000000000
+> [  133.984255][ T4356] RDX: ffff88819a650000 RSI: 0000000000000000 RDI: 0000000000000000
+> [  133.985462][ T4356] RBP: 0000000000000001 R08: 0000000000000000 R09: 0000000000000000
+> [  133.986638][ T4356] R10: 0000000000000000 R11: 0000000000000000 R12: ffff88819a650000
+> [  133.987842][ T4356] R13: 0000000000000000 R14: ffff88819bd68e00 R15: 0000000000000001
+> [  133.989130][ T4356] FS:  00007f0d165f6740(0000) GS:ffff88842fd00000(0000) knlGS:0000000000000000
+> [  133.990567][ T4356] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  133.991590][ T4356] CR2: 0000000000000000 CR3: 000000019bc54000 CR4: 00000000000406f0
+> [  133.992731][ T4356] Call Trace:
+> [  133.993247][ T4356]  <TASK>
+> [ 133.993714][ T4356] ? __die_body (arch/x86/kernel/dumpstack.c:421) 
+> [ 133.994395][ T4356] ? page_fault_oops (arch/x86/mm/fault.c:710) 
+> [ 133.995182][ T4356] ? do_user_addr_fault (arch/x86/mm/fault.c:?) 
+> [ 133.996009][ T4356] ? exc_page_fault (arch/x86/mm/fault.c:? arch/x86/mm/fault.c:1538) 
+> [ 133.996790][ T4356] ? asm_exc_page_fault (arch/x86/include/asm/idtentry.h:623) 
+> [ 133.997605][ T4356] ? __se_sys_open_tree (fs/mount.h:152 fs/namespace.c:2873 fs/namespace.c:2943 fs/namespace.c:2905) 
+> [ 133.998433][ T4356] ? __se_sys_open_tree (fs/namespace.c:2872 fs/namespace.c:2943 fs/namespace.c:2905) 
+> [ 133.999267][ T4356] ? do_syscall_64 (arch/x86/entry/common.c:83) 
+> [ 133.999925][ T4356] ? do_int80_emulation (arch/x86/entry/common.c:257) 
+> [ 134.000690][ T4356] ? entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130) 
+> [  134.001567][ T4356]  </TASK>
+> [  134.002006][ T4356] Modules linked in: af_key ieee802154_socket ieee802154 caif_socket caif crc_ccitt rxrpc bluetooth rfkill pptp gre pppoe pppox ppp_generic slhc crypto_user scsi_transport_iscsi xfrm_user sctp dccp_ipv4 dccp ipmi_devintf ipmi_msghandler sr_mod cdrom sg ata_generic ata_piix libata sha1_ssse3 aesni_intel scsi_mod scsi_common input_leds serio_raw stm_p_basic
+> [  134.007226][ T4356] CR2: 0000000000000000
+> [  134.008040][ T4356] ---[ end trace 0000000000000000 ]---
+> [ 134.013890][ T4356] RIP: 0010:__se_sys_open_tree (fs/mount.h:152 fs/namespace.c:2873 fs/namespace.c:2943 fs/namespace.c:2905) 
+> [ 134.015705][ T4356] Code: 01 f0 ff ff 72 0a e8 62 8a c4 ff e9 59 02 00 00 4c 89 64 24 10 48 c7 c7 78 e5 6e 84 e8 8c c8 82 01 48 8b 44 24 08 4c 8b 68 d0 <4d> 8b 65 00 31 ff 4c 89 e6 e8 f5 8f c4 ff 4d 85 e4 74 07 e8 2b 8a
+> All code
+> ========
+>    0:	01 f0                	add    %esi,%eax
+>    2:	ff                   	(bad)
+>    3:	ff 72 0a             	push   0xa(%rdx)
+>    6:	e8 62 8a c4 ff       	call   0xffffffffffc48a6d
+>    b:	e9 59 02 00 00       	jmp    0x269
+>   10:	4c 89 64 24 10       	mov    %r12,0x10(%rsp)
+>   15:	48 c7 c7 78 e5 6e 84 	mov    $0xffffffff846ee578,%rdi
+>   1c:	e8 8c c8 82 01       	call   0x182c8ad
+>   21:	48 8b 44 24 08       	mov    0x8(%rsp),%rax
+>   26:	4c 8b 68 d0          	mov    -0x30(%rax),%r13
+>   2a:*	4d 8b 65 00          	mov    0x0(%r13),%r12		<-- trapping instruction
+>   2e:	31 ff                	xor    %edi,%edi
+>   30:	4c 89 e6             	mov    %r12,%rsi
+>   33:	e8 f5 8f c4 ff       	call   0xffffffffffc4902d
+>   38:	4d 85 e4             	test   %r12,%r12
+>   3b:	74 07                	je     0x44
+>   3d:	e8                   	.byte 0xe8
+>   3e:	2b                   	.byte 0x2b
+>   3f:	8a                   	.byte 0x8a
+> 
+> Code starting with the faulting instruction
+> ===========================================
+>    0:	4d 8b 65 00          	mov    0x0(%r13),%r12
+>    4:	31 ff                	xor    %edi,%edi
+>    6:	4c 89 e6             	mov    %r12,%rsi
+>    9:	e8 f5 8f c4 ff       	call   0xffffffffffc49003
+>    e:	4d 85 e4             	test   %r12,%r12
+>   11:	74 07                	je     0x1a
+>   13:	e8                   	.byte 0xe8
+>   14:	2b                   	.byte 0x2b
+>   15:	8a                   	.byte 0x8a
 > 
 > 
 > The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20250304/202503041413.872983bd-lkp@intel.com
+> https://download.01.org/0day-ci/archive/20250304/202503041421.38b0d0c-lkp@intel.com
 > 
-Sorry, but there was a stale entry left over for wbt_lat_usec attribute 
-causing the observed symptom.I will be sending next patchset with the fix.
-
-Thanks,
---Nilay
- 
+> 
+> 
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+> 
