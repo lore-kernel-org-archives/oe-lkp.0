@@ -1,76 +1,42 @@
-Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AAAA233737
-	for <oe-lkp@lists.linux.dev>; Tue, 11 Mar 2025 10:25:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7D2011CBA;
+	Tue, 11 Mar 2025 12:10:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741688706; cv=none; b=UeoSpHIEmk850zirTRN4wi2auwatEcfHQutMfug7A4hLyXBHx4U9fpgtKGHzI9pwV4tplO2OUX70VZYRhN3kQw1JDXVxnRgbeiMxLwNZZPD6BjfU/QKOojLyDnxZVmTz3culv6LHAHlOHoncx7uR4YwTnS48nw6PK9i9RnMo/Ug=
+	t=1741695048; cv=none; b=tw63TyAjb8IA6iAZEHyDniN91cDVjCUiaEULZdXMtP88aZvSSkWt0TpwNVU/EyIY52APtb2LmjhDul5Sgz6ZFCuitvHxFGoowBYxeaXzvKiM10VWhPM+zeB2MEwGxST5WpxoL4tu2pBa2c44EdmwfwbY3OlFqp50xK5Lzc/A6e4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741688706; c=relaxed/simple;
-	bh=eDgq6JXqoZ8TDqPqb3LsjrjdX0fEl/p8NNVfCpfdP/g=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HC+5VHjQYfwfmv0/o+y1H8WCI9EPx8+s8WkotC5L9qE75EiFrZ4PeKFez4vNSZ8Z3xuYOQjbjADVHYTuPSNu+htkLs7fqrCssElVFvmW003FfNGEJxDn8e8i4bKa+SFY6S3Unlr3OuoFGMzvS7UnStAR7K9yolX+F6wea8xJnPM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XoPF/1sN; arc=none smtp.client-ip=209.85.208.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1741695048; c=relaxed/simple;
+	bh=MPQEg5ZspKJem06ktpIpqTUrYZgcnEZSH61y0z6cE1w=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=cjHCgWDuH+YWDsNhDRT75QRzPz+ntKoYN5434menu3z7RHy2bXwCilReiAjI+GexUiTl5nazWieP9Khcoe/EDMMTuI8H923QCVWm9+mT8ddyKyGcQtgZrw7EwTWtei0n0QA+foHGKlU3V+AUufLdfm4ZRdr+9JdHUXplONOdON4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hT8F7hR2; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XoPF/1sN"
-Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-30c05fd126cso25246171fa.3
-        for <oe-lkp@lists.linux.dev>; Tue, 11 Mar 2025 03:25:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741688703; x=1742293503; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:date:from:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=yQ9QHu9OwuR/HOCYxmuFMkfIcaT2lB/BHKzVqZDxMW4=;
-        b=XoPF/1sNd6SyTvXGvkUGr14zFyAhzVEcmd5B0+vQ6bHSqDQdxw5AIoYcKxnVcf5BKC
-         2hF1OC72VANW1hLPe1Kj3XeIaJIOr6eubzeEwkTGRfpXZ8KCd5rmGYnZBabV5xkocw1f
-         Wb5YfeNgAjoaTEyaYqmcKDzPuXAH39gJvDAgVcPHBYCCbKxce2NqNlh9cRYvmgptFtBY
-         z4j7cRfcd2cknJPdejIf+3YHmQubrbfXHk2mwRU5MLIUZLo83zCkltPpv+eckaGRUQhz
-         wpYbAVVV9vbp3btfkadO8mSv3gafM+Fl7HY/Zd7r0MPpA0Zo/KD9w18Z7ouP9JJCUIbF
-         ej6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741688703; x=1742293503;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:date:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=yQ9QHu9OwuR/HOCYxmuFMkfIcaT2lB/BHKzVqZDxMW4=;
-        b=ngw4D47z6S0YMI7NlX63dw8mNsFLILqnYLj4Q9QOyIAvHuHkbvRuxrLMxjNqnDq0LT
-         BZKivvOQJkYI1SLGgq2Sw1DPGDeY6rGl8Gq+o7pK78JExiUrd4KUpHXGFy+ga05BAhuV
-         xfn1teEWK6VFtyPOHOZtZd1FsKvZVobVL/2S7As6ykIlk1mcwUJVt0T4ynLZgr1JF9fr
-         e9EQBgVHyqhsuhsQ+H5/nnyj0fp8OwPWI7g0XRdxz6+gzQtQBafoonwxQ0sH4zWxF/lV
-         EybsUHlsvvvXqvSPf4L01LecaIXDQ0cdxZ0IDtPTaEkMdnzCkomGmd5RQYNt7urh36Jg
-         K1Gg==
-X-Forwarded-Encrypted: i=1; AJvYcCUnTOG+1VcxJkjQDNLpTpGFMU27lXIvcRgaxXUHgo4q7nbs6lQbqSPhE8c8/uk6FzTgzbr9Vsw=@lists.linux.dev
-X-Gm-Message-State: AOJu0YwXk19UAtfQHBypGxK8E0srxOmiJcfAFLCTqOiQKs8QiRbuaNRl
-	WaHs8/F9e+ai9+pTw5yL1hbMF/h9uRP9GC/1JDNnaAK5ldzkqX3F
-X-Gm-Gg: ASbGncupyX9dm4ZgiDDrkfYpBcB10ItBEYvR+Kv1AR5JJ3saC8w6YrsJtEaqQQ4gEpp
-	PxdTrB3cYR6ozloHg1l0oJv6HUVze4XZg3k+WlLkxBDMG+gs6yTEBVUZ7/QctG5BH7L2hTXYb6k
-	GeFR6RtczqrO7fVicj/j/hZK5RQSYErHokVgVQtc1SfxRaet9eMBzwH66Tetupnm/Z3+/UbNt+V
-	l39ntW4+6cfM0w/xBxSYysYMeLh9+1M0H1dDgE0DmHcTK1vxIybquKA9fc7OG/y+Sg1ydPyPdTW
-	3W0STVzVN8mmSyA/WgydeDpmxSGLix0Q/wqgOGm58EFhvpIf2TI/vUJL3Qxz2ufIC1Y=
-X-Google-Smtp-Source: AGHT+IHZ491cWXLpS+dqT3PInxZGFT9Hawkj2mUnUkO88aGsnJ/1oIGYlFx6eiFALRnYsmrDGwS0fw==
-X-Received: by 2002:a2e:bea2:0:b0:30b:bfca:bbf2 with SMTP id 38308e7fff4ca-30bf44e60d1mr57376651fa.7.1741688702288;
-        Tue, 11 Mar 2025 03:25:02 -0700 (PDT)
-Received: from pc636 (host-95-203-6-24.mobileonline.telia.com. [95.203.6.24])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-30bffe3a2b5sm14425671fa.32.2025.03.11.03.25.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Mar 2025 03:25:01 -0700 (PDT)
-From: Uladzislau Rezki <urezki@gmail.com>
-X-Google-Original-From: Uladzislau Rezki <urezki@pc636>
-Date: Tue, 11 Mar 2025 11:24:58 +0100
-To: liuye <liuye@kylinos.cn>, Andrew Morton <akpm@linux-foundation.org>
-Cc: Uladzislau Rezki <urezki@gmail.com>,
-	Andrew Morton <akpm@linux-foundation.org>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, Christop Hellwig <hch@infradead.org>,
-	linux-mm@kvack.org
-Subject: Re: [linux-next:master] [mm/vmalloc] ff6f2b81ea:
- WARNING:at_kernel/fork.c:#vm_area_init_from
-Message-ID: <Z9APeowHOXe-MkV2@pc636>
-References: <202503101629.7289b1-lkp@intel.com>
- <Z88Y4KcvjcskC5TW@pc636>
- <e563f63c-a37f-4405-921f-6da6c9709788@kylinos.cn>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hT8F7hR2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32850C4CEEC;
+	Tue, 11 Mar 2025 12:10:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1741695047;
+	bh=MPQEg5ZspKJem06ktpIpqTUrYZgcnEZSH61y0z6cE1w=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=hT8F7hR2KxabWlh8ZZQRGkj7dxr8nftImoYF0q+KU6VsZTTVREPRD2dnMRH0WX3l2
+	 YmBXIlsDIwyIGHVU9B91AH2HAs7ObYRD2frrYHZAgSRe4ezF9qk7AwEXgOdTG4zd5q
+	 7UMcUEZl2nlExVjCpCZ/bfV/TudPLcoAMZm/7EZ+YtxRRdgLBc1vf1Y6kj5bt78O44
+	 ZvEpg4IAaoG+i+brns+Qq9ml/nrjlkEYHwseDkQxPnw5urGZLrgY2cTZV6Kfio5892
+	 58IirZJbIozOINhm3+TfIz0tzqQX6cfTEY5izi5OMEKaK5gEaYXTKmnwGxTxJKFfde
+	 28oEb6E1lj0VA==
+Date: Tue, 11 Mar 2025 13:10:43 +0100
+From: Christian Brauner <brauner@kernel.org>
+To: kernel test robot <oliver.sang@intel.com>, 
+	Luis Chamberlain <mcgrof@kernel.org>
+Cc: Hannes Reinecke <hare@suse.de>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	"Matthew Wilcox (Oracle)" <willy@infradead.org>, John Garry <john.g.garry@oracle.com>, 
+	linux-block@vger.kernel.org, ltp@lists.linux.it
+Subject: Re: [linux-next:master] [block/bdev]  3c20917120:
+ BUG:sleeping_function_called_from_invalid_context_at_mm/util.c
+Message-ID: <20250311-testphasen-behelfen-09b950bbecbf@brauner>
+References: <202503101536.27099c77-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -79,133 +45,123 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <e563f63c-a37f-4405-921f-6da6c9709788@kylinos.cn>
+In-Reply-To: <202503101536.27099c77-lkp@intel.com>
 
-On Tue, Mar 11, 2025 at 03:26:59PM +0800, liuye wrote:
+On Mon, Mar 10, 2025 at 03:43:49PM +0800, kernel test robot wrote:
 > 
 > 
-> 在 2025/3/11 00:52, Uladzislau Rezki 写道:
-> > Hello, Andrew, Liu Ye.
-> > 
-> >>
-> >> Hello,
-> >>
-> >> kernel test robot noticed "WARNING:at_kernel/fork.c:#vm_area_init_from" on:
-> >>
-> >> commit: ff6f2b81eaa8a9fe5d158c6e7b1e58d3929c32c1 ("mm/vmalloc: move free_vm_area(area) from the __vmalloc_area_node function to the __vmalloc_node_range_noprof function")
-> >> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> >>
-> >> [test failed on linux-next/master 0a2f889128969dab41861b6e40111aa03dc57014]
-> >>
-> >> in testcase: trinity
-> >> version: 
-> >> with following parameters:
-> >>
-> >> 	runtime: 300s
-> >> 	group: group-02
-> >> 	nr_groups: 5
-> >>
-> >>
-> >>
-> >> config: x86_64-randconfig-101-20250306
-> >> compiler: gcc-12
-> >> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> >>
-> >> (please refer to attached dmesg/kmsg for entire log/backtrace)
-> >>
-> >>
-> >> +-------------------------------------------------------------+------------+------------+
-> >> |                                                             | fb8faf4337 | ff6f2b81ea |
-> >> +-------------------------------------------------------------+------------+------------+
-> >> | boot_successes                                              | 9          | 0          |
-> >> | boot_failures                                               | 0          | 6          |
-> >> | WARNING:at_kernel/fork.c:#vm_area_init_from                 | 0          | 6          |
-> >> | RIP:vm_area_init_from                                       | 0          | 6          |
-> >> | BUG:KASAN:slab-use-after-free_in__vmalloc_node_range_noprof | 0          | 5          |
-> >> | WARNING:at_mm/vmalloc.c:#remove_vm_area                     | 0          | 5          |
-> >> | RIP:remove_vm_area                                          | 0          | 5          |
-> >> | kernel_BUG_at_mm/vmalloc.c                                  | 0          | 5          |
-> >> | Oops:invalid_opcode:#[##]PREEMPT_KASAN                      | 0          | 5          |
-> >> | RIP:__vmalloc_node_range_noprof                             | 0          | 5          |
-> >> | Kernel_panic-not_syncing:Fatal_exception                    | 0          | 5          |
-> >> +-------------------------------------------------------------+------------+------------+
-> >>
-> > The patch that is in question, indeed, looks buggy. At least i can see
-> > how a use-after-free can occur:
-> > 
-> > <snip>
-> > static void *__vmalloc_area_node(...)
-> > ...
-> > fail:
-> > 	vfree(area->addr);
-> > 	return NULL;
-> > }
-> > <snip>
-> > 
-> > <snip>
-> > ...
-> > ret = __vmalloc_area_node(area, gfp_mask, prot, shift, node);
-> > if (!ret) {
-> >   free_vm_area(area);
-> >   goto fail;
-> > }
-> > ...
-> > <snip>
-> > 
-> > vfree() - __also__ frees "vm_struct" where "area" points to. A NULL is
-> > returned and free_vm_area() is invoked one more time on already freed
-> > "area". 
-> > 
-> > Probably it is better to drop the below patch:
-> > 
-> > ff6f2b81eaa8a9fe5d158c6e7b1e58d3929c32c1 ("mm/vmalloc: move free_vm_area(area) from the __vmalloc_area_node function to the __vmalloc_node_range_noprof function")
-> > 
+> Hello,
 > 
-> If drop this commit, then the two “goto fail; ”in the __vmalloc_area_node function will cause area memory leaks in the __vmalloc_area_node function  when returning.
+> kernel test robot noticed "BUG:sleeping_function_called_from_invalid_context_at_mm/util.c" on:
 > 
-It does not leak. On a fail case we release everything including "area":
+> commit: 3c20917120ce61f2a123ca0810293872f4c6b5a4 ("block/bdev: enable large folio support for large logical block sizes")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 
-fail:
-    vfree(area->addr);
-    return NULL;
+Is this also already fixed by:
 
-this is how vfree() works.
+commit a64e5a596067 ("bdev: add back PAGE_SIZE block size validation for sb_set_blocksize()")
 
-> Perhaps the following changes should be added.
+?
+
 > 
-> If the following changes should fix all issues I will send a new patch.
+> in testcase: ltp
+> version: ltp-x86_64-0f9d817a3-1_20250222
+> with following parameters:
 > 
-> diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-> index 61981ee1c9d2..1826f3d70885 100644
-> --- a/mm/vmalloc.c
-> +++ b/mm/vmalloc.c
-> @@ -3697,7 +3697,7 @@ static void *__vmalloc_area_node(struct vm_struct *area, gfp_t gfp_mask,
->                         warn_alloc(gfp_mask, NULL,
->                                 "vmalloc error: size %lu, failed to allocate pages",
->                                 area->nr_pages * PAGE_SIZE);
-> -               goto fail;
-> +               return NULL;
->         }
->  
->         /*
-> @@ -3725,14 +3725,10 @@ static void *__vmalloc_area_node(struct vm_struct *area, gfp_t gfp_mask,
->                 warn_alloc(gfp_mask, NULL,
->                         "vmalloc error: size %lu, failed to map pages",
->                         area->nr_pages * PAGE_SIZE);
-> -               goto fail;
-> +               return NULL;
->         }
->  
->         return area->addr;
-> -
-> -fail:
-> -       vfree(area->addr);
-> -       return NULL;
->  }
->  
-It is better to drop the patch. It does not fix anything, instead it
-has introduced a degrade.
-
---
-Uladzislau Rezki
+> 	disk: 1HDD
+> 	fs: btrfs
+> 	test: syscalls-04/close_range01
+> 
+> 
+> 
+> config: x86_64-rhel-9.4-ltp
+> compiler: gcc-12
+> test machine: 4 threads 1 sockets Intel(R) Core(TM) i3-3220 CPU @ 3.30GHz (Ivy Bridge) with 8G memory
+> 
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+> 
+> 
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202503101536.27099c77-lkp@intel.com
+> 
+> 
+> [  218.427851][   T51] BUG: sleeping function called from invalid context at mm/util.c:901
+> [  218.435981][   T51] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 51, name: kcompactd0
+> [  218.444773][   T51] preempt_count: 1, expected: 0
+> [  218.449601][   T51] RCU nest depth: 0, expected: 0
+> [  218.454476][   T51] CPU: 2 UID: 0 PID: 51 Comm: kcompactd0 Tainted: G S                 6.14.0-rc1-00006-g3c20917120ce #1
+> [  218.454486][   T51] Tainted: [S]=CPU_OUT_OF_SPEC
+> [  218.454488][   T51] Hardware name: Hewlett-Packard HP Pro 3340 MT/17A1, BIOS 8.07 01/24/2013
+> [  218.454492][   T51] Call Trace:
+> [  218.454495][   T51]  <TASK>
+> [ 218.454498][ T51] dump_stack_lvl (lib/dump_stack.c:123 (discriminator 1)) 
+> [ 218.454508][ T51] __might_resched (kernel/sched/core.c:8767) 
+> [ 218.454517][ T51] folio_mc_copy (include/linux/sched.h:2072 mm/util.c:901) 
+> [ 218.454525][ T51] ? _raw_spin_lock (arch/x86/include/asm/atomic.h:107 include/linux/atomic/atomic-arch-fallback.h:2170 include/linux/atomic/atomic-instrumented.h:1302 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 include/linux/spinlock_api_smp.h:134 kernel/locking/spinlock.c:154) 
+> [ 218.454532][ T51] __migrate_folio+0x11a/0x2d0 
+> [ 218.454541][ T51] __buffer_migrate_folio (mm/migrate.c:945 mm/migrate.c:876) 
+> [ 218.454548][ T51] move_to_new_folio (mm/migrate.c:1080) 
+> [ 218.454555][ T51] migrate_folio_move (mm/migrate.c:1360) 
+> [ 218.454562][ T51] ? __pfx_compaction_free (mm/compaction.c:1892) 
+> [ 218.454572][ T51] ? __pfx_migrate_folio_move (mm/migrate.c:1349) 
+> [ 218.454578][ T51] ? compaction_alloc_noprof (arch/x86/include/asm/bitops.h:206 arch/x86/include/asm/bitops.h:238 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/page-flags.h:829 include/linux/page-flags.h:850 mm/internal.h:711 mm/compaction.c:1878) 
+> [ 218.454587][ T51] ? __pfx_compaction_alloc (mm/compaction.c:1882) 
+> [ 218.454594][ T51] ? __pfx_compaction_free (mm/compaction.c:1892) 
+> [ 218.454601][ T51] ? __pfx_compaction_free (mm/compaction.c:1892) 
+> [ 218.454607][ T51] ? migrate_folio_unmap (arch/x86/include/asm/atomic.h:23 include/linux/atomic/atomic-arch-fallback.h:457 include/linux/atomic/atomic-instrumented.h:33 include/linux/mm.h:1257 include/linux/mm.h:1273 mm/migrate.c:1324) 
+> [ 218.454614][ T51] migrate_pages_batch (mm/migrate.c:1721 mm/migrate.c:1959) 
+> [ 218.454621][ T51] ? __pfx_compaction_free (mm/compaction.c:1892) 
+> [ 218.454631][ T51] ? __pfx_migrate_pages_batch (mm/migrate.c:1779) 
+> [ 218.454638][ T51] ? cgroup_rstat_updated (kernel/cgroup/rstat.c:45 kernel/cgroup/rstat.c:101) 
+> [ 218.454648][ T51] migrate_pages_sync (mm/migrate.c:1992) 
+> [ 218.454656][ T51] ? __pfx_compaction_alloc (mm/compaction.c:1882) 
+> [ 218.454662][ T51] ? __pfx_compaction_free (mm/compaction.c:1892) 
+> [ 218.454669][ T51] ? lru_gen_del_folio (include/linux/list.h:215 include/linux/list.h:229 include/linux/mm_inline.h:300) 
+> [ 218.454677][ T51] ? __pfx_migrate_pages_sync (mm/migrate.c:1982) 
+> [ 218.454683][ T51] ? set_pfnblock_flags_mask (mm/page_alloc.c:415 (discriminator 14)) 
+> [ 218.454691][ T51] ? __pfx_lru_gen_del_folio (include/linux/mm_inline.h:284) 
+> [ 218.454699][ T51] ? __pfx_compaction_alloc (mm/compaction.c:1882) 
+> [ 218.454705][ T51] ? __pfx_compaction_free (mm/compaction.c:1892) 
+> [ 218.454713][ T51] migrate_pages (mm/migrate.c:2098) 
+> [ 218.454720][ T51] ? __pfx_compaction_alloc (mm/compaction.c:1882) 
+> [ 218.454726][ T51] ? __pfx_compaction_free (mm/compaction.c:1892) 
+> [ 218.454733][ T51] ? __pfx_buffer_migrate_folio_norefs (mm/migrate.c:936) 
+> [ 218.454740][ T51] ? __pfx_migrate_pages (mm/migrate.c:2057) 
+> [ 218.454748][ T51] ? isolate_migratepages (mm/compaction.c:2167) 
+> [ 218.454757][ T51] compact_zone (mm/compaction.c:2667) 
+> [ 218.454767][ T51] ? __pfx_compact_zone (mm/compaction.c:2529) 
+> [ 218.454774][ T51] ? _raw_spin_lock_irqsave (arch/x86/include/asm/atomic.h:107 include/linux/atomic/atomic-arch-fallback.h:2170 include/linux/atomic/atomic-instrumented.h:1302 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 include/linux/spinlock_api_smp.h:111 kernel/locking/spinlock.c:162) 
+> [ 218.454780][ T51] ? __pfx__raw_spin_lock_irqsave (kernel/locking/spinlock.c:161) 
+> [ 218.454788][ T51] compact_node (mm/compaction.c:2934) 
+> [ 218.454795][ T51] ? __pfx_compact_node (mm/compaction.c:2910) 
+> [ 218.454807][ T51] ? __pfx_extfrag_for_order (mm/vmstat.c:1138) 
+> [ 218.454814][ T51] ? __pfx_mutex_unlock (kernel/locking/mutex.c:518) 
+> [ 218.454822][ T51] ? finish_wait (include/linux/list.h:215 include/linux/list.h:287 kernel/sched/wait.c:376) 
+> [ 218.454831][ T51] kcompactd (mm/compaction.c:2235 mm/compaction.c:3227) 
+> [ 218.454839][ T51] ? __pfx_kcompactd (mm/compaction.c:3179) 
+> [ 218.454846][ T51] ? _raw_spin_lock_irqsave (arch/x86/include/asm/atomic.h:107 include/linux/atomic/atomic-arch-fallback.h:2170 include/linux/atomic/atomic-instrumented.h:1302 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 include/linux/spinlock_api_smp.h:111 kernel/locking/spinlock.c:162) 
+> [ 218.454852][ T51] ? __pfx__raw_spin_lock_irqsave (kernel/locking/spinlock.c:161) 
+> [ 218.454858][ T51] ? __pfx_autoremove_wake_function (kernel/sched/wait.c:383) 
+> [ 218.454867][ T51] ? __kthread_parkme (arch/x86/include/asm/bitops.h:206 arch/x86/include/asm/bitops.h:238 include/asm-generic/bitops/instrumented-non-atomic.h:142 kernel/kthread.c:291) 
+> [ 218.454874][ T51] ? __pfx_kcompactd (mm/compaction.c:3179) 
+> [ 218.454880][ T51] kthread (kernel/kthread.c:464) 
+> [ 218.454887][ T51] ? __pfx_kthread (kernel/kthread.c:413) 
+> [ 218.454895][ T51] ? __pfx_kthread (kernel/kthread.c:413) 
+> [ 218.454902][ T51] ret_from_fork (arch/x86/kernel/process.c:154) 
+> [ 218.454910][ T51] ? __pfx_kthread (kernel/kthread.c:413) 
+> [ 218.454915][ T51] ret_from_fork_asm (arch/x86/entry/entry_64.S:257) 
+> [  218.454924][   T51]  </TASK>
+> 
+> 
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20250310/202503101536.27099c77-lkp@intel.com
+> 
+> 
+> 
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+> 
