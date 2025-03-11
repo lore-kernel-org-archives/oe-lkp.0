@@ -1,69 +1,209 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BF9219007D;
-	Tue, 11 Mar 2025 03:26:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DD9D221DA1
+	for <oe-lkp@lists.linux.dev>; Tue, 11 Mar 2025 07:27:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741663579; cv=none; b=fQkEdv6L6a4ULM9LotXGfpgfxOIdM4PKw3SzPGpPhJBP++EOU7Uty+Ds8T3x54E0EXYLOdfQ3WeSMHEuI+sMF4LJ0SDqWgiQ1Ij9ys9ibFU94bTLrXskLQMNGerX9m4kvtmgFZOTb/NO5fUkCB3jObQsd40iQESOv5I+kyz7O0M=
+	t=1741678056; cv=none; b=TKVzmo0mAJJpRktERm+/MAIMSr3feb3kbgy1ezlmCbpdt/ml1eo1uQeu4ypmV95sK2UoUgyaiEpLi0m2IiMl8k8SDfInvaECeXsQXSyIyjfae8M85y92lE+fWACjYe4opANgudg/eGUPNTov8ikt8Qsd7gIvFlRlyM7I2mDCPzw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741663579; c=relaxed/simple;
-	bh=rIMjY2dFt+Lt1PyoYuCijFezfQk+o99NGZVJjN+fDUQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eBVpjzogjm+Y8m0EQ4T+wzLaHdGZ4YHfsT3r+C+ezvujHouMFIn5gVs4YpsEpZPIWPYa2mKsKzh+7/UaWdHXnq1BW6ocul9RnzfvUvdQM+CBGqLZLAIgGbNL6y29aRqI5f7RIJoVF4irrycAnA0G8A70WETK3TcEf4w4DZ7opho=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pOHVEl2v; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pOHVEl2v"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41605C4CEE9;
-	Tue, 11 Mar 2025 03:26:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1741663577;
-	bh=rIMjY2dFt+Lt1PyoYuCijFezfQk+o99NGZVJjN+fDUQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=pOHVEl2vHwqln/qBGYJOl9jBduAi4KkQUiisN3H6pmLiP/HxPBqF5+0ZPWtY9w6la
-	 mNrfVDfN+G9JANWRA4prIlgJ450bYErvsPrscMYR5ifP9yqx/L6fhEIjYmtwqpaAvW
-	 8W1vcmfiW3V9/eN01vw/FCwQUGijwU636aPNqLM9SsrqEcBCXmIwS9V3mAgHOGgV1N
-	 nngiJ6c3GaAQPvy3E00+Ck0VJLANGxZZbPq5BYigAHTRGZHw1Tncnw+156tUMo0mRs
-	 aBJ869fkzLkGvuQZlhXMdVoKXFl8SOHwvRLhdd9rg7pyaj0MULorc+x44J3fDsBOFY
-	 IWLKsapaExR2Q==
-Date: Mon, 10 Mar 2025 20:26:15 -0700
-From: Luis Chamberlain <mcgrof@kernel.org>
-To: Li Wang <liwang@redhat.com>
-Cc: kernel test robot <oliver.sang@intel.com>,
-	LTP List <ltp@lists.linux.it>,
-	Christian Brauner <brauner@kernel.org>, 0day robot <lkp@intel.com>,
-	"Matthew Wilcox (Oracle)" <willy@infradead.org>,
-	linux-block@vger.kernel.org, Hannes Reinecke <hare@suse.de>,
-	oe-lkp@lists.linux.dev
-Subject: Re: [LTP] [linux-next:master] [block/bdev] 47dd675323:
- ltp.ioctl_loop06.fail
-Message-ID: <Z8-tV0zJKP7wRAxK@bombadil.infradead.org>
-References: <202503101538.84c33cd4-lkp@intel.com>
- <CAEemH2egF6ehr7B_5KDLuBQqoUJ5k7bVZkid-ERDBkxkChi7fw@mail.gmail.com>
- <CAB=NE6UWzyq+qXhGmpH2-6bePE+Zi=dJjBH7y3HeJnYyh6xvtw@mail.gmail.com>
- <CAEemH2c21vrSOKdJvHkyH+UOv-aXefXeFVZuv4-DSZ_P4Z3Mxw@mail.gmail.com>
+	s=arc-20240116; t=1741678056; c=relaxed/simple;
+	bh=stQIiUNLuqEHjJoODJyAMhHAOo0USnx04Q2RzLCuPu0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=OeGdY9uaGkCgvFE4G0IZkLizf2RlcIAJqasycyO2aimo/ox3lr5ROSgP5kcuGcPNnoYlJWcxUIsPyqmiZj6zT30vXgYVO3zugLeE+iR0SmcFpP4eJ2FRpN4JMBZCFaVy5ScjSnAIk39SingAqrv9UACupsyrc/muaaEOjcA9El4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
+X-UUID: 43cfda32fe4a11efa216b1d71e6e1362-20250311
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.45,REQID:3dc87d35-bfe1-4761-a9de-ec26d9451ec1,IP:0,U
+	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
+	release,TS:0
+X-CID-META: VersionHash:6493067,CLOUDID:9bd491b5f3e91c0733a7b8ff98a6724a,BulkI
+	D:nil,BulkQuantity:0,Recheck:0,SF:80|81|82|83|102,TC:nil,Content:0|52,EDM:
+	-3,IP:nil,URL:1,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,
+	AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 0,NGT
+X-CID-BAS: 0,NGT,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR,TF_CID_SPAM_ULS
+X-UUID: 43cfda32fe4a11efa216b1d71e6e1362-20250311
+Received: from node2.com.cn [(10.44.16.197)] by mailgw.kylinos.cn
+	(envelope-from <liuye@kylinos.cn>)
+	(Generic MTA)
+	with ESMTP id 1192882239; Tue, 11 Mar 2025 15:27:19 +0800
+Received: from node2.com.cn (localhost [127.0.0.1])
+	by node2.com.cn (NSMail) with SMTP id D4C66B804E8F;
+	Tue, 11 Mar 2025 15:27:18 +0800 (CST)
+X-ns-mid: postfix-67CFE5D6-8161111199
+Received: from [172.30.70.73] (unknown [172.30.70.73])
+	by node2.com.cn (NSMail) with ESMTPA id BCC3DB80758A;
+	Tue, 11 Mar 2025 07:27:15 +0000 (UTC)
+Message-ID: <e563f63c-a37f-4405-921f-6da6c9709788@kylinos.cn>
+Date: Tue, 11 Mar 2025 15:26:59 +0800
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAEemH2c21vrSOKdJvHkyH+UOv-aXefXeFVZuv4-DSZ_P4Z3Mxw@mail.gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [linux-next:master] [mm/vmalloc] ff6f2b81ea:
+ WARNING:at_kernel/fork.c:#vm_area_init_from
+To: Uladzislau Rezki <urezki@gmail.com>,
+ Andrew Morton <akpm@linux-foundation.org>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
+ Christop Hellwig <hch@infradead.org>, linux-mm@kvack.org
+References: <202503101629.7289b1-lkp@intel.com> <Z88Y4KcvjcskC5TW@pc636>
+Content-Language: en-US
+From: liuye <liuye@kylinos.cn>
+In-Reply-To: <Z88Y4KcvjcskC5TW@pc636>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Mar 11, 2025 at 09:43:42AM +0800, Li Wang wrote:
-> On Mon, Mar 10, 2025 at 11:15 PM Luis Chamberlain <mcgrof@kernel.org> wrote:
-> 
-> > There's a fix for this already in next
-> >
-> 
-> Oh? Which commit?
 
-Oh seems linux-next hasn't been updated in a few days, so you can try
-this patch:
 
-https://lore.kernel.org/all/20250307020403.3068567-1-mcgrof@kernel.org/
+=E5=9C=A8 2025/3/11 00:52, Uladzislau Rezki =E5=86=99=E9=81=93:
+> Hello, Andrew, Liu Ye.
+>=20
+>>
+>> Hello,
+>>
+>> kernel test robot noticed "WARNING:at_kernel/fork.c:#vm_area_init_from=
+" on:
+>>
+>> commit: ff6f2b81eaa8a9fe5d158c6e7b1e58d3929c32c1 ("mm/vmalloc: move fr=
+ee_vm_area(area) from the __vmalloc_area_node function to the __vmalloc_n=
+ode_range_noprof function")
+>> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git maste=
+r
+>>
+>> [test failed on linux-next/master 0a2f889128969dab41861b6e40111aa03dc5=
+7014]
+>>
+>> in testcase: trinity
+>> version:=20
+>> with following parameters:
+>>
+>> 	runtime: 300s
+>> 	group: group-02
+>> 	nr_groups: 5
+>>
+>>
+>>
+>> config: x86_64-randconfig-101-20250306
+>> compiler: gcc-12
+>> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -=
+m 16G
+>>
+>> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>>
+>>
+>> +-------------------------------------------------------------+-------=
+-----+------------+
+>> |                                                             | fb8faf=
+4337 | ff6f2b81ea |
+>> +-------------------------------------------------------------+-------=
+-----+------------+
+>> | boot_successes                                              | 9     =
+     | 0          |
+>> | boot_failures                                               | 0     =
+     | 6          |
+>> | WARNING:at_kernel/fork.c:#vm_area_init_from                 | 0     =
+     | 6          |
+>> | RIP:vm_area_init_from                                       | 0     =
+     | 6          |
+>> | BUG:KASAN:slab-use-after-free_in__vmalloc_node_range_noprof | 0     =
+     | 5          |
+>> | WARNING:at_mm/vmalloc.c:#remove_vm_area                     | 0     =
+     | 5          |
+>> | RIP:remove_vm_area                                          | 0     =
+     | 5          |
+>> | kernel_BUG_at_mm/vmalloc.c                                  | 0     =
+     | 5          |
+>> | Oops:invalid_opcode:#[##]PREEMPT_KASAN                      | 0     =
+     | 5          |
+>> | RIP:__vmalloc_node_range_noprof                             | 0     =
+     | 5          |
+>> | Kernel_panic-not_syncing:Fatal_exception                    | 0     =
+     | 5          |
+>> +-------------------------------------------------------------+-------=
+-----+------------+
+>>
+> The patch that is in question, indeed, looks buggy. At least i can see
+> how a use-after-free can occur:
+>=20
+> <snip>
+> static void *__vmalloc_area_node(...)
+> ...
+> fail:
+> 	vfree(area->addr);
+> 	return NULL;
+> }
+> <snip>
+>=20
+> <snip>
+> ...
+> ret =3D __vmalloc_area_node(area, gfp_mask, prot, shift, node);
+> if (!ret) {
+>   free_vm_area(area);
+>   goto fail;
+> }
+> ...
+> <snip>
+>=20
+> vfree() - __also__ frees "vm_struct" where "area" points to. A NULL is
+> returned and free_vm_area() is invoked one more time on already freed
+> "area".=20
+>=20
+> Probably it is better to drop the below patch:
+>=20
+> ff6f2b81eaa8a9fe5d158c6e7b1e58d3929c32c1 ("mm/vmalloc: move free_vm_are=
+a(area) from the __vmalloc_area_node function to the __vmalloc_node_range=
+_noprof function")
+>=20
 
-  Luis
+If drop this commit, then the two =E2=80=9Cgoto fail; =E2=80=9Din the __v=
+malloc_area_node function will cause area memory leaks in the __vmalloc_a=
+rea_node function  when returning.
+
+Perhaps the following changes should be added.
+
+If the following changes should fix all issues I will send a new patch.
+
+diff --git a/mm/vmalloc.c b/mm/vmalloc.c
+index 61981ee1c9d2..1826f3d70885 100644
+--- a/mm/vmalloc.c
++++ b/mm/vmalloc.c
+@@ -3697,7 +3697,7 @@ static void *__vmalloc_area_node(struct vm_struct *=
+area, gfp_t gfp_mask,
+                        warn_alloc(gfp_mask, NULL,
+                                "vmalloc error: size %lu, failed to alloc=
+ate pages",
+                                area->nr_pages * PAGE_SIZE);
+-               goto fail;
++               return NULL;
+        }
+=20
+        /*
+@@ -3725,14 +3725,10 @@ static void *__vmalloc_area_node(struct vm_struct=
+ *area, gfp_t gfp_mask,
+                warn_alloc(gfp_mask, NULL,
+                        "vmalloc error: size %lu, failed to map pages",
+                        area->nr_pages * PAGE_SIZE);
+-               goto fail;
++               return NULL;
+        }
+=20
+        return area->addr;
+-
+-fail:
+-       vfree(area->addr);
+-       return NULL;
+ }
+=20
+Thanks,
+Liu Ye
+
+
+> --
+> Uladzislau Rezki
