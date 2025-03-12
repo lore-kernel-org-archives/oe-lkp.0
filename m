@@ -1,104 +1,127 @@
-Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BDB825BAB1
-	for <oe-lkp@lists.linux.dev>; Tue, 11 Mar 2025 20:26:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 531723595E;
+	Wed, 12 Mar 2025 05:00:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741724807; cv=none; b=gHDPXF2xB4JmjkAw4JKRksF1Qsay+TA5RXrTdd2GviLyhkWucrrN4sLCAEtj7J8iyrsclE2OwCoxmxX2d5LZ8oD/UxpwzXznKzmSGqZ6PToFVjYPkAjLd6NtwmSgrHsNu3f7/QtvfgGG5Jk8zHm1YD2HxUj+uBUwsVfskSutZUA=
+	t=1741755641; cv=none; b=CA1ojzRhKIZ68/lVPBakwsATQq4oxKH35pnVfz0JeizpQBmFUSRK7YTnTmbcEdNb1YYnvXlaExUmZ21rVeAoHYMQZb1wW4lqGPv2KvXKIIaepsH8CbztNgettCWMkNU8F4uSxETbuZx+f4r+VOMIuppL4t+a6ESBg/NlMfvyZhg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741724807; c=relaxed/simple;
-	bh=m50ftLv102iZ+oXasLDGl0g4wrXDjViIEYK+5Alcy+E=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SPdP/NjCa3TjeZXCXzilB7eGUKkGVz2H1fL5wuiwK7mfbTGSsPY0E2AMg6bcgWUwN0hWzpDvTxzsklX26ageFwRrdZubJ/qsT1HW9MtG2uOWrkujTT9q5Lw1KQFWCGq60uZgrRxEXoQ//Lkte7q7pSknKbg+tllygxHq+aQ2Tzg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=O8ZCVsFH; arc=none smtp.client-ip=209.85.208.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1741755641; c=relaxed/simple;
+	bh=OkfWCX8RTVVm9tKf1VzdYkRl9gs9wdSCj7hmibIgeMo=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=KpnzfJfxL7v8tH1i+ZWTRQMyFdKhJ5hRYAW3RUMDZHwukXRn/7jRrxti/3JrOWkQrZDg9G9oDoWuj9BsvQf1NaHoGrf3TZosbsO8mACyLVfuwkI4wCPykzpzdRtQjKSXtetIP3QWGRImqF+lo3d5XmXPqEPndsYqssWpZ3moYAE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=kernel.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=t/IlGc//; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="O8ZCVsFH"
-Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-30613802a59so65783691fa.0
-        for <oe-lkp@lists.linux.dev>; Tue, 11 Mar 2025 13:26:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741724803; x=1742329603; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=AahSKJVgI/pi08MdkK0DJyWDSRLW4fh2EkDnIVgqOZE=;
-        b=O8ZCVsFHADgWBVdcGcMufqPbgXUlLQmfuo5azXswa4lf8Yp3kCF1J//TYmKhsuGog2
-         RvW70btiwPmlhudcmTXZsbDtZO7nHzLc5MHX43bCfgdbVox0TeAcgPZBucWdhK9XoRPk
-         r9iI+XdPpthMN9NxDN8L3aae/nqyS6MM56bcQtuphQfIl48ibklKEIkskTWB87Ir5NXp
-         aiikAXBPA0zT5FRz2uvErrSWNEken0Aare4/JpXWR5zr3EgTRydnWYmbMret5yUjMOHR
-         VAgQPmZA/tjFWkgbb0HVoc/aPHXtqyeF9SNZIV7Qjxyjn+fGU38KzjZoLHFS3alyjr4Y
-         nW6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741724803; x=1742329603;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AahSKJVgI/pi08MdkK0DJyWDSRLW4fh2EkDnIVgqOZE=;
-        b=ihbOc6KjpI83RrQZeg5FlFom8j5uBhhenAw+AhtnDS/ZUP2B6WxqCVHL8l/+QnWcgK
-         BdRKVH1WU50ccED17Zh9QL1iO+p8Rjq8tI8sPMwKwjDorArJq20xVIQsJD/JfHyxifpx
-         CnD72y9wulWZbLI3+Q0Ev7HCgizyf1GTE/fScpeG2tNWogi2ZUe+Gl5DUdnqjB2Aotx0
-         lognDx/bWcSpxOGJMcIB/cozW8c18eniyTY1OwYPAuFJ/cGRq1hbhCnlAZhFzhqKeJnq
-         sJpCT1ciBwHHwMqMcH02T7M9puTvCuusFoJ4DSU97Q/MOrhSfL3y5aI2ooSsIzfuhjqz
-         8Qcg==
-X-Forwarded-Encrypted: i=1; AJvYcCVmcVibSj4bJR5rj9DDbDLrK/GKrunpZ6XbvHvdw7crGQFtZgrlFFAaS9XLU3hdn6kIyllu/40=@lists.linux.dev
-X-Gm-Message-State: AOJu0YwlugECLmq7CX1RbzY4mM5+dT8KmaoDDNrV9EuBs3TIw7GsjnbV
-	PCov90QBtTZHD71X6/lIHdV39VahDNkAh8xvsiZP4+WdYd/+scQ3
-X-Gm-Gg: ASbGncvRsiKWOhinTnLcoHcYh9yjt5ZpxP2SFYDHgS3ohknRZ8+FW6unRs9SugEdc0W
-	3GGug9f3JYVUe7/Z5k/gMILRlh6w/gXioGDyI5pHCkP+ZKvo0K02G2uXCGGdHSH8Qj/oB1Fmx9O
-	XSunHmHggqlbRR9TKAshdO2zwT5TxMFJQ6r3ZdbGlsmDD6rN/2jGVh4Q1lutEbSxpQ/bVz40zLN
-	E2Yitmrn4HcRcPU7sB5Q4WDTm4p0ShI2U3aXUsvitKlsVJvEdhbD8BbYXJ06Dit86MTOeEXPCZO
-	dr/i4vqJFCI=
-X-Google-Smtp-Source: AGHT+IEH2DE5DnmsyAIiy3U/MIxWnrBXiXqD0KluC3NvZJc3U+m2N4UXxe7iAtAZL/xvbs5abc+q6A==
-X-Received: by 2002:a05:651c:198a:b0:308:e5e8:9d4c with SMTP id 38308e7fff4ca-30bf46071f4mr60240811fa.28.1741724803202;
-        Tue, 11 Mar 2025 13:26:43 -0700 (PDT)
-Received: from pc636 ([2001:9b1:d5a0:a500::800])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-30bfead2e76sm15709241fa.7.2025.03.11.13.26.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Mar 2025 13:26:42 -0700 (PDT)
-From: Uladzislau Rezki <urezki@gmail.com>
-X-Google-Original-From: Uladzislau Rezki <urezki@pc636>
-Date: Tue, 11 Mar 2025 21:26:41 +0100
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Uladzislau Rezki <urezki@gmail.com>, liuye <liuye@kylinos.cn>,
-	oe-lkp@lists.linux.dev, lkp@intel.com,
-	Christop Hellwig <hch@infradead.org>, linux-mm@kvack.org
-Subject: Re: [linux-next:master] [mm/vmalloc] ff6f2b81ea:
- WARNING:at_kernel/fork.c:#vm_area_init_from
-Message-ID: <Z9CcgQYZdzHXKRoT@pc636>
-References: <202503101629.7289b1-lkp@intel.com>
- <Z88Y4KcvjcskC5TW@pc636>
- <e563f63c-a37f-4405-921f-6da6c9709788@kylinos.cn>
- <Z9APeowHOXe-MkV2@pc636>
- <Z9AwAKYI92AgIJ8M@pc636>
- <20250311111828.10b30576b9392e56d2c3f963@linux-foundation.org>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="t/IlGc//"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Sender:Content-Transfer-Encoding:
+	MIME-Version:Message-ID:Date:Subject:Cc:To:From:Reply-To:Content-Type:
+	Content-ID:Content-Description:In-Reply-To:References;
+	bh=4VfUOjWo+32AuDiC0iqDr/l/PZ8nRE39G5zh1X+A1H0=; b=t/IlGc//5oKhH6cZ8+VHa8bIfM
+	tvt1u6yhti395QXHvt9kcozQoMQbFXQZouoDZl+V2ogFnAQJqk/1QHNdwflgIwO/UhbQY6ft0lyU2
+	6MpOs3RjEmatQ+7feZOUZaGhmt7nC11d8dLCRfIC7urgrHjiypoz6KwayU8iq8yAdeGDDc0t/BBIl
+	epyGrqE59e6CTlhp4neui5oR2SlfVz3+AaYwkHb+AOyhJgu9BMAf5VKZhHlIWc8C4S6MQymNXAD84
+	BcObPxnc+TcSehPM8PIDNsHyDEHH1zfY6rxeGK6Rf6liXSVNtNB3icLV8j33REoK6YIPEBIbrN6F7
+	CrPzSN/Q==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.98 #2 (Red Hat Linux))
+	id 1tsECj-00000007U8E-2579;
+	Wed, 12 Mar 2025 05:00:29 +0000
+From: Luis Chamberlain <mcgrof@kernel.org>
+To: liwang@redhat.com,
+	brauner@kernel.org,
+	hare@suse.de,
+	willy@infradead.org,
+	david@fromorbit.com,
+	djwong@kernel.org
+Cc: kbusch@kernel.org,
+	john.g.garry@oracle.com,
+	hch@lst.de,
+	ritesh.list@gmail.com,
+	linux-fsdevel@vger.kernel.org,
+	linux-block@vger.kernel.org,
+	ltp@lists.linux.it,
+	lkp@intel.com,
+	oliver.sang@intel.com,
+	oe-lkp@lists.linux.dev,
+	gost.dev@samsung.com,
+	p.raghav@samsung.com,
+	da.gomez@samsung.com,
+	kernel@pankajraghav.com,
+	mcgrof@kernel.org
+Subject: [PATCH] block: add BLK_FEAT_LBS to check for PAGE_SIZE limit
+Date: Tue, 11 Mar 2025 22:00:28 -0700
+Message-ID: <20250312050028.1784117-1-mcgrof@kernel.org>
+X-Mailer: git-send-email 2.48.1
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250311111828.10b30576b9392e56d2c3f963@linux-foundation.org>
+Content-Transfer-Encoding: 8bit
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 
-On Tue, Mar 11, 2025 at 11:18:28AM -0700, Andrew Morton wrote:
-> On Tue, 11 Mar 2025 13:43:44 +0100 Uladzislau Rezki <urezki@gmail.com> wrote:
-> 
-> > > > >> config: x86_64-randconfig-101-20250306
-> > > > >> compiler: gcc-12
-> > > > >> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> > > > >>
-> > > > >> (please refer to attached dmesg/kmsg for entire log/backtrace)
-> > > > >>
-> > >
-> > Could you please share your view what we should do with the patch in
-> > question? I mean we can drop it, since it is broken and there is also
-> > another option - it is to fix the broken patch.
-> 
-> I dropped it.  This can be addressed in the next version, if there is one.
->
-Thank you!
+The commit titled "block/bdev: lift block size restrictions to 64k"
+lifted the block layer's max supported block size to 64k inside the
+helper blk_validate_block_size() now that we support large folios on
+the block layer. However, block drivers have relied on the call for
+queue_limits_commit_update() to validate and ensure the logical block
+size < PAGE_SIZE.
 
---
-Uladzislau Rezki
+We should take time to validate each block driver before enabling
+support for larger logical block sizes, so that those that didn't
+have support stay that way and don't need modifications.
+
+Li Wang reported this as a regression on LTP via:
+
+testcases/kernel/syscalls/ioctl/ioctl_loop06
+
+Which uses the loopback driver to enable larger logical block sizes
+first with LOOP_CONFIGURE and then LOOP_SET_BLOCK_SIZE. While
+I see no reason why the loopback block driver can't support
+larger logical block sizes than PAGE_SIZE, leave this validation
+step as a secondary effort for each block driver.
+
+Reported-by: Li Wang <liwang@redhat.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-lkp/202503101538.84c33cd4-lkp@intel.com
+Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+---
+ block/blk-settings.c   | 4 +++-
+ include/linux/blkdev.h | 3 +++
+ 2 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/block/blk-settings.c b/block/blk-settings.c
+index c44dadc35e1e..5cdd0d7d2af2 100644
+--- a/block/blk-settings.c
++++ b/block/blk-settings.c
+@@ -254,7 +254,9 @@ int blk_validate_limits(struct queue_limits *lim)
+ 	 */
+ 	if (!lim->logical_block_size)
+ 		lim->logical_block_size = SECTOR_SIZE;
+-	else if (blk_validate_block_size(lim->logical_block_size)) {
++	else if (blk_validate_block_size(lim->logical_block_size) ||
++		 (lim->logical_block_size > PAGE_SIZE &&
++		   !(lim->features & BLK_FEAT_LBS))) {
+ 		pr_warn("Invalid logical block size (%d)\n", lim->logical_block_size);
+ 		return -EINVAL;
+ 	}
+diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
+index a97428e8bbbe..cdab3731a646 100644
+--- a/include/linux/blkdev.h
++++ b/include/linux/blkdev.h
+@@ -341,6 +341,9 @@ typedef unsigned int __bitwise blk_features_t;
+ #define BLK_FEAT_ATOMIC_WRITES \
+ 	((__force blk_features_t)(1u << 16))
+ 
++/* Supports sector sizes > PAGE_SIZE */
++#define BLK_FEAT_LBS		((__force blk_features_t)(1u << 17))
++
+ /*
+  * Flags automatically inherited when stacking limits.
+  */
+-- 
+2.47.2
+
