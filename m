@@ -1,47 +1,35 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6082C1172A;
-	Wed, 12 Mar 2025 05:44:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 673601DE4F3
+	for <oe-lkp@lists.linux.dev>; Wed, 12 Mar 2025 13:59:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741758252; cv=none; b=LjE8705rIPCfMogmJIicxK0CqbQJS8IS5AhKFPZDdVFhLSGkrgi9A8peRIQieZ9u6zx+ICAKDZIyfkHuuR2RoTusfqG9ID/tWWke8Azq4dsVGngxg7WjfmSYFihi9R1+uNZ15WmM8AI1IZwA+e1j4qmHzgTDNpADmGTgeAZuVBg=
+	t=1741787960; cv=none; b=FwjSiHcnvri1dwa/ddxJaH8V2B0VvUxMMxfhhEBTK5pxPlOGRWxX5ZdVirp/yOzemgAdfvUWVqHhHotFLKo+4DvJgZ8NPZRzZ3C4YQ5g0TGga+RJkwUrLg1juNRDzqVyw7Q/U7UueoK/SX3uA5yBG4SZDG32guQ1OCe6dQQmJ7E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741758252; c=relaxed/simple;
-	bh=xZJOc5XyyMym8hnBaWHbYKIhBmxjzcDArBveIIsMQaw=;
+	s=arc-20240116; t=1741787960; c=relaxed/simple;
+	bh=I+ZggbW2AQWliXHPSHrqQCZgq7RM16Z511PBjh6KULs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lp/Qt0EkbmBzZLXYUO4h6Vfbpogu4hhJsjS+gWg8tL3/7uEAoD6XRdEKrKZNcbI+dtnsQYoiYV+4vgycGMyf91bB9H6vECul/eepHGlGnhSr/axm222Trgtqfuqg6SLb7bfsPLsN3ac/r9x8aoG65QL11ufBFj//vr6NCjw2ZEg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ICeOF2ep; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ICeOF2ep"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F770C4CEE3;
-	Wed, 12 Mar 2025 05:44:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1741758251;
-	bh=xZJOc5XyyMym8hnBaWHbYKIhBmxjzcDArBveIIsMQaw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ICeOF2epMNoffeQ3REYCIW93hpTuJ2Sj4xX0l2wWnvQWl6oEOKD8dyiYJgHNexqfH
-	 kwmoltpD4B4hjxY4VJ8rtKV00O5gfg+O11VC02S9n6VqlSwJZ3ATubAwqzPl11nj53
-	 HXIGdEQ8AjcSNSbu7dOugnu6tp8myqa/9ZexcN59FMbbG/moBfpsXLeVMQlLpSNVtC
-	 wp7zwmWI5h2FPeJvfvHx4rY+0mqVSqtZvMIH2KsOPhk+q8XnBbNvvOsYwJEc0dH7r2
-	 bCLp2GzVEZjOQaay5zOlb4RJbAmYrKmu1BTxRdHrOL/D8bi9ihKW3YgT1k1PKPKXuv
-	 0eKWlA7+ygwOg==
-Date: Tue, 11 Mar 2025 22:44:09 -0700
-From: Luis Chamberlain <mcgrof@kernel.org>
-To: Christoph Hellwig <hch@lst.de>
-Cc: liwang@redhat.com, brauner@kernel.org, hare@suse.de,
-	willy@infradead.org, david@fromorbit.com, djwong@kernel.org,
-	kbusch@kernel.org, john.g.garry@oracle.com, ritesh.list@gmail.com,
+	 Content-Type:Content-Disposition:In-Reply-To; b=LnwfkDrkWjJFDOJI5V1uDaobKXxARQPF+LdkyXqbxaBJbW/xZNJWYCs/IukPU3APxrDpar4xG25bbw4QsjEKo/n1otUonWsUHqwrd2Eeaa+S9gn8yUqdpaJ7shgm8KKPQ62SBIQ5NzInHYfwwncdwsorJlx+vcPORfv9nxSg//s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id EF23C68BFE; Wed, 12 Mar 2025 14:59:12 +0100 (CET)
+Date: Wed, 12 Mar 2025 14:59:12 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: Li Wang <liwang@redhat.com>
+Cc: Luis Chamberlain <mcgrof@kernel.org>, Christoph Hellwig <hch@lst.de>,
+	brauner@kernel.org, hare@suse.de, willy@infradead.org,
+	david@fromorbit.com, djwong@kernel.org, kbusch@kernel.org,
+	john.g.garry@oracle.com, ritesh.list@gmail.com,
 	linux-fsdevel@vger.kernel.org, linux-block@vger.kernel.org,
 	ltp@lists.linux.it, lkp@intel.com, oliver.sang@intel.com,
 	oe-lkp@lists.linux.dev, gost.dev@samsung.com, p.raghav@samsung.com,
 	da.gomez@samsung.com, kernel@pankajraghav.com
 Subject: Re: [PATCH] block: add BLK_FEAT_LBS to check for PAGE_SIZE limit
-Message-ID: <Z9EfKXH6w8C0arzb@bombadil.infradead.org>
-References: <20250312050028.1784117-1-mcgrof@kernel.org>
- <20250312052155.GA11864@lst.de>
- <Z9Edl05uSrNfgasu@bombadil.infradead.org>
- <20250312054053.GA12234@lst.de>
+Message-ID: <20250312135912.GB12488@lst.de>
+References: <20250312050028.1784117-1-mcgrof@kernel.org> <20250312052155.GA11864@lst.de> <Z9Edl05uSrNfgasu@bombadil.infradead.org> <20250312054053.GA12234@lst.de> <Z9EfKXH6w8C0arzb@bombadil.infradead.org> <CAEemH2du_ULgnX19YnCiAJnCNzAURW0R17Tgxpdy9tg-XzisHQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -50,26 +38,18 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250312054053.GA12234@lst.de>
+In-Reply-To: <CAEemH2du_ULgnX19YnCiAJnCNzAURW0R17Tgxpdy9tg-XzisHQ@mail.gmail.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Wed, Mar 12, 2025 at 06:40:53AM +0100, Christoph Hellwig wrote:
-> On Tue, Mar 11, 2025 at 10:37:27PM -0700, Luis Chamberlain wrote:
-> > > If you need extra per-driver validatation, do it in the driver.
-> > 
-> > Are you suggesting we just move back the PAGE_SIZE check,
-> 
-> PAGE_SIZE now is a consumer (i.e. file system) limitation.  Having
-> a flag in the provider (driver) does not make sense.
-> 
-> > or to keep
-> > the checks for the block driver limits into each driver?
-> 
-> Most drivers probably don't have a limit other than than that implicit
-> by the field width used for reporting.  So in general the driver should
-> not need any checks.  The only exceptions might be for virtual drivers
-> where the value comes from userspace, but even then it is a bit doubtful.
+On Wed, Mar 12, 2025 at 05:19:36PM +0800, Li Wang wrote:
+> Well, does that patch for ioctl_loop06 still make sense?
+> Or any other workaround?
+> https://lists.linux.it/pipermail/ltp/2025-March/042599.html
 
-Alrighty, so silly tests just need to be updated. If a hang is reported,
-we can look into it, or just add block driver checks / limitations.
+The real question is what block sizes we want to support for the
+loop driver.  Because if it is larger than the physical block size
+it can lead to torn writes.  But I guess no one cared about those
+on loop so far, so why care about this now..
 
-  Luis
+But if we don't want any limit on the block size that patch looks
+right.
