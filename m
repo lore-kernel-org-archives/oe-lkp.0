@@ -1,381 +1,360 @@
-Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDE7A13A41F
-	for <oe-lkp@lists.linux.dev>; Sat, 15 Mar 2025 03:39:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742009951; cv=none; b=YAu/F7zFj8n3d7dEMrAc4dQZBCQyCAM202sFh4HDCa3CetRbNwp4CCtM0WwhX/Q2PsWWas/hbAqSDN6lqkUa6heDwZJYKAnBIKsgWOdD3/IT7RnKV186N2yEEJxrBn7GqRRXNeW/6cAODoiTcCb+oBOcz8YP2scf50phbILKiEw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742009951; c=relaxed/simple;
-	bh=cGqFxvmVG7c0cwD7Ks1WEFW7KZWq7Iu4vQJtFoc+epU=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=WedKYrbV7piOdFaLLyHxepVL0m5sU2VBJ+IabW5e720vmFxBnvlnDlspS6FhhioCbaA7SfWU2EKMI8I7hQgacNDFsrRg5dVKgTFZBdMfdc2CSDQyqJqnHFsiu5tNX3QBeCSnG6o6HijMTpV2xWvWsVGn6ngqXwb0ylPPbo9jSrI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=k3LWj/ma; arc=none smtp.client-ip=209.85.214.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19C59217709
+	for <oe-lkp@lists.linux.dev>; Mon, 17 Mar 2025 08:13:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.10
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1742199201; cv=fail; b=qfKtB7hafF3k0Fv+iuhsYZXRluxcd5hlTd3EnS4KwyQ+MUgYi6uGsoQz84B2KQNZ7JVKq7F4O1EE1DeWsuN8wUu6xdn3i0bIngVNvPp/mTGLfnegTOqoRG4+01WVyWqrOF9BemEGXjoMosTbIZXTttCjpbMzJqXYMzh5twagQZ0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1742199201; c=relaxed/simple;
+	bh=tVO8YomUxxDU3jWasC/1l3QyfAyZA3gfIksjanq5WJ4=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=Mf35tM7rG4rSLJ3aWmj7C4v3IRfE5H3pLZN7xMEWKCfgxS8c8ppQh1ufgYYA2AvIuCVGHFRphkvnTUA1bsIz1t7+zCi0+B+gZ47Ku3uExDE1gMvDsjHPcj8epeCJb1Z3qS0vsyL9vUWRMDXN0PIE9B9xNY6zBUrcsb9miUOCjdg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=a722lgWJ; arc=fail smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="k3LWj/ma"
-Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2240b4de12bso73613385ad.2
-        for <oe-lkp@lists.linux.dev>; Fri, 14 Mar 2025 20:39:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1742009949; x=1742614749; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ux/gIeOn/dRUyFKTGt1jFoBokm3wJ2bYCbMIzrGOjLE=;
-        b=k3LWj/ma+BCdJjNvBTuJaT/WSI6JLl2JH2qJuY+G8XNvJtJg4pzrbhGXssfySdaemx
-         q9uT6ZUWvrrUoZr3CxzOn0eti+UqoMoj1xbDYgL3WFNbrnvOXkdZ0dIYzIuKp0jrMAPY
-         t1+8R7UEK4PtLpRUrkmkcjLS4bwFoyXliJ8/PFTF5yebzex0KPu9h54tKtE3GR1Gce3p
-         ibaL1zKzTxNI708fT9nSHAcRtEdKAwfPqAlSMeCKWgBhPm2j/jcFbqJxu5gfTK7pzhLo
-         0ni/Ar3CGoNF1EWHeoigLL9AH90EZD/CpVNqPwI3JqY2Wfm4bsDS/BU9khkNiPzPhaas
-         FQAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742009949; x=1742614749;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ux/gIeOn/dRUyFKTGt1jFoBokm3wJ2bYCbMIzrGOjLE=;
-        b=OrhTgzzCqmtjOJ10vzJar/jZ0mEDTaeyo+JXig5dEgfeTigvXS5tCjZAs7rwWlCPfG
-         k09KtAbKxvYByiLtTvqMpgiMcGiiBkMVsgN4Abr8OIhzA1Xj3AfaqDVaZeWRf0dk7b8o
-         yK4AW8MbujpEktPzWlWUM6Mh0jzgX+OER88yUZ7VTm8/Rd+CKf7CDXk6fvX+Xt+PFljN
-         EdH1O80C7/NGNCkzmHCiig6vGEQS5r/VPQZiWGWREHRgjPiDiH+ecWDthhTfssXeGZgY
-         lH2UYd3Chi6LGdpyJO0iFcY5ggtXb58qKh0HLgaaASISaJC/du+hqufUX7WobMYjw3eA
-         j0GA==
-X-Forwarded-Encrypted: i=1; AJvYcCXaoSv7eZA4IbBdRyoCzLyqsCULRIXMZjHqHrY+ctJRRgfsrQXKfege+VUNgrFPShIkr+r8nqk=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzPeEvodLjR7c0op1hEU4key8c63pn4V0lbxdzcKPQZhExg16og
-	mZfbVNzhiuCVuwR0kTz6BYO4bmByogacfkZLgfSfsN8ie8neFJ4/
-X-Gm-Gg: ASbGncsPxXTEi+mklbZ/grANqDSSVHcQyBYDtNY0HPjqzs/Kn+F1KWbzJxfejjYGvJ9
-	0J1Mtd25RJo6TsBmqKJ3tx2OcjwhBZJ0YJYx4RMzwCL/gK0WaK37cg2t44S3H2U3rRg2bJiqIep
-	zmvWvDbYU2pFDCA4I7kWX6CjBDzaPCJsVa40LOMCqhirlqig9CZAtc+NRlxpVvaLamshImJ7pHA
-	18cgEc3q3osY8NVubUhlplrIMGUlSUJ05zjONOu0IeoNLQDtZN1cIgTPVFBLRRRac+G9TXt6Rhl
-	96or0RsTOlZbqxIIPdufFm5WmfHkYoD4c1xWfgbDTVhgj9OHk/VIJ/f91c3eYtlq2yEo9bxijba
-	9KJpgfa3F+rhzdGM+SkL7jJhEqa9gqYY=
-X-Google-Smtp-Source: AGHT+IFWAmz8maiyCGjmjKLYohdJW8DF8E6YXzyWgPIrVhfl/G6yHCbUUH/4R7GEbKHqzSvIItIeVQ==
-X-Received: by 2002:a05:6a21:682:b0:1ee:ef0b:7bf7 with SMTP id adf61e73a8af0-1f5c118e79cmr6791020637.19.1742009948975;
-        Fri, 14 Mar 2025 20:39:08 -0700 (PDT)
-Received: from localhost.localdomain (p12284229-ipxg45101marunouchi.tokyo.ocn.ne.jp. [60.39.60.229])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-af56ea7bd0csm3446921a12.47.2025.03.14.20.39.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Mar 2025 20:39:08 -0700 (PDT)
-From: Ryo Takakura <ryotkkr98@gmail.com>
-To: pmladek@suse.com,
-	john.ogness@linutronix.de
-Cc: Jason@zx2c4.com,
-	gregkh@linuxfoundation.org,
-	linux-serial@vger.kernel.org,
-	lkp@intel.com,
-	oe-lkp@lists.linux.dev,
-	oliver.sang@intel.com
-Subject: Re: [linux-next:master] [serial]  b63e6f60ea: BUG:soft_lockup-CPU##stuck_for#s![modprobe:#]
-Date: Sat, 15 Mar 2025 12:38:44 +0900
-Message-Id: <20250315033844.130505-1-ryotkkr98@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <Z5O7Y_tdtvOahjRs@pathway.suse.cz>
-References: <Z5O7Y_tdtvOahjRs@pathway.suse.cz>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="a722lgWJ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1742199199; x=1773735199;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   mime-version;
+  bh=tVO8YomUxxDU3jWasC/1l3QyfAyZA3gfIksjanq5WJ4=;
+  b=a722lgWJTIYW7gT5tOqr0+uLNYvNgx6JvqI6bZ7bAB1Er2BPEXnUFuAT
+   34wYlB/UHS3wKNTIJnDDS/0EhKWDNUIDBUzjNwZAdv9x39JqNkwDd5Vs+
+   RY06io76uplrveaLu8IHgWnVkRUHbzhQS6M1zb13DfbJVmkowDtuXkYu4
+   YvMEavfNU2iaUeQEOz0vM4i83FWDjr7TaXsjFfyQBLXw6DKQhCFGz0cYM
+   QC2Zlr+e3eIbjs6m9u6Q5SwQd/tYoWQGuthbVsrYx6GYvgqCnCXqvH8yj
+   mWpTmt6KDkjc5y3qRYyqq5lzQ77o3clC4YImEdLK1fxenBr/1kxFbwAsl
+   g==;
+X-CSE-ConnectionGUID: 3vUmPo8vRk+RmdTCLlVPWQ==
+X-CSE-MsgGUID: Kd/vOtYuSfGI8tWMjtZUQw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11375"; a="54652448"
+X-IronPort-AV: E=Sophos;i="6.14,253,1736841600"; 
+   d="scan'208";a="54652448"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2025 01:13:18 -0700
+X-CSE-ConnectionGUID: ScHJ/Xb1RlCzJzqI7iJrcw==
+X-CSE-MsgGUID: 6mzzSHR8SVKq9rZS273v7g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.14,253,1736841600"; 
+   d="scan'208";a="121676243"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmviesa006.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 17 Mar 2025 01:13:18 -0700
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.44; Mon, 17 Mar 2025 01:13:17 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.44 via Frontend Transport; Mon, 17 Mar 2025 01:13:17 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.40) by
+ edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.44; Mon, 17 Mar 2025 01:13:17 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=gjIlGRuTpeDQStb5HUoiYe70PY9WFmAdy+s53Wy/fqO1RK/ST93VXBvWjlDkd70/FzGw6MY0d5mbMcn8enV9vF25sN4rZXXUu/zeX27MW/rjQMYgeMrzNbQWp6gm55sPR7wNfdqorBSJ231fE05dK6gnrHYL6AFoKYkyqZUfsXOTmPhLDyaoG0ByC9jIapIPCOkTLMw4w4JY/rkNQIu72GFWkrNjN0H7cbjIdVflnOFFG2n2dwsh1EYaxE2d/WFIqDL+tRA7YJyjEbK+8ik9rPuy9SImccastCWmJnEzitHkLml2fIkP8pT/ER4oLae6pZgFlKNmAl5yNaS8NWgecg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fdM6OPoh4TpWnSIdZmt5xV3WREUoSISyM3/vhurBvN0=;
+ b=PU/ex5p6uyC3ZbbxcL2f4aDf9b0sEmJfb+JmzEZnQ4IZdlZm3Z/7jeUr5HttYRgo0DzqK+vXyPcMf3F/uxU7j6jfNqv3fitLFxCdhZDIGDWUlwFAna3JBhxozhkLz1WOaNMsEfoacQdM18rS9DvPXQSwldp8K6jIlq+xJA1iq7i/DsrAYhefNyOLXAf6djfPnDhuxsDR0R3BepuXK8SLWIdghpZqlsKaNl1JCjI6mZMZlErkZnlFwuR8336+z8FyM1iBmKy+ZdeVY79Bq1Zzaw6/CEwTfg75xzc9Sib9nQCvpsm2QwL248IPrv4bcGKpTPecXW6Ge+ZWvaUiIvPGrA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by PH7PR11MB7027.namprd11.prod.outlook.com (2603:10b6:510:20a::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.33; Mon, 17 Mar
+ 2025 08:13:15 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%4]) with mapi id 15.20.8534.031; Mon, 17 Mar 2025
+ 08:13:15 +0000
+Date: Mon, 17 Mar 2025 16:13:03 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Thadeu Lima de Souza Cascardo <cascardo@igalia.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>, Andrew Morton <akpm@linux-foundation.org>,
+	"Dirk VanDerMerwe" <dirk.vandermerwe@sophos.com>, Vimal Agrawal
+	<vimal.agrawal@sophos.com>, Thadeu Lima de Souza Cascardo
+	<cascardo@igalia.com>, <oliver.sang@intel.com>
+Subject: Re: [PATCH v2 1/2] char: misc: restrict the dynamic range to exclude
+ reserved minors
+Message-ID: <202503171507.6c8093d0-lkp@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20250307-misc-dynrange-v2-1-6fe19032ef76@igalia.com>
+X-ClientProxiedBy: KL1PR01CA0002.apcprd01.prod.exchangelabs.com
+ (2603:1096:820::14) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|PH7PR11MB7027:EE_
+X-MS-Office365-Filtering-Correlation-Id: 53c025d9-e794-43eb-76bb-08dd652b90fb
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?aSSVa/gSseqcGjGSL9brToDXPCgpMqO1nsPy4G+M9JDUWui/osCDNh5iarHj?=
+ =?us-ascii?Q?3iaczAhhA6lQ1CMW7e8TQd/SV+Ogc5Nb1l7rjHzuQHR3NLqEpZdPXb/sq7sk?=
+ =?us-ascii?Q?dresE6zIgugu/Eenm9Z0kwwO+D/T3CYL7mCiTdcFOdzTAK6CfvttBV3QGlg4?=
+ =?us-ascii?Q?C5JBMy2j3RReAWilUOf8ZC8ER2AWrxPfC5fWBFrc5xfS97wVI7wPsuFSMXbB?=
+ =?us-ascii?Q?71AgF0/ps6VHRrLZTROSlPY5z37LZ2620fZILRy4mmhkHiH8RwGq362FR3hq?=
+ =?us-ascii?Q?IlzJ2ntLOVDWr0vJXqPXYAX5XzXq5/K+AtNgTTBh7v+ANvdCNhf2DwFMYsd/?=
+ =?us-ascii?Q?8V1eQwPCf9MHJOzxVJzn3YNtJQ1LQ2cLexPK7bYT09xqaO4fsQPsKsvtI0a7?=
+ =?us-ascii?Q?YTpOI3dPInVgTKe8oAQ+3pV0et62MxWyEzTZUNaCloqknSInQbAEV8CWM6oZ?=
+ =?us-ascii?Q?xkgE5AMdjicu2hv5188J+Vb4y47RHEoeXLTvsValG1yxDntg7se6WS9YNJUN?=
+ =?us-ascii?Q?zewp+DUVRuyU5KD8+tz5WGBGn8s48lwyXFci1+oNEMPxB1sQMUD//2dQpAjC?=
+ =?us-ascii?Q?MUHJFG4XMmEeb3c+9DEPHwax38UluqSnQrFnDfJ+txXoE8i4TqEPYdbAGXLu?=
+ =?us-ascii?Q?2CFPqQeieiexNzmvno5ug/qgcU0uWXGMCBK6IWVFjAKKcj5R/vPKWHbrid92?=
+ =?us-ascii?Q?pViiVu/SLLOf+i47cYqc70JSh9T2F8+x9I81kDOSaOo8M7B9fkokFL3Y7vrI?=
+ =?us-ascii?Q?CNxyaqAXew4E/JHByLW17TfpL3pQr68PF2A2RycDrY2tSnJSsObepUGusxC0?=
+ =?us-ascii?Q?Rsj3R99SyQP1cdgJl4B6obWa9/FpJrQSbKroBON5Y5iQz3f2kYRO61M9rXdl?=
+ =?us-ascii?Q?nY9zUNR68GuYKWR/RuAfEw8ekeIlkpYRN/UsW5wRzhFKu3AceANeSbUTg00k?=
+ =?us-ascii?Q?eHw1bW4RDxe1Wb34zfKdfTTYfB8MDyORC3czNgK8Jfm8gCmYvH071Zy81AWK?=
+ =?us-ascii?Q?5RHtA+McyIY6gnjXN4oZ5AebwMFnDolh+uSiPrQbOJRiSroAHCoOgbZT20Sr?=
+ =?us-ascii?Q?5oyHt/rxlebhOsjmiGpcXd/DSZcTIzNjHp8na6bw80KEdwMp5d1y5I0EmvQ3?=
+ =?us-ascii?Q?NuLTx0hZCJeS+cZ+OOVXjobtd5uH6pzdASIc8tR9PWC+VnEzf+0V9gaHY+2O?=
+ =?us-ascii?Q?QoAuQw7rJPTOtXlp0GyBq5cxHuoaR6yRkziMzcootlnb9DUZvTaRp8G/0+Xj?=
+ =?us-ascii?Q?JoGd5RahWGX70XFI4C4OLgNtsgP0d2aFirbn9C6UaAMawqjRqPdGJAprxG5a?=
+ =?us-ascii?Q?H/inDujdRvytCOTomCH4Vf19z/imGHnVQBUrxJgWMieJoA=3D=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Yka2pgdo4NHx6EeBdVTXTH/id107v+PWS86tAKoOjzwSVGlB1kFI0qTc+pdF?=
+ =?us-ascii?Q?Fm0MIM0gBOSfkvor1748o9YbAMIs2e9HCiPCDv0VqdImnQlOZEud1d7My3Dy?=
+ =?us-ascii?Q?deRVH4+FPO8KdTy82GGaj5h/s0zC1GajwYHVkDMOJFfbvFDCQ8t3OS6GhgKY?=
+ =?us-ascii?Q?elmb/b2E7J+6n7WAN8g6aaF+dqgSRTeP6ndHnw2wUS3LxKazwAh5FmOhbE5K?=
+ =?us-ascii?Q?swhmlbHBaFBkbTozudkTu/u364gGxKrweI+f+bsKNAnGDPecLh+H2bokc8RG?=
+ =?us-ascii?Q?3xnIpYdUsAdsxgkqAwv+DxRMZZtYOFjX8yxBb+V7tGeIPMFL3hJvhX1wGREC?=
+ =?us-ascii?Q?vYD8D73TQeBpZjMdUgtyaN3UyGHoV5A17oIT2DUVBoElQjYOtyuDM3Q5QZx2?=
+ =?us-ascii?Q?J22LTVJLqkZoLL0w29Hr0EgX0MMGH/pqh8pZEgSRl1Py+jO+6zj+eec+joWQ?=
+ =?us-ascii?Q?at0oIPxMaNGuDHtQdC4MrYIDCYF76q1Re6Hw1PwKkQNYsSZHird+52BOumgn?=
+ =?us-ascii?Q?2YbeHaoyCj1S5jshNEhWImXLl9uyPnpPdWYOJrFnkDDfuq+S4bWFxDbj9PRT?=
+ =?us-ascii?Q?pFncrrtKo9OfAnBLwroGZKbNqgQvrS6LDJxM/Oc0PyUxdbD7LD+BabIg4dIm?=
+ =?us-ascii?Q?V/bXWp82GBMUcHTNSY7Z+qr/vS2SYGWlM175mpUrWOICwn+ohzm+EP/EKiQc?=
+ =?us-ascii?Q?QDjJo7Ql8FBrjp2UAMjwiqyDH3B8YEumf0f+HFV7m4RhIkrqAbNu+DqsYZsU?=
+ =?us-ascii?Q?svFh1y7QQ13PxKS7I31WvlfMmh7SxJtwJ4BetPS6FuvqNeMhUpq8Tof7e/u7?=
+ =?us-ascii?Q?b7Y+Gg+lBxTz/yahqF5eQ6mPd1PvRiaBxOVXCD8WcyXpW9GNviTanVMymqP4?=
+ =?us-ascii?Q?tKQX+rJTeQC9DRcZmxLh8QcDRtEVGugIW8YsSgcAkZrhwWbU/7wgInHH9H+G?=
+ =?us-ascii?Q?AN+2EjsGmvrLc5GjN1r52oEnaDTsIFi1Z0BXUYCeWtj8G72u1SpdrKrwPAl7?=
+ =?us-ascii?Q?WR8v3PaQEc43yiPnXQuLku/JJ2Yel3tw+ApWJcjnsktKYpsUWDFw+IAs/O2E?=
+ =?us-ascii?Q?noByZ+pYNQoFEy/9pgLw/We5CXzd6TW/TSbRE0881kAKHCZxmX89DWxyGBD4?=
+ =?us-ascii?Q?H+/lUAYNDG1dbjGtbYPU0237fBhSCZw9JBjd4SdKZZ7dyxE5YEmiIRPYz5RH?=
+ =?us-ascii?Q?txo53i/G0psGeULTefLTr2N3Cr65/PBnVg6i7WYTGSPI4NBuPOfwq/i6uqsr?=
+ =?us-ascii?Q?hDl//lMZMjrFgZZ5lockduPDwK8pIExR6PmUMIudth4tcSpag3gppk8NrawT?=
+ =?us-ascii?Q?BP2hEcrVHp/GaI3+ab3oVdIY4mmTQm+xfC0W0j/gciRAH0xeBdiUNKEVg20G?=
+ =?us-ascii?Q?+8iwUgCcofGQ/h2U8XEFoPib590EoKegxfwtwhPLxklKPkDwhh+Q7whTzyH5?=
+ =?us-ascii?Q?QA+SHVWsn49W4Zc6JKXmx+Ag9KwwCtDl51j7bfLrh118WhGTJpI+G/IQTton?=
+ =?us-ascii?Q?TdLDZqfeTqfEgFlHVHxW/eaCt4i7XI2U+IcABUDyLmhrjf4iwgMKLf6ZO3WQ?=
+ =?us-ascii?Q?MjEuHGROeIRhIaeeSd3OutslKheDXsIB/7ENc8C4TGRe+6MGWbKjzQhOQquF?=
+ =?us-ascii?Q?Ig=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 53c025d9-e794-43eb-76bb-08dd652b90fb
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2025 08:13:15.0045
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +UPd8mgZ6SPN6/Cej2W0GgsRqsgMQAqmVooZasgZMH3GsceeLkK6FTkUSs5AXHfW/XcCA0q5LqIGzRSsyJ4Fmw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB7027
+X-OriginatorOrg: intel.com
 
-Hi!
 
-Is the thread still active? I looked into this.
 
-On Fri, 24 Jan 2025 17:10:11 +0100, Petr Mladek wrote:
->On Wed 2025-01-22 10:28:52, kernel test robot wrote:
->> 
->> 
->> Hello,
->> 
->> kernel test robot noticed "BUG:soft_lockup-CPU##stuck_for#s![modprobe:#]" on:
->> 
->> commit: b63e6f60eab45b16a1bf734fef9035a4c4187cd5 ("serial: 8250: Switch to nbcon console")
->> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
->> 
->> [test failed on linux-next/master 0907e7fb35756464aa34c35d6abb02998418164b]
->> 
->> in testcase: kunit
->> version: 
->> with following parameters:
->> 
->> 	group: group-01
->> 
->> 
->> 
->> config: x86_64-rhel-9.4-kunit
->> compiler: gcc-12
->> test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (Haswell) with 16G memory
->> 
->> (please refer to attached dmesg/kmsg for entire log/backtrace)
->> 
->> 
->> 
->> If you fix the issue in a separate patch/commit (i.e. not just a new version of
->> the same patch/commit), kindly add following tags
->> | Reported-by: kernel test robot <oliver.sang@intel.com>
->> | Closes: https://lore.kernel.org/oe-lkp/202501221029.fb0d574d-lkp@intel.com
->> 
->> 
->> [  231.759560][    C3] watchdog: BUG: soft lockup - CPU#3 stuck for 26s! [modprobe:3860]
->> [  231.759572][    C3] Modules linked in: test_rslib(+) reed_solomon ipmi_devintf ipmi_msghandler intel_rapl_msr intel_rapl_common >btrfs snd_hda_codec_hdmi x86_pkg_temp_thermal intel_powerclamp blake2b_generic coretemp xor raid6_pq libcrc32c kvm_intel >snd_hda_codec_realtek snd_hda_codec_generic platform_profile i915 kvm snd_hda_scodec_component snd_hda_intel sd_mod snd_intel_dspcfg >dell_wmi crc32_generic snd_intel_sdw_acpi sg crct10dif_pclmul cec crc32_pclmul dell_smbios snd_hda_codec intel_gtt crc32c_intel >dell_wmi_descriptor ghash_clmulni_intel sparse_keymap snd_hda_core ttm snd_hwdep ahci rapl rfkill drm_display_helper snd_pcm mei_wdt >libahci intel_cstate dcdbas snd_timer mei_me libata intel_uncore drm_kms_helper snd pcspkr drm_buddy mei soundcore video wmi binfmt_misc >drm fuse loop dm_mod ip_tables poly1305_generic chacha_generic [last unloaded: test_fpu]
->> [  231.759681][    C3] CPU: 3 UID: 0 PID: 3860 Comm: modprobe Tainted: G S  B            N 6.13.0-rc3-00034-gb63e6f60eab4 #1
->> [  231.759690][    C3] Tainted: [S]=CPU_OUT_OF_SPEC, [B]=BAD_PAGE, [N]=TEST
->> [  231.759694][    C3] Hardware name: Dell Inc. OptiPlex 9020/0DNKMN, BIOS A05 12/05/2013
->> [ 231.759699][ C3] RIP: 0010:encode_rs16 (lib/reed_solomon/encode_rs.c:33) reed_solomon 
->> [ 231.759708][ C3] Code: 87 68 83 00 00 89 da d3 fa 41 0f b6 4d 00 41 38 cc 7c 08 84 c9 0f 85 64 02 00 00 8b 75 04 21 f3 01 d3 39 de 7e >c0 48 8b 3c 24 <48> 63 db 48 8d 1c 5f 48 89 d9 48 c1 e9 03 42 0f b6 34 39 48 89 d9
->> All code
->> ========
->>    0:	87 68 83             	xchg   %ebp,-0x7d(%rax)
->>    3:	00 00                	add    %al,(%rax)
->>    5:	89 da                	mov    %ebx,%edx
->>    7:	d3 fa                	sar    %cl,%edx
->>    9:	41 0f b6 4d 00       	movzbl 0x0(%r13),%ecx
->>    e:	41 38 cc             	cmp    %cl,%r12b
->>   11:	7c 08                	jl     0x1b
->>   13:	84 c9                	test   %cl,%cl
->>   15:	0f 85 64 02 00 00    	jne    0x27f
->>   1b:	8b 75 04             	mov    0x4(%rbp),%esi
->>   1e:	21 f3                	and    %esi,%ebx
->>   20:	01 d3                	add    %edx,%ebx
->>   22:	39 de                	cmp    %ebx,%esi
->>   24:	7e c0                	jle    0xffffffffffffffe6
->>   26:	48 8b 3c 24          	mov    (%rsp),%rdi
->>   2a:*	48 63 db             	movslq %ebx,%rbx		<-- trapping instruction
->>   2d:	48 8d 1c 5f          	lea    (%rdi,%rbx,2),%rbx
->>   31:	48 89 d9             	mov    %rbx,%rcx
->>   34:	48 c1 e9 03          	shr    $0x3,%rcx
->>   38:	42 0f b6 34 39       	movzbl (%rcx,%r15,1),%esi
->>   3d:	48 89 d9             	mov    %rbx,%rcx
->> 
->> Code starting with the faulting instruction
->> ===========================================
->>    0:	48 63 db             	movslq %ebx,%rbx
->>    3:	48 8d 1c 5f          	lea    (%rdi,%rbx,2),%rbx
->>    7:	48 89 d9             	mov    %rbx,%rcx
->>    a:	48 c1 e9 03          	shr    $0x3,%rcx
->>    e:	42 0f b6 34 39       	movzbl (%rcx,%r15,1),%esi
->>   13:	48 89 d9             	mov    %rbx,%rcx
->> [  231.759717][    C3] RSP: 0018:ffffc90000abf3b0 EFLAGS: 00000297
->> [  231.759723][    C3] RAX: ffff888102c9ff0a RBX: 00000000000000dd RCX: 0000000000000000
->> [  231.759728][    C3] RDX: 0000000000000000 RSI: 00000000000000ff RDI: ffff88816b6b7c00
->> [  231.759733][    C3] RBP: ffff88812901fb00 R08: 00000000000000c8 R09: ffff88816c8b518e
->> [  231.759738][    C3] R10: 1ffff11025203f60 R11: ffff88816c8b5184 R12: 0000000000000007
->> [  231.759743][    C3] R13: ffffed1025203f60 R14: ffffed1025203f60 R15: dffffc0000000000
->> [  231.759748][    C3] FS:  00007f64c760f040(0000) GS:ffff8883a7d80000(0000) knlGS:0000000000000000
->> [  231.759754][    C3] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->> [  231.759759][    C3] CR2: 00007f024b693000 CR3: 00000001d4462004 CR4: 00000000001726f0
->> [  231.759764][    C3] DR0: ffffffff8789050c DR1: ffffffff8789050d DR2: ffffffff8789050e
->> [  231.759769][    C3] DR3: ffffffff8789050f DR6: 00000000fffe0ff0 DR7: 0000000000000600
->> [  231.759774][    C3] Call Trace:
->> [  231.759778][    C3]  <IRQ>
->> [ 231.759782][ C3] ? watchdog_timer_fn (kernel/watchdog.c:770) 
->> [ 231.759790][ C3] ? __pfx_watchdog_timer_fn (kernel/watchdog.c:685) 
->> [ 231.759796][ C3] ? __hrtimer_run_queues (kernel/time/hrtimer.c:1739 kernel/time/hrtimer.c:1803) 
->> [ 231.759803][ C3] ? __pfx___hrtimer_run_queues (kernel/time/hrtimer.c:1773) 
->> [ 231.759808][ C3] ? ktime_get_update_offsets_now (kernel/time/timekeeping.c:312 (discriminator 3) kernel/time/timekeeping.c:335 >(discriminator 3) kernel/time/timekeeping.c:2457 (discriminator 3)) 
->> [ 231.759814][ C3] ? sched_clock (arch/x86/include/asm/preempt.h:94 arch/x86/kernel/tsc.c:286) 
->> [ 231.759821][ C3] ? hrtimer_interrupt (kernel/time/hrtimer.c:1868) 
->> [ 231.759828][ C3] ? __sysvec_apic_timer_interrupt (arch/x86/include/asm/jump_label.h:36 arch/x86/include/asm/trace/irq_vectors.h:41 >arch/x86/kernel/apic/apic.c:1056) 
->> [ 231.759835][ C3] ? sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1049 arch/x86/kernel/apic/apic.c:1049) 
->> [  231.759842][    C3]  </IRQ>
->> [  231.759845][    C3]  <TASK>
->> [ 231.759848][ C3] ? asm_sysvec_apic_timer_interrupt (arch/x86/include/asm/idtentry.h:702) 
->> [ 231.759857][ C3] ? encode_rs16 (lib/reed_solomon/encode_rs.c:33) reed_solomon 
->> [ 231.759864][ C3] get_rcw_we (lib/reed_solomon/test_rslib.c:173) test_rslib 
->
->Honestly, I do not see much how this could be related to the serial
->console. This is a module for testing the Generic Reed Solomon
->encoder / decoder library.
->
->It seems to do a lot of computation and needs a lot of random numbers.
->I wonder if there is not enough entropy and the test is too slow.
->
->From the config file:
->
->CONFIG_PREEMPT_VOLUNTARY=y
+Hello,
 
-I tested with and without the bleow two commits on v6.14-rc6 
-where CONFIG_PREEMPT_VOLUNTARY=y and CONFIG_REED_SOLOMON_TEST=y.
-I used Raspberry pi 4 (4G Mem).
+kernel test robot noticed "kernel-selftests.sgx.test_sgx.enclave.unclobbered_vdso.fail" on:
 
-    b63e6f60eab4 ("serial: 8250: Switch to nbcon console")
-    422c9727b07f ("serial: 8250: Revert "drop lockdep annotation from serial8250_clear_IER()"")
+commit: 47b2b7ca1ce4d1dbbaae0334436869c9e987d03c ("[PATCH v2 1/2] char: misc: restrict the dynamic range to exclude reserved minors")
+url: https://github.com/intel-lab-lkp/linux/commits/Thadeu-Lima-de-Souza-Cascardo/char-misc-restrict-the-dynamic-range-to-exclude-reserved-minors/20250307-231711
+patch link: https://lore.kernel.org/all/20250307-misc-dynrange-v2-1-6fe19032ef76@igalia.com/
+patch subject: [PATCH v2 1/2] char: misc: restrict the dynamic range to exclude reserved minors
 
-I got the same softlockup during the test regardless of the presence
-of the commits.
+in testcase: kernel-selftests
+version: kernel-selftests-x86_64-7ff71e6d9239-1_20250215
+with following parameters:
 
-[   60.222013] watchdog: BUG: soft lockup - CPU#2 stuck for 22s! [swapper/0:1]
-[   60.222023] Modules linked in:
-[   60.222032] CPU: 2 UID: 0 PID: 1 Comm: swapper/0 Tainted: G             L     6.14.0-rc6-v14-rc6-voluntary+ #4
-[   60.222047] Tainted: [L]=SOFTLOCKUP
-[   60.222051] Hardware name: Raspberry Pi 4 Model B Rev 1.5 (DT)
-[   60.222055] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[   60.222066] pc : get_random_u32+0xac/0x118
-[   60.222081] lr : __get_random_u32_below+0x20/0x78
-[   60.222094] sp : ffffffc08002bb80
-[   60.222098] x29: ffffffc08002bb80 x28: 0000000000000003 x27: 0000000000000001
-[   60.222114] x26: ffffff804112e6a4 x25: ffffffd33ed21820 x24: ffffff804112e69c
-[   60.222128] x23: 0000000000000000 x22: ffffff804112e64e x21: 0000000000000000
-[   60.222142] x20: 000000000000000d x19: ffffff80fb7aebb8 x18: 0000000000000002
-[   60.222156] x17: 0000000000000004 x16: ffffff804112e584 x15: ffffff8041126796
-[   60.222169] x14: ffffff80411267c0 x13: 0000000000000006 x12: ffffff804112e5c0
-[   60.222183] x11: ffffff804112e64c x10: 0000000000000007 x9 : ffffffd33dccdd10
-[   60.222196] x8 : ffffff804112e6a8 x7 : 0000000000000000 x6 : 0005000400060005
-[   60.222210] x5 : ffffff804112e65a x4 : 0000000000000000 x3 : 0000000000000010
-[   60.222223] x2 : 0000000000000014 x1 : 000000002c7d0b7a x0 : 0000000000000013
-[   60.222237] Call trace:
-[   60.222241]  get_random_u32+0xac/0x118 (P)
-[   60.222256]  __get_random_u32_below+0x20/0x78
-[   60.222268]  get_rcw_we+0x180/0x208
-[   60.222278]  test_rslib_init+0x2c8/0xba0
-[   60.222292]  do_one_initcall+0x4c/0x210
-[   60.222303]  kernel_init_freeable+0x1fc/0x3a0
-[   60.222317]  kernel_init+0x28/0x1f8
-[   60.222327]  ret_from_fork+0x10/0x20
+	group: sgx
 
->
->I wonder if a cond_resched() in some loop would help. Or using a
 
-I wasn't sure which loop would be the appropriate one but adding 
-cond_resched() as below worked as suggested.
 
------ BEGIN -----
-diff --git a/lib/reed_solomon/test_rslib.c b/lib/reed_solomon/test_rslib.c
-index 75cb1adac..322d7b0a8 100644
---- a/lib/reed_solomon/test_rslib.c
-+++ b/lib/reed_solomon/test_rslib.c
-@@ -306,6 +306,8 @@ static void test_uc(struct rs_control *rs, int len, int errs,
+config: x86_64-rhel-9.4-kselftests
+compiler: gcc-12
+test machine: 16 threads 1 sockets Intel(R) Xeon(R) E-2278G CPU @ 3.40GHz (Coffee Lake-E) with 32G memory
 
-                if (memcmp(r, c, len * sizeof(*r)))
-                        stat->dwrong++;
-+
-+               cond_resched();
-        }
-        stat->nwords += trials;
- }
-@@ -400,6 +402,8 @@ static void test_bc(struct rs_control *rs, int len, int errs,
-                } else {
-                        stat->rfail++;
-                }
-+
-+               cond_resched();
-        }
-        stat->nwords += trials;
- }
------ END -----
+(please refer to attached dmesg/kmsg for entire log/backtrace)
 
->pseudorandom generator. I remember the problems related to much
->slower random generator, for example, see the commit f900fde28883602b6
->("crypto: testmgr - fix RNG performance in fuzz tests").
 
-I haven't tested this but I'll look into it!
+here is a comparison with more details, cases failed upon this commit while
+pass on parent:
 
->That said, I did not dig deep into the code. And I did not try to
->reproduce the softlockup. I am pretty busy at the moment with some
->other stuff. I just wanted to give it a look and share my opinion.
+=========================================================================================
+tbox_group/testcase/rootfs/kconfig/compiler/group:
+  lkp-cfl-e1/kernel-selftests/debian-12-x86_64-20240206.cgz/x86_64-rhel-9.4-kselftests/gcc-12/sgx
 
-I think the softlockup is rather a problem of test itself, 
-not the two commits.
+2397d61ee45cddb8 47b2b7ca1ce4d1dbbaae0334436
+---------------- ---------------------------
+       fail:runs  %reproduction    fail:runs
+           |             |             |
+           :9           67%           6:6     kernel-selftests.sgx.test_sgx.enclave.clobbered_vdso.fail
+           :9           67%           6:6     kernel-selftests.sgx.test_sgx.enclave.clobbered_vdso_and_user_function.fail
+           :9           67%           6:6     kernel-selftests.sgx.test_sgx.enclave.pte_permissions.fail
+           :9           67%           6:6     kernel-selftests.sgx.test_sgx.enclave.tcs_entry.fail
+           :9           67%           6:6     kernel-selftests.sgx.test_sgx.enclave.unclobbered_vdso.fail
+           :9           67%           6:6     kernel-selftests.sgx.test_sgx.enclave.unclobbered_vdso_oversubscribed.fail
+           :9           67%           6:6     kernel-selftests.sgx.test_sgx.fail
 
-I hope this helps!
 
-Sincerely,
-Ryo Takakura
 
->Best Regards,
->Petr
->
->
->> [ 231.759873][ C3] test_bc (lib/reed_solomon/test_rslib.c:379) test_rslib 
->> [ 231.759880][ C3] ? run_exercise (lib/reed_solomon/test_rslib.c:127 lib/reed_solomon/test_rslib.c:457) test_rslib 
->> [ 231.759886][ C3] run_exercise (lib/reed_solomon/test_rslib.c:423 lib/reed_solomon/test_rslib.c:477) test_rslib 
->> [ 231.759895][ C3] ? __pfx_run_exercise (lib/reed_solomon/test_rslib.c:443) test_rslib 
->> [ 231.759902][ C3] test_rslib_init (lib/reed_solomon/test_rslib.c:155) test_rslib 
->> [ 231.759909][ C3] ? __pfx_test_rslib_init (lib/reed_solomon/test_rslib.c:153) test_rslib 
->> [ 231.759915][ C3] do_one_initcall (init/main.c:1266) 
->> [ 231.759922][ C3] ? kasan_save_track (arch/x86/include/asm/current.h:49 mm/kasan/common.c:60 mm/kasan/common.c:69) 
->> [ 231.759928][ C3] ? __pfx_do_one_initcall (init/main.c:1257) 
->> [ 231.759934][ C3] ? __kasan_slab_alloc (mm/kasan/common.c:318 mm/kasan/common.c:345) 
->> [ 231.759939][ C3] ? __kmalloc_cache_noprof (mm/slub.c:4119 mm/slub.c:4168 mm/slub.c:4324) 
->> [ 231.759945][ C3] ? kasan_unpoison (mm/kasan/shadow.c:156 mm/kasan/shadow.c:182) 
->> [ 231.759951][ C3] do_init_module (kernel/module/main.c:2910) 
->> [ 231.759958][ C3] load_module (kernel/module/main.c:3376) 
->> [ 231.759964][ C3] ? __pfx_load_module (kernel/module/main.c:3223) 
->> [ 231.759969][ C3] ? security_kernel_post_read_file (security/security.c:3363) 
->> [ 231.759975][ C3] ? kernel_read_file (arch/x86/include/asm/atomic.h:53 include/linux/atomic/atomic-arch-fallback.h:992 include/linux/>atomic/atomic-instrumented.h:436 include/linux/fs.h:3060 fs/kernel_read_file.c:122) 
->> [ 231.759982][ C3] ? __pfx_kernel_read_file (fs/kernel_read_file.c:38) 
->> [ 231.759988][ C3] ? init_module_from_file (kernel/module/main.c:3565) 
->> [ 231.759993][ C3] init_module_from_file (kernel/module/main.c:3565) 
->> [ 231.759998][ C3] ? __pfx_init_module_from_file (kernel/module/main.c:3541) 
->> [ 231.760004][ C3] ? __pfx__raw_spin_lock (kernel/locking/spinlock.c:153) 
->> [ 231.760011][ C3] idempotent_init_module (kernel/module/main.c:3577) 
->> [ 231.760016][ C3] ? __pfx_idempotent_init_module (kernel/module/main.c:3569) 
->> [ 231.760022][ C3] ? fdget (include/linux/atomic/atomic-arch-fallback.h:479 include/linux/atomic/atomic-instrumented.h:50 fs/file.>c:1145 fs/file.c:1159) 
->> [ 231.760028][ C3] ? security_capable (security/security.c:1142) 
->> [ 231.760035][ C3] __x64_sys_finit_module (include/linux/file.h:62 include/linux/file.h:83 kernel/module/main.c:3600 kernel/module/main.>c:3587 kernel/module/main.c:3587) 
->> [ 231.760040][ C3] do_syscall_64 (arch/x86/entry/common.c:52 arch/x86/entry/common.c:83) 
->> [ 231.760046][ C3] ? do_mmap (mm/mmap.c:496) 
->> [ 231.760053][ C3] ? __pfx_userfaultfd_unmap_complete (fs/userfaultfd.c:838) 
->> [ 231.760060][ C3] ? __pfx_do_mmap (mm/mmap.c:288) 
->> [ 231.760065][ C3] ? down_write_killable (arch/x86/include/asm/atomic64_64.h:20 include/linux/atomic/atomic-arch-fallback.h:2629 >include/linux/atomic/atomic-long.h:79 include/linux/atomic/atomic-instrumented.h:3224 kernel/locking/rwsem.c:143 kernel/locking/rwsem.>c:268 kernel/locking/rwsem.c:1303 kernel/locking/rwsem.c:1318 kernel/locking/rwsem.c:1590) 
->> [ 231.760071][ C3] ? __pfx_down_write_killable (kernel/locking/rwsem.c:1586) 
->> [ 231.760077][ C3] ? vm_mmap_pgoff (mm/util.c:584) 
->> [ 231.760084][ C3] ? __pfx_vm_mmap_pgoff (mm/util.c:570) 
->> [ 231.760089][ C3] ? fget (fs/file.c:1063) 
->> [ 231.760095][ C3] ? fput (arch/x86/include/asm/atomic64_64.h:79 include/linux/atomic/atomic-arch-fallback.h:2913 include/linux/atomic/>atomic-arch-fallback.h:3364 include/linux/atomic/atomic-long.h:698 include/linux/atomic/atomic-instrumented.h:3767 include/linux/file_ref.>h:157 fs/file_table.c:501) 
->> [ 231.760100][ C3] ? ksys_mmap_pgoff (mm/mmap.c:547) 
->> [ 231.760105][ C3] ? syscall_exit_to_user_mode (arch/x86/include/asm/irqflags.h:37 arch/x86/include/asm/irqflags.h:92 include/linux/>entry-common.h:232 kernel/entry/common.c:206 kernel/entry/common.c:218) 
->> [ 231.760111][ C3] ? syscall_exit_to_user_mode (arch/x86/include/asm/irqflags.h:37 arch/x86/include/asm/irqflags.h:92 include/linux/>entry-common.h:232 kernel/entry/common.c:206 kernel/entry/common.c:218) 
->> [ 231.760116][ C3] ? do_syscall_64 (arch/x86/entry/common.c:102) 
->> [ 231.760121][ C3] ? do_user_addr_fault (include/linux/rcupdate.h:882 include/linux/mm.h:741 arch/x86/mm/fault.c:1340) 
->> [ 231.760127][ C3] ? syscall_exit_to_user_mode (arch/x86/include/asm/irqflags.h:37 arch/x86/include/asm/irqflags.h:92 include/linux/>entry-common.h:232 kernel/entry/common.c:206 kernel/entry/common.c:218) 
->> [ 231.760133][ C3] ? do_syscall_64 (arch/x86/entry/common.c:102) 
->> [ 231.760137][ C3] ? exc_page_fault (arch/x86/include/asm/irqflags.h:37 arch/x86/include/asm/irqflags.h:92 arch/x86/mm/fault.c:1489 >arch/x86/mm/fault.c:1539) 
->> [ 231.760142][ C3] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130) 
->> [  231.760148][    C3] RIP: 0033:0x7f64c7711719
->> [ 231.760154][ C3] Code: 08 89 e8 5b 5d c3 66 2e 0f 1f 84 00 00 00 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b >4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b7 06 0d 00 f7 d8 64 89 01 48
->> All code
->> ========
->>    0:	08 89 e8 5b 5d c3    	or     %cl,-0x3ca2a418(%rcx)
->>    6:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
->>    d:	00 00 00 
->>   10:	90                   	nop
->>   11:	48 89 f8             	mov    %rdi,%rax
->>   14:	48 89 f7             	mov    %rsi,%rdi
->>   17:	48 89 d6             	mov    %rdx,%rsi
->>   1a:	48 89 ca             	mov    %rcx,%rdx
->>   1d:	4d 89 c2             	mov    %r8,%r10
->>   20:	4d 89 c8             	mov    %r9,%r8
->>   23:	4c 8b 4c 24 08       	mov    0x8(%rsp),%r9
->>   28:	0f 05                	syscall
->>   2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping instruction
->>   30:	73 01                	jae    0x33
->>   32:	c3                   	ret
->>   33:	48 8b 0d b7 06 0d 00 	mov    0xd06b7(%rip),%rcx        # 0xd06f1
->>   3a:	f7 d8                	neg    %eax
->>   3c:	64 89 01             	mov    %eax,%fs:(%rcx)
->>   3f:	48                   	rex.W
->> 
->> Code starting with the faulting instruction
->> ===========================================
->>    0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
->>    6:	73 01                	jae    0x9
->>    8:	c3                   	ret
->>    9:	48 8b 0d b7 06 0d 00 	mov    0xd06b7(%rip),%rcx        # 0xd06c7
->>   10:	f7 d8                	neg    %eax
->>   12:	64 89 01             	mov    %eax,%fs:(%rcx)
->>   15:	48                   	rex.W
->> 
->> 
->> The kernel config and materials to reproduce are available at:
->> https://download.01.org/0day-ci/archive/20250122/202501221029.fb0d574d-lkp@intel.com
->> 
->> 
->> 
->> -- 
->> 0-DAY CI Kernel Test Service
->> https://github.com/intel/lkp-tests/wiki
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202503171507.6c8093d0-lkp@intel.com
+
+
+2025-03-11 18:27:45 make quicktest=1 run_tests -C sgx
+make: Entering directory '/usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-47b2b7ca1ce4d1dbbaae0334436869c9e987d03c/tools/testing/selftests/sgx'
+TAP version 13
+1..1
+# timeout set to 300
+# selftests: sgx: test_sgx
+# TAP version 13
+# 1..16
+# # Starting 16 tests from 1 test cases.
+# #  RUN           enclave.unclobbered_vdso ...
+# Unable to open /dev/sgx_enclave: No such device or address
+# # main.c:188:unclobbered_vdso:Failed to load the test enclave.
+# # main.c:287:unclobbered_vdso:Expected 0 (0) != setup_test_encl(ENCL_HEAP_SIZE_DEFAULT, &self->encl, _metadata) (0)
+# # unclobbered_vdso: Test terminated by assertion
+# #          FAIL  enclave.unclobbered_vdso
+# not ok 1 enclave.unclobbered_vdso
+# #  RUN           enclave.unclobbered_vdso_oversubscribed ...
+# Unable to open /dev/sgx_enclave: No such device or address
+# # main.c:188:unclobbered_vdso_oversubscribed:Failed to load the test enclave.
+# # main.c:360:unclobbered_vdso_oversubscribed:Expected 0 (0) != setup_test_encl(total_mem, &self->encl, _metadata) (0)
+# # unclobbered_vdso_oversubscribed: Test terminated by assertion
+# #          FAIL  enclave.unclobbered_vdso_oversubscribed
+# not ok 2 enclave.unclobbered_vdso_oversubscribed
+# #  RUN           enclave.unclobbered_vdso_oversubscribed_remove ...
+# # main.c:402:unclobbered_vdso_oversubscribed_remove:Creating an enclave with 198705152 bytes heap may take a while ...
+# Unable to open /dev/sgx_enclave: No such device or address
+# # main.c:188:unclobbered_vdso_oversubscribed_remove:Failed to load the test enclave.
+# # main.c:404:unclobbered_vdso_oversubscribed_remove:Expected 0 (0) != setup_test_encl(total_mem, &self->encl, _metadata) (0)
+# # unclobbered_vdso_oversubscribed_remove: Test terminated by assertion
+# #          FAIL  enclave.unclobbered_vdso_oversubscribed_remove
+# not ok 3 enclave.unclobbered_vdso_oversubscribed_remove
+# #  RUN           enclave.clobbered_vdso ...
+# Unable to open /dev/sgx_enclave: No such device or address
+# # main.c:188:clobbered_vdso:Failed to load the test enclave.
+# # main.c:509:clobbered_vdso:Expected 0 (0) != setup_test_encl(ENCL_HEAP_SIZE_DEFAULT, &self->encl, _metadata) (0)
+# # clobbered_vdso: Test terminated by assertion
+# #          FAIL  enclave.clobbered_vdso
+# not ok 4 enclave.clobbered_vdso
+# #  RUN           enclave.clobbered_vdso_and_user_function ...
+# Unable to open /dev/sgx_enclave: No such device or address
+# # main.c:188:clobbered_vdso_and_user_function:Failed to load the test enclave.
+# # main.c:545:clobbered_vdso_and_user_function:Expected 0 (0) != setup_test_encl(ENCL_HEAP_SIZE_DEFAULT, &self->encl, _metadata) (0)
+# # clobbered_vdso_and_user_function: Test terminated by assertion
+# #          FAIL  enclave.clobbered_vdso_and_user_function
+# not ok 5 enclave.clobbered_vdso_and_user_function
+# #  RUN           enclave.tcs_entry ...
+# Unable to open /dev/sgx_enclave: No such device or address
+# # main.c:188:tcs_entry:Failed to load the test enclave.
+# # main.c:578:tcs_entry:Expected 0 (0) != setup_test_encl(ENCL_HEAP_SIZE_DEFAULT, &self->encl, _metadata) (0)
+# # tcs_entry: Test terminated by assertion
+# #          FAIL  enclave.tcs_entry
+# not ok 6 enclave.tcs_entry
+# #  RUN           enclave.pte_permissions ...
+# Unable to open /dev/sgx_enclave: No such device or address
+# # main.c:188:pte_permissions:Failed to load the test enclave.
+# # main.c:623:pte_permissions:Expected 0 (0) != setup_test_encl(ENCL_HEAP_SIZE_DEFAULT, &self->encl, _metadata) (0)
+# # pte_permissions: Test terminated by assertion
+# #          FAIL  enclave.pte_permissions
+# not ok 7 enclave.pte_permissions
+# #  RUN           enclave.tcs_permissions ...
+# Unable to open /dev/sgx_enclave: No such device or address
+# # main.c:188:tcs_permissions:Failed to load the test enclave.
+# # main.c:725:tcs_permissions:Expected 0 (0) != setup_test_encl(ENCL_HEAP_SIZE_DEFAULT, &self->encl, _metadata) (0)
+# # tcs_permissions: Test terminated by assertion
+# #          FAIL  enclave.tcs_permissions
+# not ok 8 enclave.tcs_permissions
+# #  RUN           enclave.epcm_permissions ...
+# Unable to open /dev/sgx_enclave: No such device or address
+# # main.c:188:epcm_permissions:Failed to load the test enclave.
+# # main.c:788:epcm_permissions:Expected 0 (0) != setup_test_encl(ENCL_HEAP_SIZE_DEFAULT, &self->encl, _metadata) (0)
+# # epcm_permissions: Test terminated by assertion
+# #          FAIL  enclave.epcm_permissions
+# not ok 9 enclave.epcm_permissions
+# #  RUN           enclave.augment ...
+# #      SKIP      SGX2 not supported
+# #            OK  enclave.augment
+# ok 10 enclave.augment # SKIP SGX2 not supported
+# #  RUN           enclave.augment_via_eaccept ...
+# #      SKIP      SGX2 not supported
+# #            OK  enclave.augment_via_eaccept
+# ok 11 enclave.augment_via_eaccept # SKIP SGX2 not supported
+# #  RUN           enclave.tcs_create ...
+# Unable to open /dev/sgx_enclave: No such device or address
+# # main.c:188:tcs_create:Failed to load the test enclave.
+# # main.c:1240:tcs_create:Expected 0 (0) != setup_test_encl(ENCL_HEAP_SIZE_DEFAULT, &self->encl, _metadata) (0)
+# # tcs_create: Test terminated by assertion
+# #          FAIL  enclave.tcs_create
+# not ok 12 enclave.tcs_create
+# #  RUN           enclave.remove_added_page_no_eaccept ...
+# Unable to open /dev/sgx_enclave: No such device or address
+# # main.c:188:remove_added_page_no_eaccept:Failed to load the test enclave.
+# # main.c:1571:remove_added_page_no_eaccept:Expected 0 (0) != setup_test_encl(ENCL_HEAP_SIZE_DEFAULT, &self->encl, _metadata) (0)
+# # remove_added_page_no_eaccept: Test terminated by assertion
+# #          FAIL  enclave.remove_added_page_no_eaccept
+# not ok 13 enclave.remove_added_page_no_eaccept
+# #  RUN           enclave.remove_added_page_invalid_access ...
+# Unable to open /dev/sgx_enclave: No such device or address
+# # main.c:188:remove_added_page_invalid_access:Failed to load the test enclave.
+# # main.c:1682:remove_added_page_invalid_access:Expected 0 (0) != setup_test_encl(ENCL_HEAP_SIZE_DEFAULT, &self->encl, _metadata) (0)
+# # remove_added_page_invalid_access: Test terminated by assertion
+# #          FAIL  enclave.remove_added_page_invalid_access
+# not ok 14 enclave.remove_added_page_invalid_access
+# #  RUN           enclave.remove_added_page_invalid_access_after_eaccept ...
+# Unable to open /dev/sgx_enclave: No such device or address
+# # main.c:188:remove_added_page_invalid_access_after_eaccept:Failed to load the test enclave.
+# # main.c:1797:remove_added_page_invalid_access_after_eaccept:Expected 0 (0) != setup_test_encl(ENCL_HEAP_SIZE_DEFAULT, &self->encl, _metadata) (0)
+# # remove_added_page_invalid_access_after_eaccept: Test terminated by assertion
+# #          FAIL  enclave.remove_added_page_invalid_access_after_eaccept
+# not ok 15 enclave.remove_added_page_invalid_access_after_eaccept
+# #  RUN           enclave.remove_untouched_page ...
+# Unable to open /dev/sgx_enclave: No such device or address
+# # main.c:188:remove_untouched_page:Failed to load the test enclave.
+# # main.c:1921:remove_untouched_page:Expected 0 (0) != setup_test_encl(ENCL_HEAP_SIZE_DEFAULT, &self->encl, _metadata) (0)
+# # remove_untouched_page: Test terminated by assertion
+# #          FAIL  enclave.remove_untouched_page
+# not ok 16 enclave.remove_untouched_page
+# # FAILED: 2 / 16 tests passed.
+# # 2 skipped test(s) detected. Consider enabling relevant config options to improve coverage.
+# # Totals: pass:0 fail:14 xfail:0 xpass:0 skip:2 error:0
+not ok 1 selftests: sgx: test_sgx # exit=1
+make: Leaving directory '/usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-47b2b7ca1ce4d1dbbaae0334436869c9e987d03c/tools/testing/selftests/sgx'
+
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20250317/202503171507.6c8093d0-lkp@intel.com
+
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
