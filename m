@@ -1,193 +1,202 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83FBD1EEA5D;
-	Tue, 18 Mar 2025 08:15:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E1E620D4E3
+	for <oe-lkp@lists.linux.dev>; Tue, 18 Mar 2025 13:43:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742285736; cv=none; b=rU2irjvM5JlTAJztdBjEGCzHgFfi8zOqO/XxwAr4ZZOeZHW4brArw5T3Qti/EaI3GaetyVpFz0MnatcLUnN6FoP4K8XHhvh2NgrNJEBh4PwI2ZRZBPuXrN1VX5pZIZndMykZH6fAbNE4qEdwcysstZfOePnb2H2w2ilprFOQiWw=
+	t=1742305415; cv=none; b=iwbogIgAJcNrtqRHZQCYlPeMStJMVU/by+RH/A4KvmoEATemO/NxxhI55g4fp5O4WmCJNS47XiZATN1eDz15nSIlN4DBPHmBjV7IoCIO9YUKuCrjMfpjCm6SsyV/zsAfoQ1fzSND1Bo90ljinyrAR1tLXIq4MzPiXjFEaTDOF8s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742285736; c=relaxed/simple;
-	bh=GOH2xhBMFEGxfM//+pfgHfqRcH9vIbAtgCXTwxoE1Ho=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZAP9KEKrk8i3QoKnEpXAWWfsSg259Zi30p+RluefcKNgHExIwxsqiTQKsTlWpK3Oal304p/pelqE52uc0VOBkJs3u3xe78RkvW29DU4CUiYae4il7T8dshCDUUNk2S5QpqBlJbXZM4HJc6DOBuHhblO3ff3iibnn4QpagqtKTsY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D7iH4LeN; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1742305415; c=relaxed/simple;
+	bh=uFshjnch6COON/lIdXmtI3HvzIF/PxLTSiVUaUs2klA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=sZ1tualJ/WZchEN4a/L8j9ZtN3yKUNq0UI9EgN9kz0hWtlEw5CQSZjtKmrdDc3Duo9BnG/vEiIH0Riu+TjKRDhRqyF6bzTcZyHjXeflF4ttdpGUVVWDmIugmjZz+BPlxzfbab+52LZZHsw/U0yNA1NnFvpgDNCq4DSOrrF258oM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=RLKkxFWT; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D7iH4LeN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 437FBC4CEF7;
-	Tue, 18 Mar 2025 08:15:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742285735;
-	bh=GOH2xhBMFEGxfM//+pfgHfqRcH9vIbAtgCXTwxoE1Ho=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=D7iH4LeN+716af4PfUJBivMp2JUJYhen3EN0YQl2FGbyklx2tQQ2YFcrUPPhf5Mtm
-	 dSGhh+YQ0IefTEwBuLWM3HwoegS3SJd7n2uJEDYWuF3vyjUCQ20UAluQBiERAx02Gz
-	 pYg7xGldrQMQoR7D+Or3umeWBNlKRpgYh8VfQP6lzRZ2mIu5dWklhKW/91d/6QuAMI
-	 ImOnVNQpZmEdLLX7eBvBA2ohVkItfGeoapQf2WYO7CcqmQRyTimERLwvYA1giFPQZ6
-	 e+HKFbcwu5pxjuylOEmtE646RTeT+wZhKk+i3f9yESb18fCDVGUc0+5Y5nCfLj66yw
-	 D2S5huFjlb1bA==
-Date: Tue, 18 Mar 2025 01:15:33 -0700
-From: Luis Chamberlain <mcgrof@kernel.org>
-To: Oliver Sang <oliver.sang@intel.com>,
-	David Hildenbrand <david@redhat.com>,
-	Alistair Popple <apopple@nvidia.com>, linux-mm@kvack.org
-Cc: Christian Brauner <brauner@kernel.org>, Hannes Reinecke <hare@suse.de>,
-	oe-lkp@lists.linux.dev, lkp@intel.com,
-	"Matthew Wilcox (Oracle)" <willy@infradead.org>,
-	John Garry <john.g.garry@oracle.com>, linux-block@vger.kernel.org,
-	ltp@lists.linux.it, Pankaj Raghav <p.raghav@samsung.com>,
-	Daniel Gomez <da.gomez@samsung.com>
-Subject: Re: [linux-next:master] [block/bdev]  3c20917120:
- BUG:sleeping_function_called_from_invalid_context_at_mm/util.c
-Message-ID: <Z9krpfrKjnFs6mfE@bombadil.infradead.org>
-References: <202503101536.27099c77-lkp@intel.com>
- <20250311-testphasen-behelfen-09b950bbecbf@brauner>
- <Z9kEdPLNT8SOyOQT@xsang-OptiPlex-9020>
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="RLKkxFWT"
+Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 52ICSHk8030912;
+	Tue, 18 Mar 2025 13:43:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=T+XfCi
+	ogmjfy2Rk9LOyW7fR4o+KUQUGMxOm6P0obNJw=; b=RLKkxFWTtrbPrXKT1/hWK3
+	Q+Lsc4EM9hxZTSv92SLXpsgNTLJcxX1r+pSlozckLneIt7LAOfTwlX1bRL8zGJoZ
+	R7TtEWh2yfv0n+L+CtXsrsV1uqI4mcLLuFrDVj3XUiP80AX0r5VXc2J4SmjTQIyK
+	9jChVDksbEwHdr5TKFbCCyU7UGl830pN8C8FS2FKhWtrJKkTwUuE6Vho5oVl2AP0
+	+uJVqdfWgJ1eLZSkD2yP8PC58ZN5Wb0sk1yfhH6qNO0gekfUBueCkBr846LR2H/y
+	3qlLrisS/9H+nBJk58dQnW1H9itZhUEx/fNCkff5VAgst6v/bGBtjZbr3PVbQ3DA
+	==
+Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 45f8v7gcs8-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 18 Mar 2025 13:43:29 +0000 (GMT)
+Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma11.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 52ICgner005819;
+	Tue, 18 Mar 2025 13:43:28 GMT
+Received: from smtprelay02.wdc07v.mail.ibm.com ([172.16.1.69])
+	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 45dpk2bqb4-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 18 Mar 2025 13:43:28 +0000
+Received: from smtpav01.wdc07v.mail.ibm.com (smtpav01.wdc07v.mail.ibm.com [10.39.53.228])
+	by smtprelay02.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 52IDhR9l27919090
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 18 Mar 2025 13:43:27 GMT
+Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 6733B58065;
+	Tue, 18 Mar 2025 13:43:27 +0000 (GMT)
+Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id D4C565804B;
+	Tue, 18 Mar 2025 13:43:22 +0000 (GMT)
+Received: from [9.171.73.51] (unknown [9.171.73.51])
+	by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Tue, 18 Mar 2025 13:43:22 +0000 (GMT)
+Message-ID: <95c6356c-da6d-4f66-8782-ada1f56315c2@linux.ibm.com>
+Date: Tue, 18 Mar 2025 19:13:20 +0530
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Z9kEdPLNT8SOyOQT@xsang-OptiPlex-9020>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCHv6 6/7] block: protect wbt_lat_usec using q->elevator_lock
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, Christoph Hellwig <hch@lst.de>,
+        Hannes Reinecke <hare@suse.de>, Ming Lei <ming.lei@redhat.com>,
+        cgroups@vger.kernel.org, linux-block@vger.kernel.org,
+        dlemoal@kernel.org, axboe@kernel.dk, gjoyce@ibm.com
+References: <202503171650.cc082b66-lkp@intel.com>
+Content-Language: en-US
+From: Nilay Shroff <nilay@linux.ibm.com>
+In-Reply-To: <202503171650.cc082b66-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: xWM--ITegE4REgDi0zmHdWDw2CibOQF5
+X-Proofpoint-ORIG-GUID: xWM--ITegE4REgDi0zmHdWDw2CibOQF5
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-03-18_06,2025-03-17_03,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ impostorscore=0 clxscore=1015 bulkscore=0 phishscore=0 adultscore=0
+ suspectscore=0 mlxlogscore=999 malwarescore=0 priorityscore=1501
+ mlxscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2502280000 definitions=main-2503180100
 
-On Tue, Mar 18, 2025 at 01:28:20PM +0800, Oliver Sang wrote:
-> hi, Christian Brauner,
+
+
+On 3/17/25 7:10 PM, kernel test robot wrote:
 > 
-> On Tue, Mar 11, 2025 at 01:10:43PM +0100, Christian Brauner wrote:
-> > On Mon, Mar 10, 2025 at 03:43:49PM +0800, kernel test robot wrote:
-> > > 
-> > > 
-> > > Hello,
-> > > 
-> > > kernel test robot noticed "BUG:sleeping_function_called_from_invalid_context_at_mm/util.c" on:
-> > > 
-> > > commit: 3c20917120ce61f2a123ca0810293872f4c6b5a4 ("block/bdev: enable large folio support for large logical block sizes")
-> > > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> > 
-> > Is this also already fixed by:
-> > 
-> > commit a64e5a596067 ("bdev: add back PAGE_SIZE block size validation for sb_set_blocksize()")
-> > 
-> > ?
 > 
-> sorry for late.
+> Hello,
 > 
-> commit a64e5a596067 cannot fix the issue. one dmesg is attached FYI.
+> kernel test robot noticed "INFO:task_blocked_for_more_than#seconds" on:
 > 
-> we also tried to check linux-next/master tip, but neither below one can boot
-> successfully in our env which we need further check.
+> commit: f35c9ef2ba17842de59176b29df32999803bd9fa ("[PATCHv6 6/7] block: protect wbt_lat_usec using q->elevator_lock")
+> url: https://github.com/intel-lab-lkp/linux/commits/Nilay-Shroff/block-acquire-q-limits_lock-while-reading-sysfs-attributes/20250304-182738
+> base: https://git.kernel.org/cgit/linux/kernel/git/axboe/linux-block.git for-next
+> patch link: https://lore.kernel.org/all/20250304102551.2533767-7-nilay@linux.ibm.com/
+> patch subject: [PATCHv6 6/7] block: protect wbt_lat_usec using q->elevator_lock
 > 
-> da920b7df70177 (tag: next-20250314, linux-next/master) Add linux-next specific files for 20250314
+> in testcase: fio-basic
+> version: fio-x86_64-3.38-1_20250308
+> with following parameters:
 > 
-> e94bd4ec45ac1 (tag: next-20250317, linux-next/master) Add linux-next specific files for 20250317
+> 	runtime: 300s
+> 	disk: 1HDD
+> 	fs: btrfs
+> 	nr_task: 100%
+> 	test_size: 128G
+> 	rw: randwrite
+> 	bs: 4M
+> 	ioengine: posixaio
+> 	cpufreq_governor: performance
 > 
-> so we are not sure the status of latest linux-next/master.
 > 
-> if you want us to check other commit or other patches, please let us know. thanks!
+> 
+> config: x86_64-rhel-9.4
+> compiler: gcc-12
+> test machine: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory
+> 
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+> 
+> 
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202503171650.cc082b66-lkp@intel.com
+> 
+> 
+> [  991.017071][  T472] INFO: task umount:12320 blocked for more than 491 seconds.
+> [  991.024314][  T472]       Tainted: G        W          6.14.0-rc5-00192-gf35c9ef2ba17 #1
+> [  991.032414][  T472] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+> [  991.040948][  T472] task:umount          state:D stack:0     pid:12320 tgid:12320 ppid:12317  task_flags:0x400100 flags:0x00004002
+> [  991.052695][  T472] Call Trace:
+> [  991.055849][  T472]  <TASK>
+> [ 991.058658][ T472] __schedule (kernel/sched/core.c:5378 kernel/sched/core.c:6765) 
+> [ 991.062856][ T472] schedule (arch/x86/include/asm/bitops.h:206 arch/x86/include/asm/bitops.h:238 include/linux/thread_info.h:192 include/linux/thread_info.h:208 include/linux/sched.h:2149 kernel/sched/core.c:6844 kernel/sched/core.c:6857) 
+> [ 991.066706][ T472] wb_wait_for_completion (fs/fs-writeback.c:216 fs/fs-writeback.c:213) 
+> [ 991.071773][ T472] ? __pfx_autoremove_wake_function (kernel/sched/wait.c:383) 
+> [ 991.077702][ T472] __writeback_inodes_sb_nr (fs/fs-writeback.c:2736) 
+> [ 991.082936][ T472] sync_filesystem (fs/sync.c:55 fs/sync.c:30) 
+> [ 991.087390][ T472] generic_shutdown_super (fs/super.c:622) 
+> [ 991.092538][ T472] kill_anon_super (fs/super.c:434 fs/super.c:1238) 
+> [ 991.096991][ T472] btrfs_kill_super (fs/btrfs/super.c:2101) btrfs 
+> [ 991.102280][ T472] deactivate_locked_super (fs/super.c:473) 
+> [ 991.107678][ T472] cleanup_mnt (fs/namespace.c:281 fs/namespace.c:1414) 
+> [ 991.112082][ T472] task_work_run (kernel/task_work.c:227 (discriminator 1)) 
+> [ 991.116534][ T472] syscall_exit_to_user_mode (include/linux/resume_user_mode.h:50 kernel/entry/common.c:114 include/linux/entry-common.h:329 kernel/entry/common.c:207 kernel/entry/common.c:218) 
+> [ 991.122197][ T472] do_syscall_64 (arch/x86/entry/common.c:102) 
+> [ 991.126731][ T472] ? do_syscall_64 (arch/x86/entry/common.c:102) 
+> [ 991.131430][ T472] ? __count_memcg_events (mm/memcontrol.c:583 mm/memcontrol.c:857) 
+> [ 991.136738][ T472] ? handle_mm_fault (arch/x86/include/asm/irqflags.h:154 include/linux/memcontrol.h:970 include/linux/memcontrol.h:993 include/linux/memcontrol.h:1000 mm/memory.c:6077 mm/memory.c:6238) 
+> [ 991.141606][ T472] ? do_user_addr_fault (include/linux/mm.h:743 arch/x86/mm/fault.c:1339) 
+> [ 991.146823][ T472] ? clear_bhb_loop (arch/x86/entry/entry_64.S:1538) 
+> [ 991.151517][ T472] ? clear_bhb_loop (arch/x86/entry/entry_64.S:1538) 
+> [ 991.156203][ T472] ? clear_bhb_loop (arch/x86/entry/entry_64.S:1538) 
+> [ 991.160881][ T472] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130) 
+> [  991.166777][  T472] RIP: 0033:0x7f415ea2aa77
+> [  991.171197][  T472] RSP: 002b:00007ffe0db2fd98 EFLAGS: 00000246 ORIG_RAX: 00000000000000a6
+> [  991.179611][  T472] RAX: 0000000000000000 RBX: 000055cc64b55048 RCX: 00007f415ea2aa77
+> [  991.187586][  T472] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 000055cc64b55160
+> [  991.195555][  T472] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000073
+> [  991.203514][  T472] R10: 0000000000000000 R11: 0000000000000246 R12: 00007f415eb65264
+> [  991.211476][  T472] R13: 000055cc64b55160 R14: 0000000000000000 R15: 000055cc64b54f30
+> [  991.219431][  T472]  </TASK>
+> [ 1008.358661][T12320] BTRFS info (device sda1): last unmount of filesystem 8b972718-96ad-4a66-b549-8be29321e91a
+> 
+> 
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20250317/202503171650.cc082b66-lkp@intel.com
+> 
+I attempted to reproduce the above issue multiple times using the provided 
+reproducer but was unable to do so. However, during further investigation, 
+I discovered a  lockdep warning related to a circular buffer. The patch in
+question introduces q->elevator_lock to protect writes to the sysfs attribute
+wbt_lat_usec and the cgroup attribute io.cost.qos. However, write to these
+attributes also acquire q->rq_qos_mutex, which may lead to a potential lock
+ordering issue reported by lockdep. Unfortunately, blktest doesn't have any
+testcase testing writes to these attributes. I think we should have one and
+so will submit a blktest. 
 
-I cannot reproduce the issue by running the LTP test manually in a loop
-for a long time:
+The lockdep warning reports an incorrect locking order between q->elevator_lock
+and q->rq_qos_mutex, which might cause the observed symptom reported. Notably, 
+I saw that the LKP test case did not have lockdep enabled, which may have 
+allowed this issue to manifest much earlier rather than being detected later 
+while unmounting the file system.
 
-export LTP_RUNTIME_MUL=2
+Anyways, we have to fix the circular locking dependency between q->elevator_lock 
+and q->rq_qos_mutex. I will prepare a patch to address this and submit it upstream, 
+tagging you in the commit.
 
-while true; do \
-	./testcases/kernel/syscalls/close_range/close_range01; done
+On another, if you're able to recreate this issue then whenever this issue manifests
+would you please help run the below command and collect dmesg output:
+# echo w > /proc/sysrq-trigger
 
-What's the failure rate of just running the test alone above?
-Does it always fail on this system? Is this a deterministic failure
-or does it have a lower failure rate?
+Thanks,
+--Nilay
 
-I also can't see how the patch ("("block/bdev: enable large folio
-support for large logical block sizes") would trigger this.
-
-You could try this patch but ...
-
-https://lore.kernel.org/all/20250312050028.1784117-1-mcgrof@kernel.org/
-
-we decided this is not right and not needed, and if we have a buggy
-block driver we can address that.
-
-I just can't see how this LTP test actually doing anything funky with block
-devices at all.
-
-The associated sleeping while atomic warning is triggered during
-compaction though:
-
-[  218.143642][  T299] Architecture:                         x86_64
-[  218.143659][  T299] 
-[  218.427851][   T51] BUG: sleeping function called from invalid context at mm/util.c:901
-[  218.435981][   T51] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 51, name: kcompactd0
-[  218.444773][   T51] preempt_count: 1, expected: 0
-[  218.449601][   T51] RCU nest depth: 0, expected: 0
-[  218.454476][   T51] CPU: 2 UID: 0 PID: 51 Comm: kcompactd0 Tainted: G S                 6.14.0-rc1-00006-g3c20917120ce #1
-[  218.454486][   T51] Tainted: [S]=CPU_OUT_OF_SPEC
-[  218.454488][   T51] Hardware name: Hewlett-Packard HP Pro 3340 MT/17A1, BIOS 8.07 01/24/2013
-[  218.454492][   T51] Call Trace:
-[  218.454495][   T51]  <TASK>
-[  218.454498][   T51]  dump_stack_lvl+0x4f/0x70
-[  218.454508][   T51]  __might_resched+0x2c6/0x450
-[  218.454517][   T51]  folio_mc_copy+0xca/0x1f0
-[  218.454525][   T51]  ? _raw_spin_lock+0x81/0xe0
-[  218.454532][   T51]  __migrate_folio+0x11a/0x2d0
-[  218.454541][   T51]  __buffer_migrate_folio+0x558/0x660
-[  218.454548][   T51]  move_to_new_folio+0xf5/0x410
-[  218.454555][   T51]  migrate_folio_move+0x211/0x770
-[  218.454562][   T51]  ? __pfx_compaction_free+0x10/0x10
-[  218.454572][   T51]  ? __pfx_migrate_folio_move+0x10/0x10
-[  218.454578][   T51]  ? compaction_alloc_noprof+0x441/0x720
-[  218.454587][   T51]  ? __pfx_compaction_alloc+0x10/0x10
-[  218.454594][   T51]  ? __pfx_compaction_free+0x10/0x10
-[  218.454601][   T51]  ? __pfx_compaction_free+0x10/0x10
-[  218.454607][   T51]  ? migrate_folio_unmap+0x329/0x890
-[  218.454614][   T51]  migrate_pages_batch+0xddf/0x1810
-[  218.454621][   T51]  ? __pfx_compaction_free+0x10/0x10
-[  218.454631][   T51]  ? __pfx_migrate_pages_batch+0x10/0x10
-[  218.454638][   T51]  ? cgroup_rstat_updated+0xf1/0x860
-[  218.454648][   T51]  migrate_pages_sync+0x10c/0x8e0
-[  218.454656][   T51]  ? __pfx_compaction_alloc+0x10/0x10
-[  218.454662][   T51]  ? __pfx_compaction_free+0x10/0x10
-[  218.454669][   T51]  ? lru_gen_del_folio+0x383/0x820
-[  218.454677][   T51]  ? __pfx_migrate_pages_sync+0x10/0x10
-[  218.454683][   T51]  ? set_pfnblock_flags_mask+0x179/0x220
-[  218.454691][   T51]  ? __pfx_lru_gen_del_folio+0x10/0x10
-[  218.454699][   T51]  ? __pfx_compaction_alloc+0x10/0x10
-[  218.454705][   T51]  ? __pfx_compaction_free+0x10/0x10
-[  218.454713][   T51]  migrate_pages+0x846/0xe30
-[  218.454720][   T51]  ? __pfx_compaction_alloc+0x10/0x10
-[  218.454726][   T51]  ? __pfx_compaction_free+0x10/0x10
-[  218.454733][   T51]  ? __pfx_buffer_migrate_folio_norefs+0x10/0x10
-[  218.454740][   T51]  ? __pfx_migrate_pages+0x10/0x10
-[  218.454748][   T51]  ? isolate_migratepages+0x32d/0xbd0
-[  218.454757][   T51]  compact_zone+0x9e1/0x1680
-[  218.454767][   T51]  ? __pfx_compact_zone+0x10/0x10
-[  218.454774][   T51]  ? _raw_spin_lock_irqsave+0x87/0xe0
-[  218.454780][   T51]  ? __pfx__raw_spin_lock_irqsave+0x10/0x10
-[  218.454788][   T51]  compact_node+0x159/0x250
-[  218.454795][   T51]  ? __pfx_compact_node+0x10/0x10
-[  218.454807][   T51]  ? __pfx_extfrag_for_order+0x10/0x10
-[  218.454814][   T51]  ? __pfx_mutex_unlock+0x10/0x10
-[  218.454822][   T51]  ? finish_wait+0xd1/0x280
-[  218.454831][   T51]  kcompactd+0x582/0x960
-[  218.454839][   T51]  ? __pfx_kcompactd+0x10/0x10
-[  218.454846][   T51]  ? _raw_spin_lock_irqsave+0x87/0xe0
-[  218.454852][   T51]  ? __pfx__raw_spin_lock_irqsave+0x10/0x10
-[  218.454858][   T51]  ? __pfx_autoremove_wake_function+0x10/0x10
-[  218.454867][   T51]  ? __kthread_parkme+0xba/0x1e0
-[  218.454874][   T51]  ? __pfx_kcompactd+0x10/0x10
-[  218.454880][   T51]  kthread+0x3a1/0x770
-[  218.454887][   T51]  ? __pfx_kthread+0x10/0x10
-[  218.454895][   T51]  ? __pfx_kthread+0x10/0x10
-[  218.454902][   T51]  ret_from_fork+0x30/0x70
-[  218.454910][   T51]  ? __pfx_kthread+0x10/0x10
-[  218.454915][   T51]  ret_from_fork_asm+0x1a/0x30
-[  218.454924][   T51]  </TASK>
-
-So the only thing I can think of the patch which the patch can do is
-push more large folios to be used and so compaction can be a secondary
-effect which managed to trigger another mm issue. I know there was a
-recent migration fix but I can't see the relationship at all either.
-
-  Luis
