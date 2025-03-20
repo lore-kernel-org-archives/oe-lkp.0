@@ -1,67 +1,58 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B9C3364BA
-	for <oe-lkp@lists.linux.dev>; Thu, 20 Mar 2025 01:24:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D94522068D;
+	Thu, 20 Mar 2025 12:11:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742433872; cv=none; b=JQXe0yCk/jd/jvJlUE02MM6hArMHO+1pYl/c00BfXCCIGcdefpmOJ5XwqCc8NSKMFH98OMS7fdnEVpqontPidqgc/KcjLwIZxJWibHWWEArPCNDLyHjBTap3aeSyFR4wIvt0DD+RPqxKqFAe6xYzkZz2Ue9kleSPlzEHkPgQHZI=
+	t=1742472681; cv=none; b=YDcUINihL2zecc7Eb+0gsJ7zQQp3YSY5HUa8PJ4R7044oG5kRbwjblQKWqtkBPF7HmCy43rsButKHnReRFo7fmreP+J6UlXTwYf91e6Q8ZE3Rk1o6Q9OCON4MzsHj0TfV25g1heJhOlvMuKNoqn5z+ziU25hAWKX6h+lFm3B2io=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742433872; c=relaxed/simple;
-	bh=mVjHOvtZt3NxlZEmYD6UIjkVerVA4XASUbcf/dG+FVs=;
+	s=arc-20240116; t=1742472681; c=relaxed/simple;
+	bh=lAA6dsHJHk9It386Fum5QAZ0hCirSjpfY33LKsMgCE4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cgutL6DejCvSd0d4XCmIOya8A43fhWwkFCMDbCw43qX4v7cdZAwhHwH4FqQrjhse/G5+fKr37zJGzdENuJQm1+XXwyz3YJ8ArUcwQDaIIg4rJhOl3W+QpoZLa5DzUcpB4jUWNmPSPQdLjyNSmyC16wKl0IYJ6mOatSoRRagvaTo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZTYrx6HT; arc=none smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=e8T89uUlT+RRQXaj3HrBdHKcr6v1ZU9fGkMuVgqbaC6NCRg+ZqcUMG3u3XqYKs6AmOmYcMDLjI41qZj/LO8v7lflIKnjITLiQixuP5KDwfZ9SHRksrRWVWFG8NMOqwaGBmRN1/+iTpNAbkmzu95NQy29VLHdIhZBTq2jwwe5yyU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RDooq5R/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZTYrx6HT"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1742433871; x=1773969871;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mVjHOvtZt3NxlZEmYD6UIjkVerVA4XASUbcf/dG+FVs=;
-  b=ZTYrx6HTGsGULcSq3MCARlzT8KImZZ/aWXH9DxYydQmL2ZRyKhCnFYKm
-   saGYh8RaoTzpZF/mMTKCQFst620ZtQQh1gvtK5n/hQYl0kPNc4sthl0AZ
-   h9C3h6sH7+AVg+6bj4ZOd5PqGBNJYJsASNl0tmUycrREHojSshewIgTRQ
-   v9qtEyRTmWttbp1Mbfb4UQVesbjtO3swQXC//lmdjFNSSz7sIGyo8d9Lr
-   HHRL9whAzxDGZ/PKB5ZLLXEc4qtmV6N75nZPzgdMRyjuh4Tl0BcBwJX8l
-   Q21/SwCXMKWVRYRCibpO/QH+8mWXhpS1fBSCc3VA/WKnNcJUy5QBG/Qvr
-   A==;
-X-CSE-ConnectionGUID: fmVfGiucTHW2rfxwz8zPCQ==
-X-CSE-MsgGUID: phiM8Z+RTSGc7ctNu48grA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11378"; a="42819323"
-X-IronPort-AV: E=Sophos;i="6.14,260,1736841600"; 
-   d="scan'208";a="42819323"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2025 18:24:30 -0700
-X-CSE-ConnectionGUID: DbN0uQkNRpeSpgiOBLvoZg==
-X-CSE-MsgGUID: qfJrijahQaOY85HhtQR5NQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.14,260,1736841600"; 
-   d="scan'208";a="122600501"
-Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.161.23])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2025 18:24:27 -0700
-Date: Thu, 20 Mar 2025 09:24:51 +0800
-From: "Lai, Yi" <yi1.lai@linux.intel.com>
-To: Luis Chamberlain <mcgrof@kernel.org>
-Cc: Oliver Sang <oliver.sang@intel.com>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RDooq5R/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8452FC4CEDD;
+	Thu, 20 Mar 2025 12:11:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1742472681;
+	bh=lAA6dsHJHk9It386Fum5QAZ0hCirSjpfY33LKsMgCE4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=RDooq5R/FovOLHSj7M1hearKsRBi0uJDIUlrK2RPUohurT0kPQqO2XG5pn+WfIMcC
+	 CkcWQIb32h22p3f1KSPmYNzRQZe2JSxuvHzG2rU/PjBKwaHp7hc5JIvi2kx6pRGXjF
+	 smDPAdey/CSvCs4JjPJok7clPISdEE1yB1EQzWMwDMgGqnrGGIj7l1mbGF8DnYww7D
+	 xNEabK6TtuoxdRdzKOm34JLTO38OwiKJNp1QWkTIn53u+I1WL0V0SM0QEAeOhFrZQ0
+	 MtjOmFzSva/VR2pI9/Sylmdamaz9SNgKBwyzu9BZP/OoL3fGpdlqwW7vFVkWAzoCwy
+	 LJ6VCZcapNSbg==
+Date: Thu, 20 Mar 2025 05:11:19 -0700
+From: Luis Chamberlain <mcgrof@kernel.org>
+To: Matthew Wilcox <willy@infradead.org>,
+	Johannes Weiner <hannes@cmpxchg.org>
+Cc: Jan Kara <jack@suse.cz>, Oliver Sang <oliver.sang@intel.com>,
 	David Hildenbrand <david@redhat.com>,
 	Alistair Popple <apopple@nvidia.com>, linux-mm@kvack.org,
 	Christian Brauner <brauner@kernel.org>,
 	Hannes Reinecke <hare@suse.de>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-	John Garry <john.g.garry@oracle.com>, linux-block@vger.kernel.org,
-	ltp@lists.linux.it, Pankaj Raghav <p.raghav@samsung.com>,
-	Daniel Gomez <da.gomez@samsung.com>, yi1.lai@intel.com
+	lkp@intel.com, John Garry <john.g.garry@oracle.com>,
+	linux-block@vger.kernel.org, ltp@lists.linux.it,
+	Pankaj Raghav <p.raghav@samsung.com>,
+	Daniel Gomez <da.gomez@samsung.com>,
+	David Bueso <dave@stgolabs.net>
 Subject: Re: [linux-next:master] [block/bdev]  3c20917120:
  BUG:sleeping_function_called_from_invalid_context_at_mm/util.c
-Message-ID: <Z9tuY5hCGOOVrSVL@ly-workstation>
+Message-ID: <Z9wF57eEBR-42K9a@bombadil.infradead.org>
 References: <202503101536.27099c77-lkp@intel.com>
  <20250311-testphasen-behelfen-09b950bbecbf@brauner>
  <Z9kEdPLNT8SOyOQT@xsang-OptiPlex-9020>
  <Z9krpfrKjnFs6mfE@bombadil.infradead.org>
+ <Z9mFKa3p5P9TBSTQ@casper.infradead.org>
+ <Z9n_Iu6W40ZNnKwT@bombadil.infradead.org>
+ <Z9oy3i3n_HKFu1M1@casper.infradead.org>
+ <Z9r27eUk993BNWTX@bombadil.infradead.org>
+ <Z9sYGccL4TocoITf@bombadil.infradead.org>
+ <Z9sZ5_lJzTwGShQT@casper.infradead.org>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -70,271 +61,172 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Z9krpfrKjnFs6mfE@bombadil.infradead.org>
+In-Reply-To: <Z9sZ5_lJzTwGShQT@casper.infradead.org>
 
-On Tue, Mar 18, 2025 at 01:15:33AM -0700, Luis Chamberlain wrote:
-> On Tue, Mar 18, 2025 at 01:28:20PM +0800, Oliver Sang wrote:
-> > hi, Christian Brauner,
+On Wed, Mar 19, 2025 at 07:24:23PM +0000, Matthew Wilcox wrote:
+> On Wed, Mar 19, 2025 at 12:16:41PM -0700, Luis Chamberlain wrote:
+> > On Wed, Mar 19, 2025 at 09:55:11AM -0700, Luis Chamberlain wrote:
+> > > FWIW, I'm not seeing this crash or any kernel splat within the
+> > > same time (I'll let this run the full 2.5 hours now to verify) on
+> > > vanilla 6.14.0-rc3 + the 64k-sector-size patches, which would explain why I
+> > > hadn't seen this in my earlier testing over 10 ext4 profiles on fstests. This
+> > > particular crash seems likely to be an artifact on the development cycle on
+> > > next-20250317.
 > > 
-> > On Tue, Mar 11, 2025 at 01:10:43PM +0100, Christian Brauner wrote:
-> > > On Mon, Mar 10, 2025 at 03:43:49PM +0800, kernel test robot wrote:
-> > > > 
-> > > > 
-> > > > Hello,
-> > > > 
-> > > > kernel test robot noticed "BUG:sleeping_function_called_from_invalid_context_at_mm/util.c" on:
-> > > > 
-> > > > commit: 3c20917120ce61f2a123ca0810293872f4c6b5a4 ("block/bdev: enable large folio support for large logical block sizes")
-> > > > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> > > 
-> > > Is this also already fixed by:
-> > > 
-> > > commit a64e5a596067 ("bdev: add back PAGE_SIZE block size validation for sb_set_blocksize()")
-> > > 
-> > > ?
-> > 
-> > sorry for late.
-> > 
-> > commit a64e5a596067 cannot fix the issue. one dmesg is attached FYI.
-> > 
-> > we also tried to check linux-next/master tip, but neither below one can boot
-> > successfully in our env which we need further check.
-> > 
-> > da920b7df70177 (tag: next-20250314, linux-next/master) Add linux-next specific files for 20250314
-> > 
-> > e94bd4ec45ac1 (tag: next-20250317, linux-next/master) Add linux-next specific files for 20250317
-> > 
-> > so we are not sure the status of latest linux-next/master.
-> > 
-> > if you want us to check other commit or other patches, please let us know. thanks!
+> > I confirm that with a vanilla 6.14.0-rc3 + the 64k-sector-size patches a 2.5
+> > hour run generic/750 doesn't crash at all. So indeed something on the
+> > development cycle leads to this particular crash.
 > 
-> I cannot reproduce the issue by running the LTP test manually in a loop
-> for a long time:
+> We can't debug two problems at once.
 > 
-> export LTP_RUNTIME_MUL=2
-> 
-> while true; do \
-> 	./testcases/kernel/syscalls/close_range/close_range01; done
-> 
-> What's the failure rate of just running the test alone above?
-> Does it always fail on this system? Is this a deterministic failure
-> or does it have a lower failure rate?
->
-Hi Luis,
+> FOr the first problem, I've demonstrated what the cause is, and that's
+> definitely introduced by your patch, so we need to figure out a
+> solution.
 
-Greetings!
+Sure, yeah I followed that.
 
-I used Syzkaller and found that this issue can also be reproduced using Syzkaller reproduction binary.
+> For the second problem, we don't know what it is.  Do you want to bisect
+> it to figure out which commit introduced it?
 
-All detailed into can be found at:
-https://github.com/laifryiee/syzkaller_logs/tree/main/250320_033346_folio_mc_copy
-Syzkaller repro code:
-https://github.com/laifryiee/syzkaller_logs/tree/main/250320_033346_folio_mc_copy/repro.c
-Syzkaller repro syscall steps:
-https://github.com/laifryiee/syzkaller_logs/tree/main/250320_033346_folio_mc_copy/repro.prog
-Syzkaller report:
-https://github.com/laifryiee/syzkaller_logs/tree/main/250320_033346_folio_mc_copy/repro.report
-Kconfig(make olddefconfig):
-https://github.com/laifryiee/syzkaller_logs/tree/main/250320_033346_folio_mc_copy/kconfig_origin
-Bisect info:
-https://github.com/laifryiee/syzkaller_logs/tree/main/250320_033346_folio_mc_copy/bisect_info.log
-bzImage:
-https://github.com/laifryiee/syzkaller_logs/raw/refs/heads/main/250320_033346_folio_mc_copy/bzImage_e94bd4ec45ac156616da285a0bf03056cd7430fc
-Issue dmesg:
-https://github.com/laifryiee/syzkaller_logs/blob/main/250320_033346_folio_mc_copy/e94bd4ec45ac156616da285a0bf03056cd7430fc_dmesg.log
+Sure, the culprit is the patch titled:
 
+mm: page_alloc: trace type pollution from compaction capturing
 
-After bisection and the first bad commit is:
-"
-3c20917120ce block/bdev: enable large folio support for large logical block sizes
-"
+Johannes, any ideas? You can reproduce easily (1-2 minutes) by running
+fstests against ext4 with a 4k block size filesystem on linux-next
+against the test generic/750.
 
-"
-[   23.399326]  dump_stack+0x19/0x20
-[   23.399332]  __might_resched+0x37b/0x5a0
-[   23.399345]  ? __kasan_check_read+0x15/0x20
-[   23.399354]  folio_mc_copy+0x111/0x240
-[   23.399368]  __migrate_folio.constprop.0+0x173/0x3c0
-[   23.399377]  __buffer_migrate_folio+0x6a2/0x7b0
-[   23.399389]  buffer_migrate_folio_norefs+0x3d/0x50
-[   23.399398]  move_to_new_folio+0x153/0x5b0
-[   23.399403]  ? __pfx_buffer_migrate_folio_norefs+0x10/0x10
-[   23.399412]  migrate_pages_batch+0x19e0/0x2890
-[   23.399424]  ? __pfx_compaction_free+0x10/0x10
-[   23.399444]  ? __pfx_migrate_pages_batch+0x10/0x10
-[   23.399450]  ? __kasan_check_read+0x15/0x20
-[   23.399455]  ? __lock_acquire+0xdb6/0x5d60
-[   23.399475]  ? __pfx___lock_acquire+0x10/0x10
-[   23.399486]  migrate_pages+0x18de/0x2450
-[   23.399500]  ? __pfx_compaction_free+0x10/0x10
-[   23.399505]  ? __pfx_compaction_alloc+0x10/0x10
-[   23.399514]  ? __pfx_migrate_pages+0x10/0x10
-[   23.399519]  ? __this_cpu_preempt_check+0x21/0x30
-[   23.399533]  ? rcu_is_watching+0x19/0xc0
-[   23.399546]  ? isolate_migratepages_block+0x2253/0x41c0
-[   23.399565]  ? __pfx_isolate_migratepages_block+0x10/0x10
-[   23.399578]  compact_zone+0x1d66/0x4480
-[   23.399600]  ? perf_trace_lock+0xe0/0x4f0
-[   23.399612]  ? __pfx_compact_zone+0x10/0x10
-[   23.399617]  ? __pfx_perf_trace_lock+0x10/0x10
-[   23.399627]  ? __pfx_lock_acquire+0x10/0x10
-[   23.399639]  compact_node+0x190/0x2c0
-[   23.399647]  ? __pfx_compact_node+0x10/0x10
-[   23.399653]  ? __pfx_lock_release+0x10/0x10
-[   23.399678]  ? _raw_spin_unlock_irqrestore+0x45/0x70
-[   23.399694]  kcompactd+0x784/0xde0
-[   23.399705]  ? __pfx_kcompactd+0x10/0x10
-[   23.399711]  ? lockdep_hardirqs_on+0x89/0x110
-[   23.399721]  ? __pfx_autoremove_wake_function+0x10/0x10
-[   23.399731]  ? __sanitizer_cov_trace_const_cmp1+0x1e/0x30
-[   23.399742]  ? __kthread_parkme+0x15d/0x230
-[   23.399753]  ? __pfx_kcompactd+0x10/0x10
-[   23.399761]  kthread+0x444/0x980
-[   23.399769]  ? __pfx_kthread+0x10/0x10
-[   23.399776]  ? _raw_spin_unlock_irq+0x3c/0x60
-[   23.399784]  ? __pfx_kthread+0x10/0x10
-[   23.399792]  ret_from_fork+0x56/0x90
-[   23.399802]  ? __pfx_kthread+0x10/0x10
-[   23.399809]  ret_from_fork_asm+0x1a/0x30
-[   23.399827]  </TASK>
-"
+Below is the splat decoded.
 
-Hope this cound be insightful to you.
+Mar 20 11:52:55 extra-ext4-4k kernel: Linux version 6.14.0-rc6+ (mcgrof@beefy) (gcc (Debian 14.2.0-16) 14.2.0, GNU ld (GNU Binutils for Debian) 2.44) #51 SMP PREEMPT_DYNAMIC Thu Mar 20 11:50:32 UTC 2025
+Mar 20 11:52:55 extra-ext4-4k kernel: Command line: BOOT_IMAGE=/boot/vmlinuz-6.14.0-rc6+ root=PARTUUID=503fa6f2-2d5b-4d7e-8cf8-3a811de326ce ro console=tty0 console=tty1 console=ttyS0,115200n8 console=ttyS0
 
-Regards,
-Yi Lai
+< -- etc -->
 
----
+Mar 20 11:55:27 extra-ext4-4k unknown: run fstests generic/750 at 2025-03-20 11:55:27
+Mar 20 11:55:28 extra-ext4-4k kernel: EXT4-fs (loop5): mounted filesystem c20cbdee-a370-4743-80aa-95dec0beaaa2 r/w with ordered data mode. Quota mode: none.
+Mar 20 11:56:29 extra-ext4-4k kernel: BUG: unable to handle page fault for address: ffff93098000ba00
+Mar 20 11:56:29 extra-ext4-4k kernel: #PF: supervisor read access in kernel mode
+Mar 20 11:56:29 extra-ext4-4k kernel: #PF: error_code(0x0000) - not-present page
+Mar 20 11:56:29 extra-ext4-4k kernel: PGD 3a201067 P4D 3a201067 PUD 0
+Mar 20 11:56:29 extra-ext4-4k kernel: Oops: Oops: 0000 [#1] PREEMPT SMP NOPTI
+Mar 20 11:56:29 extra-ext4-4k kernel: CPU: 0 UID: 0 PID: 74 Comm: kcompactd0 Not tainted 6.14.0-rc6+ #51
+Mar 20 11:56:29 extra-ext4-4k kernel: Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 2024.11-5 01/28/2025
+Mar 20 11:56:29 extra-ext4-4k kernel: RIP: 0010:__zone_watermark_ok (mm/page_alloc.c:3256) 
+Mar 20 11:56:29 extra-ext4-4k kernel: Code: 00 00 00 41 f7 c0 38 02 00 00 0f 85 2c 01 00 00 48 8b 4f 30 48 63 d2 48 01 ca 85 db 0f 84 f3 00 00 00 49 29 d1 bb 80 00 00 00 <4c> 03 54 f7 38 31 d2 4d 39 ca 0f 8d d2 00 00 00 ba 01 00 00 00 85
+All code
+========
+   0:	00 00                	add    %al,(%rax)
+   2:	00 41 f7             	add    %al,-0x9(%rcx)
+   5:	c0 38 02             	sarb   $0x2,(%rax)
+   8:	00 00                	add    %al,(%rax)
+   a:	0f 85 2c 01 00 00    	jne    0x13c
+  10:	48 8b 4f 30          	mov    0x30(%rdi),%rcx
+  14:	48 63 d2             	movslq %edx,%rdx
+  17:	48 01 ca             	add    %rcx,%rdx
+  1a:	85 db                	test   %ebx,%ebx
+  1c:	0f 84 f3 00 00 00    	je     0x115
+  22:	49 29 d1             	sub    %rdx,%r9
+  25:	bb 80 00 00 00       	mov    $0x80,%ebx
+  2a:*	4c 03 54 f7 38       	add    0x38(%rdi,%rsi,8),%r10		<-- trapping instruction
+  2f:	31 d2                	xor    %edx,%edx
+  31:	4d 39 ca             	cmp    %r9,%r10
+  34:	0f 8d d2 00 00 00    	jge    0x10c
+  3a:	ba 01 00 00 00       	mov    $0x1,%edx
+  3f:	85                   	.byte 0x85
 
-If you don't need the following environment to reproduce the problem or if you
-already have one reproduced environment, please ignore the following information.
+Code starting with the faulting instruction
+===========================================
+   0:	4c 03 54 f7 38       	add    0x38(%rdi,%rsi,8),%r10
+   5:	31 d2                	xor    %edx,%edx
+   7:	4d 39 ca             	cmp    %r9,%r10
+   a:	0f 8d d2 00 00 00    	jge    0xe2
+  10:	ba 01 00 00 00       	mov    $0x1,%edx
+  15:	85                   	.byte 0x85
+Mar 20 11:56:29 extra-ext4-4k kernel: RSP: 0018:ffffa5bb002b7c78 EFLAGS: 00010206
+Mar 20 11:56:29 extra-ext4-4k kernel: RAX: 0000000000000000 RBX: 0000000000000080 RCX: 0000000000000000
+Mar 20 11:56:29 extra-ext4-4k kernel: RDX: 0000000000000000 RSI: 0000000000002431 RDI: ffff93097fff9840
+Mar 20 11:56:29 extra-ext4-4k kernel: RBP: 0000000000000009 R08: 0000000000000080 R09: 0000000000005e90
+Mar 20 11:56:29 extra-ext4-4k kernel: R10: 0000000000000c8e R11: 0000000000000c8e R12: 0000000000000000
+Mar 20 11:56:29 extra-ext4-4k kernel: R13: 0000000000002431 R14: 0000000000000002 R15: 0000000000000000
+Mar 20 11:56:29 extra-ext4-4k kernel: FS:  0000000000000000(0000) GS:ffff93097bc00000(0000) knlGS:0000000000000000
+Mar 20 11:56:29 extra-ext4-4k kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+Mar 20 11:56:29 extra-ext4-4k kernel: CR2: ffff93098000ba00 CR3: 000000010c602004 CR4: 0000000000772ef0
+Mar 20 11:56:29 extra-ext4-4k kernel: DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+Mar 20 11:56:29 extra-ext4-4k kernel: DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Mar 20 11:56:29 extra-ext4-4k kernel: PKRU: 55555554
+Mar 20 11:56:29 extra-ext4-4k kernel: Call Trace:
+Mar 20 11:56:29 extra-ext4-4k kernel:  <TASK>
+Mar 20 11:56:29 extra-ext4-4k kernel: ? __die_body.cold (arch/x86/kernel/dumpstack.c:478 (discriminator 1) arch/x86/kernel/dumpstack.c:465 (discriminator 1) arch/x86/kernel/dumpstack.c:420 (discriminator 1)) 
+Mar 20 11:56:29 extra-ext4-4k kernel: ? page_fault_oops (arch/x86/mm/fault.c:710 (discriminator 1)) 
+Mar 20 11:56:29 extra-ext4-4k kernel: ? search_module_extables (kernel/module/main.c:3733 (discriminator 3)) 
+Mar 20 11:56:29 extra-ext4-4k kernel: ? __zone_watermark_ok (mm/page_alloc.c:3256) 
+Mar 20 11:56:29 extra-ext4-4k kernel: ? search_bpf_extables (kernel/bpf/core.c:804) 
+Mar 20 11:56:29 extra-ext4-4k kernel: ? exc_page_fault (arch/x86/mm/fault.c:1182 (discriminator 1) arch/x86/mm/fault.c:1478 (discriminator 1) arch/x86/mm/fault.c:1538 (discriminator 1)) 
+Mar 20 11:56:29 extra-ext4-4k kernel: ? asm_exc_page_fault (./arch/x86/include/asm/idtentry.h:574) 
+Mar 20 11:56:29 extra-ext4-4k kernel: ? __zone_watermark_ok (mm/page_alloc.c:3256) 
+Mar 20 11:56:29 extra-ext4-4k kernel: ? asm_sysvec_call_function_single (./arch/x86/include/asm/idtentry.h:574) 
+Mar 20 11:56:29 extra-ext4-4k kernel: compaction_suitable (mm/compaction.c:2438) 
+Mar 20 11:56:29 extra-ext4-4k kernel: compaction_suit_allocation_order (mm/compaction.c:2525 (discriminator 1)) 
+Mar 20 11:56:29 extra-ext4-4k kernel: kcompactd_do_work (mm/compaction.c:3106) 
+Mar 20 11:56:29 extra-ext4-4k kernel: kcompactd (mm/compaction.c:3220) 
+Mar 20 11:56:29 extra-ext4-4k kernel: ? __pfx_autoremove_wake_function (kernel/sched/wait.c:383) 
+Mar 20 11:56:29 extra-ext4-4k kernel: ? __pfx_kcompactd (mm/compaction.c:3184) 
+Mar 20 11:56:29 extra-ext4-4k kernel: kthread (kernel/kthread.c:464) 
+Mar 20 11:56:29 extra-ext4-4k kernel: ? __pfx_kthread (kernel/kthread.c:413) 
+Mar 20 11:56:29 extra-ext4-4k kernel: ? _raw_spin_unlock (./include/linux/spinlock_api_smp.h:143 (discriminator 3) kernel/locking/spinlock.c:186 (discriminator 3)) 
+Mar 20 11:56:29 extra-ext4-4k kernel: ? finish_task_switch.isra.0 (./arch/x86/include/asm/paravirt.h:691 kernel/sched/sched.h:1533 kernel/sched/core.c:5132 kernel/sched/core.c:5250) 
+Mar 20 11:56:29 extra-ext4-4k kernel: ? __pfx_kthread (kernel/kthread.c:413) 
+Mar 20 11:56:29 extra-ext4-4k kernel: ret_from_fork (arch/x86/kernel/process.c:148) 
+Mar 20 11:56:29 extra-ext4-4k kernel: ? __pfx_kthread (kernel/kthread.c:413) 
+Mar 20 11:56:29 extra-ext4-4k kernel: ret_from_fork_asm (arch/x86/entry/entry_64.S:257) 
+Mar 20 11:56:29 extra-ext4-4k kernel:  </TASK>
+Mar 20 11:56:29 extra-ext4-4k kernel: Modules linked in: loop sunrpc 9p nls_iso8859_1 nls_cp437 vfat crc32c_generic fat kvm_intel kvm ghash_clmulni_intel sha512_ssse3 sha512_generic sha256_ssse3 sha1_ssse3 aesni_intel gf128mul crypto_simd 9pnet_virtio cryptd virtio_console virtio_balloon button evdev joydev serio_raw dm_mod nvme_fabrics drm nvme_core nfnetlink vsock_loopback vmw_vsock_virtio_transport_common vsock autofs4 ext4 crc16 mbcache jbd2 btrfs blake2b_generic efivarfs raid10 raid456 async_raid6_recov async_memcpy async_pq async_xor async_tx xor raid6_pq raid1 raid0 md_mod virtio_net net_failover failover virtio_blk psmouse virtio_pci virtio_pci_legacy_dev virtio_pci_modern_dev virtio virtio_ring
+Mar 20 11:56:29 extra-ext4-4k kernel: CR2: ffff93098000ba00
+Mar 20 11:56:29 extra-ext4-4k kernel: ---[ end trace 0000000000000000 ]---
+Mar 20 11:56:29 extra-ext4-4k kernel: RIP: 0010:__zone_watermark_ok (mm/page_alloc.c:3256) 
+Mar 20 11:56:29 extra-ext4-4k kernel: Code: 00 00 00 41 f7 c0 38 02 00 00 0f 85 2c 01 00 00 48 8b 4f 30 48 63 d2 48 01 ca 85 db 0f 84 f3 00 00 00 49 29 d1 bb 80 00 00 00 <4c> 03 54 f7 38 31 d2 4d 39 ca 0f 8d d2 00 00 00 ba 01 00 00 00 85
+All code
+========
+   0:	00 00                	add    %al,(%rax)
+   2:	00 41 f7             	add    %al,-0x9(%rcx)
+   5:	c0 38 02             	sarb   $0x2,(%rax)
+   8:	00 00                	add    %al,(%rax)
+   a:	0f 85 2c 01 00 00    	jne    0x13c
+  10:	48 8b 4f 30          	mov    0x30(%rdi),%rcx
+  14:	48 63 d2             	movslq %edx,%rdx
+  17:	48 01 ca             	add    %rcx,%rdx
+  1a:	85 db                	test   %ebx,%ebx
+  1c:	0f 84 f3 00 00 00    	je     0x115
+  22:	49 29 d1             	sub    %rdx,%r9
+  25:	bb 80 00 00 00       	mov    $0x80,%ebx
+  2a:*	4c 03 54 f7 38       	add    0x38(%rdi,%rsi,8),%r10		<-- trapping instruction
+  2f:	31 d2                	xor    %edx,%edx
+  31:	4d 39 ca             	cmp    %r9,%r10
+  34:	0f 8d d2 00 00 00    	jge    0x10c
+  3a:	ba 01 00 00 00       	mov    $0x1,%edx
+  3f:	85                   	.byte 0x85
 
-How to reproduce:
-git clone https://gitlab.com/xupengfe/repro_vm_env.git
-cd repro_vm_env
-tar -xvf repro_vm_env.tar.gz
-cd repro_vm_env; ./start3.sh  // it needs qemu-system-x86_64 and I used v7.1.0
-  // start3.sh will load bzImage_2241ab53cbb5cdb08a6b2d4688feb13971058f65 v6.2-rc5 kernel
-  // You could change the bzImage_xxx as you want
-  // Maybe you need to remove line "-drive if=pflash,format=raw,readonly=on,file=./OVMF_CODE.fd \" for different qemu version
-You could use below command to log in, there is no password for root.
-ssh -p 10023 root@localhost
+Code starting with the faulting instruction
+===========================================
+   0:	4c 03 54 f7 38       	add    0x38(%rdi,%rsi,8),%r10
+   5:	31 d2                	xor    %edx,%edx
+   7:	4d 39 ca             	cmp    %r9,%r10
+   a:	0f 8d d2 00 00 00    	jge    0xe2
+  10:	ba 01 00 00 00       	mov    $0x1,%edx
+  15:	85                   	.byte 0x85
+Mar 20 11:56:29 extra-ext4-4k kernel: RSP: 0018:ffffa5bb002b7c78 EFLAGS: 00010206
+Mar 20 11:56:29 extra-ext4-4k kernel: RAX: 0000000000000000 RBX: 0000000000000080 RCX: 0000000000000000
+Mar 20 11:56:29 extra-ext4-4k kernel: RDX: 0000000000000000 RSI: 0000000000002431 RDI: ffff93097fff9840
+Mar 20 11:56:29 extra-ext4-4k kernel: RBP: 0000000000000009 R08: 0000000000000080 R09: 0000000000005e90
+Mar 20 11:56:29 extra-ext4-4k kernel: R10: 0000000000000c8e R11: 0000000000000c8e R12: 0000000000000000
+Mar 20 11:56:29 extra-ext4-4k kernel: R13: 0000000000002431 R14: 0000000000000002 R15: 0000000000000000
+Mar 20 11:56:29 extra-ext4-4k kernel: FS:  0000000000000000(0000) GS:ffff93097bc00000(0000) knlGS:0000000000000000
+Mar 20 11:56:29 extra-ext4-4k kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+Mar 20 11:56:29 extra-ext4-4k kernel: CR2: ffff93098000ba00 CR3: 000000010c602004 CR4: 0000000000772ef0
+Mar 20 11:56:29 extra-ext4-4k kernel: DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+Mar 20 11:56:29 extra-ext4-4k kernel: DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Mar 20 11:56:29 extra-ext4-4k kernel: PKRU: 55555554
+Mar 20 11:56:29 extra-ext4-4k kernel: note: kcompactd0[74] exited with irqs disabled
 
-After login vm(virtual machine) successfully, you could transfer reproduced
-binary to the vm by below way, and reproduce the problem in vm:
-gcc -pthread -o repro repro.c
-scp -P 10023 repro root@localhost:/root/
-
-Get the bzImage for target kernel:
-Please use target kconfig and copy it to kernel_src/.config
-make olddefconfig
-make -jx bzImage           //x should equal or less than cpu num your pc has
-
-Fill the bzImage file into above start3.sh to load the target kernel in vm.
-
-
-Tips:
-If you already have qemu-system-x86_64, please ignore below info.
-If you want to install qemu v7.1.0 version:
-git clone https://github.com/qemu/qemu.git
-cd qemu
-git checkout -f v7.1.0
-mkdir build
-cd build
-yum install -y ninja-build.x86_64
-yum -y install libslirp-devel.x86_64
-../configure --target-list=x86_64-softmmu --enable-kvm --enable-vnc --enable-gtk --enable-sdl --enable-usb-redir --enable-slirp
-make
-make install 
-
-> I also can't see how the patch ("("block/bdev: enable large folio
-> support for large logical block sizes") would trigger this.
-> 
-> You could try this patch but ...
-> 
-> https://lore.kernel.org/all/20250312050028.1784117-1-mcgrof@kernel.org/
-> 
-> we decided this is not right and not needed, and if we have a buggy
-> block driver we can address that.
-> 
-> I just can't see how this LTP test actually doing anything funky with block
-> devices at all.
-> 
-> The associated sleeping while atomic warning is triggered during
-> compaction though:
-> 
-> [  218.143642][  T299] Architecture:                         x86_64
-> [  218.143659][  T299] 
-> [  218.427851][   T51] BUG: sleeping function called from invalid context at mm/util.c:901
-> [  218.435981][   T51] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 51, name: kcompactd0
-> [  218.444773][   T51] preempt_count: 1, expected: 0
-> [  218.449601][   T51] RCU nest depth: 0, expected: 0
-> [  218.454476][   T51] CPU: 2 UID: 0 PID: 51 Comm: kcompactd0 Tainted: G S                 6.14.0-rc1-00006-g3c20917120ce #1
-> [  218.454486][   T51] Tainted: [S]=CPU_OUT_OF_SPEC
-> [  218.454488][   T51] Hardware name: Hewlett-Packard HP Pro 3340 MT/17A1, BIOS 8.07 01/24/2013
-> [  218.454492][   T51] Call Trace:
-> [  218.454495][   T51]  <TASK>
-> [  218.454498][   T51]  dump_stack_lvl+0x4f/0x70
-> [  218.454508][   T51]  __might_resched+0x2c6/0x450
-> [  218.454517][   T51]  folio_mc_copy+0xca/0x1f0
-> [  218.454525][   T51]  ? _raw_spin_lock+0x81/0xe0
-> [  218.454532][   T51]  __migrate_folio+0x11a/0x2d0
-> [  218.454541][   T51]  __buffer_migrate_folio+0x558/0x660
-> [  218.454548][   T51]  move_to_new_folio+0xf5/0x410
-> [  218.454555][   T51]  migrate_folio_move+0x211/0x770
-> [  218.454562][   T51]  ? __pfx_compaction_free+0x10/0x10
-> [  218.454572][   T51]  ? __pfx_migrate_folio_move+0x10/0x10
-> [  218.454578][   T51]  ? compaction_alloc_noprof+0x441/0x720
-> [  218.454587][   T51]  ? __pfx_compaction_alloc+0x10/0x10
-> [  218.454594][   T51]  ? __pfx_compaction_free+0x10/0x10
-> [  218.454601][   T51]  ? __pfx_compaction_free+0x10/0x10
-> [  218.454607][   T51]  ? migrate_folio_unmap+0x329/0x890
-> [  218.454614][   T51]  migrate_pages_batch+0xddf/0x1810
-> [  218.454621][   T51]  ? __pfx_compaction_free+0x10/0x10
-> [  218.454631][   T51]  ? __pfx_migrate_pages_batch+0x10/0x10
-> [  218.454638][   T51]  ? cgroup_rstat_updated+0xf1/0x860
-> [  218.454648][   T51]  migrate_pages_sync+0x10c/0x8e0
-> [  218.454656][   T51]  ? __pfx_compaction_alloc+0x10/0x10
-> [  218.454662][   T51]  ? __pfx_compaction_free+0x10/0x10
-> [  218.454669][   T51]  ? lru_gen_del_folio+0x383/0x820
-> [  218.454677][   T51]  ? __pfx_migrate_pages_sync+0x10/0x10
-> [  218.454683][   T51]  ? set_pfnblock_flags_mask+0x179/0x220
-> [  218.454691][   T51]  ? __pfx_lru_gen_del_folio+0x10/0x10
-> [  218.454699][   T51]  ? __pfx_compaction_alloc+0x10/0x10
-> [  218.454705][   T51]  ? __pfx_compaction_free+0x10/0x10
-> [  218.454713][   T51]  migrate_pages+0x846/0xe30
-> [  218.454720][   T51]  ? __pfx_compaction_alloc+0x10/0x10
-> [  218.454726][   T51]  ? __pfx_compaction_free+0x10/0x10
-> [  218.454733][   T51]  ? __pfx_buffer_migrate_folio_norefs+0x10/0x10
-> [  218.454740][   T51]  ? __pfx_migrate_pages+0x10/0x10
-> [  218.454748][   T51]  ? isolate_migratepages+0x32d/0xbd0
-> [  218.454757][   T51]  compact_zone+0x9e1/0x1680
-> [  218.454767][   T51]  ? __pfx_compact_zone+0x10/0x10
-> [  218.454774][   T51]  ? _raw_spin_lock_irqsave+0x87/0xe0
-> [  218.454780][   T51]  ? __pfx__raw_spin_lock_irqsave+0x10/0x10
-> [  218.454788][   T51]  compact_node+0x159/0x250
-> [  218.454795][   T51]  ? __pfx_compact_node+0x10/0x10
-> [  218.454807][   T51]  ? __pfx_extfrag_for_order+0x10/0x10
-> [  218.454814][   T51]  ? __pfx_mutex_unlock+0x10/0x10
-> [  218.454822][   T51]  ? finish_wait+0xd1/0x280
-> [  218.454831][   T51]  kcompactd+0x582/0x960
-> [  218.454839][   T51]  ? __pfx_kcompactd+0x10/0x10
-> [  218.454846][   T51]  ? _raw_spin_lock_irqsave+0x87/0xe0
-> [  218.454852][   T51]  ? __pfx__raw_spin_lock_irqsave+0x10/0x10
-> [  218.454858][   T51]  ? __pfx_autoremove_wake_function+0x10/0x10
-> [  218.454867][   T51]  ? __kthread_parkme+0xba/0x1e0
-> [  218.454874][   T51]  ? __pfx_kcompactd+0x10/0x10
-> [  218.454880][   T51]  kthread+0x3a1/0x770
-> [  218.454887][   T51]  ? __pfx_kthread+0x10/0x10
-> [  218.454895][   T51]  ? __pfx_kthread+0x10/0x10
-> [  218.454902][   T51]  ret_from_fork+0x30/0x70
-> [  218.454910][   T51]  ? __pfx_kthread+0x10/0x10
-> [  218.454915][   T51]  ret_from_fork_asm+0x1a/0x30
-> [  218.454924][   T51]  </TASK>
-> 
-> So the only thing I can think of the patch which the patch can do is
-> push more large folios to be used and so compaction can be a secondary
-> effect which managed to trigger another mm issue. I know there was a
-> recent migration fix but I can't see the relationship at all either.
-> 
->   Luis
+  Luis
