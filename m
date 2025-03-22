@@ -1,72 +1,88 @@
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D573A4502F
-	for <oe-lkp@lists.linux.dev>; Fri, 21 Mar 2025 13:55:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0BB01D5176
+	for <oe-lkp@lists.linux.dev>; Sat, 22 Mar 2025 23:14:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742565336; cv=none; b=iWB2vyQH7qlXFyjab9/ufwmKp/dn5PFr3pdYTYMDeWpmr0bz0PDBty+u5Jf1DMNYv0VfNCF2cs06FkvbQrSy7XmSQFFB7mzoy7OIaKA9oxXwEf5HSEUjOntmac4WtrC5hE+g3EsljIBPrgtcPssFCaN/rDx0EtLoEEG9PZrYmgo=
+	t=1742685291; cv=none; b=IrvpYpp+bf4yxNyJ4ANMkE8iJKgFh0DpVLa6pA1YBoHstwScNHHLCYe69PTPMM05BUedmzDFT3c8e7MHcnn/sjKfKCZLvbXtCZwViOEVvYQ6n//MEBLzrRbDFvg/A07bHbSAoe2U7Gjp7SMjt6IQOvSrp2Xnzlbt31QzMDJCubw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742565336; c=relaxed/simple;
-	bh=AdJuexWRzfAz86oxnne/IW4kJwTlZlMmB/BbN8hoPs0=;
+	s=arc-20240116; t=1742685291; c=relaxed/simple;
+	bh=p+ipIzxKURRpwjIIPgDxs5c1USXn9lYQ6uV7AMoW1zo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ciuVZmqo4bxtfaLqipbWdopraUEIwBfj0RAnd9ahuBXC0ZG4FdJM2ddPtEETntrcVcbLVR5pBEjAFKUB+XiCKXhg7VQzS3tKqhgIP9lfIIPsBqjma+MKTXWksRD0gorFzSqsgxGeFMF7P9v3+mAyuw8VRB9H/jjRFbc/7JfEWOs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cmpxchg.org; spf=pass smtp.mailfrom=cmpxchg.org; dkim=pass (2048-bit key) header.d=cmpxchg-org.20230601.gappssmtp.com header.i=@cmpxchg-org.20230601.gappssmtp.com header.b=TYLdU3LE; arc=none smtp.client-ip=209.85.160.173
+	 Content-Type:Content-Disposition:In-Reply-To; b=e3uBFcXeiwPrwnubpwlawPb7ucdyt92kcnrUxvS+KJw7CpAW/e7enSy5UL9F62s2CtxLBFViVf4nJw1bL3gxZFjxIcpgSbqYKjw4P6ySRn+P++nQyEHZ1vgMkzRrS23G/JCwnHvbyJvq7AkJHFnTgS8DMXvoWL0NhiGi9Hw+IFg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cmpxchg.org; spf=pass smtp.mailfrom=cmpxchg.org; dkim=pass (2048-bit key) header.d=cmpxchg-org.20230601.gappssmtp.com header.i=@cmpxchg-org.20230601.gappssmtp.com header.b=l9kx22io; arc=none smtp.client-ip=209.85.160.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cmpxchg.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmpxchg.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=cmpxchg-org.20230601.gappssmtp.com header.i=@cmpxchg-org.20230601.gappssmtp.com header.b="TYLdU3LE"
-Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-476f4e9cf92so13696141cf.3
-        for <oe-lkp@lists.linux.dev>; Fri, 21 Mar 2025 06:55:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=cmpxchg-org.20230601.gappssmtp.com header.i=@cmpxchg-org.20230601.gappssmtp.com header.b="l9kx22io"
+Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-476f4e9cf92so21240711cf.3
+        for <oe-lkp@lists.linux.dev>; Sat, 22 Mar 2025 16:14:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20230601.gappssmtp.com; s=20230601; t=1742565330; x=1743170130; darn=lists.linux.dev;
+        d=cmpxchg-org.20230601.gappssmtp.com; s=20230601; t=1742685286; x=1743290086; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Zkaw5iQ5n3Q/0Lpyrz/8zsFxGsxzzffjeg2zbqFtr2Y=;
-        b=TYLdU3LEB7d+q3fqKAVTnmNCw2ZQII26zXvV3HSNgvia0/tH9zGgtf/+/y7NNYoQe4
-         pkCwipBG5nNIcIrdiavmApJlL+jf4FLNocL3a92WINJ42/LtrQpgXVJV/iH8zQxpBuA+
-         MIM99Mg9xSh1+/8240X2BgMcs5gJaaHXkutFknetgr/MTPYew7QHW0hVMy8G17OaQfUK
-         XsI8MtlYpENCTlHc5O+pw5iIkiT5BxkKjA6dYIV6fbvMUapNGFEN9Kmc+rnRe0UnZHAS
-         FUPeKTU5wzJLhms7ywz/QQOMwFwucyxnajlr+xg8Yv1aNwMRqobXCuEInItYfgwYVIXM
-         Febg==
+        bh=XJHqDIUEdiSQHsyrP8cT37rDikvtCQ4w65f+7jAbskE=;
+        b=l9kx22ioZyBZ/acTmWKPA4SYQU0Y3mQFpaDAKS5qT05uCPILAc11ET8Vd5JeQnDMTX
+         osUwNKDek6IkVlzN9EgLqMXCHDrHiMHrQ9p5vAaq0ZJwl7DNzEiXi20QtfjRLCUoCv0y
+         G7egwK22V5LV4cvcsEEEVvChWdMInZygizDIN/SgCf5/HVA2nseFEXP7nEYi3xe1Bidn
+         B+hA6h1vV+WfK5z+fLBbnTkW5eIoCuHeKyGaB6KprhWfYZtbcbL82Yiej07w+xTA8N9D
+         4butnSUZRIWaHUOucjnDVE/3i6bdpQhIQ9AzzA5iFpVELPHnMoa5T4+EE7w4vdSf6Z3H
+         cYzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742565330; x=1743170130;
+        d=1e100.net; s=20230601; t=1742685286; x=1743290086;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Zkaw5iQ5n3Q/0Lpyrz/8zsFxGsxzzffjeg2zbqFtr2Y=;
-        b=r1XmGfG3FLRYU1/i1nvQLNjWWaf1VoF15TwoYJ+yRvdqxoT5llt0k43CRIxFsRpjpj
-         Po+ujU6GmVAkCgcZk+eq3BKQ3UwxQBTMcuVq7hFGQJ7FifKbSHR1jcUnS6FZkQH2Yzog
-         Phrh2+C0KDuRoR/JaereY3ecYCWwfwJ503oTSYPVhoVjgJoqJpwfzWlKOmcdl/RqbbEV
-         tzWsWJ/fJiTvSIZ3ul1LpA+Pr8CApDwF0+TtpdldYiv0atUG4ytOmnpKcLSnA8ew2Yz/
-         nVv0yM3eQDnCOS2griMWmnIWdfK0vPbG7hu/NY/tXwNFIq+2kjp7zALWVwKzIfh9Et3N
-         YXAg==
-X-Gm-Message-State: AOJu0Yx/bzsKSkyUkQFquHCKJQoTM5+0aPn+gtZUkTJvlumSJPGHMXmQ
-	sINIwjXu8ncsLlyzTvVuJIQYb0dnHB9yD0WYF8MdOlQvS5nJtRM3SKo+cSmc5XM=
-X-Gm-Gg: ASbGncuJWDsWP/FAXDs0b1ryqPOzrtAIqhGKULqBY8BjZMIjnchWG5lbp95JhXFxjzx
-	dYKf6AOAUB37PojsrX+hZpeLGsGPicPIyNhGie7loorJGAv5TCeloKtAhvyIAhRH9GiOAJgd2G7
-	Bic5fpGU7gJUsDr6pxQBvjm+j7JrM46xy5i0D7F1KZCvekBEUG4RMp/gqXCAiT3xAEnmHht1+DJ
-	1kj/6OBySbhZTlq/gZon7l3csnuWD9LAhDj8R15vHgVZnwIr185VFdyo+tEM77EV9TkfpACXWrg
-	vJ89j3BnAkMCFbnpAOeMT4F68zXdzONMIRRGFtTBPTc=
-X-Google-Smtp-Source: AGHT+IEbXh5FE8O7VAveIGhz62AHSuu58vMlCms/I/PLbVH2bCgBpWKIinMzMYIWRzFsFMsCidgO4g==
-X-Received: by 2002:a05:622a:2b0b:b0:476:8e85:2a2f with SMTP id d75a77b69052e-4771dd943f4mr53309741cf.20.1742565330289;
-        Fri, 21 Mar 2025 06:55:30 -0700 (PDT)
+        bh=XJHqDIUEdiSQHsyrP8cT37rDikvtCQ4w65f+7jAbskE=;
+        b=ZU9owELiWRYoolUcX6DysRkf5vqN+etfPmEZoZv+dWDL+9pztb94FzoV9IyDBFFPjG
+         2JUBZzzrbNF7de3iLrbXYIaiw8CUyT6BmnwD891HlRMRwLpnho/o/QqhSsyZRad7mx/z
+         AvZL6UshEw8bE7CHvQzFjmtZfkW2g7TCtgjAki0Hc65ZPTj/As7kVQNHM5Pip1gHbAoq
+         RPOkKpfXu4y1ZyNK+QmhrMZ99WgmxW8EH8dQt/qaSFk0MTkT8ernMu4T2cB3E8UIr8Te
+         uIOLpMk7JdgJmNNpaALX37OT6GtVU2HOBkKe57GIrlCxR7jP8PUmy380tWLPsaKYNmwO
+         j5qQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXfaeBLZTn05DRx2BIUp1gRzMzWT6wUFV9NRbYZHb6B4qqj7q52d+WqDqH3j7L28vhehW6uKj4=@lists.linux.dev
+X-Gm-Message-State: AOJu0YzxdWLSDig7rFQsPRnLHY/3Y4jtJcgYbmyZz57K+jHk+4+ZRPVE
+	VMr8WW4blgstZAXvtOROayS1SlYqW/dZXUBNbOtuxKGulNbRVKdtLlSrJgKgwx8=
+X-Gm-Gg: ASbGncvazUCaBXjJc+VGCoclMwIzNeGc168rDBnhi68bfP0Z0ZrKPBmthL/ZSBL6tK0
+	O/CXze5Ox5gshz5/ZLURyDjT3OIoWLF5IfrFJ1dr06G5Ny5lVWBUo3MFcuIuunSkoetmxtZZNQJ
+	8SbJPdG5Ekk5AZcT8sJwu6WdYgO7uISLanV5uOFe1WpOdFMeztd+0ukxw+BUbWRV9jsOo8gS7rU
+	xHlROISphvDRU6YS0e/uzM+rYuflDAyb/2cTFH+dFqBuT/MRpBdutxwzQ73sjDdp1/KZMUu3Mru
+	2oDXzW5gK7mPTQ1M7CUjUKG5lP3Y/AbIvIBrb+S20xk=
+X-Google-Smtp-Source: AGHT+IGn+Hfwrgke1zQGLzwV/3qh9WnxZhHDgrV3gDmuUHLVptmjftr0MP8pFPzrqZlO7fZJloZXWg==
+X-Received: by 2002:a05:622a:2513:b0:476:8132:c556 with SMTP id d75a77b69052e-4771de61284mr143182971cf.48.1742685286373;
+        Sat, 22 Mar 2025 16:14:46 -0700 (PDT)
 Received: from localhost ([2603:7000:c01:2716:da5e:d3ff:fee7:26e7])
-        by smtp.gmail.com with UTF8SMTPSA id d75a77b69052e-4771d64d5f6sm12262101cf.81.2025.03.21.06.55.29
+        by smtp.gmail.com with UTF8SMTPSA id d75a77b69052e-4771d18f6a3sm27701901cf.38.2025.03.22.16.14.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Mar 2025 06:55:29 -0700 (PDT)
-Date: Fri, 21 Mar 2025 09:55:24 -0400
+        Sat, 22 Mar 2025 16:14:45 -0700 (PDT)
+Date: Sat, 22 Mar 2025 19:14:40 -0400
 From: Johannes Weiner <hannes@cmpxchg.org>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>,
-	Vlastimil Babka <vbabka@suse.cz>,
-	Mel Gorman <mgorman@techsingularity.net>, Zi Yan <ziy@nvidia.com>
-Subject: Re: [PATCH 1/5] mm: compaction: push watermark into
- compaction_suitable() callers
-Message-ID: <20250321135524.GA1888695@cmpxchg.org>
-References: <20250313210647.1314586-2-hannes@cmpxchg.org>
- <202503201604.a3aa6a95-lkp@intel.com>
+To: Luis Chamberlain <mcgrof@kernel.org>
+Cc: Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.cz>,
+	Oliver Sang <oliver.sang@intel.com>,
+	David Hildenbrand <david@redhat.com>,
+	Alistair Popple <apopple@nvidia.com>, linux-mm@kvack.org,
+	Christian Brauner <brauner@kernel.org>,
+	Hannes Reinecke <hare@suse.de>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, John Garry <john.g.garry@oracle.com>,
+	linux-block@vger.kernel.org, ltp@lists.linux.it,
+	Pankaj Raghav <p.raghav@samsung.com>,
+	Daniel Gomez <da.gomez@samsung.com>,
+	David Bueso <dave@stgolabs.net>
+Subject: Re: [linux-next:master] [block/bdev]  3c20917120:
+ BUG:sleeping_function_called_from_invalid_context_at_mm/util.c
+Message-ID: <20250322231440.GA1894930@cmpxchg.org>
+References: <20250311-testphasen-behelfen-09b950bbecbf@brauner>
+ <Z9kEdPLNT8SOyOQT@xsang-OptiPlex-9020>
+ <Z9krpfrKjnFs6mfE@bombadil.infradead.org>
+ <Z9mFKa3p5P9TBSTQ@casper.infradead.org>
+ <Z9n_Iu6W40ZNnKwT@bombadil.infradead.org>
+ <Z9oy3i3n_HKFu1M1@casper.infradead.org>
+ <Z9r27eUk993BNWTX@bombadil.infradead.org>
+ <Z9sYGccL4TocoITf@bombadil.infradead.org>
+ <Z9sZ5_lJzTwGShQT@casper.infradead.org>
+ <Z9wF57eEBR-42K9a@bombadil.infradead.org>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -75,74 +91,85 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202503201604.a3aa6a95-lkp@intel.com>
+In-Reply-To: <Z9wF57eEBR-42K9a@bombadil.infradead.org>
 
-On Fri, Mar 21, 2025 at 02:21:20PM +0800, kernel test robot wrote:
-> commit: 6304be90cf5460f33b031e1e19cbe7ffdcbc9f66 ("[PATCH 1/5] mm: compaction: push watermark into compaction_suitable() callers")
-> url: https://github.com/intel-lab-lkp/linux/commits/Johannes-Weiner/mm-compaction-push-watermark-into-compaction_suitable-callers/20250314-050839
-> base: https://git.kernel.org/cgit/linux/kernel/git/akpm/mm.git mm-everything
-> patch link: https://lore.kernel.org/all/20250313210647.1314586-2-hannes@cmpxchg.org/
-> patch subject: [PATCH 1/5] mm: compaction: push watermark into compaction_suitable() callers
+Hey Luis,
 
-> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+On Thu, Mar 20, 2025 at 05:11:19AM -0700, Luis Chamberlain wrote:
+> On Wed, Mar 19, 2025 at 07:24:23PM +0000, Matthew Wilcox wrote:
+> > On Wed, Mar 19, 2025 at 12:16:41PM -0700, Luis Chamberlain wrote:
+> > > On Wed, Mar 19, 2025 at 09:55:11AM -0700, Luis Chamberlain wrote:
+> > > > FWIW, I'm not seeing this crash or any kernel splat within the
+> > > > same time (I'll let this run the full 2.5 hours now to verify) on
+> > > > vanilla 6.14.0-rc3 + the 64k-sector-size patches, which would explain why I
+> > > > hadn't seen this in my earlier testing over 10 ext4 profiles on fstests. This
+> > > > particular crash seems likely to be an artifact on the development cycle on
+> > > > next-20250317.
+> > > 
+> > > I confirm that with a vanilla 6.14.0-rc3 + the 64k-sector-size patches a 2.5
+> > > hour run generic/750 doesn't crash at all. So indeed something on the
+> > > development cycle leads to this particular crash.
+> > 
+> > We can't debug two problems at once.
+> > 
+> > FOr the first problem, I've demonstrated what the cause is, and that's
+> > definitely introduced by your patch, so we need to figure out a
+> > solution.
+> 
+> Sure, yeah I followed that.
+> 
+> > For the second problem, we don't know what it is.  Do you want to bisect
+> > it to figure out which commit introduced it?
+> 
+> Sure, the culprit is the patch titled:
+> 
+> mm: page_alloc: trace type pollution from compaction capturing
+> 
+> Johannes, any ideas? You can reproduce easily (1-2 minutes) by running
+> fstests against ext4 with a 4k block size filesystem on linux-next
+> against the test generic/750.
 
-> [   24.321289][   T36] BUG: unable to handle page fault for address: ffff88844000c5f8
-> [   24.322631][   T36] #PF: supervisor read access in kernel mode
-> [   24.323577][   T36] #PF: error_code(0x0000) - not-present page
-> [   24.324482][   T36] PGD 3a01067 P4D 3a01067 PUD 0
-> [   24.325301][   T36] Oops: Oops: 0000 [#1] PREEMPT SMP PTI
-> [   24.326157][   T36] CPU: 1 UID: 0 PID: 36 Comm: kcompactd0 Not tainted 6.14.0-rc6-00559-g6304be90cf54 #1
-> [   24.327631][   T36] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> [ 24.329194][ T36] RIP: 0010:__zone_watermark_ok (mm/page_alloc.c:3256) 
-> [ 24.330125][ T36] Code: 84 c0 78 14 4c 8b 97 48 06 00 00 45 31 db 4d 85 d2 4d 0f 4f da 4c 01 de 49 29 f1 41 f7 c0 38 02 00 00 0f 85 92 00 00 00 48 98 <48> 03 54 c7 38 49 39 d1 7e 7e b0 01 85 c9 74 7a 83 f9 0a 7f 73 48
+Sorry for the late reply, I just saw your emails now.
+
+> Below is the splat decoded.
+> 
+> Mar 20 11:52:55 extra-ext4-4k kernel: Linux version 6.14.0-rc6+ (mcgrof@beefy) (gcc (Debian 14.2.0-16) 14.2.0, GNU ld (GNU Binutils for Debian) 2.44) #51 SMP PREEMPT_DYNAMIC Thu Mar 20 11:50:32 UTC 2025
+> Mar 20 11:52:55 extra-ext4-4k kernel: Command line: BOOT_IMAGE=/boot/vmlinuz-6.14.0-rc6+ root=PARTUUID=503fa6f2-2d5b-4d7e-8cf8-3a811de326ce ro console=tty0 console=tty1 console=ttyS0,115200n8 console=ttyS0
+> 
+> < -- etc -->
+> 
+> Mar 20 11:55:27 extra-ext4-4k unknown: run fstests generic/750 at 2025-03-20 11:55:27
+> Mar 20 11:55:28 extra-ext4-4k kernel: EXT4-fs (loop5): mounted filesystem c20cbdee-a370-4743-80aa-95dec0beaaa2 r/w with ordered data mode. Quota mode: none.
+> Mar 20 11:56:29 extra-ext4-4k kernel: BUG: unable to handle page fault for address: ffff93098000ba00
+> Mar 20 11:56:29 extra-ext4-4k kernel: #PF: supervisor read access in kernel mode
+> Mar 20 11:56:29 extra-ext4-4k kernel: #PF: error_code(0x0000) - not-present page
+> Mar 20 11:56:29 extra-ext4-4k kernel: PGD 3a201067 P4D 3a201067 PUD 0
+> Mar 20 11:56:29 extra-ext4-4k kernel: Oops: Oops: 0000 [#1] PREEMPT SMP NOPTI
+> Mar 20 11:56:29 extra-ext4-4k kernel: CPU: 0 UID: 0 PID: 74 Comm: kcompactd0 Not tainted 6.14.0-rc6+ #51
+> Mar 20 11:56:29 extra-ext4-4k kernel: Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 2024.11-5 01/28/2025
+> Mar 20 11:56:29 extra-ext4-4k kernel: RIP: 0010:__zone_watermark_ok (mm/page_alloc.c:3256) 
+> Mar 20 11:56:29 extra-ext4-4k kernel: Code: 00 00 00 41 f7 c0 38 02 00 00 0f 85 2c 01 00 00 48 8b 4f 30 48 63 d2 48 01 ca 85 db 0f 84 f3 00 00 00 49 29 d1 bb 80 00 00 00 <4c> 03 54 f7 38 31 d2 4d 39 ca 0f 8d d2 00 00 00 ba 01 00 00 00 85
 > All code
 > ========
->    0:	84 c0                	test   %al,%al
->    2:	78 14                	js     0x18
->    4:	4c 8b 97 48 06 00 00 	mov    0x648(%rdi),%r10
->    b:	45 31 db             	xor    %r11d,%r11d
->    e:	4d 85 d2             	test   %r10,%r10
->   11:	4d 0f 4f da          	cmovg  %r10,%r11
->   15:	4c 01 de             	add    %r11,%rsi
->   18:	49 29 f1             	sub    %rsi,%r9
->   1b:	41 f7 c0 38 02 00 00 	test   $0x238,%r8d
->   22:	0f 85 92 00 00 00    	jne    0xba
->   28:	48 98                	cltq
->   2a:*	48 03 54 c7 38       	add    0x38(%rdi,%rax,8),%rdx		<-- trapping instruction
+>    0:	00 00                	add    %al,(%rax)
+>    2:	00 41 f7             	add    %al,-0x9(%rcx)
+>    5:	c0 38 02             	sarb   $0x2,(%rax)
+>    8:	00 00                	add    %al,(%rax)
+>    a:	0f 85 2c 01 00 00    	jne    0x13c
+>   10:	48 8b 4f 30          	mov    0x30(%rdi),%rcx
+>   14:	48 63 d2             	movslq %edx,%rdx
+>   17:	48 01 ca             	add    %rcx,%rdx
+>   1a:	85 db                	test   %ebx,%ebx
+>   1c:	0f 84 f3 00 00 00    	je     0x115
+>   22:	49 29 d1             	sub    %rdx,%r9
+>   25:	bb 80 00 00 00       	mov    $0x80,%ebx
+>   2a:*	4c 03 54 f7 38       	add    0x38(%rdi,%rsi,8),%r10		<-- trapping instruction
 
-That would be the zone->lowmem_reserve[highest_zoneidx] deref:
+This looks like the same issue the bot reported here:
 
-        long int                   lowmem_reserve[4];    /*  0x38  0x20 */
+https://lore.kernel.org/all/20250321135524.GA1888695@cmpxchg.org/
 
->   2f:	49 39 d1             	cmp    %rdx,%r9
->   32:	7e 7e                	jle    0xb2
->   34:	b0 01                	mov    $0x1,%al
->   36:	85 c9                	test   %ecx,%ecx
->   38:	74 7a                	je     0xb4
->   3a:	83 f9 0a             	cmp    $0xa,%ecx
->   3d:	7f 73                	jg     0xb2
->   3f:	48                   	rex.W
-> 
-> Code starting with the faulting instruction
-> ===========================================
->    0:	48 03 54 c7 38       	add    0x38(%rdi,%rax,8),%rdx
->    5:	49 39 d1             	cmp    %rdx,%r9
->    8:	7e 7e                	jle    0x88
->    a:	b0 01                	mov    $0x1,%al
->    c:	85 c9                	test   %ecx,%ecx
->    e:	74 7a                	je     0x8a
->   10:	83 f9 0a             	cmp    $0xa,%ecx
->   13:	7f 73                	jg     0x88
->   15:	48                   	rex.W
-> [   24.333001][   T36] RSP: 0018:ffffc90000137cd0 EFLAGS: 00010246
-> [   24.334003][   T36] RAX: 00000000000036a8 RBX: 0000000000000001 RCX: 0000000000000000
-> [   24.335270][   T36] RDX: 0000000000000006 RSI: 0000000000000000 RDI: ffff88843fff1080
+There is a fix for it queued in next-20250318 and later. Could you
+please double check with your reproducer against a more recent next?
 
-and %rax and %rdx look like the swapped watermark and zoneidx (36a8 is
-14k pages, or 54M, which matches a min watermark on a 16G system).
-
-So this is the bug that Hugh fixed here:
-
-https://lore.kernel.org/all/005ace8b-07fa-01d4-b54b-394a3e029c07@google.com/
-
-It's resolved in the latest version of the patch in -mm.
+Thanks
