@@ -1,36 +1,36 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A11AD1FDE07;
-	Sun, 23 Mar 2025 01:02:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA84BAD24;
+	Sun, 23 Mar 2025 07:07:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742691733; cv=none; b=XPn+ZalqhyYBr174R4uEIpjG2RpCDO4mkCFGVCy1H3BJoQnBGycfJEMco4PVs0MVBGnCjThTd/wGEqkRAfec1e3+bTpWc2MmxugqGhkA1svbJL5Jznv5h7eYFRNr+IDgyetTjpeJWY5MH1W298uKwPRqNjHe2L7YSGBYC2DBdkA=
+	t=1742713650; cv=none; b=KRiT3gUPVYvw/pvR/S2/wbxxu8J9pY9teOCa+8nZmSSER6ajvYPpwSw+Ay0eb3v7z0l6vdkruwl380C8DcPx8EnDhwG6Zzs/nbtsGbTS3sORqvHQmzsW/lS1FFmJxDCxVJ4ujpIEbKB7adrZypThvLGRmjTqEfnstax5dj7536Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742691733; c=relaxed/simple;
-	bh=Ksj6kRjx99oAfhdgnyVT4Uj8dlQB6UBKFAwF5s+xPlg=;
+	s=arc-20240116; t=1742713650; c=relaxed/simple;
+	bh=waNR4m35arNyjJJa0jtGjNQD6uPw/33mh7/K0+sSIU0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YZvZVLK9ih0Er5Fs8Fh/NyjeI48oTz7s1EJctnDsuaeWB6EFVFiq/U+DNdBWvAic1RfsDurqpEgKoa8kInAal2cJ6OVi6a+CDbt1i92oPLjtbCAcZ+eNRNq4zOQ6kWOmb8fijxPgdMJL+NhsYudf7xzQvSZFsbNsugJkLudyS6s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CoBLcu/j; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=M3tCssTpE+Kp6PGXlFgbBv4tyMKcuC57Fnzvrtgws08lhfA7x8mAPQHNZhiGPV5uwRmHS0kEB/L69oqx7+rmDAHb/FSeHrrwEtDX/yqEo2oPGgNwKHmubRR76DLlkbvZfQIP3Gz9TTub6lA1dP4c4ja6q5e1x2yK4qCjm+OO17A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DtaPfMGI; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CoBLcu/j"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8769CC4CEDD;
-	Sun, 23 Mar 2025 01:02:12 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DtaPfMGI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6291C4CEE2;
+	Sun, 23 Mar 2025 07:07:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742691733;
-	bh=Ksj6kRjx99oAfhdgnyVT4Uj8dlQB6UBKFAwF5s+xPlg=;
+	s=k20201202; t=1742713649;
+	bh=waNR4m35arNyjJJa0jtGjNQD6uPw/33mh7/K0+sSIU0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=CoBLcu/jy/tQoEJPKu4zMxzpXJQK+xwszeEO/+RObGT7IVe41R4YLh7oM/1WbG2+C
-	 RCu6SXeajWsTP5VqnQ3NDK9v/zYKtWM2bn9az2UWxngflbCe0Si4BJMRfMcJRVJim/
-	 gHVVGEf7cgaKVzBApnrnzpMXK6vzQztobCpuUjrW5RbvxU8ZoKKpN+jIXU+qPWgqHv
-	 A4Lw7of4DJ6Ury7X0esaOC62ZhTk5rlpVeQhx6iAhxxDLhuK06CsBmldeLuYufN4PZ
-	 gEWzErqKBdElrxe5P+ToGo99IHs8/IXf81ppfcCZYb/LTs5d+CDAksSBrR1OHGyyKQ
-	 owxGZ31uXdkLw==
-Date: Sat, 22 Mar 2025 18:02:11 -0700
+	b=DtaPfMGIzhAvrqUamGTqwM1triUwq3WJtmXy2fQM/+l/eFBpbreqQ6PJGuA7YlHxL
+	 MB3p4OjJjZU/C6YWcUXLA4zDZqvW2omU0/cFsmt6135idyi4+0iGCdqp4M9XvxJxFF
+	 32bdFKkg+/m6lNWc9T+RGWXE8xTy+/U2CQj8Lq1AKhELBZ3um48DbTfk+2QOV+lRyS
+	 oH5DWdSgtSlotIj+XTfFV8SFwnX8Z5XCkwnK0BCb6Oje9qdHVq1hZ20NX6KScKifRi
+	 jnUspnRHfa+5/ivFqTYm4m/LuWnJTZu4jOwppG905ycdAUOfAse+jzkOXB1MovafSd
+	 M64Oe4gdkbOyA==
+Date: Sun, 23 Mar 2025 00:07:27 -0700
 From: Luis Chamberlain <mcgrof@kernel.org>
-To: Johannes Weiner <hannes@cmpxchg.org>
+To: Johannes Weiner <hannes@cmpxchg.org>,
+	Oliver Sang <oliver.sang@intel.com>
 Cc: Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.cz>,
-	Oliver Sang <oliver.sang@intel.com>,
 	David Hildenbrand <david@redhat.com>,
 	Alistair Popple <apopple@nvidia.com>, linux-mm@kvack.org,
 	Christian Brauner <brauner@kernel.org>,
@@ -42,9 +42,8 @@ Cc: Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.cz>,
 	David Bueso <dave@stgolabs.net>
 Subject: Re: [linux-next:master] [block/bdev]  3c20917120:
  BUG:sleeping_function_called_from_invalid_context_at_mm/util.c
-Message-ID: <Z99dk_ZMNRFgaaH8@bombadil.infradead.org>
-References: <Z9kEdPLNT8SOyOQT@xsang-OptiPlex-9020>
- <Z9krpfrKjnFs6mfE@bombadil.infradead.org>
+Message-ID: <Z9-zL3pRpCHm5a0w@bombadil.infradead.org>
+References: <Z9krpfrKjnFs6mfE@bombadil.infradead.org>
  <Z9mFKa3p5P9TBSTQ@casper.infradead.org>
  <Z9n_Iu6W40ZNnKwT@bombadil.infradead.org>
  <Z9oy3i3n_HKFu1M1@casper.infradead.org>
@@ -53,6 +52,7 @@ References: <Z9kEdPLNT8SOyOQT@xsang-OptiPlex-9020>
  <Z9sZ5_lJzTwGShQT@casper.infradead.org>
  <Z9wF57eEBR-42K9a@bombadil.infradead.org>
  <20250322231440.GA1894930@cmpxchg.org>
+ <Z99dk_ZMNRFgaaH8@bombadil.infradead.org>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -61,23 +61,33 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250322231440.GA1894930@cmpxchg.org>
+In-Reply-To: <Z99dk_ZMNRFgaaH8@bombadil.infradead.org>
 
-On Sat, Mar 22, 2025 at 07:14:40PM -0400, Johannes Weiner wrote:
-> Hey Luis,
+On Sat, Mar 22, 2025 at 06:02:13PM -0700, Luis Chamberlain wrote:
+> On Sat, Mar 22, 2025 at 07:14:40PM -0400, Johannes Weiner wrote:
+> > Hey Luis,
+> > 
+> > This looks like the same issue the bot reported here:
+> > 
+> > https://lore.kernel.org/all/20250321135524.GA1888695@cmpxchg.org/
+> > 
+> > There is a fix for it queued in next-20250318 and later. Could you
+> > please double check with your reproducer against a more recent next?
 > 
-> This looks like the same issue the bot reported here:
+> Confirmed, at least it's been 30 minutes and no crashes now where as
+> before it would crash in 1 minute. I'll let it soak for 2.5 hours in
+> the hopes I can trigger the warning originally reported by this thread.
 > 
-> https://lore.kernel.org/all/20250321135524.GA1888695@cmpxchg.org/
-> 
-> There is a fix for it queued in next-20250318 and later. Could you
-> please double check with your reproducer against a more recent next?
+> Even though from code inspection I see how the kernel warning would
+> trigger I just want to force trigger it on a test, and I can't yet.
 
-Confirmed, at least it's been 30 minutes and no crashes now where as
-before it would crash in 1 minute. I'll let it soak for 2.5 hours in
-the hopes I can trigger the warning originally reported by this thread.
+Survied 5 hours now. This certainly fixed that crash.
 
-Even though from code inspection I see how the kernel warning would
-trigger I just want to force trigger it on a test, and I can't yet.
+As for the kernel warning, I can't yet reproduce that, so trying to
+run generic/750 forever and looping
+./testcases/kernel/syscalls/close_range/close_range01
+and yet nothing.
+
+Oliver can you reproduce the kernel warning on next-20250321 ?
 
   Luis
