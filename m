@@ -1,189 +1,108 @@
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D52B71F3D5D
-	for <oe-lkp@lists.linux.dev>; Mon, 24 Mar 2025 09:33:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F124825DD1B;
+	Mon, 24 Mar 2025 11:15:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742808792; cv=none; b=MTKIx2GyiTimugoRihdFRZWGN51vK3gDzYztOvvrCvvQ0Uw35AIbhKab7AQ3walU87+sxlcvnVSV3NXxNeAiFOPjHXgxApqI/pNI/AZ9TQzJmw9DDvkmsrSh0glNAUUb8qrJWlK/M+Uod1BsAnD/P3kbZvyHHHBK72S6yTPVPOQ=
+	t=1742814916; cv=none; b=EdpiihvETbtC2YHYz6otzYSHiQf5UkgwKHuaU8Rl5V5rzUjytVddehOmOts98toKdpvWSKu9LNESwy3wDI4UUlmQDO9z9Ak/yJ4l4U92dD/3Jlx6hiWIdtot31JGA5tjh7FSpbFGuazGRGvr62PLK27X2KkjVSe+zDpU50AfppU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742808792; c=relaxed/simple;
-	bh=uRvFLVNMEM4g4PryJiKbZcddMzcPS+20Bc48Sgo6u1k=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=e4TpIJF4Pu+Dt3T34LLG2uZhv4/zP1aHxfSVGpu16bzGdhTHPktqiEfSznt1cpQSUOGWrNC7cqtaUaXTJa0C/QX6od/GzpelOVf9XQADCOSDpgqYbvfEUE1uSnWCDJ1anDmYGKpYAYnNa+dr6fKBONGrm+Gt+sJIqqprmCuVloM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=XewrUf9/; arc=none smtp.client-ip=209.85.221.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1742814916; c=relaxed/simple;
+	bh=hZ5GbCzl/Fw4XjbhusZchqQNyyvFLq+89EztqsUraO0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=p2JYqFm3j40FURz995vv+N5rURM2C9orjCFQJdkfngJdvKMRRyxJWQGJQ0t0OS/1rdJQBsrEJy6uCSmJfvgd6EoB5GEl7MoJEryBxxreepQNMIgPY3T9ydqvdGeVlyjSOrrht/MaQjrW9VF9XPA4cqdAri4hdD6eZFkUMOxC7xI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=qtZNJJNZ; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=rEc6EP4K; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="XewrUf9/"
-Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-399749152b4so1215860f8f.3
-        for <oe-lkp@lists.linux.dev>; Mon, 24 Mar 2025 02:33:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1742808788; x=1743413588; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=sYPFnmatdEC2jaYKJ2PQ0L61fcr9EfY3NcYk9dAoMX8=;
-        b=XewrUf9/QsDfjxc74q2qrCgJdqKeuCjBHHEJBw3ft+CUpfrWJnsgL+QQVZp/ZPIxs8
-         d+WI2mRqCAccQLIcKxNIkOIlNpyS1dqvO4KVWuRPaUxZDu814O9xs/r0m1NfmKoag9tR
-         qDd/AdiEbWEfvgpDQSYv9UipPHbmSGAObV0q7vHxhxNY1u3wuowIkOG1vyDU65ikvptO
-         DrMohZcLUHd/VcI4IE4yHHemBvtYFek2tBhICfz4UHyt2gNIsOUUUf8/QfZeooSIe5LM
-         6h3ndBhaTRWY3aYumgLdBFj0H2z1AU6K6cXalNaeMQAwH0CJGzewA1IOhQxP93lb52Uc
-         bmvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742808788; x=1743413588;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=sYPFnmatdEC2jaYKJ2PQ0L61fcr9EfY3NcYk9dAoMX8=;
-        b=fAGYs8N4gSBKRdCKXtWqpH5law3VESl92Nk7NdxkzzY2KqmpoBgR5PdOAGmABkQUJx
-         r0IF+YVHWn9JyOR9YKbmgvD2qZQBii/ThHDf3RaAph3sO+h/bdZj7LGknB6aMXFGJk7F
-         CfWG/chRL1Qj72mfG7LjQbawZ3Gn11RucsrJPQM3p/yX2Yo1ZvNPrZAdrmCkBV8eQiSF
-         InXHXcqw9X9+bH3ROXlXHlL/YlaRreU/1iyFzMlm5dAEfA2B1UNYKM2MRsnOFPQcNlob
-         K89q00POTYRBMrsnImKGuUtJAvyUChOLlYARBe/C/yzNcaHwCgm+4LbmLvEWXawvVziq
-         dFKQ==
-X-Gm-Message-State: AOJu0YxqijFY0gBrtrueBL2F5hp4A5DBW0jXbGr3nmhEyuXY/QcrHC7a
-	sooHFKaU/bjnb2m+zmBQ6+lyH/Z9ZSL5t7/J+H3QPAghTDySQv7tMapovPm93VM=
-X-Gm-Gg: ASbGnct0vi0+CQ8f2t4eUhHb3KpZfq/qhDBa6KA4wfDFk4SQf2Uct8c1iOLHaMLz+jJ
-	aCPV7ihGvnkmcF/UoXYNvoIepmonGckT9qhy92Yuuxb3IDZdgLrhMORmPBt6Kt6XU4Ub/5KOko+
-	kMBEvOahtKpjZzfAb1gLEOZPAivZAycXcMyLnH3hhw5DA6buGhme3l3JaRAnOChrSRIzNV4+KFm
-	WDeb2P5+Jy2dxSLIvU8gth7sxXPFqqdg4cCfn0hqBZKpA00HCgGVNDdlf9B64RWlcu5jexxD5kB
-	swA0vH+1qGXZcrsx7l3lG9vYGUwgjT1Nd0LId8hbSkz6D+4V7u8jVBGytTALUhgIlGzxJalS
-X-Google-Smtp-Source: AGHT+IH5oHHBER08ah2i0IDaqI+3iXCtyYMXTHCh3YDoWnWqTBGSsphm3nCZLlAJR+/x+Sdpml/CYw==
-X-Received: by 2002:a05:6000:2103:b0:391:2954:de27 with SMTP id ffacd0b85a97d-3997f93c2b0mr8304059f8f.45.1742808787934;
-        Mon, 24 Mar 2025 02:33:07 -0700 (PDT)
-Received: from ?IPV6:2403:580d:fda1::299? (2403-580d-fda1--299.ip6.aussiebb.net. [2403:580d:fda1::299])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-227811daa2dsm66238425ad.171.2025.03.24.02.33.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Mar 2025 02:33:07 -0700 (PDT)
-Message-ID: <883442fa-e398-4d56-a7cc-a7fdfbadfd53@suse.com>
-Date: Mon, 24 Mar 2025 20:03:02 +1030
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="qtZNJJNZ";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="rEc6EP4K"
+Date: Mon, 24 Mar 2025 12:15:09 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1742814911;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=86m/cLxXP9bfNs1Ln11D5y3dZxfnOk7qTOhdH9UMKxk=;
+	b=qtZNJJNZ0xux8VOBm84Ls0CCUhvjW5xt0HKjoR8ebj71eSGy+VSwFogWGspDaUrgVC+79c
+	wUP1mwAIqvH6Rpc2sDAIo+FSG7j0Ne2E75uaOOYjKIBAUvhiCofQbjrtdD0E3k+T++wQ87
+	1DQPfFyNXb1WpWNlyC8xNailwbYRUhDGOf3mpmmBmUUTiGETZWmYkwB2JIFdu6yc5rIU+w
+	j7zscMi/7J+KWhfOGDn8MvAG3vLvxF4MVvOhGOeIvWNqoxXkTWh9RwalVl/vrZ8y+x4X4g
+	iatO+lIJD0/d/mNNv71r/oR6wiKZJAm6NOf12xwmNjqxjQ/zxMtgEukJz6NY2Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1742814911;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=86m/cLxXP9bfNs1Ln11D5y3dZxfnOk7qTOhdH9UMKxk=;
+	b=rEc6EP4KLiJw5DPcwsIAdDU0oL1zCwm7e0CxHExT4ByjW2oe0vs1aRtV8jFwxu9OgXOAcT
+	LbUhQgAmx3TKI1CQ==
+From: "Ahmed S. Darwish" <darwi@linutronix.de>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Andrew Cooper <andrew.cooper3@citrix.com>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	John Ogness <john.ogness@linutronix.de>, x86@kernel.org,
+	x86-cpuid@lists.linux.dev
+Subject: Re: [PATCH v3 22/29] x86/cpu: Use consolidated leaf 0x2 descriptor
+ table
+Message-ID: <Z-E-vXHVl3dLFYx0@lx-t490>
+References: <20250319122137.4004-23-darwi@linutronix.de>
+ <202503241523.6b53646b-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [linux-next:master] [btrfs] 968f19c5b1: xfstests.btrfs.226.fail
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, David Sterba <dsterba@suse.com>,
- Christoph Hellwig <hch@infradead.org>, Filipe Manana <fdmanana@suse.com>,
- linux-btrfs@vger.kernel.org
-References: <202503241538.dbc17bf9-lkp@intel.com>
-Content-Language: en-US
-From: Qu Wenruo <wqu@suse.com>
-Autocrypt: addr=wqu@suse.com; keydata=
- xsBNBFnVga8BCACyhFP3ExcTIuB73jDIBA/vSoYcTyysFQzPvez64TUSCv1SgXEByR7fju3o
- 8RfaWuHCnkkea5luuTZMqfgTXrun2dqNVYDNOV6RIVrc4YuG20yhC1epnV55fJCThqij0MRL
- 1NxPKXIlEdHvN0Kov3CtWA+R1iNN0RCeVun7rmOrrjBK573aWC5sgP7YsBOLK79H3tmUtz6b
- 9Imuj0ZyEsa76Xg9PX9Hn2myKj1hfWGS+5og9Va4hrwQC8ipjXik6NKR5GDV+hOZkktU81G5
- gkQtGB9jOAYRs86QG/b7PtIlbd3+pppT0gaS+wvwMs8cuNG+Pu6KO1oC4jgdseFLu7NpABEB
- AAHNGFF1IFdlbnJ1byA8d3F1QHN1c2UuY29tPsLAlAQTAQgAPgIbAwULCQgHAgYVCAkKCwIE
- FgIDAQIeAQIXgBYhBC3fcuWlpVuonapC4cI9kfOhJf6oBQJnEXVgBQkQ/lqxAAoJEMI9kfOh
- Jf6o+jIH/2KhFmyOw4XWAYbnnijuYqb/obGae8HhcJO2KIGcxbsinK+KQFTSZnkFxnbsQ+VY
- fvtWBHGt8WfHcNmfjdejmy9si2jyy8smQV2jiB60a8iqQXGmsrkuR+AM2V360oEbMF3gVvim
- 2VSX2IiW9KERuhifjseNV1HLk0SHw5NnXiWh1THTqtvFFY+CwnLN2GqiMaSLF6gATW05/sEd
- V17MdI1z4+WSk7D57FlLjp50F3ow2WJtXwG8yG8d6S40dytZpH9iFuk12Sbg7lrtQxPPOIEU
- rpmZLfCNJJoZj603613w/M8EiZw6MohzikTWcFc55RLYJPBWQ+9puZtx1DopW2jOwE0EWdWB
- rwEIAKpT62HgSzL9zwGe+WIUCMB+nOEjXAfvoUPUwk+YCEDcOdfkkM5FyBoJs8TCEuPXGXBO
- Cl5P5B8OYYnkHkGWutAVlUTV8KESOIm/KJIA7jJA+Ss9VhMjtePfgWexw+P8itFRSRrrwyUf
- E+0WcAevblUi45LjWWZgpg3A80tHP0iToOZ5MbdYk7YFBE29cDSleskfV80ZKxFv6koQocq0
- vXzTfHvXNDELAuH7Ms/WJcdUzmPyBf3Oq6mKBBH8J6XZc9LjjNZwNbyvsHSrV5bgmu/THX2n
- g/3be+iqf6OggCiy3I1NSMJ5KtR0q2H2Nx2Vqb1fYPOID8McMV9Ll6rh8S8AEQEAAcLAfAQY
- AQgAJgIbDBYhBC3fcuWlpVuonapC4cI9kfOhJf6oBQJnEXWBBQkQ/lrSAAoJEMI9kfOhJf6o
- cakH+QHwDszsoYvmrNq36MFGgvAHRjdlrHRBa4A1V1kzd4kOUokongcrOOgHY9yfglcvZqlJ
- qfa4l+1oxs1BvCi29psteQTtw+memmcGruKi+YHD7793zNCMtAtYidDmQ2pWaLfqSaryjlzR
- /3tBWMyvIeWZKURnZbBzWRREB7iWxEbZ014B3gICqZPDRwwitHpH8Om3eZr7ygZck6bBa4MU
- o1XgbZcspyCGqu1xF/bMAY2iCDcq6ULKQceuKkbeQ8qxvt9hVxJC2W3lHq8dlK1pkHPDg9wO
- JoAXek8MF37R8gpLoGWl41FIUb3hFiu3zhDDvslYM4BmzI18QgQTQnotJH8=
-In-Reply-To: <202503241538.dbc17bf9-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202503241523.6b53646b-lkp@intel.com>
 
+Hi,
 
+On Mon, 24 Mar 2025, kernel test robot wrote:
+>
+> [ 5.001760][ T0] BUG: KASAN: stack-out-of-bounds in intel_detect_tlb (arch/x86/kernel/cpu/intel.c:698 arch/x86/kernel/cpu/intel.c:688)
+> [    5.001760][    T0] Read of size 1 at addr ffffffff8a607e80 by task swapper/0/0
+> [    5.001760][    T0]
+> [    5.001760][    T0] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted 6.14.0-rc5-00152-ge114ca069e27 #1
+> [    5.001760][    T0] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> [    5.001760][    T0] Call Trace:
+> [    5.001760][    T0]  <TASK>
+> [ 5.001760][ T0] dump_stack_lvl (lib/dump_stack.c:124)
+> [ 5.001760][ T0] print_address_description+0x2c/0x3f0
+> [ 5.001760][ T0] ? intel_detect_tlb (arch/x86/kernel/cpu/intel.c:698 arch/x86/kernel/cpu/intel.c:688)
+>
 
-在 2025/3/24 18:15, kernel test robot 写道:
-> 
-> 
-> Hello,
-> 
-> kernel test robot noticed "xfstests.btrfs.226.fail" on:
-> 
-> commit: 968f19c5b1b7d5595423b0ac0020cc18dfed8cb5 ("btrfs: always fallback to buffered write if the inode requires checksum")
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> 
-> [test failed on linux-next/master 9388ec571cb1adba59d1cded2300eeb11827679c]
-> 
-> in testcase: xfstests
-> version: xfstests-x86_64-8467552f-1_20241215
-> with following parameters:
-> 
-> 	disk: 6HDD
-> 	fs: btrfs
-> 	test: btrfs-226
-> 
-> 
-> 
-> config: x86_64-rhel-9.4-func
-> compiler: gcc-12
-> test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (Haswell) with 8G memory
-> 
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
-> 
-> 
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202503241538.dbc17bf9-lkp@intel.com
-> 
-> 2025-03-22 11:44:50 export TEST_DIR=/fs/sdb1
-> 2025-03-22 11:44:50 export TEST_DEV=/dev/sdb1
-> 2025-03-22 11:44:50 export FSTYP=btrfs
-> 2025-03-22 11:44:50 export SCRATCH_MNT=/fs/scratch
-> 2025-03-22 11:44:50 mkdir /fs/scratch -p
-> 2025-03-22 11:44:50 export SCRATCH_DEV_POOL="/dev/sdb2 /dev/sdb3 /dev/sdb4 /dev/sdb5 /dev/sdb6"
-> 2025-03-22 11:44:50 echo btrfs/226
-> 2025-03-22 11:44:50 ./check btrfs/226
-> FSTYP         -- btrfs
-> PLATFORM      -- Linux/x86_64 lkp-hsw-d01 6.14.0-rc7-00005-g968f19c5b1b7 #1 SMP PREEMPT_DYNAMIC Sat Mar 22 19:24:48 CST 2025
-> MKFS_OPTIONS  -- /dev/sdb2
-> MOUNT_OPTIONS -- /dev/sdb2 /fs/scratch
-> 
-> btrfs/226       - output mismatch (see /lkp/benchmarks/xfstests/results//btrfs/226.out.bad)
->      --- tests/btrfs/226.out	2024-12-15 06:14:52.000000000 +0000
->      +++ /lkp/benchmarks/xfstests/results//btrfs/226.out.bad	2025-03-22 11:44:56.303230706 +0000
->      @@ -39,14 +39,11 @@
->       Testing write against prealloc extent at eof
->       wrote 65536/65536 bytes at offset 0
->       XXX Bytes, X ops; XX:XX:XX.X (XXX YYY/sec and XXX ops/sec)
->      -wrote 65536/65536 bytes at offset 65536
->      -XXX Bytes, X ops; XX:XX:XX.X (XXX YYY/sec and XXX ops/sec)
->      +pwrite: Resource temporarily unavailable
+I've reproduced the KASAN report and below hunk fixes it:
 
-Please update the fstests project.
+ | --- a/arch/x86/include/asm/cpuid/leaf_0x2_api.h
+ | +++ b/arch/x86/include/asm/cpuid/leaf_0x2_api.h
+ | @@ -88,9 +88,9 @@ static inline void cpuid_get_leaf_0x2_regs(union leaf_0x2_regs *regs)
+ |   *		}
+ |   *	}
+ |   */
+ | -#define for_each_leaf_0x2_entry(regs, __ptr, entry)			\
+ | -	for (__ptr = &(regs).desc[1], entry = &cpuid_0x2_table[*__ptr];	\
+ | -	     __ptr < &(regs).desc[16];					\
+ | -	     __ptr++, entry = &cpuid_0x2_table[*__ptr])
+ | +#define for_each_leaf_0x2_entry(regs, __ptr, entry)				\
+ | +	for (__ptr = &(regs).desc[1];						\
+ | +	     __ptr < &(regs).desc[16] && (entry = &cpuid_0x2_table[*__ptr]);	\
+ | +	     __ptr++)
 
-The commit 7e92cb991b0b ("fstests: btrfs/226: use nodatasum mount option 
-to prevent false alerts") fixes the false alerts.
+I'll include the fix in v4.
 
-Thanks,
-Qu
+(It also makes sense that this was triggered at x86/cpu intel.c and not
+ x86/cacheinfo, since in cacheinfo.c, CPUID(4) when available is always
+ preferred to CPUID(2).)
 
->       File after write:
->      ...
->      (Run 'diff -u /lkp/benchmarks/xfstests/tests/btrfs/226.out /lkp/benchmarks/xfstests/results//btrfs/226.out.bad'  to see the entire diff)
-> Ran: btrfs/226
-> Failures: btrfs/226
-> Failed 1 of 1 tests
-> 
-> 
-> 
-> 
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20250324/202503241538.dbc17bf9-lkp@intel.com
-> 
-> 
-> 
+Thanks!
 
+--
+Ahmed S. Darwish
+Linutronix GmbH
