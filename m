@@ -1,91 +1,97 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 972391EB5F4
-	for <oe-lkp@lists.linux.dev>; Tue, 25 Mar 2025 08:30:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A77479F5
+	for <oe-lkp@lists.linux.dev>; Tue, 25 Mar 2025 08:41:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.9
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742891430; cv=fail; b=HQStPMgin/N5vSwB72YFbCnQJqhbfyBSrw3VpFoZKgfmK0Stnkg9U/pHZZEdRYs+U/vs4LyZhSQlMJifZUkuMLHtddZ4UpsDDIXS5d8oJ55G8jnGUEIZRAbT7WUZfV/rpz6Bh2BDvyYx4n+8yJir0O9910CfUgbHoWAwhEqN8Yk=
+	t=1742892073; cv=fail; b=Ea2pr0aU6e3ZcQ0f6QKA5R+CIrIkKagWbcBhbHrjgOQG2F/Xrg7WWqdEuoafhRcyO6Q5Mp8G6BzMZMPZNXxwIZibmVXA3A1t8/lpW/UoW2JxpdCe7iyE3tgrX3E1aAioJzMfbI+w1SgsVDZlwoDqWrNrgzsK4kODJINzXqKatg4=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742891430; c=relaxed/simple;
-	bh=egaWBc+JJwmnewf77ooKZN9uAeGrTdC9hDHn6QvgPM4=;
+	s=arc-20240116; t=1742892073; c=relaxed/simple;
+	bh=vQJAt6brMoyMmzDw15HtjLWqzvS6Dj3ORQHa1Ih7LYE=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=Y8BqqdgWZdrMF3XQlxWlcnsZtENwKsVkzu1BGf0J1TYZNWkrE6Fgn9vU6Kfdpmn8jcPFKLu+uTTGGi1t4naX/qrGOLc2k6KjQox4olAKZqI36agneTaCi3BBWCBiUj2xZwv4ZFQEhu50mOWrJUJ5ld0nU4R1kuXRJOU5Uz5syT8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=H/aT089p; arc=fail smtp.client-ip=192.198.163.10
+	 Content-Disposition:In-Reply-To:MIME-Version; b=gOgn8I+aWGkAh9+lXJ5hbe9GpoFtXEUHMrZNckJx3+zi7AMng5VeOZCH3jA/RGEK/Ajk26PFh0ho/0OFq7SKYje0vNAe+UDiQxHqVMaYF0xbZMlUSn2ZDlBwh3+bdk406Vk+ZNnGG0rofgoBAKJJ30HruLPdvVvkzw4rv0cCotM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HCGoEJeb; arc=fail smtp.client-ip=192.198.163.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="H/aT089p"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HCGoEJeb"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1742891425; x=1774427425;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=egaWBc+JJwmnewf77ooKZN9uAeGrTdC9hDHn6QvgPM4=;
-  b=H/aT089pQT8J3QAEVzi77IbTGCMhHPNeH/gNA7iZ8UdvWfrdb2Vcq/UE
-   1e0O3ID23sskrWfUYVW/belPK2hlBkZTAli8zgVPGem53p1SzbT138R/V
-   Y2u7xb3T0bTRx61+jBSUSguWQ40GPxKjQTBf8qOR9BENTomPU8lCBLA48
-   c2VILBzPjSJ0HLPuchXipoh0PnBnX6SNkdGxuQPi1cWQ/x0Umy5s3q6Qk
-   ux0I/tdQ8V5of8koB6nXS/bZ8OMd9vcxvIHVrA5Nzh9NsF0PttO8VVFWk
-   g0SGq19CN0mq4t5oRvG+j0aCsRDWOLm/0fR7bw9+H/Nazm717Ypc3kFgY
-   g==;
-X-CSE-ConnectionGUID: pI47Z4iTS/uIHtfuBk+ddw==
-X-CSE-MsgGUID: gm4WKKkHRmOmgxWXn+YQYQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11383"; a="55505466"
+  t=1742892071; x=1774428071;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   mime-version;
+  bh=vQJAt6brMoyMmzDw15HtjLWqzvS6Dj3ORQHa1Ih7LYE=;
+  b=HCGoEJebo9JpYXek5YU4TUOPS2UqHYykC7X+/MGoxhOZjnP/bFo+v0mR
+   0v8Be8fcFnziTUsew9ibwuUznjf38FCmEvKCnrGrxpiZdT17QEBZcstOs
+   Kf2+UM+cg3y/KJL7l0L3YU/85FFlXiCTKnFAu4Ub6ko1/ZWhyeZgTPo6X
+   oEBAlTOT7dsxxYEWsjcBd9usIXEMHKrygGlGuSSzyBL85LSM5CO38rWn5
+   AhtVka7x6ZX8ComWDPxjYB2D01FKNIjShoFgUPS5wnj/0Ez0nEbDp07SP
+   YHd5K1NcSbe6m7SBVePnlIKFoDmQwUV7/gxgbjZGbJpJz1k65eadRz/gm
+   A==;
+X-CSE-ConnectionGUID: SKxYYdmXQxyXSfQzMMAOrg==
+X-CSE-MsgGUID: NYDV7DD/TUWS9wQN0t6dHg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11383"; a="54772348"
 X-IronPort-AV: E=Sophos;i="6.14,274,1736841600"; 
-   d="scan'208";a="55505466"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2025 01:30:24 -0700
-X-CSE-ConnectionGUID: cn+EsGYbQU+JxnaL9aL3Vw==
-X-CSE-MsgGUID: NrpTCYdDQA2+FztGKUpPgA==
+   d="scan'208";a="54772348"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2025 01:41:10 -0700
+X-CSE-ConnectionGUID: z0lFiUsyS4ezU2cqGIRlRg==
+X-CSE-MsgGUID: 3SHXpWplSnGlHRuvMAKcsw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.14,274,1736841600"; 
-   d="scan'208";a="129489065"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by orviesa005.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 25 Mar 2025 01:30:25 -0700
+   d="scan'208";a="129130523"
+Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
+  by orviesa003.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2025 01:41:10 -0700
 Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.44; Tue, 25 Mar 2025 01:30:24 -0700
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14; Tue, 25 Mar 2025 01:41:09 -0700
 Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
  ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.14 via Frontend Transport; Tue, 25 Mar 2025 01:30:24 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.40) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ 15.2.1544.14 via Frontend Transport; Tue, 25 Mar 2025 01:41:09 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.169)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.44; Tue, 25 Mar 2025 01:30:24 -0700
+ 15.1.2507.44; Tue, 25 Mar 2025 01:41:09 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=oQqxhCwhpVH8oPlcCIZC+C2hCM1B58UAxAMnseiwR8ugKOJqejROpZqJ/wnOPRIuFJ6koni3uhFrNMnpL9XjcK0JoeEIRZl/JFokzcU6l17YBrTz908R4Bf/RUHddwuhqDh+LHl5sngnTv09VFnTMbxJwbFBihRfe2Eb5B6E8zGYF42nhZ4dbRDP68/30cXq2QigoARojJl0x2iiq9e80/b71kcTD70i2bjO9R7kRrhFO/5sKk/1qfc5qrhx2S4UeFh12QH6YWub0xlXtrSAFxfkeqF45uCp12FTUsHRLvSu32SeOoWQBI/z3ZScJB04/rIqUSQurOOBWvfHErfmTA==
+ b=Eny65+Sr8hDaJjIIXnn7bY2yxIcXS8MsigCYz28VEHHEkuftKf0djtXXYTKK+/o37C26I5vR6dVjpY2m+X4f3bMB6/gV8H5i/EKQeU4M7DA48CS20VQTPIKufs0Ttg12l9AqBSUni6d/t1DZXvq+Oc4iUnOgFxfogbEwL9uFDWpJmJsEO3T+NoDCBt+YQJgsIbsT6aUh+eSHKSgBxEpJ4sn5W1xwzo3JxXgtzOjkwzMJj9ru7uonQO8PaNa8dD7/QLpN3/s5pnIZMyyxZr4kH/qZOkcHNWnWjAeqAKqxB0plVmKpd7RWHf5jVi6Qaf4qnsaafjZPyfZaNOifMj7qGg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5m8Rtzqo7VAwuBMUYk4vwG6VeqTU0Wxnr0CtcwDsZ30=;
- b=iJ0hM6ZKPlT7I39FyJiKAQhwKBl96pgIGOdfVdfQja1klLyNwCzuZo6WLCnZyqJVqRXvWffpSLUOZXIQdMPUpK1uURKOCBCBBzz6BnddUVuIDI2xPVn0uD1533HwnB0LPtgJuZkXu0QtEoQcoz3gZI0Pt8Wf2tFHkIc/7WBMR1Xj6VhEbymPAONqHHuOS6cbzBBSwb4xPqc82d0vAh1XOl8n+WbnhwCiyt/zJq+SHWD8snzsHYY6L9yEsu7qR6rnGfguNCQfNLB0O6NHymV3xbMvBu5HO+61ovd+UFrJyv7ya9L6WpiRsz8Ei8YNzJDOXmS51LvT4kQbmVNoG7u5fA==
+ bh=EBTD/rTD/RnMeqTRxStgN8EgvQZtifwDbRV6+aa1p98=;
+ b=eDFQntVdJSz7fNcel8I2JwGJnrreM/VKJ4r0HiOBxQkjeBTNbP48XfeDyqtjo6ls3y/RZBHxQ4MEQMa+pamsEjSyVNxZ0uUVR564tMz/KNR+ukHWHCOtenfVaWrcK6Hkvc7e6sUn1JQvROfMPnUN68Nc4NefrjBsSgPvyjq9q22OSkdJZIvJB8cgvPlijccqcXXGmZFvpF0k2GR+pHw3DZI+532U5KQR5Ocit8RhWrePGj7UrPVn1YmHeRb3muNEiuWaSyJfzDFS8MM7uKmSVoeBioJHsuMyBdc0G83swW4TRp7BEkSfBZ+38Tk4DFnAFN11h2H5ghP+ugiLCNwULA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by DS4PPF93A1BBECD.namprd11.prod.outlook.com (2603:10b6:f:fc02::3c) with
+ by IA1PR11MB8199.namprd11.prod.outlook.com (2603:10b6:208:455::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.42; Tue, 25 Mar
- 2025 08:30:21 +0000
+ 2025 08:40:53 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c%4]) with mapi id 15.20.8534.040; Tue, 25 Mar 2025
- 08:30:21 +0000
-Date: Tue, 25 Mar 2025 16:30:13 +0800
+ 08:40:53 +0000
+Date: Tue, 25 Mar 2025 16:40:42 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Yury Norov <yury.norov@gmail.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <oliver.sang@intel.com>
-Subject: [norov:shift] [bitmap]  c061d07ca7:
- stderr.netperf:data_send_error:No_such_process
-Message-ID: <202503251628.297db24d-lkp@intel.com>
-Content-Type: multipart/mixed; boundary="RjmeHVVu++HFeLki"
+To: Yang Shi <yang@os.amperecomputing.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, kernel test robot
+	<oliver.sang@intel.com>, Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+	<linux-mm@kvack.org>, <ltp@lists.linux.it>, <Liam.Howlett@oracle.com>,
+	<vbabka@suse.cz>, <jannh@google.com>, <akpm@linux-foundation.org>,
+	<yang@os.amperecomputing.com>, <linux-kernel@vger.kernel.org>
+Subject: Re: [v2 PATCH] mm: vma: skip anonymous vma when inserting vma to
+ file rmap tree
+Message-ID: <202503251554.34a0b29b-lkp@intel.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-X-ClientProxiedBy: SI2PR04CA0010.apcprd04.prod.outlook.com
- (2603:1096:4:197::11) To LV3PR11MB8603.namprd11.prod.outlook.com
+In-Reply-To: <20250312221521.1255690-1-yang@os.amperecomputing.com>
+X-ClientProxiedBy: SG2PR01CA0179.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:28::35) To LV3PR11MB8603.namprd11.prod.outlook.com
  (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -94,122 +100,104 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|DS4PPF93A1BBECD:EE_
-X-MS-Office365-Filtering-Correlation-Id: 70c71555-f089-4ef3-d00c-08dd6b7747f9
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|IA1PR11MB8199:EE_
+X-MS-Office365-Filtering-Correlation-Id: 45a03146-4bc6-4824-4e86-08dd6b78c11b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016|4053099003;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?PLNxiOvygmR/zfVSfQUIRfJGu55eK5OLMxWHK0+p5+1VfPVbppwSGudOX6D7?=
- =?us-ascii?Q?Tx66XuFfYB4suiKbSxfWc2JbmyE8l6UR/B4n40O3eVTFVbAmj5uSzRFtAcNH?=
- =?us-ascii?Q?ukzm++erwkEfbKDltUL/y8r9SPhpViRA3rSCRetG+IwJOeBQA3mJP6KCGqZg?=
- =?us-ascii?Q?mfdK3X3BHvy4UfgaCTcSuFLdEPjDZKG9zZC30d8an56rWiLcSG8AqVgbr0d9?=
- =?us-ascii?Q?8ljy+wC5pEpydY2HsZFPGd+qjZBzJlZxiG2G0bBhUEjIF4QFTOdA8Q/9bWRE?=
- =?us-ascii?Q?DHMC8tb73MRiyb7kHYFJFvMdozmwSqzeF3foGCwp8ox3924OvPPd/D6FBP4E?=
- =?us-ascii?Q?/BcH0SvOJVEJz7KUebIkOsOuf+PBOCA+hV4R7sh0TyjTWdTD8YzfEYUCLpIZ?=
- =?us-ascii?Q?7Dj1B/4udTQUuicCs4eAKBrH99g9+zaTPeuagaL3nIcXCSWF5atNaq8veEWp?=
- =?us-ascii?Q?it0v+QloSMRsyUV3CstXZXKB7sHXwg9yyeGspHD9JVYnY6USRLt1TYA0IlaJ?=
- =?us-ascii?Q?6TLNIrtg5ahgE4utIzlctbezaWHEe9pbDoTbmuM7rUPcSj7hLhIyPa2o7/Jj?=
- =?us-ascii?Q?hzGvjmPLHg/BUQ6ciYdRvNbmEEXo6Oz2P6CK2xVXG1i7ITnjAAX42Qw3SDMT?=
- =?us-ascii?Q?181jTIt3dlGfZlHidib1EaGNle7lrxItOAnpqUVOkSn3PUMoTUpsQou4Vx5n?=
- =?us-ascii?Q?QEmLItEQCDuTbY3BgTlbUlHsJz07K6PZGnpY/ZDOo30SwYkY5AtJ363ORnPk?=
- =?us-ascii?Q?+SaPtxdBdSKy+8XhYPoqGqLl2h7R3gfZ/mOPT+3CcGkkIOw0SPbqt0KjEsvA?=
- =?us-ascii?Q?TGQG3npby3uarvZTrTqfAx1QYvT14vCNv+IC2FuQUiP4vipCqr3Asr8PR7GN?=
- =?us-ascii?Q?mzsqSArOfQ+yBwDOJRfcbkc/YUe/DxmJ1a3JllIYs9eFK3DXV9cC/mRLok/M?=
- =?us-ascii?Q?V1sJlDzIaU5m0cdmCGpDYGYht5SkvTpe1+y4O+jCKUcpoCJN5P03Ba/IRiG1?=
- =?us-ascii?Q?dFznEpr/BGzECHJefN5i8qIgGahC3U97VQ1ZzMqvXoNphGramrMTQNv3p1QK?=
- =?us-ascii?Q?aElGtQmwC1+BE4VNxafsY/w8dqv7Ys9I3SqH4PcU2cZTXB0LAENmAqFimtZ1?=
- =?us-ascii?Q?m3d3pNKOU4WIri+n274eHDwKo+TUS+jG29SWEnFKRvtUbTNUFywVfDpP8gbJ?=
- =?us-ascii?Q?lT3sfI2twYXBYFCjKb0Y0+fT4J3AsfPw820tG2P5fnPfujpgJahoHC88Q+ob?=
- =?us-ascii?Q?93EVNtUfyM1EdrmjD95gKSHuVOiprT+uNIWtVFr/FOKAZ43Ro50+L5auNpX8?=
- =?us-ascii?Q?tDjLmNMELI7y4gnCtc3gra92LMx0jPt4oGXd1o08xSnNkQ=3D=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016)(4053099003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|7416014|376014|7053199007;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?1qcl2NHzJ9gUaS1Y0E16f2QxlAqVNarFuvAMBnKhLinhIdyjjKdMMZlJ3lRA?=
+ =?us-ascii?Q?QJr6tqW1AFFOZmRrBUHTm7JXvUZEXtOu5+S75PWUL31d/nCjNHndzxRW8I1s?=
+ =?us-ascii?Q?OtU+5KLjdbf4p7fN8ll31cm/ewHAVGB6h8IqhbPfd8/u8Yb/7+7s78jfyrc6?=
+ =?us-ascii?Q?B50/Y9xLvhUUf72lV1YFtqImWAnMR9bl1I911P5eECeJHg6RW6gYDYU3KzGW?=
+ =?us-ascii?Q?Mz+LZvNMEHIPOnILvksgfiKLue0dU1c+0OBC3CmIlJv0gfMyJGImNwf49GUh?=
+ =?us-ascii?Q?ZojswilZaQvKLEuem+KXYVuy+rznM5VI1a1Xzly0/c9LxmoO6Ce7xY5yxgKF?=
+ =?us-ascii?Q?9LvmkYbNG8eGAMzeOyEHLZ+vr421l3r2zqHG0Y/g8g7R2m/7i4Jh9104656Y?=
+ =?us-ascii?Q?j8jlot6UT9J29zW31vDpsoA+7JSjCpgzg+tdkOnnBgSFdXp1AaB3wuO+hqOm?=
+ =?us-ascii?Q?HkgD+hGPUwt3tLQZeclarwNyQ3nhroGKM9vI8Fu9L3sDt4ZmPua+8Mf74GZB?=
+ =?us-ascii?Q?hoKnauribS6ksFHxVeT/qZGGBN1v3CCSWjc/Ou+GNVxXvoGwbdFrn40dlJ4Z?=
+ =?us-ascii?Q?S/GumFO4xDy9o9rvySs0Ion62vb5fUtn9vt2FnXJQGFtQZl10/MGHJr6W4nV?=
+ =?us-ascii?Q?s9vYsvJ1EXN7egXQ/PGNrX5LnPWUKcIh2fjBNFHM5+IYnLJZ4jZsw8lbBxtX?=
+ =?us-ascii?Q?kbJ+IS0zwErmL4KHTwk2Yo23PL0sCN824dOfMTn2Mx9zH3lMM+opZHfnXZeg?=
+ =?us-ascii?Q?jeI05mn2LEMKkFzr9lAe1tm+yu1IE02Co8VX/gHMHoFQ+7IwOZET2656RwTI?=
+ =?us-ascii?Q?b0pqcWj9OuT4QHhxqvHPkXDjLIejpVrGb8UjFJZW3xOd7PtXiAGniBuvtIlQ?=
+ =?us-ascii?Q?/Y08dbnDSgoye1DNxJhi67lmHfq5/FNUpIHthJSRMSttSqkpuptXCWo87fC/?=
+ =?us-ascii?Q?A1Q+LQKlW+oUMmFrbFh7Ld7jrnVJCIXy2KZCtIcRPez7JgzhKkmwXIuXLQtr?=
+ =?us-ascii?Q?lvZBmGeC6uIqQ0IkWZgvT+a2w5XTIvk5XsDm9hu7ESH1AupTu0+N9bRcyCs0?=
+ =?us-ascii?Q?AKvRoQlh+gv+rY/7eJggcZfdVj23kHVlu5C4nDsBJp73Inud33nuF0UsbcXn?=
+ =?us-ascii?Q?PowTI+Qx8B7DenyX0JdgWk6LU6qcGDfLpB36NCQkpHBsTvwqo6+wB9uEOu/a?=
+ =?us-ascii?Q?VPcg2usxKd5XAtWFdp1UHlUxW9M3jwqfklIK7rms64G3XTjEEQJt9swnpYjH?=
+ =?us-ascii?Q?TeCoVYjCqENGSGyrZ38ooQhji0sz7wX10PO95jpc3xre5r1WD1AwtSv/HW+8?=
+ =?us-ascii?Q?z0ykolH0BEN6xnCUZJ5zypykctVKSOsu3tWXL26lCG5y1Q=3D=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014)(7053199007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?iLdF7k2m4/z+U0DEihqfyKjHd03b4ChsPWrFua/KI8GDe5C1v+3/WysZifLv?=
- =?us-ascii?Q?2HIRoCU/YmswfH7aPFiOFMhquodRCEFgHnwJ7Kv/t6aA6J77xqOIYA+FzH2D?=
- =?us-ascii?Q?raAs0xtDTc2b/d3kmQ93w6WUbAl68qeXKkANtmr38t8xi7Sjz6mCmFam4ZOA?=
- =?us-ascii?Q?Z1WhzYWeqeFOjhZg16pJQI7O+HZb2tdGerLNP7anfPtKcnyBAfopubo2Lkp3?=
- =?us-ascii?Q?V0UPIOHmw8QjjTY7wmgvWBHK4cgtEXjUw43dVPbDyUFU9C/aL4Q+TnWzEdGG?=
- =?us-ascii?Q?oEUZG1CVQXKzh+uwDK/UaG9cg2HFEJ6l5Od5dkbMoaGDLe421uVQekUuYxXK?=
- =?us-ascii?Q?i5fphqk9PJg+aE0UJOVYKY6BZi7trK6UAI0hZVw96DiR2PnPJRZbP+ppCC8H?=
- =?us-ascii?Q?CLzJx8gJ5hsqvGJRwgc7Bzd2cdfnwCDE4WmPMI/1gJ8Z8rL2mYmiPHPR8/IW?=
- =?us-ascii?Q?C3pFmG7+DOtPM7qtt5RefOVrFKGO+G3XGWtSqqP5WKNp+fMgAVVXEEUj0chN?=
- =?us-ascii?Q?TMyTi1PyqEpzaVmpL14TephfmduT/W6eu885pSFC+V6nJ3YAfDPY4MbT9bOk?=
- =?us-ascii?Q?jCbIf7GeMtiAYyV0x+I5GI47NGACVDXLnz/f8ddIzDkZcSZJZbFV1/0FxIiI?=
- =?us-ascii?Q?H8Nfp0DVsRZbhWAyR+NviCgaiT45N3bIHKJgQzx8EYObyfbYST6R26q89xEV?=
- =?us-ascii?Q?4Ic/3cLN1Wsd83czxrWny3YEaR1yqJMzsj+3QV2JMTipSfkXqnRrT1ngxYdo?=
- =?us-ascii?Q?BbU6V7YhngzhIfJADxz4CxQ4JUMYLGa0byo6qyM4PKOZ/+j2z6vdrMGBEHLr?=
- =?us-ascii?Q?2Sse01OjLgyEuMty/kGILB5wOhjhBTnN/qM+SB3gXnJWU8ay1kQf/FBRhA5b?=
- =?us-ascii?Q?pGZpNVLOUHzoC7ddL6Uo8de8N1AZ+hRZH8ON/GpTaOiMk7GOqDhSr1WZ6kA6?=
- =?us-ascii?Q?RKQXLXzuCKcD0662mmoktZ13DZnjruDgP7AsnPWsPKhjFz/2T26jtxoh8Dcm?=
- =?us-ascii?Q?enQNg7WiIjYV7SQ7Cv6r/0iLqzA4sHer6OQYx+cpV/PqbiYoqEqud7MG0IZ4?=
- =?us-ascii?Q?xhkpkDk9SiqgXzLNOAcXd0UbZ3O5ppIgx7Y3weSwyAQGUn20tOJ6NI6gLaUB?=
- =?us-ascii?Q?nmDmcDOBpTeYPK8B9dvUx4o5y5TTGG7wRIZWHIwpB48c3VLNJnWHtM+w2nG+?=
- =?us-ascii?Q?PiO5tu7WZxza7YMFRoSF4309NHAy2GjA8naEBF6iQHbVweGy4D+7qsHk/GrX?=
- =?us-ascii?Q?kF0OTn99oFvEa/ncdOfcnfkQxaKLAq4yWrasENr7OTYwy/SqZ5oj3jWjIbWA?=
- =?us-ascii?Q?4xDvwHMaLcWCVhTcJ+SHLUpb7lEak/1nVLEPXxciXo1gzPbp03CwHXNnRYV/?=
- =?us-ascii?Q?PTciJqi+oQDxeSaCJbFeGlNlBRfdEHdNGmrKqFCDLG9xZkIaI7JOf8uxguiP?=
- =?us-ascii?Q?iSF4ZTll6k90QxGymZWbJet2sEKMsBzfMdA9ndpTlnM8Ey+gP7J5NikX2rEo?=
- =?us-ascii?Q?NdJFa5vxLllRk0y9BObC0vNpvOJwIgN/0Xsqbp0L53XrwUKlvMb8E4kLt5KA?=
- =?us-ascii?Q?JHfgYA2g+xcflCTRL+ZXJvQsQDGrxlKjVvDKTNDoIl6rWPC8hghY7cPAN/aH?=
- =?us-ascii?Q?+g=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 70c71555-f089-4ef3-d00c-08dd6b7747f9
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?U5GaDkCk3gLo9enNcWtUaoq3xSWTehUbcqiLVZ3Gewu0eL9GcYaeJ1Op+D+F?=
+ =?us-ascii?Q?1T+CGiMYN5R3dDnRwXJWbrFvtjFhZJ2C+0xdu7ib0mpmQLG6Zz8g2XCmJbTj?=
+ =?us-ascii?Q?Atwj4lZgFQBGMGmiXC40T2YhY1voqirCeKbTyH5Yf74Yf9bDvhb22EBFoMq9?=
+ =?us-ascii?Q?o98qNEdpjVAbzAniwEcvDQWQj3iWBg5wecp+j/cindtuLb0YL7JLksJdTNgd?=
+ =?us-ascii?Q?qikuUv5h0h4sGnfXC4SE5nfYUwtXr45cb4YlRT3S0kFpcEyuZhGQvrXiEgL5?=
+ =?us-ascii?Q?1dr5vWyWqVWHYlzeul91w7KNHUb3xC5B85qC4MhMM/2YIrAJ+OG9MmbrUg5a?=
+ =?us-ascii?Q?EByGLEM2B990LL9LBMpwQZ83cGS/tQ/68dTdZEZQtw6LPTJHvVtH9LNef+TU?=
+ =?us-ascii?Q?iUc51QpYdRHqtn8SfWroxZpNaEFRx8zdapR4rE8F/tRpd0EgLku6qseAHscN?=
+ =?us-ascii?Q?8BCE3PklnFV1tCrIkBg4PD954Ek03emcns5OC1WHMpAWw98iSNoXzoP+fDcj?=
+ =?us-ascii?Q?vDfV25sF1CBWKc2JnPF8DEpde4xki45BLpJ+pLBOdek0O173/dGXMbZnL539?=
+ =?us-ascii?Q?JKN4LAR0q4AMu5bsGARHz+OugXkJuynZ7TetArdxwm+9e3JeMghBKYA2oliG?=
+ =?us-ascii?Q?A8iatKGGwIKNJV02zMdaZ3pts0elQPf5m5bVCLw2XShfKOz7snpuBriRwH6n?=
+ =?us-ascii?Q?ojIopKinyQrfPBlFiUsMtiewFIbY/KsfOMB8XzURyHr2dnzO37h6QrWIue5o?=
+ =?us-ascii?Q?Ewk9VG9I6IgyDnupcKMKNmDIkIaou54mrkbpmdEQrHhRviB1237wAFuezcCe?=
+ =?us-ascii?Q?/L0KsdzuEfGC4YI1C6UNkeZiAuHqMAZXBBWxkiFJQz76rNcyKukBUlfWmKZm?=
+ =?us-ascii?Q?kKuKl6E1vz8NNu/Uv3dnytwjKssaQJn+tZ2JnqjxTMtuq28wlqYBcUZl0zff?=
+ =?us-ascii?Q?Pspaobip7kUis6cuSpqEq1FT8BwxYGVbXTsTC/nllbQOBeNdfQdpb5inaGG5?=
+ =?us-ascii?Q?gDk1AXdRhCeeRgV5XAN4RY707X57jQVAEYToxAjPnEgbxYSsbcmvoOcLjpuQ?=
+ =?us-ascii?Q?yM4+DRqQhh/IOdE0zwxWOSAQCKPi1/YIB/A/6iQqQaZcEP1j5dAzhBmMd77I?=
+ =?us-ascii?Q?wXt7DsxA8/wrHt1UjpGFU757qMoqcinMD2o7dCvovnl+bPJoabrKIdiDx+L0?=
+ =?us-ascii?Q?WLHuyAaEdO/b1+kdLUTzF60NxjJvpnjQnEeOMJf/RItS+Uw01DCPUftgcvBc?=
+ =?us-ascii?Q?EJLiAhIDGYU0VOK5YQuEKayV5q14ma5VfjTGiX/eTeUZIBH87XDeH/aNe8L9?=
+ =?us-ascii?Q?WvWxqeXmWQZbRJRrNoSM2mIBQ0ykG5cTCe95tclq7zuvC+cs1LHR8bvIuy+k?=
+ =?us-ascii?Q?4ZjcuZJ6ImrkUeWtScxPN62pTs5hyrTIdnKt7IrvXdhSedqRmNeL+O3+i9B8?=
+ =?us-ascii?Q?OVvmgT/2/sYLe1yrNJ04ONP77VN3J1F357TUbQkU2ztAdyyNGnu+BL1gLIDG?=
+ =?us-ascii?Q?+NxR/9yNpM8vxL7o2ztK+oylxis5TMzS/ieDelXI0KcKs8hMffhfa/+8jMK1?=
+ =?us-ascii?Q?et3Ge4onAxfFMPPGvXI4sGuqcW4fmQPKUiiwfYGot55AOntAmh1zpUOXqz7U?=
+ =?us-ascii?Q?4A=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 45a03146-4bc6-4824-4e86-08dd6b78c11b
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Mar 2025 08:30:21.4574
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Mar 2025 08:40:53.7964
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 88GvtUk5R9FE4nWjUTEm3i495gZkcpfL3z64cKXhKUTSP4b6mTbsU2ZQIOx/1D2VnoD5nf4/i21EBnYhTjQDrA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS4PPF93A1BBECD
+X-MS-Exchange-CrossTenant-UserPrincipalName: TKwXQ9WXnBWfgftkcGVuizyf/xzArUpYkpINsRu2aHyYQ70jLbi8gAGMgyJJqL7mDnsIqWGssqFzzKe7PmcXuw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB8199
 X-OriginatorOrg: intel.com
 
---RjmeHVVu++HFeLki
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
 
+hi, Yang Shi,
 
-Hi, Yury Norov,
+just in case below report could supply any further useful information to you.
 
-we found a strange issue upon this commit
-
-bb9854b1b053934a c061d07ca7f619a389972f5204f
----------------- ---------------------------
-       fail:runs  %reproduction    fail:runs
-           |             |             |
-           :10         100%          10:10    stderr.has_stderr
-           :10         100%          10:10    stderr.netperf:data_send_error:No_such_process
-
-one output during tests is attached.
-for parent, netperf can run successfully and give out reasonable results.
-but we didn't captured any useful information from dmesg.
-
-below is full report FYI.
 
 Hello,
 
-kernel test robot noticed "stderr.netperf:data_send_error:No_such_process" on:
+kernel test robot noticed "Oops:general_protection_fault,probably_for_non-canonical_address#:#[##]PREEMPT_SMP_KASAN_PTI" on:
 
-commit: c061d07ca7f619a389972f5204f990e49746578d ("bitmap: use bitmap_{read,write} where appropriate")
-https://github.com/norov/linux shift
+commit: 13671c9499a4883f6bece7229463ff89a48709f6 ("[v2 PATCH] mm: vma: skip anonymous vma when inserting vma to file rmap tree")
+url: https://github.com/intel-lab-lkp/linux/commits/Yang-Shi/mm-vma-skip-anonymous-vma-when-inserting-vma-to-file-rmap-tree/20250313-061727
+base: v6.14-rc6
+patch link: https://lore.kernel.org/all/20250312221521.1255690-1-yang@os.amperecomputing.com/
+patch subject: [v2 PATCH] mm: vma: skip anonymous vma when inserting vma to file rmap tree
 
-in testcase: netperf
-version: netperf-x86_64-2.7-0_20241103
+in testcase: ltp
+version: ltp-x86_64-042eff32a-1_20250322
 with following parameters:
 
-	ip: ipv4
-	runtime: 300s
-	nr_threads: 200%
-	cluster: cs-localhost
-	send_size: 10K
-	test: SCTP_STREAM_MANY
-	cpufreq_governor: performance
+	disk: 1HDD
+	test: mm-00
 
 
 
-config: x86_64-rhel-9.4
+config: x86_64-rhel-9.4-ltp
 compiler: gcc-12
-test machine: 128 threads 2 sockets Intel(R) Xeon(R) Gold 6338 CPU @ 2.00GHz (Ice Lake) with 256G memory
+test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-7700 CPU @ 3.60GHz (Kaby Lake) with 32G memory
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
 
@@ -218,1911 +206,83 @@ test machine: 128 threads 2 sockets Intel(R) Xeon(R) Gold 6338 CPU @ 2.00GHz (Ic
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202503251628.297db24d-lkp@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202503251554.34a0b29b-lkp@intel.com
 
+
+
+[  557.087938][  T349] mmapstress10    0  TINFO  :  Using /tmp/ltp-2cGaEA7GG8/LTP_mmaUxM2MU as tmpdir (tmpfs filesystem)
+[  557.087946][  T349]
+[  557.102809][ T3834] LTP: starting mmap10
+[  557.103401][  T349] mmapstress10    0  TINFO  :  Using /tmp/ltp-2cGaEA7GG8/LTP_mmaUxM2MU as tmpdir (tmpfs filesystem)
+[  557.106782][  T349]
+[  557.119531][T141949] Oops: general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] PREEMPT SMP KASAN PTI
+[  557.121506][  T349] mmapstress10    0  TINFO  :  Using /tmp/ltp-2cGaEA7GG8/LTP_mmaUxM2MU as tmpdir (tmpfs filesystem)
+[  557.132309][T141949] KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
+[  557.132314][T141949] CPU: 1 UID: 0 PID: 141949 Comm: mmap10 Tainted: G          I        6.14.0-rc6-00001-g13671c9499a4 #1
+[  557.132319][T141949] Tainted: [I]=FIRMWARE_WORKAROUND
+[  557.143013][  T349]
+[  557.151409][T141949] Hardware name: Dell Inc. OptiPlex 7050/062KRH, BIOS 1.2.0 12/22/2016
+[557.151411][T141949] RIP: 0010:__rb_insert_augmented (kbuild/src/consumer/lib/rbtree.c:115 kbuild/src/consumer/lib/rbtree.c:459) 
+[  557.164270][  T349] mmapstress10    0  TINFO  :  Using /tmp/ltp-2cGaEA7GG8/LTP_mmaUxM2MU as tmpdir (tmpfs filesystem)
+[ 557.167616][T141949] Code: 00 48 89 da 48 c1 ea 03 80 3c 02 00 0f 85 a0 05 00 00 48 8b 2b 40 f6 c5 01 0f 85 44 05 00 00 48 8d 55 08 48 89 d1 48 c1 e9 03 <80> 3c 01 00 0f 85 94 05 00 00 4c 8b 6d 08 49 39 dd 0f 84 7f 01 00
+All code
+========
+   0:	00 48 89             	add    %cl,-0x77(%rax)
+   3:	da 48 c1             	fimull -0x3f(%rax)
+   6:	ea                   	(bad)
+   7:	03 80 3c 02 00 0f    	add    0xf00023c(%rax),%eax
+   d:	85 a0 05 00 00 48    	test   %esp,0x48000005(%rax)
+  13:	8b 2b                	mov    (%rbx),%ebp
+  15:	40 f6 c5 01          	test   $0x1,%bpl
+  19:	0f 85 44 05 00 00    	jne    0x563
+  1f:	48 8d 55 08          	lea    0x8(%rbp),%rdx
+  23:	48 89 d1             	mov    %rdx,%rcx
+  26:	48 c1 e9 03          	shr    $0x3,%rcx
+  2a:*	80 3c 01 00          	cmpb   $0x0,(%rcx,%rax,1)		<-- trapping instruction
+  2e:	0f 85 94 05 00 00    	jne    0x5c8
+  34:	4c 8b 6d 08          	mov    0x8(%rbp),%r13
+  38:	49 39 dd             	cmp    %rbx,%r13
+  3b:	0f                   	.byte 0xf
+  3c:	84 7f 01             	test   %bh,0x1(%rdi)
+	...
+
+Code starting with the faulting instruction
+===========================================
+   0:	80 3c 01 00          	cmpb   $0x0,(%rcx,%rax,1)
+   4:	0f 85 94 05 00 00    	jne    0x59e
+   a:	4c 8b 6d 08          	mov    0x8(%rbp),%r13
+   e:	49 39 dd             	cmp    %rbx,%r13
+  11:	0f                   	.byte 0xf
+  12:	84 7f 01             	test   %bh,0x1(%rdi)
+	...
+[  557.167620][T141949] RSP: 0018:ffffc9002edff800 EFLAGS: 00010202
+[  557.169827][  T349]
+[  557.178054][T141949] RAX: dffffc0000000000 RBX: ffff88810b878308 RCX: 0000000000000001
+[  557.178057][T141949] RDX: 0000000000000008 RSI: ffff8881051ec2f0 RDI: ffff8887de397c58
+[  557.178059][T141949] RBP: 0000000000000000 R08: 0000000000000001 R09: ffffed1020a3d868
+[  557.178061][T141949] R10: ffff8881051ec347 R11: ffff8887de397c20 R12: ffff8887de397c58
+[  557.185709][  T349] mmapstress10    0  TINFO  :  Using /tmp/ltp-2cGaEA7GG8/LTP_mmaUxM2MU as tmpdir (tmpfs filesystem)
+[  557.194702][T141949] R13: ffff8881051ec2a8 R14: ffffffff81c1fa50 R15: ffff8881051ec2f0
+[  557.194704][T141949] FS:  00007f318f741740(0000) GS:ffff888759880000(0000) knlGS:0000000000000000
+[  557.194707][T141949] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  557.214407][  T349]
+[  557.220440][T141949] CR2: 00007f318f917710 CR3: 000000015f928002 CR4: 00000000003726f0
+[  557.220442][T141949] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  557.220444][T141949] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  557.220445][T141949] Call Trace:
+[  557.220447][T141949]  <TASK>
+[  557.224320][  T349] mmapstress10    0  TINFO  :  Using /tmp/ltp-2cGaEA7GG8/LTP_mmaUxM2MU as tmpdir (tmpfs filesystem)
+[557.230618][T141949] ? die_addr (kbuild/src/consumer/arch/x86/kernel/dumpstack.c:421 kbuild/src/consumer/arch/x86/kernel/dumpstack.c:460) 
+[557.230624][T141949] ? exc_general_protection (kbuild/src/consumer/arch/x86/kernel/traps.c:751 kbuild/src/consumer/arch/x86/kernel/traps.c:693) 
+[  557.238606][  T349]
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20250325/202503251628.297db24d-lkp@intel.com
+https://download.01.org/0day-ci/archive/20250325/202503251554.34a0b29b-lkp@intel.com
 
-
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 wait
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-....
 
 
 -- 
 0-DAY CI Kernel Test Service
 https://github.com/intel/lkp-tests/wiki
 
-
---RjmeHVVu++HFeLki
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: attachment; filename="output"
-
-==> /tmp/stdout <==
-
-==> /tmp/stderr <==
-
-==> /tmp/stdout <==
-RESULT_ROOT=/result/netperf/cs-localhost-performance-ipv4-200%-300s-10K-SCTP_STREAM_MANY/lkp-icl-2sp2/debian-12-x86_64-20240206.cgz/x86_64-rhel-9.4/gcc-12/c061d07ca7f619a389972f5204f990e49746578d/0
-job=/lkp/jobs/scheduled/lkp-icl-2sp2/netperf-cs-localhost-performance-ipv4-200%-300s-10K-SCTP_STREAM_MANY-debian-12-x86_64-20240206.cgz-c061d07ca7f6-20250324-3904740-11of7s5-4.yaml
-result_service: raw_upload, RESULT_MNT: /internal-lkp-server/result, RESULT_ROOT: /internal-lkp-server/result/netperf/cs-localhost-performance-ipv4-200%-300s-10K-SCTP_STREAM_MANY/lkp-icl-2sp2/debian-12-x86_64-20240206.cgz/x86_64-rhel-9.4/gcc-12/c061d07ca7f619a389972f5204f990e49746578d/0, TMP_RESULT_ROOT: /tmp/lkp/result
-run-job /lkp/jobs/scheduled/lkp-icl-2sp2/netperf-cs-localhost-performance-ipv4-200%-300s-10K-SCTP_STREAM_MANY-debian-12-x86_64-20240206.cgz-c061d07ca7f6-20250324-3904740-11of7s5-4.yaml
-/usr/bin/wget -q --timeout=3600 --tries=1 --local-encoding=UTF-8 http://internal-lkp-server:80/~lkp/cgi-bin/lkp-jobfile-append-var?job_file=/lkp/jobs/scheduled/lkp-icl-2sp2/netperf-cs-localhost-performance-ipv4-200%25-300s-10K-SCTP_STREAM_MANY-debian-12-x86_64-20240206.cgz-c061d07ca7f6-20250324-3904740-11of7s5-4.yaml&job_state=running -O /dev/null
-target ucode: 0xd0003a5
-LKP: stdout: 2505: current_version: d0003a5, target_version: d0003a5
-2025-03-24 07:58:30 
-for cpu_dir in /sys/devices/system/cpu/cpu[0-9]*
-do
-	online_file="$cpu_dir"/online
-	[ -f "$online_file" ] && [ "$(cat "$online_file")" -eq 0 ] && continue
-
-	file="$cpu_dir"/cpufreq/scaling_governor
-	[ -f "$file" ] && echo "performance" > "$file"
-done
-
-check_nr_cpu
-CPU(s):                               128
-On-line CPU(s) list:                  0-127
-Thread(s) per core:                   2
-Core(s) per socket:                   32
-Socket(s):                            2
-CPU(s) scaling MHz:                   96%
-NUMA node(s):                         2
-NUMA node0 CPU(s):                    0-31,64-95
-NUMA node1 CPU(s):                    32-63,96-127
-2025-03-24 07:58:30 netserver -4 -D
-Starting netserver with host 'IN(6)ADDR_ANY' port '12865' and family AF_INET
-perf version 6.12.rc5.g11066801dd4b
-
-==> /tmp/stderr <==
-Events disabled
-Events disabled
-
-==> /tmp/stdout <==
-2025-03-24 07:58:31 modprobe sctp
-IPMI Device Information
-perf version 6.12.rc5.g11066801dd4b
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:32 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
-2025-03-24 07:58:33 wait
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-netperf: data send error: No such process
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-BMC ARP Control         : ARP Responses Enabled, Gratuitous ARP Disabled
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-Events enabled
-netperf: data send error: No such process
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-len was -1
-
-==> /tmp/stderr <==
-[ perf record: Woken up 76 times to write data ]
-[ perf record: Captured and wrote 179.674 MB /tmp/lkp/perf-sched.data (636033 samples) ]
-Events enabled
-[ perf record: Woken up 17 times to write data ]
-Warning:
-Processed 215529 events and lost 15 chunks!
-
-Check IO/CPU overload!
-
-Warning:
-Processed 65753 samples and lost 87.29%!
-
-[ perf record: Captured and wrote 26.701 MB /tmp/lkp/perf_c2c.data (8355 samples) ]
-
-==> /tmp/stdout <==
-SCTP 1-TO-MANY STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to 127.0.0.1 () port 0 AF_INET : demo
-Recv   Send    Send                          Utilization       Service Demand
-Socket Socket  Message  Elapsed              Send     Recv     Send    Recv
-Size   Size    Size     Time     Throughput  local    remote   local   remote
-bytes  bytes   bytes    secs.    10^6bits/s  % S      % S      us/KB   us/KB
-
-212992 212992  10240    300.00     17265.47   5.23     5.23     3.177   3.175 
-
---RjmeHVVu++HFeLki--
