@@ -1,81 +1,74 @@
-Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45])
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4AE025EFAE
-	for <oe-lkp@lists.linux.dev>; Wed, 26 Mar 2025 21:10:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E83D214A9C
+	for <oe-lkp@lists.linux.dev>; Wed, 26 Mar 2025 21:11:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743023453; cv=none; b=UzNlxM4iWbf6TSf9Nm3zAPDrFNtoL/6ixXW8ijyxHL11uWQT9TJKy9JVTXpJtHBlk45Mcj5n7E2B1+c+kYzUM6+uSf06ere1RvPq2cduxrUr5NqA3ZyajfMEnbVz5I4V2v3d9DTUIaeoDMEOqzSQDO4/0D1eexDvidZd59Ztq+A=
+	t=1743023499; cv=none; b=sFrqxIfxF9kYMcpQqe9LxhBdIh2T3/qKIZGjVUO8jtI/qMXXTkfwe216S0I5u3TJYcIuPW3Fxl7C8kEEmWcr3xrhAkyIA2/Q5NTh9nvUAKS5l2TTUhuTCrmsyxrSk1/I8GxmhBEq37CAaiFsMKHVXrsdn+nDrjyX7xusA+uH1ho=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743023453; c=relaxed/simple;
-	bh=KtFDJQf3LCeM6WKs6szT70ZPm1vK4ET1jMCs1JH8pQs=;
+	s=arc-20240116; t=1743023499; c=relaxed/simple;
+	bh=DZXrdqc+VEpRE2lIne3ziRcrT+tDB7NoQbmTHhMMVwo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eV14EEcJysFG+sSGZ0fXgqs9e5RjL7A8lKvrVNmZmU4O4Q1KlnRaOiGoj/q1sbrsL/U0ZmL8JIP4+62W8qL3TJ5TT7zwfnXbqJdN1c9GR0EELQc0ndzs/b+p5H9ieeFCXULuLWfeT1hRO2qDlE9P/VgWr7d8WrrqxFx5/eDhPAY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fromorbit.com; spf=pass smtp.mailfrom=fromorbit.com; dkim=pass (2048-bit key) header.d=fromorbit-com.20230601.gappssmtp.com header.i=@fromorbit-com.20230601.gappssmtp.com header.b=nptmnjTC; arc=none smtp.client-ip=209.85.216.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fromorbit.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fromorbit.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=F15FaVjGR89ss2Wu2qZJRwFkLOqcEVRQFC3CI8SzThBaou8QZf1+i1PF/SAp8bBCWR9r+a2DRiFAE6Om/PrT8NxXG/lntaXxm4IC+r5bEcU0uxSyvMC7tGYZHe0sut22V2Oy2jPje2pxbhmNhRX+i7ubX1TXXcbYVWLepv5uHa4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RV+92QxY; arc=none smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fromorbit-com.20230601.gappssmtp.com header.i=@fromorbit-com.20230601.gappssmtp.com header.b="nptmnjTC"
-Received: by mail-pj1-f45.google.com with SMTP id 98e67ed59e1d1-2ff69365e1dso301605a91.3
-        for <oe-lkp@lists.linux.dev>; Wed, 26 Mar 2025 14:10:51 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RV+92QxY"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-43cf0d787eeso2701215e9.3
+        for <oe-lkp@lists.linux.dev>; Wed, 26 Mar 2025 14:11:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fromorbit-com.20230601.gappssmtp.com; s=20230601; t=1743023451; x=1743628251; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1743023496; x=1743628296; darn=lists.linux.dev;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=8r5zblQElbPQO87GHLZRnHgdEdr+1fSpbnjgQJ9+CIo=;
-        b=nptmnjTCvolae3sU3kVlJXEQf9t7GfzI+59rGh00FO5N7J8vUe+/a0RrkFG/WNxAv5
-         1Xn1k0j8c3vOGx/fg4TkjUerkVNWpsih6j9u5WybCx8j/Eq2rpfTGerB74xhGx/4+uyz
-         33iyER4TBQ1e6GedCsH2Yf7c5M4rlhsTCpC8ODCU4XaQ01TtAWl6qf2NQU4er1oRjHaZ
-         QnlBbn7/ddVtSBdh0hLwjWjdvozH+qoi2IuvWtDS5jDyoWFqVJ/vldBP3lSLAZX7jHof
-         VoDhObanTpdY1qZg5O/XOz5OOao0ETjBk6VHME3yNzpr0iWolWnoQiD6JsgCm+ennx+N
-         eQeg==
+        bh=ADWf6svSkXJlABZrsXSNaYONnC7bUNNzGtHknmI+bTw=;
+        b=RV+92QxYGZ0uSshOyvLRwiuewQmL4nP2KdRY1CJedr4uH3U6EsSPF8gYMthWsXtD4r
+         FHU6OPgpqgt3anKII6MrcsK/mvfNjOsVHX06OUFE7Xe1aeSWgEbCges1+8MzobaxIYcG
+         Rz4u7AuosaiZkbQbLbXlX5EVYXTeD8PCIkfTPZwo/U3pJSvgwub1mLLNDlentxfc1Pu5
+         5vPSGWZSYj9oLQNGpBugoE9UzlKJiZxYiPRCPM+Sj46FjFJ6vQfwbtnOx/SJFaqlT2RC
+         nOE56IZ+AaN5I1C47aQRh5USUvANreVr3CXlYClByqWiZTlrHPhnKEEgx6PeIz6rqE4Q
+         buaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1743023451; x=1743628251;
+        d=1e100.net; s=20230601; t=1743023496; x=1743628296;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=8r5zblQElbPQO87GHLZRnHgdEdr+1fSpbnjgQJ9+CIo=;
-        b=ddaelj6G9yHZo03/K4BMsZ2SOVtSM3lkkQSt/O7pmdXSkXlnBTvj1E4f4ZaxXeLI58
-         kLMveTdbyOk4HSkyjr+F4ZndS4JE2/bQqkA5i/LJveRReT2uGKl8zYmA+Cyr7ZDlfbyj
-         IpZ2EsOqdF2DbI+F36N7MEs96nFrR0cMc7ZlWFFJKZ6rdHXLlAIag3WuSKCmLl4/MSmk
-         glSaygjyR0vHRhbAKzODwLViE4W8q/T/3wKE4GmF20Lg5osOkRmYy/OW5y59NI+D3U21
-         /DqhveyLJXB/xIAElXipXDOXBhWpV5SjLqsmUyj8squspAHr451kMFbdE6g0tbyMR33q
-         iJ0w==
-X-Forwarded-Encrypted: i=1; AJvYcCXq0OfgfxFWYZkxPK380kP/fAauIk5LGLHevgw78JDYYqmnkVVfjio4dIo4T8szR102rQBCWUs=@lists.linux.dev
-X-Gm-Message-State: AOJu0YxHwLDy24Ebqsf/2VTaz42LAc9NE6HVyb2exzbO6qN2GcePuWmt
-	xFUhbsB8YLuXoGdcEHk/0a4yBbmIT2D4jyM5t6nPedEnjz8gM15cibJYFaDYphk=
-X-Gm-Gg: ASbGnctkemuYUqSwy3y07S8OLim56PYnpxpZTjSOnGqOO5fSWowo5awoaT5A+obRRg7
-	c1LTQXSa56ahKcVuePRT+QL6MvzC10Q9AKfK5oqpCD0Igv+j7Q017Rqvv/yPU7bdRnuEebxbQLa
-	5xvDKkTdSJAPh2LUyrrqV1GActz7rWcNqpH0vRuinlUO/xI3nLbQhe0Seqz+4g4IKptDr6CGHN+
-	T0W/oKLnOiYCUxM8bB3G8+KqBPsWQjqucDb4UZL7joUag0KpntylUCT1rjFl1Ybw1Y9bHTgtZjH
-	mLUi7x6XSANxqkk1ZBGKBLiB9Id+EZyrlbQS69TGA59MK/lVuwGqSRd+yYqjuOzjmDZUONBNFP1
-	DfqobuW4=
-X-Google-Smtp-Source: AGHT+IH74ag5XeN4ls7BanUgMSLHcrsUvl+HEw2fiukQfAGjZxR0vReelBylQGQRPmjYWqz5PrQAvw==
-X-Received: by 2002:a17:90a:d2cb:b0:2ff:7b28:a51a with SMTP id 98e67ed59e1d1-303a815a72cmr2059828a91.17.1743023450937;
-        Wed, 26 Mar 2025 14:10:50 -0700 (PDT)
-Received: from dread.disaster.area (pa49-181-60-96.pa.nsw.optusnet.com.au. [49.181.60.96])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-227811b2ae1sm114999645ad.114.2025.03.26.14.10.50
+        bh=ADWf6svSkXJlABZrsXSNaYONnC7bUNNzGtHknmI+bTw=;
+        b=obmUGNLtsvWctjkJq7KPIpPsbgbQkzofnxkpyNJIXsPBPry/bKQh0P8Q82nIDrdzNB
+         1hzh3A5PSuzwg2/J4uiaeU/FXMwmY+CI0OGaIiTdtaTHM65kyIRmrXjB3QV4D3gt+i6h
+         xGdUkZQIbK11WoSTVXPm3zYoFM0IZ7DiQdpmcE+KeCicT8wMu73S/sGZGvFKSD99wpHs
+         ju3feHctUh9ovfftEYw7Ad615HXEsVUOIAyMhEg5zmiVlVj6xlS2AhqBWsFWJh5mGCCX
+         1PjhkeGOOXCChq7x9UMiNyVkGVmSSgj0o3836kPA9lywmTt78kHsf+lNeVy23MgUiGEx
+         B8XA==
+X-Forwarded-Encrypted: i=1; AJvYcCUCIl3yRms/jLRhqsXlKvQ9yv9EGIFixDj4doMfI1+cH66YWmhFKISrwVOMmHhCw4OoPoeFT6U=@lists.linux.dev
+X-Gm-Message-State: AOJu0YyBmGnY9fWU90L/r0x7QLSOvoN8wDHrx8x47+BurcJ0+PMZt/dY
+	DSghlcP8T3aUH6Tvn/BSQp/kD1wfuvJkFrm6VisK5j6t4HZHLADn
+X-Gm-Gg: ASbGncvgvsN+7syxhbAyosPoPWztbdFYRQ76OUGWSYzxyHJ+WCvS25FeoYwgWN5rSeR
+	pmvgt72QwFHO+rj0T0+kZ7S0uuZkkkImU1tWXr7JBlydDJkoLMRYvQt5jLApMp3MWginWRk3IrI
+	jrGMZw3qIWYo1YszlxyTfH+cMI2NXXW9kJnR189fMqO/8Eyc+H0RhlT/qeCA/6SHyMm+MptepWb
+	pxiMWGNSi735Ws40ogKpEl377FGkECIAHm/aCvhYaU0uYM8swap44BNIsl+GJFu90ybvhbnMS6U
+	5KjA8nmXRnMDr05J6Y+06NpT9MU+8RnbggFgxXVRSxzxI5bspzgbDtcJbXbR
+X-Google-Smtp-Source: AGHT+IGkUCkr1x6x9IgRq8UbgNXMDAJO1+RXsn6Pk+rx1bb+mTleAvrVTcY/EHJLBdEflDljB3MD/g==
+X-Received: by 2002:a05:600c:190b:b0:43c:f81d:f with SMTP id 5b1f17b1804b1-43d84f94cbemr8231035e9.8.1743023495136;
+        Wed, 26 Mar 2025 14:11:35 -0700 (PDT)
+Received: from f (cst-prg-80-192.cust.vodafone.cz. [46.135.80.192])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3997f9b25c9sm17676643f8f.42.2025.03.26.14.11.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Mar 2025 14:10:50 -0700 (PDT)
-Received: from dave by dread.disaster.area with local (Exim 4.98)
-	(envelope-from <david@fromorbit.com>)
-	id 1txY1P-00000000h3J-1N9l;
-	Thu, 27 Mar 2025 08:10:47 +1100
-Date: Thu, 27 Mar 2025 08:10:47 +1100
-From: Dave Chinner <david@fromorbit.com>
-To: Luis Chamberlain <mcgrof@kernel.org>
-Cc: patches@lists.linux.dev, fstests@vger.kernel.org, linux-mm@kvack.org,
-	linux-fsdevel@vger.kernel.org, linux-block@vger.kernel.org,
-	oliver.sang@intel.com, hannes@cmpxchg.org, willy@infradead.org,
-	jack@suse.cz, apopple@nvidia.com, brauner@kernel.org, hare@suse.de,
-	oe-lkp@lists.linux.dev, lkp@intel.com, john.g.garry@oracle.com,
-	p.raghav@samsung.com, da.gomez@samsung.com, dave@stgolabs.net,
-	riel@surriel.com, krisman@suse.de, boris@bur.io,
-	jackmanb@google.com, gost.dev@samsung.com
-Subject: Re: [PATCH] generic/764: fsstress + migrate_pages() test
-Message-ID: <Z-RtV6OO_IhggLvT@dread.disaster.area>
-References: <20250326185101.2237319-1-mcgrof@kernel.org>
+        Wed, 26 Mar 2025 14:11:34 -0700 (PDT)
+Date: Wed, 26 Mar 2025 22:11:23 +0100
+From: Mateusz Guzik <mjguzik@gmail.com>
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, 
+	lkp@intel.com, linux-kernel@vger.kernel.org, x86@kernel.org, 
+	Eric Dumazet <edumazet@google.com>, Benjamin Segall <bsegall@google.com>, 
+	Frederic Weisbecker <frederic@kernel.org>
+Subject: Re: [tip:timers/core] [posix]  1535cb8028:
+ stress-ng.epoll.ops_per_sec 36.2% regression
+Message-ID: <6sn76aya225pqikijue5uv5h3lyqk262hc6ru3vemn7xofdftd@sw7gith52xh7>
+References: <202503241406.5c9cb80a-lkp@intel.com>
+ <87pli4z02w.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -85,222 +78,80 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20250326185101.2237319-1-mcgrof@kernel.org>
+In-Reply-To: <87pli4z02w.ffs@tglx>
 
-On Wed, Mar 26, 2025 at 11:50:55AM -0700, Luis Chamberlain wrote:
-> 0-day reported a page migration kernel warning with folios which happen
-> to be buffer-heads [0]. I'm having a terribly hard time reproducing the bug
-> and so I wrote this test to force page migration filesystems.
+On Wed, Mar 26, 2025 at 09:07:51AM +0100, Thomas Gleixner wrote:
+> On Mon, Mar 24 2025 at 14:39, kernel test robot wrote:
+> > kernel test robot noticed a 36.2% regression of stress-ng.epoll.ops_per_sec on:
+> >
+> > commit: 1535cb80286e6fbc834f075039f85274538543c7 ("posix-timers: Improve hash table performance")
+> > https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git timers/core
+> >
+[snip]
+> > | testcase: change | stress-ng: stress-ng.epoll.ops_per_sec 124.9% improvement                       |
 > 
-> It turns out we have have no tests for page migration on fstests or ltp,
-> and its no surprise, other than compaction covered by generic/750 there
-> is no easy way to trigger page migration right now unless you have a
-> numa system.
+> How on earth can this commit result in both a 36% regression and a 25%
+> improvement with the same test?
 > 
-> We should evaluate if we want to help stress test page migration
-> artificially by later implementing a way to do page migration on simple
-> systems to an artificial target.
+> Unfortunately I can't reproduce any of it. I checked the epoll test
+> source and it uses a posix timer, but that commit makes the hash less
+> contended so there is zero explanation.
 > 
-> So far, this doesn't trigger any kernel splats, not even warnings for me.
-> 
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> Link: https://lore.kernel.org/r/202503101536.27099c77-lkp@intel.com # [0]
-> Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
-> ---
->  common/config         |  2 +
->  common/rc             |  8 ++++
->  tests/generic/764     | 94 +++++++++++++++++++++++++++++++++++++++++++
->  tests/generic/764.out |  2 +
->  4 files changed, 106 insertions(+)
->  create mode 100755 tests/generic/764
->  create mode 100644 tests/generic/764.out
-> 
-> diff --git a/common/config b/common/config
-> index 2afbda141746..93b50f113b44 100644
-> --- a/common/config
-> +++ b/common/config
-> @@ -239,6 +239,8 @@ export BTRFS_MAP_LOGICAL_PROG=$(type -P btrfs-map-logical)
->  export PARTED_PROG="$(type -P parted)"
->  export XFS_PROPERTY_PROG="$(type -P xfs_property)"
->  export FSCRYPTCTL_PROG="$(type -P fscryptctl)"
-> +export NUMACTL_PROG="$(type -P numactl)"
-> +export MIGRATEPAGES_PROG="$(type -P migratepages)"
->  
->  # udev wait functions.
->  #
-> diff --git a/common/rc b/common/rc
-> index e51686389a78..ed9613a9bf28 100644
-> --- a/common/rc
-> +++ b/common/rc
-> @@ -281,6 +281,14 @@ _require_vm_compaction()
->  	fi
->  }
->  
-> +_require_numa_nodes()
-> +{
-> +	readarray -t QUEUE < <($NUMACTL_PROG --show | awk '/^membind:/ {for (i=2; i<=NF; i++) print $i}')
 
-sed makes this easier: remove the membind token, then remove all the
-lines that have ":"s left in them. This leaves behind the membind
-node string.
+The short summary is:
+1. your change is fine
+2. stress-ng is doing seriously weird stuff here resulting in the above
+3. there may or may not be something the scheduler can do to help
 
-$ numactl --show | sed -e 's/membind://' -e '/:/d'
- 0 1 2 3
-$
+for the regression stats are saying:
+feb864ee99a2d8a2 1535cb80286e6fbc834f075039f
+---------------- ---------------------------
+         %stddev     %change         %stddev
+             \          |                \
+      5.97 ± 56%     +35.8       41.74 ± 24%  mpstat.cpu.all.idle%
+      0.86 ±  3%      -0.3        0.51 ± 11%  mpstat.cpu.all.irq%
+      0.10 ±  3%      +2.0        2.11 ± 13%  mpstat.cpu.all.soft%
+     92.01 ±  3%     -37.7       54.27 ± 18%  mpstat.cpu.all.sys%
+      1.06 ±  3%      +0.3        1.37 ±  8%  mpstat.cpu.all.usr%
+     27.83 ± 38%     -84.4%       4.33 ± 31%  mpstat.max_utilization.seconds
 
-Also should have:
+As in system time went down and idle went up.
 
-	_require_command "$NUMACTL_PROG" "numactl"
+Your patch must have a side effect where it messes with some of the
+timings between workers.
 
-built into it, rather than requiring the test to declare it first.
+However, there is a possibility the scheduler may be doing something
+better here -- the testcase spawned as is has wildly unstable
+performance, literally orders of magnitude difference between runs and
+tons of idle and it stabilizes if I use a taskset.
 
-> +	if (( ${#QUEUE[@]} < 2 )); then
-> +		_notrun "You need a system with at least two numa nodes to run this test"
-> +	fi
-> +}
+In an attempt to narrow it down I tried with few workers:
+taskset --cpu-list 1,2 stress-ng --timeout 10 --times --verify --metrics --no-rand-seed --epoll 1
 
+--epoll 1 spawns two worker threads and both are bound to only execute
+on cores 1 and 2.
 
+With this I consistently see high CPU usage and total executed ops
+hanging around 190k.  Sample time output:
+1.31s user 18.67s system 199% cpu 10.02s (10.023) total
 
-> +
->  # Requires CONFIG_DEBUGFS and truncation knobs
->  _require_split_huge_pages_knob()
->  {
-> diff --git a/tests/generic/764 b/tests/generic/764
-> new file mode 100755
-> index 000000000000..91d9fb7e08da
-> --- /dev/null
-> +++ b/tests/generic/764
-> @@ -0,0 +1,94 @@
-> +#! /bin/bash
-> +# SPDX-License-Identifier: GPL-2.0
-> +# Copyright (c) 2024 Luis Chamberlain.  All Rights Reserved.
-> +#
-> +# FS QA Test 764
-> +#
-> +# fsstress + migrate_pages() test
-> +#
-> +. ./common/preamble
-> +_begin_fstest auto rw long_rw stress soak smoketest
-> +
-> +_cleanup()
-> +{
-> +	cd /
-> +	rm -f $runfile
-> +	rm -f $tmp.*
-> +	kill -9 $run_migration_pid > /dev/null 2>&1
-> +	kill -9 $stress_pid > /dev/null 2>&1
-> +
-> +	wait > /dev/null 2>&1
-> +}
+If I whack the taskset or extend it to 1,2,3,4:
+taskset --cpu-list 1,2,3,4 stress-ng --timeout 10 --times --verify --metrics --no-rand-seed --epoll 1
 
-If you implement this using the fsstress wrappers like I mention
-below, and get rid of running the main migration loop in background,
-this cleanup function can go away completely.
+... I'm back to non-nensical perf, all the way down to 18k ops/s on the
+lower end and over 200k on the higher one.
 
-> +
-> +_require_scratch
-> +_require_command "$NUMACTL_PROG" "numactl"
-> +_require_command "$MIGRATEPAGES_PROG" "migratepages"
-> +_require_numa_nodes
-> +
-> +readarray -t QUEUE < <($NUMACTL_PROG --show | awk '/^membind:/ {for (i=2; i<=NF; i++) print $i}')
-> +if (( ${#QUEUE[@]} < 2 )); then
-> +	echo "Not enough NUMA nodes to pick two different ones."
-> +	exit 1
-> +fi
+Sample time outputs in consecutive runs:
+0.02s user 0.38s system 3% cpu 10.06s (10.060) total
+0.34s user 4.59s system 48% cpu 10.13s (10.132) total
 
-You've implemented this twice.
+As in during the first run this spent almost the entire time off CPU.
+During the second one it only used about a quarter of CPU time it could.
 
-> +echo "Silence is golden"
-> +
-> +_scratch_mkfs > $seqres.full 2>&1
-> +_scratch_mount >> $seqres.full 2>&1
-> +
-> +nr_cpus=$((LOAD_FACTOR * 4))
-> +nr_ops=$((25000 * nr_cpus * TIME_FACTOR))
+The testcase is doing a lot of weird stuff, including calling yield()
+for every loop iteration. On top of that if the other worker does not
+win the race there is also a sleep of 0.1s thrown in. I commented these
+suckers out and weird anomalies persisted.
 
-Don't scale ops with nr_cpus - you've already scaled processes
-with nr_cpus.
-
-> +fsstress_args=(-w -d $SCRATCH_MNT -n $nr_ops -p $nr_cpus)
-> +test -n "$SOAK_DURATION" && fsstress_args+=(--duration="$SOAK_DURATION")
-> +
-> +runfile="$tmp.migratepages"
-> +pidfile="$tmp.stress.pid"
-> +
-> +run_stress_fs()
-> +{
-> +	$FSSTRESS_PROG $FSSTRESS_AVOID "${fsstress_args[@]}" &
-> +	stress_pid=$!
-> +	echo $stress_pid > $pidfile
-> +	wait $stress_pid
-> +	rm -f $runfile
-> +	rm -f $pidfile
-> +}
-
-Don't reimplement _run_fsstress(), call it instead.
-
-> +
-> +run_stress_fs &
-
-Actually, you want _run_fsstress_bg() here, and then
-_kill_fsstress() when you want it to die.
-
-> +touch $runfile
-> +stress_pid=$(cat $pidfile)
-
-Don't need either of these.
-
-> +
-> +while [ -e $runfile ]; do
-
-while [ -n "_FSSTRESS_PID" ]; do
-
-
-> +	readarray -t QUEUE < <(numactl --show | awk '/^membind:/ {for (i=2; i<=NF; i++) print $i}')
-
-Third time this is implemented.
-
-> +	# Proper Fisher–Yates shuffle
-> +	for ((i=${#QUEUE[@]} - 1; i > 0; i--)); do
-> +		j=$((RANDOM % (i + 1)))
-> +		var=${QUEUE[i]}
-> +		QUEUE[i]=${QUEUE[j]}
-> +		QUEUE[j]=$var
-> +	done
-> +
-> +	RANDOM_NODE_1=${QUEUE[0]}
-> +	RANDOM_NODE_2=${QUEUE[1]}
-
-If all you are doing is picking two random nodes, then you could
-just use RANDOM for the array index and drop the whole shuffle
-thing, yes?
-
-> +	if [[ -f $pidfile ]]; then
-
-no need for this if we gate the loop on _FSSTRESS_PID
-
-> +		echo "migrating parent fsstress process:" >> $seqres.full
-> +		echo -en "\t$MIGRATEPAGES_PROG $pid $RANDOM_NODE_1 $RANDOM_NODE_2 ..." >> $seqres.full
-> +		$MIGRATEPAGES_PROG $stress_pid $RANDOM_NODE_1 $RANDOM_NODE_2
-> +		echo " $?" >> $seqres.full
-> +		echo "migrating child fsstress processes ..." >> $seqres.full
-> +		for pid in $(ps --ppid "$stress_pid" -o pid=); do
-> +			echo -en "\tmigratepages $pid $RANDOM_NODE_1 $RANDOM_NODE_2 ..." >> $seqres.full
-> +			$MIGRATEPAGES_PROG $pid $RANDOM_NODE_1 $RANDOM_NODE_2
-> +			echo " $?" >> $seqres.full
-> +		done
-> +	fi
-> +	sleep 2
-> +done &
-> +run_migration_pid=$!
-
-why is this put in the background, only to then wait on it to
-complete? The loop will stop when fsstress finishes, yes?
-Which means this doesn't need to be run in the background at all,
-and then cleanup doesn't need to handle killing this, either.
-
--Dave.
--- 
-Dave Chinner
-david@fromorbit.com
+All that said, I'm not going to further look into it. Was curious wtf
+though hence the write up.
