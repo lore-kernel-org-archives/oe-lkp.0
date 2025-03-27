@@ -1,159 +1,68 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A08B52139A4
-	for <oe-lkp@lists.linux.dev>; Thu, 27 Mar 2025 11:53:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBFA920F097
+	for <oe-lkp@lists.linux.dev>; Thu, 27 Mar 2025 12:03:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743076415; cv=none; b=bV+0hWDGB0yApeEkISdjVWxyswSTywnpP6fe+LAQ6U799ljrNYmAH0mv20rf3fET3ja5wRckf0HhhyqMEWx8M3IihPUe2rUCx/vtTte34QAsjrn7tAVtnyYTAp9PgMU7Sjl3zLRrK0ON7j4m5KivO1NMfYO0eTZlCwBd4NCEOgQ=
+	t=1743077030; cv=none; b=e+BSh7lZuz5Eqs0OYfUBPHKSk8R5IM6HlzrA2YFFBOFjVFbh19qj5T6DHmBqkKx4iZt3bwquYuQjA/MewsQ8WyQ0+jXGoKX8HEqZZ1m4+Y8iBRrW+mQqCOJK/+qr1qKb/94qhuFejrtbqrjVW+CUsPJhWbuo2Rq+Tw9IiNl/fAo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743076415; c=relaxed/simple;
-	bh=XABOlLOdb+GYGihfxxXpKbRns0kIKcDt7XDQoGxdyfM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Asa49hyI+RZSO38JZoC9CPvsUQfPYouiS3d6Dd5CrIpawvB/nf67oS4OWCOafyyfqmAcUoa3LtsCiMLdR793KJVoEIhC66vWPhrppvdZWcGaO2CGMOxhiiexECK971AosTlInvFGe0gEL1rrDFsB4Dv6n4I3ZN+aHNjFc06cFMQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=0WmmS6iH; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=pIotN3XF; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=0WmmS6iH; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=pIotN3XF; arc=none smtp.client-ip=195.135.223.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+	s=arc-20240116; t=1743077030; c=relaxed/simple;
+	bh=5hfLC1YzRrCnSz3zVHN/pjpVelGRCCdNDMqdXleTErQ=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=D2Tzp7vC7Nt8Jvr2KkTU/Hj/jpOqPIo8amJFRfzwfsUQDx5i1tNE5CRMjG3dqmzoIzMaiTWPt/xkiStMLQakdyeQmy9RjvYPF1KOW9NbxxafFlo3p8t0kFXRRhTr+VWHQJ8tB0igpllzKHG0xRfAnswsLF0MinEsAOtryhWyHs8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=2CUlHLYm; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=Wmy/qs0N; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="0WmmS6iH";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="pIotN3XF";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="0WmmS6iH";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="pIotN3XF"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id A2A181F449;
-	Thu, 27 Mar 2025 11:53:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1743076410; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="2CUlHLYm";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Wmy/qs0N"
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1743077026;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=R+QxkDVy5JRXbW51kJ2F9UVtUHbBkep2u9RXAqpaoBw=;
-	b=0WmmS6iHlw/gOs91YI8HSX8we1JIoZSAW6ycjBmd9yfK0HSf1J+h20t4Z96p3NQL4EgvLy
-	pqVLrN6Hm1zJlzxIuQ4gqZGmb2fGiZFJ/KjnMFQiPTnM3hIGCP4XyrnCBa1aTDa4jL1LK7
-	HJfIKZQ8nZ1pjFXGLmphhZqpXOIIL9c=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1743076410;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
+	bh=5hfLC1YzRrCnSz3zVHN/pjpVelGRCCdNDMqdXleTErQ=;
+	b=2CUlHLYmmjHr8fA1hplaYjlX2Rrr8FAqj38qPquIDKCdbe75yEhV35v9E21QpEgQ1Llj4r
+	h2L2DKGkRXV1sGbBkGJDMSGVNbSP29d1Bf6voVgtqQQ+fGNRAcMuIY3eDkqqrIXAuSVC0/
+	p7EtCd9HTBFb15/sXq1HSnBk+87ARWybYmkZIgoJAk4kBIvu3wnWk271LFVjQNkuYl+fbU
+	qY8DPXgkMlE77tRvgwt893msRjv9uc9SlrAa+tPGaWGGYyhmv8KpvzhnElV8sz0G/rStNk
+	0exz6iv3SIkSnAGgiey1TUe5Gp3EV0L/nNkU3rbz1g6fVXWDAX8G4g8hTQIbqA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1743077026;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=R+QxkDVy5JRXbW51kJ2F9UVtUHbBkep2u9RXAqpaoBw=;
-	b=pIotN3XFDhfuYS4qF+/VXHQh4jiW8JPxvUg9Zao5zvzq318vz6yZH7IPHfymstt2WoLJK5
-	9gpWYqRYiKvLeaBw==
-Authentication-Results: smtp-out2.suse.de;
-	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=0WmmS6iH;
-	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b=pIotN3XF
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1743076410; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=R+QxkDVy5JRXbW51kJ2F9UVtUHbBkep2u9RXAqpaoBw=;
-	b=0WmmS6iHlw/gOs91YI8HSX8we1JIoZSAW6ycjBmd9yfK0HSf1J+h20t4Z96p3NQL4EgvLy
-	pqVLrN6Hm1zJlzxIuQ4gqZGmb2fGiZFJ/KjnMFQiPTnM3hIGCP4XyrnCBa1aTDa4jL1LK7
-	HJfIKZQ8nZ1pjFXGLmphhZqpXOIIL9c=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1743076410;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=R+QxkDVy5JRXbW51kJ2F9UVtUHbBkep2u9RXAqpaoBw=;
-	b=pIotN3XFDhfuYS4qF+/VXHQh4jiW8JPxvUg9Zao5zvzq318vz6yZH7IPHfymstt2WoLJK5
-	9gpWYqRYiKvLeaBw==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 941D9139D4;
-	Thu, 27 Mar 2025 11:53:30 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id CNgjJDo85WdlMAAAD6G6ig
-	(envelope-from <jack@suse.cz>); Thu, 27 Mar 2025 11:53:30 +0000
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-	id 49C00A082A; Thu, 27 Mar 2025 12:53:30 +0100 (CET)
-Date: Thu, 27 Mar 2025 12:53:30 +0100
-From: Jan Kara <jack@suse.cz>
-To: Luis Chamberlain <mcgrof@kernel.org>
-Cc: patches@lists.linux.dev, fstests@vger.kernel.org, linux-mm@kvack.org, 
-	linux-fsdevel@vger.kernel.org, linux-block@vger.kernel.org, oliver.sang@intel.com, 
-	hannes@cmpxchg.org, willy@infradead.org, jack@suse.cz, apopple@nvidia.com, 
-	brauner@kernel.org, hare@suse.de, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	john.g.garry@oracle.com, p.raghav@samsung.com, da.gomez@samsung.com, dave@stgolabs.net, 
-	riel@surriel.com, krisman@suse.de, boris@bur.io, jackmanb@google.com, 
-	gost.dev@samsung.com
-Subject: Re: [PATCH] generic/764: fsstress + migrate_pages() test
-Message-ID: <pociwdgfqbzw4mjass6u6wcnvmqlh3ddqzoeoiwiyqs64pl6yu@5ad7ne7rgwe2>
-References: <20250326185101.2237319-1-mcgrof@kernel.org>
+	bh=5hfLC1YzRrCnSz3zVHN/pjpVelGRCCdNDMqdXleTErQ=;
+	b=Wmy/qs0NDbZZdF3X/u0ciYSLBcE9k5CgAgiLntMaDI2TaiBSlDSZB+tTcr6ztoP4fqJel6
+	e3uYGfvHLgDArOCQ==
+To: kernel test robot <oliver.sang@intel.com>, Roger Pau Monne
+ <roger.pau@citrix.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, Juergen Gross <jgross@suse.com>,
+ Bjorn Helgaas <bhelgaas@google.com>, xen-devel@lists.xenproject.org,
+ linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+ ltp@lists.linux.it, oliver.sang@intel.com
+Subject: Re: [linux-next:master] [PCI/MSI]  d9f2164238:
+ Kernel_panic-not_syncing:Fatal_exception
+In-Reply-To: <202503271537.b451d717-lkp@intel.com>
+References: <202503271537.b451d717-lkp@intel.com>
+Date: Thu, 27 Mar 2025 13:03:46 +0100
+Message-ID: <87semyy925.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250326185101.2237319-1-mcgrof@kernel.org>
-X-Rspamd-Queue-Id: A2A181F449
-X-Spam-Level: 
-X-Spamd-Result: default: False [-4.01 / 50.00];
-	BAYES_HAM(-3.00)[99.99%];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	MID_RHS_NOT_FQDN(0.50)[];
-	R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	ARC_NA(0.00)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	MISSING_XM_UA(0.00)[];
-	RCPT_COUNT_TWELVE(0.00)[24];
-	MIME_TRACE(0.00)[0:+];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:email,suse.cz:dkim];
-	TO_DN_SOME(0.00)[];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	RCVD_COUNT_THREE(0.00)[3];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	RCVD_TLS_LAST(0.00)[];
-	DKIM_TRACE(0.00)[suse.cz:+]
-X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
-X-Rspamd-Action: no action
-X-Spam-Score: -4.01
-X-Spam-Flag: NO
+Content-Type: text/plain
 
-On Wed 26-03-25 11:50:55, Luis Chamberlain wrote:
-> 0-day reported a page migration kernel warning with folios which happen
-> to be buffer-heads [0]. I'm having a terribly hard time reproducing the bug
-> and so I wrote this test to force page migration filesystems.
-> 
-> It turns out we have have no tests for page migration on fstests or ltp,
-> and its no surprise, other than compaction covered by generic/750 there
-> is no easy way to trigger page migration right now unless you have a
-> numa system.
-> 
-> We should evaluate if we want to help stress test page migration
-> artificially by later implementing a way to do page migration on simple
-> systems to an artificial target.
-> 
-> So far, this doesn't trigger any kernel splats, not even warnings for me.
-> 
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> Link: https://lore.kernel.org/r/202503101536.27099c77-lkp@intel.com # [0]
-> Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+On Thu, Mar 27 2025 at 16:29, kernel test robot wrote:
+> kernel test robot noticed "Kernel_panic-not_syncing:Fatal_exception" on:
+>
+> commit: d9f2164238d814d119e8c979a3579d1199e271bb ("PCI/MSI: Convert pci_msi_ignore_mask to per MSI domain flag")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 
-So when I was testing page migration in the past MM guys advised me to use
-THP compaction as a way to trigger page migration. You can manually
-trigger compaction by:
+Fixed upstream.
 
-echo 1 >/proc/sys/vm/compact_memory
-
-So you first mess with the page cache a bit to fragment memory and then
-call the above to try to compact it back...
-
-								Honza
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+3ece3e8e5976 ("PCI/MSI: Handle the NOMASK flag correctly for all PCI/MSI backends")
