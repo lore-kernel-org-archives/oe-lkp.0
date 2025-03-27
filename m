@@ -1,150 +1,103 @@
-Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EF9E17E4
-	for <oe-lkp@lists.linux.dev>; Thu, 27 Mar 2025 06:21:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 923251FFC43
+	for <oe-lkp@lists.linux.dev>; Thu, 27 Mar 2025 08:10:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743056484; cv=none; b=HA6fZrNIiRTFMOJaQ0frvAPL5si4uEQUyKISBNHYwzTXiYiJ8vAWFjc0jJKP92AbzhW7EJ21LfZp3XboyVaX9w+0p/TmtRfM+fcUc+uNUkpyXza9getR/++9ZxjLr7aJsQNQnEplYuln+0bz3whc9LXE8flY1b2wrL/6nCcefqo=
+	t=1743063048; cv=none; b=ASxfKbDBuQPjVMbizPwF1g9pKKhgSXNG/arEdX9PflXz76Cm/ZPIumbtn1v0o1N2XqxyFkffRm7cYXKjwfl1ES+7yNc/jvFE2dQOPOTJIJM4unqc332dwM2tvTDveumyb0s8rpYpiZCT587RhAZXlbR7AMtmDGuzVQY3IQJqQNA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743056484; c=relaxed/simple;
-	bh=wz7g06T9+IyVxjPU2CNqYvMwL+qAjfcbeojPOHGBNIg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=QLRHg5wj2B8PSRUVzaaq7W7sln9ZBtLuCwbVdpOcUG0Ut8s++E2zvuJP6vam2R0vP+05oa6NpWOnpbfbUovPgxMPCcwT94+WIv4IpfmYVaj+Bjyt4yuQ68yNU2xxxvyUJltiHpMxqiCcmja4RvzfBL2uBK8yy1wemvPkswx5jOw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=iKdS66Zk; arc=none smtp.client-ip=209.85.160.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1743063048; c=relaxed/simple;
+	bh=Ok6sbhuAHQgOj0VCWpsrZDM5gqJfXhwA7DaUP3dLmD4=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=B+3zIW1U3oOMEsKf+7B0JiIxYaZgVg2wiqQQ+mwOZpTqE7nRoEOY3hzITe6N7P+uWTkXP3NND5l7Hscxa68y7L/GZAnqdNmyrZUw8GJub90t/TYWvtw0qNP5+VRAyionujarWJHZMJ0GO68patojAqQ4K1OCA25igCvs60dYkIc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=OX0DLUrl; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=o+qzkT+6; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="iKdS66Zk"
-Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-476ab588f32so9716751cf.2
-        for <oe-lkp@lists.linux.dev>; Wed, 26 Mar 2025 23:21:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1743056481; x=1743661281; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=EjZpaRHfD1Umxo+R51bV2iUPt+iWpjNRuUMsRq8jaIA=;
-        b=iKdS66ZkJoVWGLI7eF/spclibhP13Or3UUC4SkAVpy2nuHDf4qunlvDb36uvJWbJPI
-         NFYtGjbPCv7hcEm8+MBLFubOT5p1ENR52n+w4/0JkiMU/JfIQ9yy3L4aZiORhyT3XnXM
-         KT5yf8zeM2DRgcZ/eUq3cnXacnubtLo35fm2FzaE0GR3Gz0InzS5Dp/ZTUxlaIkg5CE8
-         e1Y1xVt6/mNHW6CXtwdPGteE7TSjCsXifLaRHYW/K7mTCLQkqVxyvQIjU2DAUAmKQ6ik
-         qjW268m1BRiuVIb4M0bCtJaAGDtcqL3Rc0tnFT7EDNHxHPvcCV4Ma6NUgjiM0QKWxx9p
-         4znQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1743056481; x=1743661281;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=EjZpaRHfD1Umxo+R51bV2iUPt+iWpjNRuUMsRq8jaIA=;
-        b=aqikx64clrPsPpqqJnG+yw5yoO54hg2MBEWrTD2gMOsPrftZ0ry4VMSqhiM3VWqG+k
-         GOYrwVvFVteRukwYhw8iRXVriJTaKVUqKMaofxDRXa3jgMPGgKXobclTsSZQGHu80VgV
-         isooUsbOkixHA/AMxTj/Dui9ruw0dJR25KV73rHnlyBDhStRTRsNVQau9fbdXjVU5Blb
-         SaMQrOX+mnML2J86iQ0GeFYWxnWu8F1gjTtWn4p60YHQWoq7CHaAKVLrNR8cxH0Qq6Wg
-         NsFkvAuPQZyOPyFYc8FWvWX/zDnqAazCfqjTecMfq79FUctUe/ej+9Y5/xtYXR3SDL98
-         5Wug==
-X-Forwarded-Encrypted: i=1; AJvYcCXqgj+D3CmLMNH4lQAvLSJpSgcTQvAe0Sw+SW3kIREbNYAN8EOgj7k1AAKlRO9pzW4KOZbgVTE=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzsaA+Ft+QvWnKlaGyXs+8iiGEaYyg2FUCOAYorZyHZz4NLeWdN
-	sh0n9NaqTW3PcHKwp6MiDoVoeexIlApb4LubyoRKa1TXFiQWUydj89dK6t7mr5U2uUDXX8rhMNR
-	TDwoJnmo+T6ApsCvac823wad5/WfeSvIlFY5W
-X-Gm-Gg: ASbGncvx/3jpMuR0URQXDRiiGBHwWdh+aDoEuG2b9Vdx06NIhOEqe5DiGfYRSKwZ/Aa
-	b2GbM04iqSSW+oNIkLFocimZre8r3Hm26s0Hu7aam0MS85X7Za/TlaMfNXeQCX4T1i9CK1NYhMI
-	UWuBHhbbmLzTJm8UcIi/3USLfL/+s=
-X-Google-Smtp-Source: AGHT+IHn5ZnDjkzoC7XvMND87XJOg44tfghgEAuZzea1z8kg6FS7D0n79q1gwjFCJLe+AZI0npFxaG8Nl/ky/7G1qwc=
-X-Received: by 2002:a05:622a:5a0a:b0:476:8e3e:2da3 with SMTP id
- d75a77b69052e-4776e1924camr50758751cf.30.1743056481023; Wed, 26 Mar 2025
- 23:21:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="OX0DLUrl";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="o+qzkT+6"
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1743063044;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=hKLZQkdc4yEMpxWrE9FAL8M+lw5YXUz3sNPr4J+7xHU=;
+	b=OX0DLUrlW+fgg5NnLkdMX53EVPjOBtgQZTbnXRiyEg+ITLbebuSKU6OSInDWxVutaf+9iD
+	9o9J5Z9kYnc9K8BQvue0zb1JPXOzlP0x5FbIg87InVQbkLgLG6A8lCjGYMUCGXzeW1rXK+
+	YSqyZZFu3rbbNkQprdoF2dmOa5yIO1tK3S+iLQXd0xnv+KVW5K2TCasXe1sT7900yDDJAd
+	hzgDdz9HeU+qXthyhvqG/JFeZMrqKkkBgYZRF97foX99JXtRst1S90KtyAk4y1o2wleqHR
+	aM/rwW6H9VjtWV+8c3b7xxKnEU3gjWKkO2xlTJg3uImAoHcv9X5XfoOrADwx2A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1743063044;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=hKLZQkdc4yEMpxWrE9FAL8M+lw5YXUz3sNPr4J+7xHU=;
+	b=o+qzkT+6oSMCd+hmHu1f9f+3QPwQAX/BmaGuV+qdKtl43dl3LiWMsQa2Z4wuwoBiwa9SlI
+	g3IeWjmlQoolRJDQ==
+To: Eric Dumazet <edumazet@google.com>, Mateusz Guzik <mjguzik@gmail.com>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+ lkp@intel.com, linux-kernel@vger.kernel.org, x86@kernel.org, Benjamin
+ Segall <bsegall@google.com>, Frederic Weisbecker <frederic@kernel.org>
+Subject: Re: [tip:timers/core] [posix] 1535cb8028:
+ stress-ng.epoll.ops_per_sec 36.2% regression
+In-Reply-To: <CANn89iKjCgmxtiLeVAiXODHbbR7=gYYi5cfAS1hS5qn+z=-o1Q@mail.gmail.com>
+References: <202503241406.5c9cb80a-lkp@intel.com> <87pli4z02w.ffs@tglx>
+ <6sn76aya225pqikijue5uv5h3lyqk262hc6ru3vemn7xofdftd@sw7gith52xh7>
+ <CANn89iKjCgmxtiLeVAiXODHbbR7=gYYi5cfAS1hS5qn+z=-o1Q@mail.gmail.com>
+Date: Thu, 27 Mar 2025 09:10:44 +0100
+Message-ID: <877c4azyez.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202503241406.5c9cb80a-lkp@intel.com> <87pli4z02w.ffs@tglx> <6sn76aya225pqikijue5uv5h3lyqk262hc6ru3vemn7xofdftd@sw7gith52xh7>
-In-Reply-To: <6sn76aya225pqikijue5uv5h3lyqk262hc6ru3vemn7xofdftd@sw7gith52xh7>
-From: Eric Dumazet <edumazet@google.com>
-Date: Thu, 27 Mar 2025 07:21:10 +0100
-X-Gm-Features: AQ5f1JoDIB2Z5QAp2nNLWuO3dPWKeDawcsEat-roMTWkvrSkw1HQjOuv2jRfmKw
-Message-ID: <CANn89iKjCgmxtiLeVAiXODHbbR7=gYYi5cfAS1hS5qn+z=-o1Q@mail.gmail.com>
-Subject: Re: [tip:timers/core] [posix] 1535cb8028: stress-ng.epoll.ops_per_sec
- 36.2% regression
-To: Mateusz Guzik <mjguzik@gmail.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>, kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, 
-	lkp@intel.com, linux-kernel@vger.kernel.org, x86@kernel.org, 
-	Benjamin Segall <bsegall@google.com>, Frederic Weisbecker <frederic@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Mar 26, 2025 at 10:11=E2=80=AFPM Mateusz Guzik <mjguzik@gmail.com> =
-wrote:
+On Thu, Mar 27 2025 at 07:21, Eric Dumazet wrote:
+> On Wed, Mar 26, 2025 at 10:11=E2=80=AFPM Mateusz Guzik <mjguzik@gmail.com=
+> wrote:
+>> On Wed, Mar 26, 2025 at 09:07:51AM +0100, Thomas Gleixner wrote:
+>> > Unfortunately I can't reproduce any of it. I checked the epoll test
+>> > source and it uses a posix timer, but that commit makes the hash less
+>> > contended so there is zero explanation.
+>> >
+>>
+>> The short summary is:
+>> 1. your change is fine
 >
-> On Wed, Mar 26, 2025 at 09:07:51AM +0100, Thomas Gleixner wrote:
-> > On Mon, Mar 24 2025 at 14:39, kernel test robot wrote:
-> > > kernel test robot noticed a 36.2% regression of stress-ng.epoll.ops_p=
-er_sec on:
-> > >
-> > > commit: 1535cb80286e6fbc834f075039f85274538543c7 ("posix-timers: Impr=
-ove hash table performance")
-> > > https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git timers/core
-> > >
-> [snip]
-> > > | testcase: change | stress-ng: stress-ng.epoll.ops_per_sec 124.9% im=
-provement                       |
-> >
-> > How on earth can this commit result in both a 36% regression and a 25%
-> > improvement with the same test?
-> >
-> > Unfortunately I can't reproduce any of it. I checked the epoll test
-> > source and it uses a posix timer, but that commit makes the hash less
-> > contended so there is zero explanation.
-> >
+> Let me rephrase this.
 >
-> The short summary is:
-> 1. your change is fine
+> Absolutely wonderful series, thanks a lot Thomas for doing it.
 
-Let me rephrase this.
+Thank you!
 
-Absolutely wonderful series, thanks a lot Thomas for doing it.
+> Next bottlenecks are now these ones, but showing up in synthetic
+> benchmarks only.
 
-Next bottlenecks are now these ones, but showing up in synthetic
-benchmarks only.
+Right. I saw them too when working on this.
+
+>     33.36%  timer_storm      [kernel.kallsyms]           [k]
+> inc_rlimit_get_ucounts
+>
+>     32.85%  timer_storm      [kernel.kallsyms]           [k]
+> dec_rlimit_put_ucounts
+
+These two are not really posix-timer specific. They are also the
+standouts for any signal micro benchmark.
+
+I stared at the implementation a bit, but there is not much we can do
+about that I fear.
+
+Thanks,
+
+        tglx
 
 
-    33.36%  timer_storm      [kernel.kallsyms]           [k]
-inc_rlimit_get_ucounts
-            |
-             --33.34%--inc_rlimit_get_ucounts
-                       posixtimer_init_sigqueue
-                       do_timer_create
-                       __x64_sys_timer_create
-                       do_syscall_64
-                       entry_SYSCALL_64_after_hwframe
-                       ___timer_create
-                       0xe
 
-    32.85%  timer_storm      [kernel.kallsyms]           [k]
-dec_rlimit_put_ucounts
-            |
-             --32.83%--dec_rlimit_put_ucounts
-                       posix_timer_unhash_and_free
-                       __se_sys_timer_delete
-                       do_syscall_64
-                       entry_SYSCALL_64_after_hwframe
-                       ___timer_delete
-
-     9.61%  timer_storm      [kernel.kallsyms]           [k]
-queued_spin_lock_slowpath
-            |
-            ---queued_spin_lock_slowpath
-               |
-               |--8.92%--_raw_spin_lock_irqsave
-               |          |
-               |           --8.91%--get_partial_node
-               |                     ___slab_alloc
-               |                     kmem_cache_alloc_noprof
-               |                     do_timer_create
-               |                     __x64_sys_timer_create
-               |                     do_syscall_64
-               |                     entry_SYSCALL_64_after_hwframe
-               |                     ___timer_create
-               |                     0xe
-               |
