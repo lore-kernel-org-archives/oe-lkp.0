@@ -1,190 +1,131 @@
-Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
+Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20481322B
-	for <oe-lkp@lists.linux.dev>; Thu, 27 Mar 2025 13:48:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E7181C8FD6
+	for <oe-lkp@lists.linux.dev>; Thu, 27 Mar 2025 20:22:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743083334; cv=none; b=Lcobtzr4hQ+XBoxq49RHiwUzs/sVSDO4L2IOjI91S5OgWWcv4GAzjfzZCz4KlmWqOpVLRXQNS7MhPNyg3m4W+pMWSdv8GQ6wpsb4lxp4HKm+RyjxEx3YEVCuNUd5IdgI+xo4juNGr4G2z/smmKw9o5c8nJ+CXEi+U1ROOy4wW5c=
+	t=1743106971; cv=none; b=mO7HM6Yfr3TiZJjpQZigvoH6xuLsbeVTgd6JPeILAQDYkxLL2xTcA43nAVclF96hrh2y/t9yZJ8Sv0fk9UT3F+GgYUOZ05lIf8M1M7+k252A3v0p1Ekq4g9N0aPBhc+AttiLSX4FjDTMXN6IH2pDYME5VYq1LcGvzy74bgyzhOI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743083334; c=relaxed/simple;
-	bh=BqIn0wrCuMc2UTLXaPpGz2GzyQ5thvKd6jrL79PHxhw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=gmYsGR/qaPOEB54804Yh1dRoX6CZNYxuJuWKUxkaKCryQGMewcLGdrtAnGcQu4uBqd8xCR51tgBpH7DwlYmX0WgDQ4mDdt1mHZylPQvewZVlPmD/iSzkyeid+H6BFmCUvXcTAsSUS1je9CriyxhFroP7eYrElylOIspoRWymiZY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=COie/zbu; arc=none smtp.client-ip=209.85.208.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1743106971; c=relaxed/simple;
+	bh=hWsoNvNHVfFmyq/J/uqEJxexZfkLwaAkkAF8jkhLaLc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=W67SuTvkupryqavQTfMZvRbFlAZUhn0o2vXLtNSH3IACefpQf7QV2/rmzr/vSkaEidON8/B2pI7rSNFcm+B2KtkKhzFxSFrr62TPfqxz4hjbm68OUinBtrsDF9uh+1GHtToF72WG0hhVbr1iuwrqlsmyISQM4zCbvRwfNjOfX+Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fromorbit.com; spf=pass smtp.mailfrom=fromorbit.com; dkim=pass (2048-bit key) header.d=fromorbit-com.20230601.gappssmtp.com header.i=@fromorbit-com.20230601.gappssmtp.com header.b=TeMUUGf2; arc=none smtp.client-ip=209.85.216.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fromorbit.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fromorbit.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="COie/zbu"
-Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-5e6c18e2c7dso1844570a12.3
-        for <oe-lkp@lists.linux.dev>; Thu, 27 Mar 2025 06:48:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=fromorbit-com.20230601.gappssmtp.com header.i=@fromorbit-com.20230601.gappssmtp.com header.b="TeMUUGf2"
+Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-3014cb646ecso1765208a91.1
+        for <oe-lkp@lists.linux.dev>; Thu, 27 Mar 2025 13:22:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1743083331; x=1743688131; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1cShwsASNWb4Jp35AHxvP4AtgmKCcX2D/cSekQMeipE=;
-        b=COie/zbuWwx1LJ7/DAJXoqTqzcDLvxmu3AO32uVOjXZzgq3FEskpww+uE+LYO4wNiu
-         Pwtg8LvmoMd9jE1QAtwC673MzUKy8C63hn0Emdt2o72eboRy/uaHFnvlsH3Ne7WpT14a
-         peq2HmVIuZWZLl2pVG4Vc86fZySR3g8S1ikGYH3r+ohIc3+1rbmlxMrILcaNk6JEw/lA
-         kBjQBL5qmW6LxyZMbWQrKZWCu5yxvhxlZtBrcIm0s6rEvvS1sRhkW3JEdbjyUVkJgldu
-         1M9t/gxrFNdugIRtyY+x9s6HBlLjUL9iwXtFRLP9VksK1FqnRtfJq8bC1BlUwxcyH+Ie
-         boUQ==
+        d=fromorbit-com.20230601.gappssmtp.com; s=20230601; t=1743106969; x=1743711769; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=f36YSwLPJ313+jNbvLdd5CTUY7LI4BTt4o8yr4k9tM4=;
+        b=TeMUUGf2Xp/ao2J8RdwuQu/rlO+J9sYv00/yxw369Vym/CF8rir48loH2+ZguWZIyQ
+         fuFt9a8+aJRPjtfviSLhtbeAZNk3NSHzY0Dld7CgYIA3LrbgAqQbUFz8bWebdyF5GGBO
+         VuKFTp2w0mhOxMhEgAd6jfEIt7eOKyH3MoXKfZgkYFlIM+KGIs8uTaDnfrRdYfyse3yn
+         HC8T4Qi1iO/d+IOgUL4bWjveQ3U3BgKbXZMtS+lkNxcRVT5P25kY45n3DKMgkzvJir09
+         FMkFkgYcZLyPeoUbccrySKTpxQGECR+/EmiLQmw8ujNPyer1hfoWUPVJQMOHrrA/k+ev
+         +j6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1743083331; x=1743688131;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=1cShwsASNWb4Jp35AHxvP4AtgmKCcX2D/cSekQMeipE=;
-        b=XA4TUlf177FQ5QCYfEOznyM3OJHmn3I5BcbQ4rLQ3NdkYTBXf/eAp2hU2cPlh8dhRf
-         dXBsO94nwQjpdbLFDRT9BbFHzEntwGCIbJ81PCdwrGIj1YS2aZny1O4R2UBBTD3dR6mi
-         WaBQo2UXWLFIJ7BR94gjjnsmzH1CTXpaJrPyFXc41GwiG0j3WaKRy8ZEjeGTGAEsQ2jm
-         l8jYfZWZ+Bia3wcfiUseWByvIvKnqxLa4GT8TXF8w21lOxvT1ieUcouDv8AL1LAWXWKM
-         WWEtz+IcUEUXn51OTX8dxYr8lzr4e3abGwP9uBBhijFvA8oDTeSpR630/FPJNivW5bJb
-         KZsA==
-X-Forwarded-Encrypted: i=1; AJvYcCVy9h1jOWd6+K+0E+ZF5DslsO/ltaMhhTNcg2mKmbYtATHE4m5iiIa8sCI0knpGCfVphabiNcM=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzvGGF3D7+MgnjlDLQSF3YB9XXXZQiIZssQu3DfqFs/pxV97KyM
-	OOMmjgH6bGjyVdGzEji4yTnPy/2Teh40TFe6OCWxvpLlowWwXsiNB+BkVOwZK6CQc+xpYXuEsZ5
-	xteCEMnUNgNHphHkLFY7f77v1vmg=
-X-Gm-Gg: ASbGncszc32SZNb7GcRmHu2XqIDBKt6GWuUhkmaQHtj/1T0Pf9p+ay5K6xYoZoOnNDe
-	1qqpAVC75MzmJ0Xt7u1AaUwJTuqbTAnyLB8iwy33fhuoR6S063a8HcZuwt/lHOh2UabyfY2/4gT
-	NXuPJCO0zdVoyzM4YZyaN4yR1l
-X-Google-Smtp-Source: AGHT+IG8tThHD6jWDTQjmnm+9IMPz27ZM/JzO/RcyOsJuWqSoOf5JkHpUl0R3AKSFEsEeRwFhBe+mP74VNwy9s7sHk4=
-X-Received: by 2002:a05:6402:5187:b0:5ec:922f:7a02 with SMTP id
- 4fb4d7f45d1cf-5ed8e496a71mr3793788a12.10.1743083331045; Thu, 27 Mar 2025
- 06:48:51 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1743106969; x=1743711769;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=f36YSwLPJ313+jNbvLdd5CTUY7LI4BTt4o8yr4k9tM4=;
+        b=tWPEuy6Bhf3t7txP04o+JclvNY4Wf6zstNZy9v6sWR0Q0KP9FrHj2Wq2NWDU2q/sHk
+         1DuyoJKk+KcMLmPviKcPZhoLd4JZOig0BKI5Ior4AnmFjn51kqajqoETSGMPN/JfQa6c
+         51+8srY4wZDt/kisRjfFWUMjqnMiG983/hhXvcS6Bi3oggXk6rdR2cvUVxAG3RbF4k7b
+         NaUoRrMe+xQK3oHlqUjlDwgjotYtVoq0ogxIWJrj3sLtthA7Kwq6vKTHFF8wv9ony4w2
+         nL4FqGtkXpSR9MZblvi29B7haZKCRL6mQ8ToUFJvBrMWiKANHcXCF8IjM8AwExl+XvCb
+         tH0Q==
+X-Forwarded-Encrypted: i=1; AJvYcCWz9x4/OoAagpJ6HVxaARydYcWURWgRpj+rZ7YZiCr+6rDS9096bykaR5Qkk/nuejbxYdWakuQ=@lists.linux.dev
+X-Gm-Message-State: AOJu0YzS/oa8IbQJdSBQwGYAHI+bkmQPYmZd/aIwt4kPLecKtVJ+2MV6
+	S0IsoTOe/8mlS4qwpgg+3VpKVP07ApkQyea7vQWjDviNkx8ROuuyvZFvpTNKtDE=
+X-Gm-Gg: ASbGncsi9sGm3R5ue/aGlFZsNjCAJavz7O35kRiCjeg95KpC00dvTRGAS+ApZzAQ+NI
+	UtXvPK48Gh2fwovTR9AYz5pjKNEOCNiw53b5S0bERqivhunWOdvxxoTDf8EIwAaf7Z2rcR17db4
+	OdRJOtIXkee6RiRBeKzNPTU7LKQRbAUOg6R+DMcB16QbzlhT/BOA+uTMMPYHvbmIxAc+i+9/q5q
+	xINC04YzLw2WNWG0cM/dQ/Tku15tapowCAfdBHDjmarspUh4eMW1khNR0SM7LuQNWEuoilkrxdF
+	MXDv3uEUzvyZfi5d+Jyom5HtvmbSQnu8lvPGi2mn7RzmttE8LE4UZPHOAs45GUoDQBNhr19W/9K
+	axao/EAYTjy9tfLlrXA==
+X-Google-Smtp-Source: AGHT+IE04slap1s8okAKEtulK560I8Pk5y4yI9BiST5ZRxIXZ4EDqBdpcK7KvdffOC2kSZ2m8M/JJw==
+X-Received: by 2002:a17:90a:c2cd:b0:301:1bce:c252 with SMTP id 98e67ed59e1d1-303a8d81d2bmr7055953a91.27.1743106969072;
+        Thu, 27 Mar 2025 13:22:49 -0700 (PDT)
+Received: from dread.disaster.area (pa49-181-60-96.pa.nsw.optusnet.com.au. [49.181.60.96])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3039dff0529sm2964573a91.16.2025.03.27.13.22.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Mar 2025 13:22:48 -0700 (PDT)
+Received: from dave by dread.disaster.area with local (Exim 4.98)
+	(envelope-from <david@fromorbit.com>)
+	id 1txtkT-000000016eh-2SQ3;
+	Fri, 28 Mar 2025 07:22:45 +1100
+Date: Fri, 28 Mar 2025 07:22:45 +1100
+From: Dave Chinner <david@fromorbit.com>
+To: Jan Kara <jack@suse.cz>
+Cc: Luis Chamberlain <mcgrof@kernel.org>, patches@lists.linux.dev,
+	fstests@vger.kernel.org, linux-mm@kvack.org,
+	linux-fsdevel@vger.kernel.org, linux-block@vger.kernel.org,
+	oliver.sang@intel.com, hannes@cmpxchg.org, willy@infradead.org,
+	apopple@nvidia.com, brauner@kernel.org, hare@suse.de,
+	oe-lkp@lists.linux.dev, lkp@intel.com, john.g.garry@oracle.com,
+	p.raghav@samsung.com, da.gomez@samsung.com, dave@stgolabs.net,
+	riel@surriel.com, krisman@suse.de, boris@bur.io,
+	jackmanb@google.com, gost.dev@samsung.com
+Subject: Re: [PATCH] generic/764: fsstress + migrate_pages() test
+Message-ID: <Z-WzlUN6fSciApiC@dread.disaster.area>
+References: <20250326185101.2237319-1-mcgrof@kernel.org>
+ <pociwdgfqbzw4mjass6u6wcnvmqlh3ddqzoeoiwiyqs64pl6yu@5ad7ne7rgwe2>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202503241406.5c9cb80a-lkp@intel.com> <87pli4z02w.ffs@tglx>
- <6sn76aya225pqikijue5uv5h3lyqk262hc6ru3vemn7xofdftd@sw7gith52xh7>
- <CANn89iKjCgmxtiLeVAiXODHbbR7=gYYi5cfAS1hS5qn+z=-o1Q@mail.gmail.com>
- <877c4azyez.ffs@tglx> <CANn89iKAkio9wm73RNi9+KngNaS+Au2oaf0Tz9xOd+QEhFSkyw@mail.gmail.com>
- <CANn89i+nAN+p-qRypKxB4ESohXkKVPmHuV_m86j3DPv6_+C=oQ@mail.gmail.com>
- <87v7ruycfz.ffs@tglx> <CANn89iJvxYsF0Y9jH+Oa2=akrydR8qbWAMbz_S6YZQMSe=2QWQ@mail.gmail.com>
- <87jz8ay5rh.ffs@tglx> <CANn89i+r-k-2UNtnyWC6PaJmO_R6Wc6UROgeoir5BmgVV8wDqQ@mail.gmail.com>
- <CAGudoHHVJWeRWPyArnYnJERPR2gyU0PzBTwx=wWKnCemry45Nw@mail.gmail.com> <CANn89iLGof+T6Ksp56vTXpwKdn60cJ7FWrm-Y-3TNmCNW+Hq_A@mail.gmail.com>
-In-Reply-To: <CANn89iLGof+T6Ksp56vTXpwKdn60cJ7FWrm-Y-3TNmCNW+Hq_A@mail.gmail.com>
-From: Mateusz Guzik <mjguzik@gmail.com>
-Date: Thu, 27 Mar 2025 14:48:37 +0100
-X-Gm-Features: AQ5f1JpKomRkGYmjsgSFzFHODlirXHVWlwC4ZRc4JNJcxh6kNbtiGglHymgUuI8
-Message-ID: <CAGudoHE_K4iBHSNjKEPuQxJJ-cNx_8f74dou7qdEb58Pc4eKBQ@mail.gmail.com>
-Subject: Re: [tip:timers/core] [posix] 1535cb8028: stress-ng.epoll.ops_per_sec
- 36.2% regression
-To: Eric Dumazet <edumazet@google.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>, kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, 
-	lkp@intel.com, linux-kernel@vger.kernel.org, x86@kernel.org, 
-	Benjamin Segall <bsegall@google.com>, Frederic Weisbecker <frederic@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <pociwdgfqbzw4mjass6u6wcnvmqlh3ddqzoeoiwiyqs64pl6yu@5ad7ne7rgwe2>
 
-On Thu, Mar 27, 2025 at 2:44=E2=80=AFPM Eric Dumazet <edumazet@google.com> =
-wrote:
->
-> On Thu, Mar 27, 2025 at 2:43=E2=80=AFPM Mateusz Guzik <mjguzik@gmail.com>=
- wrote:
-> >
-> > On Thu, Mar 27, 2025 at 2:17=E2=80=AFPM Eric Dumazet <edumazet@google.c=
-om> wrote:
-> > >
-> > > On Thu, Mar 27, 2025 at 2:14=E2=80=AFPM Thomas Gleixner <tglx@linutro=
-nix.de> wrote:
-> > > >
-> > > > On Thu, Mar 27 2025 at 12:37, Eric Dumazet wrote:
-> > > > > On Thu, Mar 27, 2025 at 11:50=E2=80=AFAM Thomas Gleixner <tglx@li=
-nutronix.de> wrote:
-> > > > >> Cute. How much bloat does it cause?
-> > > > >
-> > > > > This would expand 'struct ucounts' by 192 bytes on x86, if the pa=
-tch
-> > > > > was actually working :)
-> > > > >
-> > > > > Note sure if it is feasible without something more intrusive like
-> > > >
-> > > > I'm not sure about the actual benefit. The problem is that parallel
-> > > > invocations which access the same ucount still will run into conten=
-tion
-> > > > of the cache line they are modifying.
-> > > >
-> > > > For the signal case, all invocations increment rlimit[SIGPENDING], =
-so
-> > > > putting that into a different cache line does not buy a lot.
-> > > >
-> > > > False sharing is when you have a lot of hot path readers on some ot=
-her
-> > > > member of the data structure, which happens to share the cache line=
- with
-> > > > the modified member. But that's not really the case here.
-> > >
-> > > We applications stressing all the counters at the same time (from
-> > > different threads)
-> > >
-> > > You seem to focus on posix timers only :)
-> >
-> > Well in that case:
-> > (gdb) ptype /o struct ucounts
-> > /* offset      |    size */  type =3D struct ucounts {
-> > /*      0      |      16 */    struct hlist_node {
-> > /*      0      |       8 */        struct hlist_node *next;
-> > /*      8      |       8 */        struct hlist_node **pprev;
-> >
-> >                                    /* total size (bytes):   16 */
-> >                                } node;
-> > /*     16      |       8 */    struct user_namespace *ns;
-> > /*     24      |       4 */    kuid_t uid;
-> > /*     28      |       4 */    atomic_t count;
-> > /*     32      |      96 */    atomic_long_t ucount[12];
-> > /*    128      |     256 */    struct {
-> > /*      0      |       8 */        atomic_long_t val;
-> >                                } rlimit[4];
-> >
-> >                                /* total size (bytes):  384 */
-> >                              }
-> >
-> > This comes from malloc. Given 384 bytes of size it is going to be
-> > backed by a 512-byte sized buffer -- that's a clear cut waste of 128
-> > bytes.
-> >
-> > It is plausible creating a 384-byte sized slab for kmalloc would help
-> > save memory overall (not just for this specific struct), but that
-> > would require extensive testing in real workloads. I think Google is
-> > in position to do it on their fleet and android? fwiw Solaris and
-> > FreeBSD do have slabs of this size and it does save memory over there.
-> > I understand it is a tradeoff, hence I'm not claiming this needs to be
-> > added. I do claim it does warrant evaluation, but I wont blame anyone
-> > for not wanting to do dig into it.
-> >
-> > The other option is to lean into it. In this case I point out the
-> > refcount shares the cacheline with some of the limits and that it
-> > could be moved to a dedicated line while still keeping the struct <
-> > 512 bytes, thus not spending more memory on allocation. the refcount
-> > changes less frequently than limits themselves so it's not a big deal,
-> > but it can be adjusted "for free" if you will.
-> >
-> > while here I would probably change the name of the field. A reference
-> > counter named "count" in a struct named "ucounts", followed by an
-> > "ucount" array is rather unpleasing. How about s/count/refcount?
->
->
-> How many 'struct ucounts' are in use in a typical host ?
->
-> Compared to other costs, this seems pure noise to me.
+On Thu, Mar 27, 2025 at 12:53:30PM +0100, Jan Kara wrote:
+> On Wed 26-03-25 11:50:55, Luis Chamberlain wrote:
+> > 0-day reported a page migration kernel warning with folios which happen
+> > to be buffer-heads [0]. I'm having a terribly hard time reproducing the bug
+> > and so I wrote this test to force page migration filesystems.
+> > 
+> > It turns out we have have no tests for page migration on fstests or ltp,
+> > and its no surprise, other than compaction covered by generic/750 there
+> > is no easy way to trigger page migration right now unless you have a
+> > numa system.
+> > 
+> > We should evaluate if we want to help stress test page migration
+> > artificially by later implementing a way to do page migration on simple
+> > systems to an artificial target.
+> > 
+> > So far, this doesn't trigger any kernel splats, not even warnings for me.
+> > 
+> > Reported-by: kernel test robot <oliver.sang@intel.com>
+> > Link: https://lore.kernel.org/r/202503101536.27099c77-lkp@intel.com # [0]
+> > Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+> 
+> So when I was testing page migration in the past MM guys advised me to use
+> THP compaction as a way to trigger page migration. You can manually
+> trigger compaction by:
+> 
+> echo 1 >/proc/sys/vm/compact_memory
 
-I did not claim this is going to increase memory usage in a significant man=
-ner.
+Right, that's what generic/750 does. IT runs fsstress and every 5
+seconds runs memory compaction in the background.
 
-I claim regardless of this change a 384-byte slab for kmalloc may be
-saving memory and this bit may be enough of an excuse to evaluate it,
-should someone be interested.
+> So you first mess with the page cache a bit to fragment memory and then
+> call the above to try to compact it back...
 
-Apart from that I claim that if the 512-byte is going to be used to
-back the 384 bytes used by the struct, the patch can trivially move
-the refcount to a dedicated cacheline to avoid some of the bouncing
-and still fit in the 512-byte allocation. I see no reason to not do
-it.
+Which is effectively what g/750 tries to exercise.
 
---=20
-Mateusz Guzik <mjguzik gmail.com>
+When it's run by check-parallel, compaction ends up doing a lot
+more work over a much wider range of tests...
+
+-Dave.
+-- 
+Dave Chinner
+david@fromorbit.com
