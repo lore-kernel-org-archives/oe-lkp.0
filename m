@@ -1,209 +1,159 @@
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04225212D9E
-	for <oe-lkp@lists.linux.dev>; Thu, 27 Mar 2025 11:38:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A08B52139A4
+	for <oe-lkp@lists.linux.dev>; Thu, 27 Mar 2025 11:53:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743075482; cv=none; b=r7tdER9ZfPa/W9nk2546n0Uxj/PMyTBZBrX8hq+4PH/jsFydmxE6S4pSHSIUgNk7uQRHlHOPxirlcY2+s2PtIpMqwV40VmbeXZcr3KeHPkK1Y4b8VIL1idv9xsyMkaO2vr/rF+Td+M+Q8c1Musjq5ZIesB7v93cJcX5u6+Uu1Yw=
+	t=1743076415; cv=none; b=bV+0hWDGB0yApeEkISdjVWxyswSTywnpP6fe+LAQ6U799ljrNYmAH0mv20rf3fET3ja5wRckf0HhhyqMEWx8M3IihPUe2rUCx/vtTte34QAsjrn7tAVtnyYTAp9PgMU7Sjl3zLRrK0ON7j4m5KivO1NMfYO0eTZlCwBd4NCEOgQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743075482; c=relaxed/simple;
-	bh=jJgFpwlIGzvdgTu5NIuLqljmZcu4Bj1hntEIypGP3WA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=N6V7rCVP6AcsPI31g6xNSFkEP/bAGUO1MOJ6NVsLjAhiKpmcV2ngOUZNpZtmCs43e1fGuqN9/OkybRNfNU6R0CGhCh3sj583LYF6JtALVPgTZLwY3/VpwNc1dMsOYtC1opsIRYtkb1AyG0tI1jcb3Vngk7BFdOZ2aKKHv8z5iKk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Am6vln2J; arc=none smtp.client-ip=209.85.160.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1743076415; c=relaxed/simple;
+	bh=XABOlLOdb+GYGihfxxXpKbRns0kIKcDt7XDQoGxdyfM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Asa49hyI+RZSO38JZoC9CPvsUQfPYouiS3d6Dd5CrIpawvB/nf67oS4OWCOafyyfqmAcUoa3LtsCiMLdR793KJVoEIhC66vWPhrppvdZWcGaO2CGMOxhiiexECK971AosTlInvFGe0gEL1rrDFsB4Dv6n4I3ZN+aHNjFc06cFMQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=0WmmS6iH; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=pIotN3XF; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=0WmmS6iH; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=pIotN3XF; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Am6vln2J"
-Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-477296dce76so7791301cf.3
-        for <oe-lkp@lists.linux.dev>; Thu, 27 Mar 2025 04:38:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1743075480; x=1743680280; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=J1q7MD5L4p1QWH6dvXV/jdGu9zU55RX2uZ00Mq2fH7Y=;
-        b=Am6vln2JiZQE5xLDd6GocfMFp3ORGP9W68sylp0rzrOJyxn9kX/6rR/4OvuwAeg7xY
-         8xwgIK+dhGYoswWOzjktoXSHdiip336p+ekQzLVk74bHPP9xftI6YMpy0Olo09SJbbE2
-         TDjsavl9fsCQaE7QU9S0qey4U7Hb2gBqsg1t2H6rX6t7T2tNaW9Ky09LmfKs+P8+egm8
-         U3bZgr5f9x1AIPtobmqdWFazL/r0sTaUT7T5ev7rzmCwSR0F+KnHn6S36k0ETqKqoNbA
-         Tk/sFbqqKPTaUAm2xoVS2Zj8JzLi7b2MzH7OuyzszwlEAPSEOVl0eH819nsPHuKqz6c+
-         kkiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1743075480; x=1743680280;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=J1q7MD5L4p1QWH6dvXV/jdGu9zU55RX2uZ00Mq2fH7Y=;
-        b=E00Jex4NBac4ON9HyPvNVw226Qasg2s68iDEeWxu6DshGmHJznwTw/v/qyDd8LvCVj
-         Tn3CbfUNtPCbFF3WLJQIS40zrmsfChc5PuL/aa9P/wTe5MBoRYxluVskMNWPEJEAZJU4
-         4A4zpswn4CNSmO8Tqf+S9RViA2xCEjuKhtS9Fzk+qRAVXSFiGBIUsHgC9zlcfnWQd52w
-         fJ1e2y7SFQCKert4tP22ZnvaNl1rFQZfBixzIgt1t3UIrFsWY7b6PD/cAuYIuAgETOvI
-         0Mtf+oRDdXhBKX5BWkROJOksMOGW323gFRx6kVM2rgNnGD/pHmi9WVRYcNCdYKNSvQun
-         3gtA==
-X-Forwarded-Encrypted: i=1; AJvYcCXDAWIJuywU5TPHQ8UOeIMcXI9hVmfPU3okcJLCwbGTvxGTESK/sIPq1ewSBIhg+LSLWDmlUH8=@lists.linux.dev
-X-Gm-Message-State: AOJu0YynPBY/5RNdYN+1ADTkRd6lK3Qfpx3G3Vgwl2NVUerEvMULQ8c4
-	Pt7e1zqMgtjKdj1EC4qW79568i69ia9uh8VNskjwlkKd8HplvkjyYdhjZLN015VFg/KcMr0AKYs
-	60IYuOPVkqqHMpqYL2neBZGCYwbQnWAsLWQ93
-X-Gm-Gg: ASbGncsd6aO8efIbnSitdaRmeORI2SgSCFvHm/3ezv+1MkDjMZw4jl6OSg0ouCeHN7o
-	QtCK9cKafbMd3qNC5PKnTpzwHgEB5/LOi5U0EloFq+YivD/bJQUdpoIg4olh/yoeXuD/ROL/8OJ
-	j6uGxrmqzFatDUb+oNMOUoL2uWUCk=
-X-Google-Smtp-Source: AGHT+IFMK1+BRWSCgAgLNRsQgWuq7hn+JjgvqMr67X53YHJ6vdJkGkcfutooQweF9AELFGacZ4T19Jmld+d58szJUpM=
-X-Received: by 2002:a05:622a:a12:b0:476:9b40:c2cf with SMTP id
- d75a77b69052e-4776e21f0aemr64540851cf.50.1743075479560; Thu, 27 Mar 2025
- 04:37:59 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="0WmmS6iH";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="pIotN3XF";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="0WmmS6iH";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="pIotN3XF"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id A2A181F449;
+	Thu, 27 Mar 2025 11:53:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1743076410; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=R+QxkDVy5JRXbW51kJ2F9UVtUHbBkep2u9RXAqpaoBw=;
+	b=0WmmS6iHlw/gOs91YI8HSX8we1JIoZSAW6ycjBmd9yfK0HSf1J+h20t4Z96p3NQL4EgvLy
+	pqVLrN6Hm1zJlzxIuQ4gqZGmb2fGiZFJ/KjnMFQiPTnM3hIGCP4XyrnCBa1aTDa4jL1LK7
+	HJfIKZQ8nZ1pjFXGLmphhZqpXOIIL9c=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1743076410;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=R+QxkDVy5JRXbW51kJ2F9UVtUHbBkep2u9RXAqpaoBw=;
+	b=pIotN3XFDhfuYS4qF+/VXHQh4jiW8JPxvUg9Zao5zvzq318vz6yZH7IPHfymstt2WoLJK5
+	9gpWYqRYiKvLeaBw==
+Authentication-Results: smtp-out2.suse.de;
+	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=0WmmS6iH;
+	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b=pIotN3XF
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1743076410; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=R+QxkDVy5JRXbW51kJ2F9UVtUHbBkep2u9RXAqpaoBw=;
+	b=0WmmS6iHlw/gOs91YI8HSX8we1JIoZSAW6ycjBmd9yfK0HSf1J+h20t4Z96p3NQL4EgvLy
+	pqVLrN6Hm1zJlzxIuQ4gqZGmb2fGiZFJ/KjnMFQiPTnM3hIGCP4XyrnCBa1aTDa4jL1LK7
+	HJfIKZQ8nZ1pjFXGLmphhZqpXOIIL9c=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1743076410;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=R+QxkDVy5JRXbW51kJ2F9UVtUHbBkep2u9RXAqpaoBw=;
+	b=pIotN3XFDhfuYS4qF+/VXHQh4jiW8JPxvUg9Zao5zvzq318vz6yZH7IPHfymstt2WoLJK5
+	9gpWYqRYiKvLeaBw==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 941D9139D4;
+	Thu, 27 Mar 2025 11:53:30 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id CNgjJDo85WdlMAAAD6G6ig
+	(envelope-from <jack@suse.cz>); Thu, 27 Mar 2025 11:53:30 +0000
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+	id 49C00A082A; Thu, 27 Mar 2025 12:53:30 +0100 (CET)
+Date: Thu, 27 Mar 2025 12:53:30 +0100
+From: Jan Kara <jack@suse.cz>
+To: Luis Chamberlain <mcgrof@kernel.org>
+Cc: patches@lists.linux.dev, fstests@vger.kernel.org, linux-mm@kvack.org, 
+	linux-fsdevel@vger.kernel.org, linux-block@vger.kernel.org, oliver.sang@intel.com, 
+	hannes@cmpxchg.org, willy@infradead.org, jack@suse.cz, apopple@nvidia.com, 
+	brauner@kernel.org, hare@suse.de, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	john.g.garry@oracle.com, p.raghav@samsung.com, da.gomez@samsung.com, dave@stgolabs.net, 
+	riel@surriel.com, krisman@suse.de, boris@bur.io, jackmanb@google.com, 
+	gost.dev@samsung.com
+Subject: Re: [PATCH] generic/764: fsstress + migrate_pages() test
+Message-ID: <pociwdgfqbzw4mjass6u6wcnvmqlh3ddqzoeoiwiyqs64pl6yu@5ad7ne7rgwe2>
+References: <20250326185101.2237319-1-mcgrof@kernel.org>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202503241406.5c9cb80a-lkp@intel.com> <87pli4z02w.ffs@tglx>
- <6sn76aya225pqikijue5uv5h3lyqk262hc6ru3vemn7xofdftd@sw7gith52xh7>
- <CANn89iKjCgmxtiLeVAiXODHbbR7=gYYi5cfAS1hS5qn+z=-o1Q@mail.gmail.com>
- <877c4azyez.ffs@tglx> <CANn89iKAkio9wm73RNi9+KngNaS+Au2oaf0Tz9xOd+QEhFSkyw@mail.gmail.com>
- <CANn89i+nAN+p-qRypKxB4ESohXkKVPmHuV_m86j3DPv6_+C=oQ@mail.gmail.com> <87v7ruycfz.ffs@tglx>
-In-Reply-To: <87v7ruycfz.ffs@tglx>
-From: Eric Dumazet <edumazet@google.com>
-Date: Thu, 27 Mar 2025 12:37:48 +0100
-X-Gm-Features: AQ5f1JpaXRqbndei8EK3d-QrLVd1cHoGleu01HKLXFr1d0BmULk0gBaqe9nHrLk
-Message-ID: <CANn89iJvxYsF0Y9jH+Oa2=akrydR8qbWAMbz_S6YZQMSe=2QWQ@mail.gmail.com>
-Subject: Re: [tip:timers/core] [posix] 1535cb8028: stress-ng.epoll.ops_per_sec
- 36.2% regression
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: Mateusz Guzik <mjguzik@gmail.com>, kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, 
-	lkp@intel.com, linux-kernel@vger.kernel.org, x86@kernel.org, 
-	Benjamin Segall <bsegall@google.com>, Frederic Weisbecker <frederic@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250326185101.2237319-1-mcgrof@kernel.org>
+X-Rspamd-Queue-Id: A2A181F449
+X-Spam-Level: 
+X-Spamd-Result: default: False [-4.01 / 50.00];
+	BAYES_HAM(-3.00)[99.99%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	MID_RHS_NOT_FQDN(0.50)[];
+	R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	ARC_NA(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	MISSING_XM_UA(0.00)[];
+	RCPT_COUNT_TWELVE(0.00)[24];
+	MIME_TRACE(0.00)[0:+];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:email,suse.cz:dkim];
+	TO_DN_SOME(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	RCVD_COUNT_THREE(0.00)[3];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	RCVD_TLS_LAST(0.00)[];
+	DKIM_TRACE(0.00)[suse.cz:+]
+X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
+X-Rspamd-Action: no action
+X-Spam-Score: -4.01
+X-Spam-Flag: NO
 
-On Thu, Mar 27, 2025 at 11:50=E2=80=AFAM Thomas Gleixner <tglx@linutronix.d=
-e> wrote:
->
-> On Thu, Mar 27 2025 at 10:11, Eric Dumazet wrote:
-> > On Thu, Mar 27, 2025 at 9:26=E2=80=AFAM Eric Dumazet <edumazet@google.c=
-om> wrote:
-> >
-> >> We could place all these atomic fields in separate cache lines,
-> >> to keep read-only fields shared as much as possible.
-> >>
-> >
-> > Following one-liner seems good enough to separate the 4 atomics used
-> > to control/limit
-> >
-> > UCOUNT_RLIMIT_NPROC, UCOUNT_RLIMIT_MSGQUEUE, UCOUNT_RLIMIT_SIGPENDING,
-> > UCOUNT_RLIMIT_MEMLOCK,
-> >
-> >
-> > diff --git a/include/linux/user_namespace.h b/include/linux/user_namesp=
-ace.h
-> > index 7183e5aca282..6cc3fbec3632 100644
-> > --- a/include/linux/user_namespace.h
-> > +++ b/include/linux/user_namespace.h
-> > @@ -120,7 +120,7 @@ struct ucounts {
-> >         kuid_t uid;
-> >         atomic_t count;
-> >         atomic_long_t ucount[UCOUNT_COUNTS];
-> > -       atomic_long_t rlimit[UCOUNT_RLIMIT_COUNTS];
-> > +       atomic_long_t ____cacheline_aligned_in_smp rlimit[UCOUNT_RLIMIT=
-_COUNTS];
-> >  };
->
-> Cute. How much bloat does it cause?
+On Wed 26-03-25 11:50:55, Luis Chamberlain wrote:
+> 0-day reported a page migration kernel warning with folios which happen
+> to be buffer-heads [0]. I'm having a terribly hard time reproducing the bug
+> and so I wrote this test to force page migration filesystems.
+> 
+> It turns out we have have no tests for page migration on fstests or ltp,
+> and its no surprise, other than compaction covered by generic/750 there
+> is no easy way to trigger page migration right now unless you have a
+> numa system.
+> 
+> We should evaluate if we want to help stress test page migration
+> artificially by later implementing a way to do page migration on simple
+> systems to an artificial target.
+> 
+> So far, this doesn't trigger any kernel splats, not even warnings for me.
+> 
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> Link: https://lore.kernel.org/r/202503101536.27099c77-lkp@intel.com # [0]
+> Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
 
-This would expand 'struct ucounts' by 192 bytes on x86, if the patch
-was actually working :)
+So when I was testing page migration in the past MM guys advised me to use
+THP compaction as a way to trigger page migration. You can manually
+trigger compaction by:
 
-Note sure if it is feasible without something more intrusive like
+echo 1 >/proc/sys/vm/compact_memory
 
-diff --git a/include/linux/user_namespace.h b/include/linux/user_namespace.=
-h
-index 7183e5aca282..3513df720430 100644
---- a/include/linux/user_namespace.h
-+++ b/include/linux/user_namespace.h
-@@ -120,7 +120,10 @@ struct ucounts {
-        kuid_t uid;
-        atomic_t count;
-        atomic_long_t ucount[UCOUNT_COUNTS];
--       atomic_long_t rlimit[UCOUNT_RLIMIT_COUNTS];
-+
-+       struct {
-+               atomic_long_t ____cacheline_aligned_in_smp val;
-+       } rlimit[UCOUNT_RLIMIT_COUNTS];
- };
+So you first mess with the page cache a bit to fragment memory and then
+call the above to try to compact it back...
 
- extern struct user_namespace init_user_ns;
-@@ -136,7 +139,7 @@ void put_ucounts(struct ucounts *ucounts);
-
- static inline long get_rlimit_value(struct ucounts *ucounts, enum
-rlimit_type type)
- {
--       return atomic_long_read(&ucounts->rlimit[type]);
-+       return atomic_long_read(&ucounts->rlimit[type].val);
- }
-
- long inc_rlimit_ucounts(struct ucounts *ucounts, enum rlimit_type
-type, long v);
-diff --git a/kernel/ucount.c b/kernel/ucount.c
-index 86c5f1c0bad9..0cd5498890f8 100644
---- a/kernel/ucount.c
-+++ b/kernel/ucount.c
-@@ -266,7 +266,7 @@ long inc_rlimit_ucounts(struct ucounts *ucounts,
-enum rlimit_type type, long v)
-        long ret =3D 0;
-
-        for (iter =3D ucounts; iter; iter =3D iter->ns->ucounts) {
--               long new =3D atomic_long_add_return(v, &iter->rlimit[type])=
-;
-+               long new =3D atomic_long_add_return(v, &iter->rlimit[type].=
-val);
-                if (new < 0 || new > max)
-                        ret =3D LONG_MAX;
-                else if (iter =3D=3D ucounts)
-@@ -281,7 +281,7 @@ bool dec_rlimit_ucounts(struct ucounts *ucounts,
-enum rlimit_type type, long v)
-        struct ucounts *iter;
-        long new =3D -1; /* Silence compiler warning */
-        for (iter =3D ucounts; iter; iter =3D iter->ns->ucounts) {
--               long dec =3D atomic_long_sub_return(v, &iter->rlimit[type])=
-;
-+               long dec =3D atomic_long_sub_return(v, &iter->rlimit[type].=
-val);
-                WARN_ON_ONCE(dec < 0);
-                if (iter =3D=3D ucounts)
-                        new =3D dec;
-@@ -294,7 +294,7 @@ static void do_dec_rlimit_put_ucounts(struct
-ucounts *ucounts,
- {
-        struct ucounts *iter, *next;
-        for (iter =3D ucounts; iter !=3D last; iter =3D next) {
--               long dec =3D atomic_long_sub_return(1, &iter->rlimit[type])=
-;
-+               long dec =3D atomic_long_sub_return(1, &iter->rlimit[type].=
-val);
-                WARN_ON_ONCE(dec < 0);
-                next =3D iter->ns->ucounts;
-                if (dec =3D=3D 0)
-@@ -316,7 +316,7 @@ long inc_rlimit_get_ucounts(struct ucounts
-*ucounts, enum rlimit_type type,
-        long dec, ret =3D 0;
-
-        for (iter =3D ucounts; iter; iter =3D iter->ns->ucounts) {
--               long new =3D atomic_long_add_return(1, &iter->rlimit[type])=
-;
-+               long new =3D atomic_long_add_return(1, &iter->rlimit[type].=
-val);
-                if (new < 0 || new > max)
-                        goto dec_unwind;
-                if (iter =3D=3D ucounts)
-@@ -334,7 +334,7 @@ long inc_rlimit_get_ucounts(struct ucounts
-*ucounts, enum rlimit_type type,
-        }
-        return ret;
- dec_unwind:
--       dec =3D atomic_long_sub_return(1, &iter->rlimit[type]);
-+       dec =3D atomic_long_sub_return(1, &iter->rlimit[type].val);
-        WARN_ON_ONCE(dec < 0);
-        do_dec_rlimit_put_ucounts(ucounts, iter, type);
-        return 0;
+								Honza
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
