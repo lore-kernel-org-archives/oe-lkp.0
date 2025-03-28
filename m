@@ -1,396 +1,274 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from smtp-bc08.mail.infomaniak.ch (smtp-bc08.mail.infomaniak.ch [45.157.188.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66EEE20E6;
-	Fri, 28 Mar 2025 09:48:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D92F171092
+	for <oe-lkp@lists.linux.dev>; Fri, 28 Mar 2025 14:11:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.157.188.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743155281; cv=none; b=PCsHt6RIAxsphuxlh4pfsMxFzkz2xLPuKi5eTSYQ/B5mLwmhMd3IoXaVWTfCpTHVieaRc6QWHRRiY0iDM/VYTZNh1PROugj3uJNfqAGkoNEs+WM/goP2eCn5xE3rBGTlsGjjyC8EXfclPknAxVtTsl4KIU5WZe5xzdgnJznsAAE=
+	t=1743171085; cv=none; b=Y+QmzUXLi88cGiBwqwM5kQFCh/eTbs2SPlYhArUNP+Y7cxdPBSB1FYnrXnrG8/Kl0/6V400yirOkb5I3HVpNujLtsilwB79oQTQuQvFgiC3nwPi9RSdS7tE+4qqYKzXuKzueQs94aHCKaPaBu3VP8lex2hwrFcFWZurf0H8tu7c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743155281; c=relaxed/simple;
-	bh=L1ZhqRI/3AJIXQgEqaTudZR8WC5Mp92X10KbrCftwaE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=d0KiM4Fovs0/NVaYbQIJYM6OYGWg1l4TxgCQhcr14rvE0jnUPJGRCdUlMsROlTeXs/qGXl1lwYIPjtGs9cXO9mR59CfK5t+iwyk2PRvclG6fGlo7V+OcdWig7DHzTRSqebvQc6EFv3J3lh8lYEyDLItlvoVQlYJnVGOrhGmKIcs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=enYSWdxw; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1743171085; c=relaxed/simple;
+	bh=tCiUrUdCF2LourYFrLD46zAIiUJklcnRNi2hRVIDCGU=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=izYdqIB1vw6nuLnhVabZoiKhuLFi+yzvCesnrcRzP/wb1gZqvgjy+KujTHRsKFnTkfJn/T5RUuxd4KPJsOBf+CQp2Ktk1uzZ6vj7ke0v426ik5kRhnyjretiI6q2yFes8wIoc1uT1pLW+cbjOO0Dh8ZjDKJ4XcXQmeWMbxqodaE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=digikod.net; spf=pass smtp.mailfrom=digikod.net; dkim=pass (1024-bit key) header.d=digikod.net header.i=@digikod.net header.b=Z0npusDx; arc=none smtp.client-ip=45.157.188.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=digikod.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=digikod.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="enYSWdxw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66014C4CEE4;
-	Fri, 28 Mar 2025 09:48:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1743155280;
-	bh=L1ZhqRI/3AJIXQgEqaTudZR8WC5Mp92X10KbrCftwaE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=enYSWdxwpGyjDxGb/SJLtqANY8cacr0AHWSdU8cA/Uspwi3xJRKoaFea0DNJBuTD1
-	 6qqR1EKuZP1hm8jAD7n1U4b9zBP5lnQpCfGHtWTEh+PUTwc80D++zBXCcvutiPb/w1
-	 KzAhWJ4LMIg2pE6AZMDXUHWq01IEgwFpHuAzjFDQFUFK+px0fYNeBcv8R9yA5x1OYc
-	 RhEerHZvXx+UjG3amXr5TnTjF7riaCxXREOOJyCXhlSGdnd1xvB4quocMb88cZUU/4
-	 9NcurqWuhoic9KipXxlMwIYLN8zpGJhhvM6IL1dXI2PJvzZ8arGnoX0FV1f+8crihO
-	 yY3MIMZjpR/aA==
-Date: Fri, 28 Mar 2025 02:47:58 -0700
-From: Luis Chamberlain <mcgrof@kernel.org>
-To: Jan Kara <jack@suse.cz>, Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc: Johannes Weiner <hannes@cmpxchg.org>,
-	Oliver Sang <oliver.sang@intel.com>,
-	Matthew Wilcox <willy@infradead.org>,
-	David Hildenbrand <david@redhat.com>,
-	Alistair Popple <apopple@nvidia.com>, linux-mm@kvack.org,
-	Christian Brauner <brauner@kernel.org>,
-	Hannes Reinecke <hare@suse.de>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, John Garry <john.g.garry@oracle.com>,
-	linux-block@vger.kernel.org, ltp@lists.linux.it,
-	Pankaj Raghav <p.raghav@samsung.com>,
-	Daniel Gomez <da.gomez@samsung.com>,
-	David Bueso <dave@stgolabs.net>
-Subject: Re: [linux-next:master] [block/bdev]  3c20917120:
- BUG:sleeping_function_called_from_invalid_context_at_mm/util.c
-Message-ID: <Z-ZwToVfJbdTVRtG@bombadil.infradead.org>
-References: <Z9r27eUk993BNWTX@bombadil.infradead.org>
- <Z9sYGccL4TocoITf@bombadil.infradead.org>
- <Z9sZ5_lJzTwGShQT@casper.infradead.org>
- <Z9wF57eEBR-42K9a@bombadil.infradead.org>
- <20250322231440.GA1894930@cmpxchg.org>
- <Z99dk_ZMNRFgaaH8@bombadil.infradead.org>
- <Z9-zL3pRpCHm5a0w@bombadil.infradead.org>
- <Z+JSwb8BT0tZrSrx@xsang-OptiPlex-9020>
- <Z-X_FiXDTSvRSksp@bombadil.infradead.org>
- <Z-YjyBF-M9ciJC7X@bombadil.infradead.org>
+	dkim=pass (1024-bit key) header.d=digikod.net header.i=@digikod.net header.b="Z0npusDx"
+Received: from smtp-3-0001.mail.infomaniak.ch (smtp-3-0001.mail.infomaniak.ch [10.4.36.108])
+	by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4ZPMrc4s9kzKJ0;
+	Fri, 28 Mar 2025 15:11:12 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=digikod.net;
+	s=20191114; t=1743171072;
+	bh=NFpUu6WrzhfUSQQIQTu0ReypD0HxLWchYWLFvMJMHMc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=Z0npusDx073v2JnL3O5Irx8nSpTz8f0cgOlbn2l2iSzLaE7891FHnwk3Dm/eI1pzY
+	 itkSGtdwwOK+ht2kDo0Xy75kfoq0ARYA2jK6v/SixjaUXzpI/bVYJiKiDQGA52Fqzr
+	 OhjOHxNi4s0C5q3od047kGO5VwvrA6SVbzc0FjKk=
+Received: from unknown by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4ZPMrb3BTZzbVQ;
+	Fri, 28 Mar 2025 15:11:11 +0100 (CET)
+Date: Fri, 28 Mar 2025 15:11:10 +0100
+From: =?utf-8?Q?Micka=C3=ABl_Sala=C3=BCn?= <mic@digikod.net>
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, 
+	=?utf-8?Q?G=C3=BCnther?= Noack <gnoack@google.com>, Paul Moore <paul@paul-moore.com>, 
+	Serge Hallyn <serge@hallyn.com>, Tahera Fahimi <fahimitahera@gmail.com>, 
+	Christian Brauner <brauner@kernel.org>, linux-security-module@vger.kernel.org, 
+	Dan Carpenter <dan.carpenter@linaro.org>, Jann Horn <jannh@google.com>, Jeff Xu <jeffxu@google.com>, 
+	Kees Cook <kees@kernel.org>, Mikhail Ivanov <ivanov.mikhail1@huawei-partners.com>, 
+	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [linux-next:master] [landlock]  9d65581539:
+ WARNING:suspicious_RCU_usage
+Message-ID: <20250328.aLawah0saice@digikod.net>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <Z-YjyBF-M9ciJC7X@bombadil.infradead.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20250326.yee0ba6Yai3m@digikod.net>
+ <Z+ZrSPZph9cDvUR4@xsang-OptiPlex-9020>
+X-Infomaniak-Routing: alpha
 
-On Thu, Mar 27, 2025 at 09:21:30PM -0700, Luis Chamberlain wrote:
-> Would the extra ref check added via commit 060913999d7a9e50 ("mm:
-> migrate: support poisoned recover from migrate folio") make the removal
-> of the spin lock safe now given all the buffers are locked from the
-> folio? This survives some basic sanity checks on my end with
-> generic/750 against ext4 and also filling a drive at the same time with
-> fio. I have a feeling is we are not sure, do we have a reproducer for
-> the issue reported through ebdf4de5642fb6 ("mm: migrate: fix reference
-> check race between __find_get_block() and migration")? I suspect the
-> answer is no.
+On Fri, Mar 28, 2025 at 05:26:32PM +0800, Oliver Sang wrote:
+> hi, Mickaël Salaün,
+> 
+> On Fri, Mar 28, 2025 at 09:31:15AM +0100, Mickaël Salaün wrote:
+> > On Fri, Mar 28, 2025 at 02:05:59PM +0800, Oliver Sang wrote:
+> > > hi, Mickaël Salaün,
+> > > 
+> > > On Fri, Mar 28, 2025 at 11:00:37AM +0800, Oliver Sang wrote:
+> > > > hi, Mickaël Salaün,
+> > > > 
+> > > > On Thu, Mar 27, 2025 at 07:41:08PM +0100, Mickaël Salaün wrote:
+> > > > > Hi Olivier,
+> > > > > 
+> > > > > I pushed an updated yesterday in linux-next that should fix this issue
+> > > > > and this other issue too:
+> > > > > https://lore.kernel.org/all/20250326.yee0ba6Yai3m@digikod.net/
+> > > > > 
+> > > > > Could you please confirm that these issues are really fixed? Or
+> > > > > otherwise, please let me know when I should expect (or not) an email
+> > > > > from kernel test robot. :)
+> > > > 
+> > > > ok, we've started the tests for both issues. upon the commit:
+> > > > db8da9da41bce (tag: next-20250327, linux-next/master) Add linux-next specific files for 20250327
+> > > 
+> > > sorry that due to unknown reason, we cannot build sucessfully upon db8da9da41bce
+> > > for both tests (which are using randconfig). could you give us the commit-id
+> > > of your fix? we could try test upon that fix commit again.
+> > 
+> > The new commit is 18eb75f3af40 ("landlock: Always allow signals between
+> > threads of the same process").
+> 
+> it turned out the build failure is due to my typo. shamed...
+> 
+> we finished tests still upon db8da9da41bce, for the WARNING:suspicious_RCU_usage
+> issue in this report, we run the tests 20 times, cannot reproduce now.
+> 
+> for the random issues we reported in
+> https://lore.kernel.org/all/202503261534.22d970e8-lkp@intel.com/
+> now we cannot reproduce it with db8da9da41bce by 500 runs.
 
-<-- snip -->
+Yes, that makes sense with my fix.
 
-> diff --git a/mm/migrate.c b/mm/migrate.c
-> index 97f0edf0c032..6a5d125ecde9 100644
-> --- a/mm/migrate.c
-> +++ b/mm/migrate.c
-> @@ -859,12 +859,12 @@ static int __buffer_migrate_folio(struct address_space *mapping,
->  			}
->  			bh = bh->b_this_page;
->  		} while (bh != head);
-> +		spin_unlock(&mapping->i_private_lock);
->  		if (busy) {
->  			if (invalidated) {
->  				rc = -EAGAIN;
->  				goto unlock_buffers;
->  			}
-> -			spin_unlock(&mapping->i_private_lock);
->  			invalidate_bh_lrus();
->  			invalidated = true;
->  			goto recheck_buffers;
-> @@ -882,8 +882,6 @@ static int __buffer_migrate_folio(struct address_space *mapping,
->  	} while (bh != head);
->  
->  unlock_buffers:
-> -	if (check_refs)
-> -		spin_unlock(&mapping->i_private_lock);
->  	bh = head;
->  	do {
->  		unlock_buffer(bh);
-> diff --git a/mm/util.c b/mm/util.c
-> index 448117da071f..3585bdb8700a 100644
-> --- a/mm/util.c
-> +++ b/mm/util.c
-> @@ -735,6 +735,8 @@ int folio_mc_copy(struct folio *dst, struct folio *src)
->  	long nr = folio_nr_pages(src);
->  	long i = 0;
->  
-> +	might_sleep();
-> +
->  	for (;;) {
->  		if (copy_mc_highpage(folio_page(dst, i), folio_page(src, i)))
->  			return -EHWPOISON;
+> 
+> we think both issues are solved.
+> 
+> and since db8da9da41bce includes the 18eb75f3af40, we won't test again upon
+> 18eb75f3af40. thanks!
 
-Nah, this ends up producing the following so I'm inclined at this point
-to just rever the 64k 64k block size enablment until we get this figured
-out because I can't think of an easy quick solution to this.
+Thanks for the confirmation!
 
-
-Mar 28 03:35:30 extra-ext4-4k kernel: Linux version 6.14.0-rc7-next-20250321-dirty (mcgrof@beef) (gcc (Debian 14.2.0-16) 14.2.0, GNU ld (GNU Binutils for Debian) 2.44) #57 SMP PREEMPT_DYNAMIC Fri Mar 28 03:33:04 UTC 2025
-Mar 28 03:35:30 extra-ext4-4k kernel: Command line: BOOT_IMAGE=/boot/vmlinuz-6.14.0-rc7-next-20250321-dirty root=PARTUUID=503fa6f2-2d5b-4d7e-8cf8-3a811de326ce ro console=tty0 console=tty1 console=ttyS0,115200n8 console=ttyS0
-
-<-- snip -->
-
-Mar 28 03:36:32 extra-ext4-4k kernel: EXT4-fs (loop16): mounted filesystem 90cdb700-ad4a-4261-a1be-4f4627772317 r/w with ordered data mode. Quota mode: none.
-Mar 28 03:36:37 extra-ext4-4k kernel: EXT4-fs (loop5): mounted filesystem fef0662d-01fc-483d-87ac-8e4ef2939de3 r/w with ordered data mode. Quota mode: none.
-Mar 28 03:36:37 extra-ext4-4k kernel: EXT4-fs (loop5): unmounting filesystem fef0662d-01fc-483d-87ac-8e4ef2939de3.
-Mar 28 03:36:37 extra-ext4-4k kernel: EXT4-fs (loop16): unmounting filesystem 90cdb700-ad4a-4261-a1be-4f4627772317.
-Mar 28 03:36:37 extra-ext4-4k kernel: EXT4-fs (loop16): mounted filesystem 90cdb700-ad4a-4261-a1be-4f4627772317 r/w with ordered data mode. Quota mode: none.
-Mar 28 03:36:37 extra-ext4-4k unknown: run fstests generic/750 at 2025-03-28 03:36:37
-Mar 28 03:36:39 extra-ext4-4k kernel: EXT4-fs (loop5): mounted filesystem ed8a8fa0-0ea1-4820-aa26-366cd64a6e36 r/w with ordered data mode. Quota mode: none.
-Mar 28 03:39:06 extra-ext4-4k kernel: rcu: INFO: rcu_preempt detected expedited stalls on CPUs/tasks: { P7603 } 8 jiffies s: 565 root: 0x0/T
-Mar 28 03:39:06 extra-ext4-4k kernel: rcu: blocking rcu_node structures (internal RCU debug):
-Mar 28 03:59:47 extra-ext4-4k kernel: NOHZ tick-stop error: local softirq work is pending, handler #10!!!
-Mar 28 04:24:47 extra-ext4-4k kernel: ------------[ cut here ]------------
-Mar 28 04:24:47 extra-ext4-4k kernel: WARNING: CPU: 7 PID: 1790 at mm/slub.c:4756 free_large_kmalloc+0xc1/0x100
-Mar 28 04:24:47 extra-ext4-4k kernel: Modules linked in: loop sunrpc 9p nls_iso8859_1 kvm_intel nls_cp437 vfat crc32c_generic fat kvm ghash_clmulni_intel sha512_ssse3 sha256_ssse3 sha1_ssse3 aesni_intel gf128mul crypto_simd cryptd 9pnet_virtio virtio_balloon virtio_console evdev button joydev serio_raw nvme_fabrics nvme_core dm_mod drm nfnetlink vsock_loopback vmw_vsock_virtio_transport_common vsock autofs4 ext4 crc16 mbcache jbd2 btrfs blake2b_generic efivarfs raid10 raid456 async_raid6_recov async_memcpy async_pq async_xor async_tx xor raid6_pq raid1 raid0 md_mod virtio_net net_failover failover virtio_blk virtio_pci virtio_pci_legacy_dev virtio_pci_modern_dev psmouse virtio virtio_ring
-Mar 28 04:24:47 extra-ext4-4k kernel: CPU: 7 UID: 0 PID: 1790 Comm: fsstress Not tainted 6.14.0-rc7-next-20250321-dirty #57 PREEMPT(full) 
-Mar 28 04:24:47 extra-ext4-4k kernel: Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 2024.11-5 01/28/2025
-Mar 28 04:24:47 extra-ext4-4k kernel: RIP: 0010:free_large_kmalloc+0xc1/0x100
-Mar 28 04:24:47 extra-ext4-4k kernel: Code: f8 00 00 00 75 24 0f 0b 80 3d de 57 3b 01 00 0f 84 4f 63 be ff bd 00 f0 ff ff eb 8e 48 c7 c6 10 03 27 90 e8 61 32 fa ff 0f 0b <0f> 0b 48 83 c4 08 48 89 df 48 c7 c6 18 db 31 90 5b 5d e9 48 32 fa
-Mar 28 04:24:47 extra-ext4-4k kernel: RSP: 0018:ffffa95942a67ac8 EFLAGS: 00010202
-Mar 28 04:24:47 extra-ext4-4k kernel: RAX: 00000000000000ff RBX: fffffc63c4219c40 RCX: 0000000000000001
-Mar 28 04:24:47 extra-ext4-4k kernel: RDX: 0000000000000000 RSI: ffff978e08671000 RDI: fffffc63c4219c40
-Mar 28 04:24:47 extra-ext4-4k kernel: RBP: 0000000000000000 R08: 0000000000000020 R09: fffffffffffffff0
-Mar 28 04:24:47 extra-ext4-4k kernel: R10: 00000000000000a0 R11: 0000000000000004 R12: 0000000000000000
-Mar 28 04:24:47 extra-ext4-4k kernel: R13: ffff978e08671000 R14: 0000000000000000 R15: ffff978d03bf1000
-Mar 28 04:24:47 extra-ext4-4k kernel: FS:  00007fefc4670740(0000) GS:ffff978eecda0000(0000) knlGS:0000000000000000
-Mar 28 04:24:47 extra-ext4-4k kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-Mar 28 04:24:47 extra-ext4-4k kernel: CR2: 00007fefc4872000 CR3: 0000000075fa6002 CR4: 0000000000772ef0
-Mar 28 04:24:47 extra-ext4-4k kernel: DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-Mar 28 04:24:47 extra-ext4-4k kernel: DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Mar 28 04:24:47 extra-ext4-4k kernel: PKRU: 55555554
-Mar 28 04:24:47 extra-ext4-4k kernel: Call Trace:
-Mar 28 04:24:47 extra-ext4-4k kernel:  <TASK>
-Mar 28 04:24:47 extra-ext4-4k kernel:  ? __warn.cold+0xb7/0x14f
-Mar 28 04:24:47 extra-ext4-4k kernel:  ? free_large_kmalloc+0xc1/0x100
-Mar 28 04:24:47 extra-ext4-4k kernel:  ? report_bug+0xe6/0x170
-Mar 28 04:24:47 extra-ext4-4k kernel:  ? free_large_kmalloc+0xc1/0x100
-Mar 28 04:24:47 extra-ext4-4k kernel:  ? handle_bug+0x199/0x260
-Mar 28 04:24:47 extra-ext4-4k kernel:  ? exc_invalid_op+0x13/0x60
-Mar 28 04:24:47 extra-ext4-4k kernel:  ? asm_exc_invalid_op+0x16/0x20
-Mar 28 04:24:47 extra-ext4-4k kernel:  ? free_large_kmalloc+0xc1/0x100
-Mar 28 04:24:47 extra-ext4-4k kernel:  ext4_xattr_block_set+0x191/0x1200 [ext4]
-Mar 28 04:24:47 extra-ext4-4k kernel:  ? xattr_find_entry+0x96/0x110 [ext4]
-Mar 28 04:24:47 extra-ext4-4k kernel:  ext4_xattr_set_handle+0x572/0x630 [ext4]
-Mar 28 04:24:47 extra-ext4-4k kernel:  ext4_xattr_set+0x7c/0x150 [ext4]
-Mar 28 04:24:47 extra-ext4-4k kernel:  __vfs_removexattr+0x7c/0xb0
-Mar 28 04:24:47 extra-ext4-4k kernel:  __vfs_removexattr_locked+0xb7/0x150
-Mar 28 04:24:47 extra-ext4-4k kernel:  vfs_removexattr+0x58/0x100
-Mar 28 04:24:47 extra-ext4-4k kernel:  path_removexattrat+0x17d/0x330
-Mar 28 04:24:47 extra-ext4-4k kernel:  ? __do_sys_newfstatat+0x33/0x60
-Mar 28 04:24:47 extra-ext4-4k kernel:  __x64_sys_removexattr+0x19/0x20
-Mar 28 04:24:47 extra-ext4-4k kernel:  do_syscall_64+0x69/0x140
-Mar 28 04:24:47 extra-ext4-4k kernel:  entry_SYSCALL_64_after_hwframe+0x76/0x7e
-Mar 28 04:24:47 extra-ext4-4k kernel: RIP: 0033:0x7fefc4781037
-Mar 28 04:24:47 extra-ext4-4k kernel: Code: f0 ff ff 73 01 c3 48 8b 0d be 8d 0d 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 b8 c5 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 91 8d 0d 00 f7 d8 64 89 01 48
-Mar 28 04:24:47 extra-ext4-4k kernel: RSP: 002b:00007ffc2b5a5d48 EFLAGS: 00000206 ORIG_RAX: 00000000000000c5
-Mar 28 04:24:47 extra-ext4-4k kernel: RAX: ffffffffffffffda RBX: 000000000002d937 RCX: 00007fefc4781037
-Mar 28 04:24:47 extra-ext4-4k kernel: RDX: 0000000000000000 RSI: 00007ffc2b5a5d70 RDI: 0000563075ae5850
-Mar 28 04:24:47 extra-ext4-4k kernel: RBP: 00007ffc2b5a5d70 R08: 0000000000000064 R09: 00000000ffffffff
-Mar 28 04:24:47 extra-ext4-4k kernel: R10: 0000000000000000 R11: 0000000000000206 R12: 00000000000030d4
-Mar 28 04:24:47 extra-ext4-4k kernel: R13: 8f5c28f5c28f5c29 R14: 00007ffc2b5a5e20 R15: 0000563064291ea0
-Mar 28 04:24:47 extra-ext4-4k kernel:  </TASK>
-Mar 28 04:24:47 extra-ext4-4k kernel: irq event stamp: 94586373
-Mar 28 04:24:47 extra-ext4-4k kernel: hardirqs last  enabled at (94586383): [<ffffffff8f19ee1e>] __up_console_sem+0x5e/0x70
-Mar 28 04:24:47 extra-ext4-4k kernel: hardirqs last disabled at (94586394): [<ffffffff8f19ee03>] __up_console_sem+0x43/0x70
-Mar 28 04:24:47 extra-ext4-4k kernel: softirqs last  enabled at (94585948): [<ffffffff8f0ffa53>] __irq_exit_rcu+0xc3/0x120
-Mar 28 04:24:47 extra-ext4-4k kernel: softirqs last disabled at (94585929): [<ffffffff8f0ffa53>] __irq_exit_rcu+0xc3/0x120
-Mar 28 04:24:47 extra-ext4-4k kernel: ---[ end trace 0000000000000000 ]---
-Mar 28 04:24:47 extra-ext4-4k kernel: page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x402a88 pfn:0x108671
-Mar 28 04:24:47 extra-ext4-4k kernel: flags: 0x57fffc000000000(node=1|zone=2|lastcpupid=0x1ffff)
-Mar 28 04:24:47 extra-ext4-4k kernel: raw: 057fffc000000000 dead000000000100 dead000000000122 0000000000000000
-Mar 28 04:24:47 extra-ext4-4k kernel: raw: 0000000000402a88 0000000000000000 00000000ffffffff 0000000000000000
-Mar 28 04:24:47 extra-ext4-4k kernel: page dumped because: Not a kmalloc allocation
-Mar 28 04:50:41 extra-ext4-4k kernel: BUG: MAX_LOCKDEP_CHAIN_HLOCKS too low!
-Mar 28 04:50:41 extra-ext4-4k kernel: turning off the locking correctness validator.
-Mar 28 04:50:41 extra-ext4-4k kernel: CPU: 4 UID: 0 PID: 668 Comm: btrfs-transacti Tainted: G        W           6.14.0-rc7-next-20250321-dirty #57 PREEMPT(full) 
-Mar 28 04:50:41 extra-ext4-4k kernel: Tainted: [W]=WARN
-Mar 28 04:50:41 extra-ext4-4k kernel: Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 2024.11-5 01/28/2025
-Mar 28 04:50:41 extra-ext4-4k kernel: Call Trace:
-Mar 28 04:50:41 extra-ext4-4k kernel:  <TASK>
-Mar 28 04:50:41 extra-ext4-4k kernel:  dump_stack_lvl+0x68/0x90
-Mar 28 04:50:41 extra-ext4-4k kernel:  __lock_acquire+0x1eaf/0x2210
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? __lock_acquire+0xc77/0x2210
-Mar 28 04:50:41 extra-ext4-4k kernel:  lock_acquire+0xd1/0x2e0
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? put_cpu_partial+0x5f/0x1d0
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? lock_acquire+0xe1/0x2e0
-Mar 28 04:50:41 extra-ext4-4k kernel:  put_cpu_partial+0x68/0x1d0
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? put_cpu_partial+0x5f/0x1d0
-Mar 28 04:50:41 extra-ext4-4k kernel:  get_partial_node.part.0+0xde/0x400
-Mar 28 04:50:41 extra-ext4-4k kernel:  ___slab_alloc+0x361/0x13c0
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? __alloc_object+0x2f/0x240
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? mark_held_locks+0x40/0x70
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? ___slab_alloc+0x701/0x13c0
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? lockdep_hardirqs_on+0x78/0x100
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? __alloc_object+0x2f/0x240
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? __slab_alloc.isra.0+0x52/0xa0
-Mar 28 04:50:41 extra-ext4-4k kernel:  __slab_alloc.isra.0+0x52/0xa0
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? __alloc_object+0x2f/0x240
-Mar 28 04:50:41 extra-ext4-4k kernel:  kmem_cache_alloc_noprof+0x1e3/0x430
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? xas_alloc+0x9f/0xc0
-Mar 28 04:50:41 extra-ext4-4k kernel:  __alloc_object+0x2f/0x240
-Mar 28 04:50:41 extra-ext4-4k kernel:  __create_object+0x22/0x90
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? xas_alloc+0x9f/0xc0
-Mar 28 04:50:41 extra-ext4-4k kernel:  kmem_cache_alloc_lru_noprof+0x337/0x430
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? __lock_acquire+0x45d/0x2210
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? stack_depot_save_flags+0x23/0x9d0
-Mar 28 04:50:41 extra-ext4-4k kernel:  xas_alloc+0x9f/0xc0
-Mar 28 04:50:41 extra-ext4-4k kernel:  xas_create+0x309/0x6f0
-Mar 28 04:50:41 extra-ext4-4k kernel:  xas_store+0x54/0x700
-Mar 28 04:50:41 extra-ext4-4k kernel:  __xa_cmpxchg+0xb9/0x140
-Mar 28 04:50:41 extra-ext4-4k kernel:  add_delayed_ref+0x11d/0xa50 [btrfs]
-Mar 28 04:50:41 extra-ext4-4k kernel:  btrfs_alloc_tree_block+0x3ea/0x5a0 [btrfs]
-Mar 28 04:50:41 extra-ext4-4k kernel:  split_leaf+0x167/0x6d0 [btrfs]
-Mar 28 04:50:41 extra-ext4-4k kernel:  setup_leaf_for_split+0x19f/0x200 [btrfs]
-Mar 28 04:50:41 extra-ext4-4k kernel:  btrfs_split_item+0x21/0x50 [btrfs]
-Mar 28 04:50:41 extra-ext4-4k kernel:  btrfs_del_csums+0x270/0x3a0 [btrfs]
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? btrfs_csum_root+0x83/0xb0 [btrfs]
-Mar 28 04:50:41 extra-ext4-4k kernel:  __btrfs_free_extent.isra.0+0x5fb/0xcc0 [btrfs]
-Mar 28 04:50:41 extra-ext4-4k kernel:  __btrfs_run_delayed_refs+0x51d/0xf40 [btrfs]
-Mar 28 04:50:41 extra-ext4-4k kernel:  btrfs_run_delayed_refs+0x3d/0x110 [btrfs]
-Mar 28 04:50:41 extra-ext4-4k kernel:  btrfs_commit_transaction+0x8f/0xee0 [btrfs]
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? btrfs_init_block_rsv+0x51/0x60 [btrfs]
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? start_transaction+0x22c/0xaa0 [btrfs]
-Mar 28 04:50:41 extra-ext4-4k kernel:  transaction_kthread+0x152/0x1b0 [btrfs]
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? __pfx_transaction_kthread+0x10/0x10 [btrfs]
-Mar 28 04:50:41 extra-ext4-4k kernel:  kthread+0x107/0x250
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? find_held_lock+0x2b/0x80
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? ret_from_fork+0x17/0x50
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? ret_from_fork+0x17/0x50
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? lock_release+0x17d/0x2c0
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? __pfx_kthread+0x10/0x10
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? __pfx_kthread+0x10/0x10
-Mar 28 04:50:41 extra-ext4-4k kernel:  ret_from_fork+0x2d/0x50
-Mar 28 04:50:41 extra-ext4-4k kernel:  ? __pfx_kthread+0x10/0x10
-Mar 28 04:50:41 extra-ext4-4k kernel:  ret_from_fork_asm+0x1a/0x30
-Mar 28 04:50:41 extra-ext4-4k kernel:  </TASK>
-Mar 28 05:04:32 extra-ext4-4k kernel: page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x20889c pfn:0x4a3e
-Mar 28 05:04:32 extra-ext4-4k kernel: flags: 0xffffc000000000(node=0|zone=1|lastcpupid=0x1ffff)
-Mar 28 05:04:32 extra-ext4-4k kernel: raw: 00ffffc000000000 fffffc63c041d448 ffff978d7bc347f0 0000000000000000
-Mar 28 05:04:32 extra-ext4-4k kernel: raw: 000000000020889c 0000000000000000 00000000ffffffff 0000000000000000
-Mar 28 05:04:32 extra-ext4-4k kernel: page dumped because: Not a kmalloc allocation
-Mar 28 05:31:13 extra-ext4-4k kernel: page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x498b96 pfn:0x76f4
-Mar 28 05:31:13 extra-ext4-4k kernel: flags: 0xffffc000000000(node=0|zone=1|lastcpupid=0x1ffff)
-Mar 28 05:31:13 extra-ext4-4k kernel: raw: 00ffffc000000000 fffffc63c01d9308 fffffc63c01df648 0000000000000000
-Mar 28 05:31:13 extra-ext4-4k kernel: raw: 0000000000498b96 0000000000000000 00000000ffffffff 0000000000000000
-Mar 28 05:31:13 extra-ext4-4k kernel: page dumped because: Not a kmalloc allocation
-Mar 28 05:57:09 extra-ext4-4k kernel: EXT4-fs error (device loop5): ext4_get_first_dir_block:3538: inode #5174: comm fsstress: directory missing '.'
-Mar 28 06:04:43 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5176: comm fsstress: directory missing '.'
-Mar 28 06:05:19 extra-ext4-4k kernel: page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x243117 pfn:0x104ddb
-Mar 28 06:05:19 extra-ext4-4k kernel: flags: 0x57fffc000000000(node=1|zone=2|lastcpupid=0x1ffff)
-Mar 28 06:05:19 extra-ext4-4k kernel: raw: 057fffc000000000 fffffc63c4136fc8 ffff978d7bcb4970 0000000000000000
-Mar 28 06:05:19 extra-ext4-4k kernel: raw: 0000000000243117 0000000000000000 00000000ffffffff 0000000000000000
-Mar 28 06:05:19 extra-ext4-4k kernel: page dumped because: Not a kmalloc allocation
-Mar 28 06:15:16 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5176: comm fsstress: directory missing '.'
-Mar 28 06:23:04 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 06:23:15 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 06:23:23 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 06:23:28 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 06:23:43 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 06:24:02 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 06:24:35 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 06:30:04 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5173: comm fsstress: directory missing '.'
-Mar 28 06:32:30 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5188: comm fsstress: directory missing '.'
-Mar 28 06:32:39 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5176: comm fsstress: directory missing '.'
-Mar 28 06:38:54 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5173: comm fsstress: directory missing '.'
-Mar 28 06:41:37 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5187: comm fsstress: directory missing '.'
-Mar 28 06:42:05 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 06:42:06 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 06:42:22 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 06:42:38 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 06:42:42 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 06:42:53 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 06:42:54 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 06:43:02 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 06:43:12 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 06:43:15 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 06:53:28 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5188: comm fsstress: directory missing '.'
-Mar 28 06:54:36 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5176: comm fsstress: directory missing '.'
-Mar 28 06:55:07 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 06:55:09 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 06:55:12 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 07:04:21 extra-ext4-4k kernel: EXT4-fs error (device loop5): ext4_get_first_dir_block:3538: inode #5173: comm fsstress: directory missing '.'
-Mar 28 07:11:04 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5173: comm fsstress: directory missing '.'
-Mar 28 07:13:11 extra-ext4-4k kernel: EXT4-fs error (device loop5): ext4_get_first_dir_block:3538: inode #5174: comm fsstress: directory missing '.'
-Mar 28 07:15:45 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5176: comm fsstress: checksumming directory block 0
-Mar 28 07:15:49 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5176: comm fsstress: checksumming directory block 0
-Mar 28 07:15:51 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5176: comm fsstress: checksumming directory block 0
-Mar 28 07:15:52 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5176: comm fsstress: checksumming directory block 0
-Mar 28 07:16:00 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5176: comm fsstress: checksumming directory block 0
-Mar 28 07:16:41 extra-ext4-4k kernel: EXT4-fs error (device loop5): ext4_get_first_dir_block:3538: inode #5187: comm fsstress: directory missing '.'
-Mar 28 07:24:00 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5176: comm fsstress: checksumming directory block 0
-Mar 28 07:24:31 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5176: comm fsstress: checksumming directory block 0
-Mar 28 07:25:40 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #8703: comm fsstress: checksumming directory block 0
-Mar 28 07:25:47 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #8703: comm fsstress: checksumming directory block 0
-Mar 28 07:25:50 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #8703: comm fsstress: checksumming directory block 0
-Mar 28 07:26:18 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #8684: comm fsstress: checksumming directory block 0
-Mar 28 07:41:04 extra-ext4-4k kernel: EXT4-fs error (device loop5): ext4_get_first_dir_block:3538: inode #5188: comm fsstress: directory missing '.'
-Mar 28 07:41:11 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5174: comm fsstress: checksumming directory block 0
-Mar 28 07:44:41 extra-ext4-4k kernel: EXT4-fs error (device loop5): ext4_get_first_dir_block:3538: inode #5187: comm fsstress: directory missing '.'
-Mar 28 07:47:20 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5187: comm fsstress: directory missing '.'
-Mar 28 07:47:28 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5187: comm fsstress: directory missing '.'
-Mar 28 07:47:56 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5176: comm fsstress: checksumming directory block 0
-Mar 28 07:49:05 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5187: comm fsstress: directory missing '.'
-Mar 28 07:53:26 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5173: comm fsstress: directory missing '.'
-Mar 28 08:16:43 extra-ext4-4k kernel: EXT4-fs error (device loop5): ext4_find_extent:938: inode #1104560: comm fsstress: pblk 4932229 bad header/extent: invalid magic - magic 8383, entries 33667, max 33667(0), depth 33667(0)
-Mar 28 08:16:43 extra-ext4-4k kernel: EXT4-fs error (device loop5): ext4_find_extent:938: inode #1104560: comm fsstress: pblk 4932229 bad header/extent: invalid magic - magic 8383, entries 33667, max 33667(0), depth 33667(0)
-Mar 28 08:16:43 extra-ext4-4k kernel: EXT4-fs error (device loop5): ext4_find_extent:938: inode #1104560: comm fsstress: pblk 4932229 bad header/extent: invalid magic - magic 8383, entries 33667, max 33667(0), depth 33667(0)
-Mar 28 08:16:43 extra-ext4-4k kernel: EXT4-fs error (device loop5): ext4_find_extent:938: inode #1104560: comm fsstress: pblk 4932229 bad header/extent: invalid magic - magic 8383, entries 33667, max 33667(0), depth 33667(0)
-Mar 28 08:16:43 extra-ext4-4k kernel: EXT4-fs error (device loop5): ext4_find_extent:938: inode #1104560: comm fsstress: pblk 4932229 bad header/extent: invalid magic - magic 8383, entries 33667, max 33667(0), depth 33667(0)
-Mar 28 08:16:43 extra-ext4-4k kernel: EXT4-fs error (device loop5): ext4_find_extent:938: inode #1104560: comm fsstress: pblk 4932229 bad header/extent: invalid magic - magic 8383, entries 33667, max 33667(0), depth 33667(0)
-Mar 28 08:16:43 extra-ext4-4k kernel: EXT4-fs error (device loop5): ext4_find_extent:938: inode #1104560: comm fsstress: pblk 4932229 bad header/extent: invalid magic - magic 8383, entries 33667, max 33667(0), depth 33667(0)
-Mar 28 08:16:43 extra-ext4-4k kernel: EXT4-fs error (device loop5): ext4_find_extent:938: inode #1104560: comm fsstress: pblk 4932229 bad header/extent: invalid magic - magic 8383, entries 33667, max 33667(0), depth 33667(0)
-Mar 28 08:16:43 extra-ext4-4k kernel: EXT4-fs error (device loop5): ext4_find_extent:938: inode #1104560: comm fsstress: pblk 4932229 bad header/extent: invalid magic - magic 8383, entries 33667, max 33667(0), depth 33667(0)
-Mar 28 08:16:43 extra-ext4-4k kernel: EXT4-fs error (device loop5): ext4_find_extent:938: inode #1104560: comm fsstress: pblk 4932229 bad header/extent: invalid magic - magic 8383, entries 33667, max 33667(0), depth 33667(0)
-Mar 28 08:19:26 extra-ext4-4k kernel: EXT4-fs error: 6 callbacks suppressed
-Mar 28 08:19:26 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 08:21:37 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5173: comm fsstress: directory missing '.'
-Mar 28 08:28:17 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5173: comm fsstress: directory missing '.'
-Mar 28 08:30:17 extra-ext4-4k kernel: EXT4-fs error (device loop5): ext4_find_extent:938: inode #1104560: comm fsstress: pblk 4932229 bad header/extent: invalid magic - magic 8383, entries 33667, max 33667(0), depth 33667(0)
-Mar 28 08:31:02 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5176: comm fsstress: directory missing '.'
-Mar 28 08:32:21 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #8699: comm fsstress: checksumming directory block 0
-Mar 28 08:32:23 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #8699: comm fsstress: checksumming directory block 0
-Mar 28 08:32:24 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #8699: comm fsstress: checksumming directory block 0
-Mar 28 08:32:31 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #8699: comm fsstress: checksumming directory block 0
-Mar 28 08:32:36 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #8699: comm fsstress: checksumming directory block 0
-Mar 28 08:32:43 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5176: comm fsstress: directory missing '.'
-Mar 28 08:34:47 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5174: comm fsstress: directory missing '.'
-Mar 28 08:34:58 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5173: comm fsstress: directory missing '.'
-Mar 28 08:35:01 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5187: comm fsstress: directory missing '.'
-Mar 28 08:37:11 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #8699: comm fsstress: checksumming directory block 0
-Mar 28 08:37:12 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #8699: comm fsstress: checksumming directory block 0
-Mar 28 08:37:14 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5188: comm fsstress: directory missing '.'
-Mar 28 08:37:17 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #8699: comm fsstress: checksumming directory block 0
-Mar 28 08:39:32 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5174: comm fsstress: directory missing '.'
-Mar 28 08:40:52 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5176: comm fsstress: checksumming directory block 0
-Mar 28 08:40:55 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5176: comm fsstress: checksumming directory block 0
-Mar 28 08:41:03 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5173: comm fsstress: directory missing '.'
-Mar 28 08:54:04 extra-ext4-4k kernel: EXT4-fs error (device loop5): ext4_get_first_dir_block:3538: inode #5187: comm fsstress: directory missing '.'
-Mar 28 08:58:02 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5188: comm fsstress: directory missing '.'
-Mar 28 09:00:10 extra-ext4-4k kernel: EXT4-fs error (device loop5): ext4_get_first_dir_block:3538: inode #5174: comm fsstress: directory missing '.'
-Mar 28 09:01:30 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5174: comm fsstress: checksumming directory block 0
-Mar 28 09:04:55 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5176: comm fsstress: directory missing '.'
-Mar 28 09:05:48 extra-ext4-4k kernel: EXT4-fs warning (device loop5): ext4_empty_dir:3088: inode #5188: comm fsstress: directory missing '.'
-Mar 28 09:07:16 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5176: comm fsstress: checksumming directory block 0
-Mar 28 09:07:21 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5176: comm fsstress: checksumming directory block 0
-Mar 28 09:07:31 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5176: comm fsstress: checksumming directory block 0
-Mar 28 09:07:33 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 09:07:34 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 09:07:42 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 09:07:43 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 09:07:49 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5173: comm fsstress: checksumming directory block 0
-Mar 28 09:13:23 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5188: comm fsstress: checksumming directory block 0
-Mar 28 09:13:44 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5188: comm fsstress: checksumming directory block 0
-Mar 28 09:13:56 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5188: comm fsstress: checksumming directory block 0
-Mar 28 09:14:06 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5188: comm fsstress: checksumming directory block 0
-Mar 28 09:14:33 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5187: comm fsstress: checksumming directory block 0
-Mar 28 09:14:35 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5187: comm fsstress: checksumming directory block 0
-Mar 28 09:14:50 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5187: comm fsstress: checksumming directory block 0
-Mar 28 09:14:51 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5187: comm fsstress: checksumming directory block 0
-Mar 28 09:14:53 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5187: comm fsstress: checksumming directory block 0
-Mar 28 09:14:54 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5187: comm fsstress: checksumming directory block 0
-Mar 28 09:14:55 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5187: comm fsstress: checksumming directory block 0
-Mar 28 09:14:56 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5187: comm fsstress: checksumming directory block 0
-Mar 28 09:14:57 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5187: comm fsstress: checksumming directory block 0
-Mar 28 09:15:00 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5187: comm fsstress: checksumming directory block 0
-Mar 28 09:15:11 extra-ext4-4k kernel: EXT4-fs error (device loop5): __ext4_find_entry:1626: inode #5187: comm fsstress: checksumming directory block 0
-Mar 28 09:16:55 extra-ext4-4k kernel: EXT4-fs error (device loop5): ext4_find_extent:938: inode #1104560: comm fsstress: pblk 4932229 bad header/extent: invalid magic - magic 8383, entries 33667, max 33667(0), depth 33667(0)
-Mar 28 09:17:22 extra-ext4-4k kernel: NOHZ tick-stop error: local softirq work is pending, handler #10!!!
+> 
+> 
+> > 
+> > > 
+> > > > 
+> > > > if this is not the correct commit to check, please let us know. thanks!
+> > > > 
+> > > > > 
+> > > > > Regards,
+> > > > >  Mickaël
+> > > > > 
+> > > > > On Wed, Mar 26, 2025 at 04:00:12PM +0800, kernel test robot wrote:
+> > > > > > 
+> > > > > > hi, Mickaël Salaün,
+> > > > > > 
+> > > > > > we just reported a random
+> > > > > > "Oops:general_protection_fault,probably_for_non-canonical_address#:#[##]SMP_KASAN"
+> > > > > > issue in
+> > > > > > https://lore.kernel.org/all/202503261534.22d970e8-lkp@intel.com/
+> > > > > > 
+> > > > > > now we noticed this commit is also in linux-next/master.
+> > > > > > 
+> > > > > > we don't have enough knowledge to check the difference, but we found a
+> > > > > > persistent issue for this commit.
+> > > > > > 
+> > > > > > 6d9ac5e4d70eba3e 9d65581539252fdb1666917a095
+> > > > > > ---------------- ---------------------------
+> > > > > >        fail:runs  %reproduction    fail:runs
+> > > > > >            |             |             |
+> > > > > >            :6          100%           6:6     dmesg.WARNING:suspicious_RCU_usage
+> > > > > >            :6          100%           6:6     dmesg.boot_failures
+> > > > > >            :6          100%           6:6     dmesg.kernel/pid.c:#suspicious_rcu_dereference_check()usage
+> > > > > > 
+> > > > > > below full report FYI.
+> > > > > > 
+> > > > > > 
+> > > > > > Hello,
+> > > > > > 
+> > > > > > kernel test robot noticed "WARNING:suspicious_RCU_usage" on:
+> > > > > > 
+> > > > > > commit: 9d65581539252fdb1666917a09549c13090fe9e5 ("landlock: Always allow signals between threads of the same process")
+> > > > > > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> > > > > > 
+> > > > > > [test failed on linux-next/master eb4bc4b07f66f01618d9cb1aa4eaef59b1188415]
+> > > > > > 
+> > > > > > in testcase: trinity
+> > > > > > version: trinity-x86_64-ba2360ed-1_20241228
+> > > > > > with following parameters:
+> > > > > > 
+> > > > > > 	runtime: 300s
+> > > > > > 	group: group-00
+> > > > > > 	nr_groups: 5
+> > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > > config: x86_64-randconfig-101-20250325
+> > > > > > compiler: gcc-12
+> > > > > > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+> > > > > > 
+> > > > > > (please refer to attached dmesg/kmsg for entire log/backtrace)
+> > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > > If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> > > > > > the same patch/commit), kindly add following tags
+> > > > > > | Reported-by: kernel test robot <oliver.sang@intel.com>
+> > > > > > | Closes: https://lore.kernel.org/oe-lkp/202503261510.f9652c11-lkp@intel.com
+> > > > > > 
+> > > > > > 
+> > > > > > [  166.893101][ T3747] WARNING: suspicious RCU usage
+> > > > > > [  166.893462][ T3747] 6.14.0-rc5-00006-g9d6558153925 #1 Not tainted
+> > > > > > [  166.893895][ T3747] -----------------------------
+> > > > > > [  166.894239][ T3747] kernel/pid.c:414 suspicious rcu_dereference_check() usage!
+> > > > > > [  166.894747][ T3747]
+> > > > > > [  166.894747][ T3747] other info that might help us debug this:
+> > > > > > [  166.894747][ T3747]
+> > > > > > [  166.895450][ T3747]
+> > > > > > [  166.895450][ T3747] rcu_scheduler_active = 2, debug_locks = 1
+> > > > > > [  166.896030][ T3747] 3 locks held by trinity-c2/3747:
+> > > > > > [ 166.896415][ T3747] #0: ffff888114a5a930 (&group->mark_mutex){+.+.}-{4:4}, at: fcntl_dirnotify (include/linux/sched/mm.h:332 include/linux/sched/mm.h:386 include/linux/fsnotify_backend.h:279 fs/notify/dnotify/dnotify.c:329) 
+> > > > > > [ 166.897165][ T3747] #1: ffff888148bbea60 (&mark->lock){+.+.}-{3:3}, at: fcntl_dirnotify (fs/notify/dnotify/dnotify.c:349) 
+> > > > > > [ 166.897831][ T3747] #2: ffff888108a53220 (&f_owner->lock){....}-{3:3}, at: __f_setown (fs/fcntl.c:137) 
+> > > > > > [  166.898481][ T3747]
+> > > > > > [  166.898481][ T3747] stack backtrace:
+> > > > > > [  166.898901][ T3747] CPU: 0 UID: 65534 PID: 3747 Comm: trinity-c2 Not tainted 6.14.0-rc5-00006-g9d6558153925 #1
+> > > > > > [  166.898908][ T3747] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> > > > > > [  166.898912][ T3747] Call Trace:
+> > > > > > [  166.898916][ T3747]  <TASK>
+> > > > > > [ 166.898921][ T3747] dump_stack_lvl (lib/dump_stack.c:123) 
+> > > > > > [ 166.898932][ T3747] lockdep_rcu_suspicious (kernel/locking/lockdep.c:6848) 
+> > > > > > [ 166.898945][ T3747] pid_task (kernel/pid.c:414 (discriminator 11)) 
+> > > > > > [ 166.898954][ T3747] hook_file_set_fowner (security/landlock/fs.c:1651 (discriminator 9)) 
+> > > > > > [ 166.898963][ T3747] security_file_set_fowner (arch/x86/include/asm/atomic.h:23 (discriminator 4) include/linux/atomic/atomic-arch-fallback.h:457 (discriminator 4) include/linux/jump_label.h:262 (discriminator 4) security/security.c:3062 (discriminator 4)) 
+> > > > > > [ 166.898969][ T3747] __f_setown (fs/fcntl.c:145) 
+> > > > > > [ 166.898980][ T3747] fcntl_dirnotify (fs/notify/dnotify/dnotify.c:233 fs/notify/dnotify/dnotify.c:371) 
+> > > > > > [ 166.898996][ T3747] do_fcntl (fs/fcntl.c:539) 
+> > > > > > [ 166.899002][ T3747] ? f_getown (fs/fcntl.c:448) 
+> > > > > > [ 166.899007][ T3747] ? check_prev_add (kernel/locking/lockdep.c:3862) 
+> > > > > > [ 166.899011][ T3747] ? do_syscall_64 (arch/x86/entry/common.c:102) 
+> > > > > > [ 166.899023][ T3747] ? syscall_exit_to_user_mode (include/linux/entry-common.h:361 kernel/entry/common.c:220) 
+> > > > > > [ 166.899038][ T3747] __x64_sys_fcntl (fs/fcntl.c:591 fs/fcntl.c:576 fs/fcntl.c:576) 
+> > > > > > [ 166.899050][ T3747] do_syscall_64 (arch/x86/entry/common.c:52 arch/x86/entry/common.c:83) 
+> > > > > > [ 166.899062][ T3747] ? find_held_lock (kernel/locking/lockdep.c:5341) 
+> > > > > > [ 166.899072][ T3747] ? __lock_release+0x10b/0x440 
+> > > > > > [ 166.899076][ T3747] ? __task_pid_nr_ns (include/linux/rcupdate.h:347 include/linux/rcupdate.h:880 kernel/pid.c:514) 
+> > > > > > [ 166.899082][ T3747] ? reacquire_held_locks (kernel/locking/lockdep.c:5502) 
+> > > > > > [ 166.899087][ T3747] ? lockdep_hardirqs_on (kernel/locking/lockdep.c:4470) 
+> > > > > > [ 166.899093][ T3747] ? do_syscall_64 (arch/x86/entry/common.c:102) 
+> > > > > > [ 166.899099][ T3747] ? do_syscall_64 (arch/x86/entry/common.c:102) 
+> > > > > > [ 166.899111][ T3747] ? syscall_exit_to_user_mode (include/linux/entry-common.h:361 kernel/entry/common.c:220) 
+> > > > > > [ 166.899119][ T3747] ? lockdep_hardirqs_on_prepare (kernel/locking/lockdep.c:469 kernel/locking/lockdep.c:4409) 
+> > > > > > [ 166.899124][ T3747] ? do_syscall_64 (arch/x86/entry/common.c:102) 
+> > > > > > [ 166.899129][ T3747] ? lockdep_hardirqs_on (kernel/locking/lockdep.c:4470) 
+> > > > > > [ 166.899134][ T3747] ? do_syscall_64 (arch/x86/entry/common.c:102) 
+> > > > > > [ 166.899139][ T3747] ? do_int80_emulation (arch/x86/include/asm/atomic.h:23 include/linux/atomic/atomic-arch-fallback.h:457 include/linux/jump_label.h:262 arch/x86/entry/common.c:230) 
+> > > > > > [ 166.899149][ T3747] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130) 
+> > > > > > [  166.899155][ T3747] RIP: 0033:0x7f55ad007719
+> > > > > > [ 166.899159][ T3747] Code: 08 89 e8 5b 5d c3 66 2e 0f 1f 84 00 00 00 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b7 06 0d 00 f7 d8 64 89 01 48
+> > > > > > All code
+> > > > > > ========
+> > > > > >    0:	08 89 e8 5b 5d c3    	or     %cl,-0x3ca2a418(%rcx)
+> > > > > >    6:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+> > > > > >    d:	00 00 00 
+> > > > > >   10:	90                   	nop
+> > > > > >   11:	48 89 f8             	mov    %rdi,%rax
+> > > > > >   14:	48 89 f7             	mov    %rsi,%rdi
+> > > > > >   17:	48 89 d6             	mov    %rdx,%rsi
+> > > > > >   1a:	48 89 ca             	mov    %rcx,%rdx
+> > > > > >   1d:	4d 89 c2             	mov    %r8,%r10
+> > > > > >   20:	4d 89 c8             	mov    %r9,%r8
+> > > > > >   23:	4c 8b 4c 24 08       	mov    0x8(%rsp),%r9
+> > > > > >   28:	0f 05                	syscall
+> > > > > >   2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping instruction
+> > > > > >   30:	73 01                	jae    0x33
+> > > > > >   32:	c3                   	ret
+> > > > > >   33:	48 8b 0d b7 06 0d 00 	mov    0xd06b7(%rip),%rcx        # 0xd06f1
+> > > > > >   3a:	f7 d8                	neg    %eax
+> > > > > >   3c:	64 89 01             	mov    %eax,%fs:(%rcx)
+> > > > > >   3f:	48                   	rex.W
+> > > > > > 
+> > > > > > Code starting with the faulting instruction
+> > > > > > ===========================================
+> > > > > >    0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
+> > > > > >    6:	73 01                	jae    0x9
+> > > > > >    8:	c3                   	ret
+> > > > > >    9:	48 8b 0d b7 06 0d 00 	mov    0xd06b7(%rip),%rcx        # 0xd06c7
+> > > > > >   10:	f7 d8                	neg    %eax
+> > > > > >   12:	64 89 01             	mov    %eax,%fs:(%rcx)
+> > > > > >   15:	48                   	rex.W
+> > > > > > [  166.899164][ T3747] RSP: 002b:00007ffff6eefb48 EFLAGS: 00000246 ORIG_RAX: 0000000000000048
+> > > > > > [  166.899168][ T3747] RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007f55ad007719
+> > > > > > [  166.899172][ T3747] RDX: 0000000000000027 RSI: 0000000000000402 RDI: 0000000000000043
+> > > > > > [  166.899174][ T3747] RBP: 00007f55ab92f058 R08: 0000000099999999 R09: 00000000377dd000
+> > > > > > [  166.899177][ T3747] R10: 0000000084848484 R11: 0000000000000246 R12: 0000000000000048
+> > > > > > [  166.899180][ T3747] R13: 00007f55acf036c0 R14: 00007f55ab92f058 R15: 00007f55ab92f000
+> > > > > > [  166.899203][ T3747]  </TASK>
+> > > > > > 
+> > > > > > 
+> > > > > > The kernel config and materials to reproduce are available at:
+> > > > > > https://download.01.org/0day-ci/archive/20250326/202503261510.f9652c11-lkp@intel.com
+> > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > > -- 
+> > > > > > 0-DAY CI Kernel Test Service
+> > > > > > https://github.com/intel/lkp-tests/wiki
+> > > > > > 
+> > > > > > 
