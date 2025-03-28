@@ -1,91 +1,99 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B56BC17BA3
-	for <oe-lkp@lists.linux.dev>; Fri, 28 Mar 2025 09:09:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC709213236
+	for <oe-lkp@lists.linux.dev>; Fri, 28 Mar 2025 09:26:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.19
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743152959; cv=fail; b=rDN+Pk7AsZ6dPRs4LwJCHi7wwZS6yD9vYpnj5aP5reAiCHpejABIr2EDfwkR9MmaVqxjj5ZeTTmQfpCp+lz8bAtadsKcO6QtUKn4nNoYWjgDXEKzi6R9sdg/ABie88iYXyqqn+K2manvDPBmLdBBC0YW/w0oOj+QP6kqhbKau68=
+	t=1743154009; cv=fail; b=MmnZNcH61k6XecCU8845hyG76IooFdm1R/8CpSl0c8mwuOZQSU9oZMjcytIn7fWLSFeBK3CQaDgGxfykSZ9Xisithivw9aoCdD+7baWcvA7p7OS1hmtQweTF0K4Jd+UVdTqlC4k4HuXMqvaEhxXxSGJ7WhBa2xcE6S6aDDHVbMg=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743152959; c=relaxed/simple;
-	bh=MXYwoTPaRLtACh9PhimN4fuoiyL3aIdL33Syet/lqrU=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=W44wDWMWSU/r83DSclUr2cupVjwjw7n/679hg0YtF7JdG8sn75OSJHgOhLGFHoVlnNLbU4F7PEnpExUftXlc5PNMfs/UD9M0/Ck2Zi6WeM9mqSuY8MCqSRYwcl6CHiRaJw1drWQb5wNRqvX2J/Kvx0tgQLYsIRKN/hkX3Q8qLGU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=c++aJtqz; arc=fail smtp.client-ip=198.175.65.12
+	s=arc-20240116; t=1743154009; c=relaxed/simple;
+	bh=xvZCD54nZN4X0uYb89zg15nZvRQWaaFejkzWkixwnkM=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=G3UprPwhBhvoouTa5lkErMcXy5TDAYxd2W9gOe9UywL1oFmEhAv4EyxLeLr5MzvXeeCwCJxnDwCrGxLaXmY5FwFd1ff7ahhzOk8SvIFrq01fk4gP8yXQGGnL2JIzISTVoqRNFuN1TgHIXb465jY6Ooxx9lgJAK1LhLlxPM0kCKg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=a7cAmfqP; arc=fail smtp.client-ip=198.175.65.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="c++aJtqz"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="a7cAmfqP"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1743152955; x=1774688955;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=MXYwoTPaRLtACh9PhimN4fuoiyL3aIdL33Syet/lqrU=;
-  b=c++aJtqz1pDSmZ4Jpya7YlhT0H8dOHPd+y2qu4ksxGS9dF3SuCwlhOWR
-   LX9wZK4jAlqX1y9df47wynD6/luRDetiimx3u/m29SVtCIlDivBl+tmfG
-   Pg4KLtRVMlLD5fiuMedPtUMSZCBTQoZbQutsF6IBBbsHj8HHyDGdJCRQu
-   6qPtaNJDNwjsZV2LAsqtPZJqHwA/uoDenWL+vpXPlKbSUtPhpS6zCbbGJ
-   y62Tf5vGxPsCG1QI+CcBphjqb3q24rnWJJlc5n+5aq/kMLFAxowOh1Hvh
-   Q2rbEEUhlNXwlcWDua2jutpu8PSF9DIcePFPXEgrs6ZumiCJBabAkqBmC
-   g==;
-X-CSE-ConnectionGUID: CKV3AQwjRBKN8mI2dHIseQ==
-X-CSE-MsgGUID: rgZxqwVsQYCJ4kxUH0ngyw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11385"; a="55877572"
+  t=1743154007; x=1774690007;
+  h=date:from:to:cc:subject:message-id:references:
+   content-transfer-encoding:in-reply-to:mime-version;
+  bh=xvZCD54nZN4X0uYb89zg15nZvRQWaaFejkzWkixwnkM=;
+  b=a7cAmfqPX6u1EW2CB+kzxWLjVlSnBzT3GVEsqjmtFsYBscC6CjgnZFbA
+   ct+vn8Po4Og7Fxc4W4Y2ZcB89w7KJc0CK7ODePQ3DZW3xBmMVL5t26jmk
+   gZLNs+mNL1UXF/Or/lEvc8l/m+rTxpWoVfOD/D7nAm+AKQYFWYM3Q81vC
+   faNxjW4mpXDJNVHmSN9bySvOxS7sIhgtw64KN8CsT/WHrLUAZL/X5g0T0
+   N97z2fD1sFMx+Rjs2Uu3anR2K2z59S9fVUxJKf/7AG20oOieBQmTnfXa5
+   B7ZGMXP5hoH2TeXsFeCIB/2rWd2QzyX9gl6rxadxjbFIvM2smPLHzPkCG
+   w==;
+X-CSE-ConnectionGUID: nhXFT+/3QCOsv4Ypr+xzHA==
+X-CSE-MsgGUID: TUb67oM4S+GQ9EPtRww5aQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11385"; a="44402869"
 X-IronPort-AV: E=Sophos;i="6.14,282,1736841600"; 
-   d="scan'208";a="55877572"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2025 02:09:15 -0700
-X-CSE-ConnectionGUID: 7T3eI1PVSrey6iD7F5+fJA==
-X-CSE-MsgGUID: ENuyr9D8RIyluSX/+RrApg==
+   d="scan'208";a="44402869"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2025 02:26:45 -0700
+X-CSE-ConnectionGUID: 9BQfyeRURBqpwgzUelCBMw==
+X-CSE-MsgGUID: WgUs48CyRQampRWcktdMrQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.14,282,1736841600"; 
-   d="scan'208";a="125907919"
-Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
-  by orviesa007.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2025 02:09:15 -0700
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.2.1544.14; Fri, 28 Mar 2025 02:09:14 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.44 via Frontend Transport; Fri, 28 Mar 2025 02:09:14 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.171)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+   d="scan'208";a="125624011"
+Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
+  by fmviesa008.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2025 02:26:45 -0700
+Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.44; Fri, 28 Mar 2025 02:09:14 -0700
+ 15.2.1544.14; Fri, 28 Mar 2025 02:26:44 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14 via Frontend Transport; Fri, 28 Mar 2025 02:26:44 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.49) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.44; Fri, 28 Mar 2025 02:26:43 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=CR1VfmsoVvJEaLsgWE7G+B8wlE0t+mW96b6x5eyh/9aXWn3rwYTj3fbuMAfTIjBTVy/qpKocSfvqceg7aZgj8gToIWcR5KlMLJgCGxO58faBBMq5rYIlJqTrjS2P1SN3cqdsDYZ5rjW4LH4asrqTM2pjofJgivoUg4OGtcj/G7Yk7lcpZnouegrJ2O4e2QHIJ0U0waSHwxOl4yfDae+nq2ViOx8D0jP2UYpShn5NiFv6m1+rGyzwThPzg0LuB70ubIaw/q9yxG5GG+75bwhKRqxPnnxmDkUG6MiHUrkp5NWZ+q+vkjlmcMTUcXcqDbubHedZuZKkAKINj8cdHQu+KA==
+ b=ERL5pqG8QSEVbrUxBCmUqoHGcm3rR8c804ccUoaLmbmXvjRII+JuMXu1awNGlxM0GxXMmpFWLKW4L/LPTR/WqCCKsAJSljwMEiFUq3QHnUmcJa7biQwzpooVJBw7oY/Y3nCagNrp1MONVTJKU9VC8+2abkJJq6U9F20GMUVEaUSU+7Nlus31yJ/QNuYtkQ7e2hQcXO7CB3+2mIIyl82zlmdH8zGbB32Byo7wNvc63GueShuhylHMIbPPTizUKw2L0evEZ9ZJO+mXfrXFyqxqs8YhLm5CKx2IYigveFt+ueyAgjsQEpw5Mne5wpZF1ATbHOZmLKQ7BXvciAmZnA7YBg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8LtqedrZAAtxKOdyWC/E4GWuttiSKvOkZye+I+Vabr8=;
- b=LO9Z+p1oMiOziMfR4jQPMmqyPt5/tn/yvcZykFJSTMAKxYkTIDWnGEcjBGcm2Y//w9Y+5ztlDny9j9+qb/LLZlKv5KpmktgEc4q0WN/Ha9nwJOvi0kXWrDFNcKMHZxa4EyXPe6wGITHRN0fHFcF8WOO5/2TIIG8eNtIF6oxrDPf2oQ9L18d+UYU37L133p2X3PkV+GH4gVs8ylBoHoIRBhCodVVgYbvQgiT/JQ+jha/MielJkz84RxL5AbXAPLYuWIaB+bUVCX7Z6xHO3FRXFtN7Hvny5E37p1LBdH++A+v4ChuSADRos4jf5hb/HbhruLgBOdQqzXlDoQMB0M5gPw==
+ bh=hjn6nJNZnEaFBPITYaY72PHnTow04tFewr/PvqlWHrs=;
+ b=R1+YjnczFkQYBMZp9y7gUe/ntzcn+lgnBTkqZU/n/HMgJp1M4ZCrs64KbT6XneVbjLEhjvLSu9vXLfiVy66vykHRZxB5W/enDme8KftDdntx8grwdsWmAn24b72O6RVlvjWsO0KOBDLyMJcIsrmVUx4y0tg1Ybxg5jo09zcwRgWtd8iMTsVYPZFyTqTQKVaXUiqR8m/cS77Vgrz+Ci2FosoxuGpO7eVEYSVsiv/bLUyIUVMb87FO9YE6qn2+aSDYdmbwGWMdP4VaZsGwwZyrWhIU6TDHOvRMRd1Oy2lTOIrB9EW82GMcZB+KkL4NbjqurRo/eTfdCFCkebQYQVa/9Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by CYYPR11MB8388.namprd11.prod.outlook.com (2603:10b6:930:c2::6) with
+ by MN2PR11MB4568.namprd11.prod.outlook.com (2603:10b6:208:266::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.44; Fri, 28 Mar
- 2025 09:09:11 +0000
+ 2025 09:26:41 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c%4]) with mapi id 15.20.8534.043; Fri, 28 Mar 2025
- 09:09:11 +0000
-Date: Fri, 28 Mar 2025 17:09:03 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Joel Fernandes <joel@joelfernandes.org>
+ 09:26:40 +0000
+Date: Fri, 28 Mar 2025 17:26:32 +0800
+From: Oliver Sang <oliver.sang@intel.com>
+To: =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>
 CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <oliver.sang@intel.com>
-Subject: [jfern:rcu/for-next] [rcutorture]  84e0a11498:
- WARNING:at_kernel/rcu/rcutorture.c:#rcu_torture_updown[rcutorture]
-Message-ID: <202503281620.ed5fa280-lkp@intel.com>
-Content-Type: text/plain; charset="us-ascii"
+Subject: Re: [linux-next:master] [landlock]  9d65581539:
+ WARNING:suspicious_RCU_usage
+Message-ID: <Z+ZrSPZph9cDvUR4@xsang-OptiPlex-9020>
+References: <202503261510.f9652c11-lkp@intel.com>
+ <20250327.ahthiSoh4Nec@digikod.net>
+ <Z+YQ1Un2QgAYvmos@xsang-OptiPlex-9020>
+ <Z+Y8R5AEXabED4FD@xsang-OptiPlex-9020>
+ <20250328.raitee2Ciepe@digikod.net>
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
-X-ClientProxiedBy: SI1PR02CA0047.apcprd02.prod.outlook.com
- (2603:1096:4:1f5::15) To LV3PR11MB8603.namprd11.prod.outlook.com
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20250328.raitee2Ciepe@digikod.net>
+X-ClientProxiedBy: SI1PR02CA0060.apcprd02.prod.outlook.com
+ (2603:1096:4:1f5::17) To LV3PR11MB8603.namprd11.prod.outlook.com
  (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -94,449 +102,286 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|CYYPR11MB8388:EE_
-X-MS-Office365-Filtering-Correlation-Id: be8d3f15-5186-4d1e-99f5-08dd6dd83448
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|MN2PR11MB4568:EE_
+X-MS-Office365-Filtering-Correlation-Id: da3c9304-0fb1-4a48-b6e6-08dd6ddaa5a7
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?7+YMIUZMJVrQREHb7o++ULm2lCCwed6jZc0TXHoCAfxuOT91qeQfdD9J5hT3?=
- =?us-ascii?Q?10WjcTu8iLeeuC/TO2RaILDFsK7VzvPApABZNWpxX+tsFedbUFgUS5E/wfd2?=
- =?us-ascii?Q?jK7SZlH+xha4YfGAxipa/mOeYtcFcSebkJI9J4GI/++NXpoWvtCWpPbaGU0h?=
- =?us-ascii?Q?a8EjRMfrhegzS/AOa91K12idLX+edx/YK8cUVWjKSvWV6dzNVm3NNJXSkEwo?=
- =?us-ascii?Q?iws5ZdxszJah86McjelQY4PcAGJTPp+BpMlQ3x/U3OjmNMu4fggpOsdscm5i?=
- =?us-ascii?Q?odbPSDWJWiM0GuZirdCAJ73xeAv9kx1w2kGIteRee1h3r+dsAY908RNPhkBX?=
- =?us-ascii?Q?nE5uAa8Iye6zH8dV2SXRGL9Datq+MO6RxyGEIK1LB4ev6zQgFPT3aiGgMCS+?=
- =?us-ascii?Q?kJOF0uxKu/E5NQrzQEh1jqyIOBJTGpaZLZgY6LR0RQUuUGcYI/ZsucCKgoZg?=
- =?us-ascii?Q?OJmV+YLWm8w1qWV1CnUkkhpbMfgZfg2HGX+rRgCVNZyUNRgNiuKV0Ou+gikv?=
- =?us-ascii?Q?UZzLZXmhEe1aTUpBeUeh9chdsjEHPcarAJV3MjMO/dVAD+vdAdVrcNO7UX1t?=
- =?us-ascii?Q?ZToun17Gq/FlRfGwmP+d7D0wgsnllzi8pQz5jGs7pkilydHBCxim0JxjYYSI?=
- =?us-ascii?Q?cVAvR25gwLdfNzE3l8fvJMUYxx0dvxFhqAKnTx1JjSRGzG7LepaLRqtVCmQE?=
- =?us-ascii?Q?PAYLH2Snrze1PYA0rRir5XYYgV68eJvnZ3mrkr33Hu7E3wfnZUU/qa9w1Noj?=
- =?us-ascii?Q?Gx9FgBlKJxn+nbg/u7krZxrNvVZlUjTCz934ILMF9qd4VRP1QrCAVwvrMUdn?=
- =?us-ascii?Q?3oP9+2zVOPU6jM93VNG1R2YuG1LxAte6/ugFl5NU4l7SJZTPIqC7rLim6MIN?=
- =?us-ascii?Q?QeD07UTcxt8HZ9qMBT8t1pU+XqShJuXeEBJxR73P8R+eo6Oia1HFR1C0akpN?=
- =?us-ascii?Q?n99PBXgfy6PpJf+t55bOaTxJEIDJYXxA/pPDrULFw/YSt9qZmKVeXw3JtwvX?=
- =?us-ascii?Q?4DXNR/PjFQwxsRl4s4u2sTU/QmK4+dThCIo9RSU4RIZqppsGXnCnACKvSzJx?=
- =?us-ascii?Q?mXkRIsDbhB3yX8ujQzTh+zUtMHITG/znzdOQYPI9imji+YMdePQgEjMuPe+z?=
- =?us-ascii?Q?FGEo11OywAcFmfGjbKI869+L5CmEG9tXIdVHwFAPi2w+Rqjah8jODq3PMt+z?=
- =?us-ascii?Q?mBJ+hgdeOb797+hmxQOB+mZLN10hYsQqlRNADcLhRaAOAONDTcwDCoxQ6yWI?=
- =?us-ascii?Q?v/owlIu6XMwjjg9oy4575k76gc4OcqOElETlYxEfew2HFTxMw2QiBarUg2TG?=
- =?us-ascii?Q?x6mOIe3hiJ9kRAdJThhdXGWDOX9Lzrmtq2bg+1YFfoM2ew=3D=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014|13003099007;
+X-Microsoft-Antispam-Message-Info: =?iso-8859-1?Q?a04yUrgOoVycGTlKs/7x8eyZxb2n/A50IRc8ROgfAyUzwytOrR2q7ntAbM?=
+ =?iso-8859-1?Q?0p3s9Onsr+fpJo+G4dNdNDJ/8P8a8sue81AxxJcu/pY9SyoYlEDN8yD6kc?=
+ =?iso-8859-1?Q?Y9zTv789iD7qubp6b00I7D8DXAAiGxLmpbb1pWv4DW3TFNBrZjCXxZYksY?=
+ =?iso-8859-1?Q?Iqy+9Zog7A5Ta5wehA+DJcI6t4RJFReKIU98V4xDp9rt82Z951A7NbcXRr?=
+ =?iso-8859-1?Q?gSIvRV1lH1Jkin69iODHl/vvA+o5hD8Eo1CgezLicrqCF46g5ufqf1zLxU?=
+ =?iso-8859-1?Q?S1SXcDR4B4jchMho5jhAtdHyJMnSWnS5Ui18IjkvExydy6A/7RhWAXIQLr?=
+ =?iso-8859-1?Q?8s9aZC8/u2oiSFu7W/sUwrrCfZm7+FmKdwAk/RypoIPCSHz7QEA/QAo0k7?=
+ =?iso-8859-1?Q?sl0NF18nLVx4Bo/q+VHhNkXDKs8nV/pnYnLhuxF0YhalaBQI23nh57WA7h?=
+ =?iso-8859-1?Q?+RCvj58OZba0Uks8tETziwZrM95guqAHykeHZa0ocvkH10vOO07gFOtqNd?=
+ =?iso-8859-1?Q?UoVumTzTHhhwa4QRSqtq2JjJ1byBjCTpz/QZa7NPM8483dZ5RE9j66LTae?=
+ =?iso-8859-1?Q?XE8bqIas9O98Wvk7ftU7X9ZWcU3umuhM8hqLKrZRTimtiJgzuXZ4nWT2wB?=
+ =?iso-8859-1?Q?z/fjMe4j67uq8T/gdXABTgTRHCfACHOCdAMBVK1dh19vA/OpFN5kx3piCL?=
+ =?iso-8859-1?Q?USRekRiuyWScvBFCWMB3XoHwC0dGB04pbe7QgMCK4Mb7kMo6Em1VtfsO6U?=
+ =?iso-8859-1?Q?E6cOsK07G/MAtUk/UtWwlfgIpRltPsyryBXdr3XsQHtU3Wo8krX0z5kffp?=
+ =?iso-8859-1?Q?Fj/KFhlfIxg39vnmyO9CtJwhRABV6Kp5sCLm/YQvOywT73SgCrH9Wi0i8i?=
+ =?iso-8859-1?Q?1JOJaYNYGLJkFNr3yiLtKlRgprbR2nI0Dympi78UN31kax42sO79I4f85v?=
+ =?iso-8859-1?Q?d45XIFc2lmI8IpadOrOJez7jwDeU0VQWGd5nBAksMHRFrd7LmrYwk4NE+W?=
+ =?iso-8859-1?Q?Uzp6q5ywwe334++b5t57QJkEyn2jSX5QGjrVomnqcRU6eh/0206MkLbkWt?=
+ =?iso-8859-1?Q?Dahx7ktcDgYYMAzeX//XK5kPIpxGSVVaG5JFdMjRZawHD7QgqNkA4aMh7D?=
+ =?iso-8859-1?Q?yTYYoAEGNpClmG/YK39o3lSh1NlE8V8jz6JnKl5jUWnFmBJh/rNtN4Pucu?=
+ =?iso-8859-1?Q?BYwyMLeemRr3HPGLhE5OIgPITKhkPoyLqVeUOXS+HJ9Pbpm9vFvwaMkQRP?=
+ =?iso-8859-1?Q?6VSCP6o/1vZ8mgN8VZCYS0NmPmUGCnAdzNt5E2dYqJsuvzv+a4CbdS8Ogt?=
+ =?iso-8859-1?Q?yp2XB/8tvB0V++dBCcJM9JTNgKgdb99q5YErJifIiTvmIPShXl/m3YOdeT?=
+ =?iso-8859-1?Q?sZGXw+McgshHhvQMIjE62c/4XGEmi8Ag=3D=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(13003099007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VBysZqEae7ION1Uq9YaYx462Rbrshv7fFThcZkDihllFYFDTwy4J6pHBic3X?=
- =?us-ascii?Q?UQPsIB2LcUMzq3R7iuR4NoHN+o48nLB4It2Kesl2ecrq1a0eLqE3dVl892/T?=
- =?us-ascii?Q?4ulkGYKP/jIfwlfXSd9vCA6u/QduqD1OWRApjEyr8qaFebcmiw5RLrEXsnM3?=
- =?us-ascii?Q?fXBthF7TDcJiON050DXLnThou5xC1CxjMEoleVuhX0s6jpsezVkdyXCPI6/+?=
- =?us-ascii?Q?7G9b5d3w0SFwJsBBmIdqzcEuGiaP1PBxrXEeEOUtO1dS0HEqgVTZ5ZjETfHC?=
- =?us-ascii?Q?7D3OMm3nFPaXHud5OCh+o9c6tt6K8Vezp7XNmU0iIjYlQIOZturVklUOHmna?=
- =?us-ascii?Q?Zwkhys8q8fOSTQswoHwpwPggN7tGPch2ha7dT4feZ2elj3pIG7Jt4gV6j01q?=
- =?us-ascii?Q?msIzw5Tt1zUTvtqB3fDA+6nZPplzwOOmn4aeqPMttY3nR5jotR2QbIgb53Ws?=
- =?us-ascii?Q?JCxZsuejb/pGlbQU5kZjJ4x9bGbXWYUYebJDJDmomwOxu5NkO11FTxgh3usQ?=
- =?us-ascii?Q?4j63H/v/GDrJl141Fu2Bmv+93QdvQXXJrD1FiggugoNKOWuK+bpnO8Y8MYZX?=
- =?us-ascii?Q?2C6+kiLGGzZ4GTJd7YgbhimpZahKdOdcYZixM5xxnn0zFvqDucfLSNNeLX6h?=
- =?us-ascii?Q?f5j+U/OVanNjzd2+Fg4nIilOyKYdoAINXhIbPq64vSv5JAYXsnTSMkrN7Rlh?=
- =?us-ascii?Q?p9nz9oIyuMDBzCDkE5FGpdGOk9bCkv10E703uYojoSLhQ3uo3R0nw26oHOgj?=
- =?us-ascii?Q?WrhU6SBHiMjy5Ux6XAsdsRzJER4pIFvAEJEtE2J4ZZ94oik2uAYThlDI1y2H?=
- =?us-ascii?Q?TiKljGNCZSmqRAi01YIiZkm+pjtdAqp05A8DBsTPyhtncVnAMacLQ0gaplff?=
- =?us-ascii?Q?8vH0en+IgEP9vUKhavQm1RhNnHhgPE0KPzzoaAnZWhp7FJ4mcCN9jgV+yhrf?=
- =?us-ascii?Q?1eRGdfR7yzaFiU47P0hBZRKm2p1a3oQ5K5/bqkMaRn5og43TotUQK4gXK11D?=
- =?us-ascii?Q?VGclNYkP0XDML2LC8HM29Iq3n262cNIuVk+qigiBy1sfIvaFBKTfzW+qjPsj?=
- =?us-ascii?Q?plqMK8MZEOZLyI1qsbFibWmiIeqVsrRaahFyEXViIa38b9i7ZPap7AtFw4VQ?=
- =?us-ascii?Q?5xXPNt2oyzH+VgtvBm8vas1AlTiKjT0w5U+6yHNzxTbe4zocdZUQEu69q3ug?=
- =?us-ascii?Q?WQonf5l0t0MLPBLVXW4Y9GUNUFW2xiCRDFunKtBtcLKV1TpkXTjLVfSNCaxp?=
- =?us-ascii?Q?Bfxk2tX6sZNhDEiYvg7V235nznAzU7FTb7SRRsULiZ1Itpn3eVT/Kkjgli54?=
- =?us-ascii?Q?j5t1wSHTuzjgDUx5wFEqoJU1jfHs18NkyoGAOlv5Ll/A31eC4i4KULLY6nLl?=
- =?us-ascii?Q?l8iGUz9ABXL62KKlJQEdlIEBpn5iGVfyRbIonyFFwj/fE1i04Co1jqIIu9Ex?=
- =?us-ascii?Q?s77f9UrsmkNZlK6cYIpBioaQoHUY6nWiA4MpPnkmM6jXPRUno6hVC+4WIchI?=
- =?us-ascii?Q?hNP5nEp93omxse4f1phTdaJXq5mqcIJyS2rmXtXWoAgIEU8NuW6P+TIivO2k?=
- =?us-ascii?Q?n6/4rSqgWLAX8GgImJIL7fTkG15gpIbn/oseQuLi+d6UFU5G2VROvRtWikIK?=
- =?us-ascii?Q?3w=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: be8d3f15-5186-4d1e-99f5-08dd6dd83448
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?4hHkpqGrh7cejY1U/r+xESG143eViMe5MQGq5dWPnnkNre7PyLDZzBtEHe?=
+ =?iso-8859-1?Q?baxeY+s93jXHMlocBKDFQPeOC67H3oi2oo1guYeNajTL2YBXeMM/JxR3oL?=
+ =?iso-8859-1?Q?A3qFYt3eIWzSLtesQNUUKEsaOtyWCs7buMEs/TfSr2V7M2/JLzxjrHuwXu?=
+ =?iso-8859-1?Q?UVVxMgtjkr6clxiyjBMsJyJ6o0/ciheCxjoRfVILPCPx+F/5FXaEAKqgyE?=
+ =?iso-8859-1?Q?CkY39Gw/VGpUdGKW9tuVajFkV4wzvNnNo5EC5clLjc0G//E9EZe3Wsbyay?=
+ =?iso-8859-1?Q?VY4vDbGTJ+vVJREj/qT9ZQ4Jy/KJxbCJoEBBqp1G4DVMJLTrcHBH9cXFmf?=
+ =?iso-8859-1?Q?IymQ5hhJNstTCf5C5HTFfHI3aCSTBZYCU5qURXlfuoIcKHCck2i+wsrlEA?=
+ =?iso-8859-1?Q?elZQ1YOjvLGCODXlIVOee68zbLmRIsCT3wzcY4B7ePOjvwBl+w5s8t0dOR?=
+ =?iso-8859-1?Q?l63f1sZ80pQxQFum79rE0/EYHR2og/R21cB/NN4H7SmI8eZiKGcaRiiunJ?=
+ =?iso-8859-1?Q?ah2LSwhcEUBN5vLCuK9FTt7/AfoDdWHDbHHgr4rETP+Rbl8mJz007c4ogT?=
+ =?iso-8859-1?Q?OLWomj5kJHW7NvpUOafFP4q6vPeuihj7M/LSyibXb+EA+JEZnIFKUjmzXm?=
+ =?iso-8859-1?Q?LFdTmqLbNksT+KJvsAptkntkktOILQW9X9yedWBYoCHIGD7ToHiX/EloD3?=
+ =?iso-8859-1?Q?6x0wgXn453wfxcl/XMRGxlIudI9D8nx50DSA9nem4x8KHL5A7wnMA9U7jQ?=
+ =?iso-8859-1?Q?To+UefesVk00S34dW8wbqVRwBpFh3EyaWynsQHYgFnQTcMV6T3ARiOFJ0r?=
+ =?iso-8859-1?Q?JCfTYTMMnlVilM9eJut6BcAToT/onPXDeZh6/azVXg4TI2KgMy5xovFbwx?=
+ =?iso-8859-1?Q?/maCFYaPK0jJzPdv6nFP71j/HSwp23KRzCUM5vL5l7sIRPZaqtVQqlbtaB?=
+ =?iso-8859-1?Q?8qJocE+4EeDgPy9VsuUGJY/9DKmJ7mg/CHdEkhOlMvvWxFI6Ebp6YEetGj?=
+ =?iso-8859-1?Q?/pHSo+WMy5nx0D447OB5oSmREKugAHLuNO18uuuo/Hihquojqorzv1Ccjq?=
+ =?iso-8859-1?Q?MNG47p29WJdS1KH+DOJnpqsFuuJGPA+2jVPUadk4hb9k581z2rsGs2iHV0?=
+ =?iso-8859-1?Q?V4mjaKVCG3ygxwkUwz9cuMNJEKRMXogmvwQqL9WtNBMx1n/9nBOVSYPk0B?=
+ =?iso-8859-1?Q?C0V0LxujE4bUDPka4Rs4oeWwyWdWvMqdH8qABpsW5159keoeOpHXzC8xGt?=
+ =?iso-8859-1?Q?T8wZQh83c5UfYV8cPoDH/HLTySYbl3yjYeYSe4f0XU92uk8aSAps109NFE?=
+ =?iso-8859-1?Q?SBVOejg6uppwfGsoteqq6f2sAl+83h1vU7aAw5JKbTQ72d1zXYjEHkdaE+?=
+ =?iso-8859-1?Q?6wPB5MxlJTZO5/m5HsILrrpyvNmF17loUF39gNav1soe92hOQOfOFVOap6?=
+ =?iso-8859-1?Q?ac2GbjWwgWNrr8l+A0lksjXC2tKqxKVcYLInbgs40qdU97rjekMZyqHohB?=
+ =?iso-8859-1?Q?fMqu4UD3rNCVCWqFALNAg9s7Lvkk7MQ7kV0UhFxQiXGh9oDshO9uV56q20?=
+ =?iso-8859-1?Q?vqJNK+4gTvd6EWGJfyptGIDfPFtcuJSHu3TlC83x09YMBzZEVvzPS2ItTV?=
+ =?iso-8859-1?Q?JNjysGku6N6XsPFG0ipxbwIJvDH85aeBgD4swxC6QXni6detm1KfkDyA?=
+ =?iso-8859-1?Q?=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: da3c9304-0fb1-4a48-b6e6-08dd6ddaa5a7
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Mar 2025 09:09:11.7273
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Mar 2025 09:26:40.6990
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 12BbOSuj0qERR4FboSW6Y3SGzLutVzIVbQm8OMJ6/IhzRbYTm+8wzWt+WxvcUPjqm66Qe55gg87XvdfCTKz19A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR11MB8388
+X-MS-Exchange-CrossTenant-UserPrincipalName: xjnhES8d3HgXaC3wcdHhUnLEWtTRRAoF7EpwKPF/Emwt7YLkJYJ/u+/YLTRvghhD9JZRr8Opvsf4A7AzdPvp7g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4568
 X-OriginatorOrg: intel.com
 
+hi, Mickaël Salaün,
+
+On Fri, Mar 28, 2025 at 09:31:15AM +0100, Mickaël Salaün wrote:
+> On Fri, Mar 28, 2025 at 02:05:59PM +0800, Oliver Sang wrote:
+> > hi, Mickaël Salaün,
+> > 
+> > On Fri, Mar 28, 2025 at 11:00:37AM +0800, Oliver Sang wrote:
+> > > hi, Mickaël Salaün,
+> > > 
+> > > On Thu, Mar 27, 2025 at 07:41:08PM +0100, Mickaël Salaün wrote:
+> > > > Hi Olivier,
+> > > > 
+> > > > I pushed an updated yesterday in linux-next that should fix this issue
+> > > > and this other issue too:
+> > > > https://lore.kernel.org/all/20250326.yee0ba6Yai3m@digikod.net/
+> > > > 
+> > > > Could you please confirm that these issues are really fixed? Or
+> > > > otherwise, please let me know when I should expect (or not) an email
+> > > > from kernel test robot. :)
+> > > 
+> > > ok, we've started the tests for both issues. upon the commit:
+> > > db8da9da41bce (tag: next-20250327, linux-next/master) Add linux-next specific files for 20250327
+> > 
+> > sorry that due to unknown reason, we cannot build sucessfully upon db8da9da41bce
+> > for both tests (which are using randconfig). could you give us the commit-id
+> > of your fix? we could try test upon that fix commit again.
+> 
+> The new commit is 18eb75f3af40 ("landlock: Always allow signals between
+> threads of the same process").
+
+it turned out the build failure is due to my typo. shamed...
+
+we finished tests still upon db8da9da41bce, for the WARNING:suspicious_RCU_usage
+issue in this report, we run the tests 20 times, cannot reproduce now.
+
+for the random issues we reported in
+https://lore.kernel.org/all/202503261534.22d970e8-lkp@intel.com/
+now we cannot reproduce it with db8da9da41bce by 500 runs.
+
+we think both issues are solved.
+
+and since db8da9da41bce includes the 18eb75f3af40, we won't test again upon
+18eb75f3af40. thanks!
 
 
-Hello,
-
-kernel test robot noticed "WARNING:at_kernel/rcu/rcutorture.c:#rcu_torture_updown[rcutorture]" on:
-
-commit: 84e0a11498cf967ae236f1feaf8b8b25ea738f2d ("rcutorture: Add tests for SRCU up/down reader primitives")
-https://git.kernel.org/cgit/linux/kernel/git/jfern/linux.git rcu/for-next
-
-in testcase: rcutorture
-version: 
-with following parameters:
-
-	runtime: 300s
-	test: cpuhotplug
-	torture_type: srcu
-
-
-
-config: i386-randconfig-012-20250327
-compiler: gcc-12
-test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m 4G
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-+--------------------------------------------------------------------+------------+------------+
-|                                                                    | 906bd1fdb0 | 84e0a11498 |
-+--------------------------------------------------------------------+------------+------------+
-| WARNING:at_kernel/rcu/rcutorture.c:#rcu_torture_updown[rcutorture] | 0          | 5          |
-| EIP:rcu_torture_updown                                             | 0          | 5          |
-| INFO:task_blocked_for_more_than#seconds                            | 0          | 5          |
-| BUG:kernel_hang_in_test_stage                                      | 0          | 5          |
-+--------------------------------------------------------------------+------------+------------+
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202503281620.ed5fa280-lkp@intel.com
-
-
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20250328/202503281620.ed5fa280-lkp@intel.com
-
-
-[  349.997265][  T402] ------------[ cut here ]------------
-[  349.997645][  T402] WARNING: CPU: 0 PID: 402 at kernel/rcu/rcutorture.c:2501 rcu_torture_updown+0x158/0x182 [rcutorture]
-[  349.998434][  T402] Modules linked in: rcutorture(-) torture intel_rapl_msr bochs drm_client_lib usbtest evdev input_leds font drm_shmem_helper syscopyarea sysfillrect sysimgblt fb_sys_fops led_class intel_rapl_common intel_agp drm_kms_helper intel_gtt pcspkr psmouse serio_raw i2c_piix4 fb agpgart qemu_fw_cfg tiny_power_button button drm drm_panel_orientation_quirks backlight
-[  350.001106][  T402] CPU: 0 UID: 0 PID: 402 Comm: rcu_torture_upd Not tainted 6.14.0-rc1-00087-g84e0a11498cf #1
-[  350.001807][  T402] EIP: rcu_torture_updown+0x158/0x182 [rcutorture]
-[  350.002299][  T402] Code: c3 64 02 00 00 8b 15 04 0e 58 ef 69 05 10 07 58 ef 64 02 00 00 01 d0 39 c3 72 dd eb 11 89 d8 e8 ed aa b6 d1 80 7b 28 00 74 d5 <0f> 0b eb d1 89 d0 e8 f0 40 c9 d1 31 c0 a3 04 0e 58 ef b8 c1 06 5f
-[  350.003704][  T402] EAX: 00000001 EBX: eaad84c8 ECX: 00000000 EDX: 00000000
-[  350.004199][  T402] ESI: 00000000 EDI: eaadca50 EBP: eaa17f64 ESP: eaa17f54
-[  350.004729][  T402] DS: 007b ES: 007b FS: 0000 GS: 0000 SS: 0068 EFLAGS: 00010202
-[  350.005259][  T402] CR0: 80050033 CR2: 00493adc CR3: 2a9db000 CR4: 00040690
-[  350.005751][  T402] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-[  350.006242][  T402] DR6: fffe0ff0 DR7: 00000400
-[  350.006576][  T402] Call Trace:
-[  350.006862][  T402]  ? show_regs+0x64/0x70
-[  350.007169][  T402]  ? rcu_torture_updown+0x158/0x182 [rcutorture]
-[  350.007628][  T402]  ? __warn+0x97/0x130
-[  350.007926][  T402]  ? report_bug+0xde/0x13b
-[  350.008246][  T402]  ? rcu_torture_updown+0x158/0x182 [rcutorture]
-[  350.008703][  T402]  ? exc_overflow+0x3d/0x3d
-[  350.009026][  T402]  ? handle_bug+0x3d/0x5c
-[  350.009333][  T402]  ? exc_invalid_op+0x24/0x49
-[  350.009667][  T402]  ? handle_exception+0x11a/0x11a
-[  350.010027][  T402]  ? xa_find+0x69/0xc0
-[  350.010317][  T402]  ? exc_overflow+0x3d/0x3d
-[  350.010644][  T402]  ? rcu_torture_updown+0x158/0x182 [rcutorture]
-[  350.011154][  T402]  ? exc_overflow+0x3d/0x3d
-[  350.011476][  T402]  ? rcu_torture_updown+0x158/0x182 [rcutorture]
-[  350.011935][  T402]  kthread+0x142/0x147
-[  350.012227][  T402]  ? rcu_torture_one_read_start+0x102/0x102 [rcutorture]
-[  350.012726][  T402]  ? kthread_is_per_cpu+0x1c/0x1c
-[  350.013083][  T402]  ret_from_fork+0x1e/0x37
-[  350.013399][  T402]  ? kthread_is_per_cpu+0x1c/0x1c
-[  350.013756][  T402]  ret_from_fork_asm+0x12/0x20
-[  350.014095][  T402]  entry_INT80_32+0x10c/0x10c
-[  350.014440][  T402] irq event stamp: 2657215
-[  350.014797][  T402] hardirqs last  enabled at (2657325): [<c10a22fc>] __up_console_sem+0x5e/0x72
-[  350.015410][  T402] hardirqs last disabled at (2657332): [<c10a22e3>] __up_console_sem+0x45/0x72
-[  350.016029][  T402] softirqs last  enabled at (2657322): [<c1067e55>] handle_softirqs+0x2ca/0x2fa
-[  350.016651][  T402] softirqs last disabled at (2657223): [<c17cdd3f>] __do_softirq+0xf/0x13
-[  350.017238][  T402] ---[ end trace 0000000000000000 ]---
-[  350.017837][  T402] srcu-torture: rcu_torture_updown is stopping
-[  350.022138][  T413] srcu-torture: torture_stutter is stopping
-[  350.054328][  T401] srcu-torture: rcu_torture_reader is stopping
-[  350.551011][  T420] srcu-torture: rcu_torture_read_exit is stopping
-[  350.551522][  T838] srcu-torture: Stopping rcutorture_read_exit task
-[  350.552059][  T838] srcu-torture: Stopping rcu_torture_fwd_prog task
-[  350.552526][  T416] rcu_torture_fwd_prog n_max_cbs: 50000
-[  350.552894][  T416] rcu_torture_fwd_prog: Starting forward-progress test 0
-[  350.553360][  T416] rcu_torture_fwd_prog_cr: Starting forward-progress test 0
-[  357.078863][  T407] srcu-torture: rtc: 3041ac47 ver: 591 tfle: 0 rta: 592 rtaf: 0 rtf: 581 rtmbe: 0 rtmbkf: 0/0 rtbe: 0 rtbke: 0 rtbf: 0 rtb: 0 nt: 10173 barrier: 0/0:0 read-exits: 320 nocb-toggles: 0:0
-[  357.080072][  T407] srcu-torture: Reader Pipe:  31012756 6308 0 0 0 0 0 0 0 0 0
-[  357.080574][  T407] srcu-torture: Reader Batch:  31001386 17678 0 0 0 0 0 0 0 0 0
-[  357.081080][  T407] srcu-torture: Free-Block Circulation:  591 590 588 587 586 585 584 583 582 581 0
-[  357.081699][  T407] rcu: srcu-torture: Tree SRCU g4462 state 0 (SRCU_SIZE_SMALL) per-CPU(idx=0): 0(12,3 C) T(12,3)
-[  357.082384][  T407] srcu-torture: rcu_torture_stats is stopping
-[  973.526852][   T24] INFO: task rcu_torture_fak:389 blocked for more than 491 seconds.
-[  973.527493][   T24]       Tainted: G        W          6.14.0-rc1-00087-g84e0a11498cf #1
-[  973.528053][   T24] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[  973.528648][   T24] task:rcu_torture_fak state:D stack:0     pid:389   tgid:389   ppid:2      task_flags:0x208040 flags:0x00004000
-[  973.529454][   T24] Call Trace:
-[  973.529699][   T24]  __schedule+0x3d7/0x409
-[  973.530019][   T24]  schedule+0x42/0x5e
-[  973.530302][   T24]  schedule_timeout+0x2f/0xb9
-[  973.530639][   T24]  ? usleep_range_state+0x8b/0x8b
-[  973.531066][   T24]  __wait_for_common+0x91/0xe4
-[  973.531427][   T24]  wait_for_common+0x15/0x1b
-[  973.531756][   T24]  wait_for_completion+0x17/0x1f
-[  973.532121][   T24]  __synchronize_srcu+0x10b/0x122
-[  973.532467][   T24]  ? rcu_tasks_pregp_step+0xf/0xf
-[  973.532831][   T24]  synchronize_srcu_expedited+0x1a/0x21
-[  973.533209][   T24]  srcu_torture_synchronize_expedited+0x12/0x16 [rcutorture]
-[  973.533718][   T24]  rcu_torture_fakewriter+0x135/0x351 [rcutorture]
-[  973.534184][   T24]  kthread+0x142/0x147
-[  973.534479][   T24]  ? srcu_read_delay+0x55/0x55 [rcutorture]
-[  973.534938][   T24]  ? kthread_is_per_cpu+0x1c/0x1c
-[  973.535300][   T24]  ret_from_fork+0x1e/0x37
-[  973.535605][   T24]  ? kthread_is_per_cpu+0x1c/0x1c
-[  973.535960][   T24]  ret_from_fork_asm+0x12/0x20
-[  973.536311][   T24]  entry_INT80_32+0x10c/0x10c
-[  973.536665][   T24] INFO: task rcu_torture_fak:390 blocked for more than 491 seconds.
-[  973.537233][   T24]       Tainted: G        W          6.14.0-rc1-00087-g84e0a11498cf #1
-[  973.537809][   T24] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[  973.538402][   T24] task:rcu_torture_fak state:D stack:0     pid:390   tgid:390   ppid:2      task_flags:0x208040 flags:0x00004000
-[  973.539297][   T24] Call Trace:
-[  973.539548][   T24]  __schedule+0x3d7/0x409
-[  973.539865][   T24]  schedule+0x42/0x5e
-[  973.540156][   T24]  schedule_timeout+0x2f/0xb9
-[  973.540503][   T24]  ? usleep_range_state+0x8b/0x8b
-[  973.540864][   T24]  __wait_for_common+0x91/0xe4
-[  973.541215][   T24]  wait_for_common+0x15/0x1b
-[  973.541550][   T24]  wait_for_completion+0x17/0x1f
-[  973.541902][   T24]  __synchronize_srcu+0x10b/0x122
-[  973.542262][   T24]  ? rcu_tasks_pregp_step+0xf/0xf
-[  973.542637][   T24]  synchronize_srcu+0xa7/0xb3
-[  973.543015][   T24]  srcu_torture_synchronize+0x12/0x16 [rcutorture]
-[  973.543517][   T24]  rcu_torture_fakewriter+0x330/0x351 [rcutorture]
-[  973.543985][   T24]  kthread+0x142/0x147
-[  973.544277][   T24]  ? srcu_read_delay+0x55/0x55 [rcutorture]
-[  973.544692][   T24]  ? kthread_is_per_cpu+0x1c/0x1c
-[  973.545057][   T24]  ret_from_fork+0x1e/0x37
-[  973.545367][   T24]  ? kthread_is_per_cpu+0x1c/0x1c
-[  973.545730][   T24]  ret_from_fork_asm+0x12/0x20
-[  973.546079][   T24]  entry_INT80_32+0x10c/0x10c
-[  973.546433][   T24] INFO: task rcu_torture_fak:394 blocked for more than 491 seconds.
-[  973.547041][   T24]       Tainted: G        W          6.14.0-rc1-00087-g84e0a11498cf #1
-[  973.547594][   T24] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[  973.548182][   T24] task:rcu_torture_fak state:D stack:0     pid:394   tgid:394   ppid:2      task_flags:0x208040 flags:0x00004000
-[  973.549000][   T24] Call Trace:
-[  973.549236][   T24]  __schedule+0x3d7/0x409
-[  973.549563][   T24]  schedule+0x42/0x5e
-[  973.549851][   T24]  schedule_timeout+0x2f/0xb9
-[  973.550207][   T24]  ? usleep_range_state+0x8b/0x8b
-[  973.550574][   T24]  __wait_for_common+0x91/0xe4
-[  973.550966][   T24]  wait_for_common+0x15/0x1b
-[  973.551305][   T24]  wait_for_completion+0x17/0x1f
-[  973.555756][   T24]  __synchronize_srcu+0x10b/0x122
-[  973.556118][   T24]  ? rcu_tasks_pregp_step+0xf/0xf
-[  973.556510][   T24]  synchronize_srcu_expedited+0x1a/0x21
-[  973.556904][   T24]  srcu_torture_synchronize_expedited+0x12/0x16 [rcutorture]
-[  973.557433][   T24]  rcu_torture_fakewriter+0x135/0x351 [rcutorture]
-[  973.557904][   T24]  kthread+0x142/0x147
-[  973.558204][   T24]  ? srcu_read_delay+0x55/0x55 [rcutorture]
-[  973.558636][   T24]  ? kthread_is_per_cpu+0x1c/0x1c
-[  973.559053][   T24]  ret_from_fork+0x1e/0x37
-[  973.559412][   T24]  ? kthread_is_per_cpu+0x1c/0x1c
-[  973.559758][   T24]  ret_from_fork_asm+0x12/0x20
-[  973.560086][   T24]  entry_INT80_32+0x10c/0x10c
-[  973.560440][   T24] INFO: task rcu_torture_fak:398 blocked for more than 491 seconds.
-[  973.560968][   T24]       Tainted: G        W          6.14.0-rc1-00087-g84e0a11498cf #1
-[  973.561489][   T24] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[  973.562047][   T24] task:rcu_torture_fak state:D stack:0     pid:398   tgid:398   ppid:2      task_flags:0x208040 flags:0x00004000
-[  973.562849][   T24] Call Trace:
-[  973.563079][   T24]  __schedule+0x3d7/0x409
-[  973.563392][   T24]  schedule+0x42/0x5e
-[  973.563657][   T24]  schedule_timeout+0x2f/0xb9
-[  973.563992][   T24]  ? usleep_range_state+0x8b/0x8b
-[  973.564337][   T24]  __wait_for_common+0x91/0xe4
-[  973.564674][   T24]  wait_for_common+0x15/0x1b
-[  973.564987][   T24]  wait_for_completion+0x17/0x1f
-[  973.565337][   T24]  __synchronize_srcu+0x10b/0x122
-[  973.565692][   T24]  ? rcu_tasks_pregp_step+0xf/0xf
-[  973.566085][   T24]  synchronize_srcu+0xa7/0xb3
-[  973.566427][   T24]  srcu_torture_synchronize+0x12/0x16 [rcutorture]
-[  973.566926][   T24]  rcu_torture_fakewriter+0x330/0x351 [rcutorture]
-[  973.567431][   T24]  kthread+0x142/0x147
-[  973.567700][   T24]  ? srcu_read_delay+0x55/0x55 [rcutorture]
-[  973.568112][   T24]  ? kthread_is_per_cpu+0x1c/0x1c
-[  973.568454][   T24]  ret_from_fork+0x1e/0x37
-[  973.568763][   T24]  ? kthread_is_per_cpu+0x1c/0x1c
-[  973.569103][   T24]  ret_from_fork_asm+0x12/0x20
-[  973.569426][   T24]  entry_INT80_32+0x10c/0x10c
-[  973.569760][   T24] INFO: task rcu_torture_fwd:416 blocked for more than 491 seconds.
-[  973.570303][   T24]       Tainted: G        W          6.14.0-rc1-00087-g84e0a11498cf #1
-[  973.570912][   T24] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[  973.571499][   T24] task:rcu_torture_fwd state:D stack:0     pid:416   tgid:416   ppid:2      task_flags:0x208040 flags:0x00024000
-[  973.572290][   T24] Call Trace:
-[  973.572518][   T24]  __schedule+0x3d7/0x409
-[  973.572824][   T24]  schedule+0x42/0x5e
-[  973.573091][   T24]  schedule_timeout+0x2f/0xb9
-[  973.573418][   T24]  ? usleep_range_state+0x8b/0x8b
-[  973.573759][   T24]  __wait_for_common+0x91/0xe4
-[  973.574083][   T24]  wait_for_common+0x15/0x1b
-[  973.574389][   T24]  wait_for_completion+0x17/0x1f
-[  973.574719][   T24]  __synchronize_srcu+0x10b/0x122
-[  973.575096][   T24]  ? rcu_tasks_pregp_step+0xf/0xf
-[  973.575458][   T24]  synchronize_srcu+0xa7/0xb3
-[  973.575760][   T24]  srcu_torture_synchronize+0x12/0x16 [rcutorture]
-[  973.576221][   T24]  rcu_torture_fwd_prog_cr+0x55/0x2cf [rcutorture]
-[  973.576672][   T24]  ? vprintk+0x13/0x17
-[  973.576942][   T24]  ? _printk+0x14/0x16
-[  973.577220][   T24]  rcu_torture_fwd_prog+0x106/0x196 [rcutorture]
-[  973.577677][   T24]  kthread+0x142/0x147
-[  973.577973][   T24]  ? rcu_torture_fwd_prog_cr+0x2cf/0x2cf [rcutorture]
-[  973.578452][   T24]  ? kthread_is_per_cpu+0x1c/0x1c
-[  973.578825][   T24]  ret_from_fork+0x1e/0x37
-[  973.579136][   T24]  ? kthread_is_per_cpu+0x1c/0x1c
-[  973.583603][   T24]  ret_from_fork_asm+0x12/0x20
-[  973.583948][   T24]  entry_INT80_32+0x10c/0x10c
-[  973.584284][   T24] INFO: task rmmod:838 blocked for more than 491 seconds.
-[  973.584763][   T24]       Tainted: G        W          6.14.0-rc1-00087-g84e0a11498cf #1
-[  973.585294][   T24] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[  973.585871][   T24] task:rmmod           state:D stack:0     pid:838   tgid:838   ppid:375    task_flags:0x400100 flags:0x00004000
-[  973.586653][   T24] Call Trace:
-[  973.586923][   T24]  __schedule+0x3d7/0x409
-[  973.587233][   T24]  schedule+0x42/0x5e
-[  973.587522][   T24]  schedule_timeout+0x2f/0xb9
-[  973.587864][   T24]  ? usleep_range_state+0x8b/0x8b
-[  973.588188][   T24]  __wait_for_common+0x91/0xe4
-[  973.588514][   T24]  wait_for_common+0x15/0x1b
-[  973.588827][   T24]  wait_for_completion+0x17/0x1f
-[  973.589168][   T24]  kthread_stop+0xaa/0x111
-[  973.589482][   T24]  _torture_stop_kthread+0x3c/0x50 [torture]
-[  973.589897][   T24]  rcu_torture_cleanup+0x1b8/0x914 [rcutorture]
-[  973.590331][   T24]  ? __mutex_unlock_slowpath+0x25/0x1ae
-[  973.590709][   T24]  ? lockdep_assert_rq_held+0x21/0x21
-[  973.591131][   T24]  __do_sys_delete_module+0xf9/0x201
-[  973.591565][   T24]  __ia32_sys_delete_module+0xf/0x11
-[  973.591929][   T24]  ia32_sys_call+0x4c1/0x10e2
-[  973.592254][   T24]  __do_fast_syscall_32+0xa4/0xc7
-[  973.592602][   T24]  do_fast_syscall_32+0x28/0x4f
-[  973.592941][   T24]  do_SYSENTER_32+0x15/0x19
-[  973.593255][   T24]  entry_SYSENTER_32+0xa2/0x102
-[  973.593594][   T24] EIP: 0xb7efe579
-[  973.593839][   T24] EAX: ffffffda EBX: 0048a37c ECX: 00000800 EDX: 0046f939
-[  973.594314][   T24] ESI: 0048a340 EDI: 0048a340 EBP: bfcb6c19 ESP: bfcb5f98
-[  973.594841][   T24] DS: 007b ES: 007b FS: 0000 GS: 0000 SS: 007b EFLAGS: 00200202
-[  973.595398][   T24] 
-[  973.595398][   T24] Showing all locks held in the system:
-[  973.595915][   T24] 1 lock held by khungtaskd/24:
-[  973.596249][   T24]  #0: c20c0f60 (rcu_read_lock){....}-{1:3}, at: rcu_lock_acquire+0x3/0x27
-[  973.596914][   T24] 1 lock held by in:imklog/150:
-[  973.597246][   T24] 1 lock held by dmesg/305:
-[  973.597556][   T24] 
-[  973.597724][   T24] =============================================
-[  973.597724][   T24] 
-[ 1465.046858][   T24] INFO: task rcu_torture_fak:389 blocked for more than 983 seconds.
-[ 1465.047451][   T24]       Tainted: G        W          6.14.0-rc1-00087-g84e0a11498cf #1
-[ 1465.047999][   T24] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[ 1465.048575][   T24] task:rcu_torture_fak state:D stack:0     pid:389   tgid:389   ppid:2      task_flags:0x208040 flags:0x00004000
-[ 1465.049364][   T24] Call Trace:
-[ 1465.049605][   T24]  __schedule+0x3d7/0x409
-[ 1465.049922][   T24]  schedule+0x42/0x5e
-[ 1465.050203][   T24]  schedule_timeout+0x2f/0xb9
-[ 1465.050533][   T24]  ? usleep_range_state+0x8b/0x8b
-[ 1465.050967][   T24]  __wait_for_common+0x91/0xe4
-[ 1465.051320][   T24]  wait_for_common+0x15/0x1b
-[ 1465.051640][   T24]  wait_for_completion+0x17/0x1f
-[ 1465.051991][   T24]  __synchronize_srcu+0x10b/0x122
-[ 1465.052344][   T24]  ? rcu_tasks_pregp_step+0xf/0xf
-[ 1465.052705][   T24]  synchronize_srcu_expedited+0x1a/0x21
-[ 1465.053092][   T24]  srcu_torture_synchronize_expedited+0x12/0x16 [rcutorture]
-[ 1465.053591][   T24]  rcu_torture_fakewriter+0x135/0x351 [rcutorture]
-[ 1465.054044][   T24]  kthread+0x142/0x147
-[ 1465.054329][   T24]  ? srcu_read_delay+0x55/0x55 [rcutorture]
-[ 1465.054748][   T24]  ? kthread_is_per_cpu+0x1c/0x1c
-[ 1465.055140][   T24]  ret_from_fork+0x1e/0x37
-[ 1465.055454][   T24]  ? kthread_is_per_cpu+0x1c/0x1c
-[ 1465.055812][   T24]  ret_from_fork_asm+0x12/0x20
-[ 1465.056154][   T24]  entry_INT80_32+0x10c/0x10c
-[ 1465.056491][   T24] INFO: task rcu_torture_fak:390 blocked for more than 983 seconds.
-[ 1465.057030][   T24]       Tainted: G        W          6.14.0-rc1-00087-g84e0a11498cf #1
-[ 1465.057582][   T24] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[ 1465.058154][   T24] task:rcu_torture_fak state:D stack:0     pid:390   tgid:390   ppid:2      task_flags:0x208040 flags:0x00004000
-[ 1465.058962][   T24] Call Trace:
-[ 1465.059199][   T24]  __schedule+0x3d7/0x409
-[ 1465.059508][   T24]  schedule+0x42/0x5e
-[ 1465.059784][   T24]  schedule_timeout+0x2f/0xb9
-[ 1465.060116][   T24]  ? usleep_range_state+0x8b/0x8b
-[ 1465.060464][   T24]  __wait_for_common+0x91/0xe4
-[ 1465.060799][   T24]  wait_for_common+0x15/0x1b
-[ 1465.061125][   T24]  wait_for_completion+0x17/0x1f
-[ 1465.061466][   T24]  __synchronize_srcu+0x10b/0x122
-[ 1465.061809][   T24]  ? rcu_tasks_pregp_step+0xf/0xf
-[ 1465.062172][   T24]  synchronize_srcu+0xa7/0xb3
-[ 1465.062509][   T24]  srcu_torture_synchronize+0x12/0x16 [rcutorture]
-[ 1465.062994][   T24]  rcu_torture_fakewriter+0x330/0x351 [rcutorture]
-[ 1465.063450][   T24]  kthread+0x142/0x147
-[ 1465.063736][   T24]  ? srcu_read_delay+0x55/0x55 [rcutorture]
-[ 1465.064150][   T24]  ? kthread_is_per_cpu+0x1c/0x1c
-[ 1465.064501][   T24]  ret_from_fork+0x1e/0x37
-[ 1465.064801][   T24]  ? kthread_is_per_cpu+0x1c/0x1c
-[ 1465.065191][   T24]  ret_from_fork_asm+0x12/0x20
-[ 1465.065513][   T24]  entry_INT80_32+0x10c/0x10c
-[ 1465.065851][   T24] INFO: task rcu_torture_fak:394 blocked for more than 983 seconds.
-[ 1465.066381][   T24]       Tainted: G        W          6.14.0-rc1-00087-g84e0a11498cf #1
-[ 1465.066957][   T24] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[ 1465.067557][   T24] task:rcu_torture_fak state:D stack:0     pid:394   tgid:394   ppid:2      task_flags:0x208040 flags:0x00004000
-[ 1465.068359][   T24] Call Trace:
-[ 1465.068596][   T24]  __schedule+0x3d7/0x409
-[ 1465.068909][   T24]  schedule+0x42/0x5e
-[ 1465.069192][   T24]  schedule_timeout+0x2f/0xb9
-[ 1465.069520][   T24]  ? usleep_range_state+0x8b/0x8b
-[ 1465.069869][   T24]  __wait_for_common+0x91/0xe4
-[ 1465.070205][   T24]  wait_for_common+0x15/0x1b
-[ 1465.070519][   T24]  wait_for_completion+0x17/0x1f
-[ 1465.070891][   T24]  __synchronize_srcu+0x10b/0x122
-[ 1465.071244][   T24]  ? rcu_tasks_pregp_step+0xf/0xf
-[ 1465.071607][   T24]  synchronize_srcu_expedited+0x1a/0x21
-[ 1465.071989][   T24]  srcu_torture_synchronize_expedited+0x12/0x16 [rcutorture]
-[ 1465.072521][   T24]  rcu_torture_fakewriter+0x135/0x351 [rcutorture]
-[ 1465.072977][   T24]  kthread+0x142/0x147
-[ 1465.073260][   T24]  ? srcu_read_delay+0x55/0x55 [rcutorture]
-[ 1465.073669][   T24]  ? kthread_is_per_cpu+0x1c/0x1c
-[ 1465.074013][   T24]  ret_from_fork+0x1e/0x37
-[ 1465.074319][   T24]  ? kthread_is_per_cpu+0x1c/0x1c
-[ 1465.074664][   T24]  ret_from_fork_asm+0x12/0x20
-[ 1465.075046][   T24]  entry_INT80_32+0x10c/0x10c
-[ 1465.075389][   T24] INFO: task rcu_torture_fak:398 blocked for more than 983 seconds.
-[ 1465.075929][   T24]       Tainted: G        W          6.14.0-rc1-00087-g84e0a11498cf #1
-[ 1465.076485][   T24] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[ 1465.077071][   T24] task:rcu_torture_fak state:D stack:0     pid:398   tgid:398   ppid:2      task_flags:0x208040 flags:0x00004000
-[ 1465.077875][   T24] Call Trace:
-[ 1465.078122][   T24]  __schedule+0x3d7/0x409
-[ 1465.078443][   T24]  schedule+0x42/0x5e
-[ 1465.078737][   T24]  schedule_timeout+0x2f/0xb9
-[ 1465.079132][   T24]  ? usleep_range_state+0x8b/0x8b
-[ 1465.079496][   T24]  __wait_for_common+0x91/0xe4
-[ 1465.079854][   T24]  wait_for_common+0x15/0x1b
-[ 1465.080189][   T24]  wait_for_completion+0x17/0x1f
-[ 1465.080556][   T24]  __synchronize_srcu+0x10b/0x122
-[ 1465.080907][   T24]  ? rcu_tasks_pregp_step+0xf/0xf
-[ 1465.081265][   T24]  synchronize_srcu+0xa7/0xb3
-[ 1465.081621][   T24]  srcu_torture_synchronize+0x12/0x16 [rcutorture]
-[ 1465.082083][   T24]  rcu_torture_fakewriter+0x330/0x351 [rcutorture]
-[ 1465.082553][   T24]  kthread+0x142/0x147
-[ 1465.082879][   T24]  ? srcu_read_delay+0x55/0x55 [rcutorture]
-[ 1465.083310][   T24]  ? kthread_is_per_cpu+0x1c/0x1c
-[ 1465.083683][   T24]  ret_from_fork+0x1e/0x37
-[ 1465.084005][   T24]  ? kthread_is_per_cpu+0x1c/0x1c
-[ 1465.084370][   T24]  ret_from_fork_asm+0x12/0x20
-[ 1465.084714][   T24]  entry_INT80_32+0x10c/0x10c
-[ 1465.085077][   T24] Future hung task reports are suppressed, see sysctl kernel.hung_task_warnings
-[ 1465.085703][   T24] 
-[ 1465.085703][   T24] Showing all locks held in the system:
-[ 1465.086263][   T24] 1 lock held by khungtaskd/24:
-[ 1465.086617][   T24]  #0: c20c0f60 (rcu_read_lock){....}-{1:3}, at: rcu_lock_acquire+0x3/0x27
-[ 1465.087324][   T24] 1 lock held by in:imklog/150:
-[ 1465.087665][   T24] 1 lock held by dmesg/305:
-[ 1465.087983][   T24] 
-[ 1465.088154][   T24] =============================================
-[ 1465.088154][   T24] 
-BUG: kernel hang in test stage
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+> 
+> > 
+> > > 
+> > > if this is not the correct commit to check, please let us know. thanks!
+> > > 
+> > > > 
+> > > > Regards,
+> > > >  Mickaël
+> > > > 
+> > > > On Wed, Mar 26, 2025 at 04:00:12PM +0800, kernel test robot wrote:
+> > > > > 
+> > > > > hi, Mickaël Salaün,
+> > > > > 
+> > > > > we just reported a random
+> > > > > "Oops:general_protection_fault,probably_for_non-canonical_address#:#[##]SMP_KASAN"
+> > > > > issue in
+> > > > > https://lore.kernel.org/all/202503261534.22d970e8-lkp@intel.com/
+> > > > > 
+> > > > > now we noticed this commit is also in linux-next/master.
+> > > > > 
+> > > > > we don't have enough knowledge to check the difference, but we found a
+> > > > > persistent issue for this commit.
+> > > > > 
+> > > > > 6d9ac5e4d70eba3e 9d65581539252fdb1666917a095
+> > > > > ---------------- ---------------------------
+> > > > >        fail:runs  %reproduction    fail:runs
+> > > > >            |             |             |
+> > > > >            :6          100%           6:6     dmesg.WARNING:suspicious_RCU_usage
+> > > > >            :6          100%           6:6     dmesg.boot_failures
+> > > > >            :6          100%           6:6     dmesg.kernel/pid.c:#suspicious_rcu_dereference_check()usage
+> > > > > 
+> > > > > below full report FYI.
+> > > > > 
+> > > > > 
+> > > > > Hello,
+> > > > > 
+> > > > > kernel test robot noticed "WARNING:suspicious_RCU_usage" on:
+> > > > > 
+> > > > > commit: 9d65581539252fdb1666917a09549c13090fe9e5 ("landlock: Always allow signals between threads of the same process")
+> > > > > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> > > > > 
+> > > > > [test failed on linux-next/master eb4bc4b07f66f01618d9cb1aa4eaef59b1188415]
+> > > > > 
+> > > > > in testcase: trinity
+> > > > > version: trinity-x86_64-ba2360ed-1_20241228
+> > > > > with following parameters:
+> > > > > 
+> > > > > 	runtime: 300s
+> > > > > 	group: group-00
+> > > > > 	nr_groups: 5
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > config: x86_64-randconfig-101-20250325
+> > > > > compiler: gcc-12
+> > > > > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+> > > > > 
+> > > > > (please refer to attached dmesg/kmsg for entire log/backtrace)
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> > > > > the same patch/commit), kindly add following tags
+> > > > > | Reported-by: kernel test robot <oliver.sang@intel.com>
+> > > > > | Closes: https://lore.kernel.org/oe-lkp/202503261510.f9652c11-lkp@intel.com
+> > > > > 
+> > > > > 
+> > > > > [  166.893101][ T3747] WARNING: suspicious RCU usage
+> > > > > [  166.893462][ T3747] 6.14.0-rc5-00006-g9d6558153925 #1 Not tainted
+> > > > > [  166.893895][ T3747] -----------------------------
+> > > > > [  166.894239][ T3747] kernel/pid.c:414 suspicious rcu_dereference_check() usage!
+> > > > > [  166.894747][ T3747]
+> > > > > [  166.894747][ T3747] other info that might help us debug this:
+> > > > > [  166.894747][ T3747]
+> > > > > [  166.895450][ T3747]
+> > > > > [  166.895450][ T3747] rcu_scheduler_active = 2, debug_locks = 1
+> > > > > [  166.896030][ T3747] 3 locks held by trinity-c2/3747:
+> > > > > [ 166.896415][ T3747] #0: ffff888114a5a930 (&group->mark_mutex){+.+.}-{4:4}, at: fcntl_dirnotify (include/linux/sched/mm.h:332 include/linux/sched/mm.h:386 include/linux/fsnotify_backend.h:279 fs/notify/dnotify/dnotify.c:329) 
+> > > > > [ 166.897165][ T3747] #1: ffff888148bbea60 (&mark->lock){+.+.}-{3:3}, at: fcntl_dirnotify (fs/notify/dnotify/dnotify.c:349) 
+> > > > > [ 166.897831][ T3747] #2: ffff888108a53220 (&f_owner->lock){....}-{3:3}, at: __f_setown (fs/fcntl.c:137) 
+> > > > > [  166.898481][ T3747]
+> > > > > [  166.898481][ T3747] stack backtrace:
+> > > > > [  166.898901][ T3747] CPU: 0 UID: 65534 PID: 3747 Comm: trinity-c2 Not tainted 6.14.0-rc5-00006-g9d6558153925 #1
+> > > > > [  166.898908][ T3747] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> > > > > [  166.898912][ T3747] Call Trace:
+> > > > > [  166.898916][ T3747]  <TASK>
+> > > > > [ 166.898921][ T3747] dump_stack_lvl (lib/dump_stack.c:123) 
+> > > > > [ 166.898932][ T3747] lockdep_rcu_suspicious (kernel/locking/lockdep.c:6848) 
+> > > > > [ 166.898945][ T3747] pid_task (kernel/pid.c:414 (discriminator 11)) 
+> > > > > [ 166.898954][ T3747] hook_file_set_fowner (security/landlock/fs.c:1651 (discriminator 9)) 
+> > > > > [ 166.898963][ T3747] security_file_set_fowner (arch/x86/include/asm/atomic.h:23 (discriminator 4) include/linux/atomic/atomic-arch-fallback.h:457 (discriminator 4) include/linux/jump_label.h:262 (discriminator 4) security/security.c:3062 (discriminator 4)) 
+> > > > > [ 166.898969][ T3747] __f_setown (fs/fcntl.c:145) 
+> > > > > [ 166.898980][ T3747] fcntl_dirnotify (fs/notify/dnotify/dnotify.c:233 fs/notify/dnotify/dnotify.c:371) 
+> > > > > [ 166.898996][ T3747] do_fcntl (fs/fcntl.c:539) 
+> > > > > [ 166.899002][ T3747] ? f_getown (fs/fcntl.c:448) 
+> > > > > [ 166.899007][ T3747] ? check_prev_add (kernel/locking/lockdep.c:3862) 
+> > > > > [ 166.899011][ T3747] ? do_syscall_64 (arch/x86/entry/common.c:102) 
+> > > > > [ 166.899023][ T3747] ? syscall_exit_to_user_mode (include/linux/entry-common.h:361 kernel/entry/common.c:220) 
+> > > > > [ 166.899038][ T3747] __x64_sys_fcntl (fs/fcntl.c:591 fs/fcntl.c:576 fs/fcntl.c:576) 
+> > > > > [ 166.899050][ T3747] do_syscall_64 (arch/x86/entry/common.c:52 arch/x86/entry/common.c:83) 
+> > > > > [ 166.899062][ T3747] ? find_held_lock (kernel/locking/lockdep.c:5341) 
+> > > > > [ 166.899072][ T3747] ? __lock_release+0x10b/0x440 
+> > > > > [ 166.899076][ T3747] ? __task_pid_nr_ns (include/linux/rcupdate.h:347 include/linux/rcupdate.h:880 kernel/pid.c:514) 
+> > > > > [ 166.899082][ T3747] ? reacquire_held_locks (kernel/locking/lockdep.c:5502) 
+> > > > > [ 166.899087][ T3747] ? lockdep_hardirqs_on (kernel/locking/lockdep.c:4470) 
+> > > > > [ 166.899093][ T3747] ? do_syscall_64 (arch/x86/entry/common.c:102) 
+> > > > > [ 166.899099][ T3747] ? do_syscall_64 (arch/x86/entry/common.c:102) 
+> > > > > [ 166.899111][ T3747] ? syscall_exit_to_user_mode (include/linux/entry-common.h:361 kernel/entry/common.c:220) 
+> > > > > [ 166.899119][ T3747] ? lockdep_hardirqs_on_prepare (kernel/locking/lockdep.c:469 kernel/locking/lockdep.c:4409) 
+> > > > > [ 166.899124][ T3747] ? do_syscall_64 (arch/x86/entry/common.c:102) 
+> > > > > [ 166.899129][ T3747] ? lockdep_hardirqs_on (kernel/locking/lockdep.c:4470) 
+> > > > > [ 166.899134][ T3747] ? do_syscall_64 (arch/x86/entry/common.c:102) 
+> > > > > [ 166.899139][ T3747] ? do_int80_emulation (arch/x86/include/asm/atomic.h:23 include/linux/atomic/atomic-arch-fallback.h:457 include/linux/jump_label.h:262 arch/x86/entry/common.c:230) 
+> > > > > [ 166.899149][ T3747] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130) 
+> > > > > [  166.899155][ T3747] RIP: 0033:0x7f55ad007719
+> > > > > [ 166.899159][ T3747] Code: 08 89 e8 5b 5d c3 66 2e 0f 1f 84 00 00 00 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b7 06 0d 00 f7 d8 64 89 01 48
+> > > > > All code
+> > > > > ========
+> > > > >    0:	08 89 e8 5b 5d c3    	or     %cl,-0x3ca2a418(%rcx)
+> > > > >    6:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+> > > > >    d:	00 00 00 
+> > > > >   10:	90                   	nop
+> > > > >   11:	48 89 f8             	mov    %rdi,%rax
+> > > > >   14:	48 89 f7             	mov    %rsi,%rdi
+> > > > >   17:	48 89 d6             	mov    %rdx,%rsi
+> > > > >   1a:	48 89 ca             	mov    %rcx,%rdx
+> > > > >   1d:	4d 89 c2             	mov    %r8,%r10
+> > > > >   20:	4d 89 c8             	mov    %r9,%r8
+> > > > >   23:	4c 8b 4c 24 08       	mov    0x8(%rsp),%r9
+> > > > >   28:	0f 05                	syscall
+> > > > >   2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping instruction
+> > > > >   30:	73 01                	jae    0x33
+> > > > >   32:	c3                   	ret
+> > > > >   33:	48 8b 0d b7 06 0d 00 	mov    0xd06b7(%rip),%rcx        # 0xd06f1
+> > > > >   3a:	f7 d8                	neg    %eax
+> > > > >   3c:	64 89 01             	mov    %eax,%fs:(%rcx)
+> > > > >   3f:	48                   	rex.W
+> > > > > 
+> > > > > Code starting with the faulting instruction
+> > > > > ===========================================
+> > > > >    0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
+> > > > >    6:	73 01                	jae    0x9
+> > > > >    8:	c3                   	ret
+> > > > >    9:	48 8b 0d b7 06 0d 00 	mov    0xd06b7(%rip),%rcx        # 0xd06c7
+> > > > >   10:	f7 d8                	neg    %eax
+> > > > >   12:	64 89 01             	mov    %eax,%fs:(%rcx)
+> > > > >   15:	48                   	rex.W
+> > > > > [  166.899164][ T3747] RSP: 002b:00007ffff6eefb48 EFLAGS: 00000246 ORIG_RAX: 0000000000000048
+> > > > > [  166.899168][ T3747] RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007f55ad007719
+> > > > > [  166.899172][ T3747] RDX: 0000000000000027 RSI: 0000000000000402 RDI: 0000000000000043
+> > > > > [  166.899174][ T3747] RBP: 00007f55ab92f058 R08: 0000000099999999 R09: 00000000377dd000
+> > > > > [  166.899177][ T3747] R10: 0000000084848484 R11: 0000000000000246 R12: 0000000000000048
+> > > > > [  166.899180][ T3747] R13: 00007f55acf036c0 R14: 00007f55ab92f058 R15: 00007f55ab92f000
+> > > > > [  166.899203][ T3747]  </TASK>
+> > > > > 
+> > > > > 
+> > > > > The kernel config and materials to reproduce are available at:
+> > > > > https://download.01.org/0day-ci/archive/20250326/202503261510.f9652c11-lkp@intel.com
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > -- 
+> > > > > 0-DAY CI Kernel Test Service
+> > > > > https://github.com/intel/lkp-tests/wiki
+> > > > > 
+> > > > > 
