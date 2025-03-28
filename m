@@ -1,245 +1,287 @@
-Received: from smtp-bc0e.mail.infomaniak.ch (smtp-bc0e.mail.infomaniak.ch [45.157.188.14])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B8B91D63FD
-	for <oe-lkp@lists.linux.dev>; Fri, 28 Mar 2025 08:50:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.157.188.14
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743151825; cv=none; b=Q/jE1fuqXVISkAsE50+pxeUluqbNHu7e700FgXGW+Ga/GbUN7YNDxSPMuA4vaLPeQ5vFDCC0QBeLRE1HbMmOFiE9otRd2IEy0RuzyvMjCJTPTfy92LD9CE5nE8TrHC6PbdW5m3On9zgWkShyQ+QbAOAXHh1AuAXIZwjUkN/h2+0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743151825; c=relaxed/simple;
-	bh=dFJpez1ynAokY/Wy4PB6JG+DZAnRsQYPQlCGDWN0e3g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=M2MWBUGTpw/ib0f/lsSwD2+58IG8t/+YIrpVl1T8AQJCTDMmiEIpiP/dz4KrqLxFXCSYnpVkgOHLgurbszNUFmoK0zI2SwzBW9mGaVbCgYsaLZsKXEBYJ3CXMr7G+clXyCgGs1JEginAMAqL+8oQ8igDIY9UtfUM9iGJj6IBCns=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=digikod.net; spf=pass smtp.mailfrom=digikod.net; dkim=pass (1024-bit key) header.d=digikod.net header.i=@digikod.net header.b=bkwXgQ8O; arc=none smtp.client-ip=45.157.188.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=digikod.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=digikod.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A6211D63FD
+	for <oe-lkp@lists.linux.dev>; Fri, 28 Mar 2025 08:51:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1743151917; cv=fail; b=njU4ki3GZQaoK2xv7DQnExA9FbAFVvXEEd77WNvXs0HjESyFn7AzG1UqbqKm5RXWrioaeycNaMb4DmtB76n1Z15aVlVul1o4Rr49ssidwRsegcY8cTZeAWEtwcFwVm4YpcOxiqDQQNqf/vySjXpylb3i7WPAZMQzM3M4yFj4eB8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1743151917; c=relaxed/simple;
+	bh=beDjSOOl6xtHCY23PztphOyY0PO+hSZcsQ0rSp30qLY=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:MIME-Version; b=iKLgZiKKCSD5iapCWtMMiOjTB3/MmGwYVplQEh4QdAGKjLJuEYDFWBJCkNTBWW/R/JN2wT8J4zo72MAR/2ApMR5m9a2jTa3fe5NogshEAoULEAarbX978OBT6u+5qmr9jQyF5CLz1fpTNB/QNEyXRu2hFqL70wGywVjT4vL7Zh8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eCR7is7P; arc=fail smtp.client-ip=192.198.163.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=digikod.net header.i=@digikod.net header.b="bkwXgQ8O"
-Received: from smtp-3-0000.mail.infomaniak.ch (smtp-3-0000.mail.infomaniak.ch [10.4.36.107])
-	by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4ZPDJP4G9XzjMP;
-	Fri, 28 Mar 2025 09:31:17 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=digikod.net;
-	s=20191114; t=1743150677;
-	bh=kuhwS5MclSbtAuLWIZEo1DS6iD+NX57rsMFIOKQBegw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=bkwXgQ8Oe7nrk0LjyUg1ftUqgVzAaohSZo0gGj04ACi42c4trlVwGppcp2yg478fv
-	 b84un3ShdtSsyE0e42ARP6IgjEaTDKUiR52SmIZz71UBHINvvyE9kWzMHgB8LX3hmW
-	 CmkYw2cldiRpCGt/kLz+F8uOyXPrWqqyNztEbNIg=
-Received: from unknown by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4ZPDJP00R5z3tf;
-	Fri, 28 Mar 2025 09:31:16 +0100 (CET)
-Date: Fri, 28 Mar 2025 09:31:15 +0100
-From: =?utf-8?Q?Micka=C3=ABl_Sala=C3=BCn?= <mic@digikod.net>
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com
-Subject: Re: [linux-next:master] [landlock]  9d65581539:
- WARNING:suspicious_RCU_usage
-Message-ID: <20250328.raitee2Ciepe@digikod.net>
-References: <202503261510.f9652c11-lkp@intel.com>
- <20250327.ahthiSoh4Nec@digikod.net>
- <Z+YQ1Un2QgAYvmos@xsang-OptiPlex-9020>
- <Z+Y8R5AEXabED4FD@xsang-OptiPlex-9020>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eCR7is7P"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1743151916; x=1774687916;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=beDjSOOl6xtHCY23PztphOyY0PO+hSZcsQ0rSp30qLY=;
+  b=eCR7is7PX5HTi6BKj80RgUMRkuIVfZOAlMinLQJjhNocsy+0sa9boVIN
+   1LxcDUoFc/g1gUG4un6RNozlvfaSnWYtBfzuepxev8hqiDPniPR234On5
+   7DyNh/GTwfTcfvDbvaJXixwBpvRhlvIDAcdcYHs1kwyCnEC4laW4U6Ykd
+   sp+bk3YlStUzvg7l2sFZRPKIDB4TlAc7kcXXJRdq9RkgIifLoUsX/k81+
+   JZegij20v8jvoywNfOW4GuXVLD6EDXaNZnNGDEip01URUcEb1hXBO2xM3
+   RU7JybcK123PtF5vGe1A4kRj5f4EYIDXJ9JdnnmkNgMLFewkTY+/4DQTg
+   A==;
+X-CSE-ConnectionGUID: WjjywJgRTMu1bVgHiQyR8Q==
+X-CSE-MsgGUID: cdOiQzj2T1OIb+W58cqTKA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11385"; a="43755824"
+X-IronPort-AV: E=Sophos;i="6.14,282,1736841600"; 
+   d="scan'208";a="43755824"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2025 01:51:55 -0700
+X-CSE-ConnectionGUID: n5j3JAU1SCWoUnA2nuII6Q==
+X-CSE-MsgGUID: VriCJoMkQjuNd713kp4QCg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.14,282,1736841600"; 
+   d="scan'208";a="130107002"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmviesa005.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 28 Mar 2025 01:51:55 -0700
+Received: from ORSMSX903.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.44; Fri, 28 Mar 2025 01:51:54 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14 via Frontend Transport; Fri, 28 Mar 2025 01:51:54 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.174)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.44; Fri, 28 Mar 2025 01:51:53 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=dKEhpZD1MPazNH/dOXVvoNKZpDQxUU4xRwT3D1CZ19kNPn9cLloDBqUd6pkNiSrWpkbBCmRGCihkGFecvtz0Yv/wCblajg8Zhn+aH3lRH+ZXbjCRhkPlxjbZT0inYbZDorDRB9NWWLoGDK9FQfUpqXgnxBTjWm/+H2zWf9m1Qso1EeyoGbwPKXdEDOiGhJKe1B2q8ZkA9vudgDCgxjdhzY0vINKSSPNaV9/guf+CBHSoHARE/J24VYJMmYMacAeNz5Cj0bk24qkO+2oOfNraxQh+aXi/xJL7VLYpOePTmWbGuZtLV40k666bfetaeFszYDEYFn7WFEjeHYUcue23ig==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8zvhRet3TPTAXiJpN2BoaAYKqggDTTlJHIdOm8Izcd0=;
+ b=guqfN0aaEfCvnMrH3fXfyrNZahsdCutS5WGLDkxJqzyU0Q58kX1lJJtFjgQzuSKK65Nu1ZwM67nwmKo32dZ7qDyf7YXXc1ROFAciWaFJpwDk2LcJKnsV+Ic4MrNrBgz3SEdzWi/cX0vAxtidKhzVfOJO39xaYsCvWXX3An/yRXPyEvRKIjNcmjSUyeFqpHAHr/Fw/kWMR4Wt/SQ3APCwoOvF+5rrZpfNr9njwqAt7Ky3KBtKFI8xhpdZpKtZ37Xhh4QZU5OrWPX3Q++jd/nrmLoGHa3U0SEswHz8HRMRHE54jpZ8Whw7AVt+UKCxFHs5CHvfoyACnfJ/v2+TjlWwUA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by DS0PR11MB6471.namprd11.prod.outlook.com (2603:10b6:8:c1::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.44; Fri, 28 Mar
+ 2025 08:51:47 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%4]) with mapi id 15.20.8534.043; Fri, 28 Mar 2025
+ 08:51:47 +0000
+Date: Fri, 28 Mar 2025 16:51:38 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Herbert Xu <herbert@gondor.apana.org.au>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-crypto@vger.kernel.org>,
+	<oliver.sang@intel.com>
+Subject: [linux-next:master] [crypto]  8b54e6a8f4:
+ WARNING:at_crypto/testmgr.c:#alg_test
+Message-ID: <202503281658.7a078821-lkp@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+X-ClientProxiedBy: SI2PR01CA0052.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:193::11) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Z+Y8R5AEXabED4FD@xsang-OptiPlex-9020>
-X-Infomaniak-Routing: alpha
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|DS0PR11MB6471:EE_
+X-MS-Office365-Filtering-Correlation-Id: d34fd215-44cf-48c9-c62c-08dd6dd5c5cd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?bV4m+BpVlLD7K+qWzuUCc9ivmwiSBuCNyQ/DGnj+DmxA+TU6WHRXR7/nlp1C?=
+ =?us-ascii?Q?bzrSuXEEYuyAcgsNieB8EVW7/g9z0rzqd6NOF+ay83RlduT0klM8Tm8S03JD?=
+ =?us-ascii?Q?XAURoAoYRjcZpBDPcxXu/O/H2weDfKCoeG/tSfo3JKU9c5++A8FPRgANvkw3?=
+ =?us-ascii?Q?RaE7nUbIqaNqI4oid1HAiZIZlwHezFKxYAcJXnGuDDFyv7ayO3u9QCM8WFlA?=
+ =?us-ascii?Q?f9ckQi3L/k2TSwpZysux004/wVQUvMVZfUKZQwc/t0K4BMi1TQVFrPLJt1/A?=
+ =?us-ascii?Q?UONpyVMyGo8iTay8G0zMrbL/BEZXDmV1ZcbbfUjH8gE+IrLjgnW1hu5DdMFq?=
+ =?us-ascii?Q?BAztVCNN0qCIshkcuREtUvdqjHsMNg10h8EP9mAlonC16i47ItkiWqYu/6lv?=
+ =?us-ascii?Q?yz5PjuBd9AUUpkQoW2QK2Dvtpfyu5kGcWJJHG30dMGVU+RWE46KU7U78F7FY?=
+ =?us-ascii?Q?pWIkLTPh7FfO+JTCK/CzOPaShUSRcj4Z9TU4CvdENeOMyVy3ikpg4mW8omyq?=
+ =?us-ascii?Q?uJ5ySYqvwO77rEnZf3hXs0/Kqi9PVdviBOQkTc4uU1vk049AVg25870nPNda?=
+ =?us-ascii?Q?ZiLTt/nLfPFQhCEsOX9eQ/pEp5flBdIWdkAVlMeg+dCKOvb/+6wPa9gICbkR?=
+ =?us-ascii?Q?xuH2vnGVdqrirDodBIHFvch6kfIWUIGL/s9JcvJwXtpsyl+4Zc/ulOvZWuTE?=
+ =?us-ascii?Q?cY2KCuqeDViPkh3yMgJ0buSh19gQR5UWizkeLMqkfnRzFeoEhnbh3+P0H/tR?=
+ =?us-ascii?Q?cikLeRPsiYRjPC0GFdjZrPt1B6Bso/sDoSejrkGbVCmbJkNixbrrQm/5waFR?=
+ =?us-ascii?Q?ncuKJTmnfjIeaWEs051Bcx+Sz8PiSdKEUKXF3RaTv2Pw5ysUvXUfYPhKZBz1?=
+ =?us-ascii?Q?nyDV0tRGvI4+xzv54URRxWJKkWdZJnTsXXW9RYvnYcgfBc1MDFANwrILrJbK?=
+ =?us-ascii?Q?fnGVds4Rn1h32KXuwInhQXTOIkv2YndqQbDLftJg0jSE0q1XgOhOrm3nnNBj?=
+ =?us-ascii?Q?43X3nXtU2XrJZUU/Pgs1s5rO9Dv+ff5PB6X96+5DImhmSpLCtzhK0+ybNR7J?=
+ =?us-ascii?Q?a3ZrrO9XZ6QVILGbLPQgNwUytzjFiGRDJeGuxVmw64XifWCe1aH3zqfsloJR?=
+ =?us-ascii?Q?2uP5TsreqgLrpMTjg2u5mXu8yNM54PWzZJS5OSehIUMFCCL2Ht0s/AsV5o9z?=
+ =?us-ascii?Q?tDb3SgH8Pd3g6Rap4xnp5VwjY+Irg+mc30Ld2ZUYOv6yIo+sIsJPuC9pw4yR?=
+ =?us-ascii?Q?fTSeOeMr4qi8BdY3V/f4QHwYRX2NInHJxUTW1INJqQdarFvaZBAQCGgsudAq?=
+ =?us-ascii?Q?02zosK9iXjOP7ZDOVdzOsjqe+zdBT6bhq2jNxzTJPpfkvw=3D=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?al7ahFllPngTdT58SDZEu+r0iQ60Aw+z8f1UdmHIoS5QYLm7lnSmQabm0CJs?=
+ =?us-ascii?Q?U0ssKd/Quag4g2Hpk7nRW+DLKGs+0d+Ti7+PBRlNu/KVZzqBKwN98z3e7dK1?=
+ =?us-ascii?Q?cpfcOx+jbY4wiCdcYKAJ6wJeXpGsVSRuvqg5b6pJE3uPvXgl3t9DiUU5AuVP?=
+ =?us-ascii?Q?irlYJ/HBsl0k9iyo4nkNAMlEGEZo5csRMiOCEq3Di7VAFotayyrGIdMT/Q0D?=
+ =?us-ascii?Q?1p/9KhswW7x3ZbkGFl2owUkvqoJaviTvF39bodVYKziKmkAMTjvjXSvWm+QY?=
+ =?us-ascii?Q?W319rfgo/ngTnsd1jJwOUHzzd/COti0SYxN6PyQ6MSp38qxddAdxML4z00fP?=
+ =?us-ascii?Q?kLRZlfd3XFGJyW+M0nUClMPuwCIuFGuv8VGZb1RJ854bTJOR7QH3RuLH0edf?=
+ =?us-ascii?Q?TYU+zuBgtSIIT3gJrewJE0PgyYu31niQ2/gGa6bYD1ciQmWMFdRqmNRM7Nc4?=
+ =?us-ascii?Q?JZnMR/aAHZ//E9RwjAPlc1Qdpb/ced8GU0NyGb8foJFjF1c4GgUVXFqqoc6g?=
+ =?us-ascii?Q?XexO6B5Grj0CP7tQT9izf7xe1b+qQWWWQ3WpF8zxHwD0NxaNANblkdUdKB8L?=
+ =?us-ascii?Q?Xzb/2Jnc2tELhUKPYYTAILei4tKKKOBp0eCK5fuH5GKWYrNLgfkfMzTFqDOu?=
+ =?us-ascii?Q?0kVZbmzqNpAkQ5lETwvcPw+/TVisanEpDwV7zsB1/EYh8QvPGzQWNby+Kscl?=
+ =?us-ascii?Q?OMyXY1AeF7gKsVZwKPsnPQem/U68GsmM8rVtjvYqklRp4IpWy8Itbwsv5/Yg?=
+ =?us-ascii?Q?7Hd5ruK9A//YhUIb5Xf014Vn91cbEFNctCIBiRpNLwTs9Z1lhPR8eFtEXJaf?=
+ =?us-ascii?Q?hPj3WCZ1OqOOjl8ujLeI3CuEkfygRFJ9ACz5w0M2VYJ3xn5elOBT1M39EbgK?=
+ =?us-ascii?Q?I/UKTpGYrlD6Z8hOo8lfSQcp5DxP4Wy8SJMI0g8cxiL8LvtOxm71nyFV0Gwy?=
+ =?us-ascii?Q?4I6dPaB4ScPlsvZccQ3o2Ge0Qtf6cVUQ9eWYkYql114uW6+WwdUmN1gZq9c+?=
+ =?us-ascii?Q?PZppATR7INTvm0LqsT29J6xXtAtEyzK1GDK73AMv9L0yrk2F24gk1Efz7JQ1?=
+ =?us-ascii?Q?x+MREhKQTaD5MyYSEo1V9ebFaJ6uXh+9XqPpjuVMFfEbTXz7lvdt5faoziyf?=
+ =?us-ascii?Q?x5RYSQVQIS2jW2+8X2C0fh2CH2sVqSGM1jn6awE4pfGanWDuuLwPtBL3wDPZ?=
+ =?us-ascii?Q?iFEsjHVCajYVXUZTzaAOnEF7dadw9v4eRK0Gj4vCU9tvm+IStzgjD0+lQV4Z?=
+ =?us-ascii?Q?7rRh2S1H7rHCMBBDtL1qv9RJNzZPJvNi02xbCuho7w3N6NuBYTl0XBytk7yX?=
+ =?us-ascii?Q?z/IXPBagmZgAn2v3xJuvIENy/oRvOYEQ+zdEXwXGDdu+rU+5DU43Oid/beC9?=
+ =?us-ascii?Q?A2/Jl2dWtx0vhJ0484OMWlqUXk8xyRdOdMEmR9kwllVcbuQc+BSY5OXkfXxD?=
+ =?us-ascii?Q?DtCmXR59wJZ7/7w2iNaBlc+cWZIX3QmNiQmgfbPo1MAhSp36ENmrVHzqR3g5?=
+ =?us-ascii?Q?LwyOmhReDxnfJyNb/XJXaNSyj3WdLbI0tG1ERoCniKP6CT4HS61lWE7ilyuY?=
+ =?us-ascii?Q?//cizxQUz3j947KexrjLUTdIvPZH36nu+humVCpXS+vR3X+V/QVpKdGyxaC0?=
+ =?us-ascii?Q?4g=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: d34fd215-44cf-48c9-c62c-08dd6dd5c5cd
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Mar 2025 08:51:47.1502
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: pPFjcLn0GyPdWWxHj/pX/KZYDbqXbk/KajmmzRRo5vXaxkDIr3RrL39lqgye/Ig3AvLhOiVqd6K3tsHfkc5qfw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB6471
+X-OriginatorOrg: intel.com
 
-On Fri, Mar 28, 2025 at 02:05:59PM +0800, Oliver Sang wrote:
-> hi, Mickaël Salaün,
-> 
-> On Fri, Mar 28, 2025 at 11:00:37AM +0800, Oliver Sang wrote:
-> > hi, Mickaël Salaün,
-> > 
-> > On Thu, Mar 27, 2025 at 07:41:08PM +0100, Mickaël Salaün wrote:
-> > > Hi Olivier,
-> > > 
-> > > I pushed an updated yesterday in linux-next that should fix this issue
-> > > and this other issue too:
-> > > https://lore.kernel.org/all/20250326.yee0ba6Yai3m@digikod.net/
-> > > 
-> > > Could you please confirm that these issues are really fixed? Or
-> > > otherwise, please let me know when I should expect (or not) an email
-> > > from kernel test robot. :)
-> > 
-> > ok, we've started the tests for both issues. upon the commit:
-> > db8da9da41bce (tag: next-20250327, linux-next/master) Add linux-next specific files for 20250327
-> 
-> sorry that due to unknown reason, we cannot build sucessfully upon db8da9da41bce
-> for both tests (which are using randconfig). could you give us the commit-id
-> of your fix? we could try test upon that fix commit again.
 
-The new commit is 18eb75f3af40 ("landlock: Always allow signals between
-threads of the same process").
 
-> 
-> > 
-> > if this is not the correct commit to check, please let us know. thanks!
-> > 
-> > > 
-> > > Regards,
-> > >  Mickaël
-> > > 
-> > > On Wed, Mar 26, 2025 at 04:00:12PM +0800, kernel test robot wrote:
-> > > > 
-> > > > hi, Mickaël Salaün,
-> > > > 
-> > > > we just reported a random
-> > > > "Oops:general_protection_fault,probably_for_non-canonical_address#:#[##]SMP_KASAN"
-> > > > issue in
-> > > > https://lore.kernel.org/all/202503261534.22d970e8-lkp@intel.com/
-> > > > 
-> > > > now we noticed this commit is also in linux-next/master.
-> > > > 
-> > > > we don't have enough knowledge to check the difference, but we found a
-> > > > persistent issue for this commit.
-> > > > 
-> > > > 6d9ac5e4d70eba3e 9d65581539252fdb1666917a095
-> > > > ---------------- ---------------------------
-> > > >        fail:runs  %reproduction    fail:runs
-> > > >            |             |             |
-> > > >            :6          100%           6:6     dmesg.WARNING:suspicious_RCU_usage
-> > > >            :6          100%           6:6     dmesg.boot_failures
-> > > >            :6          100%           6:6     dmesg.kernel/pid.c:#suspicious_rcu_dereference_check()usage
-> > > > 
-> > > > below full report FYI.
-> > > > 
-> > > > 
-> > > > Hello,
-> > > > 
-> > > > kernel test robot noticed "WARNING:suspicious_RCU_usage" on:
-> > > > 
-> > > > commit: 9d65581539252fdb1666917a09549c13090fe9e5 ("landlock: Always allow signals between threads of the same process")
-> > > > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> > > > 
-> > > > [test failed on linux-next/master eb4bc4b07f66f01618d9cb1aa4eaef59b1188415]
-> > > > 
-> > > > in testcase: trinity
-> > > > version: trinity-x86_64-ba2360ed-1_20241228
-> > > > with following parameters:
-> > > > 
-> > > > 	runtime: 300s
-> > > > 	group: group-00
-> > > > 	nr_groups: 5
-> > > > 
-> > > > 
-> > > > 
-> > > > config: x86_64-randconfig-101-20250325
-> > > > compiler: gcc-12
-> > > > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> > > > 
-> > > > (please refer to attached dmesg/kmsg for entire log/backtrace)
-> > > > 
-> > > > 
-> > > > 
-> > > > If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> > > > the same patch/commit), kindly add following tags
-> > > > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> > > > | Closes: https://lore.kernel.org/oe-lkp/202503261510.f9652c11-lkp@intel.com
-> > > > 
-> > > > 
-> > > > [  166.893101][ T3747] WARNING: suspicious RCU usage
-> > > > [  166.893462][ T3747] 6.14.0-rc5-00006-g9d6558153925 #1 Not tainted
-> > > > [  166.893895][ T3747] -----------------------------
-> > > > [  166.894239][ T3747] kernel/pid.c:414 suspicious rcu_dereference_check() usage!
-> > > > [  166.894747][ T3747]
-> > > > [  166.894747][ T3747] other info that might help us debug this:
-> > > > [  166.894747][ T3747]
-> > > > [  166.895450][ T3747]
-> > > > [  166.895450][ T3747] rcu_scheduler_active = 2, debug_locks = 1
-> > > > [  166.896030][ T3747] 3 locks held by trinity-c2/3747:
-> > > > [ 166.896415][ T3747] #0: ffff888114a5a930 (&group->mark_mutex){+.+.}-{4:4}, at: fcntl_dirnotify (include/linux/sched/mm.h:332 include/linux/sched/mm.h:386 include/linux/fsnotify_backend.h:279 fs/notify/dnotify/dnotify.c:329) 
-> > > > [ 166.897165][ T3747] #1: ffff888148bbea60 (&mark->lock){+.+.}-{3:3}, at: fcntl_dirnotify (fs/notify/dnotify/dnotify.c:349) 
-> > > > [ 166.897831][ T3747] #2: ffff888108a53220 (&f_owner->lock){....}-{3:3}, at: __f_setown (fs/fcntl.c:137) 
-> > > > [  166.898481][ T3747]
-> > > > [  166.898481][ T3747] stack backtrace:
-> > > > [  166.898901][ T3747] CPU: 0 UID: 65534 PID: 3747 Comm: trinity-c2 Not tainted 6.14.0-rc5-00006-g9d6558153925 #1
-> > > > [  166.898908][ T3747] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> > > > [  166.898912][ T3747] Call Trace:
-> > > > [  166.898916][ T3747]  <TASK>
-> > > > [ 166.898921][ T3747] dump_stack_lvl (lib/dump_stack.c:123) 
-> > > > [ 166.898932][ T3747] lockdep_rcu_suspicious (kernel/locking/lockdep.c:6848) 
-> > > > [ 166.898945][ T3747] pid_task (kernel/pid.c:414 (discriminator 11)) 
-> > > > [ 166.898954][ T3747] hook_file_set_fowner (security/landlock/fs.c:1651 (discriminator 9)) 
-> > > > [ 166.898963][ T3747] security_file_set_fowner (arch/x86/include/asm/atomic.h:23 (discriminator 4) include/linux/atomic/atomic-arch-fallback.h:457 (discriminator 4) include/linux/jump_label.h:262 (discriminator 4) security/security.c:3062 (discriminator 4)) 
-> > > > [ 166.898969][ T3747] __f_setown (fs/fcntl.c:145) 
-> > > > [ 166.898980][ T3747] fcntl_dirnotify (fs/notify/dnotify/dnotify.c:233 fs/notify/dnotify/dnotify.c:371) 
-> > > > [ 166.898996][ T3747] do_fcntl (fs/fcntl.c:539) 
-> > > > [ 166.899002][ T3747] ? f_getown (fs/fcntl.c:448) 
-> > > > [ 166.899007][ T3747] ? check_prev_add (kernel/locking/lockdep.c:3862) 
-> > > > [ 166.899011][ T3747] ? do_syscall_64 (arch/x86/entry/common.c:102) 
-> > > > [ 166.899023][ T3747] ? syscall_exit_to_user_mode (include/linux/entry-common.h:361 kernel/entry/common.c:220) 
-> > > > [ 166.899038][ T3747] __x64_sys_fcntl (fs/fcntl.c:591 fs/fcntl.c:576 fs/fcntl.c:576) 
-> > > > [ 166.899050][ T3747] do_syscall_64 (arch/x86/entry/common.c:52 arch/x86/entry/common.c:83) 
-> > > > [ 166.899062][ T3747] ? find_held_lock (kernel/locking/lockdep.c:5341) 
-> > > > [ 166.899072][ T3747] ? __lock_release+0x10b/0x440 
-> > > > [ 166.899076][ T3747] ? __task_pid_nr_ns (include/linux/rcupdate.h:347 include/linux/rcupdate.h:880 kernel/pid.c:514) 
-> > > > [ 166.899082][ T3747] ? reacquire_held_locks (kernel/locking/lockdep.c:5502) 
-> > > > [ 166.899087][ T3747] ? lockdep_hardirqs_on (kernel/locking/lockdep.c:4470) 
-> > > > [ 166.899093][ T3747] ? do_syscall_64 (arch/x86/entry/common.c:102) 
-> > > > [ 166.899099][ T3747] ? do_syscall_64 (arch/x86/entry/common.c:102) 
-> > > > [ 166.899111][ T3747] ? syscall_exit_to_user_mode (include/linux/entry-common.h:361 kernel/entry/common.c:220) 
-> > > > [ 166.899119][ T3747] ? lockdep_hardirqs_on_prepare (kernel/locking/lockdep.c:469 kernel/locking/lockdep.c:4409) 
-> > > > [ 166.899124][ T3747] ? do_syscall_64 (arch/x86/entry/common.c:102) 
-> > > > [ 166.899129][ T3747] ? lockdep_hardirqs_on (kernel/locking/lockdep.c:4470) 
-> > > > [ 166.899134][ T3747] ? do_syscall_64 (arch/x86/entry/common.c:102) 
-> > > > [ 166.899139][ T3747] ? do_int80_emulation (arch/x86/include/asm/atomic.h:23 include/linux/atomic/atomic-arch-fallback.h:457 include/linux/jump_label.h:262 arch/x86/entry/common.c:230) 
-> > > > [ 166.899149][ T3747] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130) 
-> > > > [  166.899155][ T3747] RIP: 0033:0x7f55ad007719
-> > > > [ 166.899159][ T3747] Code: 08 89 e8 5b 5d c3 66 2e 0f 1f 84 00 00 00 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b7 06 0d 00 f7 d8 64 89 01 48
-> > > > All code
-> > > > ========
-> > > >    0:	08 89 e8 5b 5d c3    	or     %cl,-0x3ca2a418(%rcx)
-> > > >    6:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
-> > > >    d:	00 00 00 
-> > > >   10:	90                   	nop
-> > > >   11:	48 89 f8             	mov    %rdi,%rax
-> > > >   14:	48 89 f7             	mov    %rsi,%rdi
-> > > >   17:	48 89 d6             	mov    %rdx,%rsi
-> > > >   1a:	48 89 ca             	mov    %rcx,%rdx
-> > > >   1d:	4d 89 c2             	mov    %r8,%r10
-> > > >   20:	4d 89 c8             	mov    %r9,%r8
-> > > >   23:	4c 8b 4c 24 08       	mov    0x8(%rsp),%r9
-> > > >   28:	0f 05                	syscall
-> > > >   2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping instruction
-> > > >   30:	73 01                	jae    0x33
-> > > >   32:	c3                   	ret
-> > > >   33:	48 8b 0d b7 06 0d 00 	mov    0xd06b7(%rip),%rcx        # 0xd06f1
-> > > >   3a:	f7 d8                	neg    %eax
-> > > >   3c:	64 89 01             	mov    %eax,%fs:(%rcx)
-> > > >   3f:	48                   	rex.W
-> > > > 
-> > > > Code starting with the faulting instruction
-> > > > ===========================================
-> > > >    0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
-> > > >    6:	73 01                	jae    0x9
-> > > >    8:	c3                   	ret
-> > > >    9:	48 8b 0d b7 06 0d 00 	mov    0xd06b7(%rip),%rcx        # 0xd06c7
-> > > >   10:	f7 d8                	neg    %eax
-> > > >   12:	64 89 01             	mov    %eax,%fs:(%rcx)
-> > > >   15:	48                   	rex.W
-> > > > [  166.899164][ T3747] RSP: 002b:00007ffff6eefb48 EFLAGS: 00000246 ORIG_RAX: 0000000000000048
-> > > > [  166.899168][ T3747] RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007f55ad007719
-> > > > [  166.899172][ T3747] RDX: 0000000000000027 RSI: 0000000000000402 RDI: 0000000000000043
-> > > > [  166.899174][ T3747] RBP: 00007f55ab92f058 R08: 0000000099999999 R09: 00000000377dd000
-> > > > [  166.899177][ T3747] R10: 0000000084848484 R11: 0000000000000246 R12: 0000000000000048
-> > > > [  166.899180][ T3747] R13: 00007f55acf036c0 R14: 00007f55ab92f058 R15: 00007f55ab92f000
-> > > > [  166.899203][ T3747]  </TASK>
-> > > > 
-> > > > 
-> > > > The kernel config and materials to reproduce are available at:
-> > > > https://download.01.org/0day-ci/archive/20250326/202503261510.f9652c11-lkp@intel.com
-> > > > 
-> > > > 
-> > > > 
-> > > > -- 
-> > > > 0-DAY CI Kernel Test Service
-> > > > https://github.com/intel/lkp-tests/wiki
-> > > > 
-> > > > 
+Hello,
+
+kernel test robot noticed "WARNING:at_crypto/testmgr.c:#alg_test" on:
+
+commit: 8b54e6a8f4156ed43627f40300b0711dc977fbc1 ("crypto: testmgr - Add multibuffer hash testing")
+https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+
+[test failed on linux-next/master db8da9da41bced445077925f8a886c776a47440c]
+
+in testcase: boot
+
+config: x86_64-rhel-9.4-kunit
+compiler: gcc-12
+test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
++---------------------------------------+------------+------------+
+|                                       | 108ce629cf | 8b54e6a8f4 |
++---------------------------------------+------------+------------+
+| WARNING:at_crypto/testmgr.c:#alg_test | 0          | 12         |
+| RIP:alg_test                          | 0          | 12         |
++---------------------------------------+------------+------------+
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202503281658.7a078821-lkp@intel.com
+
+
+[   71.838087][ T2596] ------------[ cut here ]------------
+[   71.840212][ T2596] alg: self-tests for poly1305 using poly1305-simd failed (rc=-126)
+[ 71.840238][ T2596] WARNING: CPU: 0 PID: 2596 at crypto/testmgr.c:5997 alg_test (crypto/testmgr.c:5997 (discriminator 1)) 
+[   71.842804][ T2596] Modules linked in:
+[   71.843503][ T2596] CPU: 0 UID: 0 PID: 2596 Comm: cryptomgr_test Not tainted 6.14.0-rc1-00186-g8b54e6a8f415 #1
+[   71.845159][ T2596] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+[ 71.846781][ T2596] RIP: 0010:alg_test (crypto/testmgr.c:5997 (discriminator 1)) 
+[ 71.847651][ T2596] Code: cc f7 ff ff 45 89 fd 44 39 ed 0f 8c fe f8 ff ff e9 de fc ff ff 44 89 c1 4c 89 ea 4c 89 f6 48 c7 c7 60 61 90 b7 e8 ac a6 01 ff <0f> 0b 44 8b 04 24 e9 66 fc ff ff 41 8d 6f 01 eb cc 48 8b 6c 24 18
+All code
+========
+   0:	cc                   	int3
+   1:	f7 ff                	idiv   %edi
+   3:	ff 45 89             	incl   -0x77(%rbp)
+   6:	fd                   	std
+   7:	44 39 ed             	cmp    %r13d,%ebp
+   a:	0f 8c fe f8 ff ff    	jl     0xfffffffffffff90e
+  10:	e9 de fc ff ff       	jmp    0xfffffffffffffcf3
+  15:	44 89 c1             	mov    %r8d,%ecx
+  18:	4c 89 ea             	mov    %r13,%rdx
+  1b:	4c 89 f6             	mov    %r14,%rsi
+  1e:	48 c7 c7 60 61 90 b7 	mov    $0xffffffffb7906160,%rdi
+  25:	e8 ac a6 01 ff       	call   0xffffffffff01a6d6
+  2a:*	0f 0b                	ud2		<-- trapping instruction
+  2c:	44 8b 04 24          	mov    (%rsp),%r8d
+  30:	e9 66 fc ff ff       	jmp    0xfffffffffffffc9b
+  35:	41 8d 6f 01          	lea    0x1(%r15),%ebp
+  39:	eb cc                	jmp    0x7
+  3b:	48 8b 6c 24 18       	mov    0x18(%rsp),%rbp
+
+Code starting with the faulting instruction
+===========================================
+   0:	0f 0b                	ud2
+   2:	44 8b 04 24          	mov    (%rsp),%r8d
+   6:	e9 66 fc ff ff       	jmp    0xfffffffffffffc71
+   b:	41 8d 6f 01          	lea    0x1(%r15),%ebp
+   f:	eb cc                	jmp    0xffffffffffffffdd
+  11:	48 8b 6c 24 18       	mov    0x18(%rsp),%rbp
+[   71.854667][ T2596] RSP: 0018:ffffc9000072fd18 EFLAGS: 00010286
+[   71.855664][ T2596] RAX: 0000000000000000 RBX: ffffffffbacc4900 RCX: 1ffffffff70eba78
+[   71.856951][ T2596] RDX: 0000000000000000 RSI: 0000000000000004 RDI: 0000000000000001
+[   71.858195][ T2596] RBP: 1ffff920000e5faa R08: 0000000000000000 R09: fffffbfff70eba78
+[   71.859419][ T2596] R10: 0000000000000003 R11: 0000000000000001 R12: 00000000000000b7
+[   71.860650][ T2596] R13: ffff8881ab234000 R14: ffff8881ab234080 R15: 0000000000002dc0
+[   71.861880][ T2596] FS:  0000000000000000(0000) GS:ffff8883aee00000(0000) knlGS:0000000000000000
+[   71.863262][ T2596] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   71.864318][ T2596] CR2: 00007f68c26a3160 CR3: 000000000e66c000 CR4: 00000000000406f0
+[   71.865581][ T2596] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[   71.866912][ T2596] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[   71.868210][ T2596] Call Trace:
+[   71.868795][ T2596]  <TASK>
+[ 71.869314][ T2596] ? __warn (kernel/panic.c:748) 
+[ 71.869972][ T2596] ? alg_test (crypto/testmgr.c:5997 (discriminator 1)) 
+[ 71.870752][ T2596] ? report_bug (lib/bug.c:180 lib/bug.c:219) 
+[ 71.871522][ T2596] ? handle_bug (arch/x86/kernel/traps.c:285) 
+[ 71.872255][ T2596] ? exc_invalid_op (arch/x86/kernel/traps.c:309 (discriminator 1)) 
+[ 71.873050][ T2596] ? asm_exc_invalid_op (arch/x86/include/asm/idtentry.h:574) 
+[ 71.873884][ T2596] ? alg_test (crypto/testmgr.c:5997 (discriminator 1)) 
+[ 71.874597][ T2596] ? alg_test (crypto/testmgr.c:5997 (discriminator 1)) 
+[ 71.875322][ T2596] ? __pfx_alg_test (crypto/testmgr.c:5936) 
+[ 71.876084][ T2596] ? __pfx___schedule (kernel/sched/core.c:6645) 
+[ 71.876894][ T2596] ? try_to_wake_up (kernel/sched/core.c:4332) 
+[ 71.877689][ T2596] ? _raw_spin_lock_irqsave (arch/x86/include/asm/atomic.h:107 include/linux/atomic/atomic-arch-fallback.h:2170 include/linux/atomic/atomic-instrumented.h:1302 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 include/linux/spinlock_api_smp.h:111 kernel/locking/spinlock.c:162) 
+[ 71.878561][ T2596] ? __pfx__raw_spin_lock_irqsave (kernel/locking/spinlock.c:161) 
+[ 71.879484][ T2596] ? __pfx_cryptomgr_test (crypto/algboss.c:174) 
+[ 71.880305][ T2596] cryptomgr_test (crypto/algboss.c:181) 
+[ 71.881035][ T2596] kthread (kernel/kthread.c:464) 
+[ 71.881699][ T2596] ? __pfx_kthread (kernel/kthread.c:413) 
+[ 71.882452][ T2596] ? __pfx__raw_spin_lock_irq (kernel/locking/spinlock.c:169) 
+[ 71.883322][ T2596] ? __pfx_kthread (kernel/kthread.c:413) 
+[ 71.884067][ T2596] ret_from_fork (arch/x86/kernel/process.c:154) 
+[ 71.884800][ T2596] ? __pfx_kthread (kernel/kthread.c:413) 
+[ 71.885569][ T2596] ret_from_fork_asm (arch/x86/entry/entry_64.S:257) 
+[   71.886338][ T2596]  </TASK>
+[   71.886876][ T2596] ---[ end trace 0000000000000000 ]---
+
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20250328/202503281658.7a078821-lkp@intel.com
+
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
