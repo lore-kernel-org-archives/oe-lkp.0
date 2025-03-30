@@ -1,62 +1,46 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from abb.hmeau.com (abb.hmeau.com [144.6.53.87])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77E121C36;
-	Sat, 29 Mar 2025 01:06:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F3802F24;
+	Sun, 30 Mar 2025 01:44:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=144.6.53.87
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743210410; cv=none; b=nwzrfELwmN98rdxJsyhtPdVf1JzAER1OAqXrkHz/Rd6ca8Bgqf8WCL5X4tDnfIzH0dEZlG4AwjM/pBI5F5EggLVA+hsIZclKMWvmgK4xYPSw1zI3jnogTY55fuqoYKReHL/JgDeCciLibPwaRMzlZ/VmYSXvSjEvD1ttrSmOD/s=
+	t=1743299045; cv=none; b=ozYAgrNJEeZrShqFKDvPI7S0n1XMh6TdfFxf0cFNdnjAaXpTRiSW0AyDlsLi6BTC9pblCjw8EQiou43ZL3EN/NU40DGIDsIAVIMNtlKLbWNWPElKSgIR9LQlb2yxwyf/VpJrrQ/OajMXxWL/jitqi1cYilKGh/mO6pHM0PGuAdk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743210410; c=relaxed/simple;
-	bh=gtnCohqVELmcawsV6NjbhkkPqDLxo8ZP2RZwSaOktPQ=;
+	s=arc-20240116; t=1743299045; c=relaxed/simple;
+	bh=q0JgxsA70ur2LSUYqAHYtht6Q4LvLkygIc1TnIcLsA0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=j4iKkIQzLCpCRj5VD5dpXE3wO74AsVd+QbxzEtVCtDkbr5d7HY6H7JQ1Qq5mgiwL+xnXPUaV6Tyol+Ww0wcIRpTPeF4P7sJYnlQcAdGXqk+7zIVfHjztudK872SYJaDrqAkxpFpH+uacNoi/gCx/aKPIyKjdiRYPs5wRUWelj+o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OXNfcbio; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=GTdUPYMgOtmtW2hzm6KsrO9PN5rLGsU7CAeQBoXPucFqey4d7Ye5A5jh7j1+aNtR0JliDDZkZgSNZ+SVZwjyRBI5fClrPjWCUvMJ5vbvFWE3DM+etZ9n+idi5MXi6+6MZFDNayqZrxxhyA6iEErBNoKNYy6ZjjQWb7fZi2NpKvA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gondor.apana.org.au; spf=pass smtp.mailfrom=gondor.apana.org.au; dkim=pass (2048-bit key) header.d=hmeau.com header.i=@hmeau.com header.b=ERPN0296; arc=none smtp.client-ip=144.6.53.87
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gondor.apana.org.au
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gondor.apana.org.au
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OXNfcbio"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5031C4CEEA;
-	Sat, 29 Mar 2025 01:06:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1743210410;
-	bh=gtnCohqVELmcawsV6NjbhkkPqDLxo8ZP2RZwSaOktPQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=OXNfcbioMcZNFe70LjaiqF6/770DiVEXn72cLVuxo/7X/xKxSdDSzLaZtJPQdtqXF
-	 DNSNJA5g4lU9jLz594FtEg3eixSeeT7jmf15/xLkHOHIDSmtymy48tlgynxRsUaif/
-	 ZGWwqQjZcSPEhlhgW/Ct0zOSgF9fMFa6Zcqwv13ZYns5Ykep0K81xVFe5BG/7oF5yV
-	 gLLfuGbRoO1zn2E31BH/bqRNuxSOcRM4RD6+8/9RrEPx/GZIPMOj2ZXDU/gOkPJtCd
-	 7jn93izUGhlfTyV3xh1GT7WCfYOJ+gJHkmSN2dpbEvkX3jknvcY1lKcOTGck0lwLwf
-	 Q/oNKv+SKyihw==
-Date: Fri, 28 Mar 2025 18:06:48 -0700
-From: Luis Chamberlain <mcgrof@kernel.org>
-To: Jan Kara <jack@suse.cz>, Kefeng Wang <wangkefeng.wang@huawei.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	David Bueso <dave@stgolabs.net>, Tso Ted <tytso@mit.edu>,
-	Ritesh Harjani <ritesh.list@gmail.com>
-Cc: Johannes Weiner <hannes@cmpxchg.org>,
-	Oliver Sang <oliver.sang@intel.com>,
-	Matthew Wilcox <willy@infradead.org>,
-	David Hildenbrand <david@redhat.com>,
-	Alistair Popple <apopple@nvidia.com>, linux-mm@kvack.org,
-	Christian Brauner <brauner@kernel.org>,
-	Hannes Reinecke <hare@suse.de>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, John Garry <john.g.garry@oracle.com>,
-	linux-block@vger.kernel.org, ltp@lists.linux.it,
-	Pankaj Raghav <p.raghav@samsung.com>,
-	Daniel Gomez <da.gomez@samsung.com>,
-	Dave Chinner <david@fromorbit.com>, gost.dev@samsung.com
-Subject: Re: [linux-next:master] [block/bdev]  3c20917120:
- BUG:sleeping_function_called_from_invalid_context_at_mm/util.c
-Message-ID: <Z-dHqMtGneCVs3v5@bombadil.infradead.org>
-References: <Z9wF57eEBR-42K9a@bombadil.infradead.org>
- <20250322231440.GA1894930@cmpxchg.org>
- <Z99dk_ZMNRFgaaH8@bombadil.infradead.org>
- <Z9-zL3pRpCHm5a0w@bombadil.infradead.org>
- <Z+JSwb8BT0tZrSrx@xsang-OptiPlex-9020>
- <Z-X_FiXDTSvRSksp@bombadil.infradead.org>
- <Z-YjyBF-M9ciJC7X@bombadil.infradead.org>
- <Z-ZwToVfJbdTVRtG@bombadil.infradead.org>
- <Z-bz0IZuTtwNYPBq@bombadil.infradead.org>
- <Z-c6BqCSmAnNxb57@bombadil.infradead.org>
+	dkim=pass (2048-bit key) header.d=hmeau.com header.i=@hmeau.com header.b="ERPN0296"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hmeau.com;
+	s=formenos; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+	Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	List-Post:List-Owner:List-Archive;
+	bh=/DXWsN0Dr889Hf9khoNk9VARb6cbpuCUe0xmbyA6i4I=; b=ERPN0296qysxR2J45SQc09+q+5
+	hj0ryedijafW5y67CwS/JiL7+JGN3TCWkkINK7LPCCwlINkdy9D+/EdUQCTag6BDZNPN0CGlvRqQH
+	S3R8acfVh8dLgNmK3skJUu9y/oTArRf8g9xiYo/lB1ShywUgLkF+NDUZaq2v/550+plTTe+uVI5YZ
+	tOgH4B76Api88S/uVBfDFAWjBpCXKxgYSML6d5YMGHJX9M/o0nmbe08MmfBDpj8nlTfTty/ZG/Bmx
+	4SGaclf1X6eMpiWoQFNvfXajqYxZuPg/p3wFi1VtkfjlphTp7jMQHWUXnQbd98oQE5WebEpN+F5/8
+	smfjgyWA==;
+Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
+	by formenos.hmeau.com with smtp (Exim 4.96 #2 (Debian))
+	id 1tyhiO-00BHZm-1d;
+	Sun, 30 Mar 2025 09:43:57 +0800
+Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Sun, 30 Mar 2025 09:43:56 +0800
+Date: Sun, 30 Mar 2025 09:43:56 +0800
+From: Herbert Xu <herbert@gondor.apana.org.au>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-crypto@vger.kernel.org,
+	Manorit Chawdhry <m-chawdhry@ti.com>
+Subject: [PATCH] Revert "crypto: testmgr - Add multibuffer hash testing"
+Message-ID: <Z-ih3Hqf8eNlAc-U@gondor.apana.org.au>
+References: <202503281658.7a078821-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -65,157 +49,414 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Z-c6BqCSmAnNxb57@bombadil.infradead.org>
+In-Reply-To: <202503281658.7a078821-lkp@intel.com>
 
-On Fri, Mar 28, 2025 at 05:08:40PM -0700, Luis Chamberlain wrote:
-> So, moving on, I think what's best is to see how we can get __find_get_block()
-> to not chug on during page migration.
+On Fri, Mar 28, 2025 at 04:51:38PM +0800, kernel test robot wrote:
+> 
+> kernel test robot noticed "WARNING:at_crypto/testmgr.c:#alg_test" on:
+> 
+> commit: 8b54e6a8f4156ed43627f40300b0711dc977fbc1 ("crypto: testmgr - Add multibuffer hash testing")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> 
+> [test failed on linux-next/master db8da9da41bced445077925f8a886c776a47440c]
 
-Something like this maybe? Passes initial 10 minutes of generic/750
-on ext4 while also blasting an LBS device with dd. I'll let it soak.
-The second patch is what requieres more eyeballs / suggestions / ideas.
+---8<---
+This reverts commit 8b54e6a8f4156ed43627f40300b0711dc977fbc1.
 
-From 86b2315f3c80dd4562a1a0fa0734921d3e92398f Mon Sep 17 00:00:00 2001
-From: Luis Chamberlain <mcgrof@kernel.org>
-Date: Fri, 28 Mar 2025 17:12:48 -0700
-Subject: [PATCH 1/3] mm/migrate: add might_sleep() on __migrate_folio()
+The multibuffer tests has a number of bugs.  For example, the SG
+lists for the filler requests weren't initialised properly, and
+it fails to take data-keyed algorithms such as poly1305 into account.
 
-When we do page migration of large folios folio_mc_copy() can
-cond_resched() *iff* we are on a large folio. There's a hairy
-bug reported by both 0-day [0] and  syzbot [1] where it has been
-detected we can call folio_mc_copy() in atomic context. While,
-technically speaking that should in theory be only possible today
-from buffer-head filesystems using buffer_migrate_folio_norefs()
-on page migration the only buffer-head large folio filesystem -- the
-block device cache, and so with block devices with large block sizes.
-However tracing shows that folio_mc_copy() *isn't* being called
-as often as we'd expect from buffer_migrate_folio_norefs() path
-as we're likely bailing early now thanks to the check added by commit
-060913999d7a ("mm: migrate: support poisoned recover from migrate
-folio").
+More importantly, the chaining interface itself is under review.
+Revert this until the interface is fully settled.
 
-*Most* folio_mc_copy() calls in turn end up *not* being in atomic
-context, and so we won't hit a splat when using:
-
-CONFIG_PROVE_LOCKING=y
-CONFIG_DEBUG_ATOMIC_SLEEP=y
-
-But we *want* to help proactively find callers of __migrate_folio() in
-atomic context, so make might_sleep() explicit to help us root out
-large folio atomic callers of migrate_folio().
-
-Link: https://lkml.kernel.org/r/202503101536.27099c77-lkp@intel.com # [0]
-Link: https://lkml.kernel.org/r/67e57c41.050a0220.2f068f.0033.GAE@google.com # [1]
-Link: https://lkml.kernel.org/r/Z-c6BqCSmAnNxb57@bombadil.infradead.org # [2]
-Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+Reported-by: Manorit Chawdhry <m-chawdhry@ti.com>
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Closes: https://lore.kernel.org/oe-lkp/202503281658.7a078821-lkp@intel.com
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 ---
- mm/migrate.c | 2 ++
- 1 file changed, 2 insertions(+)
+ crypto/testmgr.c | 157 ++++++++---------------------------------------
+ 1 file changed, 24 insertions(+), 133 deletions(-)
 
-diff --git a/mm/migrate.c b/mm/migrate.c
-index f3ee6d8d5e2e..712ddd11f3f0 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -751,6 +751,8 @@ static int __migrate_folio(struct address_space *mapping, struct folio *dst,
+diff --git a/crypto/testmgr.c b/crypto/testmgr.c
+index cd0f6a778b62..2c7fc4c94c04 100644
+--- a/crypto/testmgr.c
++++ b/crypto/testmgr.c
+@@ -302,13 +302,6 @@ struct test_sg_division {
+  * @key_offset_relative_to_alignmask: if true, add the algorithm's alignmask to
+  *				      the @key_offset
+  * @finalization_type: what finalization function to use for hashes
+- * @multibuffer: test with multibuffer
+- * @multibuffer_index: random number used to generate the message index to use
+- *		       for multibuffer.
+- * @multibuffer_uneven: test with multibuffer using uneven lengths
+- * @multibuffer_lens: random lengths to make chained request uneven
+- * @multibuffer_count: random number used to generate the num_msgs parameter
+- *		       for multibuffer
+  * @nosimd: execute with SIMD disabled?  Requires !CRYPTO_TFM_REQ_MAY_SLEEP.
+  *	    This applies to the parts of the operation that aren't controlled
+  *	    individually by @nosimd_setkey or @src_divs[].nosimd.
+@@ -328,11 +321,6 @@ struct testvec_config {
+ 	enum finalization_type finalization_type;
+ 	bool nosimd;
+ 	bool nosimd_setkey;
+-	bool multibuffer;
+-	unsigned int multibuffer_index;
+-	unsigned int multibuffer_count;
+-	bool multibuffer_uneven;
+-	unsigned int multibuffer_lens[MAX_MB_MSGS];
+ };
+ 
+ #define TESTVEC_CONFIG_NAMELEN	192
+@@ -572,7 +560,6 @@ struct test_sglist {
+ 	char *bufs[XBUFSIZE];
+ 	struct scatterlist sgl[XBUFSIZE];
+ 	struct scatterlist sgl_saved[XBUFSIZE];
+-	struct scatterlist full_sgl[XBUFSIZE];
+ 	struct scatterlist *sgl_ptr;
+ 	unsigned int nents;
+ };
+@@ -686,11 +673,6 @@ static int build_test_sglist(struct test_sglist *tsgl,
+ 	sg_mark_end(&tsgl->sgl[tsgl->nents - 1]);
+ 	tsgl->sgl_ptr = tsgl->sgl;
+ 	memcpy(tsgl->sgl_saved, tsgl->sgl, tsgl->nents * sizeof(tsgl->sgl[0]));
+-
+-	sg_init_table(tsgl->full_sgl, XBUFSIZE);
+-	for (i = 0; i < XBUFSIZE; i++)
+-		sg_set_buf(tsgl->full_sgl, tsgl->bufs[i], PAGE_SIZE * 2);
+-
+ 	return 0;
+ }
+ 
+@@ -1167,27 +1149,6 @@ static void generate_random_testvec_config(struct rnd_state *rng,
+ 		break;
+ 	}
+ 
+-	if (prandom_bool(rng)) {
+-		int i;
+-
+-		cfg->multibuffer = true;
+-		cfg->multibuffer_count = prandom_u32_state(rng);
+-		cfg->multibuffer_count %= MAX_MB_MSGS;
+-		if (cfg->multibuffer_count++) {
+-			cfg->multibuffer_index = prandom_u32_state(rng);
+-			cfg->multibuffer_index %= cfg->multibuffer_count;
+-		}
+-
+-		cfg->multibuffer_uneven = prandom_bool(rng);
+-		for (i = 0; i < MAX_MB_MSGS; i++)
+-			cfg->multibuffer_lens[i] =
+-				generate_random_length(rng, PAGE_SIZE * 2 * XBUFSIZE);
+-
+-		p += scnprintf(p, end - p, " multibuffer(%d/%d%s)",
+-			       cfg->multibuffer_index, cfg->multibuffer_count,
+-			       cfg->multibuffer_uneven ? "/uneven" : "");
+-	}
+-
+ 	if (!(cfg->req_flags & CRYPTO_TFM_REQ_MAY_SLEEP)) {
+ 		if (prandom_bool(rng)) {
+ 			cfg->nosimd = true;
+@@ -1492,7 +1453,6 @@ static int do_ahash_op(int (*op)(struct ahash_request *req),
+ 		       struct ahash_request *req,
+ 		       struct crypto_wait *wait, bool nosimd)
  {
- 	int rc, expected_count = folio_expected_refs(mapping, src);
+-	struct ahash_request *r2;
+ 	int err;
  
-+	might_sleep();
-+
- 	/* Check whether src does not have extra refs before we do more work */
- 	if (folio_ref_count(src) != expected_count)
- 		return -EAGAIN;
--- 
-2.47.2
-
-
-From 561e94951fce481bb2e5917230bec7008c131d9a Mon Sep 17 00:00:00 2001
-From: Luis Chamberlain <mcgrof@kernel.org>
-Date: Fri, 28 Mar 2025 17:44:10 -0700
-Subject: [PATCH 2/3] fs/buffer: avoid getting buffer if it is folio migration
- candidate
-
-Avoid giving a way a buffer with __find_get_block_slow() if the
-folio may be a folio migration candidate. We do this as an alternative
-to the issue fixed by commit ebdf4de5642fb6 ("mm: migrate: fix reference
-check race between __find_get_block() and migration"), given we've
-determined that we should avoid requiring folio migration callers
-from holding a spin lock while calling __migrate_folio().
-
-This alternative simply avoids completing __find_get_block_slow()
-on folio migration candidates to let us later rip out the spin_lock()
-held on the buffer_migrate_folio_norefs() path.
-
-Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
----
- fs/buffer.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/fs/buffer.c b/fs/buffer.c
-index c7abb4a029dc..6e2c3837a202 100644
---- a/fs/buffer.c
-+++ b/fs/buffer.c
-@@ -208,6 +208,12 @@ __find_get_block_slow(struct block_device *bdev, sector_t block)
- 	head = folio_buffers(folio);
- 	if (!head)
- 		goto out_unlock;
-+
-+	if (folio_test_lru(folio) &&
-+	    folio_test_locked(folio) &&
-+	    !folio_test_writeback(folio))
-+		goto out_unlock;
-+
- 	bh = head;
- 	do {
- 		if (!buffer_mapped(bh))
--- 
-2.47.2
-
-
-From af6963b73a8406162e6c2223fae600a799402e2b Mon Sep 17 00:00:00 2001
-From: Luis Chamberlain <mcgrof@kernel.org>
-Date: Fri, 28 Mar 2025 17:51:39 -0700
-Subject: [PATCH 3/3] mm/migrate: avoid atomic context on
- buffer_migrate_folio_norefs() migration
-
-The buffer_migrate_folio_norefs() should avoid holding the spin lock
-held in order to ensure we can support large folios. The prior commit
-"fs/buffer: avoid getting buffer if it is folio migration candidate"
-ripped out the only rationale for having the atomic context,  so we can
-remove the spin lock call now.
-
-Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
----
- mm/migrate.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/mm/migrate.c b/mm/migrate.c
-index 712ddd11f3f0..f3047c685706 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -861,12 +861,12 @@ static int __buffer_migrate_folio(struct address_space *mapping,
- 			}
- 			bh = bh->b_this_page;
- 		} while (bh != head);
-+		spin_unlock(&mapping->i_private_lock);
- 		if (busy) {
- 			if (invalidated) {
- 				rc = -EAGAIN;
- 				goto unlock_buffers;
- 			}
--			spin_unlock(&mapping->i_private_lock);
- 			invalidate_bh_lrus();
- 			invalidated = true;
- 			goto recheck_buffers;
-@@ -884,8 +884,6 @@ static int __buffer_migrate_folio(struct address_space *mapping,
- 	} while (bh != head);
+ 	if (nosimd)
+@@ -1503,15 +1463,7 @@ static int do_ahash_op(int (*op)(struct ahash_request *req),
+ 	if (nosimd)
+ 		crypto_reenable_simd_for_test();
  
- unlock_buffers:
--	if (check_refs)
--		spin_unlock(&mapping->i_private_lock);
- 	bh = head;
- 	do {
- 		unlock_buffer(bh);
+-	err = crypto_wait_req(err, wait);
+-	if (err)
+-		return err;
+-
+-	list_for_each_entry(r2, &req->base.list, base.list)
+-		if (r2->base.err)
+-			return r2->base.err;
+-
+-	return 0;
++	return crypto_wait_req(err, wait);
+ }
+ 
+ static int check_nonfinal_ahash_op(const char *op, int err,
+@@ -1532,65 +1484,20 @@ static int check_nonfinal_ahash_op(const char *op, int err,
+ 	return 0;
+ }
+ 
+-static void setup_ahash_multibuffer(
+-	struct ahash_request *reqs[MAX_MB_MSGS],
+-	const struct testvec_config *cfg,
+-	struct test_sglist *tsgl)
+-{
+-	struct scatterlist *sg = tsgl->full_sgl;
+-	static u8 trash[HASH_MAX_DIGESTSIZE];
+-	struct ahash_request *req = reqs[0];
+-	unsigned int num_msgs;
+-	unsigned int msg_idx;
+-	int i;
+-
+-	if (!cfg->multibuffer)
+-		return;
+-
+-	num_msgs = cfg->multibuffer_count;
+-	if (num_msgs == 1)
+-		return;
+-
+-	msg_idx = cfg->multibuffer_index;
+-	for (i = 1; i < num_msgs; i++) {
+-		struct ahash_request *r2 = reqs[i];
+-		unsigned int nbytes = req->nbytes;
+-
+-		if (cfg->multibuffer_uneven)
+-			nbytes = cfg->multibuffer_lens[i];
+-
+-		ahash_request_set_callback(r2, req->base.flags, NULL, NULL);
+-		ahash_request_set_crypt(r2, sg, trash, nbytes);
+-		ahash_request_chain(r2, req);
+-	}
+-
+-	if (msg_idx) {
+-		reqs[msg_idx]->src = req->src;
+-		reqs[msg_idx]->nbytes = req->nbytes;
+-		reqs[msg_idx]->result = req->result;
+-		req->src = sg;
+-		if (cfg->multibuffer_uneven)
+-			req->nbytes = cfg->multibuffer_lens[0];
+-		req->result = trash;
+-	}
+-}
+-
+ /* Test one hash test vector in one configuration, using the ahash API */
+ static int test_ahash_vec_cfg(const struct hash_testvec *vec,
+ 			      const char *vec_name,
+ 			      const struct testvec_config *cfg,
+-			      struct ahash_request *reqs[MAX_MB_MSGS],
++			      struct ahash_request *req,
+ 			      struct test_sglist *tsgl,
+ 			      u8 *hashstate)
+ {
+-	struct ahash_request *req = reqs[0];
+ 	struct crypto_ahash *tfm = crypto_ahash_reqtfm(req);
+ 	const unsigned int digestsize = crypto_ahash_digestsize(tfm);
+ 	const unsigned int statesize = crypto_ahash_statesize(tfm);
+ 	const char *driver = crypto_ahash_driver_name(tfm);
+ 	const u32 req_flags = CRYPTO_TFM_REQ_MAY_BACKLOG | cfg->req_flags;
+ 	const struct test_sg_division *divs[XBUFSIZE];
+-	struct ahash_request *reqi = req;
+ 	DECLARE_CRYPTO_WAIT(wait);
+ 	unsigned int i;
+ 	struct scatterlist *pending_sgl;
+@@ -1598,9 +1505,6 @@ static int test_ahash_vec_cfg(const struct hash_testvec *vec,
+ 	u8 result[HASH_MAX_DIGESTSIZE + TESTMGR_POISON_LEN];
+ 	int err;
+ 
+-	if (cfg->multibuffer)
+-		reqi = reqs[cfg->multibuffer_index];
+-
+ 	/* Set the key, if specified */
+ 	if (vec->ksize) {
+ 		err = do_setkey(crypto_ahash_setkey, tfm, vec->key, vec->ksize,
+@@ -1630,7 +1534,7 @@ static int test_ahash_vec_cfg(const struct hash_testvec *vec,
+ 
+ 	/* Do the actual hashing */
+ 
+-	testmgr_poison(reqi->__ctx, crypto_ahash_reqsize(tfm));
++	testmgr_poison(req->__ctx, crypto_ahash_reqsize(tfm));
+ 	testmgr_poison(result, digestsize + TESTMGR_POISON_LEN);
+ 
+ 	if (cfg->finalization_type == FINALIZATION_TYPE_DIGEST ||
+@@ -1639,7 +1543,6 @@ static int test_ahash_vec_cfg(const struct hash_testvec *vec,
+ 		ahash_request_set_callback(req, req_flags, crypto_req_done,
+ 					   &wait);
+ 		ahash_request_set_crypt(req, tsgl->sgl, result, vec->psize);
+-		setup_ahash_multibuffer(reqs, cfg, tsgl);
+ 		err = do_ahash_op(crypto_ahash_digest, req, &wait, cfg->nosimd);
+ 		if (err) {
+ 			if (err == vec->digest_error)
+@@ -1661,7 +1564,6 @@ static int test_ahash_vec_cfg(const struct hash_testvec *vec,
+ 
+ 	ahash_request_set_callback(req, req_flags, crypto_req_done, &wait);
+ 	ahash_request_set_crypt(req, NULL, result, 0);
+-	setup_ahash_multibuffer(reqs, cfg, tsgl);
+ 	err = do_ahash_op(crypto_ahash_init, req, &wait, cfg->nosimd);
+ 	err = check_nonfinal_ahash_op("init", err, result, digestsize,
+ 				      driver, vec_name, cfg);
+@@ -1678,7 +1580,6 @@ static int test_ahash_vec_cfg(const struct hash_testvec *vec,
+ 						   crypto_req_done, &wait);
+ 			ahash_request_set_crypt(req, pending_sgl, result,
+ 						pending_len);
+-			setup_ahash_multibuffer(reqs, cfg, tsgl);
+ 			err = do_ahash_op(crypto_ahash_update, req, &wait,
+ 					  divs[i]->nosimd);
+ 			err = check_nonfinal_ahash_op("update", err,
+@@ -1693,7 +1594,7 @@ static int test_ahash_vec_cfg(const struct hash_testvec *vec,
+ 			/* Test ->export() and ->import() */
+ 			testmgr_poison(hashstate + statesize,
+ 				       TESTMGR_POISON_LEN);
+-			err = crypto_ahash_export(reqi, hashstate);
++			err = crypto_ahash_export(req, hashstate);
+ 			err = check_nonfinal_ahash_op("export", err,
+ 						      result, digestsize,
+ 						      driver, vec_name, cfg);
+@@ -1706,8 +1607,8 @@ static int test_ahash_vec_cfg(const struct hash_testvec *vec,
+ 				return -EOVERFLOW;
+ 			}
+ 
+-			testmgr_poison(reqi->__ctx, crypto_ahash_reqsize(tfm));
+-			err = crypto_ahash_import(reqi, hashstate);
++			testmgr_poison(req->__ctx, crypto_ahash_reqsize(tfm));
++			err = crypto_ahash_import(req, hashstate);
+ 			err = check_nonfinal_ahash_op("import", err,
+ 						      result, digestsize,
+ 						      driver, vec_name, cfg);
+@@ -1721,7 +1622,6 @@ static int test_ahash_vec_cfg(const struct hash_testvec *vec,
+ 
+ 	ahash_request_set_callback(req, req_flags, crypto_req_done, &wait);
+ 	ahash_request_set_crypt(req, pending_sgl, result, pending_len);
+-	setup_ahash_multibuffer(reqs, cfg, tsgl);
+ 	if (cfg->finalization_type == FINALIZATION_TYPE_FINAL) {
+ 		/* finish with update() and final() */
+ 		err = do_ahash_op(crypto_ahash_update, req, &wait, cfg->nosimd);
+@@ -1753,7 +1653,7 @@ static int test_ahash_vec_cfg(const struct hash_testvec *vec,
+ static int test_hash_vec_cfg(const struct hash_testvec *vec,
+ 			     const char *vec_name,
+ 			     const struct testvec_config *cfg,
+-			     struct ahash_request *reqs[MAX_MB_MSGS],
++			     struct ahash_request *req,
+ 			     struct shash_desc *desc,
+ 			     struct test_sglist *tsgl,
+ 			     u8 *hashstate)
+@@ -1773,12 +1673,11 @@ static int test_hash_vec_cfg(const struct hash_testvec *vec,
+ 			return err;
+ 	}
+ 
+-	return test_ahash_vec_cfg(vec, vec_name, cfg, reqs, tsgl, hashstate);
++	return test_ahash_vec_cfg(vec, vec_name, cfg, req, tsgl, hashstate);
+ }
+ 
+ static int test_hash_vec(const struct hash_testvec *vec, unsigned int vec_num,
+-			 struct ahash_request *reqs[MAX_MB_MSGS],
+-			 struct shash_desc *desc,
++			 struct ahash_request *req, struct shash_desc *desc,
+ 			 struct test_sglist *tsgl, u8 *hashstate)
+ {
+ 	char vec_name[16];
+@@ -1790,7 +1689,7 @@ static int test_hash_vec(const struct hash_testvec *vec, unsigned int vec_num,
+ 	for (i = 0; i < ARRAY_SIZE(default_hash_testvec_configs); i++) {
+ 		err = test_hash_vec_cfg(vec, vec_name,
+ 					&default_hash_testvec_configs[i],
+-					reqs, desc, tsgl, hashstate);
++					req, desc, tsgl, hashstate);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -1807,7 +1706,7 @@ static int test_hash_vec(const struct hash_testvec *vec, unsigned int vec_num,
+ 			generate_random_testvec_config(&rng, &cfg, cfgname,
+ 						       sizeof(cfgname));
+ 			err = test_hash_vec_cfg(vec, vec_name, &cfg,
+-						reqs, desc, tsgl, hashstate);
++						req, desc, tsgl, hashstate);
+ 			if (err)
+ 				return err;
+ 			cond_resched();
+@@ -1866,12 +1765,11 @@ static void generate_random_hash_testvec(struct rnd_state *rng,
+  */
+ static int test_hash_vs_generic_impl(const char *generic_driver,
+ 				     unsigned int maxkeysize,
+-				     struct ahash_request *reqs[MAX_MB_MSGS],
++				     struct ahash_request *req,
+ 				     struct shash_desc *desc,
+ 				     struct test_sglist *tsgl,
+ 				     u8 *hashstate)
+ {
+-	struct ahash_request *req = reqs[0];
+ 	struct crypto_ahash *tfm = crypto_ahash_reqtfm(req);
+ 	const unsigned int digestsize = crypto_ahash_digestsize(tfm);
+ 	const unsigned int blocksize = crypto_ahash_blocksize(tfm);
+@@ -1969,7 +1867,7 @@ static int test_hash_vs_generic_impl(const char *generic_driver,
+ 					       sizeof(cfgname));
+ 
+ 		err = test_hash_vec_cfg(&vec, vec_name, cfg,
+-					reqs, desc, tsgl, hashstate);
++					req, desc, tsgl, hashstate);
+ 		if (err)
+ 			goto out;
+ 		cond_resched();
+@@ -1987,7 +1885,7 @@ static int test_hash_vs_generic_impl(const char *generic_driver,
+ #else /* !CONFIG_CRYPTO_MANAGER_EXTRA_TESTS */
+ static int test_hash_vs_generic_impl(const char *generic_driver,
+ 				     unsigned int maxkeysize,
+-				     struct ahash_request *reqs[MAX_MB_MSGS],
++				     struct ahash_request *req,
+ 				     struct shash_desc *desc,
+ 				     struct test_sglist *tsgl,
+ 				     u8 *hashstate)
+@@ -2034,8 +1932,8 @@ static int __alg_test_hash(const struct hash_testvec *vecs,
+ 			   u32 type, u32 mask,
+ 			   const char *generic_driver, unsigned int maxkeysize)
+ {
+-	struct ahash_request *reqs[MAX_MB_MSGS] = {};
+ 	struct crypto_ahash *atfm = NULL;
++	struct ahash_request *req = NULL;
+ 	struct crypto_shash *stfm = NULL;
+ 	struct shash_desc *desc = NULL;
+ 	struct test_sglist *tsgl = NULL;
+@@ -2059,14 +1957,12 @@ static int __alg_test_hash(const struct hash_testvec *vecs,
+ 	}
+ 	driver = crypto_ahash_driver_name(atfm);
+ 
+-	for (i = 0; i < MAX_MB_MSGS; i++) {
+-		reqs[i] = ahash_request_alloc(atfm, GFP_KERNEL);
+-		if (!reqs[i]) {
+-			pr_err("alg: hash: failed to allocate request for %s\n",
+-			       driver);
+-			err = -ENOMEM;
+-			goto out;
+-		}
++	req = ahash_request_alloc(atfm, GFP_KERNEL);
++	if (!req) {
++		pr_err("alg: hash: failed to allocate request for %s\n",
++		       driver);
++		err = -ENOMEM;
++		goto out;
+ 	}
+ 
+ 	/*
+@@ -2102,12 +1998,12 @@ static int __alg_test_hash(const struct hash_testvec *vecs,
+ 		if (fips_enabled && vecs[i].fips_skip)
+ 			continue;
+ 
+-		err = test_hash_vec(&vecs[i], i, reqs, desc, tsgl, hashstate);
++		err = test_hash_vec(&vecs[i], i, req, desc, tsgl, hashstate);
+ 		if (err)
+ 			goto out;
+ 		cond_resched();
+ 	}
+-	err = test_hash_vs_generic_impl(generic_driver, maxkeysize, reqs,
++	err = test_hash_vs_generic_impl(generic_driver, maxkeysize, req,
+ 					desc, tsgl, hashstate);
+ out:
+ 	kfree(hashstate);
+@@ -2117,12 +2013,7 @@ static int __alg_test_hash(const struct hash_testvec *vecs,
+ 	}
+ 	kfree(desc);
+ 	crypto_free_shash(stfm);
+-	if (reqs[0]) {
+-		ahash_request_set_callback(reqs[0], 0, NULL, NULL);
+-		for (i = 1; i < MAX_MB_MSGS && reqs[i]; i++)
+-			ahash_request_chain(reqs[i], reqs[0]);
+-		ahash_request_free(reqs[0]);
+-	}
++	ahash_request_free(req);
+ 	crypto_free_ahash(atfm);
+ 	return err;
+ }
 -- 
-2.47.2
+2.39.5
 
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
