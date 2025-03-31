@@ -1,110 +1,99 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE12217A2FA
-	for <oe-lkp@lists.linux.dev>; Mon, 31 Mar 2025 13:25:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0585213E78
+	for <oe-lkp@lists.linux.dev>; Mon, 31 Mar 2025 14:11:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.21
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743427505; cv=fail; b=kVtaUeYrGwC8l6X42mOotqhPLS8A8L45dgE/gKK1XigYs3usJuMd8Iy/JycwE3hhTwMHZhyxk7xxLBx1lQdDDosCajwV1VdXFTMy83J2ptK13h+gtFkRG6j0wLa6ExgXopyMlDs1snHWipAv7rdUbgNmL7i2T4KgmU0Nu1uRRLk=
+	t=1743430264; cv=fail; b=oeC2xnAjWHeZQ94Og+3OVVBpsKEIOZzJUwPZ8F6nTSAgAAMTRSp5qMyzYibZ0L+tXNZlKArleylW71cBNX1qo0PBBprfgHB86pd4T9+fyGvDqYovA+QryVez9Dykz7w48nTEptcy9IEznNXukTwvdRT6tq1Qf40njE7BIv1I+1o=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743427505; c=relaxed/simple;
-	bh=B5ItHvm71otNf3P/WmQR4K3jzDcHuAfOCSNWBnssyBc=;
+	s=arc-20240116; t=1743430264; c=relaxed/simple;
+	bh=gehdCoFo7WvSacGd6h2om2tOLQYfp/nEUZahnNBAhdg=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=noPoKuQAO61zIX5ymyDTS4OKEePgtrRsxt0/g0krn2DmTj52n+IKrH1NFYWsTsEpv1sveQzdy9u7ACq5j2aYQxBoZRzvIio3kOyFiWtu5rcnOuv+0SvJitc9tFj6nG7tc6ZxD0Px2yTISRbeWup9NyKS+x46lbEvyOgP3/9Ru6o=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QBfE2EIt; arc=fail smtp.client-ip=192.198.163.15
+	 Content-Disposition:In-Reply-To:MIME-Version; b=ZgGpO/SCML6ldSYmgflKWyW1fLn0720QtGpp7BYBK7k/QCXjyJ4yoY7jyuz9DXtggHrXfjD14GWAisO24X27FOjjOnhtyyMWh4HNcLpSORyuwgxY89ic86mPOk+V7OYylpgGO01Sv40pSoQKlg0T6pMtu7CHw2Nmn3qAxKm5fFo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RoL8ReHO; arc=fail smtp.client-ip=198.175.65.21
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QBfE2EIt"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RoL8ReHO"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1743427504; x=1774963504;
+  t=1743430262; x=1774966262;
   h=date:from:to:cc:subject:message-id:
-   content-transfer-encoding:mime-version;
-  bh=B5ItHvm71otNf3P/WmQR4K3jzDcHuAfOCSNWBnssyBc=;
-  b=QBfE2EItkJLDSWAKHqIe1jgTHU1/VeuTxZKG3jBpu/JdJtHNsmAafg9Q
-   fVRPVSa13JjTNi13J7UHw0B+FL37NCeB0M/EdRFvBQpSBcXsvjA2lxV22
-   xEPm4W1i4ZzSCbmioQMmiLeYP5BfM6lUM499GTeaiRrNtwOmIs2Ug7mZ3
-   NF+BuIPWBwcxIZty56+HMeEX0ww74jO5/iKWvTwBHrMV8D2oB4zCBYuxR
-   cety7aGfgz+UJLLHcQjjaI6fU6664B8Elkc/s2mzYN1US0+Advp/EizfK
-   0KmtP9laDbjTn9WXHWfmx5WQvvsjUVyAckZ8fY7PLaLFcBX01oEkhQS/Q
-   Q==;
-X-CSE-ConnectionGUID: cBf1o4myQSmAX8SyejUW1w==
-X-CSE-MsgGUID: wEwU0Q7ERYOCLTK0Sy/zpA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11390"; a="44845071"
+   content-transfer-encoding:in-reply-to:mime-version;
+  bh=gehdCoFo7WvSacGd6h2om2tOLQYfp/nEUZahnNBAhdg=;
+  b=RoL8ReHOfgIV51aMgERuoTNkkCzAMhbwjhqRX4Mm5z0HxAzjNPJE5t+e
+   Mmnlm0VMpATDVVie9qEOdvhsdxP9dH5B4lT9xHxFsTEf8BRpsg7XLbRy3
+   KKc+6skCbA1xXW2Cwn+g/wPkUbWzS0OaQPlKlReoNyoggJEr6gGFejp7A
+   eirnEVNjeqXVnoZ4/Q0tVAYJnVMFtmLeTOLtkSRfxW8rZXUI/fdQw35qs
+   NthdhTPcid1cVfiRSSsmD88jY58B8nxJuIq2xO5OiO+oR4tBQiyTFJ++z
+   uq5qf9xTjWk1GpFBsLqctqUMunGpmtT6s22K4sCZhHQuyPv/EuNNb9CGq
+   w==;
+X-CSE-ConnectionGUID: LQ6clD4BSWCgoXcw1vJ5uQ==
+X-CSE-MsgGUID: 9nsllAiUQpKMkrYskSkYNA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11390"; a="44628470"
 X-IronPort-AV: E=Sophos;i="6.14,290,1736841600"; 
-   d="scan'208";a="44845071"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2025 06:25:03 -0700
-X-CSE-ConnectionGUID: qIqnxzcfSf+BFlilqFllcA==
-X-CSE-MsgGUID: BwgnchnjTxmwHLd10kuQfA==
+   d="scan'208";a="44628470"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2025 07:10:55 -0700
+X-CSE-ConnectionGUID: RdILkl43QQKj1e3PSODb+g==
+X-CSE-MsgGUID: TOp8OU7cRwKRZzQlgUSnCg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.14,290,1736841600"; 
-   d="scan'208";a="125994320"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orviesa010.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 31 Mar 2025 06:25:03 -0700
-Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.44; Mon, 31 Mar 2025 06:25:01 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+   d="scan'208";a="130210054"
+Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
+  by fmviesa003.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2025 07:10:55 -0700
+Received: from ORSMSX903.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.14 via Frontend Transport; Mon, 31 Mar 2025 06:25:01 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.170)
+ 15.2.1544.14; Mon, 31 Mar 2025 07:10:54 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14 via Frontend Transport; Mon, 31 Mar 2025 07:10:54 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.171)
  by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.44; Mon, 31 Mar 2025 06:25:01 -0700
+ 15.1.2507.44; Mon, 31 Mar 2025 07:10:53 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=S9g0T7GUknAn0SsHI/Dcqh+BUXMD9wrax4/uZkTfsr/BAp8y9Y2lifZZmmDnNsimsS5NHg22JN+jco00mfYYo+UNGbWq4d9fNvEX4d4/SxGJEYPRgb3Qxjh4ZrfT+e4KqJNEzv6kgRfTaz5gHrLnVHGEficixfH4939fRlMYFGmzNQWWWHJdB8XOmQRBsykwBEUN39CvbH5bHIopzrfEfD+KjJI9gRgPSfCIzNafXAIaMqsy8IFYXpVU7a1I9U7VVp4IXh6O6ubw5IaXNru5pRbQJpTKU8BLvnUcycRF7OQ+wLoWwNKPoXQrMBj+/UNLezOLS66/JfG6YyImrwFo3w==
+ b=yOEWj+hs3tS2nzj54sK8pSzNLQ/QWsB1vKayBA2y/4z6q7BntFX5PVcjwNRBsGh3D9SthUSa9oC7Fb5i5MXy+J/vZNI9d+QIb9ulc+LJM02E48GBN/p9pRwfgYiRGzi+YuRGMzeluonHJxjn6Iq8cSqVpDV5Tg03/uAjNwAFemiFkf3CKo0ke6L+CDXOGjPxEnUo2KpTKTK0L/muFqwqxLzYEQpqPE1dzUsFsXQNnLCjvxhVXghtsSSkmmQ/JdfUxwlxiWnzTl4PcsLbYOZyXSMCg8NHjxqqxz3ev9YdjcyHA1lJnIDgqq+tBVS4KmSxpjYYqnC6v7IkG1TZTaG+Jg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GH91vEoEtpz3O+9XwpP51f1Ycmuu91cB2cSP9rcVZpE=;
- b=nWTXdQp2RfFKVwrLrVGqhb/oENTrq32mZHRNKmTW8qKYlFOXRqxnXZpYfd4mn/4FF5+QZ2HDfo2f5aWj1EXaR91gP91WTI0NISht9dvnsfRVPSj3uka1L3byPKcZWI78FDvAr4kY18JJTjU5migegJYPY9/dT+gwyNqy8mQFKqcB4ePDGjoIRJd+1YwWD4tCcILLSXwzDgWtfuozttuppo9pIqUvDR5jcLd0Z3J67MNCsdd88C48eUhTwNsptAqXXAgerxw+UTCiIekenjS8WQ2+WhCCM3pibRwoIhaCSYehtA15rzjv85ud59+thVLl5LzdKIZeAvnIJ+qAEpTr4Q==
+ bh=Jzn4jCwyDqNBcwikO2xM8EMT2rNnNFQKbLu1EUuwUOw=;
+ b=ldBK6V1pvGetB9ESyDuflSMqiBZIXW+NH33wTcAvUTEkj+G3dfsNiIfLJNtKR1c2v1uUZX/hQKxzpjsJ8F7lhxuX/sKU35AfKe9FJcZG8E06tEDIcEMZODsik6V+PPOJ8I6vEQGafuehvSr6YlMCj6IA5O43a9Au49ufcbopJeztd5GS316B2i4NMHm9d1MClZT719AGGlpRXuvle0s8UVeUFFw61auJX09SI5hPB1wUeyuwX+M1tFG1cH+0pTeMBoSlunCx2XZvJcyex/Ddxqs9Gqhhxm6giJI/qCAQkYkrc+xOUjGNCCbw15TNuDcJ5ppMGP4hGzgwI3KD4Eycig==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by SN7PR11MB7975.namprd11.prod.outlook.com (2603:10b6:806:2eb::9) with
+ by PH7PR11MB7147.namprd11.prod.outlook.com (2603:10b6:510:1ee::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.52; Mon, 31 Mar
- 2025 13:24:40 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.46; Mon, 31 Mar
+ 2025 14:10:23 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c%4]) with mapi id 15.20.8534.043; Mon, 31 Mar 2025
- 13:24:40 +0000
-Date: Mon, 31 Mar 2025 21:24:23 +0800
+ 14:10:23 +0000
+Date: Mon, 31 Mar 2025 22:10:13 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Suren Baghdasaryan <surenb@google.com>
+To: Nikhil Dhama <nikhil.dhama@amd.com>
 CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Andrew Morton
-	<akpm@linux-foundation.org>, Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
-	Shakeel Butt <shakeel.butt@linux.dev>, Vlastimil Babka <vbabka@suse.cz>,
-	"Liam R. Howlett" <Liam.Howlett@oracle.com>, Shivank Garg <shivankg@amd.com>,
-	Christian Brauner <brauner@kernel.org>, David Hildenbrand <david@redhat.com>,
-	David Howells <dhowells@redhat.com>, Davidlohr Bueso <dave@stgolabs.net>,
-	Hugh Dickins <hughd@google.com>, Jann Horn <jannh@google.com>, "Johannes
- Weiner" <hannes@cmpxchg.org>, Jonathan Corbet <corbet@lwn.net>, Klara Modin
-	<klarasmodin@gmail.com>, Lokesh Gidra <lokeshgidra@google.com>, Mateusz Guzik
-	<mjguzik@gmail.com>, Matthew Wilcox <willy@infradead.org>, Mel Gorman
-	<mgorman@techsingularity.net>, Michal Hocko <mhocko@suse.com>, Minchan Kim
-	<minchan@google.com>, Oleg Nesterov <oleg@redhat.com>, Pasha Tatashin
-	<pasha.tatashin@soleen.com>, "Paul E . McKenney" <paulmck@kernel.org>, "Peter
- Xu" <peterx@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Sourav Panda
-	<souravpanda@google.com>, Wei Yang <richard.weiyang@gmail.com>, Will Deacon
-	<will@kernel.org>, Heiko Carstens <hca@linux.ibm.com>, Stephen Rothwell
-	<sfr@canb.auug.org.au>, <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-	<oliver.sang@intel.com>
-Subject: [linux-next:master] [mm]  7b6218ae12:
- stress-ng.forkheavy.ops_per_sec 5.0% improvement
-Message-ID: <202503311656.e3596aaf-lkp@intel.com>
+	<akpm@linux-foundation.org>, Ying Huang <huang.ying.caritas@gmail.com>,
+	Bharata B Rao <bharata@amd.com>, Raghavendra
+	<raghavendra.kodsarathimmappa@amd.com>, <linux-mm@kvack.org>,
+	<ying.huang@linux.alibaba.com>, Nikhil Dhama <nikhil.dhama@amd.com>,
+	<linux-kernel@vger.kernel.org>, <oliver.sang@intel.com>
+Subject: Re: [PATCH] mm: pcp: scale batch to reduce number of high order pcp
+ flushes on deallocation
+Message-ID: <202503312148.c74b0351-lkp@intel.com>
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SG2PR03CA0116.apcprd03.prod.outlook.com
- (2603:1096:4:91::20) To LV3PR11MB8603.namprd11.prod.outlook.com
+In-Reply-To: <20250325171915.14384-1-nikhil.dhama@amd.com>
+X-ClientProxiedBy: KL1PR01CA0158.apcprd01.prod.exchangelabs.com
+ (2603:1096:820:149::14) To LV3PR11MB8603.namprd11.prod.outlook.com
  (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -113,100 +102,105 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SN7PR11MB7975:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4a4a9bc3-d5d9-47f1-3433-08dd7057647a
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|PH7PR11MB7147:EE_
+X-MS-Office365-Filtering-Correlation-Id: 77b1656c-da3d-4806-0a29-08dd705dc755
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|7416014|376014;
-X-Microsoft-Antispam-Message-Info: =?iso-8859-1?Q?5r2LjNTyMJyBIEcKQ/r2o5k6jdL8h6iv+kenovpGWSKa4zC7zPClBt0Pq1?=
- =?iso-8859-1?Q?PBxMQkVanTRHqlKKuURxclJyLO1Jmob9p4vNpp6tg48CAxrC+fZBSanuKd?=
- =?iso-8859-1?Q?2TGiyc3Z66mpTouDQiLqVm+SR6GmfQndiqPmwB6RuzNgbOMXZJkF5G0AKY?=
- =?iso-8859-1?Q?eBylp5+pH1OwwH+8gVhAaO5dhWcMdaSyGlWLTZZwUkMor/t/RjtjwNKBad?=
- =?iso-8859-1?Q?kwQRTQdcEEj8+et1+e5wFIS/1MkOvr/DVmguz8mPIcToLuNxA8fEiVW93l?=
- =?iso-8859-1?Q?uy/g8IpKBYNbKpqyf0axoz9WC6kLCuh+PmzeXygmd4QFzxAW2xHOdtgFax?=
- =?iso-8859-1?Q?7wHll9laeZyfeyeSG7uDiwjIjG3tyQX90VyjEPpMpuf4MmSRoo2cOxD0r5?=
- =?iso-8859-1?Q?pB3uJD3XHEHsrjGxwtqRP/9NNRshMGvYSa6E5DmVGL6mZMwlOk5oMHVmsj?=
- =?iso-8859-1?Q?UCon0IG98rmOnPOE3PVZTAMnHlU/7E1wyDkRIrZTY1zqvXvBD4+s8rbTn4?=
- =?iso-8859-1?Q?92NCTw1D42JlmI7Ig6qg4MJSZcf+Opf+kDKVQXqbVJ+0dDI9vKrVe/PCbI?=
- =?iso-8859-1?Q?RHVCUHYfM0/+gEU+zTKlqYKhj3NjfU+0aaHfb0V095lRUMvEpUV9DuvKL9?=
- =?iso-8859-1?Q?nzXWq3VUV2cGUhHdN6AFWzIbFttgXACXVExmLZTbT5W/kzBT4dtJaQ/2Li?=
- =?iso-8859-1?Q?9SFW1nMUhVyYKaurSPYeqj1+2Zzh0fsJY5cCAaqFhsS8icQXtSiTaQfRjq?=
- =?iso-8859-1?Q?a6afbFq1sEeBGYy5NTdpLnuoxObG60EDVrBRt70fPmFcehf7hiFiAn+G9J?=
- =?iso-8859-1?Q?/y6C7pigK3CO/I2khoISgf4HaW8fjqXYv8PqoPwXmFqApVnsiloUZrxw4o?=
- =?iso-8859-1?Q?YK6i0KGwpjRM0HTRhmHIZguv3Gv3EJgOVJl63EX4GcobvWpQ9VIBdiEt9D?=
- =?iso-8859-1?Q?uVyeVh1o+58+DMvFzFM+PPMlPIXG6dk4LdDejNLE0BSkPhUexbX7Eg4ii0?=
- =?iso-8859-1?Q?GKUO2peTkv+mtcoPqKromVMix6PjWEkEvbw7hFlKutA4U5VXOnX7nKqiat?=
- =?iso-8859-1?Q?fywnlUOFHL6ir8A0RfZwzKUZ5Dh1bATB4idlhSyLHScdCsAGQIbt4BPQsL?=
- =?iso-8859-1?Q?f3Jt13+7I2xhJpEBs/ai48ZDZ83uE4G+8Q9UxvQI3A+5+j8+dTMdGcre3m?=
- =?iso-8859-1?Q?a7HQiRxB1e6gL/tq72jhuoLAnONoM0MYpGLeVC9R3V6VeDaVf6IjmQxjDM?=
- =?iso-8859-1?Q?Gw2mCPu05y9B3mLDLx9FHuT79TBuQs1wnXXu56m1Cry34mX5diE4dZ4Bty?=
- =?iso-8859-1?Q?kxi/9D8yDZyz3OrdRGagWlQzQVRhltUNoofoOgBTJPvKW7K4cZB/ez1QhM?=
- =?iso-8859-1?Q?Bxok4qswnInz38JEXi811I6qbgkDnww9il7muPk+siFchFM0083cOI0DR4?=
- =?iso-8859-1?Q?XckTqUPW+8b37AB/?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024|13003099007|7053199007;
+X-Microsoft-Antispam-Message-Info: =?iso-8859-1?Q?RtGgGgL33J0Tu8Vmv8Mx9FwNZzKZr6WV1BGDRck9uakkq5pCF78ntTF12q?=
+ =?iso-8859-1?Q?UrHr62pWejJuaDuyKqHabzYEUu5THFRiXZRcuc1A7XoOCU9TcArlqOpABc?=
+ =?iso-8859-1?Q?UDa7FebdNDTeP+IqZq6gc/BGg6muj0SQcwEHh/hI9DCYtbvkEpj8KaCKJW?=
+ =?iso-8859-1?Q?5SIwa31hegjchzUo4iF+HLEkuR/jER6N82LRN+bHByfQnoL1jCXDyCrjiz?=
+ =?iso-8859-1?Q?TXYlBxyY66g6T3qSq7CcKZh3AUSLg8jAb5p1tF7uaabjaf6cMKfMw9dJvG?=
+ =?iso-8859-1?Q?IzRuwiH/2VnpOdJm2kvWl7XZQzyJFUoJumK7/x0oBm4oJ7+UUaIFJyvvJT?=
+ =?iso-8859-1?Q?PoqY7JHKnUvwbctt4nNQ9O5RT3Q57+pxqjzeHcBA0d6Bb1IduSVUJ81+HY?=
+ =?iso-8859-1?Q?jy2IfPBqj3cCUKs/3QFtk2U54q7mqVJCKiQAkfCuzHTcRgmxWzaV0V3IL1?=
+ =?iso-8859-1?Q?+/A33cMqQilVGLJ3o3D2Yr2GCaEpPvAFS5g3O+dmXGPvahFY7ERh1TY0bl?=
+ =?iso-8859-1?Q?yE2csK5CMId1JM3ahE7K26jId27W+Th4kmKaedsI4dumdFFR70pC1yl+JL?=
+ =?iso-8859-1?Q?ieqHjTni7vc2+mgv15w/lsVEZd7jBtEd0CqpTMeaPvHolhA3wDZK6yKj42?=
+ =?iso-8859-1?Q?MwAhobasKsRuo0BULtf7Imcg1q6LONGCl54+Xid/iR3Q5095kqyFpmRPfQ?=
+ =?iso-8859-1?Q?GAmhWwpBMyXGZgjgkSIf3l/EF+d0HlyYatrV8d0c6DY9oQf8WNRBBJ2WyD?=
+ =?iso-8859-1?Q?nJdiEv1GInWC5MFDMaRUh7Y3lcaPk0KUcKyxM5hvs/5ukh8g0oX3FUIEgS?=
+ =?iso-8859-1?Q?jxqTNCYDL1VtsZwDHVLo15cjuBm/YxRDkXIyaXILDPiFcykBFjTq9s5iLi?=
+ =?iso-8859-1?Q?R2pZoc4UEqweLU32smpXfV09LpBlbMBvFTAFiCFtg8C/lklLd1IrVW+R4K?=
+ =?iso-8859-1?Q?smlZG7hUXivLzExi7XVKdecBDHc8aZq4/t6G/QMqXGR8u079v4OvUdiTvh?=
+ =?iso-8859-1?Q?7iBoLa+qA/XD9BVxjBNaXFP5PvR3hArxZToP6YgzDE0XtYq6qpA5Oi+DFK?=
+ =?iso-8859-1?Q?x0fobAcU2gdQTB3XwJBSovF8xm2eIBEfY+QAl6F2R5KSTa/0EB1a0kn/5G?=
+ =?iso-8859-1?Q?L4GSlUXyLAA2PqG30Lijc0XD9B0lsz/hLke/f5LswB17vCkjlEDO+8SXFK?=
+ =?iso-8859-1?Q?Qr1IjZ11Dt+nT24IWtT/09Sl1YpnZ3bULhF8DCuwJDcJXPslZ3svzLBe7z?=
+ =?iso-8859-1?Q?xrRVdT2lcLhd2W55J6RNDzhysguL1AWzj0+PbF4/92rvftIivJd8OTXgk+?=
+ =?iso-8859-1?Q?hd+hSG1ZHhsg7V8ULzCl6OYvPsWdAvN9GbcR+DFJ1E14TzKJXsVv6KTo6u?=
+ =?iso-8859-1?Q?8M5JrmLPp841SsL+MYN2ZGWVA2LxhVzUgKDqjikjBOpTf4STdpkMY1IWRI?=
+ =?iso-8859-1?Q?mKQwXFh9RlJNDzdi?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(13003099007)(7053199007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?BpwboCuvlXk6qV6tlraY2534ET4EXfd+53Of2jNhCWjdISfMstcu+R8jva?=
- =?iso-8859-1?Q?nn5LzSZQlBL3T6kgcj5mXDd/ldDO2QIGcSC6ETV00yNHbA7rh9XZz0Tcal?=
- =?iso-8859-1?Q?+wzSVqdo50+V3A1WFCweaC88malOUkOB4MIQj/MxOGqJySmzYxbGfeEmXH?=
- =?iso-8859-1?Q?rQqVEPeGqNVe84icnAcs1ylvXi1o13tl7j30EYWKu9xQcGCXrCtfqaLQWR?=
- =?iso-8859-1?Q?JeKBzXn74v6NtiPdvDlAFJukBdp0mNL9H607qf1fqY5jYq8cVCYiE4kFl7?=
- =?iso-8859-1?Q?f2cP2QJUdeI8LW8Jzz8Er4UM8VmqsSQ/4n/601TacLXrYGU9HUWjlkG0ie?=
- =?iso-8859-1?Q?54EsQXZz9HqyjWFZ1tJEgRamc5B2/1787QCyGRHv/lFjOay/Ul63cJ3ViS?=
- =?iso-8859-1?Q?pruOP2VeQx3FiBc3jVeZu+C5uA3uxxsks3aGvjTGOiZVaKjuwImOlQytps?=
- =?iso-8859-1?Q?S+WPWv+V5AN88FFFlcLx62L5NTiPJN9J7kOR1488Jhz43j8Cj0Z6PEU++6?=
- =?iso-8859-1?Q?fA/TuRzW6G6B68m4vTWUFByb+P7VwWn6wQ+RRRTXyEv602ZqaCXOvRa+mA?=
- =?iso-8859-1?Q?4ac9yKYNuKNk5lYBqXSvyDxFPip6f+CjHvXzXUY31uYBpDnNOhOSQ61f8G?=
- =?iso-8859-1?Q?IqBZ+FsM09S5prY87+NBlEmaLa3s9kqqECGbxtFPoUNh5PLfPfc79zbuEA?=
- =?iso-8859-1?Q?kYACqLiC7IUUvGNyEP6Ay27V6dOHCZ+TUHCvno/Nlc0QpaT50VBuq5n/3D?=
- =?iso-8859-1?Q?vgFjKIrmK2vJ5I1NwkgFiY6zWs7RujtD4IDNjtNvMnGDjMflB+G4zp9Y9o?=
- =?iso-8859-1?Q?3u6+IPS5aI2U87iS6Pg80j/YdmLjYUl3xb58KbAAIhK6vpxM7I65Gc1Ivf?=
- =?iso-8859-1?Q?gGWiLETUhYoEDq6GVPAIUGmOcseJYREYAgIPKHjQ6XaRjG3OHmija4o3ux?=
- =?iso-8859-1?Q?td6OPKxj0ceAXXRxbQImik72cJzUQxC16Wv2UMBeUrvblKi4Kp4LPTcMvZ?=
- =?iso-8859-1?Q?43Uu6s4hoiIaLeoHxK+tUaPToaqlCvZlt0a7C3CnHH6RY3LaRm76B35o7o?=
- =?iso-8859-1?Q?EUHNMGf5zlnVhN9xtQZ35qO6vopYctKX/tkZzfG2EMLnlj8ovt1FZQ75CD?=
- =?iso-8859-1?Q?B1Ek+yvDObxn7GCBwYySnSBd31bmRI7C46tS+VbD4rskvw8m+17EmXXur4?=
- =?iso-8859-1?Q?BF6TA6BNl/NlMOLQv7vZapgOjyVessrxxU8e5PvzbcevABmQIRRHy0txzM?=
- =?iso-8859-1?Q?taqEBv1H6GMOU1XGTuHEtegpsC/IpIzBcUtK3o0i6KOErhXjdaC0sdL/nk?=
- =?iso-8859-1?Q?bmtM3THpbFukYcHmLg48y5OsSuohUXRDokzgevJVOdsnYxpBRA1mElHCea?=
- =?iso-8859-1?Q?cLu/C/JPVYVkJj7u5yUyaBmYMy/IULehQrhbcors+LQNP5evmQAAhZsOwT?=
- =?iso-8859-1?Q?PunM/xAHVhEgK/Rj+vkRoJH7c4XJLxRPB2QCekBV8WlYFzgy8Fdnm4Gcj9?=
- =?iso-8859-1?Q?5DXY/5wkXyGuQjF+IKBOU5dqu2PudV/iH8vBWMidKmIHtzwN/BzpXYmoZu?=
- =?iso-8859-1?Q?ki5tkA8Q/CwJNuNfziFAAvdFgBYbl9IlQRWdkh/ulfze/xfmvGa//X/Rzp?=
- =?iso-8859-1?Q?CyLYdi2D2bSDNMugyKVENPmPAQ2Nii85JJRHDJQJ9Nx6ERWoTGquHrew?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?z3X3PWTrDeKq9X02IwLPzq2FzUkDduXgKgg7ktYesWVhBLWuK9J8cOd4Lp?=
+ =?iso-8859-1?Q?b4Vxjn0PRCuj6S9Rz5qBWb2/UlRq/3H1ro6uR+WkWFHycfIAlb/AdgmUlK?=
+ =?iso-8859-1?Q?1MvHRuh4/2A0foGj4heacw9rR+ohsZdOIAhorQbz05Ev2m4hkAi1EzwBHH?=
+ =?iso-8859-1?Q?uNoRsfYqpTV8OGh9FrV9/jm/cbyoo2doBGpUumEvuxdFYeypM+z3nFmGSE?=
+ =?iso-8859-1?Q?v5CqFxDYENVXU+zFfjyweZqp+75EfB2qp2NK4A0AsclqUm0ryMgxeKAetw?=
+ =?iso-8859-1?Q?kifJyDaK2ayumuwKWxDrqCUR5OgOY5jeEZ6eGSWTBIneNT2p/MDUrExISv?=
+ =?iso-8859-1?Q?EIj/ZU9OAgKE687jXQjK76XECIYKgt31TPKwG9/AcPQJeM8MAHmcsNMxBz?=
+ =?iso-8859-1?Q?LNl2dpx7nzdZQgkNOI4fSL0VYzKToK01zIhPtUCKppb2J57m5EQqIrX20g?=
+ =?iso-8859-1?Q?6TSc+t0fQX9JWwul6GJOFq+rHscSaVuYCOftQt6iKUQQN1OtUpwBhTodFg?=
+ =?iso-8859-1?Q?H/obY1fGq07rwaEqaGvLbIC6siaGr/IkxGo7X0uJKICdDxCvpULLNMpmRR?=
+ =?iso-8859-1?Q?j8cmgVax5ZSHQWBN+DK0AUv2kJeuUOxu1W0cqh1fT4WZ40R7c196anCFYp?=
+ =?iso-8859-1?Q?h3Df/OQIK7hqjT8upW4hEdXxBzXwytTxiEQ9ZFWwBRb9+ijO2JZVjCWnxJ?=
+ =?iso-8859-1?Q?1figiZOgeKhef/xF/AFgxDv3cjZLTtNImXIUrC10KLwCEwKqjPKJASdzll?=
+ =?iso-8859-1?Q?+axGiCpUszflTssQQoxBNsuZQ74yUWkbRTagqyuFblTZEs0/fhiuZfMULO?=
+ =?iso-8859-1?Q?VD9n8Moya5sZQnJdurHqRY7om4m99glVz4f/JKndsaHRqVa6uxmMZtILu1?=
+ =?iso-8859-1?Q?YWTK7aMdj9fhg0BUnNlEv7q6oa8JBu2LJJewsh1RIeML0jDS90jUoPrkZL?=
+ =?iso-8859-1?Q?iKF/lD8y3oIiphfWN2s+rfS7NYBDC1vs2QEmuMDHRfUpGqUstVdqghKRMS?=
+ =?iso-8859-1?Q?5aL3bkDGDME8FsEEeXa3PVFxJd+8V0Lm1Lb4HyGUXMTChfdg4aJ8ieM2uS?=
+ =?iso-8859-1?Q?s+5zBg/aKmIySo/I04tk01kkntoPSyJTH6U3n7alcUtDF+8gNhHkasJa+y?=
+ =?iso-8859-1?Q?G6SUY6N8qHdx7lUObamWmRJoDDK2spM15KzanBVAU7ieZ+W3Xj2PU567P7?=
+ =?iso-8859-1?Q?2eRSMiGVY0dTLiUkHEFgfWsbhIjnlEOoUaZsx7rWXwaDxrGNaBBDIsWANT?=
+ =?iso-8859-1?Q?e8KkBKK3jCr1XPGvya2tI4gvS3zaxak4WQw2BCVxO5prXwPSO2X36SGVJy?=
+ =?iso-8859-1?Q?PKisEdr5Hn+yc+xP8DMirAzvhK36in1bRbAQMb5IjTdTfhdDY9DP9lcr4h?=
+ =?iso-8859-1?Q?JC12zyQABvbEDzNntH61WoxhDufuRK+d5BhuhCsc69DY63vWmCQ5kZD+VL?=
+ =?iso-8859-1?Q?Vc5ugkBTCxVt3sr+pvcVP2EGdY1hF98GYb4rmPB7Cw5PVjreKW1ee95GcD?=
+ =?iso-8859-1?Q?Ibah6hyQIHEQaPKmOes05PJX7UCruDRo9PmqKPPp7bVGjp05qGZQ1ix7Ff?=
+ =?iso-8859-1?Q?QBA/HrsYITamuJACuOkZP6L/rFtGr8aqqUSeSEBiLTjMZLQjoUcNddI6iu?=
+ =?iso-8859-1?Q?9vVjo3Nzo/WqSPDhIhC96e7l8b7n0rqbV1KHsDOmbYO7EC2GWPOtH3Xw?=
  =?iso-8859-1?Q?=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4a4a9bc3-d5d9-47f1-3433-08dd7057647a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 77b1656c-da3d-4806-0a29-08dd705dc755
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2025 13:24:40.8124
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2025 14:10:23.6628
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tIGK48p3MVevMwa8GN/yRIB/5VmeaVhWaGcMBYxMD2DajUvsxufAH6hCHoMGi/nyzCEfuQGp6q9aOUg4UO7Z6Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB7975
+X-MS-Exchange-CrossTenant-UserPrincipalName: CmilIl6pvNiYIlMYoNdu+sLwBeCe1Uolx8Mefu2EPffnAPV+fWebdBDkHZcRrBUWyPLr0EUFUHoEv5opairb1w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB7147
 X-OriginatorOrg: intel.com
-
 
 
 Hello,
 
-kernel test robot noticed a 5.0% improvement of stress-ng.forkheavy.ops_per_sec on:
+kernel test robot noticed a 32.2% improvement of lmbench3.TCP.socket.bandwidth.10MB.MB/sec on:
 
 
-commit: 7b6218ae1253491d56f21f4b1f3609f3dd873600 ("mm: move per-vma lock into vm_area_struct")
-https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+commit: 6570c41610d1d2d3b143c253010b38ce9cbc0012 ("[PATCH] mm: pcp: scale batch to reduce number of high order pcp flushes on deallocation")
+url: https://github.com/intel-lab-lkp/linux/commits/Nikhil-Dhama/mm-pcp-scale-batch-to-reduce-number-of-high-order-pcp-flushes-on-deallocation/20250326-012247
+base: https://git.kernel.org/cgit/linux/kernel/git/akpm/mm.git mm-everything
+patch link: https://lore.kernel.org/all/20250325171915.14384-1-nikhil.dhama@amd.com/
+patch subject: [PATCH] mm: pcp: scale batch to reduce number of high order pcp flushes on deallocation
 
-
-testcase: stress-ng
+testcase: lmbench3
 config: x86_64-rhel-9.4
 compiler: gcc-12
-test machine: 192 threads 2 sockets Intel(R) Xeon(R) Platinum 8468V  CPU @ 2.4GHz (Sapphire Rapids) with 384G memory
+test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 512G memory
 parameters:
 
+	test_memory_size: 50%
 	nr_threads: 100%
-	testtime: 60s
-	test: forkheavy
+	mode: development
+	test: TCP
 	cpufreq_governor: performance
+
+
+
 
 
 
@@ -215,60 +209,48 @@ Details are as below:
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20250331/202503311656.e3596aaf-lkp@intel.com
+https://download.01.org/0day-ci/archive/20250331/202503312148.c74b0351-lkp@intel.com
 
 =========================================================================================
-compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
-  gcc-12/performance/x86_64-rhel-9.4/100%/debian-12-x86_64-20240206.cgz/igk-spr-2sp1/forkheavy/stress-ng/60s
+compiler/cpufreq_governor/kconfig/mode/nr_threads/rootfs/tbox_group/test/test_memory_size/testcase:
+  gcc-12/performance/x86_64-rhel-9.4/development/100%/debian-12-x86_64-20240206.cgz/lkp-spr-2sp4/TCP/50%/lmbench3
 
 commit: 
-  b2ae5fccb8 ("mm: introduce vma_start_read_locked{_nested} helpers")
-  7b6218ae12 ("mm: move per-vma lock into vm_area_struct")
+  7514d3cb91 ("foo")
+  6570c41610 ("mm: pcp: scale batch to reduce number of high order pcp flushes on deallocation")
 
-b2ae5fccb8c0ec21 7b6218ae1253491d56f21f4b1f3 
+7514d3cb916f9344 6570c41610d1d2d3b143c253010 
 ---------------- --------------------------- 
          %stddev     %change         %stddev
              \          |                \  
-    382800 ±  4%     +10.2%     421797 ±  5%  numa-meminfo.node1.AnonHugePages
-     32850            +5.0%      34492        stress-ng.forkheavy.ops
-    493.66            +5.0%     518.50        stress-ng.forkheavy.ops_per_sec
-     40.74 ± 30%     +68.2%      68.53 ± 23%  sched_debug.cfs_rq:/.removed.runnable_avg.stddev
-     73.19 ± 42%     +52.2%     111.39 ± 16%  sched_debug.cfs_rq:/.util_est.avg
-    222.12 ± 29%     +34.4%     298.62 ± 10%  sched_debug.cfs_rq:/.util_est.stddev
-      4555 ± 10%     -45.3%       2491 ± 27%  perf-c2c.DRAM.local
-     11750 ±  4%     -22.7%       9082 ± 22%  perf-c2c.HITM.local
-      2592 ±  6%     -45.4%       1414 ± 23%  perf-c2c.HITM.remote
-     14342 ±  4%     -26.8%      10497 ± 22%  perf-c2c.HITM.total
-  41336771            -4.4%   39526485        proc-vmstat.numa_hit
-  41134683            -4.4%   39326465        proc-vmstat.numa_local
-  71479761            +1.8%   72742225        proc-vmstat.pgalloc_normal
-   3480841            +2.4%    3564757        proc-vmstat.pgfault
-  71044889            +1.7%   72274310        proc-vmstat.pgfree
-      1.47 ± 86%     -73.5%       0.39 ±138%  perf-sched.sch_delay.avg.ms.__cond_resched.do_ftruncate.do_sys_ftruncate.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.33 ±108%    +205.7%       1.00 ± 83%  perf-sched.sch_delay.avg.ms.__cond_resched.down_write.do_mq_open.__x64_sys_mq_open.do_syscall_64
-      0.77 ± 25%     +43.6%       1.10 ± 21%  perf-sched.sch_delay.avg.ms.__cond_resched.dput.vfs_tmpfile.path_openat.do_filp_open
-      0.16 ± 17%     +44.7%       0.23 ± 26%  perf-sched.sch_delay.avg.ms.do_wait.kernel_wait4.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.58 ± 85%     -85.8%       0.08 ±130%  perf-sched.sch_delay.avg.ms.irqentry_exit_to_user_mode.asm_sysvec_reschedule_ipi.[unknown]
-      3.92 ± 72%     -80.6%       0.76 ±198%  perf-sched.sch_delay.max.ms.irqentry_exit_to_user_mode.asm_sysvec_reschedule_ipi.[unknown]
-      6.96 ± 55%    +113.7%      14.88 ± 28%  perf-sched.sch_delay.max.ms.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
-     62.68 ± 72%    +129.9%     144.11 ±  9%  perf-sched.wait_and_delay.avg.ms.__cond_resched.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
-    334.97 ± 57%     -66.4%     112.42 ± 70%  perf-sched.wait_and_delay.avg.ms.do_nanosleep.hrtimer_nanosleep.common_nsleep.__x64_sys_clock_nanosleep
-     82.80 ± 23%     +73.9%     143.96 ±  9%  perf-sched.wait_time.avg.ms.__cond_resched.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
-      2.15 ± 43%     -72.2%       0.60 ± 94%  perf-sched.wait_time.avg.ms.__cond_resched.unmap_vmas.unmap_region.__mmap_new_vma.__mmap_region
-     68.44 ±135%    +288.8%     266.12 ±121%  perf-sched.wait_time.max.ms.__cond_resched.ww_mutex_lock.drm_gem_vunmap_unlocked.drm_gem_fb_vunmap.drm_atomic_helper_commit_planes
-     15.31            +8.9%      16.67 ±  2%  perf-stat.i.MPKI
- 1.684e+10            -3.9%  1.618e+10        perf-stat.i.branch-instructions
-  75533943            -4.7%   72015903        perf-stat.i.branch-misses
-      6.71            +5.6%       7.09        perf-stat.i.cpi
-  8.19e+10            -5.7%  7.726e+10        perf-stat.i.instructions
-      0.16            -4.9%       0.15        perf-stat.i.ipc
-     16.72            +7.0%      17.90        perf-stat.overall.MPKI
-      6.53            +6.2%       6.94        perf-stat.overall.cpi
-      0.15            -5.9%       0.14        perf-stat.overall.ipc
-  1.66e+10            -4.2%   1.59e+10        perf-stat.ps.branch-instructions
-  73765712            -5.4%   69811938        perf-stat.ps.branch-misses
- 8.092e+10            -5.9%  7.612e+10        perf-stat.ps.instructions
-  5.53e+12            -5.5%  5.227e+12        perf-stat.total.instructions
+    143.28 ± 38%     +49.0%     213.49 ± 20%  numa-vmstat.node1.nr_anon_transparent_hugepages
+    118.00 ± 21%     +50.3%     177.33 ± 17%  perf-c2c.DRAM.local
+    182485           +32.2%     241267        lmbench3.TCP.socket.bandwidth.10MB.MB/sec
+  40582104 ±  6%    +114.4%   87026622 ±  2%  lmbench3.time.involuntary_context_switches
+      0.46 ±  2%      +0.1        0.52 ±  3%  mpstat.cpu.all.irq%
+      4.57 ± 11%      +1.4        5.96 ±  6%  mpstat.cpu.all.soft%
+    291657 ± 38%     +49.6%     436355 ± 20%  numa-meminfo.node1.AnonHugePages
+   4728254 ± 36%     +32.0%    6241931 ± 26%  numa-meminfo.node1.MemUsed
+      0.40           -24.4%       0.30 ± 12%  perf-sched.wait_time.avg.ms.do_wait.kernel_wait4.do_syscall_64.entry_SYSCALL_64_after_hwframe
+     13.88 ±  3%     -78.2%       3.03 ±157%  perf-sched.wait_time.max.ms.do_wait.kernel_wait4.do_syscall_64.entry_SYSCALL_64_after_hwframe
+      1.50 ±  4%    +670.3%      11.58 ± 38%  perf-sched.wait_time.max.ms.schedule_timeout.__wait_for_common.wait_for_completion_state.kernel_clone
+ 1.209e+09 ±  3%      +6.5%  1.288e+09        proc-vmstat.numa_hit
+ 1.209e+09 ±  3%      +6.5%  1.287e+09        proc-vmstat.numa_local
+ 9.644e+09 ±  3%      +6.6%  1.028e+10        proc-vmstat.pgalloc_normal
+ 9.644e+09 ±  3%      +6.6%  1.028e+10        proc-vmstat.pgfree
+  92870937 ± 14%     -17.9%   76271910 ±  8%  sched_debug.cfs_rq:/.avg_vruntime.avg
+      2343 ± 10%     -17.3%       1938 ± 17%  sched_debug.cfs_rq:/.load.min
+  92870938 ± 14%     -17.9%   76271910 ±  8%  sched_debug.cfs_rq:/.min_vruntime.avg
+     13803 ± 10%     -22.2%      10740 ± 14%  sched_debug.cpu.curr->pid.min
+      2.87 ±  9%     +69.1%       4.85 ±  4%  perf-stat.i.MPKI
+      0.31 ±  6%      +0.0        0.34 ±  3%  perf-stat.i.branch-miss-rate%
+     13.92            +1.1       15.06        perf-stat.i.cache-miss-rate%
+ 2.719e+08 ±  9%     +27.6%  3.469e+08 ±  4%  perf-stat.i.cache-misses
+ 5.658e+11            -2.5%  5.516e+11        perf-stat.i.cpu-cycles
+ 3.618e+11 ±  7%     +10.5%  3.996e+11 ±  4%  perf-stat.i.instructions
+      1.64 ±  9%     -42.0%       0.95 ± 70%  perf-stat.overall.cpi
+      2233 ± 11%     -50.7%       1100 ± 71%  perf-stat.overall.cycles-between-cache-misses
+ 5.691e+11           -35.0%  3.702e+11 ± 70%  perf-stat.ps.cpu-cycles
 
 
 
