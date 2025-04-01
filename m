@@ -1,272 +1,227 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2077.outbound.protection.outlook.com [40.107.92.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A30FB21B8F2
-	for <oe-lkp@lists.linux.dev>; Mon, 31 Mar 2025 14:37:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29E65C2C6
+	for <oe-lkp@lists.linux.dev>; Tue,  1 Apr 2025 13:57:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.77
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743431871; cv=fail; b=aZkpWCIXnURJlcWCPQGHNlkxg1A6cfc/RZ+MahhCna7+OM7KMXmD+/O1HBNkbNTZBaB880h/bK9zvv7jjRQmfa9APs6PyOni83mTzhJygPtjwgQv03ceS8YBZ/ljfCa6NanxvEo+0+OJR1Qbw3QEom0ys5ALu09ABiKCs8v795g=
+	t=1743515845; cv=fail; b=Fp+V2uSJbdpJDe2vQWskb2M7SiuV4feFWNtsEqypNPTFwwx1R0jV0WVgn/viGnAcq9L0faC/JwmtyHMwOpTC342oWPXmjTT8s1bKLX/ymIgCOq2KA+LIZKFI38Kc2iIiuBH40tuhpbRm8nf7RgPDBrKiTBfDjWsUvbR4DleZLyE=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743431871; c=relaxed/simple;
-	bh=p9dhMg5YB50c1467BtgTYr8JR+qcXFuaROtBJMzo+0U=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=GEIAGMdOAxVZEgvmKI+dq/2//w9+HZ92AL4zDE9co/PrlvvjB4RwPXSu5wm7zVOjyOg8+VcNXuDleh3cdtQgGB6z78lckzZMc90Y/mo2d0J1XfTrL3J9VwancRHBcjpdE/SLZ3tfwx2XZK9wun37jN6u7pc2MeCzZ5qdCMDJwPo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cLIljhey; arc=fail smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1743515845; c=relaxed/simple;
+	bh=h75P6kjDyG446TIgKhkdSsVVAhWn9wbH7FIW7Skd3/8=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=rqAv0EY47p3ghfFJ1sTYkf0Zkg5zsyLj5AGSsaZd78sQQ4Zlo8T9yeYMbCn50Ji45EVtAitL69T1Dud6MGrk0dHO1mK0J8H3wnFBfkVy5lfU8hhwy9iFm36WRTYxJYlhSytrCcIl6gdcmBxMtKvOm1NslOsmZMhfF79uAtpPdm4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=Jvi/eUOz; arc=fail smtp.client-ip=40.107.92.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cLIljhey"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1743431870; x=1774967870;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=p9dhMg5YB50c1467BtgTYr8JR+qcXFuaROtBJMzo+0U=;
-  b=cLIljheyg8aTX4fp7Lq3PC1XAtq/Gco5Ti0oRAlhDzIbk6aj2qW8mz1h
-   kk5NieZ3mRx1o47WIF2XWHJPv6O9CQDxONSoilmz2FbcfT9f2ZWGB6u4e
-   gLAoaDDPIWTe+WxlfyrA/27TIBat0PBoORijfpZjO/Ptlm2s9Qga78qgt
-   rz5WF6KnSTQ44/2/SGsa/IFDxR5OkG26QOJTg2XU+cUvbWQtVfco9kA/3
-   +YZxR7ZsFc/LAQzmnds7cZoNgti5LX4Blurkmf4IWcXBmcX9F3TSZgPSc
-   UT0+4wdTyQYSSp+JzuKagjW3twPapUyhQJFggHfAR8gr5dQg11VwLnpfT
-   g==;
-X-CSE-ConnectionGUID: est3vvDWRz+n9vp9OvzFoQ==
-X-CSE-MsgGUID: Lj090b2PQtSbJsauNxTHng==
-X-IronPort-AV: E=McAfee;i="6700,10204,11390"; a="48387456"
-X-IronPort-AV: E=Sophos;i="6.14,290,1736841600"; 
-   d="scan'208";a="48387456"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2025 07:37:49 -0700
-X-CSE-ConnectionGUID: tqmWPYtdTcaFe1rlXHHDNw==
-X-CSE-MsgGUID: 73cdnVQkQWmZZPL6N9nSig==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.14,290,1736841600"; 
-   d="scan'208";a="126092495"
-Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
-  by orviesa006.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2025 07:37:49 -0700
-Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
- ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.14; Mon, 31 Mar 2025 07:37:48 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.14 via Frontend Transport; Mon, 31 Mar 2025 07:37:48 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.168)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.44; Mon, 31 Mar 2025 07:37:46 -0700
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="Jvi/eUOz"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=BBJZDk+xp/12lv2Dt1Pwkffu9CwkYZ3b3sZS8xAKX4ISG2AFjR2Tvs/HyKuBpZEvowsRCYOujIQL5P7UXo2AYNk6df2Itg7UTbemSz835P1C/J2Qov0NipY4CjJMYBukH902OqLrv9BjNTLxq9m40cGzV3IKixyVs8pAvNzMDOPfZyr+Pn7l7EMmGcbplYqh0DTozPBoSLuX5FYcMAEuwk1o8+HRea+FNpnKR9MzJNch6PkI8HATW/83RZwIK1SOrlgCSVc9b6LaT/XSoaDd/drxN9XmbWyJ+8Zx2zg1KxPQSqjHaLvIDXX4Ypu4m8ESubb1J4gYYFwuioeaLlqnFQ==
+ b=thzbNun7ZF3xJQz/pY69IDsDwSjOu8nf8TgnZ7FPepRzLP447XMtWDG9wobJar9KYWhDyY2MQeu8a1MbtTftzOrZi7zPErLDfqsxIR9s+QFlthG8B3UiSjCiSlLFDK/pBOerTzgDdRTbWYXLD9JnELZnnQFBCdEx67JNp5YSuMqRlG1RO6LpK2a4/I1xQPkG86liASs4seZduAR0NBRGsUnKe6OHKZyyvXM5kVHvouZox0X09eGhwDMVIFcgSYqS6fsDtvQWdmmh+xQR3ZQP4AGLMnI08bVQbjkeQ2PT9T1TFXYRXjyfC5o7c1/9LvUZbDzzY9npoZme8MzWoKEVVA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7oNXUp9un+3JfyHWQuuFumRLM+uon8u9Gqk9VzZ4e/8=;
- b=PuxgQEAVnj5VWY3zNTs6X0sf6AoK8yRaF/wn9DpTMP8in8Cs6u8i8SC06SLfjCNVAYol+8ZBW8MXxxnrgSMPDnxxXngrlGIYoNNeIMbaXG+8TPHxa4ET+GbxT7/6woywHv2p19GbWD+2SHg5Iar7sQdM7w/d7guu7u2gTuz/92avZaXxDgQI/+yGs1LbSdzb/eJ+YNVl0vOIJFi/nF6Wj8erLHGIegZWdXZoqjFDX/nFfk1+PCwsr+yVUGJF+GC6yETvkCQpFsY1NIEe9LZ9jdSOk5j0z0b8OTld6ejRmBYen8JdRtkTQ4boB938nJQnL6ccDU5yIecGk+EVcEyx5A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by PH7PR11MB6522.namprd11.prod.outlook.com (2603:10b6:510:212::12) with
+ bh=5+ONV7n8KEuhdBr3MlPs2Zi1tt7JAfVRENI0P3VxEBw=;
+ b=E/2tfiwov46CPRD3kPIEdF0xLi+BarkJZpmA4UVdfYIDz0u13BGg3AD6eQ/XP/20prNVOs0OTiPfGBqlccZkDH4kPgNirfJne2V91SjDzeFu0MBNhWfOz+nQlrPAN0zvgEo0wa8GbslVi3ief83ksQD9kBWxK+gz+KpMpMg0lKOWG28Oy3WRp7CL7KjyrEjmEH9P6iwyONas4uG1K5tN+715cllYrbrmVnP9JFkFDvwGmSv7AUA4D7lW9HQtvPlxvbYArlqPw3JjGlPKdC0E88jPPXLbDFdoPjxcl9KyM8zVaBqBPiudNNUcgUVoKoo9EAptZC0/PCB2qrGj0Yj5cQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=linux.alibaba.com smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5+ONV7n8KEuhdBr3MlPs2Zi1tt7JAfVRENI0P3VxEBw=;
+ b=Jvi/eUOz7AhNNZAG84GrWpp6Y41PMQNFXAExN46A8QAY60wNWYH5Ege2vnhipE/7+R34w9ib1TSymYLosdTAutQIO+YELjl0vobsL85EXPhjKFzdQoFDOk2+oyfOYRh6nx7NaX9RdlVVWzIYoVlyupIr7bhasZTDIwRS/VPm0E0=
+Received: from MW4PR03CA0179.namprd03.prod.outlook.com (2603:10b6:303:8d::34)
+ by CY1PR12MB9603.namprd12.prod.outlook.com (2603:10b6:930:108::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.54; Mon, 31 Mar
- 2025 14:37:30 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%4]) with mapi id 15.20.8534.043; Mon, 31 Mar 2025
- 14:37:30 +0000
-Date: Mon, 31 Mar 2025 22:37:22 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Jarkko Sakkinen <jarkko@kernel.org>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <oliver.sang@intel.com>
-Subject: [jarkko-tpmdd:keys-graveyard] [keys]  aa52a1fbfc:
- WARNING:inconsistent_lock_state
-Message-ID: <202503312252.bef52733-lkp@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-X-ClientProxiedBy: SI1PR02CA0055.apcprd02.prod.outlook.com
- (2603:1096:4:1f5::16) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.45; Tue, 1 Apr
+ 2025 13:57:21 +0000
+Received: from SJ1PEPF000023D1.namprd02.prod.outlook.com
+ (2603:10b6:303:8d:cafe::e4) by MW4PR03CA0179.outlook.office365.com
+ (2603:10b6:303:8d::34) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8534.54 via Frontend Transport; Tue,
+ 1 Apr 2025 13:57:21 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ SJ1PEPF000023D1.mail.protection.outlook.com (10.167.244.7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.8606.22 via Frontend Transport; Tue, 1 Apr 2025 13:57:20 +0000
+Received: from spgblr-titan-01.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Tue, 1 Apr
+ 2025 08:57:17 -0500
+From: Nikhil Dhama <nikhil.dhama@amd.com>
+To: <ying.huang@linux.alibaba.com>, <akpm@linux-foundation.org>
+CC: <bharata@amd.com>, <huang.ying.caritas@gmail.com>,
+	<linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+	<mgorman@techsingularity.net>, <raghavendra.kodsarathimmappa@amd.com>,
+	<oe-lkp@lists.linux.dev>, <lkp@intel.com>, Nikhil Dhama
+	<nikhil.dhama@amd.com>
+Subject: Re: [PATCH] mm: pcp: scale batch to reduce number of high order pcp flushes on deallocation
+Date: Tue, 1 Apr 2025 19:26:38 +0530
+Message-ID: <20250401135638.25436-1-nikhil.dhama@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <202503312148.c74b0351-lkp@intel.com>
+References: <202503312148.c74b0351-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|PH7PR11MB6522:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9aacb7bb-7851-481e-c1e7-08dd706190c9
+X-MS-TrafficTypeDiagnostic: SJ1PEPF000023D1:EE_|CY1PR12MB9603:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8dcf98b6-36fd-493f-eb37-08dd71251f5f
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?Qd2b85s2YCcLIsEQpPaXdK5+qWJbICAoWd7aSaXTPjQKHkTF9ICum3PBWTt+?=
- =?us-ascii?Q?0YgfK7O6KM7bIKkTPYYRrMd0mJBiRQNXGosjKO07LDffwg2aJ0B0KEWBTfns?=
- =?us-ascii?Q?luzfzGhqlU4fTann5OzhG0U7DqbUiKelYjWxYpgR7qNbDfnVj4qqoG1zdyO4?=
- =?us-ascii?Q?F0aNyuMk60Pfu3XDwYU8j+vLCVUl0AgGjsQe6f2NLtNuwR/6B3tVHdIUyme6?=
- =?us-ascii?Q?wv2dh0ZeSLpt1yi9RFF9lg7LAA+YOEAmznRDbEZAYYbflTJhvJLWpi5oE5YS?=
- =?us-ascii?Q?KMlACDEfmLCvIPVj3Cs7Ebp4mscn9KOkSjgZeGKkgh5Zk3UCdfe85dTxuESo?=
- =?us-ascii?Q?6X9AIVuyIhXdjIMC5XWjroIWgcdK13EEAbgoPb6v5egSh3KGV8Loa48LMJR5?=
- =?us-ascii?Q?YPcRMpw+bsNZSb6bHQlUzP7a++LaOrJnVevo+ONfgHL/SIFxPFe+vJP6JZrg?=
- =?us-ascii?Q?Q/CgHQbVllnJusPQYZlKzsYH1wnfqHgKJqoh4pJEj7GOFCo4dBXo/2PZRe0h?=
- =?us-ascii?Q?8MdcX6nbeUY3P7ZeM9/ue7S1yJdUEoeAuPAXIPVusARSF1PkDnXuCGxOR1ql?=
- =?us-ascii?Q?BUw+80Jtacn+BPWQOnbSyc5elqALfaMQfcfRe+nLLNzI3s4RQf+LAvGRL2cr?=
- =?us-ascii?Q?jqe2ulcbKZyP00rgbfJr4KOGYALoedgtBYaOgtnqZ/MttPj4zCF9T5UjgsRF?=
- =?us-ascii?Q?LEainAqIcGihJaD2G3VUVoBCXfy+RxPbTPkiclz6gsi5CXBo/8didue/L2I4?=
- =?us-ascii?Q?/5kJ++62+l/VCwkLfMfklQDNKqZBxeoKkchcKMCIzhUEuigrrSfx9RrmuZii?=
- =?us-ascii?Q?HbUiSxqZvLXvSdKVc9swbLbpdI8cDcOFbZp38Fb1wk8b56gNuqPPx56B+w0g?=
- =?us-ascii?Q?84P7ckVE7XkxH27F4VPwT4YDoH3+Rro5fewWlcyW/os/wLXRBRi1I3i/ausI?=
- =?us-ascii?Q?1ZLZcmpW/qtgopm0zqAJkoa/eK+McAGJXKtD3QDcPRHkxHMVn0Q7XwnPdDKz?=
- =?us-ascii?Q?DEn7CBTdkWRZAzqakG1/N1FhjKUB1Jt+S0VxUhy1pbTKxtWSuIdEdIPKdE25?=
- =?us-ascii?Q?hXVLzwtzGCKNeMsqaGfgOoIVSgydtOJo+qtrFPifAc7XsTNBQy+1cIY3NIif?=
- =?us-ascii?Q?vfkddUwA9WGSRjN/fszCFaJ03EL/vqgf9tW9M842FJUhj0/4K/ctoqUsTyEp?=
- =?us-ascii?Q?3pRoktk0XuylZb4EJVSPlOzvatkDevonet8GzcyYnU3EDyCKUks9/KpPqR2e?=
- =?us-ascii?Q?jqTJe4A0FYLlppHkjJyAk7yRsX5OttvQ/BC04zdgbO9QS55kMN2gJgubMHEs?=
- =?us-ascii?Q?o2tJ+PHWs4KyZPmQMk401g3oZfJ03CK7EhqQVZFe0feqDA=3D=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?CZGvcauK6DhLYZNnz4fRuSylHa9Ib/zpXWY1dLboJuuzxjo73mBaZR90acq/?=
- =?us-ascii?Q?+ddVjrMGQI3WjK/qoorVkFCCpOMN7rAsE6xdK+Bc80RLlXOqnGI8Xk9wVKCR?=
- =?us-ascii?Q?46+3UHgW2eQ4qgxwkOp5Mig56R3DrnHmhS/duPuwBT1j/qv0A996RlkAKJzv?=
- =?us-ascii?Q?g0E250SAFaRhP9dK+A9kGvgSO0OBrnQKNnQH5OYVlpBVAp0GuP6VVDH3zXaH?=
- =?us-ascii?Q?31VkNM4TS+Pw+XtrF66s7tiJLRl3a46Fw0ys7qDSjwR8qkj05GkBZg/vcPds?=
- =?us-ascii?Q?zeaRny+daiz/97hbvI95+AcygnxBvPw5HG5zWp+W30VgrVgzWVP1of9IWwhi?=
- =?us-ascii?Q?SPb9wgnjka1lpaJ1fsVbCDtwsvNaC0WqoER8urzA47NActiDqsqw6wn8yKNg?=
- =?us-ascii?Q?URRsWpHm/SeN4/sEicCDSfDsUtHzRLtJECeYZKDQvS5NpVblYXJJSR5FrHeV?=
- =?us-ascii?Q?k1wkdVaKrdcXvdjHGwRy1dsKffgMSDh9+AxygjJq3w38mJEv7d0rbPgn4k1D?=
- =?us-ascii?Q?RjxF6tzxihu4VZNO1/mDD/wGMKG+lyJVtcUfvbS9PelQaBTt1+LML6OWXsIT?=
- =?us-ascii?Q?FZRjrq2/Bppeu3k13x/3crhIdCTvHVCeINSNf9xyepLcwg29x6MJ7FrPMEmV?=
- =?us-ascii?Q?Tm6m8VuuUJUcFjw7k29+aqliNfXiDDCe8JcpfxPB3nvYPAuLi1KgsPRM3y3b?=
- =?us-ascii?Q?bFdO6sWlkvq5LGKtd7orX64TCZVkQTVNSJ6jXjwFfiegkMQq02t7LA4QNaEW?=
- =?us-ascii?Q?tNr8RnCWGVepi9TgA83R8BTBCXs/+5yixBpf+oe0QQmVvhmYabj9p/DwLwBe?=
- =?us-ascii?Q?ekQlQWFksOlza6re56ZTgsb+FwZWlsmUJkmQHLjuUJ/2UudnlJnstNyH6O6K?=
- =?us-ascii?Q?MDo7F/DvKPeQ+b9Wle93ioqJm4J5WwUVwnothiU4GbRPKOao9fvmqIpBilax?=
- =?us-ascii?Q?dMIEMby0Q6Qm64MgsSzMrFssaUHB+Eu2q7HkHRXQgXv15jF6jVo1jRZ8zmx+?=
- =?us-ascii?Q?9HvaSYmJRfk1RbVojtAWwuKpUgUdrcwC2tByVn59/xaclkRK/aD+AU1EXCJp?=
- =?us-ascii?Q?mM09MzfEFMHbBpWDIdnACQVhFFT8tpyNXsPXa9USj6UhzeM+jlPhGMi/ajSh?=
- =?us-ascii?Q?GDTjMzrKoifI9XlyHiPJDxV/49fBD9yELUhzGpVNxHBTWCxURc8zpdUoU6aG?=
- =?us-ascii?Q?BreKcBJkmjC1SCdlTroS2J55EkY5EX/c4LHgOw57BbUzWo6aanP/DeFbOPIo?=
- =?us-ascii?Q?RpZ+VM3xQwsOELcNxq+LMY8Dka9Dhn4r1phAsaZ4WNdgiLMmccNAQ9nsp3Lw?=
- =?us-ascii?Q?PV1qZJp9ZJ0kvYp3itLBzTUk7SsXkmlEGHZ5x8o2K133xjEGhOFct5HKhKl3?=
- =?us-ascii?Q?d0/CAtCmr7KqBIujR3THMxIoeWs2M33Hn9x+SxdHTKrk02/EvJq9mk6PJ6ZH?=
- =?us-ascii?Q?KFGIyCnWa2gfW+tarsD0nhwOrEwzv15D/+581cv68q7iZLZzdRNK8IIluAr1?=
- =?us-ascii?Q?XG8vwEoV+fyS3xvUM24nwl2pJIFuj1KM2XylcLca0mgWOQ/yki3St44YMNEf?=
- =?us-ascii?Q?wQf5tFnNRQqX0R3F8gWyGd5PJa404j3ck3ilFujb2S9tgNJV7q8YF7A8MPH8?=
- =?us-ascii?Q?ZA=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9aacb7bb-7851-481e-c1e7-08dd706190c9
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2025 14:37:30.1161
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|1800799024|36860700013|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?wf5f/L6sbCT3W0w7bHouZEQpt/vt5HOe0jWNiH50O98YA4mTmDSkAkkJ2KS+?=
+ =?us-ascii?Q?wmhJCri0DOZr3LVIn2HFeTeRVkKxhGe7z9FCN3zbMcEyyVN3ZH1wqWMXPDBZ?=
+ =?us-ascii?Q?pvhg9EL2O+FAMTD9D/ghYjon9tKt04DCeV0iR2+X1FQof2DqwdBAeORfxKP0?=
+ =?us-ascii?Q?99kGtKdRysCOUtEZx4nEc9NodcdGO8qS4lfEkH/5R73ACg2eyvd/OGzrI7aq?=
+ =?us-ascii?Q?6OGR/B1xN7ymQHabOCo4Xg8YAl2SUHJuIzTd7ztP18GtAh/ZR8WaI1iodEqr?=
+ =?us-ascii?Q?GyFtb/t6Yh0KgtDzYxVFonOWSfbPD8akAFNgwV305DwZv4RtxVJnCw9duK9v?=
+ =?us-ascii?Q?gk0z8JE6qHOEff283f0HrsSfaOy3jfYzBgvk+oHnM2XY76enaFfha4pCOy7k?=
+ =?us-ascii?Q?k2LoZZMoMW+hwP/tVZIV8Hu/7d2KImDsZ24aofFAwhSCmbQ+zbrMREaBERRb?=
+ =?us-ascii?Q?ML8d7srLPWge14S+s9RuNYPEkdBiBFw2zbzOn9RVSuR0nVViGRvYcEDUUYT1?=
+ =?us-ascii?Q?V7AoadZw5MrZd0U3TK5neyY0/+wuqQNn3tlnzFahEKZa+1r3aIswFQd8VJ4E?=
+ =?us-ascii?Q?SVmg21/mohfCF5gryADCrt7B25wtA8Kn9PrsWaqb3M8+6Hwc/tpmxb61f2aa?=
+ =?us-ascii?Q?CQ8Ua/qUDPqkp99mW8SwXOfgOiKTer17XOxTrPHhPogQWH3/pINTUx20+j7D?=
+ =?us-ascii?Q?o/eNWIWWhqwoIKETzRWOsWqDUhdoAeauMrCUMXlXaQ+QSxQODobshw0FP5fp?=
+ =?us-ascii?Q?sPQORcFCE7vvWa11iR+iHXB3ae6g3k12NREMt58u3sHCAa8l51eL/d5WRLJN?=
+ =?us-ascii?Q?S5tVWwHj3ev5++jerJpzpF1DYLWC/eO7qjEzSx+YEO9PB91IIrNB0sDvdY6u?=
+ =?us-ascii?Q?XV9aCsZd8Pw1KlclaYXUpFhJY8n5+5c/dtFWNJ4jh41QS1Qo0c7zSVBA2Hoc?=
+ =?us-ascii?Q?wgeFS7OdypdUGq0xjwsBAkQFKn4Gw6UNFlEKQr5FUauEMA5Z16FoBuL2Pi71?=
+ =?us-ascii?Q?NS+rrtFn8iylv0N6E3j+jjkGk6EBjO68++KHzmHtwGEuOWFEcRSA+p00LS7n?=
+ =?us-ascii?Q?6cVPpuCniQ8bq+p/iCrM84INy5+DpIGJZIPbJSv3eilDiEjlfxNeLMYGUleq?=
+ =?us-ascii?Q?Sm6kzvFMMtAkeArCxbY/hZbnmyyNxYGmfSp+zM1FgJkVtWZNqsXWuzMH6+yG?=
+ =?us-ascii?Q?ErIhdD6IO4pmVi78Nv8bpHJy2bwLiREtLayZuHk0f+aOKYPhB7+T+WU/AYxJ?=
+ =?us-ascii?Q?anSCgB4CsyRUDbnMWXwVV49y4qByeVIr6pd61oNJnrbcT0M0/t+nGdggalTS?=
+ =?us-ascii?Q?zE9xXIILZZZoUAg3Bnaemfn1HKfS2qniYQrjFXN+BvkGfS0At1tbwGvvT5VF?=
+ =?us-ascii?Q?fm4pNxlVC1lXEWtOsFqMo8EDK3AzMsC26F5kq4G/ImHY9zWPC0r+LWvhTwVV?=
+ =?us-ascii?Q?tWFkRzGTkcW5v5dFKSDM+eqosvQkhmNL2e/kKE75bEqpDV7K5b65yEYfZlSS?=
+ =?us-ascii?Q?1AumropeBA/amGM=3D?=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(36860700013)(376014);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Apr 2025 13:57:20.9180
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OSRMhr6MEB4ds41JtFvNmrz3WETvdNUeXECXFIoLJw258yJICtA/XxhXgx4v/tGvWhPbgfpFVAMLY/6Y7XAcnA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB6522
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8dcf98b6-36fd-493f-eb37-08dd71251f5f
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ1PEPF000023D1.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY1PR12MB9603
 
 
+On 3/30/2025 12:22 PM, Huang, Ying wrote:
 
-Hello,
+>
+> Hi, Nikhil,
+>
+> Nikhil Dhama <nikhil.dhama@amd.com> writes:
+>
+>> In old pcp design, pcp->free_factor gets incremented in nr_pcp_free()
+>> which is invoked by free_pcppages_bulk(). So, it used to increase
+>> free_factor by 1 only when we try to reduce the size of pcp list or
+>> flush for high order.
+>> and free_high used to trigger only for order > 0 and order <
+>> costly_order and free_factor > 0.
+>>
+>> and free_factor used to scale down by a factor of 2 on every successful
+>> allocation.
+>>
+>> for iperf3 I noticed that with older design in kernel v6.6, pcp list was
+>> drained mostly when pcp->count > high (more often when count goes above
+>> 530). and most of the time free_factor was 0, triggering very few
+>> high order flushes.
+>>
+>> Whereas in the current design, free_factor is changed to free_count to keep
+>> track of the number of pages freed contiguously,
+>> and with this design for iperf3, pcp list is getting flushed more
+>> frequently because free_high heuristics is triggered more often now.
+>>
+>> In current design, free_count is incremented on every deallocation,
+>> irrespective of whether pcp list was reduced or not. And logic to
+>> trigger free_high is if free_count goes above batch (which is 63) and
+>> there are two contiguous page free without any allocation.
+>> (and with cache slice optimisation).
+>>
+>> With this design, I observed that high order pcp list is drained as soon
+>> as both count and free_count goes about 63.
+>>
+>> and due to this more aggressive high order flushing, applications
+>> doing contiguous high order allocation will require to go to global list
+>> more frequently.
+>>
+>> On a 2-node AMD machine with 384 vCPUs on each node,
+>> connected via Mellonox connectX-7, I am seeing a ~30% performance
+>> reduction if we scale number of iperf3 client/server pairs from 32 to 64.
+>>
+>> So, though this new design reduced the time to detect high order flushes,
+>> but for application which are allocating high order pages more
+>> frequently it may be flushing the high order list pre-maturely.
+>> This motivates towards tuning on how late or early we should flush
+>> high order lists.
+>>
+>> for free_high heuristics. I tried to scale batch and tune it,
+>> which will delay the free_high flushes.
+>>
+>>
+>>                       score   # free_high
+>> -----------           -----   -----------
+>> v6.6 (base)           100             4
+>> v6.12 (batch*1)        69           170
+>> batch*2                69           150
+>> batch*4                74           101
+>> batch*5               100            53
+>> batch*6               100            36
+>> batch*8               100             3
+>>
+>> scaling batch for free_high heuristics with a factor of 5 or above restores
+>> the performance, as it is reducing the number of high order flushes.
+>>
+>> On 2-node AMD server with 384 vCPUs each,score for other benchmarks with
+>> patch v2 along with iperf3 are as follows:
+>
+> Em..., IIUC, this may disable the free_high optimizations.  free_high
+> optimization is introduced by Mel Gorman in commit f26b3fa04611
+> ("mm/page_alloc: limit number of high-order pages on PCP during bulk
+> free").  So, this may trigger regression for the workloads in the
+> commit.  Can you try it too?
+>
 
-kernel test robot noticed "WARNING:inconsistent_lock_state" on:
+Hi, I ran netperf-tcp as in commit f26b3fa04611 ("mm/page_alloc: limit 
+number of high-order pages on PCP during bulk free"),
 
-commit: aa52a1fbfc9a9fcfe467c256dc2d91d8333db80e ("keys: Add a list for unreferenced keys")
-https://git.kernel.org/cgit/linux/kernel/git/jarkko/linux-tpmdd.git keys-graveyard
+On a 2-node AMD server with 384 vCPUs, results I observed are as follows:
 
-in testcase: boot
+                                  6.12                     6.12
+                               vanilla   freehigh-heuristicsopt
+Hmean     64         732.14 (   0.00%)        736.90 (   0.65%)
+Hmean     128       1417.46 (   0.00%)       1421.54 (   0.29%)
+Hmean     256       2679.67 (   0.00%)       2689.68 (   0.37%)
+Hmean     1024      8328.52 (   0.00%)       8413.94 (   1.03%)
+Hmean     2048     12716.98 (   0.00%)      12838.94 (   0.96%)
+Hmean     3312     15787.79 (   0.00%)      15822.40 (   0.22%)
+Hmean     4096     17311.91 (   0.00%)      17328.74 (   0.10%)
+Hmean     8192     20310.73 (   0.00%)      20447.12 (   0.67%)
 
-config: i386-randconfig-141-20250330
-compiler: gcc-12
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+It is not regressing for netperf-tcp. 
 
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-+-------------------------------------------------+------------+------------+
-|                                                 | 980a573621 | aa52a1fbfc |
-+-------------------------------------------------+------------+------------+
-| WARNING:inconsistent_lock_state                 | 0          | 21         |
-| inconsistent{SOFTIRQ-ON-W}->{IN-SOFTIRQ-W}usage | 0          | 21         |
-+-------------------------------------------------+------------+------------+
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202503312252.bef52733-lkp@intel.com
-
-
-[   10.186009][    C0] WARNING: inconsistent lock state
-[   10.186875][    C0] 6.14.0-05893-gaa52a1fbfc9a #1 Tainted: G                T
-[   10.188003][    C0] --------------------------------
-[   10.188912][    C0] inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
-[   10.189954][    C0] ksoftirqd/0/14 [HC0[0]:SC1[1]:HE1:SE0] takes:
-[ 10.190715][ C0] 432b47f0 (key_serial_lock){+.?.}-{3:3}, at: key_put (security/keys/key.c:663 security/keys/key.c:647) 
-[   10.191504][    C0] {SOFTIRQ-ON-W} state was registered at:
-[   10.192152][    C0] irq event stamp: 101196
-[ 10.192693][ C0] hardirqs last enabled at (101196): _raw_spin_unlock_irqrestore (arch/x86/include/asm/irqflags.h:42 arch/x86/include/asm/irqflags.h:97 arch/x86/include/asm/irqflags.h:155 include/linux/spinlock_api_smp.h:151 kernel/locking/spinlock.c:194) 
-[ 10.193640][ C0] hardirqs last disabled at (101195): _raw_spin_lock_irqsave (arch/x86/include/asm/preempt.h:80 include/linux/spinlock_api_smp.h:109 kernel/locking/spinlock.c:162) 
-[ 10.194643][ C0] softirqs last enabled at (101168): handle_softirqs (kernel/softirq.c:408 kernel/softirq.c:589) 
-[ 10.195866][ C0] softirqs last disabled at (101173): run_ksoftirqd (kernel/softirq.c:418 kernel/softirq.c:951 kernel/softirq.c:942) 
-[   10.197069][    C0]
-[   10.197069][    C0] other info that might help us debug this:
-[   10.198605][    C0]  Possible unsafe locking scenario:
-[   10.198605][    C0]
-[   10.199624][    C0]        CPU0
-[   10.200118][    C0]        ----
-[   10.200607][    C0]   lock(key_serial_lock);
-[   10.201190][    C0]   <Interrupt>
-[   10.201699][    C0]     lock(key_serial_lock);
-[   10.202284][    C0]
-[   10.202284][    C0]  *** DEADLOCK ***
-[   10.202284][    C0]
-[   10.203553][    C0] 1 lock held by ksoftirqd/0/14:
-[ 10.204145][ C0] #0: 431e5c64 (rcu_callback){....}-{0:0}, at: rcu_lock_acquire (include/linux/rcupdate.h:330) 
-[   10.204992][    C0]
-[   10.204992][    C0] stack backtrace:
-[   10.205856][    C0] CPU: 0 UID: 0 PID: 14 Comm: ksoftirqd/0 Tainted: G                T  6.14.0-05893-gaa52a1fbfc9a #1 PREEMPT(full)
-[   10.207648][    C0] Tainted: [T]=RANDSTRUCT
-[   10.208460][    C0] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[   10.209410][    C0] Call Trace:
-[ 10.209878][ C0] ? dump_stack_lvl (lib/dump_stack.c:124) 
-[ 10.210436][ C0] ? dump_stack (lib/dump_stack.c:130) 
-[ 10.210988][ C0] ? print_usage_bug (kernel/locking/lockdep.c:4147 kernel/locking/lockdep.c:4295) 
-[ 10.211641][ C0] ? print_usage_bug (kernel/locking/lockdep.c:4011 (discriminator 1)) 
-[ 10.212244][ C0] ? valid_state (kernel/locking/lockdep.c:4058) 
-[ 10.212822][ C0] ? mark_lock_irq (kernel/locking/lockdep.c:4268) 
-[ 10.213418][ C0] ? mark_lock (kernel/locking/lockdep.c:4754) 
-[ 10.213985][ C0] ? mark_usage (kernel/locking/lockdep.c:4643) 
-[ 10.214568][ C0] ? __lock_acquire (kernel/locking/lockdep.c:5189) 
-[ 10.215145][ C0] ? key_put (security/keys/key.c:663 security/keys/key.c:647) 
-[ 10.215661][ C0] ? lock_acquire (kernel/locking/lockdep.c:472 kernel/locking/lockdep.c:5868 kernel/locking/lockdep.c:5823) 
-[ 10.216212][ C0] ? key_put (security/keys/key.c:663 security/keys/key.c:647) 
-[ 10.216721][ C0] ? __lock_release+0x48/0x104 
-[ 10.217314][ C0] ? _raw_spin_lock (include/linux/spinlock_api_smp.h:134 kernel/locking/spinlock.c:154) 
-[ 10.217874][ C0] ? key_put (security/keys/key.c:663 security/keys/key.c:647) 
-[ 10.218407][ C0] ? key_put (security/keys/key.c:663 security/keys/key.c:647) 
-[ 10.218934][ C0] ? put_cred_rcu (kernel/cred.c:80) 
-[ 10.219497][ C0] ? rcu_do_batch (include/linux/rcupdate.h:341 kernel/rcu/tree.c:2570) 
-[ 10.220063][ C0] ? rcu_core (kernel/rcu/tree.c:2826) 
-[ 10.220629][ C0] ? rcu_core_si (kernel/rcu/tree.c:2842) 
-[ 10.221170][ C0] ? handle_softirqs (arch/x86/include/asm/atomic.h:23 include/linux/atomic/atomic-arch-fallback.h:457 include/linux/jump_label.h:262 include/trace/events/irq.h:142 kernel/softirq.c:562) 
-[ 10.221774][ C0] ? run_ksoftirqd (kernel/softirq.c:418 kernel/softirq.c:951 kernel/softirq.c:942) 
-[ 10.222312][ C0] ? smpboot_thread_fn (kernel/smpboot.c:164 (discriminator 3)) 
-[ 10.222909][ C0] ? kthread (kernel/kthread.c:466) 
-[ 10.223434][ C0] ? sort_range (kernel/smpboot.c:107) 
-[ 10.223956][ C0] ? kthread_is_per_cpu (kernel/kthread.c:413) 
-[ 10.224522][ C0] ? ret_from_fork (arch/x86/kernel/process.c:159) 
-[ 10.225067][ C0] ? kthread_is_per_cpu (kernel/kthread.c:413) 
-[ 10.225638][ C0] ? ret_from_fork_asm (arch/x86/entry/entry_32.S:737) 
-[ 10.226210][ C0] ? entry_INT80_32 (arch/x86/entry/entry_32.S:942) 
-
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20250331/202503312252.bef52733-lkp@intel.com
-
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+Thanks,
+Nikhil Dhama
