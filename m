@@ -1,228 +1,314 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2086.outbound.protection.outlook.com [40.107.243.86])
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2077.outbound.protection.outlook.com [40.107.101.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F287214D2A0
-	for <oe-lkp@lists.linux.dev>; Mon,  7 Apr 2025 10:53:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.86
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F1E2158545
+	for <oe-lkp@lists.linux.dev>; Mon,  7 Apr 2025 11:03:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.101.77
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744023192; cv=fail; b=qNvjSiA6pCWoa/Ajg0KKE/Zi+rkhXAhHHMyToS0webcAIzy0SrsC+eJP1XyzRmvZlLoQcG0Qah3ISIUDcFIFHtQRAdsFx+iclVstGSpvXbTVIpgu8Uvilp5lWTucueyTyIIQvaf1sAWOYSRYdG0xIvU6cmI4EiBOX/yQ9b8w+m0=
+	t=1744023816; cv=fail; b=QfmuFvLZRGZiPbrCwrnFI9fX2jFGXYFjGdrC2zjbztAw8NzFZqVnN4CSaAHaUS13kFcxhmSjDlceIp0rn/zHXIm62sidKRF+JtbjYpQ3Dm1j5QhBCPG6BSiRq6SBEO5fpzmg4YjIoiI/2hxmunzljT/3m/BaIh9kQ25R9LlydE8=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744023192; c=relaxed/simple;
-	bh=S4uLNPngnFiBghJT6DYLX302Tp0cwyigiVDfwS7ip6Q=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Ool4V1G/OJP7AhtMe5xCGuxsJG3wKDrym7ZXIw744x4CBpTTtw2laUyZzpGOFzPHiTlg3nKJX40D3NMessGtLwXSQ2rd3lsKDS+ncHfL6Fzmw+6SLmhTFHAV2l8flbjM+1/3B/8op/7Ac3feKrw5avScYk2z9YogAlZ1aceX0Nw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=ccn2mCn7; arc=fail smtp.client-ip=40.107.243.86
+	s=arc-20240116; t=1744023816; c=relaxed/simple;
+	bh=QWIppXXuHhYC0LOijT734AhNV/UMkKA6f4lPt4D4Ptw=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=jMmQoac0k5da0WREQf9Qtcv8sL1OuKTBVi5/nHRCSbS1pbeYfW6SDBoDR0WS0Jc6w/8eZ+NVf/g/R5hzYiY7QbHk4zJRezob8njfm2yvWJXfsc9zSZXLxGrN3FIpCOdZZfvyIYxDUoCw4RfOsCLCMpEf/khFCSjgVF+wU2eKT+w=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=M9YUZNO0; arc=fail smtp.client-ip=40.107.101.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="ccn2mCn7"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="M9YUZNO0"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=K70TMJZIitKxyEWAsFWXkne8bleAoKSAz5ovOaz+Bl/AwzXi2K4xw/0Ha0DdRdbKFVdb1NYnn8a7NT3SE4ApwKaRlboSqM6umBrg4WjwZnuNeY+Gum9pCHk603aw+BfayhzRMEchMkpC1rVa5Fk8mvxbbKS8TwRhuzR0Wervlgf1Fk3w3yskliiqTOrDncxG1twtq+D5oxDNFz6RrrwMNg5Sb2i3GuGFPhVDkD6Ld+p/qB/ogYai/W1zsN+RPjVEmUgb5ZDIi5Sbh4kjqk5a5rWy01/swSlgnmI4R+nZAn0Rz6HrLenpsf7Yn0LtpFeSnWdx6NNhUUhZ9IxLqkmBYw==
+ b=YMXDJKs1xUxnAcYIH8jZwz3Mn4OeUD4FuSc52kS6emXy4w/eCC7Euw1L9OwmOLCtMIT+a5BO0q+TUYfDLBktiEE+e3cHRTwxyVTZ7qg4isgB2HjGL6FoYhJU8Y1I4R7bhq8dWUodq3YpxL3fV/VbfNDwZhfToT04Zlm0Qs7tQ20STBtLxJnaIuV7XgX1/6kJ0Eoqg8P+KwTo7qfcuQEizOlAiOemJ5qQqbiiVDcjSHrA2Pjsn3tBZjEuHcVNYVwtVJZxFqcPzN2XbgTHE1UFjQLuHPElXqsVgoENLt4anoqAsZV+6w5r1MLEFNhAHcKFBriPKS/rq3pJmkAygleCKQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=STKwmjAGckzu45dpdtFwK9NPJLhhkNR9zABHxHNslYE=;
- b=I2Lbax70ySG5HT746yyuWvQ8ceqXhaZmzJmrLR9yJS4yB2SMSe3NJxxdZgGTTYXE4AkCMfvoFtslV56RFYJh+P9Vi3COKx99xmi/ApY0PIj4IsrZuCxxs3trX2snvOUPfjmBNEE4A9Gp7gZ/dvstaXWn5hUZ27xdsXnvJHhsRqNMPJQwkGnLaBDW80SBnIj33gW0WMrvmId1ejjArfH59JimoyqnVevfXgYfEb0CHxgyPHtm9E+1LtH6yPI66r14dU/ddLZJ7RwM9OUBPdlIJq4VyLhEnmHRlZDD5P04TYDL3nem3xK1x7FQ7dwW10SLSEyykggFRuX1U/IT3986lQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=linux-foundation.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
+ bh=9id0xPgofjByflHh0AZrLg2rBHmqEES3j34YZ2qHerU=;
+ b=VBnaWyKCZwqax3M2rKdGOVU9xRbp2oXd7N8hdkwroVlN7wnBBckzxtMTRk2AO5JnBEDbmH0a9K+afcTrn+a3lLIlkKX0xtZ16xjxl4nxebQH6BhUSynfqNVqX/WdUoQCbx/6Uu6xXZ7x3RZgN65sOShareuQ52MVxRPyqx//AbqELo5Y4g/COw9SpG+XJqW8Ls+t1LkJ0CrC4joKAEg/d+89jIXx6JO0s9bTzrcoM1OSFYcKgR7Gjw1RQboxGbNNQ8sG/KJ9kji8fvp+SKmrZsH313H0KTlGyTNJ6/dFGFCyj31v49kY1GZwaGgyysw0Ep3YstjAOrQqxJ6alSQbNw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=STKwmjAGckzu45dpdtFwK9NPJLhhkNR9zABHxHNslYE=;
- b=ccn2mCn7e32+bpD8RwOmPN/2lWOpxY2wy8XZnsjWAVaojrJRM3AumOVSoCWYCbYXF4yo+KfoSAEZ0AEAR7TMJ/DVVsRLB7J0ejNX6tg5O3mylRmvBC2U63u1GmSZi/QWFyZXfYhPHYPRXmGnALvG8YWmCvmHCzW0w3o3t/Lbep8=
-Received: from BYAPR11CA0062.namprd11.prod.outlook.com (2603:10b6:a03:80::39)
- by PH7PR12MB9173.namprd12.prod.outlook.com (2603:10b6:510:2ee::9) with
+ bh=9id0xPgofjByflHh0AZrLg2rBHmqEES3j34YZ2qHerU=;
+ b=M9YUZNO0RfM9uD0UpJHjN9puJa1qaRoUaH3mwLjf/Sia1M9w2id6KCR3+8uFv/8HS4FFhw3g7nrOutXSUWoIHSQIfBCuL6XMk7zRHBk4mRNaVdXUKIx0iWMZKXEYhXeFIZPdNjXO3lnRU2s0YrP//COJqyriAN1sWYVrN47xnoY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from SJ0PR12MB6966.namprd12.prod.outlook.com (2603:10b6:a03:449::14)
+ by SA3PR12MB8047.namprd12.prod.outlook.com (2603:10b6:806:31b::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8606.34; Mon, 7 Apr
- 2025 10:53:05 +0000
-Received: from SJ1PEPF00002318.namprd03.prod.outlook.com
- (2603:10b6:a03:80:cafe::79) by BYAPR11CA0062.outlook.office365.com
- (2603:10b6:a03:80::39) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8606.33 via Frontend Transport; Mon,
- 7 Apr 2025 10:53:05 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- SJ1PEPF00002318.mail.protection.outlook.com (10.167.242.228) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.8606.22 via Frontend Transport; Mon, 7 Apr 2025 10:53:05 +0000
-Received: from spgblr-titan-01.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Mon, 7 Apr
- 2025 05:53:01 -0500
-From: Nikhil Dhama <nikhil.dhama@amd.com>
-To: <akpm@linux-foundation.org>
-CC: <bharata@amd.com>, <raghavendra.kodsarathimmappa@amd.com>,
-	<ying.huang@linux.alibaba.com>, <oe-lkp@lists.linux.dev>, <lkp@intel.com>,
-	Nikhil Dhama <nikhil.dhama@amd.com>, Huang Ying
-	<huang.ying.caritas@gmail.com>, <linux-mm@kvack.org>,
-	<linux-kernel@vger.kernel.org>, Mel Gorman <mgorman@techsingularity.net>
-Subject: [PATCH v3] mm: pcp: increase pcp->free_count threshold to trigger free_high
-Date: Mon, 7 Apr 2025 16:22:19 +0530
-Message-ID: <20250407105219.55351-1-nikhil.dhama@amd.com>
-X-Mailer: git-send-email 2.25.1
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8606.32; Mon, 7 Apr
+ 2025 11:03:32 +0000
+Received: from SJ0PR12MB6966.namprd12.prod.outlook.com
+ ([fe80::6688:276b:7e47:17d5]) by SJ0PR12MB6966.namprd12.prod.outlook.com
+ ([fe80::6688:276b:7e47:17d5%5]) with mapi id 15.20.8583.045; Mon, 7 Apr 2025
+ 11:03:31 +0000
+Message-ID: <432f63d5-cf96-4041-97b0-4f218876b9f4@amd.com>
+Date: Mon, 7 Apr 2025 16:33:23 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] mm: pcp: scale batch to reduce number of high order pcp
+ flushes on deallocation
+To: "Huang, Ying" <ying.huang@linux.alibaba.com>,
+ Nikhil Dhama <nikhil.dhama@amd.com>
+Cc: akpm@linux-foundation.org, bharata@amd.com, huang.ying.caritas@gmail.com,
+ linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+ mgorman@techsingularity.net, raghavendra.kodsarathimmappa@amd.com,
+ oe-lkp@lists.linux.dev, lkp@intel.com
+References: <875xjmuiup.fsf@DESKTOP-5N7EMDA>
+ <20250407063259.49271-1-nikhil.dhama@amd.com>
+ <87r024o1zt.fsf@DESKTOP-5N7EMDA>
+Content-Language: en-US
+From: Nikhil Dhama <nikdhama@amd.com>
+In-Reply-To: <87r024o1zt.fsf@DESKTOP-5N7EMDA>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: PN3PR01CA0085.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:9a::21) To SJ0PR12MB6966.namprd12.prod.outlook.com
+ (2603:10b6:a03:449::14)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF00002318:EE_|PH7PR12MB9173:EE_
-X-MS-Office365-Filtering-Correlation-Id: 58ac53d4-5723-48f7-67e4-08dd75c26045
+X-MS-TrafficTypeDiagnostic: SJ0PR12MB6966:EE_|SA3PR12MB8047:EE_
+X-MS-Office365-Filtering-Correlation-Id: 630854ad-fe68-4959-1582-08dd75c3d561
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700013|82310400026|1800799024|376014|13003099007;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?pn+fYDfphvBPqIPU3fhegXOPydj15AYLty77jX94mpGHXavuS1fFGNbiTG6I?=
- =?us-ascii?Q?8Du1eLTvfMFC6uJpv70YEm+eRwutUzXqrMUaoo7Ul/TUwGeqY1aiwAtOns71?=
- =?us-ascii?Q?DZJev1HfvSdanioPdmKWz8R/nArkbkmk8To8F4QQQOsH0hMeGk2mJhb3z4tM?=
- =?us-ascii?Q?b+Fp8dyl9wxsjabkX6FwOA0CuK9C5dNH4ZkVjfPEr5Xx2c9ltHrzKT4Cagrc?=
- =?us-ascii?Q?K7QWClnSZCxADq9wTZMLA9pqd6+n+v2bSEqeIurGBnI29dXXVIHpfEyElwO7?=
- =?us-ascii?Q?oBpvhdrJgF1qG1KuWgKdM8OkM0/uKliEnTBrCZ0cCb9r3OZsthA+PcylLQij?=
- =?us-ascii?Q?3uZV8sy1hoFJA8jp605L5pIbHRu9BgBD6/yWEfR9jHZh06TaIoT85uvac5o+?=
- =?us-ascii?Q?i08XXxw+LOoyDhrqQBGlwTndamKMAy+RcfQ1kTKJKA36mi2jGY2DEa9ZAQvI?=
- =?us-ascii?Q?/ivqLZ/W0myg+XHUDPufZGFj1c360wCJZTSqS7gWQYsWkDePhgTQI4fEXwfz?=
- =?us-ascii?Q?a2FPXTq3PFotTjuYpbMDSpO98J6gAnA0Zxu6kMwlXg2AmZ/1Y2VZfpzOQK3f?=
- =?us-ascii?Q?CnnKcJSa6BNRb6A3P1D1idxQtiuLCchmQ7sDZBA4+jEK41IfN4TN3XFW7ml8?=
- =?us-ascii?Q?rBKYBCNN2Dvi1RGyWIn8UryBlUtz8BJ+kqWr4cWVT7RwlC5JMX0musZ3h7Th?=
- =?us-ascii?Q?2D5xM/F6KSFOpQajN2XB/AmC/36BQ8HxSrCodowilxiYAJOVP1AEYkmWXxeb?=
- =?us-ascii?Q?T3Vo9lbsaSOkWrUSgky4xcmPlUMfXAQXpDcwy+sLpuQi/71WeQMFlbcW6G5e?=
- =?us-ascii?Q?e4S+JCJE504nzMuqAnro0tP6H/60QrqdW5rN7CIqR6f/48zPEswB8ksd2qE9?=
- =?us-ascii?Q?6kTmTvOoomPbKHlPo+BvYAWTDKbToQqXHWYMbbYtq03nuVkwhJEpjNBQcYSz?=
- =?us-ascii?Q?LBdgEPRA9l+XUejXcEcmoSGWkKUku66zCrvR42OkgjamTw+Go3ZywusFZgz6?=
- =?us-ascii?Q?LlBW7miM2MmcEZZl0n6DuqyY815+1MbGx7yGwLMGuiUS/+gXay6NFK6iNeJc?=
- =?us-ascii?Q?vt+PAq+vEO2iGtttoXKvAjmpClzu2B28RpXDIG+qJ++Lb0/ozUgMkqIayZel?=
- =?us-ascii?Q?8voVtQk0io9c1VTkH4t0kIhGu5IFyBiSamCEGxi/tPW5xiTL08h4jYPhJzv0?=
- =?us-ascii?Q?G78kY938OMuDYCUQ952eb9PtQyDFb4M4o4g+GKJrRf8hbwPWDuHATnTyPTWK?=
- =?us-ascii?Q?sQhsyRj8iGl6PxurbI425YOpbofmgHN8DXoh63GN+tTaAevul9Z+GuHXMy9z?=
- =?us-ascii?Q?zWRQk4DYKQkL/HumB+bdeic4Fp4CkDDVVEz5yiOhqxjtpj1VxWAXpYttYdg2?=
- =?us-ascii?Q?bpA3i+FsL2CFEN15jT8nx0L7vsisdc0kG0sfp2iwd1WvzmVgjKpU2M8vM0aP?=
- =?us-ascii?Q?ZxVZmYTVm7mTaHhNnDcbPP78EeVNLb8AbmgfGuFM5H+nv/QSidbqqQfgWS2x?=
- =?us-ascii?Q?2rdmE7LrOVHTb70=3D?=
+	=?utf-8?B?ODlnTmFPM1AyK1ZnamlrbE1ONzlYTWEwc0orWUR2UzlUZ0MwQnJhUm04QXQ2?=
+ =?utf-8?B?TGFTZ0tyOWt3d2djdzhsVVBTZU1xejN1WUpLdEo0SzUwQmNHV2ZtUlg0aktM?=
+ =?utf-8?B?eDRWVUFsbE5mQ2lRVlZUSEduZmtHc0h0TElwOHcxWCtIa2YyVkxKRmN1N0Vh?=
+ =?utf-8?B?VlpuTE10MWd5bk5GV1J2UjRlVVZaQUZLR05jWnU5TTdiN1BzNGlXUWptenho?=
+ =?utf-8?B?OXpFS2lBTDVZUVFrbVFWTUpYNEZINUphSzh1NkRXRCswV2xES0VVbTYxT3lu?=
+ =?utf-8?B?dWJMamtLTzhxR2ZqNEtyY1Zjem9CNWtkRnhXSnFxRzBrQTJneFp6YUQvUWhV?=
+ =?utf-8?B?TkEyUEp3VERERmE0VzlIdjVGdW9lcjhFK2k0Y2ptWlhEMFc1MEdXYjVoYTdF?=
+ =?utf-8?B?bjBrc2dvdzRpNEVWY0JIY0JxbWVBbmhENEVvU2svRVFrYjllUS9UbzFrR2Fl?=
+ =?utf-8?B?Zy9LRnh5d2JkWHQ4T0tucUtwQWZJRktNNXlJdmt3aTVOOFNZdkZ5TDVIdmhk?=
+ =?utf-8?B?UzhackZJMkxOUDlwci82S0RkdE1TQUdJSU5ENWVheUkrenpIVFlCNlBSYmwz?=
+ =?utf-8?B?LzB0VFNNY1VPZ0tHdC80dXd4MXZERTNCV2orQTAvQWtBRVpXTTkyRnZpZzRp?=
+ =?utf-8?B?VHJnNTZrd29wMTNhZnA5YVlwK016enNzS1VsU2hMQ3Q4TmVHWllicHl5NkFj?=
+ =?utf-8?B?R2xDaUZ4d2tFSTlKUmZBUEhjcWF3bmxucm1DaVFCb1VhSlhXMjkrQXN6YU5j?=
+ =?utf-8?B?NUQ0OFdsdTVQd3dCK3I2b092ZlJBc21xOWhObDNxVlNNZFN1ZDRIN21QWlR3?=
+ =?utf-8?B?T3hFL3Zha1ljcnQyNmRzcE9HMTBmVkJIZ2o4Rllpem1TUjF4WG4rb2xsNWo5?=
+ =?utf-8?B?N3lFalhtTkN2dTJ2bVdlc2JvbWRTUmdBRGZ5VFV4aS9hcjA5dlFUcGdTdGxy?=
+ =?utf-8?B?TzZncFVHdWpnUDR2Q1gwTCtFMXpkNVA1aUkwMHkxQ0VLSTEwUEVKZHhpZ0tw?=
+ =?utf-8?B?eEUxQWtVNDdXT3VFNzhCaUJpeGJ1eUE0aTV0a3ZPbGplWXZ0cXRmNGNGS0Ju?=
+ =?utf-8?B?aVoxd280blYvRjkvM3ZOTXVYMStzcm1qNVQwMWk1RWxZSmJsWkpQZjN6WGlE?=
+ =?utf-8?B?Si9PRGRFZFIxUGI5Z3Z6Z2hJQTIzNUdOU3ZzZ2dQeDlLNVVtdnVsWHJxOTg1?=
+ =?utf-8?B?Zm5qOGt5QTduMkhvS1Vkek1DdlZoWDFBM2NhTzhDWE85Q2NoQ1J2QytGZEZI?=
+ =?utf-8?B?UzBrbVFOQlBpVzhqQkNham50TDc3Kzl6aUFHMzJwSzl6cklqbTB2WUZidVkr?=
+ =?utf-8?B?YkRJRHNSaUJjcFByVk1xcGp6d0trZmNUdTJjclZpSDhaOEk2SUpCZ2RxZTlU?=
+ =?utf-8?B?SVIzbVArUGtuaGtQbkhUQ3ZRbmpHYUlPMjJnWkZvWnVSd1VXY0M2QndDVFZN?=
+ =?utf-8?B?UHZSMjhZaVora1NzVHFtOUtTSm0zSmtvbGMvSnJ1KzFITWN1aGFybU5iY2lz?=
+ =?utf-8?B?QThQWkFWM0EyREc2di9KbTViVWpJSVB6UEhiQXc5ZUFMejQ0dW1xWktGUWZv?=
+ =?utf-8?B?b3dBbklGZEpKQUFPeHh6dzAzbE9WR2tCazFjdldLOUNWZWJ0SitFTmxNTDZv?=
+ =?utf-8?B?RVpaeCtjUkx0Lyt3NnliSDlaWGdHZzA5czlqYXlzbyt0Wjg2ZCtvbU9lbW9C?=
+ =?utf-8?B?bGxzVGRuSE00WkhSTVdOcTMyRTltZ3lSSzl1aUEzR0dNVWJrY0lyMGxOVVVV?=
+ =?utf-8?B?VXIzMUIxTDRPc1lDTWhIUXp6U0QyT0ZHckMrNVZuTk9OV2lWZGtiQ0Z3WGIr?=
+ =?utf-8?B?UTR4dFU5VzhWbHFRb0VIalJ1OHFUNUZTNXFmWXlrMW1hQ0w0V2J5YmkzeUR1?=
+ =?utf-8?Q?P1JiSFwhb9zTh?=
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700013)(82310400026)(1800799024)(376014)(13003099007);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR12MB6966.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?eHRpeU9rNUdZYWx3bExvdEM4V1FjeWJzZ1RTR2llRlhZZlpCdWRLTkR5SUpq?=
+ =?utf-8?B?azZwZUo1K0xTR0F4WDVta2VudE9keDlzbnY2T3k3SjRFbzRYb1A2alVxTkVF?=
+ =?utf-8?B?dnAwTzBoZWFyS2lHYUNYNjFoNFZhQUlDSXFBUlFEeFJzUTRTckJrWDZONkZ6?=
+ =?utf-8?B?eE1sM0RFQlBsc3hEL0ZJZU5TUmZmcGV1MjFhN2pSUnFrd1AvUWpsNlRSbjJs?=
+ =?utf-8?B?UUJmNEJhTXRWd1hqRTNERkw1NlYvK09mRHhDL05DYmdZdnBuWFV3d3cyUjR4?=
+ =?utf-8?B?WDExek1UME5qdzlxMGMvT1N5Mi80QmRscDRlV0IvaWtRVHlSaHYrWVNMYmFo?=
+ =?utf-8?B?N0lSZVJ5VjdYQVJXN1V2citwQTZzY09TMW9BNy91V3FVdlRsY2txL2xCN2RE?=
+ =?utf-8?B?OU5OQ0ZVMWE2aFM3TW5vTlhPTjQzVDFsWlRzMkN3d0VxZ3lJcGM4N0VrV3FM?=
+ =?utf-8?B?REY0OUtuNDFwY28xR0lBQXpnSFd6WmJtM3RIMnRKcWh0bml3TVg3TlJYNzZh?=
+ =?utf-8?B?djAwUTFsK1d6MEdDbzM4aDExNWlzZHdoUnlwZW11SnYzUnB4TVBIT3NVSCth?=
+ =?utf-8?B?cC96YTV0cCtvWlY2T3V0OU02eWVqS2ZpZDNnaExOQWs5b3UvUlJoUWU0NDk3?=
+ =?utf-8?B?RWM5cFlteCsvWjhJWTRDL2hDMUdsWjJvdDJhTnV1SzN1aTFmems1NjM3WFl2?=
+ =?utf-8?B?Q3JRY204bi9zYmdsTGYwQTVnY2s4OVRqeU92Z1Via3RQZ3MxUWV1UzJnSEN4?=
+ =?utf-8?B?b2ZtcUtqM3RlQmJMa1ozQzUya3FjbEI1Smltelk4VzVQd2dtMVVEcWtLV0xZ?=
+ =?utf-8?B?eEhpbk02dnEya2hCTnpWbUZVUWJUV092YVVscGxBRXJJb25LSVRHZzlKYXFy?=
+ =?utf-8?B?TkowVUJDSE01RkdVTHFoQ3hrU0J3NGZkSTlaRzYzK2NRcnN5VXR1NnNCYnFW?=
+ =?utf-8?B?YmRzd0hyaTN3TUFIZFVEdDNTWGszVHdDUzU0QWhCa0oyVXY4SlVmS3pTc1Q2?=
+ =?utf-8?B?eU1nQXpFZVZGQmxPTnJ2MGJVdm9UN1ZhOVU1YlBqRDdYQkM5ZTBZTGhjVTRu?=
+ =?utf-8?B?VFpMbmFXS0hpKzVTRkQ1ZUFFYXdxakJHcXNpTUdlRm1oSkU5eW03MzEvMlRv?=
+ =?utf-8?B?MFRma05mZzB6NktUb0FHUk5TbUgwbVdOS1Vjb0U5SUtVbnQ5L2FmaDk1b2Zr?=
+ =?utf-8?B?cGZxTzBEa3Uva05JZmtCaExEdXp5V2RyREE0VlhreCs5azhHM1VDZGEvb09t?=
+ =?utf-8?B?YXU2aWs0WjBXUFd2YXc4T1o3RDYraDljQmZHYTU0U3h6MmpLejNUTEFxS2Jq?=
+ =?utf-8?B?ZE40YUtGb1QvUVgwdDZidlMwVEtTM1BLZ3hWSTJ6YXdEUTNWNFdhalVlcm1N?=
+ =?utf-8?B?WDhVT2w5dmpzK3B4aEsvalhrcHI2bHp2SVlvdXBtOHE2VnVDNzQxNTlHZ0Vn?=
+ =?utf-8?B?MzNZYkUzbU03UHk4QmtoQW8xcGNGcldnQm0vV0VtazVHK3BtRzF4a3NZVjlR?=
+ =?utf-8?B?R255YytQYVlOMEJ5RXdibURpVzlSMjR0dWpVc2F6cmNGUlA3eHJOUkRWQldv?=
+ =?utf-8?B?SXhRQyszZFZQMGZhMTgzU3pad2I4eVRPZWI3ZVBWQUlmSENoZGRIb0MyOXJM?=
+ =?utf-8?B?bTRKdlRnOUduamdQdzkwelp1Zyt4aUg0bG5Lb1NQR3VCY2JqSWt2Q0tVaUEr?=
+ =?utf-8?B?RENqMUdZQVJpalllcWhCT1krVm8vcGl1OFhsaUlPM1FrbU9IbkpidzJ4NFJL?=
+ =?utf-8?B?aURIMm5RcHVIcWViTktBUWYyWFh5WDQ1VTBndUlBUDUzMHBSbWErUHRRa3Zw?=
+ =?utf-8?B?b3QxNDRUUDZ5cEhpaTNWR1p3V05ZNlg1SG5uVVA3SGtsU01hb0NxRTFIQURl?=
+ =?utf-8?B?UmZNL1Z3UTVZdHlCcWtwSFhMOTlXMCs5T1lsR3NCbTFXeldqM21xTi9GVmhw?=
+ =?utf-8?B?ZXdOZlF2WUFBdjRPdXNqaVFjWDB1RzljUTE5Nk5NWDVFS0xyT04yU21KQ3VV?=
+ =?utf-8?B?SkVweG1mRFFxSURWK1daZGZvWmZSVm9TRW5zU0dvYUYrUWpNTzJRcWZjNWR1?=
+ =?utf-8?B?VWc2djhVakhpZndDWmhoRlBKRE1VSklWWnpscGRYWTdYc3dMeXlnUFNCb01O?=
+ =?utf-8?Q?FhGtBihpoz0eKovLB92ynvEVR?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2025 10:53:05.4338
+X-MS-Exchange-CrossTenant-Network-Message-Id: 630854ad-fe68-4959-1582-08dd75c3d561
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR12MB6966.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2025 11:03:31.8889
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 58ac53d4-5723-48f7-67e4-08dd75c26045
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF00002318.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB9173
-
-In old pcp design, pcp->free_factor gets incremented in nr_pcp_free()
-which is invoked by free_pcppages_bulk(). So, it used to increase
-free_factor by 1 only when we try to reduce the size of pcp list or
-flush for high order, and free_high used to trigger only 
-for order > 0 and order < costly_order and pcp->free_factor > 0.
-
-For iperf3 I noticed that with older design in kernel v6.6, pcp list was
-drained mostly when pcp->count > high (more often when count goes above
-530). and most of the time pcp->free_factor was 0, triggering very few
-high order flushes.
-
-But this is changed in the current design, introduced in commit 6ccdcb6d3a74 
-("mm, pcp: reduce detecting time of consecutive high order page freeing"), 
-where pcp->free_factor is changed to pcp->free_count to keep track of the 
-number of pages freed contiguously. In this design, pcp->free_count is 
-incremented on every deallocation, irrespective of whether pcp list was 
-reduced or not. And logic to trigger free_high is if pcp->free_count goes 
-above batch (which is 63) and there are two contiguous page free without 
-any allocation.
-
-With this design, for iperf3, pcp list is getting flushed more frequently 
-because free_high heuristics is triggered more often now. I observed that 
-high order pcp list is drained as soon as both count and free_count goes 
-above 63.
-
-Due to this more aggressive high order flushing, applications
-doing contiguous high order allocation will require to go to global list
-more frequently.
-
-On a 2-node AMD machine with 384 vCPUs on each node,
-connected via Mellonox connectX-7, I am seeing a ~30% performance
-reduction if we scale number of iperf3 client/server pairs from 32 to 64.
-
-Though this new design reduced the time to detect high order flushes,
-but for application which are allocating high order pages more
-frequently it may be flushing the high order list pre-maturely.
-This motivates towards tuning on how late or early we should flush
-high order lists. 
-
-So, in this patch, we increased the pcp->free_count threshold to 
-trigger free_high from "batch" to "batch + pcp->high_min / 2". 
-This new threshold keeps high order pages in pcp list for a 
-longer duration which can help the application doing high order
-allocations frequently.
-
-With this patch performace to Iperf3 is restored and 
-score for other benchmarks on the same machine are as follows:
-
-		      iperf3    lmbench3        netperf         kbuild
-                               (AF_UNIX)   (SCTP_STREAM_MANY)
-                     -------   ---------   -----------------    ------
-v6.6  vanilla (base)    100          100              100          100
-v6.12 vanilla            69          113             98.5         98.8
-v6.12 + this patch      100        110.3            100.2         99.3
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Vz1uqjL6rgu/OZj77ZXBL9HbnTzFwbirmaG5I9geq07vxv8BBG6mwNfJF80DouUSE+V6sAtmzG1/+jQmx3T48A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB8047
 
 
-netperf-tcp:
 
-                                  6.12                      6.12
-                               vanilla    	      this_patch
-Hmean     64         732.14 (   0.00%)         730.45 (  -0.23%)
-Hmean     128       1417.46 (   0.00%)        1419.44 (   0.14%)
-Hmean     256       2679.67 (   0.00%)        2676.45 (  -0.12%)
-Hmean     1024      8328.52 (   0.00%)        8339.34 (   0.13%)
-Hmean     2048     12716.98 (   0.00%)       12743.68 (   0.21%)
-Hmean     3312     15787.79 (   0.00%)       15887.25 (   0.63%)
-Hmean     4096     17311.91 (   0.00%)       17332.68 (   0.12%)
-Hmean     8192     20310.73 (   0.00%)       20465.09 (   0.76%)
+On 4/7/2025 1:08 PM, Huang, Ying wrote:
+> Nikhil Dhama <nikhil.dhama@amd.com> writes:
+>
+>> On 4/3/2025 7:06 AM, Huang, Ying wrote:
+>>
+>>> Nikhil Dhama <nikhil.dhama@amd.com> writes:
+>>>
+>>>> On 3/30/2025 12:22 PM, Huang, Ying wrote:
+>>>>
+>>>>> Hi, Nikhil,
+>>>>>
+>>>>> Nikhil Dhama <nikhil.dhama@amd.com> writes:
+>>>>>
+>>>>>> In old pcp design, pcp->free_factor gets incremented in nr_pcp_free()
+>>>>>> which is invoked by free_pcppages_bulk(). So, it used to increase
+>>>>>> free_factor by 1 only when we try to reduce the size of pcp list or
+>>>>>> flush for high order.
+>>>>>> and free_high used to trigger only for order > 0 and order <
+>>>>>> costly_order and free_factor > 0.
+>>>>>>
+>>>>>> and free_factor used to scale down by a factor of 2 on every successful
+>>>>>> allocation.
+>>>>>>
+>>>>>> for iperf3 I noticed that with older design in kernel v6.6, pcp list was
+>>>>>> drained mostly when pcp->count > high (more often when count goes above
+>>>>>> 530). and most of the time free_factor was 0, triggering very few
+>>>>>> high order flushes.
+>>>>>>
+>>>>>> Whereas in the current design, free_factor is changed to free_count to keep
+>>>>>> track of the number of pages freed contiguously,
+>>>>>> and with this design for iperf3, pcp list is getting flushed more
+>>>>>> frequently because free_high heuristics is triggered more often now.
+>>>>>>
+>>>>>> In current design, free_count is incremented on every deallocation,
+>>>>>> irrespective of whether pcp list was reduced or not. And logic to
+>>>>>> trigger free_high is if free_count goes above batch (which is 63) and
+>>>>>> there are two contiguous page free without any allocation.
+>>>>>> (and with cache slice optimisation).
+>>>>>>
+>>>>>> With this design, I observed that high order pcp list is drained as soon
+>>>>>> as both count and free_count goes about 63.
+>>>>>>
+>>>>>> and due to this more aggressive high order flushing, applications
+>>>>>> doing contiguous high order allocation will require to go to global list
+>>>>>> more frequently.
+>>>>>>
+>>>>>> On a 2-node AMD machine with 384 vCPUs on each node,
+>>>>>> connected via Mellonox connectX-7, I am seeing a ~30% performance
+>>>>>> reduction if we scale number of iperf3 client/server pairs from 32 to 64.
+>>>>>>
+>>>>>> So, though this new design reduced the time to detect high order flushes,
+>>>>>> but for application which are allocating high order pages more
+>>>>>> frequently it may be flushing the high order list pre-maturely.
+>>>>>> This motivates towards tuning on how late or early we should flush
+>>>>>> high order lists.
+>>>>>>
+>>>>>> for free_high heuristics. I tried to scale batch and tune it,
+>>>>>> which will delay the free_high flushes.
+>>>>>>
+>>>>>>
+>>>>>>                        score   # free_high
+>>>>>> -----------           -----   -----------
+>>>>>> v6.6 (base)           100             4
+>>>>>> v6.12 (batch*1)        69           170
+>>>>>> batch*2                69           150
+>>>>>> batch*4                74           101
+>>>>>> batch*5               100            53
+>>>>>> batch*6               100            36
+>>>>>> batch*8               100             3
+>>>>>>
+>>>>>> scaling batch for free_high heuristics with a factor of 5 or above restores
+>>>>>> the performance, as it is reducing the number of high order flushes.
+>>>>>>
+>>>>>> On 2-node AMD server with 384 vCPUs each,score for other benchmarks with
+>>>>>> patch v2 along with iperf3 are as follows:
+>>>>> Em..., IIUC, this may disable the free_high optimizations.  free_high
+>>>>> optimization is introduced by Mel Gorman in commit f26b3fa04611
+>>>>> ("mm/page_alloc: limit number of high-order pages on PCP during bulk
+>>>>> free").  So, this may trigger regression for the workloads in the
+>>>>> commit.  Can you try it too?
+>>>>>
+>>>> Hi, I ran netperf-tcp as in commit f26b3fa04611 ("mm/page_alloc: limit
+>>>> number of high-order pages on PCP during bulk free"),
+>>>>
+>>>> On a 2-node AMD server with 384 vCPUs, results I observed are as follows:
+>>>>
+>>>>                                    6.12                     6.12
+>>>>                                 vanilla   freehigh-heuristicsopt
+>>>> Hmean     64         732.14 (   0.00%)        736.90 (   0.65%)
+>>>> Hmean     128       1417.46 (   0.00%)       1421.54 (   0.29%)
+>>>> Hmean     256       2679.67 (   0.00%)       2689.68 (   0.37%)
+>>>> Hmean     1024      8328.52 (   0.00%)       8413.94 (   1.03%)
+>>>> Hmean     2048     12716.98 (   0.00%)      12838.94 (   0.96%)
+>>>> Hmean     3312     15787.79 (   0.00%)      15822.40 (   0.22%)
+>>>> Hmean     4096     17311.91 (   0.00%)      17328.74 (   0.10%)
+>>>> Hmean     8192     20310.73 (   0.00%)      20447.12 (   0.67%)
+>>>>
+>>>> It is not regressing for netperf-tcp.
+>>> Thanks a lot for your data!
+>>>
+>>> Think about this again.  Compared with the pcp->free_factor solution,
+>>> the pcp->free_count solution will trigger free_high heuristics more
+>>> early, this causes performance regression in your workloads.  So, it's
+>>> reasonable to raise the bar to trigger free_high.  And, it's also
+>>> reasonable to use a stricter threshold, as you have done in this patch.
+>>> However, "5 * batch" appears too magic and adapt to one type of machine.
+>>>
+>>> Let's step back to do some analysis.  In the original pcp->free_factor
+>>> solution, free_high is triggered for contiguous freeing with size
+>>> ranging from "batch" to "pcp->high + batch".  So, the average value is
+>>> about "batch + pcp->high / 2".  While in the pcp->free_count solution,
+>>> free_high will be triggered for contiguous freeing with size "batch".
+>>> So, to restore the original behavior, it seems that we can use the
+>>> threshold "batch + pcp->high_min / 2".  Do you think that this is
+>>> reasonable?  If so, can you give it a try?
+>> Hi,
+>>
+>> I have tried your suggestion as setting threshold to "batch + pcp->high_min / 2",
+>> scores for different benchmarks on the same machine
+>> (2-Node AMD server with 384 vCPUs each) are as follows:
+>>
+>>                        iperf3    lmbench3            netperf         kbuild
+>>                                 (AF_UNIX)      (SCTP_STREAM_MANY)
+>>                       -------   ---------      -----------------     ------
+>> v6.6  vanilla (base)    100          100                  100          100
+>> v6.12 vanilla            69          113                 98.5         98.8
+>> v6.12 avg_threshold     100        110.3                100.2         99.3
+>>
+>> and for netperf-tcp, it is as follows:
+>>
+>>                                    6.12                     6.12
+>>                                 vanilla   avg_free_high_threshold
+>> Hmean     64         732.14 (   0.00%)        730.45 (  -0.23%)
+>> Hmean     128       1417.46 (   0.00%)       1419.44 (   0.14%)
+>> Hmean     256       2679.67 (   0.00%)       2676.45 (  -0.12%)
+>> Hmean     1024      8328.52 (   0.00%)       8339.34 (   0.13%)
+>> Hmean     2048     12716.98 (   0.00%)      12743.68 (   0.21%)
+>> Hmean     3312     15787.79 (   0.00%)      15887.25 (   0.63%)
+>> Hmean     4096     17311.91 (   0.00%)      17332.68 (   0.12%)
+>> Hmean     8192     20310.73 (   0.00%)      20465.09 (   0.76%)
+> Thanks a lot for test and results!
+>
+> It looks good to me.  Can you submit a formal patch?
 
-Fixes: 6ccdcb6d3a74 ("mm, pcp: reduce detecting time of consecutive high order page freeing")
-
-Signed-off-by: Nikhil Dhama <nikhil.dhama@amd.com>
-Suggested-by: Huang Ying <ying.huang@linux.alibaba.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Huang Ying <huang.ying.caritas@gmail.com>
-Cc: linux-mm@kvack.org
-Cc: linux-kernel@vger.kernel.org
-Cc: Mel Gorman <mgorman@techsingularity.net>
-
+Thank you Huang Ying,  Yes,  I have submitted a formal patch with this.
+Patch v3: 
+https://lore.kernel.org/linux-mm/20250407105219.55351-1-nikhil.dhama@amd.com/
 ---
- v1: https://lore.kernel.org/linux-mm/20250107091724.35287-1-nikhil.dhama@amd.com/
- v2: https://lore.kernel.org/linux-mm/20250325171915.14384-1-nikhil.dhama@amd.com/
-
- mm/page_alloc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index b6958333054d..569dcf1f731f 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -2617,7 +2617,7 @@ static void free_unref_page_commit(struct zone *zone, struct per_cpu_pages *pcp,
- 	 * stops will be drained from vmstat refresh context.
- 	 */
- 	if (order && order <= PAGE_ALLOC_COSTLY_ORDER) {
--		free_high = (pcp->free_count >= batch &&
-+		free_high = (pcp->free_count >= (batch + pcp->high_min / 2) &&
- 			     (pcp->flags & PCPF_PREV_FREE_HIGH_ORDER) &&
- 			     (!(pcp->flags & PCPF_FREE_HIGH_BATCH) ||
- 			      pcp->count >= READ_ONCE(batch)));
--- 
-2.25.1
-
+Thanks,
+Nikhil Dhama
