@@ -1,131 +1,73 @@
-Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 755C123A9
-	for <oe-lkp@lists.linux.dev>; Fri, 11 Apr 2025 06:15:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.110
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8C791F0E32;
+	Fri, 11 Apr 2025 14:03:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744352151; cv=none; b=PvfqVXSVMkW1Pl/hODadT9/P4KJ7BuY+EyWYpw8S4F0j/gWl0pvnb3dAQxcJlccnK2P1q+IDt282q48+3NTjKSNRoURuDf5OFlMotuTZq6+5b+feFwyTefYoox7XRRswJMhdwThvwNMfkYZXbID2nq3AERjBqY71vFIGcL3l3HU=
+	t=1744380221; cv=none; b=K5PkueYYtcxCUlz8sgCUADpS9ZQxrkNi7Vc3trVL7fRxeDMpbyvo6IFXZhtgDOIC2jEiQQOpAFqVhJDHEojD9/eg+pXt3sD3ItXAc0ARaomXdXek5YoC6R1t8sCmqMn5jL8IVnDrumdcEGURQYLi76Vc952pU5tx5GV0BuUqMYQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744352151; c=relaxed/simple;
-	bh=WEpiHiznWpAqCg0Q4zJ7VdWdknAkd3kpvJJ/H9iP7MM=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=pcDI4Y1tiBo8Ax9vjyAG1qz3zNcm0rm49/iCDCF2dlYk8+0MlFgsHILZ6n65apbuw3WT7uYCk9HiXUxuHy8/HUAqsv9OoGFkY5scabQ5pCrZRDwaCnOxsRWHxhovouomtlFHyoTyQEYAHzdnO6M+b3UxNpFX5aik7oGLMmvT2uo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=JRWukqIf; arc=none smtp.client-ip=115.124.30.110
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	s=arc-20240116; t=1744380221; c=relaxed/simple;
+	bh=A9uWHZeLASAeqV3pcSaRLVnFs8sczJhLPZO/60JuIrI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=fFUufGyu2I4nz+3QXzorYg5QvSviI4UIjSSq68DE/UPXq2ClKwlx+IbchCQjdMiTtbTuFtB/sr5s8+UEB5qRjSFCn6VErdOhIj0KhmmGk5epxc5SABA9IIym7kqdVpCatKtZY5hd6sTlEic4lTezNd0sSl7FZZ8QW9qs8/2PFhA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pilFz60U; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="JRWukqIf"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1744352144; h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-	bh=S0VfXWGHPH5LSwgQh/k4+cmjq4OOTI5xXI/EGgIhxWw=;
-	b=JRWukqIfPp2EPiUgQaPgx1elazUqHDNJIsVpS2VvAZrpqAawmHZntzUNAmKRiwWE4LIS8eM/r14JvTlgCSY7HxER7kv4ihbxDgYawNdiid3OrN/VdaxFuKRQJ9gRpBTctKDf8dNp7JR9Fy+NKZ8WHQ1xef3HQplL3wRmwC4IT38=
-Received: from DESKTOP-5N7EMDA(mailfrom:ying.huang@linux.alibaba.com fp:SMTPD_---0WWSVhJv_1744352142 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Fri, 11 Apr 2025 14:15:43 +0800
-From: "Huang, Ying" <ying.huang@linux.alibaba.com>
-To: Raghavendra K T <raghavendra.kt@amd.com>, Nikhil Dhama
- <nikhil.dhama@amd.com>
-Cc: akpm@linux-foundation.org,  bharata@amd.com,
-  raghavendra.kodsarathimmappa@amd.com,  oe-lkp@lists.linux.dev,
-  lkp@intel.com,  Huang Ying <huang.ying.caritas@gmail.com>,
-  linux-mm@kvack.org,  linux-kernel@vger.kernel.org,  Mel Gorman
- <mgorman@techsingularity.net>
-Subject: Re: [PATCH v3] mm: pcp: increase pcp->free_count threshold to
- trigger free_high
-In-Reply-To: <c8b2a3c9-2252-4c0a-85a9-26fa6b519757@amd.com> (Raghavendra
-	K. T.'s message of "Fri, 11 Apr 2025 11:32:08 +0530")
-References: <20250407105219.55351-1-nikhil.dhama@amd.com>
-	<87mscn8msp.fsf@DESKTOP-5N7EMDA>
-	<c8b2a3c9-2252-4c0a-85a9-26fa6b519757@amd.com>
-Date: Fri, 11 Apr 2025 14:15:42 +0800
-Message-ID: <87mscn5ilt.fsf@DESKTOP-5N7EMDA>
-User-Agent: Gnus/5.13 (Gnus v5.13)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pilFz60U"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CD64C4CEE2;
+	Fri, 11 Apr 2025 14:03:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1744380221;
+	bh=A9uWHZeLASAeqV3pcSaRLVnFs8sczJhLPZO/60JuIrI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=pilFz60UlyKzY1WZZ9dfMwWMkW+uicFjF2tMAeTdYrC0y/DBhCyS12drndRX8Ypnt
+	 htzM95GA7M+5XIXlyee3xXx/e43qK82np0I/bWLssRM0IORmnMZ0rwKb93jMcJWZmM
+	 /yxKYIe2JuARQCYCosK2zVhZajBH0K+VQM+w3lxIUz4djrkPyzUqOM3fXDMMm6RfDE
+	 8H1KKJH5Hhxk8DQWy1vGjI30yYSWPYdQui4eFwdnUjuDDBfVjc5nUoCwuPZEl+acdB
+	 M6QVof35nhfs3XgBbkwfvsvHb7mOgbe+OKdeEOznQ8er0iTQtvCDOMyVT5JcQQ2OYv
+	 HGhE+xMz/deZg==
+Date: Fri, 11 Apr 2025 16:03:29 +0200
+From: Christian Brauner <brauner@kernel.org>
+To: Jan Kara <jack@suse.cz>
+Cc: Alistair Popple <apopple@nvidia.com>, 
+	kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, 
+	Dan Williams <dan.j.williams@intel.com>, Alison Schofield <alison.schofield@intel.com>, 
+	Alexander Gordeev <agordeev@linux.ibm.com>, Asahi Lina <lina@asahilina.net>, 
+	Balbir Singh <balbirs@nvidia.com>, Bjorn Helgaas <bhelgaas@google.com>, 
+	Catalin Marinas <catalin.marinas@arm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>, 
+	Christoph Hellwig <hch@lst.de>, Chunyan Zhang <zhang.lyra@gmail.com>, 
+	"Darrick J. Wong" <djwong@kernel.org>, Dave Chinner <david@fromorbit.com>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, Dave Jiang <dave.jiang@intel.com>, 
+	David Hildenbrand <david@redhat.com>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>, 
+	Heiko Carstens <hca@linux.ibm.com>, Huacai Chen <chenhuacai@kernel.org>, 
+	Ira Weiny <ira.weiny@intel.com>, Jason Gunthorpe <jgg@nvidia.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	John Hubbard <jhubbard@nvidia.com>, linmiaohe <linmiaohe@huawei.com>, 
+	Logan Gunthorpe <logang@deltatee.com>, Matthew Wilcow <willy@infradead.org>, 
+	Michael Camp Drill Sergeant Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
+	Peter Xu <peterx@redhat.com>, Sven Schnelle <svens@linux.ibm.com>, Ted Ts'o <tytso@mit.edu>, 
+	Vasily Gorbik <gor@linux.ibm.com>, Vishal Verma <vishal.l.verma@intel.com>, 
+	Vivek Goyal <vgoyal@redhat.com>, WANG Xuerui <kernel@xen0n.name>, Will Deacon <will@kernel.org>, 
+	linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev, linux-xfs@vger.kernel.org
+Subject: Re: [linus:master] [fs/dax]  bde708f1a6:
+ WARNING:at_mm/truncate.c:#truncate_folio_batch_exceptionals
+Message-ID: <20250411-sehgewohnheiten-blicken-7830519934ab@brauner>
+References: <202504101036.390f29a5-lkp@intel.com>
+ <v66t3szdfsfwyl4lw6ns2ykmxrfqecba2nb5wa64l5qqq2kfpb@x7zxzuijty7d>
+ <uiu7rcmtooxgbscaiiim7czqsca52bgrt6aiszsafq7jj4n3e7@ge6mfzcmnorl>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ascii
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <uiu7rcmtooxgbscaiiim7czqsca52bgrt6aiszsafq7jj4n3e7@ge6mfzcmnorl>
 
-Raghavendra K T <raghavendra.kt@amd.com> writes:
+> didn't lift off and DAX ended up being kind of niche, I think the effort
+> to maintain DAX in ext2 is not justified and we should just drop it (and
+> direct existing users to use ext4 driver instead for the cases where they
+> need it). I'll have a look into it.
 
-> On 4/11/2025 7:46 AM, Huang, Ying wrote:
->> Hi, Nikhil,
->> Sorry for late reply.
->> Nikhil Dhama <nikhil.dhama@amd.com> writes:
->> 
->>> In old pcp design, pcp->free_factor gets incremented in nr_pcp_free()
->>> which is invoked by free_pcppages_bulk(). So, it used to increase
->>> free_factor by 1 only when we try to reduce the size of pcp list or
->>> flush for high order, and free_high used to trigger only
->>> for order > 0 and order < costly_order and pcp->free_factor > 0.
->>>
->>> For iperf3 I noticed that with older design in kernel v6.6, pcp list was
->>> drained mostly when pcp->count > high (more often when count goes above
->>> 530). and most of the time pcp->free_factor was 0, triggering very few
->>> high order flushes.
->>>
->>> But this is changed in the current design, introduced in commit 6ccdcb6d3a74
->>> ("mm, pcp: reduce detecting time of consecutive high order page freeing"),
->>> where pcp->free_factor is changed to pcp->free_count to keep track of the
->>> number of pages freed contiguously. In this design, pcp->free_count is
->>> incremented on every deallocation, irrespective of whether pcp list was
->>> reduced or not. And logic to trigger free_high is if pcp->free_count goes
->>> above batch (which is 63) and there are two contiguous page free without
->>> any allocation.
->> The design changes because pcp->high can become much higher than
->> that
->> before it.  This makes it much harder to trigger free_high, which causes
->> some performance regressions too.
->> 
->>> With this design, for iperf3, pcp list is getting flushed more frequently
->>> because free_high heuristics is triggered more often now. I observed that
->>> high order pcp list is drained as soon as both count and free_count goes
->>> above 63.
->>>
->>> Due to this more aggressive high order flushing, applications
->>> doing contiguous high order allocation will require to go to global list
->>> more frequently.
->>>
->>> On a 2-node AMD machine with 384 vCPUs on each node,
->>> connected via Mellonox connectX-7, I am seeing a ~30% performance
->>> reduction if we scale number of iperf3 client/server pairs from 32 to 64.
->>>
->>> Though this new design reduced the time to detect high order flushes,
->>> but for application which are allocating high order pages more
->>> frequently it may be flushing the high order list pre-maturely.
->>> This motivates towards tuning on how late or early we should flush
->>> high order lists.
->>>
->>> So, in this patch, we increased the pcp->free_count threshold to
->>> trigger free_high from "batch" to "batch + pcp->high_min / 2".
->>> This new threshold keeps high order pages in pcp list for a
->>> longer duration which can help the application doing high order
->>> allocations frequently.
->> IIUC, we restore the original behavior with "batch + pcp->high / 2"
->> as
->> in my analysis in
->> https://lore.kernel.org/all/875xjmuiup.fsf@DESKTOP-5N7EMDA/
->> If you think my analysis is correct, can you add that in patch
->> description too?  This makes it easier for people to know why the code
->> looks this way.
->> 
->
-> Yes. This makes sense. Andrew has already included the patch in mm tree.
->
-> Nikhil,
->
-> Could you please help with the updated write up based on Ying's
-> suggestion assuming it works for Andrew?
-
-Thanks!
-
-Just send a updated version, Andrew will update the patch in mm tree
-unless it has been merged by mm-stable.
-
----
-Best Regards,
-Huang, Ying
++1
