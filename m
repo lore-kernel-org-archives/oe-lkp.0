@@ -1,189 +1,171 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out30-119.freemail.mail.aliyun.com (out30-119.freemail.mail.aliyun.com [115.124.30.119])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEDC828134D
-	for <oe-lkp@lists.linux.dev>; Thu, 10 Apr 2025 10:35:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40A6A1EA90
+	for <oe-lkp@lists.linux.dev>; Fri, 11 Apr 2025 02:17:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.119
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744281351; cv=none; b=fKAB5+G0Z7MHHdy8I8wUkNDgUo/xjPJ78plUCnR4ZLYNiKy9xWfJ6SAG9hjeTTQKmYBYv4vE03cEl1F94HScGGeU3XmvFUapDb66/0aXnIqIgHMiQVwkb6+8AQZUw0jeomroFisyp23/MfYCAgM7lTBDr5Q2y2+2CwAl05sYGWw=
+	t=1744337828; cv=none; b=EpjjFP3JecmsTYhRYX1P0cYtzkRFJ+Y8Aee182kasFBsnpU426lLyk4mbhrgJBJCavXhbkb1aWsODrRBYPmCYQIcJGb/LLirtnWSa0Tqw6lfNS/3Z+/m32zgzJOJNpv4PTqwrb+R4jNg02YMuVDcXu9UxhjQ4DAf+vA2T2fOuag=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744281351; c=relaxed/simple;
-	bh=V6cW/m8XzoIHskbnHAETvNa/9Acy4r8cBggy9Q4N9nU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OigOVh45oGWxgjufYbW1cw1/3F0DXMsf8LXeM7Nb+6cqYuw1f47IVYO2Aeu9ZYrecOkmAXuYPXa/kDDcH1lpKLTrZyPX1FFGPJz35ASj4eEPLVs3//acis5VnNxGk0i5emFQwwxYJ/GbNWlnJ1eXZIwp0rScEsKTmIJG359HeOQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=ADdYYWTf; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=80ZvvYhz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=ADdYYWTf; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=80ZvvYhz; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+	s=arc-20240116; t=1744337828; c=relaxed/simple;
+	bh=hYaBJIN7KL0pNti5XY4bYbN6SWifMw0J1ZtznYwvdwE=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=oGmLpJV+c+KALubhqcgOa8zvgbsj7Kd7lfc+5g5sJhE7wSZGFsuOtcU645b1LiCEx4+/0whubJWAlHLw97LRA+oqv7Ull1ytzSEavprGWk8y90ae/pIO2td5BwA3vLmELJask5rPjqIGjiNhaDbaaCMRX6Aj36+GPU43hKTg0Wc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=J5bXCIKC; arc=none smtp.client-ip=115.124.30.119
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="ADdYYWTf";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="80ZvvYhz";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="ADdYYWTf";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="80ZvvYhz"
-Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id B1E5C21168;
-	Thu, 10 Apr 2025 10:35:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1744281347; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=OIDP4d34DUcpKIsnqGdTzzo0Xvi37BHxdLJbQ2zC+P4=;
-	b=ADdYYWTfVIVTgwD+j75mRlJtHHUBGmZyrrVKc9goigHihcOiKnF0Hi0REnbqx91FGi+tYL
-	Jcz0hasqgrdRm+0iKn1VzWltk4pG1+ELipLnC2M/2vp556b1NqQXfMDXEI+9ucdZbHDca0
-	FlPsjnWA4y9qApWVH0FV5qK4EtlgNj0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1744281347;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=OIDP4d34DUcpKIsnqGdTzzo0Xvi37BHxdLJbQ2zC+P4=;
-	b=80ZvvYhzW8HUuYOLq3BdNSvOUhLOJcvjF/jS6ovhXflypLEw7MqtmRvNB06kR/ylFPXkRf
-	3Jsq0ADQ5l+z4+Dg==
-Authentication-Results: smtp-out1.suse.de;
-	none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1744281347; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=OIDP4d34DUcpKIsnqGdTzzo0Xvi37BHxdLJbQ2zC+P4=;
-	b=ADdYYWTfVIVTgwD+j75mRlJtHHUBGmZyrrVKc9goigHihcOiKnF0Hi0REnbqx91FGi+tYL
-	Jcz0hasqgrdRm+0iKn1VzWltk4pG1+ELipLnC2M/2vp556b1NqQXfMDXEI+9ucdZbHDca0
-	FlPsjnWA4y9qApWVH0FV5qK4EtlgNj0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1744281347;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=OIDP4d34DUcpKIsnqGdTzzo0Xvi37BHxdLJbQ2zC+P4=;
-	b=80ZvvYhzW8HUuYOLq3BdNSvOUhLOJcvjF/jS6ovhXflypLEw7MqtmRvNB06kR/ylFPXkRf
-	3Jsq0ADQ5l+z4+Dg==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id A175613886;
-	Thu, 10 Apr 2025 10:35:47 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id E0llJwOf92eGMQAAD6G6ig
-	(envelope-from <jack@suse.cz>); Thu, 10 Apr 2025 10:35:47 +0000
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-	id 5E471A0910; Thu, 10 Apr 2025 12:35:47 +0200 (CEST)
-Date: Thu, 10 Apr 2025 12:35:47 +0200
-From: Jan Kara <jack@suse.cz>
-To: Alistair Popple <apopple@nvidia.com>
-Cc: kernel test robot <oliver.sang@intel.com>, Jan Kara <jack@suse.cz>, 
-	oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, 
-	Andrew Morton <akpm@linux-foundation.org>, Dan Williams <dan.j.williams@intel.com>, 
-	Alison Schofield <alison.schofield@intel.com>, Alexander Gordeev <agordeev@linux.ibm.com>, 
-	Asahi Lina <lina@asahilina.net>, Balbir Singh <balbirs@nvidia.com>, 
-	Bjorn Helgaas <bhelgaas@google.com>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Christian Borntraeger <borntraeger@linux.ibm.com>, Christoph Hellwig <hch@lst.de>, 
-	Chunyan Zhang <zhang.lyra@gmail.com>, "Darrick J. Wong" <djwong@kernel.org>, 
-	Dave Chinner <david@fromorbit.com>, Dave Hansen <dave.hansen@linux.intel.com>, 
-	Dave Jiang <dave.jiang@intel.com>, David Hildenbrand <david@redhat.com>, 
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>, 
-	Huacai Chen <chenhuacai@kernel.org>, Ira Weiny <ira.weiny@intel.com>, 
-	Jason Gunthorpe <jgg@nvidia.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	John Hubbard <jhubbard@nvidia.com>, linmiaohe <linmiaohe@huawei.com>, 
-	Logan Gunthorpe <logang@deltatee.com>, Matthew Wilcow <willy@infradead.org>, 
-	Michael Camp Drill Sergeant Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
-	Peter Xu <peterx@redhat.com>, Sven Schnelle <svens@linux.ibm.com>, Ted Ts'o <tytso@mit.edu>, 
-	Vasily Gorbik <gor@linux.ibm.com>, Vishal Verma <vishal.l.verma@intel.com>, 
-	Vivek Goyal <vgoyal@redhat.com>, WANG Xuerui <kernel@xen0n.name>, Will Deacon <will@kernel.org>, 
-	linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev, linux-xfs@vger.kernel.org
-Subject: Re: [linus:master] [fs/dax]  bde708f1a6:
- WARNING:at_mm/truncate.c:#truncate_folio_batch_exceptionals
-Message-ID: <uiu7rcmtooxgbscaiiim7czqsca52bgrt6aiszsafq7jj4n3e7@ge6mfzcmnorl>
-References: <202504101036.390f29a5-lkp@intel.com>
- <v66t3szdfsfwyl4lw6ns2ykmxrfqecba2nb5wa64l5qqq2kfpb@x7zxzuijty7d>
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="J5bXCIKC"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1744337816; h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
+	bh=cxljmE/yofVW+Uo++SXPrG3WA9fAaQSkQEVDTJyt6tQ=;
+	b=J5bXCIKCNlRuWsnyK+nCq+Wpa7CGx+Q6K9DXKgXzXSeRTf9U0vdPVim9zv+uAbCR1+Y/tp27cCmxjmSZWqPV0+YxYmvsDFkXY81R2umOI1gJpwMHEf4dF4p1PnemvDbEMZbpo1poovYLyZX8vgsfwHS7GfOjhHZly/qPn2VHcsA=
+Received: from DESKTOP-5N7EMDA(mailfrom:ying.huang@linux.alibaba.com fp:SMTPD_---0WWRGYin_1744337814 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Fri, 11 Apr 2025 10:16:55 +0800
+From: "Huang, Ying" <ying.huang@linux.alibaba.com>
+To: Nikhil Dhama <nikhil.dhama@amd.com>
+Cc: <akpm@linux-foundation.org>,  <bharata@amd.com>,
+  <raghavendra.kodsarathimmappa@amd.com>,  <oe-lkp@lists.linux.dev>,
+  <lkp@intel.com>,  Huang Ying <huang.ying.caritas@gmail.com>,
+  <linux-mm@kvack.org>,  <linux-kernel@vger.kernel.org>,  Mel Gorman
+ <mgorman@techsingularity.net>
+Subject: Re: [PATCH v3] mm: pcp: increase pcp->free_count threshold to
+ trigger free_high
+In-Reply-To: <20250407105219.55351-1-nikhil.dhama@amd.com> (Nikhil Dhama's
+	message of "Mon, 7 Apr 2025 16:22:19 +0530")
+References: <20250407105219.55351-1-nikhil.dhama@amd.com>
+Date: Fri, 11 Apr 2025 10:16:54 +0800
+Message-ID: <87mscn8msp.fsf@DESKTOP-5N7EMDA>
+User-Agent: Gnus/5.13 (Gnus v5.13)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <v66t3szdfsfwyl4lw6ns2ykmxrfqecba2nb5wa64l5qqq2kfpb@x7zxzuijty7d>
-X-Spam-Level: 
-X-Spamd-Result: default: False [-2.30 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	SUSPICIOUS_RECIPS(1.50)[];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	MID_RHS_NOT_FQDN(0.50)[];
-	NEURAL_HAM_SHORT(-0.20)[-0.999];
-	MIME_GOOD(-0.10)[text/plain];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
-	RCVD_TLS_LAST(0.00)[];
-	RCVD_COUNT_THREE(0.00)[3];
-	ARC_NA(0.00)[];
-	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	RCPT_COUNT_TWELVE(0.00)[45];
-	MIME_TRACE(0.00)[0:+];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com];
-	FREEMAIL_CC(0.00)[intel.com,suse.cz,lists.linux.dev,vger.kernel.org,linux-foundation.org,linux.ibm.com,asahilina.net,nvidia.com,google.com,arm.com,lst.de,gmail.com,kernel.org,fromorbit.com,linux.intel.com,redhat.com,ziepe.ca,huawei.com,deltatee.com,infradead.org,ellerman.id.au,mit.edu,xen0n.name];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	TO_DN_SOME(0.00)[];
-	TAGGED_RCPT(0.00)[];
-	MISSING_XM_UA(0.00)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	R_RATELIMIT(0.00)[to_ip_from(RLx3ed8f7q4e9s3nf3mrauhj48)];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:email]
-X-Spam-Score: -2.30
-X-Spam-Flag: NO
+Content-Type: text/plain; charset=ascii
 
-On Thu 10-04-25 17:01:26, Alistair Popple wrote:
-> On Thu, Apr 10, 2025 at 01:14:42PM +0800, kernel test robot wrote:
-> > 
-> > 
-> > Hello,
-> > 
-> > kernel test robot noticed "WARNING:at_mm/truncate.c:#truncate_folio_batch_exceptionals" on:
-> > 
-> > commit: bde708f1a65d025c45575bfe1e7bf7bdf7e71e87 ("fs/dax: always remove DAX page-cache entries when breaking layouts")
-> 
-> This is warning about hitting the bug that commit 0e2f80afcfa6 ("fs/dax: ensure
-> all pages are idle prior to filesystem unmount") fixes. I couldn't reorder that
-> patch before this one because it relies on the DAX page-cache entries always
-> being removed when breaking layouts.
-> 
-> However I note that this is ext2. Commit 0e2f80afcfa6 doesn't actually update
-> ext2 so the warning will persist. The fix should basically be the same as for
-> ext4:
-> 
-> --- a/fs/ext2/inode.c
-> +++ b/fs/ext2/inode.c
-> @@ -74,6 +74,8 @@ void ext2_evict_inode(struct inode * inode)
->         struct ext2_block_alloc_info *rsv;
->         int want_delete = 0;
->  
-> +        dax_break_layout_final(inode);
-> +
->         if (!inode->i_nlink && !is_bad_inode(inode)) {
->                 want_delete = 1;
->                 dquot_initialize(inode);
-> 
-> What's more troubling though is unlike ext4 there is no ext2_dax_break_layouts()
-> defined, which is how I missed updating it. That means truncate with FS DAX
-> is already pretty broken for ext2, and will need more than just the above fix
-> to ensure DAX pages are idle before truncate. So I think FS DAX on ext2 should
-> probably just be removed or marked broken unless someone with more knowledge of
-> ext2 wants to fix it up?
+Hi, Nikhil,
 
-Yeah, with a hindsight, implementing fsdax for ext2 was a mistake (although
-it was meant as a replacement for the old execute-in-place feature that
-ext2 had for s390 and which we wanted to remove). At this point when pmem
-didn't lift off and DAX ended up being kind of niche, I think the effort
-to maintain DAX in ext2 is not justified and we should just drop it (and
-direct existing users to use ext4 driver instead for the cases where they
-need it). I'll have a look into it.
+Sorry for late reply.
 
-								Honza
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+Nikhil Dhama <nikhil.dhama@amd.com> writes:
+
+> In old pcp design, pcp->free_factor gets incremented in nr_pcp_free()
+> which is invoked by free_pcppages_bulk(). So, it used to increase
+> free_factor by 1 only when we try to reduce the size of pcp list or
+> flush for high order, and free_high used to trigger only 
+> for order > 0 and order < costly_order and pcp->free_factor > 0.
+>
+> For iperf3 I noticed that with older design in kernel v6.6, pcp list was
+> drained mostly when pcp->count > high (more often when count goes above
+> 530). and most of the time pcp->free_factor was 0, triggering very few
+> high order flushes.
+>
+> But this is changed in the current design, introduced in commit 6ccdcb6d3a74 
+> ("mm, pcp: reduce detecting time of consecutive high order page freeing"), 
+> where pcp->free_factor is changed to pcp->free_count to keep track of the 
+> number of pages freed contiguously. In this design, pcp->free_count is 
+> incremented on every deallocation, irrespective of whether pcp list was 
+> reduced or not. And logic to trigger free_high is if pcp->free_count goes 
+> above batch (which is 63) and there are two contiguous page free without 
+> any allocation.
+
+The design changes because pcp->high can become much higher than that
+before it.  This makes it much harder to trigger free_high, which causes
+some performance regressions too.
+
+> With this design, for iperf3, pcp list is getting flushed more frequently 
+> because free_high heuristics is triggered more often now. I observed that 
+> high order pcp list is drained as soon as both count and free_count goes 
+> above 63.
+>
+> Due to this more aggressive high order flushing, applications
+> doing contiguous high order allocation will require to go to global list
+> more frequently.
+>
+> On a 2-node AMD machine with 384 vCPUs on each node,
+> connected via Mellonox connectX-7, I am seeing a ~30% performance
+> reduction if we scale number of iperf3 client/server pairs from 32 to 64.
+>
+> Though this new design reduced the time to detect high order flushes,
+> but for application which are allocating high order pages more
+> frequently it may be flushing the high order list pre-maturely.
+> This motivates towards tuning on how late or early we should flush
+> high order lists. 
+>
+> So, in this patch, we increased the pcp->free_count threshold to 
+> trigger free_high from "batch" to "batch + pcp->high_min / 2". 
+> This new threshold keeps high order pages in pcp list for a 
+> longer duration which can help the application doing high order
+> allocations frequently.
+
+IIUC, we restore the original behavior with "batch + pcp->high / 2" as
+in my analysis in
+
+https://lore.kernel.org/all/875xjmuiup.fsf@DESKTOP-5N7EMDA/
+
+If you think my analysis is correct, can you add that in patch
+description too?  This makes it easier for people to know why the code
+looks this way.
+
+> With this patch performace to Iperf3 is restored and 
+> score for other benchmarks on the same machine are as follows:
+>
+> 		      iperf3    lmbench3        netperf         kbuild
+>                                (AF_UNIX)   (SCTP_STREAM_MANY)
+>                      -------   ---------   -----------------    ------
+> v6.6  vanilla (base)    100          100              100          100
+> v6.12 vanilla            69          113             98.5         98.8
+> v6.12 + this patch      100        110.3            100.2         99.3
+>
+>
+> netperf-tcp:
+>
+>                                   6.12                      6.12
+>                                vanilla    	      this_patch
+> Hmean     64         732.14 (   0.00%)         730.45 (  -0.23%)
+> Hmean     128       1417.46 (   0.00%)        1419.44 (   0.14%)
+> Hmean     256       2679.67 (   0.00%)        2676.45 (  -0.12%)
+> Hmean     1024      8328.52 (   0.00%)        8339.34 (   0.13%)
+> Hmean     2048     12716.98 (   0.00%)       12743.68 (   0.21%)
+> Hmean     3312     15787.79 (   0.00%)       15887.25 (   0.63%)
+> Hmean     4096     17311.91 (   0.00%)       17332.68 (   0.12%)
+> Hmean     8192     20310.73 (   0.00%)       20465.09 (   0.76%)
+>
+> Fixes: 6ccdcb6d3a74 ("mm, pcp: reduce detecting time of consecutive high order page freeing")
+>
+> Signed-off-by: Nikhil Dhama <nikhil.dhama@amd.com>
+> Suggested-by: Huang Ying <ying.huang@linux.alibaba.com>
+> Cc: Andrew Morton <akpm@linux-foundation.org>
+> Cc: Huang Ying <huang.ying.caritas@gmail.com>
+> Cc: linux-mm@kvack.org
+> Cc: linux-kernel@vger.kernel.org
+> Cc: Mel Gorman <mgorman@techsingularity.net>
+>
+> ---
+>  v1: https://lore.kernel.org/linux-mm/20250107091724.35287-1-nikhil.dhama@amd.com/
+>  v2: https://lore.kernel.org/linux-mm/20250325171915.14384-1-nikhil.dhama@amd.com/
+>
+>  mm/page_alloc.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index b6958333054d..569dcf1f731f 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -2617,7 +2617,7 @@ static void free_unref_page_commit(struct zone *zone, struct per_cpu_pages *pcp,
+>  	 * stops will be drained from vmstat refresh context.
+>  	 */
+>  	if (order && order <= PAGE_ALLOC_COSTLY_ORDER) {
+> -		free_high = (pcp->free_count >= batch &&
+> +		free_high = (pcp->free_count >= (batch + pcp->high_min / 2) &&
+>  			     (pcp->flags & PCPF_PREV_FREE_HIGH_ORDER) &&
+>  			     (!(pcp->flags & PCPF_FREE_HIGH_BATCH) ||
+>  			      pcp->count >= READ_ONCE(batch)));
+
+---
+Best Regards,
+Huang, Ying
