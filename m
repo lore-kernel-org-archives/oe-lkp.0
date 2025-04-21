@@ -1,475 +1,241 @@
-Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F782F507
-	for <oe-lkp@lists.linux.dev>; Mon, 21 Apr 2025 03:42:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745206937; cv=none; b=p3mrMIh1po4GmV1nSvgwSXYFhOprePhVviPXYIiocLHpCAYIVwdYhZbM548C2eb3DiXTf7v1pGWXtYgOlWXp7lZ+H3iAJkP3qhCzg2bs8k3ic8tSrLULNBy77KA7tDSg4SdE9QflUWqY6FyOfY4wv58JA9JOAmp1z6NRxH9U7w8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745206937; c=relaxed/simple;
-	bh=G8Bg5vDhlu1WZt8IOg4CwT6H7vLC5MM8+/1avfgnKXg=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=YL+7Lhm6eRN81uZgivv0oQJzdNHGtGkdyIAz/vcqNqWMo1D9gUI5n9+fqvSR9lF9tINR9yQwwaY+p2wn9jqrlfeEirMR46D+/uV5ZUv/aN3QMdjwSIXa/8j4xY8g3OEb2wVuIpkc91qBTbhea4cQ9gAaPSqDC/Ep+CcIsbYkomA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cOmaYHgz; arc=none smtp.client-ip=209.85.214.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 640F71EB196
+	for <oe-lkp@lists.linux.dev>; Mon, 21 Apr 2025 05:45:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.15
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1745214315; cv=fail; b=gfRPDpjKdf4rc2cAHcB+6Ql3l4Pp440gZDCcGjcjKqOxY/oME04XjGj53on0Balf+d+mV+wPYpssspeCAS5tB4VnURmcMsfu1BEyHo8iOTDKvdDpuoP68rdao0CigUPUCJTNUmdtYEAQ3gDDoCvK2bXkI3rvk8y730XGlMb94Lg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1745214315; c=relaxed/simple;
+	bh=VZoBGtBatv7zQtZHWsu4dfiOvdrxfqN2thZQBTLZwqI=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:MIME-Version; b=Tr25pFBlkEjb/uvFgR9f0tyyJcF8N7ydrhbPe12YikF1vnKjA73FpAJ602h4WHxqTX24w/PWidPBQCZoUmvZvXxLGOPT1Fw4RHGiWLZyVvH3UZ7G3OfYwFeR0QedPag6l7S617HT5i3xZ2ybPqR1jzHLCFMaHfvuCeM6EjhGURw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YsKwvbrs; arc=fail smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cOmaYHgz"
-Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-223fd89d036so43008925ad.1
-        for <oe-lkp@lists.linux.dev>; Sun, 20 Apr 2025 20:42:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1745206935; x=1745811735; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=L80e+YbTDP0Dk/V47p8po3Ajk3c7xaROH1CjO9UT7GA=;
-        b=cOmaYHgzpfBRiq44lvPzAw9EqGRFYUStyLH6rqGQsTK/VhCm/ESfYdIATc8qAf4YP5
-         eB1da3iXt6vMxW5mx3wQmJL4okaJPTf+/53kzqh8HhzBZEwka0y35eP/9vosbNR3EV/J
-         t9jACHMtxgLbdTS64sK8UsJaB0Cbk7TYjxK3iDfGhOmpDPfi5tXUZBtiZGmMo/S1414b
-         MfFv6Z26YKII1p9FegzztoMIHucAgYl5asSLQzuleVjq6fvklV4hJEpRcIZTfNK/U4Ud
-         3EVovZylfQip9V6O0z+aaZ/8BXJrcvYMIv/tKDH9tVNQgpqvVYxVwKZ73sv/P3PyXPUy
-         UAzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745206935; x=1745811735;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=L80e+YbTDP0Dk/V47p8po3Ajk3c7xaROH1CjO9UT7GA=;
-        b=YGDvtn46QERl5GXJDKBv6I8JMyEvxv5IpNSYEapJrF7SqrOGGCkpFL/6KK/Qqs+t/B
-         jWOokkUz9Q4mVjsttXDTOVyXfGPt0xlEMKYDGxP3MCLGjoETEldqCR7mduP3svN0IaIZ
-         4XJFUYsGGVzyYA2rUEb4WXkI8rWS/rWX12w9DQDgECZwRNvQ7JdzOUUBSsMYgQ7xkMDU
-         LrrkVSoW26BUTGQ92ZvWLm/Ctkc5OZvxxUXi6jT9R4N/L+V/AYFhmyv+WDY+V38jf32/
-         OdrzE+6gFFMPGjCr/EbQAiTxL29FcOrFMUnhfPS3pPLL76Ktdu8z2QgEKWZoGpfqdCMI
-         xIPg==
-X-Forwarded-Encrypted: i=1; AJvYcCUhHwhd9O5yZ3NxGugUQ5y+s1hdfxciD1zIjuFfQ12vk9zH31s6bJS143OGsFzSggSHYMRzZME=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzXw+ydhnj7PQzAKF+7Iifd3n7nkR/hCGZCxXqlw5wk6k1B7Se9
-	LDDcYpmoMYo/Xxt2gPVAJyXgfV0ay7YXKUwvIAhHulr8HDu+jWlr
-X-Gm-Gg: ASbGnctEM14KuE0iSh3Dj2Z8d1OcagkbBxLXh6tNFOPM69AwWHHTePnJshHcqbf/Y0c
-	teVhGduZIK9261NwRTwWt5EgGQY+S0aZjKQcTEwLRtirBQcbtryxMnBHnPAeghYmYkGfO1fMQP2
-	PtB41KkwUBrK15kiL9PwuDtiiUWZKM1DBNx/nANEHnCYjdCsS6IDpKeT8wQSJH6hgzK9z2JDKOH
-	M0pXwjdYPTUPTQUrg+lwpTtyxsmb8biMYIB2okalE8lTSmB3S3h+F4eLdKLZaqc+BMxEJacSvKB
-	tdBDhMXZ7S4zFceAxNdR0VbOAS1t50aNNGEse4nC1sPvVLuRUJuDr5wP3IpifvYILEYlE25e60C
-	COfC4Rs90nMFPfpe2f3JLwg4ou2Y=
-X-Google-Smtp-Source: AGHT+IE/L7WSqaRCif2ChIQGTqynuXwEilH3CzeEQise5/QfwpTyd9kH7j5ocvM58R6Uje7ru2bV5g==
-X-Received: by 2002:a17:903:32d1:b0:215:8809:b3b7 with SMTP id d9443c01a7336-22c5337a009mr126242865ad.7.1745206934481;
-        Sun, 20 Apr 2025 20:42:14 -0700 (PDT)
-Received: from localhost.localdomain (p12284229-ipxg45101marunouchi.tokyo.ocn.ne.jp. [60.39.60.229])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-22c50bf5425sm55621415ad.98.2025.04.20.20.42.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Apr 2025 20:42:14 -0700 (PDT)
-From: Ryo Takakura <ryotkkr98@gmail.com>
-To: john.ogness@linutronix.de,
-	pmladek@suse.com
-Cc: Jason@zx2c4.com,
-	gregkh@linuxfoundation.org,
-	linux-serial@vger.kernel.org,
-	lkp@intel.com,
-	oe-lkp@lists.linux.dev,
-	oliver.sang@intel.com
-Subject: Re: [linux-next:master] [serial]  b63e6f60ea: BUG:soft_lockup-CPU##stuck_for#s![modprobe:#]
-Date: Mon, 21 Apr 2025 12:41:50 +0900
-Message-Id: <20250421034150.107997-1-ryotkkr98@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20250317144221.8231-1-ryotkkr98@gmail.com>
-References: <20250317144221.8231-1-ryotkkr98@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YsKwvbrs"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1745214313; x=1776750313;
+  h=date:from:to:cc:subject:message-id:
+   content-transfer-encoding:mime-version;
+  bh=VZoBGtBatv7zQtZHWsu4dfiOvdrxfqN2thZQBTLZwqI=;
+  b=YsKwvbrst93f/wStA0yVLrmGjOsdO5j6Vft8muKS5x+ZJ73Ve4QyuLrR
+   CEztNQHkYedk4/jpY6zpf0oHIOQpXUhd+TwrwhDlMUANoRzSL+ki/OCF6
+   WEEEoukz73A5NXFethGJOmV2dCnw92VcCyZ+Wv/ysZz+2Nx8VhDheRToF
+   DsrrVythYJlgJQ1Cn2FHZvfRg1evgGJL7fwfknbXvsIq3Ih42bqMkZEf/
+   IuSQ43bUjRmjHBQxgfPiOm/+nZv2mXo+N5vz7YqBYegx5/XZRiZDb3MlU
+   bkyloVHsMgaA4KGzxm7jsHKGBGi6xQv3w9EXf6Py/s7GCboHzjwmET8My
+   g==;
+X-CSE-ConnectionGUID: tYt51IGvR96bDmhcUmlXDA==
+X-CSE-MsgGUID: cIRiC/KeTOO0WboeBcuF0g==
+X-IronPort-AV: E=McAfee;i="6700,10204,11409"; a="46862726"
+X-IronPort-AV: E=Sophos;i="6.15,227,1739865600"; 
+   d="scan'208";a="46862726"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2025 22:45:12 -0700
+X-CSE-ConnectionGUID: YUtvwAvITOisfqxACNRS/A==
+X-CSE-MsgGUID: ZbTmRVSsS9eoD64gtBad6Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,227,1739865600"; 
+   d="scan'208";a="162585839"
+Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
+  by orviesa002.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2025 22:45:12 -0700
+Received: from ORSMSX903.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14; Sun, 20 Apr 2025 22:45:12 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14 via Frontend Transport; Sun, 20 Apr 2025 22:45:12 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.170)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.44; Sun, 20 Apr 2025 22:45:11 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=DL579+rIf/fQZYASulCZw48OOVniPGWeyMmUFVLA1HxT9LwHlmX1kiixABb5cTIOYQszsbS8p3VCWB+hMXkcdiRJFJKxDYpzIpc4m9lCTAZ1RH1WEoo3A3QcK7vJHVkNj2Bpty+Fc0dW4cW/yCDfqXst53nP3C9K/Ua1sKP2E12zTLiAyAfW6uhi7VrXz/VdAkrggMDxTjY7B8cmtG83/QNL7fNWxIxZK+KUDauDZlI/q9GTeMXlH2BlD8kr6NJFuZr9IqdEJvwVh008ofMEGibVMAO8h7rAyWsbtyFzEWqZXYYWyZQaxJj1c90RuILZLb2OThALN0sXwiwr9S5x9Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ifQaA1vh67IHMbBNoFs1yRh5ESURBsdztmPSV1tQ5jc=;
+ b=MfftyAwy85QSUFQ8Vy2WIAOPpqGFa7G+0hA6Md+bhIcRo89l6khVOnlA33ULkGJ/jh3OCzRV3Fb1twHTCMg0mD66BPlP30e0XAOPiZkrKaYp3eyhovqdTyKiIa2axpSilCnhYjBGRIe42XqmTNUMbBOQNsQrMIrS4AIhFZ5HH93PZAt/n3CBic4ttaDJb8IaS2XH2mwX45iMMmPyJaPPWT9s2Wp9MlnHugVkeUpjCt5T3D2C+hwTKn9p4FkFyqmD0k/O+VBucMIiW8Qo1MFdi+inSEsLZ2VNRofC99Im6Skmou6+q6218PVhb0y/NcqjXSE4dVrWelgJsRdo9vo4sw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by CH3PR11MB8774.namprd11.prod.outlook.com (2603:10b6:610:1cd::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8655.32; Mon, 21 Apr
+ 2025 05:44:27 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%4]) with mapi id 15.20.8655.031; Mon, 21 Apr 2025
+ 05:44:27 +0000
+Date: Mon, 21 Apr 2025 13:44:18 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: NeilBrown <neilb@suse.de>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	Chuck Lever <chuck.lever@oracle.com>, Jeff Layton <jlayton@kernel.org>,
+	<linux-nfs@vger.kernel.org>, <oliver.sang@intel.com>
+Subject: [linus:master] [nfsd]  eccbbc7c00:  dbench.max_latency 99.9%
+ improvement
+Message-ID: <202504211304.eb2ca0c2-lkp@intel.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: KU0P306CA0100.MYSP306.PROD.OUTLOOK.COM
+ (2603:1096:d10:22::7) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|CH3PR11MB8774:EE_
+X-MS-Office365-Filtering-Correlation-Id: b3868266-3539-40bf-8645-08dd80979434
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
+X-Microsoft-Antispam-Message-Info: =?iso-8859-1?Q?WTRzC67ElS/QP+Zoye+CD1K0KeuDr1jcx8e8/fge6+zen733kiRChH7Lc0?=
+ =?iso-8859-1?Q?S1JoH/CreSXQyeE8+TdSJ5wO+h/2tp1LuEhXax1H28Pd1Ne2T4sVjQo5QN?=
+ =?iso-8859-1?Q?YyytPkwoB/ewQhbxev/oYUFhrSSypimNwuFXXaruMVHIvpADne6Up8Lh08?=
+ =?iso-8859-1?Q?3HSL/ALtV1TD9U4RQcM8dwXk+Of3BHar0aFPxBRIVu1q4PCKXUDouzFc+I?=
+ =?iso-8859-1?Q?AwRht9YTzhMtH46b9X4G3Qhvu4PeCUWo92Z9OGg1bAbgV27F9DxQSdyU+K?=
+ =?iso-8859-1?Q?3xtZW+ytMBRTOko6/5RkYknYevncMJiAeRf2pz6df+gGwUMqAeONlTP3AT?=
+ =?iso-8859-1?Q?aWsQLVhwz4Adjw24XjxTY60SU1dibStBOarcfWfbwmHh9HRbH2JImBPJVZ?=
+ =?iso-8859-1?Q?rcXrm1dLBV9FbvVatdgAF7RIJLQ/uj7tzlbSXwQ8Ipee34sMOn7bW1/Iaz?=
+ =?iso-8859-1?Q?teWw682PJ2xg85f7n88hKMfAdrMDSqlF/OEQ72+10AHf9woZ+gmdAFgcck?=
+ =?iso-8859-1?Q?XH658l6rF25LlDGgbuDjJVETnAC22Uk6IJ8yPc9yPR5lxVDIAreLxdRdZ5?=
+ =?iso-8859-1?Q?Lp6BvzObmYqqz3hNsDzivQsqhd3T6TATJsA2GPBvBsVDlBRjb/4QeOOu1p?=
+ =?iso-8859-1?Q?xIf5EBfzX7eFZAGWl7o+YzHTRTdECl0qzLRzHt6usUCpzRoh0elIx0eYd+?=
+ =?iso-8859-1?Q?LVe8oVxPuq0vU2XjAX9dM9swVa8P7T14QreaBhcjnLOzmdTCrSBh9tdp1O?=
+ =?iso-8859-1?Q?kAbhkRqdFyVPIyuQFBjUjDzQv23IMe4N4qBfLzjHSyAvH3ej4D5HeocCpe?=
+ =?iso-8859-1?Q?W4AEb6ZEs8PTWmGXGVoVi746ojfRmun7APHw/oBVA9x4L6Mb8tIY9pVtx9?=
+ =?iso-8859-1?Q?0XHeiaIt+NUL/2Wcc9ZX5M2ut/G0p6PPoLq+nhKvjYExXt8YwLLIHsyCPQ?=
+ =?iso-8859-1?Q?0YM3UcaKfydY/F6Eqi6bf9QDqj4IwuAqNKohRYl1gjbg+61HS5A3gTlCWz?=
+ =?iso-8859-1?Q?X9Fu55i28kofqtpsQQdMZi3e1Jo25lOvK+E3E+VXNz9Bk55SpvhEDP++oN?=
+ =?iso-8859-1?Q?5y5IwJqGo9lb18oa0DDWt472ybko1fwnYy9joWtHWQ0UdJSNtOcrmdx3d2?=
+ =?iso-8859-1?Q?1loOFxD9yRit1K0lLMOn+aPPraz1uG8q67KS+G+sC2yDobXW2L27jz7fbc?=
+ =?iso-8859-1?Q?HasIa4IYF/wUc3F3unNQ8KjwTGhsUNBwpk/SsBb1lYceKgwc687cLq5FcZ?=
+ =?iso-8859-1?Q?hgEfdakxIBe/TPZBRYjfZXPxX/hPZnSp6Ahb1NotGMuIzJAGpiXK4cQ8gx?=
+ =?iso-8859-1?Q?rQvL8qkdk21SwcZ9IfaryLkZlz192oST2d42fr37TuejXw+l0IrlRbIoDi?=
+ =?iso-8859-1?Q?Gbh1jHr8T3q+MmCJVNAL4L7x+5m2vKLMyH7KCflrIzj/7sICZa3mFNN0gU?=
+ =?iso-8859-1?Q?ecWc1ZurFxwuDKTo?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?kDj92lMb2/qcmX5WrVbAvuWx06MXOoa7POh7s7Mx5b3wua/rc1qFKrrFNy?=
+ =?iso-8859-1?Q?g1EwB9O/Mj72Qod1ph5utGFfQbnAt8p5gp5U7abe3Qn4easxL7pheaM1DN?=
+ =?iso-8859-1?Q?IJNhB589G2eFNAU0dCu2Jn2D965QZkEGIxRcQKhjQyAv6reInKsur4VXPY?=
+ =?iso-8859-1?Q?9Qq1SVO3n1z+2IsNCSYq7ghU0XcLRWUQWX0fONO7tYiajvHvsi4LOBhlyJ?=
+ =?iso-8859-1?Q?el8DcQ3uZnfvhaZQ9OOp7K5aRiPq8MpJgqxSR+aMDurLjXYliLLvrBBFVW?=
+ =?iso-8859-1?Q?rfSwLdkP74Q1cWhb2wSDtSTZneNfFRmX/D71fmpmA4HxtgpOF6xI+Pjv8d?=
+ =?iso-8859-1?Q?zl4zEzP5buGwMcoTFV+MiepHCFtYFAPlFchKKozUwN8fhrQg2NAenHFWWi?=
+ =?iso-8859-1?Q?0VnZTTl7g/37HTc7x9Ppm0ZayY52X4/zp3p1Z5UsJ8zZ2tixYuEJCisFFO?=
+ =?iso-8859-1?Q?ytaEuGau8I0NIcVEJ6qT2Zcy2LAoM6LCbQ5m2ZVRA9M1vzIbwLIasou5v3?=
+ =?iso-8859-1?Q?GrHeFTN7OJ+XXLIIj0yBTEjvw+EYyNuw6LtGdpDgawRpZtvs/zXZJRv5Nd?=
+ =?iso-8859-1?Q?+s+u+m0r/vktmbnKx0d60n54XvZf/I//QZq6NJpBorGoTY1dVxR7tRqHv8?=
+ =?iso-8859-1?Q?P0glHaAg/quhByVp1JL+DVsGBYQS8zk1e0f6LsWHm/X0c9SXrKM5e8aoYy?=
+ =?iso-8859-1?Q?zUwioKiAjlISL1Rs/8B95aXoyQkfGd8xJ9JH02mZa/dMC6E6JEkcKWhQez?=
+ =?iso-8859-1?Q?ocsuhobKghsyjHCQKX1dGbjaWKECkhEG6h2mY74FQggq2E3DXm6UY4wRvn?=
+ =?iso-8859-1?Q?C2raQD1FfB0+KxVHEY/4OIegqIHi0bfmkMaxsyFDfJkOJjgVRQlSA71Z4S?=
+ =?iso-8859-1?Q?lF/mtCWmhfRpZ96FwmX2rAXWHsXJE7moTS75pBf5x0b/U6/uCN1LKmpnKr?=
+ =?iso-8859-1?Q?jXQfEWx6CxIklflhJMm1qaugoAanR6HdhKrsMPFs9bWHivWOxrws7IqghK?=
+ =?iso-8859-1?Q?yllOd7MXT+4L/zzOchCYU8hEx9eqoMImBysM76/M8TTI+lf00BgTB3klo5?=
+ =?iso-8859-1?Q?s+BNbZXhejmIuGGzhkEDi/z6kjowtII4WDlBpel2TvXp/NIFs/O+ZzE3t6?=
+ =?iso-8859-1?Q?PiMV5A61N5XpsmKIl+lhQygChWYjddQucmVF9kxkvL45l2mz/W+v3sCaHu?=
+ =?iso-8859-1?Q?yVd1KkULfqb5Dh63Gk+YNKetkgan9pPke4DMup0uSjt96zqo3zbguW3xAe?=
+ =?iso-8859-1?Q?mD3qx63A6i5xCPnKVwtnuA1AikrMad324A9s5uwYVDOmclVcFDYUmwpjs6?=
+ =?iso-8859-1?Q?lPdPLPLndpVIjXLSXy3/uJWfleA/W7vy32Jj1oyOTUthSTV5SrLcSi52T2?=
+ =?iso-8859-1?Q?Lu2dnTD14cZKJjfBmtf4xowXRI9ORwr7qkn2XLD6fW7S3V1ygYEaEUt4Hy?=
+ =?iso-8859-1?Q?29ad2Ml/7jLqV4qq2LGraVevQArnhj4ZBE0HxN324eTyCoXWNGEtjo3YiQ?=
+ =?iso-8859-1?Q?4VvQKUJfgpgSMiFSm9Cf7odfMNtI6XuQKuc529K8/ZLj8v+Mk6KSIZiKii?=
+ =?iso-8859-1?Q?m+KuOwDyk3MyNkcFQkbAi9WjL9GM5U+HyD8n+hloIHmT2lUB621vWOXrMJ?=
+ =?iso-8859-1?Q?FN/4ScdaivSyO9Ol9vLLOk8w5gB3ZjxVIhnmWn+CZrdOnV/1YnwSPuUQ?=
+ =?iso-8859-1?Q?=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: b3868266-3539-40bf-8645-08dd80979434
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Apr 2025 05:44:27.2406
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7ICy1PWm8Hb+sVssKiG3c1Itlfx5DBoWp0/r6u3EiaH/RaBRb3k2yddHLYk0n3Co7+16z9gAGAK0zmq0+CWgEg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB8774
+X-OriginatorOrg: intel.com
 
-Hi!
 
-I would like to follow up the last email that I sent.
 
-First, I'm sorry that I later realized that I should have tested
-the rslib test as an inserted module, as how the robot does, by
-choosing CONFIG_REED_SOLOMON_TEST=m.
-Not as a boottime test by enabling CONFIG_REED_SOLOMON_TEST=y.
+Hello,
 
-Running the rslib test as an inserted module without the John's series
-was less prone to softlockup. Without the John's series, softlockup shows
-up once in a test or not at all. With the John's series, softlockup can
-be observed constanly over the test.
+kernel test robot noticed a 99.9% improvement of dbench.max_latency on:
 
-On Mon, 17 Mar 2025 23:42:21 +0900, Ryo Takakura wrote:
->On Mon, 17 Mar 2025 09:51:46 +0106, John Ogness wrote:
->>On 2025-03-15, Ryo Takakura <ryotkkr98@gmail.com> wrote:
->>> I got the same softlockup during the test regardless of the presence
->>> of the commits.
->>>
->>> [   60.222013] watchdog: BUG: soft lockup - CPU#2 stuck for 22s! [swapper/0:1]
->>> [   60.222023] Modules linked in:
->>> [   60.222032] CPU: 2 UID: 0 PID: 1 Comm: swapper/0 Tainted: G             L     6.14.0-rc6-v14-rc6-voluntary+ #4
->>> [   60.222047] Tainted: [L]=SOFTLOCKUP
->>> [   60.222051] Hardware name: Raspberry Pi 4 Model B Rev 1.5 (DT)
->>> [   60.222055] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
->>> [   60.222066] pc : get_random_u32+0xac/0x118
->>> [   60.222081] lr : __get_random_u32_below+0x20/0x78
->>> [   60.222094] sp : ffffffc08002bb80
->>> [   60.222098] x29: ffffffc08002bb80 x28: 0000000000000003 x27: 0000000000000001
->>> [   60.222114] x26: ffffff804112e6a4 x25: ffffffd33ed21820 x24: ffffff804112e69c
->>> [   60.222128] x23: 0000000000000000 x22: ffffff804112e64e x21: 0000000000000000
->>> [   60.222142] x20: 000000000000000d x19: ffffff80fb7aebb8 x18: 0000000000000002
->>> [   60.222156] x17: 0000000000000004 x16: ffffff804112e584 x15: ffffff8041126796
->>> [   60.222169] x14: ffffff80411267c0 x13: 0000000000000006 x12: ffffff804112e5c0
->>> [   60.222183] x11: ffffff804112e64c x10: 0000000000000007 x9 : ffffffd33dccdd10
->>> [   60.222196] x8 : ffffff804112e6a8 x7 : 0000000000000000 x6 : 0005000400060005
->>> [   60.222210] x5 : ffffff804112e65a x4 : 0000000000000000 x3 : 0000000000000010
->>> [   60.222223] x2 : 0000000000000014 x1 : 000000002c7d0b7a x0 : 0000000000000013
->>> [   60.222237] Call trace:
->>> [   60.222241]  get_random_u32+0xac/0x118 (P)
->>> [   60.222256]  __get_random_u32_below+0x20/0x78
->>> [   60.222268]  get_rcw_we+0x180/0x208
->>> [   60.222278]  test_rslib_init+0x2c8/0xba0
->>> [   60.222292]  do_one_initcall+0x4c/0x210
->>> [   60.222303]  kernel_init_freeable+0x1fc/0x3a0
->>> [   60.222317]  kernel_init+0x28/0x1f8
->>> [   60.222327]  ret_from_fork+0x10/0x20
->>>
->>>> I wonder if a cond_resched() in some loop would help. Or using a
->>>
->>> I wasn't sure which loop would be the appropriate one but adding
->>> cond_resched() as below worked as suggested.
->>>
->>> ----- BEGIN -----
->>> diff --git a/lib/reed_solomon/test_rslib.c b/lib/reed_solomon/test_rslib.c
->>> index 75cb1adac..322d7b0a8 100644
->>> --- a/lib/reed_solomon/test_rslib.c
->>> +++ b/lib/reed_solomon/test_rslib.c
->>> @@ -306,6 +306,8 @@ static void test_uc(struct rs_control *rs, int len, int errs,
->>>
->>>                 if (memcmp(r, c, len * sizeof(*r)))
->>>                         stat->dwrong++;
->>> +
->>> +               cond_resched();
->>>         }
->>>         stat->nwords += trials;
->>>  }
->>> @@ -400,6 +402,8 @@ static void test_bc(struct rs_control *rs, int len, int errs,
->>>                 } else {
->>>                         stat->rfail++;
->>>                 }
->>> +
->>> +               cond_resched();
->>>         }
->>>         stat->nwords += trials;
->>>  }
->>> ----- END -----
->>>
->>>> pseudorandom generator. I remember the problems related to much
->>>> slower random generator, for example, see the commit
->>>> f900fde28883602b6 ("crypto: testmgr - fix RNG performance in fuzz
->>>> tests").
->>>
->>> I haven't tested this but I'll look into it!
 
-For the same reason pointed out by the commit f900fde28883 ("crypto: 
-testmgr - fix RNG performance in fuzz tests"), the commit d4150779e60f
-("random32: use real rng for non-deterministic randomness") does seem
-to have slowed down the rslib test.
+commit: eccbbc7c00a5aae5e704d4002adfaf4c3fa4b30d ("nfsd: don't use sv_nrthreads in connection limiting calculations.")
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-On Raspberry pi 4(4G Mem, 4 CPUs), running the rslib test on v5.19 with
-the commit d4150779e60f ("random32: use real rng for non-deterministic
-randomness") takes about 450sec compared to v5.18(without the commit)
-which only takes about 350sec.
 
-However, random number generation does not seem to be the only reason
-for the rslib test being slow.
-Below is the function stats for v5.18 vs v5.19 for the test.
+testcase: dbench
+config: x86_64-rhel-9.4
+compiler: gcc-12
+test machine: 224 threads 4 sockets Intel(R) Xeon(R) Platinum 8380H CPU @ 2.90GHz (Cooper Lake) with 192G memory
+parameters:
 
-v5.18
-+  100.00%     0.00%  insmod   [kernel.kallsyms]      [k] load_module
-+  100.00%     0.00%  insmod   [kernel.kallsyms]      [k] do_init_module
-+  100.00%     0.00%  insmod   [kernel.kallsyms]      [k] do_one_initcall
-+   59.90%    59.90%  insmod   [kernel.kallsyms]      [k] decode_rs16
-+   30.28%     0.00%  insmod   [unknown]              [k] 0xffffffd60413a748
-+   21.39%    21.39%  insmod   [kernel.kallsyms]      [k] encode_rs16
-+   20.94%     0.00%  insmod   [unknown]              [k] 0xffffffd60441b0d4
-+   14.17%     0.01%  insmod   [unknown]              [k] 0xffffffd60413a324
-+   12.92%     0.00%  insmod   [unknown]              [k] 0xffffffd60413a720
-+   11.74%     0.00%  insmod   [unknown]              [k] 0xffffffd60413a368
-+   11.63%     0.01%  insmod   [unknown]              [k] 0xffffffd60413a4b4
-+    6.60%     0.01%  insmod   [unknown]              [k] 0xffffffd60413a46c
-+    3.26%     3.26%  insmod   [unknown]              [k] 0xffffffd60413a3c4
-+    3.11%     3.11%  insmod   [kernel.kallsyms]      [k] prandom_u32
+	nr_threads: 100%
+	cpufreq_governor: performance
+	disk: 1HDD
+	fs: btrfs
+	fs2: nfs
 
-v5.19
-+  100.00%     0.00%  insmod   [kernel.kallsyms]  [k] load_module
-+  100.00%     0.00%  insmod   [kernel.kallsyms]  [k] do_init_module
-+  100.00%     0.00%  insmod   [kernel.kallsyms]  [k] do_one_initcall
-+   45.13%    45.13%  insmod   [kernel.kallsyms]  [k] decode_rs16
-+   27.84%    27.83%  insmod   [kernel.kallsyms]  [k] get_random_u32
-+   22.83%     0.01%  insmod   [unknown]          [k] 0xffffffd62b379324
-+   22.76%     0.00%  insmod   [unknown]          [k] 0xffffffd62b379748
-+   22.35%     0.00%  insmod   [unknown]          [k] 0xffffffd62b379720
-+   16.17%    16.17%  insmod   [kernel.kallsyms]  [k] encode_rs16
 
-As the v5.19 stats shows, the commit d4150779e60f ("random32: use real
-rng for non-deterministic randomness") did slowed down the rslib test
-by using real random number generator(prandom_u32->get_random_u32).
-But it also shows that the decode/encoding takes quite a lot of time.
 
-For the above reason, if we want make the softlockup go away, maybe
-just converting from real to pseudo random generator won't be enough?
-I tested with below changes applied to v6.14 which uses pseudo random
-numbers instead of real ones similar to what the commit f900fde28883
-("crypto: testmgr - fix RNG performance in fuzz tests") did.
+Details are as below:
+-------------------------------------------------------------------------------------------------->
 
-The result is that while it did help to fast up the test from 450 sec
-to 350 sec, it still triggers the softlockup.
 
---- BEGIN ---
-diff --git a/lib/reed_solomon/test_rslib.c b/lib/reed_solomon/test_rslib.c
-index 75cb1adac..5785e3c0c 100644
---- a/lib/reed_solomon/test_rslib.c
-+++ b/lib/reed_solomon/test_rslib.c
-@@ -9,6 +9,7 @@
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/moduleparam.h>
-+#include <linux/prandom.h>
- #include <linux/random.h>
- #include <linux/slab.h>
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20250421/202504211304.eb2ca0c2-lkp@intel.com
 
-@@ -95,6 +96,16 @@ static struct pad pad_coef[] = {
-        { 1, 0 },
- };
+=========================================================================================
+compiler/cpufreq_governor/disk/fs2/fs/kconfig/nr_threads/rootfs/tbox_group/testcase:
+  gcc-12/performance/1HDD/nfs/btrfs/x86_64-rhel-9.4/100%/debian-12-x86_64-20240206.cgz/lkp-cpl-4sp2/dbench
 
-+static inline void init_rnd_state(struct rnd_state *rng)
-+{
-+       prandom_seed_state(rng, get_random_u64());
-+}
-+
-+static inline u32 prandom_u32_below(struct rnd_state *rng, u32 ceil)
-+{
-+       return prandom_u32_state(rng) % ceil;
-+}
-+
- static void free_ws(struct wspace *ws)
- {
-        if (!ws)
-@@ -151,6 +162,7 @@ static struct wspace *alloc_ws(struct rs_codec *rs)
- static int get_rcw_we(struct rs_control *rs, struct wspace *ws,
-                        int len, int errs, int eras)
- {
-+       struct rnd_state rng;
-        int nroots = rs->codec->nroots;
-        int *derrlocs = ws->derrlocs;
-        int *errlocs = ws->errlocs;
-@@ -162,9 +174,11 @@ static int get_rcw_we(struct rs_control *rs, struct wspace *ws,
-        int errloc;
-        int i;
+commit: 
+  de71d4e211 ("nfsd: fix legacy client tracking initialization")
+  eccbbc7c00 ("nfsd: don't use sv_nrthreads in connection limiting calculations.")
 
-+       init_rnd_state(&rng);
-+
-        /* Load c with random data and encode */
-        for (i = 0; i < dlen; i++)
--               c[i] = get_random_u32() & nn;
-+               c[i] = prandom_u32_state(&rng) & nn;
+de71d4e211eddb67 eccbbc7c00a5aae5e704d4002ad 
+---------------- --------------------------- 
+       fail:runs  %reproduction    fail:runs
+           |             |             |    
+         10:10        -100%            :10    stderr.has_stderr
+         10:10        -100%            :10    stderr.nfsproc3_create_3_failed_in_nfsio_create
+         %stddev     %change         %stddev
+             \          |                \  
+     71006           -99.9%      35.66 ±  7%  dbench.max_latency
+     71006           -99.9%      35.66 ±  7%  dbench.max_latency_harmonic_mean
+      1.11            +0.1        1.16        perf-stat.i.branch-miss-rate%
+  80903221            +6.3%   86014278 ±  2%  perf-stat.i.branch-misses
+      1.10            +0.1        1.16        perf-stat.overall.branch-miss-rate%
+  79601951            +6.3%   84615085 ±  2%  perf-stat.ps.branch-misses
 
-        memset(c + dlen, 0, nroots * sizeof(*c));
-        encode_rs16(rs, c, dlen, c + dlen, 0);
-@@ -178,12 +192,12 @@ static int get_rcw_we(struct rs_control *rs, struct wspace *ws,
-        for (i = 0; i < errs; i++) {
-                do {
-                        /* Error value must be nonzero */
--                       errval = get_random_u32() & nn;
-+                       errval = prandom_u32_state(&rng) & nn;
-                } while (errval == 0);
 
-                do {
-                        /* Must not choose the same location twice */
--                       errloc = get_random_u32_below(len);
-+                       errloc = prandom_u32_below(&rng, len);
-                } while (errlocs[errloc] != 0);
 
-                errlocs[errloc] = 1;
-@@ -194,19 +208,19 @@ static int get_rcw_we(struct rs_control *rs, struct wspace *ws,
-        for (i = 0; i < eras; i++) {
-                do {
-                        /* Must not choose the same location twice */
--                       errloc = get_random_u32_below(len);
-+                       errloc = prandom_u32_below(&rng, len);
-                } while (errlocs[errloc] != 0);
 
-                derrlocs[i] = errloc;
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provided
+for informational purposes only. Any difference in system hardware or software
+design or configuration may affect actual performance.
 
--               if (ewsc && get_random_u32_below(2)) {
-+               if (ewsc && prandom_u32_below(&rng, 2)) {
-                        /* Erasure with the symbol intact */
-                        errlocs[errloc] = 2;
-                } else {
-                        /* Erasure with corrupted symbol */
-                        do {
-                                /* Error value must be nonzero */
--                               errval = get_random_u32() & nn;
-+                               errval = prandom_u32_state(&rng) & nn;
-                        } while (errval == 0);
 
-                        errlocs[errloc] = 1;
---- END ---
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
 
-Below is the function stats for with vs without the above change.
-
-v6.14 without the above change
-+  100.00%     0.00%  insmod   [kernel.kallsyms]      [k] load_module
-+  100.00%     0.00%  insmod   [kernel.kallsyms]      [k] do_init_module
-+  100.00%     0.00%  insmod   [kernel.kallsyms]      [k] do_one_initcall
-+   46.94%    46.94%  insmod   [kernel.kallsyms]      [k] decode_rs16
-+   24.92%    24.92%  insmod   [kernel.kallsyms]      [k] get_random_u32
-+   23.59%     0.01%  insmod   [unknown]              [k] 0xffffffde423d88cc
-+   22.66%     0.00%  insmod   [unknown]              [k] 0xffffffde423d82c0
-+   22.39%     0.00%  insmod   [unknown]              [k] 0xffffffde423d88a4
-+   16.67%    16.67%  insmod   [kernel.kallsyms]      [k] encode_rs16
-
-v6.14 with the above change
-+  100.00%     0.00%  insmod   [kernel.kallsyms]      [k] load_module
-+  100.00%     0.00%  insmod   [kernel.kallsyms]      [k] do_init_module
-+  100.00%     0.00%  insmod   [kernel.kallsyms]      [k] do_one_initcall
-+   61.51%    61.50%  insmod   [kernel.kallsyms]      [k] decode_rs16
-+   31.15%     0.00%  insmod   [unknown]              [k] 0xffffffe7013858cc
-+   21.75%    21.75%  insmod   [kernel.kallsyms]      [k] encode_rs16
-+   21.36%     0.01%  insmod   [unknown]              [k] 0xffffffe70137f120
-+   15.20%     0.00%  insmod   [unknown]              [k] 0xffffffe7013852c0
-+   12.79%     0.00%  insmod   [unknown]              [k] 0xffffffe7013858a4
-+   12.00%     0.00%  insmod   [unknown]              [k] 0xffffffe7013854c0
-+   12.00%     0.00%  insmod   [unknown]              [k] 0xffffffe701385304
-+    6.74%     0.01%  insmod   [unknown]              [k] 0xffffffe701385600
-+    3.43%     3.43%  insmod   [unknown]              [k] 0xffffffe701385598
-+    2.50%     2.50%  insmod   [unknown]              [k] 0xffffffe701385564
-+    1.96%     1.96%  insmod   [kernel.kallsyms]      [k] prandom_u32_state
-+    1.85%     1.85%  insmod   [kernel.kallsyms]      [k] get_random_u64
-
-So maybe we still need cond_resched() in addition to converting the
-test from using psuedo random numbers to real ones in order to make
-the softlockup go away?
-
->>>> That said, I did not dig deep into the code. And I did not try to
->>>> reproduce the softlockup. I am pretty busy at the moment with some
->>>> other stuff. I just wanted to give it a look and share my opinion.
->>>
->>> I think the softlockup is rather a problem of test itself,
->>> not the two commits.
->>
->>Thanks Ryo for looking into this! I think we need to have a technical
->>explanation/understanding of the problem so that it is clear how my
->>series triggers or exaggerates the issue.
-
-As mentioned earlier, I'm sorry that I should have run the test as
-inserted module... It seems the series does make the test more prone
-to softlockups.
-
-I am still looking into the issue but I noticed that if the printing
-during the test were done in a caller context, not by printk thread,
-the softlock goes away.
-
-I tested with a change something like below so that the printing during
-the test were not delegated to printk thread ("pr/ttyS0"). With the below
-change, the softlock no longer shows up.
-
---- BEGIN ---
-diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
-index fd12efcc4..07c879a64 100644
---- a/kernel/printk/nbcon.c
-+++ b/kernel/printk/nbcon.c
-@@ -1639,6 +1639,7 @@ void nbcon_cpu_emergency_enter(void)
-        cpu_emergency_nesting = nbcon_get_cpu_emergency_nesting();
-        (*cpu_emergency_nesting)++;
- }
-+EXPORT_SYMBOL_GPL(nbcon_cpu_emergency_enter);
-
- /**
-  * nbcon_cpu_emergency_exit - Exit an emergency section
-@@ -1656,6 +1657,7 @@ void nbcon_cpu_emergency_exit(void)
-
-        preempt_enable();
- }
-+EXPORT_SYMBOL_GPL(nbcon_cpu_emergency_exit);
-
- /**
-  * nbcon_alloc - Allocate and init the nbcon console specific data
-diff --git a/lib/reed_solomon/test_rslib.c b/lib/reed_solomon/test_rslib.c
-index 75cb1adac..8208f8317 100644
---- a/lib/reed_solomon/test_rslib.c
-+++ b/lib/reed_solomon/test_rslib.c
-@@ -11,6 +11,7 @@
- #include <linux/moduleparam.h>
- #include <linux/random.h>
- #include <linux/slab.h>
-+#include <linux/console.h>
-
- enum verbosity {
-        V_SILENT,
-@@ -323,8 +324,11 @@ static int ex_rs_helper(struct rs_control *rs, struct wspace *ws,
-        int nroots = rs->codec->nroots;
-        int errs, eras, retval;
-
--       if (v >= V_PROGRESS)
-+       if (v >= V_PROGRESS) {
-+               nbcon_cpu_emergency_enter();
-                pr_info("  %s\n", desc[method]);
-+               nbcon_cpu_emergency_exit();
-+       }
-
-        for (errs = 0; errs <= nroots / 2; errs++)
-                for (eras = 0; eras <= nroots - 2 * errs; eras++)
-@@ -353,8 +357,11 @@ static int exercise_rs(struct rs_control *rs, struct wspace *ws,
-        int retval = 0;
-        int i;
-
--       if (v >= V_PROGRESS)
-+       if (v >= V_PROGRESS) {
-+               nbcon_cpu_emergency_enter();
-                pr_info("Testing up to error correction capacity...\n");
-+               nbcon_cpu_emergency_exit();
-+       }
-
-        for (i = 0; i <= IN_PLACE; i++)
-                retval |= ex_rs_helper(rs, ws, len, trials, i);
-@@ -411,8 +418,11 @@ static int exercise_rs_bc(struct rs_control *rs, struct wspace *ws,
-        int nroots = rs->codec->nroots;
-        int errs, eras, cutoff;
-
--       if (v >= V_PROGRESS)
-+       if (v >= V_PROGRESS) {
-+               nbcon_cpu_emergency_enter();
-                pr_info("Testing beyond error correction capacity...\n");
-+               nbcon_cpu_emergency_exit();
-+       }
-
-        for (errs = 1; errs <= nroots; errs++) {
-                eras = nroots - 2 * errs + 1;
-@@ -468,8 +478,10 @@ static int run_exercise(struct etab *e)
-
-                prev_pad = pad;
-                if (v >= V_PROGRESS) {
-+                       nbcon_cpu_emergency_enter();
-                        pr_info("Testing (%d,%d)_%d code...\n",
-                                        len, kk - pad, nn + 1);
-+                       nbcon_cpu_emergency_exit();
-                }
-
-                retval |= exercise_rs(rsc, ws, len, e->ntrials);
---- END ---
-
-I tried to figure out how softlockup disappears over the weekend but
-couldn't... Seems the John's series somehow prevents the softlockup
-thread from touching its timestamp.
-
-I would like to continue looking into the issue and appreaciate any
-comment! Hope this provides some insight for now.
-
-Sincerely,
-Ryo Takakura
-
->I see. I can't yet say anything but still not sure if your series has
->anything to do with the softlockup... I found that there was similar
->report in the past [0].
->
->Anyways, I will look into the rslib test itself more carefully to see
->if I can give the needed technical explanation for the problem!
->[0] https://lore.kernel.org/linux-kernel//a309f09e07374e62a77bb84c70e6715efd288448.1583122776.git.planteen@gmail.com/
