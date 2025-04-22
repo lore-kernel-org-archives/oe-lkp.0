@@ -1,245 +1,189 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from fhigh-b1-smtp.messagingengine.com (fhigh-b1-smtp.messagingengine.com [202.12.124.152])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBDB42405F8
-	for <oe-lkp@lists.linux.dev>; Tue, 22 Apr 2025 08:51:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B5E92116FE
+	for <oe-lkp@lists.linux.dev>; Tue, 22 Apr 2025 10:17:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.152
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745311875; cv=none; b=nLf4mZ9a2OL4bJxP9gdk7Zu85jCpYKQnmfe3oxRw0qzNQFZ7enpNfl+hmEjzCnQjhF5GdgTWzd1Y1NLzl21RMv14YHW2Qb+2gvI1w4jUs3/zaXg65V3ASNC3x0FgMolgo6qXvjvPiJ3FDpap49WfSvL8I/iSgt3NMtzWGaOyFXc=
+	t=1745317064; cv=none; b=os/oaoXZLec1CeMZw5oQmYQ6APGocB8YYLxlSQRHLeZ/eUaHFEHwZRWrOrj5+9iJTAQgm1spVraCBJTVmWtHjufrHfEoxSORUcU64kjdAXRtHY5BCOGbcDPO1P8qr3WJ2Q+WIVBRLeQw97VFAF3sJnOtm7c5pI9X3HCHDUSIf8c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745311875; c=relaxed/simple;
-	bh=PcT0XgA6GrPvbPqcvyrP+CFpHAr7WTzkXKXG8Va7QHk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RqL700pY+qaWBVbCUx/axEaJKnAtb6ufC4aInVvkZzpMMcc1RYiKmYH7Igj+7L+aSQpxd9jUw3uL/3TPGxV1wx10BLagIlGyeBBZ4HreigQXeRq8oIybweggit/21e4JAjRoLvR2n8PIYJRLAZujA7oARLBAphzNGZ/cyrJuoWo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=iv4wEbpf; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	s=arc-20240116; t=1745317064; c=relaxed/simple;
+	bh=vbfued2uU3GT02rn8Jsz3N23RsRLimsTdInqGFiWRwY=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=l1IZj2M1N6jYhdaLGbaO2MnpbHlngD6Of1vxwEWT+gpbOJEOUR2ur7o122C+BA2FHMGUvChK9Q6t05lsbORCkm6fhchohfPDKlh88+vFo/XrNiymEuLRe+bsk9KQhjYxRyteccOLG9UhXJWj/+C433t44beg7NlhaVzFJjIN1ks=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=jUQA1QH5; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=s3IzAOwM; arc=none smtp.client-ip=202.12.124.152
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="iv4wEbpf"
-Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53M47II6016264;
-	Tue, 22 Apr 2025 08:51:09 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=FoFf+Z
-	vUn20wcXSzs2rNK9ncNZcGAXtoc7jE1dX/YPs=; b=iv4wEbpfOoKeSBir52VeJI
-	QdCU3quOSO3tUmeSOqo7eXNopJpGL+rhax8KbZKgvE7puvIdPvU5bQSNpqa44A70
-	3ft2/Lsa2LGYFawfNRn81+0jWjK4BC5e79zKOY3bAEHcql0ZMuIasP22qBeVs2Bw
-	Tdx/QJinjaeTu/DaoaGRQd6jJ3l2hvxUHwQGrGahj94Me7oAIY+IlgBV/d/TXBj4
-	LGZBGBtXJm1LRogHHg2bSiKBX7qfW3z5L+hsTU/p8H8B65IzyEHdby1BkW8Cy12y
-	+gA6MXZ8KBXJjhtL3HwZKeJMuh9mLPDVK6OI/bn86lyHVJdwxJsnnnQXa9pWEVag
-	==
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4663t613ke-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 22 Apr 2025 08:51:08 +0000 (GMT)
-Received: from m0356517.ppops.net (m0356517.ppops.net [127.0.0.1])
-	by pps.reinject (8.18.0.8/8.18.0.8) with ESMTP id 53M8p8r9012800;
-	Tue, 22 Apr 2025 08:51:08 GMT
-Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4663t613kc-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 22 Apr 2025 08:51:08 +0000 (GMT)
-Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma12.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 53M5ZFDT012496;
-	Tue, 22 Apr 2025 08:51:07 GMT
-Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
-	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 464p5t29y8-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 22 Apr 2025 08:51:07 +0000
-Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
-	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 53M8p5hI32768688
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 22 Apr 2025 08:51:05 GMT
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 7F4ED2004B;
-	Tue, 22 Apr 2025 08:51:05 +0000 (GMT)
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 8303E20040;
-	Tue, 22 Apr 2025 08:51:03 +0000 (GMT)
-Received: from li-dc0c254c-257c-11b2-a85c-98b6c1322444.ibm.com (unknown [9.109.219.249])
-	by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTPS;
-	Tue, 22 Apr 2025 08:51:03 +0000 (GMT)
-Date: Tue, 22 Apr 2025 14:21:00 +0530
-From: Ojaswin Mujoo <ojaswin@linux.ibm.com>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-        "Theodore Ts'o" <tytso@mit.edu>, Jan Kara <jack@suse.cz>,
-        Ritesh Harjani <ritesh.list@gmail.com>,
-        Baokun Li <libaokun1@huawei.com>, linux-ext4@vger.kernel.org
-Subject: Re: [linus:master] [ext4]  896b02d0b9:  stress-ng.fiemap.ops_per_sec
- 15.8% regression
-Message-ID: <aAdYdBjy4ERcfv3P@li-dc0c254c-257c-11b2-a85c-98b6c1322444.ibm.com>
-References: <202504211320.5025beac-lkp@intel.com>
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="jUQA1QH5";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="s3IzAOwM"
+Received: from phl-compute-05.internal (phl-compute-05.phl.internal [10.202.2.45])
+	by mailfhigh.stl.internal (Postfix) with ESMTP id 82AB125401D3;
+	Tue, 22 Apr 2025 06:17:41 -0400 (EDT)
+Received: from phl-imap-11 ([10.202.2.101])
+  by phl-compute-05.internal (MEProxy); Tue, 22 Apr 2025 06:17:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm2; t=1745317061;
+	 x=1745403461; bh=6iva4M18jqvPbqUQsfEmLC6SwTowYiuBTDLYua0J8Eg=; b=
+	jUQA1QH5M8T2MMgUeICA98D4v0hxkbLIrd3v1/YhAsrlEBy4A4OAxO/4eRDRKvnY
+	rbEc4jUk9JHQDm5+QFCcw8mBc1WjpPAGvnGIJhu2QDh9GDDeabTHSnd6T4Hp5qt9
+	8YzpZ0RQhEWm9qAAyXNC37AyLpffnZga8pihKnrSKgxqn1+HT5ODDxrfYDfTDCA3
+	yK+d+iqnZffaW1WD5byXuXrTNRVj3N5zg2PqiMEYrE4IAFqBiDRL07UdgmWeo6zP
+	MzFZg9kVe0/AB3OxJoEH3LammTSCtM/cdiZGGE0RvreH8QVKxZSudnWTvw9v17XA
+	38x/GZL8cfAoS8whgMiLtQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1745317061; x=
+	1745403461; bh=6iva4M18jqvPbqUQsfEmLC6SwTowYiuBTDLYua0J8Eg=; b=s
+	3IzAOwMDJK/3tCzXq0BSl4o53pcm6apEVNWMmnVea+pRbKBPA/TJv8XloxfNqjGZ
+	ry0rAEiQ/uYi4RB5LGyTysxrTk67uDhoAd18UD2m5pGPDScUDMWz83bIdCOhv8OW
+	aBGaoupR36RJd/3n93h7SSsUQhcnfDyLemP0KbdtnqeTG+U2v8RlPTo0WiypSsyJ
+	mVDgP3aiqdA+k6TcSrIUpKcofng00S7Cm6UCIW4sp8+0AuPqhQrXVWU3AGYJhyi0
+	6A0pYvgn/WY3cHnhcwdA64eZHlTvC7mIbmCw/T4uM7lNwXrnQDd8eHvs0k2xhAUl
+	lUT2v/rcu3ONKDqFZ9WIg==
+X-ME-Sender: <xms:xWwHaLHckWPWFUj6mNfhGjM9P87HwRw5idbiCYetLDvA5DaAmeQI3A>
+    <xme:xWwHaIUZhKrWFL75lmCdVof_hmkO-m9aHT_RwyVw-eSjbnj9bhKVzNY0_7BTnN31G
+    k5qzVU8Q_kbOlCA1Sg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddvgeefgeeiucetufdoteggodetrf
+    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggv
+    pdfurfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpih
+    gvnhhtshculddquddttddmnecujfgurhepofggfffhvfevkfgjfhfutgfgsehtjeertder
+    tddtnecuhfhrohhmpedftehrnhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnug
+    gsrdguvgeqnecuggftrfgrthhtvghrnhephfdthfdvtdefhedukeetgefggffhjeeggeet
+    fefggfevudegudevledvkefhvdeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrg
+    hmpehmrghilhhfrhhomheprghrnhgusegrrhhnuggsrdguvgdpnhgspghrtghpthhtohep
+    iedpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtoheplhhkphesihhnthgvlhdrtghomh
+    dprhgtphhtthhopeholhhivhgvrhdrshgrnhhgsehinhhtvghlrdgtohhmpdhrtghpthht
+    ohepmhhinhhgoheskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepthhorhhvrghlughsse
+    hlihhnuhigqdhfohhunhgurghtihhonhdrohhrghdprhgtphhtthhopehovgdqlhhkphes
+    lhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlh
+    esvhhgvghrrdhkvghrnhgvlhdrohhrgh
+X-ME-Proxy: <xmx:xWwHaNKzKB1leyBRIX9T12vDerzlDT5iIesupnLLFB1NwOHIdzZcuw>
+    <xmx:xWwHaJGoXiJuMZKgqzvMzX46m0RMeEj8qeea5qI3gU-h_btNITf5Bg>
+    <xmx:xWwHaBXQrw3RDmamFOuOWS7AlIetVVK-CBDr46DZHdUDRGofd7yPNg>
+    <xmx:xWwHaEMTEVMfNQebUikiB0pvjZeDaAbcx4J2dTv_w5B69fgbQaYAAw>
+    <xmx:xWwHaE1uhaP4QXGNC3h__nhamlSpe1C15aU9IO3tGeiPjDS6t3PFST6w>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id F1E982220073; Tue, 22 Apr 2025 06:17:40 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <202504211320.5025beac-lkp@intel.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: MmN2CsmPcZjmJY1EWwz4qJpwWFkjxRpo
-X-Proofpoint-GUID: hUoyx2pbR3Deboo-SmaDB3bv5mfesaRM
-X-Authority-Analysis: v=2.4 cv=GsRC+l1C c=1 sm=1 tr=0 ts=6807587c cx=c_pps a=bLidbwmWQ0KltjZqbj+ezA==:117 a=bLidbwmWQ0KltjZqbj+ezA==:17 a=8nJEP1OIZ-IA:10 a=XR8D0OoHHMoA:10 a=VwQbUJbxAAAA:8 a=QyXUC8HyAAAA:8 a=i3X5FwGiAAAA:8 a=NEAV23lmAAAA:8
- a=7Qg1no0YzWYdUPjgeWIA:9 a=3ZKOabzyN94A:10 a=wPNLvfGTeEIA:10 a=mmqRlSCDY2ywfjPLJ4af:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-04-22_04,2025-04-21_02,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
- priorityscore=1501 mlxlogscore=999 suspectscore=0 bulkscore=0 adultscore=0
- phishscore=0 impostorscore=0 malwarescore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 classifier=spam authscore=0 authtc=n/a
- authcc= route=outbound adjust=0 reason=mlx scancount=1
- engine=8.19.0-2502280000 definitions=main-2504220064
+X-ThreadId: T98d234c297665c71
+Date: Tue, 22 Apr 2025 12:16:33 +0200
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "kernel test robot" <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, "kernel test robot" <lkp@intel.com>,
+ linux-kernel@vger.kernel.org, "Ingo Molnar" <mingo@kernel.org>,
+ "Linus Torvalds" <torvalds@linux-foundation.org>
+Message-Id: <59198081-15e2-4b02-934f-c34dd1a0ac93@app.fastmail.com>
+In-Reply-To: <202504211553.3ba9400-lkp@intel.com>
+References: <202504211553.3ba9400-lkp@intel.com>
+Subject: Re: [linus:master] [x86/cpu]  f388f60ca9:
+ BUG:soft_lockup-CPU##stuck_for#s![swapper:#]
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-On Mon, Apr 21, 2025 at 01:56:07PM +0800, kernel test robot wrote:
-> 
-> 
+On Mon, Apr 21, 2025, at 10:12, kernel test robot wrote:
 > Hello,
-> 
-> kernel test robot noticed a 15.8% regression of stress-ng.fiemap.ops_per_sec on:
-> 
-> 
-> commit: 896b02d0b9e7deb4a4eb365e13dd912b49916519 ("ext4: Make sb update interval tunable")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> 
-> [test failed on linus/master      1a1d569a75f3ab2923cb62daf356d102e4df2b86]
-> [test failed on linux-next/master f660850bc246fef15ba78c81f686860324396628]
-> 
-> testcase: stress-ng
-> config: x86_64-rhel-9.4
+>
+> by this commit, we notice big config diff [1]
+>
+> then in this rcutorture tests, parent runs quite clean, f388f60ca9 shows
+> various random issues.
+
+Thanks for the report!
+
+From my initial reading, my patch most likely caught a preexisting bug,
+but my patch itself is correct. It's worth investigating regardless,
+at the minimum we should perhaps prevent an invalid configuration from
+building or from booting.
+
+> config: i386-randconfig-r071-20250410
+
+Generally, I would not expect 'randconfig' kernels to pass all tests,
+and what happened here is that removing the CONFIG_MK8 option made it
+pick some completely different CPU
+
 > compiler: gcc-12
-> test machine: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory
-> parameters:
-> 
-> 	nr_threads: 100%
-> 	disk: 1HDD
-> 	testtime: 60s
-> 	fs: ext4
-> 	test: fiemap
-> 	cpufreq_governor: performance
-> 
-> 
-> 
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202504211320.5025beac-lkp@intel.com
-> 
-> 
-> Details are as below:
-> -------------------------------------------------------------------------------------------------->
-> 
-> 
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20250421/202504211320.5025beac-lkp@intel.com
-> 
-> =========================================================================================
-> compiler/cpufreq_governor/disk/fs/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
->   gcc-12/performance/1HDD/ext4/x86_64-rhel-9.4/100%/debian-12-x86_64-20240206.cgz/lkp-icl-2sp8/fiemap/stress-ng/60s
-> 
-> commit: 
->   ce2f26e737 ("ext4: avoid journaling sb update on error if journal is destroying")
->   896b02d0b9 ("ext4: Make sb update interval tunable")
+> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 
-Hmm this is strange since this patch doesn't intend to change any
-functionality. Let me try out the reproducer and get back to you if 
-I see the regression as well.
+The most relevant options here are
 
-Thanks,
-ojaswin
-> 
-> ce2f26e73783b4a7 896b02d0b9e7deb4a4eb365e13d 
-> ---------------- --------------------------- 
->          %stddev     %change         %stddev
->              \          |                \  
->       2.29 ±  6%     -13.2%       1.99 ±  7%  iostat.cpu.user
->    1688381 ±  2%     -16.4%    1411358 ±  4%  vmstat.system.cs
->       0.01 ± 12%      -0.0        0.01 ± 10%  mpstat.cpu.all.soft%
->       2.33 ±  6%      -0.3        2.01 ±  7%  mpstat.cpu.all.usr%
->      28467 ± 22%     +39.4%      39676 ± 13%  numa-meminfo.node0.Inactive
->      28467 ± 22%     +39.4%      39676 ± 13%  numa-meminfo.node0.Inactive(file)
->       7099 ± 22%     +40.0%       9937 ± 13%  numa-vmstat.node0.nr_inactive_file
->       7099 ± 22%     +40.0%       9937 ± 13%  numa-vmstat.node0.nr_zone_inactive_file
->    3186734 ±  2%     -13.0%    2770907        meminfo.Active
->    3186734 ±  2%     -13.0%    2770907        meminfo.Active(anon)
->    2332511 ±  4%     -17.1%    1933636 ±  2%  meminfo.Shmem
->     829642 ±  3%     -16.0%     696952 ±  4%  sched_debug.cpu.nr_switches.avg
->     992823 ±  4%     -14.5%     849332 ±  6%  sched_debug.cpu.nr_switches.max
->     153915 ±  5%     -15.2%     130547 ± 11%  sched_debug.cpu.nr_switches.stddev
->   64971130 ±  3%     -15.8%   54708915 ±  4%  stress-ng.fiemap.ops
->    1067456 ±  3%     -15.8%     898490 ±  4%  stress-ng.fiemap.ops_per_sec
->  1.079e+08 ±  2%     -16.0%   90643140 ±  4%  stress-ng.time.involuntary_context_switches
->      67.64 ±  9%     -16.5%      56.46 ±  9%  stress-ng.time.user_time
->     797292 ±  2%     -13.2%     692413        proc-vmstat.nr_active_anon
->    1499550            -6.7%    1398519        proc-vmstat.nr_file_pages
->     583908 ±  4%     -17.3%     483006 ±  2%  proc-vmstat.nr_shmem
->     797292 ±  2%     -13.2%     692413        proc-vmstat.nr_zone_active_anon
->    1256873 ±  2%     -12.3%    1102563        proc-vmstat.numa_hit
->    1190636 ±  2%     -13.0%    1036297        proc-vmstat.numa_local
->    1367314 ±  2%     -11.3%    1212232 ±  2%  proc-vmstat.pgalloc_normal
->     369155 ±  5%      -6.9%     343753 ±  2%  proc-vmstat.pgfault
->  2.492e+10 ±  2%     -18.5%  2.031e+10        perf-stat.i.branch-instructions
->  1.232e+08 ±  7%     -15.2%  1.045e+08 ±  6%  perf-stat.i.branch-misses
->  3.895e+08 ±  2%      -8.8%  3.553e+08        perf-stat.i.cache-references
->    1759358 ±  2%     -16.0%    1478535 ±  3%  perf-stat.i.context-switches
->       1.80 ±  2%     +22.5%       2.20        perf-stat.i.cpi
->  1.262e+11 ±  2%     -18.5%  1.028e+11        perf-stat.i.instructions
->       0.56 ±  2%     -18.5%       0.46        perf-stat.i.ipc
->      27.44 ±  2%     -15.8%      23.10 ±  3%  perf-stat.i.metric.K/sec
->       4132 ±  5%      -8.9%       3766 ±  2%  perf-stat.i.minor-faults
->       4132 ±  5%      -8.9%       3766 ±  2%  perf-stat.i.page-faults
->       1.79 ±  2%     +22.8%       2.20        perf-stat.overall.cpi
->       0.56 ±  2%     -18.6%       0.45        perf-stat.overall.ipc
->   2.45e+10 ±  2%     -18.5%  1.998e+10        perf-stat.ps.branch-instructions
->   1.21e+08 ±  7%     -15.0%  1.028e+08 ±  6%  perf-stat.ps.branch-misses
->  3.828e+08 ±  2%      -8.7%  3.496e+08        perf-stat.ps.cache-references
->    1729946 ±  2%     -15.9%    1454325 ±  3%  perf-stat.ps.context-switches
->  1.241e+11 ±  2%     -18.5%  1.011e+11        perf-stat.ps.instructions
->       4060 ±  5%      -8.8%       3703 ±  2%  perf-stat.ps.minor-faults
->       4060 ±  5%      -8.8%       3703 ±  2%  perf-stat.ps.page-faults
->  7.699e+12 ±  2%     -18.7%  6.262e+12 ±  2%  perf-stat.total.instructions
->       0.02 ±194%   +3583.1%       0.80 ±127%  perf-sched.sch_delay.avg.ms.__cond_resched.zap_pte_range.zap_pmd_range.isra.0
->       0.14 ±  5%     +21.4%       0.17 ±  2%  perf-sched.sch_delay.avg.ms.__x64_sys_sched_yield.do_syscall_64.entry_SYSCALL_64_after_hwframe.[unknown]
->       0.02 ± 12%     +35.4%       0.03 ± 11%  perf-sched.sch_delay.avg.ms.schedule_timeout.kcompactd.kthread.ret_from_fork
->       0.01 ±  3%     +14.8%       0.01 ±  6%  perf-sched.sch_delay.avg.ms.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
->       2.90 ±107%    +259.8%      10.43 ± 35%  perf-sched.sch_delay.max.ms.__cond_resched.down_write.shmem_file_write_iter.vfs_write.ksys_write
->       8.62 ± 28%     +69.3%      14.58 ±  8%  perf-sched.sch_delay.max.ms.__cond_resched.shmem_get_folio_gfp.shmem_write_begin.generic_perform_write.shmem_file_write_iter
->       0.02 ±194%   +5175.4%       1.14 ± 88%  perf-sched.sch_delay.max.ms.__cond_resched.zap_pte_range.zap_pmd_range.isra.0
->     395.95 ±185%     -99.6%       1.67 ± 45%  perf-sched.sch_delay.max.ms.do_nanosleep.hrtimer_nanosleep.common_nsleep.__x64_sys_clock_nanosleep
->      10.22 ± 15%     +49.3%      15.26 ±  4%  perf-sched.sch_delay.max.ms.irqentry_exit_to_user_mode.asm_sysvec_apic_timer_interrupt.[unknown].[unknown]
->       0.05 ± 10%     +29.0%       0.06 ± 13%  perf-sched.sch_delay.max.ms.schedule_timeout.kcompactd.kthread.ret_from_fork
->       0.14 ±  5%     +20.6%       0.17 ±  2%  perf-sched.total_sch_delay.average.ms
->       0.44 ±  3%     +19.7%       0.52 ±  3%  perf-sched.total_wait_and_delay.average.ms
->    6639596 ±  3%     -17.7%    5461347 ±  3%  perf-sched.total_wait_and_delay.count.ms
->       0.30 ±  2%     +19.3%       0.36 ±  3%  perf-sched.total_wait_time.average.ms
->       0.28 ±  3%     +20.8%       0.34 ±  2%  perf-sched.wait_and_delay.avg.ms.__x64_sys_sched_yield.do_syscall_64.entry_SYSCALL_64_after_hwframe.[unknown]
->    6614032 ±  3%     -17.8%    5436664 ±  3%  perf-sched.wait_and_delay.count.__x64_sys_sched_yield.do_syscall_64.entry_SYSCALL_64_after_hwframe.[unknown]
->       5.80 ±107%    +259.8%      20.86 ± 35%  perf-sched.wait_and_delay.max.ms.__cond_resched.down_write.shmem_file_write_iter.vfs_write.ksys_write
->      17.23 ± 28%     +69.3%      29.17 ±  8%  perf-sched.wait_and_delay.max.ms.__cond_resched.shmem_get_folio_gfp.shmem_write_begin.generic_perform_write.shmem_file_write_iter
->      20.45 ± 15%     +63.4%      33.41 ± 21%  perf-sched.wait_and_delay.max.ms.irqentry_exit_to_user_mode.asm_sysvec_apic_timer_interrupt.[unknown].[unknown]
->       0.02 ±223%   +4040.9%       0.79 ±127%  perf-sched.wait_time.avg.ms.__cond_resched.zap_pte_range.zap_pmd_range.isra.0
->       0.15 ±  2%     +20.6%       0.18 ±  2%  perf-sched.wait_time.avg.ms.__x64_sys_sched_yield.do_syscall_64.entry_SYSCALL_64_after_hwframe.[unknown]
->       2.90 ±107%    +259.8%      10.43 ± 35%  perf-sched.wait_time.max.ms.__cond_resched.down_write.shmem_file_write_iter.vfs_write.ksys_write
->       8.62 ± 28%     +69.3%      14.58 ±  8%  perf-sched.wait_time.max.ms.__cond_resched.shmem_get_folio_gfp.shmem_write_begin.generic_perform_write.shmem_file_write_iter
->       0.02 ±223%   +5863.5%       1.14 ± 88%  perf-sched.wait_time.max.ms.__cond_resched.zap_pte_range.zap_pmd_range.isra.0
->      10.22 ± 15%    +103.2%      20.77 ± 61%  perf-sched.wait_time.max.ms.irqentry_exit_to_user_mode.asm_sysvec_apic_timer_interrupt.[unknown].[unknown]
-> 
-> 
-> 
-> 
-> Disclaimer:
-> Results have been estimated based on internal Intel analysis and are provided
-> for informational purposes only. Any difference in system hardware or software
-> design or configuration may affect actual performance.
-> 
-> 
-> -- 
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
-> 
+ -# CONFIG_M486SX is not set
+ +CONFIG_M486SX=y
+  # CONFIG_SMP is not set
+  CONFIG_X86_GENERIC=y
+
+In theory, setting X86_GENERIC should make a kernel built for an
+older CPU work on any newer one. In practice, I'm not surprised
+that this fails: While AMD K8 is ten years older than Intel Sandy
+Bridge, they are architecturally still very similar. The i486SX
+is another decade older, but its design is as far removed from
+both K8 and Sandy Bridge as it gets.
+
+It would be nice to not have to support 486sx any more.
+We have discussed removing support for older CPUs without
+TSC, FPU and CX8 in the past, but so far always kept them
+around.
+
+> [ 721.016779][ C0] hardirqs last disabled at (159506): 
+> sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1049) 
+> [ 721.016779][ C0] softirqs last enabled at (159174): handle_softirqs 
+> (kernel/softirq.c:408 kernel/softirq.c:589) 
+> [ 721.016779][ C0] softirqs last disabled at (159159): __do_softirq 
+> (kernel/softirq.c:596) 
+> [  721.016779][    C0] CPU: 0 UID: 0 PID: 1 Comm: swapper Not tainted 
+> 6.14.0-rc3-00037-gf388f60ca904 #1
+> [  721.016779][    C0] Hardware name: QEMU Standard PC (i440FX + PIIX, 
+> 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> [ 721.016779][ C0] EIP: timekeeping_notify 
+> (kernel/time/timekeeping.c:1522) 
+
+Timekeeping code could be related, I see that CONFIG_X86_TSC
+is disabled for i486SX configurations, so even if a TSC is present
+in the emulated machine, it is not being used to measure time
+accurately.
+
+> -CONFIG_X86_CMPXCHG64=y
+
+This could be another issue, if there is code that relies on
+the cx8/cmpxchg8b feature to be used. Since this is a non-SMP
+kernel, this is less likely to be the cause of the problem.
+
+Can you try what happens when you enable the two options, either
+by changing CONFIG_M486SX to CONFIG_M586TSC, or with a patch
+like the one below? Note that CONFIG_X86_CMPXCHG64 recently
+got renamed to CONFIG_X86_CX8, but they are the exact same thing.
+
+diff --git a/arch/x86/Kconfig.cpu b/arch/x86/Kconfig.cpu
+index f928cf6e3252..ac6cc69060f1 100644
+--- a/arch/x86/Kconfig.cpu
++++ b/arch/x86/Kconfig.cpu
+@@ -317,7 +317,6 @@ config X86_USE_PPRO_CHECKSUM
+ 
+ config X86_TSC
+        def_bool y
+-       depends on (MWINCHIP3D || MCRUSOE || MEFFICEON || MCYRIXIII || MK7 || MK6 || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || M586MMX || M586TSC || MVIAC3_2 || MVIAC7 || MGEODEGX1 || MGEODE_LX || MATOM) || X86_64
+ 
+ config X86_HAVE_PAE
+        def_bool y
+@@ -325,7 +324,6 @@ config X86_HAVE_PAE
+ 
+ config X86_CX8
+        def_bool y
+-       depends on X86_HAVE_PAE || M586TSC || M586MMX || MK6 || MK7 || MGEODEGX1 || MGEODE_LX
+ 
+ # this should be set for all -march=.. options where the compiler
+ # generates cmov.
+
+      Arnd
