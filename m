@@ -1,159 +1,157 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0270E19E7F9
-	for <oe-lkp@lists.linux.dev>; Thu, 24 Apr 2025 14:17:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31EBA22127E
+	for <oe-lkp@lists.linux.dev>; Thu, 24 Apr 2025 16:08:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745504256; cv=none; b=F4RBPgrF5pGmOWJOpL1nlBtncU5pJo7IqrB9r9xcYQO8MjdjEuzIwH/KIrbRm2yUWnCOa1R2WXtWNhQisiWAsr6PcLF377z7YB/53OFIjd0MmWwu6AR0LdjopnYdlbr+t/CEduCi7D6QETiAfRRJOFujYJ/+R9HHgR45iCeGRN0=
+	t=1745510895; cv=none; b=tnk9H1KMBX2+uGDSTwz6VjtPzyFEu9lSPmfuFEOC3juiUZZvhfxqd5jyBvfK9Ad7UG+baMNxvfajewAkKthFwVgHoMzOlyI6EErb6MQufkCnBfHiLnVPapxnCwo9JyWgxbn/7YZLYje/1Q2hTOWVQGoU1VhJ9PMH5dYsqpurFCA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745504256; c=relaxed/simple;
-	bh=35O+eXZY3DntnXcoScC+cgKTYZRl9WtcNpQPiQcipuU=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=o+HlGgAMhSqx5dRv2G1r0gXbYe4m4/IPOxUms8dGIXmHP/Li7mdS0jrJ+b8eAjiToe06m6nlPPNTC/AHB8deYIQ+6YsJmgKgrFEEZ5evgQP74JyOPPqx0EW9l+OWYMAnD5upLrcj914KSVTBTY0yyXGljYiiIs+uCHYPmvyPpic=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=huwqhcU9; arc=none smtp.client-ip=209.85.214.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1745510895; c=relaxed/simple;
+	bh=uYWmPDd6dGCG5UIqLBjzPijQmOpSj8ZY1AFu91nEB8g=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=pPTvWfT1e1/kpzGHn4ZNDbi1Ia7dZKjhk7R9r7lh+5eLZaz4C5eKKHwPnkJzdtdetG7fxNQN4FX32CxeJSRD6ue/u7EI+aabU8mU5GIJATPwzQyxfMVbbMFj1ecnAgZmeFOHXjZA8/XJr6Y+7CD1i3xrXrccO/QmvVeBDXvEC7E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=RxL7dNak; arc=none smtp.client-ip=209.85.208.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="huwqhcU9"
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-22da3b26532so10928895ad.0
-        for <oe-lkp@lists.linux.dev>; Thu, 24 Apr 2025 07:17:34 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="RxL7dNak"
+Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-5e5bc066283so2232640a12.0
+        for <oe-lkp@lists.linux.dev>; Thu, 24 Apr 2025 09:08:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1745504254; x=1746109054; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0z+evxns/Bjoiul5QbaAUNVJI+dR1D6acIWhDeMpntY=;
-        b=huwqhcU9bLxu6yIIJE+zLJCDFiSV4JpEc8l2AZtYXbW2vHw+hTsan9sK8FUUdE7akj
-         mLeIKWeI6cQBCDbw44jgjaeG8NiTV4sHEnxNUAQsxPbkAU/5brJ8QoOnOqqZvecHbSBd
-         OO1G1/SOxsl4960bQBb+JHpxqJ9piaCYQtBlLSH0E8oVuuPycuFZYhmU13XOYLP1jleR
-         fh95ni3oT9kKFbzq/gqXaR/p+D0X6B9eZKmkVuIN7+pinSQFH05EP8hU0GlTOWJHoryD
-         P7z1XgHj3xIFs7Amg+ttYl66SxZFoeW3rD+S8E/6xixnsWNQ6oAfwW5XrK4Hdu6IBXWA
-         qOyQ==
+        d=linux-foundation.org; s=google; t=1745510891; x=1746115691; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=kBzGqlReJRCvZloMhkbm/qwk3PtByoa/h3b9iiRxguw=;
+        b=RxL7dNakJVmXq8BFLlPSAiwZAaw5T8P2/TsWLf66chCm3xWrdgBHlJTMyBMXRqu0ew
+         zjM/79azrZiiXSuBdxH1jReoyp8Q1qq0DLv8jrYXoGbb6maQCOrkBLU53LqBJ2pHr9rn
+         N7ZkL6rJdZC3q9urpfx7CeVxSQ5Wrp9/m2UIg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745504254; x=1746109054;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=0z+evxns/Bjoiul5QbaAUNVJI+dR1D6acIWhDeMpntY=;
-        b=KtlpMhFH5pvxoflfJVJE4ft9fziPG9zmsFPi8z/8b6iuk5E1+Pc10fvSldIhUOko1W
-         EHxhABiFBTWcmqkRcAOEFPNYIzWsCK2hL7IQ7oGlORBQ2ljnE/bsXL5Eytqp2mgUfL0C
-         D0fBYRAkadnw9XD00x2YA4Q/0vcN11O9xkOgAfitjbzrKVgKtlF/IIoCuFyNPDszu7/1
-         eJzcFYQqRP/z9fll45T77EOQgpG7WmRGPj0y8h4Mc5AcukeJvfKWawuOdWW9j2T6yGWb
-         5GjK7xeZcvIEVGXN/p31kbW6abF+ZAyN844ExT9BaBYOSZChKBq38mv3oRPbTFoRDT0y
-         KWXQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXx2ipf5ou1FlCcrjGcxlVxeAk81DI7uymKKEhj7dh6aWRHuGRTPCWYUrD/VQjG6fiVXMlgpEI=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzTtvhi4Xgf7EdsAUEWqMG6n5RtmEarefaP1AU4Y0UBEgkBehac
-	ZQOSKJolj3W6TFxVYfcqzbzh/m6oOaM/VET9MZX0h4KR48bnAoX/
-X-Gm-Gg: ASbGncv/R/x6tZEp+SDalc+kZDU5LyVt3oaR5Zix29UNQsPl8W8wm+DVGt+0NfNRn6e
-	B2hDI/yocjA8r0HKXGxBMkJgGzdlNtz1LxTgYjxBpgL9LUQGCus39UnnknvBhEbMFlek+0NRda/
-	zF5S4e8Dm5FPgRJ8LSeBz2lm7zBInwk1FSxrcVOjqbxmxp8PyMBD0RoIBREQDrS4/k9un3flXux
-	Mdy9VHMZ9y45ukYlBSidSkek5Bf2fxB9opc7OyGY/igHxOFuy/mlp0Q/Av1gCm1ULHiofxXA/nk
-	KMJCNiXzbKNz8GbrtvYXcT+oqXShWXzLKQLKTgjZV4bX2xicLAGvt4GW
-X-Google-Smtp-Source: AGHT+IF8usctblLAnINg4TnTnQrVnn39vt8hoeGJDJEx4okN1SFMxnOPPtCRy6Y/LdW4YicZvSuIUw==
-X-Received: by 2002:a17:902:d2cb:b0:22c:2492:b96b with SMTP id d9443c01a7336-22db3bde36bmr39814175ad.15.1745504254192;
-        Thu, 24 Apr 2025 07:17:34 -0700 (PDT)
-Received: from fedora.flets-east.jp ([2400:4050:a0e1:7d00:529e:8ad4:796c:105b])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-22db4d74c93sm13760085ad.11.2025.04.24.07.17.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Apr 2025 07:17:33 -0700 (PDT)
-From: Ryo Takakura <ryotkkr98@gmail.com>
-To: pmladek@suse.com
-Cc: Jason@zx2c4.com,
-	gregkh@linuxfoundation.org,
-	john.ogness@linutronix.de,
-	linux-serial@vger.kernel.org,
-	lkp@intel.com,
-	oe-lkp@lists.linux.dev,
-	oliver.sang@intel.com,
-	ryotkkr98@gmail.com
-Subject: Re: [linux-next:master] [serial]  b63e6f60ea: BUG:soft_lockup-CPU##stuck_for#s![modprobe:#]
-Date: Thu, 24 Apr 2025 14:17:28 +0000
-Message-ID: <20250424141728.7949-1-ryotkkr98@gmail.com>
-X-Mailer: git-send-email 2.47.1
-In-Reply-To: <aAn-PkxRAz34tTPR@pathway.suse.cz>
-References: <aAn-PkxRAz34tTPR@pathway.suse.cz>
+        d=1e100.net; s=20230601; t=1745510891; x=1746115691;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=kBzGqlReJRCvZloMhkbm/qwk3PtByoa/h3b9iiRxguw=;
+        b=aZjV2TDDKsuu/j6PEDO8LtKrC5eWHUOnBT6qwsmNlz9ABn0veCu1HbIAf1DkFC5O9B
+         lGhSzTHVBM9VAlfwpELmwH+E7kooocJVMhCaahmdcQHlh1M0fUifoAqJeDZm6wvLUMAJ
+         erajpBOuqMhkzVOzKSnl64ZmsK5SNojUo+pLNvXtpXPdn7obgZ0WmzJh0Mvg8PrAvV0v
+         lTop8tnLLYfcEcDnxQMv75Kk+D7+8+lhdrVDGMCDMzj0olKtN7IRSHM7ByVlT5YyR81v
+         x230xv/Rm+V6xgGE15AUstcHvg4i9MldgXIQaxBKwkkZcH+Z2PwKno50A5S97FoJZT6r
+         9e/w==
+X-Forwarded-Encrypted: i=1; AJvYcCUTY1dKSVnIGD1yvbYfgMNzVSTcZz4GwECHHqJ7/8EBS0WEJyJ9hlutwbASZX7S+ODcSiTOrl0=@lists.linux.dev
+X-Gm-Message-State: AOJu0YzTeVjfPA1Fx6DUESMePqDdEqQDftWCS10eDOyI1GBOQNwTMA1V
+	hnmwG5MhfKhtFAi6dDvEWCwJYHlwkjl4huq/sNGFT4kUbI1NKiRPkamHK/pwBbU+2wDAb5ORx6l
+	JkOo=
+X-Gm-Gg: ASbGncvPeCuYe63lhzPOvBlxHpK9ECIUODmU3dB6/gs/8tFRToD66Grde/5W2IUNGvQ
+	ra13ca5Ux81yG9Trl55QZwfpobvoKo8PMFNV7Fq/rcofCwhWdDSaisWloe9xXQVyBCntebgGQ0V
+	qnqOQb4O/B4qFcSKZODNavlQi5jiXHtHPe+clp/PV9Rl4RMKZOhOatqoGQr07hi77FtGxetZTGo
+	QwrN04WEpbnIh1Awi31eMzMyNLHgb2CC04+5l6vsGEuSNycym9Ucgt74bPbYcbPSDG2AMxiwpfA
+	WJKUBiRfoU7jZJv9sFBjs6pbsTVoZr9RpYc0iY5MbCCJNjUEwX7TcmFVvk4bZgSDSTVl3alN9Up
+	rIL5VmD8DiUyeUg8=
+X-Google-Smtp-Source: AGHT+IGV9mRvQvEdF68K7FdupIXrfpdcM8xxoHc5vd5QH6+ur/eS+lrX/jeWPOkczpt7sEEYtG2Plw==
+X-Received: by 2002:a17:907:7210:b0:acb:94d6:a841 with SMTP id a640c23a62f3a-ace6b3cd385mr19820566b.16.1745510891073;
+        Thu, 24 Apr 2025 09:08:11 -0700 (PDT)
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com. [209.85.218.46])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ace59899a0asm129498866b.52.2025.04.24.09.08.08
+        for <oe-lkp@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 24 Apr 2025 09:08:08 -0700 (PDT)
+Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-acb415dd8faso192417666b.2
+        for <oe-lkp@lists.linux.dev>; Thu, 24 Apr 2025 09:08:08 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCWRSO6t/uFDLcnXTeRDFbHWaWO7EszFxnIXCrSf3aXsQPL+6oyvUQwBVpfdeRzD+3UH/TxuhV4=@lists.linux.dev
+X-Received: by 2002:a17:907:9803:b0:aca:e2d9:41f with SMTP id
+ a640c23a62f3a-ace6b741e5bmr13129366b.60.1745510887699; Thu, 24 Apr 2025
+ 09:08:07 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <202504211553.3ba9400-lkp@intel.com> <59198081-15e2-4b02-934f-c34dd1a0ac93@app.fastmail.com>
+ <aAmeJmL0hUx2kcXC@xsang-OptiPlex-9020> <f1ccb8b4-bbe2-42bc-bb86-c2bf3f9c557d@app.fastmail.com>
+In-Reply-To: <f1ccb8b4-bbe2-42bc-bb86-c2bf3f9c557d@app.fastmail.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Thu, 24 Apr 2025 09:07:50 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wi6k0wk89u+8vmOhcLHPmapK13DDsL2m+xeqEwR9iTd9A@mail.gmail.com>
+X-Gm-Features: ATxdqUFWu0hKLhcTGhg8mlyRmmQ2N2zZFRhSbIjzH-PLZ1yO8QAM-8GtVZ65lIc
+Message-ID: <CAHk-=wi6k0wk89u+8vmOhcLHPmapK13DDsL2m+xeqEwR9iTd9A@mail.gmail.com>
+Subject: Re: [linus:master] [x86/cpu] f388f60ca9: BUG:soft_lockup-CPU##stuck_for#s![swapper:#]
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, 
+	kernel test robot <lkp@intel.com>, linux-kernel@vger.kernel.org, 
+	Ingo Molnar <mingo@kernel.org>, John Stultz <jstultz@google.com>, 
+	Thomas Gleixner <tglx@linutronix.de>, Stephen Boyd <sboyd@kernel.org>, Borislav Petkov <bp@alien8.de>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, 
+	"H. Peter Anvin" <hpa@zytor.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, 24 Apr 2025 11:02:54 +0200, Petr Mladek wrote:
->On Thu 2025-04-24 17:11:01, Ryo Takakura wrote:
->> Hi Petr and John!
->> 
->> On Tue, 22 Apr 2025 14:15:01 +0200, Petr Mladek wrote:
->> >On Mon 2025-04-21 12:41:50, Ryo Takakura wrote:
->> >> Hi!
->> >> 
->> >> I would like to follow up the last email that I sent.
->> >> 
->> >> First, I'm sorry that I later realized that I should have tested
->> >> the rslib test as an inserted module, as how the robot does, by
->> >> choosing CONFIG_REED_SOLOMON_TEST=m.
->> >> Not as a boottime test by enabling CONFIG_REED_SOLOMON_TEST=y.
->> >> 
->> >> Running the rslib test as an inserted module without the John's series
->> >> was less prone to softlockup. Without the John's series, softlockup shows
->> >> up once in a test or not at all. With the John's series, softlockup can
->> >> be observed constanly over the test.
->> >
->> >> >>Thanks Ryo for looking into this! I think we need to have a technical
->> >> >>explanation/understanding of the problem so that it is clear how my
->> >> >>series triggers or exaggerates the issue.
->> >> 
->> >> As mentioned earlier, I'm sorry that I should have run the test as
->> >> inserted module... It seems the series does make the test more prone
->> >> to softlockups.
->> >
->> >IMHO, the main difference is that the patch "serial: 8250: Switch to
->> >nbcon console" removes touch_nmi_watchdog() from
->> >serial8250_console_write().
->> >
->> >The touch_nmi_watchdog() resets the softlockup watchdog. It might
->> >hide that the CPU did not schedule for a long time.
->> >
->> >The touch_nmi_watchdog() was there because the console_lock() owner,
->> >used by the legacy loop, was responsible for flushing all pending
->> >messages. And there might be many pending messages when new ones
->> >were added by other CPUs in parallel. And the legacy loop
->> >could not call cond_resched() when called from printk() because
->> >printk() might be called in atomic context.
->> 
->> I see. Without the John's series, the cond_resched() in the mention
->> code path should be called during the rslib test as it's not in atomic
->> context in addition to the touch_nmi_watchdog().
+On Thu, 24 Apr 2025 at 01:01, Arnd Bergmann <arnd@arndb.de> wrote:
 >
->Just to be sure. The right fix is to add cond_resched() to rslib test.
->The code should allow scheduling and do not block the CPU for too
->long.
->
->touch_nmi_watchdog() just hides the problem. It was used in printk()
->because there was no better solution.
+> Thanks for confirming. So a 486-targeted kernel still passes
+> your tests on modern hardware if we force TSC and CX8 to
+> be enabled, but the boot fails if the options are turned
+> off in Kconfig (though available in emulated hardware).
 
-Understood!
+I wouldn't expect CX8 to really matter - it causes us to generate
+extra code to pick one over the other, but on modern hardware we'll
+still always then dynamically pick the cmpxchg8b instruction.
 
->> I used this kernel[1] which is for raspberry pi. Let me recheck
->> with some other machine with Linus' master and linux-next to see
->> if the behavior is raspberry pi specific.
->
->John explained why the emergency context helped. I think that we have
->a pretty good understating of what is going on there.
->
->I believe that the problem will be the same in all code streams.
->It might be enough to check one of them (Linus' tree or linux-next)
->just to be sure that the fix applies and it has not been already
->fixed.
+Could it trigger bugs in our alternatives, or some miscompilation due
+to the extra complexity? Sure. But it does sound unlikely.
 
-Thanks for clarifying.
-I'll make sure that the problem can also be observed on either of
-Linus' tree or linux-next and they still needs the fix.
+> To be completely sure, you could re-run the same test with
+> just one of these enabled, but I'm rather sure that the TSC
+> is the root cause.
 
-Sincerely,
-Ryo Takakura
+Agreed.
 
->Best Regards,
->Petr
+Particularly when the lockup is then in timekeeping_notify() during
+the initial initcalls -> clocksource_select(), I'm pretty sure this is
+purely about TSC.
+
+That said, maybe the problem is in the watchdog logic, because
+clocksource_done_booting() is what starts the watchdog thread .
+
+So it might be the watchdog code itself that then gets confused
+(because of some "don't use tsc" case that never gets any testing in
+real life) and triggers immediately - and then points the finger at
+the clocksource code only because that's what is still running.
+
+Because CONFIG_X86_TSC does cause some oddities: we end up still
+*using* the TSC for many things if the hardware supports it (which
+modern hardware obviously does), but then other things get disabled
+entirely.
+
+For example, this:
+
+  /*
+   * Boot-time check whether the TSCs are synchronized across
+   * all CPUs/cores:
+   */
+  #ifdef CONFIG_X86_TSC
+  extern bool tsc_store_and_check_tsc_adjust(bool bootcpu);
+  extern void tsc_verify_tsc_adjust(bool resume);
+  extern void check_tsc_sync_target(void);
+  #else
+  static inline bool tsc_store_and_check_tsc_adjust(bool bootcpu) {
+return false; }
+  static inline void tsc_verify_tsc_adjust(bool resume) { }
+  static inline void check_tsc_sync_target(void) { }
+  #endif
+
+So that tsc_store_and_check_tsc_adjust() thing etc never gets run,
+even though we actually *do* use TSC for get_cycles() and friends,
+because *that* code checks the runtime status too:
+
+Now, none of that should matter - because all *those* things are about
+details that simply aren't relevant for any of this case - but maybe
+there is some other situation that has similar "I'm actually using the
+TSC through get_cycles(), but I didn't do some setup because X86_TSC
+wasn't on.."
+
+I really get the feeling that it's time to leave i486 support behind.
+There's zero real reason for anybody to waste one second of
+development effort on this kind of issue.
+
+                   Linus
