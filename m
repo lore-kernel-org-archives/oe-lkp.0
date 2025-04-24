@@ -1,78 +1,78 @@
-Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B15227FD4D
-	for <oe-lkp@lists.linux.dev>; Thu, 24 Apr 2025 14:13:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0270E19E7F9
+	for <oe-lkp@lists.linux.dev>; Thu, 24 Apr 2025 14:17:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745504039; cv=none; b=uMpSQa4pHUsvcDoT22miSa8RzQ+hq/pxIu2EOKJ7SYmhg5PEM9mEJPQhyEc8LPOa/Mcx/dXgLg36/vqrvC0I5RrxMgVVigCJVmkWhS/e80nKkL4TeknTU9w02a1WIUHrVU2axq6FgjRKZLXpyQ9D25xEOKhyIVz2/Le2Is1LIds=
+	t=1745504256; cv=none; b=F4RBPgrF5pGmOWJOpL1nlBtncU5pJo7IqrB9r9xcYQO8MjdjEuzIwH/KIrbRm2yUWnCOa1R2WXtWNhQisiWAsr6PcLF377z7YB/53OFIjd0MmWwu6AR0LdjopnYdlbr+t/CEduCi7D6QETiAfRRJOFujYJ/+R9HHgR45iCeGRN0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745504039; c=relaxed/simple;
-	bh=bEqpNki7jGGD4CCKcLuIXPBkDheH2qulR1vPkXOdIOM=;
+	s=arc-20240116; t=1745504256; c=relaxed/simple;
+	bh=35O+eXZY3DntnXcoScC+cgKTYZRl9WtcNpQPiQcipuU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ZlC2QtmeYKVErkAXuH9yJqv7TzUF1hbOa/XQ3gH156l2KRwjt8Z3J2Pp/C7yPFuus2e+nfqXZWrGyMwbRaM3W4D3zzWZyfeeRmgiRsw//ysdgFJjQUA5SwtOSRDRw2XYBNklBayegPA5IzhZDxTpaKGuHYE9b6VSUfDFO0LFpkc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gg6f3Lsq; arc=none smtp.client-ip=209.85.214.169
+	 MIME-Version; b=o+HlGgAMhSqx5dRv2G1r0gXbYe4m4/IPOxUms8dGIXmHP/Li7mdS0jrJ+b8eAjiToe06m6nlPPNTC/AHB8deYIQ+6YsJmgKgrFEEZ5evgQP74JyOPPqx0EW9l+OWYMAnD5upLrcj914KSVTBTY0yyXGljYiiIs+uCHYPmvyPpic=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=huwqhcU9; arc=none smtp.client-ip=209.85.214.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gg6f3Lsq"
-Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-2243803b776so18606715ad.0
-        for <oe-lkp@lists.linux.dev>; Thu, 24 Apr 2025 07:13:56 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="huwqhcU9"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-22da3b26532so10928895ad.0
+        for <oe-lkp@lists.linux.dev>; Thu, 24 Apr 2025 07:17:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1745504036; x=1746108836; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1745504254; x=1746109054; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=bEqpNki7jGGD4CCKcLuIXPBkDheH2qulR1vPkXOdIOM=;
-        b=gg6f3LsqfFok/lGTG46aaybhNuNQ6hcZf/78o8kFgdt3I9EVb7bGd7qXJnsovYD6QJ
-         BDd4+FckLLAEtxHUivNYB6o7N+08bc2UN0c/r9qKsXPCj/iGCN5jVDITB0b5mqWfNTN0
-         RPpUiUkv/5/5sTPNmC0HbU87BZVMKd+alqildVSaAUGPltb1FksaTM100b2ulf6VMPKz
-         Q/1xxO/+DYPMxmlHzumG7x6lJDOXCnXz4L7DeyOxXqg/IKJ0BgI9VipAjA4lCRvzyyf8
-         2txpqQ7KA3eJbLusaUQHxbkjOL5dsGitfvE0Sf9P9sXm8IiHJPq3JleV6V1RyiUDpCkA
-         Wh2A==
+        bh=0z+evxns/Bjoiul5QbaAUNVJI+dR1D6acIWhDeMpntY=;
+        b=huwqhcU9bLxu6yIIJE+zLJCDFiSV4JpEc8l2AZtYXbW2vHw+hTsan9sK8FUUdE7akj
+         mLeIKWeI6cQBCDbw44jgjaeG8NiTV4sHEnxNUAQsxPbkAU/5brJ8QoOnOqqZvecHbSBd
+         OO1G1/SOxsl4960bQBb+JHpxqJ9piaCYQtBlLSH0E8oVuuPycuFZYhmU13XOYLP1jleR
+         fh95ni3oT9kKFbzq/gqXaR/p+D0X6B9eZKmkVuIN7+pinSQFH05EP8hU0GlTOWJHoryD
+         P7z1XgHj3xIFs7Amg+ttYl66SxZFoeW3rD+S8E/6xixnsWNQ6oAfwW5XrK4Hdu6IBXWA
+         qOyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745504036; x=1746108836;
+        d=1e100.net; s=20230601; t=1745504254; x=1746109054;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=bEqpNki7jGGD4CCKcLuIXPBkDheH2qulR1vPkXOdIOM=;
-        b=OnDJC7IlvY5gCcZxQjLdBh9ruSglDmJb39hi3GPXMZJP53fsPFtxyv4zJvjjs+RR/w
-         5SecO32iOPdyWdW+7pEk6N+Y/msMeZyrhZGwq46G3Ep8LaIPRdyR9yfBR1MamRtZkLCB
-         V4evgASDhHaPuj/aFtllItWdwGBPLog8FEYV2GW79Fvdh9vfLRtTkyO7Oo3iYTEjnRPA
-         Qs0j8lXLogM9oY8cOJvVm/npaLoymDlpTGALmAqNEVt+s147N9pWPMlMh9x6vM4lUjPr
-         s5nUo66Z0Yyj3XnVhUFpoqcmPWxIJ8UA1VAWr6qOFAnxQLySRy90tUn0Vf7FbodO22mT
-         4ItA==
-X-Forwarded-Encrypted: i=1; AJvYcCWQVUp0LZC0Y903BtPHQ0wjJDjrJmJfjkBvwm5b8UJBm1pkqqTJNS9AZ6iDWs8ttfzmdyXBQF4=@lists.linux.dev
-X-Gm-Message-State: AOJu0YyuV1qNNSrvp09VKZj4qbfyaVUAldHCYUnPNIcLR9EeujxlFLMe
-	v9vkWPF6m9KqnkKWJeShd7+X/fKPp/o08frdtGGpf5qvzqXMAFuv
-X-Gm-Gg: ASbGncua/Zp0gpDgaRK95g90PGQ3A0zUXWCEMHQ5r0vAVkHFrLO4DF1w67wGRiY4+7Q
-	8oCpyHmZOGa5Z6ClMycHfAByCMsFo3n3w36GhnctAsRa7lqW11GNcM+8R8zz0Fhd9xfo7FupmKa
-	2fZYAnwfgnoz905SvIerhnadjtSP8dvwwe9W8FZq1xkbnLW1Zz3cU713f2Vfv5phnS6u0khJobK
-	xrcZV8YfzI0h5vDrYAU17riMgntbOPuXxAX2H16KUTzu6GtMepViUm3TEKD7Mdxdpem5wuZJGg4
-	DyvSVreJAGheUu3k7AyvjwEhYW4MWKn/oK71RH2iWjK5suXMGy7Mfy0A
-X-Google-Smtp-Source: AGHT+IGVeoyB0CtF1JIBT/QIdiOCuc0hvo9bPO8kHlwKv6ZbpmQi14kg9HTEQ33x3IgXj1fNkM0diA==
-X-Received: by 2002:a17:902:ef0b:b0:224:584:6f04 with SMTP id d9443c01a7336-22db3be4400mr38867505ad.18.1745504036256;
-        Thu, 24 Apr 2025 07:13:56 -0700 (PDT)
+        bh=0z+evxns/Bjoiul5QbaAUNVJI+dR1D6acIWhDeMpntY=;
+        b=KtlpMhFH5pvxoflfJVJE4ft9fziPG9zmsFPi8z/8b6iuk5E1+Pc10fvSldIhUOko1W
+         EHxhABiFBTWcmqkRcAOEFPNYIzWsCK2hL7IQ7oGlORBQ2ljnE/bsXL5Eytqp2mgUfL0C
+         D0fBYRAkadnw9XD00x2YA4Q/0vcN11O9xkOgAfitjbzrKVgKtlF/IIoCuFyNPDszu7/1
+         eJzcFYQqRP/z9fll45T77EOQgpG7WmRGPj0y8h4Mc5AcukeJvfKWawuOdWW9j2T6yGWb
+         5GjK7xeZcvIEVGXN/p31kbW6abF+ZAyN844ExT9BaBYOSZChKBq38mv3oRPbTFoRDT0y
+         KWXQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXx2ipf5ou1FlCcrjGcxlVxeAk81DI7uymKKEhj7dh6aWRHuGRTPCWYUrD/VQjG6fiVXMlgpEI=@lists.linux.dev
+X-Gm-Message-State: AOJu0YzTtvhi4Xgf7EdsAUEWqMG6n5RtmEarefaP1AU4Y0UBEgkBehac
+	ZQOSKJolj3W6TFxVYfcqzbzh/m6oOaM/VET9MZX0h4KR48bnAoX/
+X-Gm-Gg: ASbGncv/R/x6tZEp+SDalc+kZDU5LyVt3oaR5Zix29UNQsPl8W8wm+DVGt+0NfNRn6e
+	B2hDI/yocjA8r0HKXGxBMkJgGzdlNtz1LxTgYjxBpgL9LUQGCus39UnnknvBhEbMFlek+0NRda/
+	zF5S4e8Dm5FPgRJ8LSeBz2lm7zBInwk1FSxrcVOjqbxmxp8PyMBD0RoIBREQDrS4/k9un3flXux
+	Mdy9VHMZ9y45ukYlBSidSkek5Bf2fxB9opc7OyGY/igHxOFuy/mlp0Q/Av1gCm1ULHiofxXA/nk
+	KMJCNiXzbKNz8GbrtvYXcT+oqXShWXzLKQLKTgjZV4bX2xicLAGvt4GW
+X-Google-Smtp-Source: AGHT+IF8usctblLAnINg4TnTnQrVnn39vt8hoeGJDJEx4okN1SFMxnOPPtCRy6Y/LdW4YicZvSuIUw==
+X-Received: by 2002:a17:902:d2cb:b0:22c:2492:b96b with SMTP id d9443c01a7336-22db3bde36bmr39814175ad.15.1745504254192;
+        Thu, 24 Apr 2025 07:17:34 -0700 (PDT)
 Received: from fedora.flets-east.jp ([2400:4050:a0e1:7d00:529e:8ad4:796c:105b])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-22db4d76c8bsm13764895ad.48.2025.04.24.07.13.53
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-22db4d74c93sm13760085ad.11.2025.04.24.07.17.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Apr 2025 07:13:55 -0700 (PDT)
+        Thu, 24 Apr 2025 07:17:33 -0700 (PDT)
 From: Ryo Takakura <ryotkkr98@gmail.com>
-To: john.ogness@linutronix.de
+To: pmladek@suse.com
 Cc: Jason@zx2c4.com,
 	gregkh@linuxfoundation.org,
+	john.ogness@linutronix.de,
 	linux-serial@vger.kernel.org,
 	lkp@intel.com,
 	oe-lkp@lists.linux.dev,
 	oliver.sang@intel.com,
-	pmladek@suse.com,
 	ryotkkr98@gmail.com
 Subject: Re: [linux-next:master] [serial]  b63e6f60ea: BUG:soft_lockup-CPU##stuck_for#s![modprobe:#]
-Date: Thu, 24 Apr 2025 14:13:51 +0000
-Message-ID: <20250424141351.7674-1-ryotkkr98@gmail.com>
+Date: Thu, 24 Apr 2025 14:17:28 +0000
+Message-ID: <20250424141728.7949-1-ryotkkr98@gmail.com>
 X-Mailer: git-send-email 2.47.1
-In-Reply-To: <84r01i0w9k.fsf@jogness.linutronix.de>
-References: <84r01i0w9k.fsf@jogness.linutronix.de>
+In-Reply-To: <aAn-PkxRAz34tTPR@pathway.suse.cz>
+References: <aAn-PkxRAz34tTPR@pathway.suse.cz>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -81,30 +81,79 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-On Thu, 24 Apr 2025 11:06:23 +0206, John Ogness wrote:
->On 2025-04-24, Ryo Takakura <ryotkkr98@gmail.com> wrote:
->>> By other words, the rslib test should get fixed by adding
->>> cond_resched(). And the conversion of the 8250 serial console
->>> driver to nbcon is correct.
->>
->> I see, and agree! I'll test what's discussed here so that we can say
->> the above statement is true and the John's series can be brought back.
+On Thu, 24 Apr 2025 11:02:54 +0200, Petr Mladek wrote:
+>On Thu 2025-04-24 17:11:01, Ryo Takakura wrote:
+>> Hi Petr and John!
+>> 
+>> On Tue, 22 Apr 2025 14:15:01 +0200, Petr Mladek wrote:
+>> >On Mon 2025-04-21 12:41:50, Ryo Takakura wrote:
+>> >> Hi!
+>> >> 
+>> >> I would like to follow up the last email that I sent.
+>> >> 
+>> >> First, I'm sorry that I later realized that I should have tested
+>> >> the rslib test as an inserted module, as how the robot does, by
+>> >> choosing CONFIG_REED_SOLOMON_TEST=m.
+>> >> Not as a boottime test by enabling CONFIG_REED_SOLOMON_TEST=y.
+>> >> 
+>> >> Running the rslib test as an inserted module without the John's series
+>> >> was less prone to softlockup. Without the John's series, softlockup shows
+>> >> up once in a test or not at all. With the John's series, softlockup can
+>> >> be observed constanly over the test.
+>> >
+>> >> >>Thanks Ryo for looking into this! I think we need to have a technical
+>> >> >>explanation/understanding of the problem so that it is clear how my
+>> >> >>series triggers or exaggerates the issue.
+>> >> 
+>> >> As mentioned earlier, I'm sorry that I should have run the test as
+>> >> inserted module... It seems the series does make the test more prone
+>> >> to softlockups.
+>> >
+>> >IMHO, the main difference is that the patch "serial: 8250: Switch to
+>> >nbcon console" removes touch_nmi_watchdog() from
+>> >serial8250_console_write().
+>> >
+>> >The touch_nmi_watchdog() resets the softlockup watchdog. It might
+>> >hide that the CPU did not schedule for a long time.
+>> >
+>> >The touch_nmi_watchdog() was there because the console_lock() owner,
+>> >used by the legacy loop, was responsible for flushing all pending
+>> >messages. And there might be many pending messages when new ones
+>> >were added by other CPUs in parallel. And the legacy loop
+>> >could not call cond_resched() when called from printk() because
+>> >printk() might be called in atomic context.
+>> 
+>> I see. Without the John's series, the cond_resched() in the mention
+>> code path should be called during the rslib test as it's not in atomic
+>> context in addition to the touch_nmi_watchdog().
 >
->I'm looking forward to seeing your test results. Note there is also 2
-
-OK!
-
->more issues blocking the series:
+>Just to be sure. The right fix is to add cond_resched() to rslib test.
+>The code should allow scheduling and do not block the CPU for too
+>long.
 >
->https://lore.kernel.org/linux-serial/80b020fc-c18a-4da4-b222-16da1cab2f4c@nvidia.com/
->
->and an offlist report from NXP relating to not being able to suspend on
->ARMv8 due to printk irq work IPIs.
+>touch_nmi_watchdog() just hides the problem. It was used in printk()
+>because there was no better solution.
 
-Oh, I wasn't aware of those two...
-I may look into them as well after this!
+Understood!
+
+>> I used this kernel[1] which is for raspberry pi. Let me recheck
+>> with some other machine with Linus' master and linux-next to see
+>> if the behavior is raspberry pi specific.
+>
+>John explained why the emergency context helped. I think that we have
+>a pretty good understating of what is going on there.
+>
+>I believe that the problem will be the same in all code streams.
+>It might be enough to check one of them (Linus' tree or linux-next)
+>just to be sure that the fix applies and it has not been already
+>fixed.
+
+Thanks for clarifying.
+I'll make sure that the problem can also be observed on either of
+Linus' tree or linux-next and they still needs the fix.
 
 Sincerely,
 Ryo Takakura
 
->John
+>Best Regards,
+>Petr
