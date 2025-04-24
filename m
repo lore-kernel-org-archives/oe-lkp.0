@@ -1,160 +1,243 @@
-Received: from fout-a7-smtp.messagingengine.com (fout-a7-smtp.messagingengine.com [103.168.172.150])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6484A1F1908
-	for <oe-lkp@lists.linux.dev>; Thu, 24 Apr 2025 21:28:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.150
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63EA219DF4A;
+	Thu, 24 Apr 2025 22:56:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745530105; cv=none; b=TLpmGGfeJlww40VWFBgukzoHKVxXHFKk3uLBVXkVOesH2n4QHUEwSA/Gkc2ocpk2ja70POUjF0/JJ2VhcIxT/1Fx2id86d0tKvV/9oEjaZmCPttCVSFCFsb9qsFUYnhdov7a7g1qJ00zitFRuM+0da9Uvwm+OwI7UI6PObqXo18=
+	t=1745535370; cv=none; b=Sa/eo32bB+PEeqo64RWAyBcfA13TD4JfEqrI5xv7JeoJvVMWIBFl89vXwr/7AtS1dJ9Zr++WCleLsT5N2RVNx0U9zhRY6ikIXZwEBhRlNvJow42z/EDbruuZ0kzYsZUWAyMqWPQZJhW7SKQdOTGpryEtx8WOhjhXMdAmvAbX6TU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745530105; c=relaxed/simple;
-	bh=wLKWCvu+iQ+NHAp34v0YLucvFtvmmMtL0Blgbv19Ac8=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=M9glj/ZxNspoblvAfSC3F5yP7GsEusRxoOCw6yzZn7xysAvBFo1Scb4CV1BUs4VqVjbg9a/U6ETkVgZ47JULP2R/3i8AXjIPk8Mj6Q3k7pJjKplXioxnWlbr142GiI5S4OpPBB4drxfGtmiM9oUmeOZNpUX3CRFURxNRvzd/zeM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=rGi9i1Q4; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=ORg9xDFj; arc=none smtp.client-ip=103.168.172.150
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	s=arc-20240116; t=1745535370; c=relaxed/simple;
+	bh=rONlSTV9KsUzMXsWImgBgWL3p1SN2kaztMqBtsBDXbQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nqWaY7sHX/rMGHjlv91RNSL1PHOHpYbqRkOJN1JbtL8xNTNR4RzNi50+ZGS/fPo5eUr7+8gGdB1BHfuA6tcf7t955KYqbXbERW57Fm4Eeii91S7SgF034m5vgnkwzwvPYmwdSU76hMXPSWmYdJstc0o8kIai8qF2iPXmth7pH3s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g12+dwYs; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="rGi9i1Q4";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="ORg9xDFj"
-Received: from phl-compute-05.internal (phl-compute-05.phl.internal [10.202.2.45])
-	by mailfout.phl.internal (Postfix) with ESMTP id 883EC13801DD;
-	Thu, 24 Apr 2025 17:28:22 -0400 (EDT)
-Received: from phl-imap-11 ([10.202.2.101])
-  by phl-compute-05.internal (MEProxy); Thu, 24 Apr 2025 17:28:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm2; t=1745530102;
-	 x=1745616502; bh=rZFS9AFpRvZdHjvWuollRfRtx2GgZpFwPOlMhnHg6H0=; b=
-	rGi9i1Q4GxqrNKuwtbcB+HDUQkHKl9jxp6oXZAu8DvTr5Y7FYadzL2PJ7nY3ADMd
-	uAeyVYtqha4pX7oQhby0z6x02BThGynZWZT4S9EYYMfnxxfuM3zIpYa/AyJrRPee
-	S0E4j7dflGJMkgqjqEZvLDd1jKDLv8FcqfFkG+yiVh8iq3DUTn2wUrhuRB84i1xS
-	XMsFEZaMl8Jm+Rbbs12z87VYZszxXD+F8ke+M8sq+LVQ2lbQP9x9Yk4rAvia4NSm
-	LB5eJIw4kyMNBRKvGDBllqvaz5D40vcTqK1Viox5j3lMSmUIPSqfm90X7LZbf3SA
-	sLLhtsmlJAJifYPtjFSasg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1745530102; x=
-	1745616502; bh=rZFS9AFpRvZdHjvWuollRfRtx2GgZpFwPOlMhnHg6H0=; b=O
-	Rg9xDFjkpRT00qdQimXb1jCVedaHvBvjHFszlT7tlCXO8m9+q1GENv0svnPAS5/y
-	03d+MwvlHIWpg8SAIZz4lcDj+kmi85DJHIsti9cs3j+QKXZkMGXo0k1caSKr2LJ5
-	o05Rm8chzrTLU8hDIRBYnTHx/VSfsYrWl6vdT662BBvT8HThq2uhiGiIV0+Y0nO0
-	09x0+1fYiGVTCL9L/c6ro9tp/yH/eKg5hHgksu/8Xhqp4eqAnUEsWLqSw3RXFd9A
-	3wRzvyLLQK0Zyc8/anIMa4FGYkH/lDC4vXVtUt8RXROYkITeCpgqucxakTX0YY9q
-	ubZuTy2P/r5KkZDIapT1g==
-X-ME-Sender: <xms:9awKaLTry2rJDfElNuRh9IKcVtantZZEJ6efMu2OBjF0bhUWKfBphw>
-    <xme:9awKaMwvfVhqTzSvqAvvhuFRHQcUjUvpJd_-VYWhYwJWTIwNxH0lHajHaLsHWjaei
-    5GVHDuQTtbyIIOR4J4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddvhedtheehucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggv
-    pdfurfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpih
-    gvnhhtshculddquddttddmnecujfgurhepofggfffhvfevkfgjfhfutgfgsehtqhertder
-    tdejnecuhfhrohhmpedftehrnhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnug
-    gsrdguvgeqnecuggftrfgrthhtvghrnhepvdfhvdekueduveffffetgfdvveefvdelhedv
-    vdegjedvfeehtdeggeevheefleejnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrg
-    hmpehmrghilhhfrhhomheprghrnhgusegrrhhnuggsrdguvgdpnhgspghrtghpthhtohep
-    udegpdhmohguvgepshhmthhpohhuthdprhgtphhtthhopegsphesrghlihgvnhekrdguvg
-    dprhgtphhtthhopehjshhtuhhlthiisehgohhoghhlvgdrtghomhdprhgtphhtthhopehp
-    vghtvghriiesihhnfhhrrgguvggrugdrohhrghdprhgtphhtthhopehlkhhpsehinhhtvg
-    hlrdgtohhmpdhrtghpthhtohepohhlihhvvghrrdhsrghnghesihhnthgvlhdrtghomhdp
-    rhgtphhtthhopehmihhnghhosehkvghrnhgvlhdrohhrghdprhgtphhtthhopehssghohi
-    gusehkvghrnhgvlhdrohhrghdprhgtphhtthhopeigkeeisehkvghrnhgvlhdrohhrghdp
-    rhgtphhtthhopehtghhlgieslhhinhhuthhrohhnihigrdguvg
-X-ME-Proxy: <xmx:9awKaA36rhUm8ERMbAvNW1CzKsdUp5Aj5-IeLkIN44R8m2xKGLwXZA>
-    <xmx:9awKaLCRB39BR8b07IlqJvydMKjMHPyfVaut0huxKe8j3UTbJwwprQ>
-    <xmx:9awKaEjsoA188NSg9Q7WdbxNpzg8Crf0x7SljLCsf09yGWoD_KxN7g>
-    <xmx:9awKaPrmEyUpyR_-TBPcCwWs891VeaEcj4TUngJsSbAZBPeeRY91Vw>
-    <xmx:9qwKaB0SVL6cAxmF9AHUQyTou1Mm1HeAdd-TQjSIvGqaRH8NvExB2w07>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id 0D3ED2220073; Thu, 24 Apr 2025 17:28:21 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g12+dwYs"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EE87C4CEE3;
+	Thu, 24 Apr 2025 22:56:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1745535370;
+	bh=rONlSTV9KsUzMXsWImgBgWL3p1SN2kaztMqBtsBDXbQ=;
+	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+	b=g12+dwYsHbx2EXPghRdnJGqXrtjQJJ45JP81rkiNmfmCy6l3wzihx0uHZqbEGYBIp
+	 Km0d06Vx+zRg4a18en4g9J6vYjmkfcWiZnGZ9RxhpgJACh9FTd2Jxgs19BuA+ytriL
+	 ji/upc0HaRlMScQYr5CSh3Q4KAxqbsGV2iEysciyVfqRb/tD31Z4SpET5/rt/eBdQr
+	 vzuY1iuClmMjE1WqYIIQNlIQdlNQQwhqco1HhgX2yOP6Tmvbj7IcObBq3Q+PyUcE2V
+	 LBDr0lqzHqw9Z6QwC5jKQpdoWttSJ5iNjwa45qWZE4cDDEe072HUqoy8docruDomv6
+	 qF9HSI37AkQVA==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+	id D2821CE191C; Thu, 24 Apr 2025 15:56:09 -0700 (PDT)
+Date: Thu, 24 Apr 2025 15:56:09 -0700
+From: "Paul E. McKenney" <paulmck@kernel.org>
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
+	Joel Fernandes <joelagnelf@nvidia.com>,
+	linux-kernel@vger.kernel.org
+Subject: Re: [linux-next:master] [rcutorture]  ddd062f753:
+ WARNING:at_kernel/rcu/rcutorture.c:#rcu_torture_updown[rcutorture]
+Message-ID: <7f32b085-c9e9-4686-9a93-539080cee9ab@paulmck-laptop>
+Reply-To: paulmck@kernel.org
+References: <202504211513.23f21a0-lkp@intel.com>
+ <9db0175d-eb50-4534-969f-35afaa677927@paulmck-laptop>
+ <aAcixqijvHL2ihHS@xsang-OptiPlex-9020>
+ <4d8dd409-259c-4775-baf9-e272cc5238e7@paulmck-laptop>
+ <aAmYzAsE6fPz5uaB@xsang-OptiPlex-9020>
+ <5863ed5d-81b4-452a-a929-d68c26d6d028@paulmck-laptop>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-ThreadId: T4342aa6c0720da08
-Date: Thu, 24 Apr 2025 23:27:42 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Ingo Molnar" <mingo@kernel.org>,
- "Linus Torvalds" <torvalds@linux-foundation.org>
-Cc: "kernel test robot" <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
- "kernel test robot" <lkp@intel.com>, linux-kernel@vger.kernel.org,
- "John Stultz" <jstultz@google.com>, "Thomas Gleixner" <tglx@linutronix.de>,
- "Stephen Boyd" <sboyd@kernel.org>, "Borislav Petkov" <bp@alien8.de>,
- "Dave Hansen" <dave.hansen@linux.intel.com>, x86@kernel.org,
- "H. Peter Anvin" <hpa@zytor.com>, "Peter Zijlstra" <peterz@infradead.org>
-Message-Id: <dd29df0c-0b4f-44e6-b71b-2a358ea76fb4@app.fastmail.com>
-In-Reply-To: <aAp6u9ylKCpvMJRF@gmail.com>
-References: <202504211553.3ba9400-lkp@intel.com>
- <59198081-15e2-4b02-934f-c34dd1a0ac93@app.fastmail.com>
- <aAmeJmL0hUx2kcXC@xsang-OptiPlex-9020>
- <f1ccb8b4-bbe2-42bc-bb86-c2bf3f9c557d@app.fastmail.com>
- <CAHk-=wi6k0wk89u+8vmOhcLHPmapK13DDsL2m+xeqEwR9iTd9A@mail.gmail.com>
- <aAp6u9ylKCpvMJRF@gmail.com>
-Subject: Re: [RFC PATCH 0/15] x86: Remove support for TSC-less and CX8-less CPUs
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5863ed5d-81b4-452a-a929-d68c26d6d028@paulmck-laptop>
 
-On Thu, Apr 24, 2025, at 19:54, Ingo Molnar wrote:
-> * Linus Torvalds <torvalds@linux-foundation.org> wrote:
->
->> I really get the feeling that it's time to leave i486 support behind.=20
->> There's zero real reason for anybody to waste one second of=20
->> development effort on this kind of issue.
->
-> Fully agreed!
->
-> And to turn this idea into code, here's a very raw RFC series that=20
-> starts removing non-TSC 586 and 486 code and related support code from=20
-> the x86 architecture, with the goal to make TSC and CX8 (CMPXCHG8B)=20
-> support unconditionally available:
+On Wed, Apr 23, 2025 at 08:05:53PM -0700, Paul E. McKenney wrote:
+> On Thu, Apr 24, 2025 at 09:50:04AM +0800, Oliver Sang wrote:
+> > hi, Paul,
+> > 
+> > On Tue, Apr 22, 2025 at 10:54:10AM -0700, Paul E. McKenney wrote:
+> > 
+> > [...]
+> > 
+> > > > > > 
+> > > > > > If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> > > > > > the same patch/commit), kindly add following tags
+> > > > > > | Reported-by: kernel test robot <oliver.sang@intel.com>
+> > > > > > | Closes: https://lore.kernel.org/oe-lkp/202504211513.23f21a0-lkp@intel.com
+> > > > > > 
+> > > > > > 
+> > > > > > The kernel config and materials to reproduce are available at:
+> > > > > > https://download.01.org/0day-ci/archive/20250421/202504211513.23f21a0-lkp@intel.com
+> > > > > 
+> > > > > Good catch, and thank you for your testing efforts!
+> > > > > 
+> > > > > Does the patch at the end of this email help?
+> > > > 
+> > > > sorry but the patch does not help. one dmesg is attached.
+> > > 
+> > > And idiot here failed to check for the exact same problem at the point
+> > > where the timer is queued, so thank you for bearing with me.
+> > > 
+> > > Does the patch at the end of this email (in addition to the previous
+> > > patch) get the job done?
+> > 
+> > unfortunately, it still doesn't fix, one dmesg is attached. part of is as [2]
+> > 
+> > but I applied your two patches directly upon ddd062f753, like below:
+> > 
+> > * 1c91d0bd4809f (linux-devel/fixup-1539a7e7b61a9) further patch for ddd062f753 from Paul
+> > * 1539a7e7b61a9 (linux-devel/fixup-ddd062f753) fix for ddd062f753 from Paul E. McKenney
+> > * ddd062f7536cc rcutorture: Complain if an ->up_read() is delayed more than 10 seconds
+> > * 1b983c34d5695 rcutorture: Comment invocations of tick_dep_set_task()
+> > 
+> > 
+> > I noticed there are some conflicts while applying your second patch, the
+> > 1c91d0bd4809f looks like [1]. there is no "int rtorsu_cpu;" before line:
+> > +	ktime_t rtorsu_kt;
+> > 
+> > seems your patch has a different base? I worried if my applyment has
+> > problems. if so, could you tell me the correct base? thanks!
+> 
+> It looks correct to me.  I will rebase at my end to make it apply cleanly
+> by the end of my tomorrow at the latest.  Attempting it now would likely
+> just make a mess.  :-/
+> 
+> And thank you very much for your help with this because...
+> 
+> > [1]
+> > commit 1c91d0bd4809f9f12e61f25d881a02f25c473702 (linux-devel/fixup-1539a7e7b61a9)
+> > Author: 0day robot <lkp@intel.com>
+> > Date:   Wed Apr 23 10:27:51 2025 +0800
+> > 
+> >     further patch for ddd062f753 from Paul
+> > 
+> >     Signed-off-by: 0day robot <lkp@intel.com>
+> > 
+> > diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
+> > index e7b5811e0e456..14cc67d436c97 100644
+> > --- a/kernel/rcu/rcutorture.c
+> > +++ b/kernel/rcu/rcutorture.c
+> > @@ -2438,6 +2438,7 @@ rcu_torture_reader(void *arg)
+> >  struct rcu_torture_one_read_state_updown {
+> >         struct hrtimer rtorsu_hrt;
+> >         bool rtorsu_inuse;
+> > +       ktime_t rtorsu_kt;
+> >         unsigned long rtorsu_j;
+> >         struct torture_random_state rtorsu_trs;
+> >         struct rcu_torture_one_read_state rtorsu_rtors;
+> > @@ -2522,12 +2523,14 @@ static void rcu_torture_updown_one(struct rcu_torture_one_read_state_updown *rto
+> >                 schedule_timeout_idle(HZ);
+> >                 return;
+> >         }
+> > -       rtorsup->rtorsu_j = jiffies;
+> >         smp_store_release(&rtorsup->rtorsu_inuse, true);
+> >         t = torture_random(&rtorsup->rtorsu_trs) & 0xfffff; // One per million.
+> >         if (t < 10 * 1000)
+> >                 t = 200 * 1000 * 1000;
+> >         hrtimer_start(&rtorsup->rtorsu_hrt, t, HRTIMER_MODE_REL | HRTIMER_MODE_SOFT);
+> > +       smp_mb(); // Sample jiffies after posting hrtimer.
+> > +       rtorsup->rtorsu_j = jiffies;  // Not used by hrtimer handler.
+> > +       rtorsup->rtorsu_kt = t;
+> >  }
+> > 
+> >  /*
+> > @@ -2548,7 +2551,9 @@ rcu_torture_updown(void *arg)
+> >                                 break;
+> >                         j = smp_load_acquire(&jiffies); // Time before ->rtorsu_inuse.
+> >                         if (smp_load_acquire(&rtorsup->rtorsu_inuse)) {
+> > -                               WARN_ON_ONCE(time_after(j, rtorsup->rtorsu_j + 10 * HZ));
+> > +                               WARN_ONCE(time_after(j, rtorsup->rtorsu_j + 1 + HZ * 10),
+> > +                                         "hrtimer queued at jiffies %lu for %lld ns took %lu jiffies\n", rtorsup->rtorsu_j, rtorsup->rtorsu_kt, j - rtorsup->rtorsu_j);
+> >                                 continue;
+> >                         }
+> >                         rcu_torture_updown_one(rtorsup);
+> > 
+> > 
+> > 
+> > [2]
+> > 
+> > [  168.048387][  T796] ------------[ cut here ]------------
+> > [  168.049342][  T796] hrtimer queued at jiffies 4294952214 for 200000000 ns took 1502 jiffies
+> 
+> ... I am quite surprised by the 1502 jiffies.  On a HZ=1000 system,
+> I would have expected this value to be at least 10,000.  I clearly need
+> to dig into this code much more carefully.
 
-Yes, makes sense. I had considered doing something like this in
-my cleanup for large machines, but decided to keep stop there
-because I know that there are users that love their museum pieces.
+And upon looking at the dmesg.xz that you attached, I see that HZ=100.
+So there really is a 15-second delay, which is intended to trip this
+10-second timeout.
 
-For embedded systems, I'm quite sure that the AMD =C3=89lan, SIS 55x,
-RDC321x and Vortex86SX have ended their useful life. You may
-still be able to buy Vortex86SX machines and they are probably
-still running somewhere, but the entire point of those machines
-is to run old software. DM&P provides patches for linux-2.6.29
-and Windows CE 6.0 for the SX chips.
+So I guess is it no more Mr. Nice Guy for hrtimers, and therefore
+HRTIMER_MODE_HARD it is!  ;-)
 
-The desktop Socket 7 clones without CX8/TSC all got discontinued
-over 25 years ago, and they were rare even then.
+Once again, thank you for your testing efforts!
 
->       x86/platform: Remove CONFIG_X86_RDC321X support
->       arch/x86, gpio: Remove GPIO_RDC321X support
->       arch/x86, watchdog: Remove the RDC321X_WDT watchdog driver
->       arch/x86, mfd: Remove MFD_RDC321X support
->       x86/reboot: Remove the RDC321X reboot quirk
+I also rebased my fixup patches to the bottom of my development stack,
+so the combined patch shown below should apply cleanly.  Here is hoping
+that the third time is a charm.  ;-)
 
-I'm not sure about the RDC321X bits. Obviously the original
-321x/861x/vortex86sx chips are obsolete and can be removed,
-but the product line is still actively developed by RDC and=20
-DM&P, and I suspect that some of the drivers are still used
-on 586tsc-class (vortex86dx, vortex86mx) and 686-class
-(vortex86dx3, vortex86ex) SoCs that do run modern kernels and
-get updates.
+							Thanx, Paul
 
->       x86/cpu: Remove CPU_SUP_UMC_32 support
->       x86/cpu: Remove TSC-less CONFIG_M586 support
+------------------------------------------------------------------------
 
-I think Winchip6 (486-class, no tsc, no cx8) and Winchip3D
-(486-class, with tsc but no cx8) need to go as well then.
-
-At this point, maybe we can consider removing
-CONFIG_X86_GENERIC and just always build kernels that work
-across a wide set of CPUs: Only CMOV and PAE still require a
-CPU with the hardware support, and X86_L1_CACHE_SHIFT needs to
-be at least 6 (64 byte) for compatibility, but everything
-else should just be a tuning option.
-
-      Arnd
+diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
+index 88d9f5298c3d8..1ebeef8019b86 100644
+--- a/kernel/rcu/rcutorture.c
++++ b/kernel/rcu/rcutorture.c
+@@ -2445,6 +2445,7 @@ rcu_torture_reader(void *arg)
+ struct rcu_torture_one_read_state_updown {
+ 	struct hrtimer rtorsu_hrt;
+ 	bool rtorsu_inuse;
++	ktime_t rtorsu_kt;
+ 	unsigned long rtorsu_j;
+ 	unsigned long rtorsu_ndowns;
+ 	unsigned long rtorsu_nups;
+@@ -2488,7 +2489,7 @@ static int rcu_torture_updown_init(void)
+ 	for (i = 0; i < n_up_down; i++) {
+ 		init_rcu_torture_one_read_state(&updownreaders[i].rtorsu_rtors, rand);
+ 		hrtimer_setup(&updownreaders[i].rtorsu_hrt, rcu_torture_updown_hrt, CLOCK_MONOTONIC,
+-			      HRTIMER_MODE_REL | HRTIMER_MODE_SOFT);
++			      HRTIMER_MODE_REL | HRTIMER_MODE_HARD);
+ 		torture_random_init(&updownreaders[i].rtorsu_trs);
+ 		init_rcu_torture_one_read_state(&updownreaders[i].rtorsu_rtors,
+ 						&updownreaders[i].rtorsu_trs);
+@@ -2539,12 +2540,14 @@ static void rcu_torture_updown_one(struct rcu_torture_one_read_state_updown *rto
+ 		schedule_timeout_idle(HZ);
+ 		return;
+ 	}
+-	rtorsup->rtorsu_j = jiffies;
+ 	smp_store_release(&rtorsup->rtorsu_inuse, true);
+ 	t = torture_random(&rtorsup->rtorsu_trs) & 0xfffff; // One per million.
+ 	if (t < 10 * 1000)
+ 		t = 200 * 1000 * 1000;
+-	hrtimer_start(&rtorsup->rtorsu_hrt, t, HRTIMER_MODE_REL | HRTIMER_MODE_SOFT);
++	hrtimer_start(&rtorsup->rtorsu_hrt, t, HRTIMER_MODE_REL | HRTIMER_MODE_HARD);
++	smp_mb(); // Sample jiffies after posting hrtimer.
++	rtorsup->rtorsu_j = jiffies;  // Not used by hrtimer handler.
++	rtorsup->rtorsu_kt = t;
+ }
+ 
+ /*
+@@ -2555,6 +2558,7 @@ static void rcu_torture_updown_one(struct rcu_torture_one_read_state_updown *rto
+ static int
+ rcu_torture_updown(void *arg)
+ {
++	unsigned long j;
+ 	struct rcu_torture_one_read_state_updown *rtorsup;
+ 
+ 	VERBOSE_TOROUT_STRING("rcu_torture_updown task started");
+@@ -2562,8 +2566,10 @@ rcu_torture_updown(void *arg)
+ 		for (rtorsup = updownreaders; rtorsup < &updownreaders[n_up_down]; rtorsup++) {
+ 			if (torture_must_stop())
+ 				break;
++			j = smp_load_acquire(&jiffies); // Time before ->rtorsu_inuse.
+ 			if (smp_load_acquire(&rtorsup->rtorsu_inuse)) {
+-				WARN_ON_ONCE(time_after(jiffies, rtorsup->rtorsu_j + 10 * HZ));
++				WARN_ONCE(time_after(j, rtorsup->rtorsu_j + 1 + HZ * 10),
++					  "hrtimer queued at jiffies %lu for %lld ns took %lu jiffies\n", rtorsup->rtorsu_j, rtorsup->rtorsu_kt, j - rtorsup->rtorsu_j);
+ 				continue;
+ 			}
+ 			rcu_torture_updown_one(rtorsup);
