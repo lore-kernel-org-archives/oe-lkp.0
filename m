@@ -1,157 +1,265 @@
-Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31EBA22127E
-	for <oe-lkp@lists.linux.dev>; Thu, 24 Apr 2025 16:08:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C8A528E60C;
+	Thu, 24 Apr 2025 17:54:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745510895; cv=none; b=tnk9H1KMBX2+uGDSTwz6VjtPzyFEu9lSPmfuFEOC3juiUZZvhfxqd5jyBvfK9Ad7UG+baMNxvfajewAkKthFwVgHoMzOlyI6EErb6MQufkCnBfHiLnVPapxnCwo9JyWgxbn/7YZLYje/1Q2hTOWVQGoU1VhJ9PMH5dYsqpurFCA=
+	t=1745517249; cv=none; b=QNU/DXQk7Gp4/C3sQ/Lx2TcpLvba+3pL/7ebWIMRnn3Mkpbznd973i4UBOPnhSpc26FLnIt84Nf2ux8VnmGjwirZYi1IxtvQkFX8pITPjEX0I09QbRY29csG3kf9F/W5HXlFYN5OgzOQrBu8h+ab/9OhKnpMNoO2hk9RSirCbvY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745510895; c=relaxed/simple;
-	bh=uYWmPDd6dGCG5UIqLBjzPijQmOpSj8ZY1AFu91nEB8g=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=pPTvWfT1e1/kpzGHn4ZNDbi1Ia7dZKjhk7R9r7lh+5eLZaz4C5eKKHwPnkJzdtdetG7fxNQN4FX32CxeJSRD6ue/u7EI+aabU8mU5GIJATPwzQyxfMVbbMFj1ecnAgZmeFOHXjZA8/XJr6Y+7CD1i3xrXrccO/QmvVeBDXvEC7E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=RxL7dNak; arc=none smtp.client-ip=209.85.208.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
+	s=arc-20240116; t=1745517249; c=relaxed/simple;
+	bh=1kn9najvnV8gdb1NXZM+ASr0mMAJoT09AB4GZcvfjGc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GvdFJfw/jV7uLTbCkQd/2Uv8vvfyvXzx1yyywzIhb9/VLnHqHVLw0p3Ij8BdcL8jVMLuga2k8ll5236aon1dPLJrbnu5MZJ8PB5ShUlHQbSu1RdZgx3S9hezSIYOUBXe09J42I8MMABOQ7/Bg8YFAShAauyiCRGBLr0szP3ctJQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZoyHsVa+; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="RxL7dNak"
-Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-5e5bc066283so2232640a12.0
-        for <oe-lkp@lists.linux.dev>; Thu, 24 Apr 2025 09:08:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1745510891; x=1746115691; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=kBzGqlReJRCvZloMhkbm/qwk3PtByoa/h3b9iiRxguw=;
-        b=RxL7dNakJVmXq8BFLlPSAiwZAaw5T8P2/TsWLf66chCm3xWrdgBHlJTMyBMXRqu0ew
-         zjM/79azrZiiXSuBdxH1jReoyp8Q1qq0DLv8jrYXoGbb6maQCOrkBLU53LqBJ2pHr9rn
-         N7ZkL6rJdZC3q9urpfx7CeVxSQ5Wrp9/m2UIg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745510891; x=1746115691;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=kBzGqlReJRCvZloMhkbm/qwk3PtByoa/h3b9iiRxguw=;
-        b=aZjV2TDDKsuu/j6PEDO8LtKrC5eWHUOnBT6qwsmNlz9ABn0veCu1HbIAf1DkFC5O9B
-         lGhSzTHVBM9VAlfwpELmwH+E7kooocJVMhCaahmdcQHlh1M0fUifoAqJeDZm6wvLUMAJ
-         erajpBOuqMhkzVOzKSnl64ZmsK5SNojUo+pLNvXtpXPdn7obgZ0WmzJh0Mvg8PrAvV0v
-         lTop8tnLLYfcEcDnxQMv75Kk+D7+8+lhdrVDGMCDMzj0olKtN7IRSHM7ByVlT5YyR81v
-         x230xv/Rm+V6xgGE15AUstcHvg4i9MldgXIQaxBKwkkZcH+Z2PwKno50A5S97FoJZT6r
-         9e/w==
-X-Forwarded-Encrypted: i=1; AJvYcCUTY1dKSVnIGD1yvbYfgMNzVSTcZz4GwECHHqJ7/8EBS0WEJyJ9hlutwbASZX7S+ODcSiTOrl0=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzTeVjfPA1Fx6DUESMePqDdEqQDftWCS10eDOyI1GBOQNwTMA1V
-	hnmwG5MhfKhtFAi6dDvEWCwJYHlwkjl4huq/sNGFT4kUbI1NKiRPkamHK/pwBbU+2wDAb5ORx6l
-	JkOo=
-X-Gm-Gg: ASbGncvPeCuYe63lhzPOvBlxHpK9ECIUODmU3dB6/gs/8tFRToD66Grde/5W2IUNGvQ
-	ra13ca5Ux81yG9Trl55QZwfpobvoKo8PMFNV7Fq/rcofCwhWdDSaisWloe9xXQVyBCntebgGQ0V
-	qnqOQb4O/B4qFcSKZODNavlQi5jiXHtHPe+clp/PV9Rl4RMKZOhOatqoGQr07hi77FtGxetZTGo
-	QwrN04WEpbnIh1Awi31eMzMyNLHgb2CC04+5l6vsGEuSNycym9Ucgt74bPbYcbPSDG2AMxiwpfA
-	WJKUBiRfoU7jZJv9sFBjs6pbsTVoZr9RpYc0iY5MbCCJNjUEwX7TcmFVvk4bZgSDSTVl3alN9Up
-	rIL5VmD8DiUyeUg8=
-X-Google-Smtp-Source: AGHT+IGV9mRvQvEdF68K7FdupIXrfpdcM8xxoHc5vd5QH6+ur/eS+lrX/jeWPOkczpt7sEEYtG2Plw==
-X-Received: by 2002:a17:907:7210:b0:acb:94d6:a841 with SMTP id a640c23a62f3a-ace6b3cd385mr19820566b.16.1745510891073;
-        Thu, 24 Apr 2025 09:08:11 -0700 (PDT)
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com. [209.85.218.46])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ace59899a0asm129498866b.52.2025.04.24.09.08.08
-        for <oe-lkp@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Apr 2025 09:08:08 -0700 (PDT)
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-acb415dd8faso192417666b.2
-        for <oe-lkp@lists.linux.dev>; Thu, 24 Apr 2025 09:08:08 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWRSO6t/uFDLcnXTeRDFbHWaWO7EszFxnIXCrSf3aXsQPL+6oyvUQwBVpfdeRzD+3UH/TxuhV4=@lists.linux.dev
-X-Received: by 2002:a17:907:9803:b0:aca:e2d9:41f with SMTP id
- a640c23a62f3a-ace6b741e5bmr13129366b.60.1745510887699; Thu, 24 Apr 2025
- 09:08:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZoyHsVa+"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F02FBC4CEEA;
+	Thu, 24 Apr 2025 17:54:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1745517248;
+	bh=1kn9najvnV8gdb1NXZM+ASr0mMAJoT09AB4GZcvfjGc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=ZoyHsVa+SRVHpA13JEdsTo9HIsoQERWOLDc+n+d9PwwQv7WcGs20nfvuCzSJ2gMvP
+	 o/2AHmPkg/DbRVHJHuXW/X7paqrKMzlpmncUMnUylxQFrS3ew510WVBYXyJ0yxKdZ+
+	 sUpyxAU6OOHr723CtjCml748hJukFd1GnIrih4i2mE8GQi9L0vaaZgmA3k7O/HYIxc
+	 /tMu1h2Mw2eSI3x/8VRKCUyMssoXzAysMLfeIGfPyDbslgU+YyXgVNIEqmXrTpMNtR
+	 S1LXeRtumexnGf2l0VMKa/Bjb8zpn2JyxCPv9TUDwlltwOOV6BXBWG5IEWcKZnEKRT
+	 ip6x7hvVCRfQA==
+Date: Thu, 24 Apr 2025 19:54:03 +0200
+From: Ingo Molnar <mingo@kernel.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Arnd Bergmann <arnd@arndb.de>,
+	kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+	kernel test robot <lkp@intel.com>, linux-kernel@vger.kernel.org,
+	John Stultz <jstultz@google.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Stephen Boyd <sboyd@kernel.org>, Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	Peter Zijlstra <peterz@infradead.org>
+Subject: [RFC PATCH 0/15] x86: Remove support for TSC-less and CX8-less CPUs
+Message-ID: <aAp6u9ylKCpvMJRF@gmail.com>
+References: <202504211553.3ba9400-lkp@intel.com>
+ <59198081-15e2-4b02-934f-c34dd1a0ac93@app.fastmail.com>
+ <aAmeJmL0hUx2kcXC@xsang-OptiPlex-9020>
+ <f1ccb8b4-bbe2-42bc-bb86-c2bf3f9c557d@app.fastmail.com>
+ <CAHk-=wi6k0wk89u+8vmOhcLHPmapK13DDsL2m+xeqEwR9iTd9A@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202504211553.3ba9400-lkp@intel.com> <59198081-15e2-4b02-934f-c34dd1a0ac93@app.fastmail.com>
- <aAmeJmL0hUx2kcXC@xsang-OptiPlex-9020> <f1ccb8b4-bbe2-42bc-bb86-c2bf3f9c557d@app.fastmail.com>
-In-Reply-To: <f1ccb8b4-bbe2-42bc-bb86-c2bf3f9c557d@app.fastmail.com>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Thu, 24 Apr 2025 09:07:50 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wi6k0wk89u+8vmOhcLHPmapK13DDsL2m+xeqEwR9iTd9A@mail.gmail.com>
-X-Gm-Features: ATxdqUFWu0hKLhcTGhg8mlyRmmQ2N2zZFRhSbIjzH-PLZ1yO8QAM-8GtVZ65lIc
-Message-ID: <CAHk-=wi6k0wk89u+8vmOhcLHPmapK13DDsL2m+xeqEwR9iTd9A@mail.gmail.com>
-Subject: Re: [linus:master] [x86/cpu] f388f60ca9: BUG:soft_lockup-CPU##stuck_for#s![swapper:#]
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, 
-	kernel test robot <lkp@intel.com>, linux-kernel@vger.kernel.org, 
-	Ingo Molnar <mingo@kernel.org>, John Stultz <jstultz@google.com>, 
-	Thomas Gleixner <tglx@linutronix.de>, Stephen Boyd <sboyd@kernel.org>, Borislav Petkov <bp@alien8.de>, 
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, 
-	"H. Peter Anvin" <hpa@zytor.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wi6k0wk89u+8vmOhcLHPmapK13DDsL2m+xeqEwR9iTd9A@mail.gmail.com>
 
-On Thu, 24 Apr 2025 at 01:01, Arnd Bergmann <arnd@arndb.de> wrote:
->
-> Thanks for confirming. So a 486-targeted kernel still passes
-> your tests on modern hardware if we force TSC and CX8 to
-> be enabled, but the boot fails if the options are turned
-> off in Kconfig (though available in emulated hardware).
 
-I wouldn't expect CX8 to really matter - it causes us to generate
-extra code to pick one over the other, but on modern hardware we'll
-still always then dynamically pick the cmpxchg8b instruction.
+* Linus Torvalds <torvalds@linux-foundation.org> wrote:
 
-Could it trigger bugs in our alternatives, or some miscompilation due
-to the extra complexity? Sure. But it does sound unlikely.
+> I really get the feeling that it's time to leave i486 support behind. 
+> There's zero real reason for anybody to waste one second of 
+> development effort on this kind of issue.
 
-> To be completely sure, you could re-run the same test with
-> just one of these enabled, but I'm rather sure that the TSC
-> is the root cause.
+Fully agreed!
 
-Agreed.
+And to turn this idea into code, here's a very raw RFC series that 
+starts removing non-TSC 586 and 486 code and related support code from 
+the x86 architecture, with the goal to make TSC and CX8 (CMPXCHG8B) 
+support unconditionally available:
 
-Particularly when the lockup is then in timekeeping_notify() during
-the initial initcalls -> clocksource_select(), I'm pretty sure this is
-purely about TSC.
+   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git WIP.x86/cpu
 
-That said, maybe the problem is in the watchdog logic, because
-clocksource_done_booting() is what starts the watchdog thread .
+The full diffstat is nice, primarily due to the removal of the math-emu 
+library:
 
-So it might be the watchdog code itself that then gets confused
-(because of some "don't use tsc" case that never gets any testing in
-real life) and triggers immediately - and then points the finger at
-the clocksource code only because that's what is still running.
+   83 files changed, 30 insertions(+), 14683 deletions(-)
 
-Because CONFIG_X86_TSC does cause some oddities: we end up still
-*using* the TSC for many things if the hardware supports it (which
-modern hardware obviously does), but then other things get disabled
-entirely.
+But even without the math-emu/ removal and the drivers/ pruning it's a 
+substantial simplification:
 
-For example, this:
+   20 files changed, 29 insertions(+), 629 deletions(-)
 
-  /*
-   * Boot-time check whether the TSCs are synchronized across
-   * all CPUs/cores:
-   */
-  #ifdef CONFIG_X86_TSC
-  extern bool tsc_store_and_check_tsc_adjust(bool bootcpu);
-  extern void tsc_verify_tsc_adjust(bool resume);
-  extern void check_tsc_sync_target(void);
-  #else
-  static inline bool tsc_store_and_check_tsc_adjust(bool bootcpu) {
-return false; }
-  static inline void tsc_verify_tsc_adjust(bool resume) { }
-  static inline void check_tsc_sync_target(void) { }
-  #endif
+The patches most relevant to this discussion should be:
 
-So that tsc_store_and_check_tsc_adjust() thing etc never gets run,
-even though we actually *do* use TSC for get_cycles() and friends,
-because *that* code checks the runtime status too:
+      x86/cpu: Remove M486/M486SX/ELAN support
+      ...
+      x86/cpu: Remove TSC-less CONFIG_M586 support
+      x86/cpu: Make CONFIG_X86_TSC unconditional
+      x86/cpu: Make CONFIG_X86_CX8 unconditional
+      x86/percpu: Remove !CONFIG_X86_CX8 methods
+      x86/atomics: Remove !CONFIG_X86_CX8 methods
 
-Now, none of that should matter - because all *those* things are about
-details that simply aren't relevant for any of this case - but maybe
-there is some other situation that has similar "I'm actually using the
-TSC through get_cycles(), but I didn't do some setup because X86_TSC
-wasn't on.."
+If there's no big objections about the scope of removal I'll finish it 
+by removing the non-TSC complications as well, and send out the series 
+to lkml for further review.
 
-I really get the feeling that it's time to leave i486 support behind.
-There's zero real reason for anybody to waste one second of
-development effort on this kind of issue.
+( Note that some of the patches in there are still WIP, as the branch 
+  name suggests. )
 
-                   Linus
+Thanks,
+
+	Ingo
+
+================>
+
+Ingo Molnar (17):
+      x86/cpu: Remove M486/M486SX/ELAN support
+      x86/cpu: Remove the CONFIG_X86_INVD_BUG quirk
+      x86/cpu, cpufreq: Remove AMD ELAN support
+      x86/fpu: Remove MATH_EMULATION and related glue code
+      x86/fpu: Remove the 'no387' boot option
+      x86/fpu: Remove the math-emu/ FPU emulation library
+      x86/platform: Remove CONFIG_X86_RDC321X support
+      arch/x86, gpio: Remove GPIO_RDC321X support
+      arch/x86, watchdog: Remove the RDC321X_WDT watchdog driver
+      arch/x86, mfd: Remove MFD_RDC321X support
+      x86/reboot: Remove the RDC321X reboot quirk
+      x86/cpu: Remove CPU_SUP_UMC_32 support
+      x86/cpu: Remove TSC-less CONFIG_M586 support
+      x86/cpu: Make CONFIG_X86_TSC unconditional
+      x86/cpu: Make CONFIG_X86_CX8 unconditional
+      x86/percpu: Remove !X86_CX8 methods
+      x86/atomics: Remove !CONFIG_X86_CX8 methods
+
+ Documentation/admin-guide/kernel-parameters.txt |    4 -
+ arch/x86/Kconfig                                |   71 +-
+ arch/x86/Kconfig.cpu                            |   73 +-
+ arch/x86/Kconfig.cpufeatures                    |    2 -
+ arch/x86/Makefile                               |    1 -
+ arch/x86/Makefile_32.cpu                        |    6 -
+ arch/x86/include/asm/asm-prototypes.h           |    4 -
+ arch/x86/include/asm/atomic64_32.h              |   17 +-
+ arch/x86/include/asm/cmpxchg_32.h               |   86 +-
+ arch/x86/include/asm/fpu/api.h                  |    6 -
+ arch/x86/include/asm/percpu.h                   |    6 +-
+ arch/x86/include/asm/vermagic.h                 |    8 -
+ arch/x86/kernel/cpu/common.c                    |    7 -
+ arch/x86/kernel/cpu/umc.c                       |   26 -
+ arch/x86/kernel/fpu/core.c                      |    5 -
+ arch/x86/kernel/fpu/init.c                      |    9 +-
+ arch/x86/kernel/reboot_fixups_32.c              |   14 -
+ arch/x86/kernel/traps.c                         |   21 -
+ arch/x86/lib/Makefile                           |    4 -
+ arch/x86/lib/atomic64_386_32.S                  |  195 ---
+ arch/x86/lib/cmpxchg8b_emu.S                    |   97 --
+ arch/x86/math-emu/Makefile                      |   30 -
+ arch/x86/math-emu/README                        |  427 ------
+ arch/x86/math-emu/control_w.h                   |   46 -
+ arch/x86/math-emu/div_Xsig.S                    |  367 -----
+ arch/x86/math-emu/div_small.S                   |   48 -
+ arch/x86/math-emu/errors.c                      |  686 ----------
+ arch/x86/math-emu/exception.h                   |   51 -
+ arch/x86/math-emu/fpu_arith.c                   |  153 ---
+ arch/x86/math-emu/fpu_asm.h                     |   32 -
+ arch/x86/math-emu/fpu_aux.c                     |  267 ----
+ arch/x86/math-emu/fpu_emu.h                     |  218 ---
+ arch/x86/math-emu/fpu_entry.c                   |  718 ----------
+ arch/x86/math-emu/fpu_etc.c                     |  136 --
+ arch/x86/math-emu/fpu_proto.h                   |  157 ---
+ arch/x86/math-emu/fpu_system.h                  |  130 --
+ arch/x86/math-emu/fpu_tags.c                    |  116 --
+ arch/x86/math-emu/fpu_trig.c                    | 1649 -----------------------
+ arch/x86/math-emu/get_address.c                 |  401 ------
+ arch/x86/math-emu/load_store.c                  |  322 -----
+ arch/x86/math-emu/mul_Xsig.S                    |  179 ---
+ arch/x86/math-emu/poly.h                        |  115 --
+ arch/x86/math-emu/poly_2xm1.c                   |  146 --
+ arch/x86/math-emu/poly_atan.c                   |  209 ---
+ arch/x86/math-emu/poly_l2.c                     |  245 ----
+ arch/x86/math-emu/poly_sin.c                    |  379 ------
+ arch/x86/math-emu/poly_tan.c                    |  213 ---
+ arch/x86/math-emu/polynom_Xsig.S                |  137 --
+ arch/x86/math-emu/reg_add_sub.c                 |  334 -----
+ arch/x86/math-emu/reg_compare.c                 |  479 -------
+ arch/x86/math-emu/reg_constant.c                |  123 --
+ arch/x86/math-emu/reg_constant.h                |   26 -
+ arch/x86/math-emu/reg_convert.c                 |   47 -
+ arch/x86/math-emu/reg_divide.c                  |  183 ---
+ arch/x86/math-emu/reg_ld_str.c                  | 1220 -----------------
+ arch/x86/math-emu/reg_mul.c                     |  116 --
+ arch/x86/math-emu/reg_norm.S                    |  150 ---
+ arch/x86/math-emu/reg_round.S                   |  711 ----------
+ arch/x86/math-emu/reg_u_add.S                   |  169 ---
+ arch/x86/math-emu/reg_u_div.S                   |  474 -------
+ arch/x86/math-emu/reg_u_mul.S                   |  150 ---
+ arch/x86/math-emu/reg_u_sub.S                   |  274 ----
+ arch/x86/math-emu/round_Xsig.S                  |  142 --
+ arch/x86/math-emu/shr_Xsig.S                    |   89 --
+ arch/x86/math-emu/status_w.h                    |   68 -
+ arch/x86/math-emu/version.h                     |   12 -
+ arch/x86/math-emu/wm_shrx.S                     |  207 ---
+ arch/x86/math-emu/wm_sqrt.S                     |  472 -------
+ drivers/cpufreq/Kconfig.x86                     |   26 -
+ drivers/cpufreq/Makefile                        |    2 -
+ drivers/cpufreq/elanfreq.c                      |  227 ----
+ drivers/cpufreq/sc520_freq.c                    |  137 --
+ drivers/gpio/Kconfig                            |    8 -
+ drivers/gpio/Makefile                           |    1 -
+ drivers/gpio/gpio-rdc321x.c                     |  197 ---
+ drivers/mfd/Kconfig                             |    9 -
+ drivers/mfd/Makefile                            |    1 -
+ drivers/mfd/rdc321x-southbridge.c               |   96 --
+ drivers/watchdog/Kconfig                        |   11 -
+ drivers/watchdog/Makefile                       |    1 -
+ drivers/watchdog/rdc321x_wdt.c                  |  281 ----
+ include/linux/mfd/rdc321x.h                     |   27 -
+ lib/atomic64_test.c                             |    4 +-
+ 83 files changed, 30 insertions(+), 14683 deletions(-)
+ delete mode 100644 arch/x86/kernel/cpu/umc.c
+ delete mode 100644 arch/x86/lib/atomic64_386_32.S
+ delete mode 100644 arch/x86/lib/cmpxchg8b_emu.S
+ delete mode 100644 arch/x86/math-emu/Makefile
+ delete mode 100644 arch/x86/math-emu/README
+ delete mode 100644 arch/x86/math-emu/control_w.h
+ delete mode 100644 arch/x86/math-emu/div_Xsig.S
+ delete mode 100644 arch/x86/math-emu/div_small.S
+ delete mode 100644 arch/x86/math-emu/errors.c
+ delete mode 100644 arch/x86/math-emu/exception.h
+ delete mode 100644 arch/x86/math-emu/fpu_arith.c
+ delete mode 100644 arch/x86/math-emu/fpu_asm.h
+ delete mode 100644 arch/x86/math-emu/fpu_aux.c
+ delete mode 100644 arch/x86/math-emu/fpu_emu.h
+ delete mode 100644 arch/x86/math-emu/fpu_entry.c
+ delete mode 100644 arch/x86/math-emu/fpu_etc.c
+ delete mode 100644 arch/x86/math-emu/fpu_proto.h
+ delete mode 100644 arch/x86/math-emu/fpu_system.h
+ delete mode 100644 arch/x86/math-emu/fpu_tags.c
+ delete mode 100644 arch/x86/math-emu/fpu_trig.c
+ delete mode 100644 arch/x86/math-emu/get_address.c
+ delete mode 100644 arch/x86/math-emu/load_store.c
+ delete mode 100644 arch/x86/math-emu/mul_Xsig.S
+ delete mode 100644 arch/x86/math-emu/poly.h
+ delete mode 100644 arch/x86/math-emu/poly_2xm1.c
+ delete mode 100644 arch/x86/math-emu/poly_atan.c
+ delete mode 100644 arch/x86/math-emu/poly_l2.c
+ delete mode 100644 arch/x86/math-emu/poly_sin.c
+ delete mode 100644 arch/x86/math-emu/poly_tan.c
+ delete mode 100644 arch/x86/math-emu/polynom_Xsig.S
+ delete mode 100644 arch/x86/math-emu/reg_add_sub.c
+ delete mode 100644 arch/x86/math-emu/reg_compare.c
+ delete mode 100644 arch/x86/math-emu/reg_constant.c
+ delete mode 100644 arch/x86/math-emu/reg_constant.h
+ delete mode 100644 arch/x86/math-emu/reg_convert.c
+ delete mode 100644 arch/x86/math-emu/reg_divide.c
+ delete mode 100644 arch/x86/math-emu/reg_ld_str.c
+ delete mode 100644 arch/x86/math-emu/reg_mul.c
+ delete mode 100644 arch/x86/math-emu/reg_norm.S
+ delete mode 100644 arch/x86/math-emu/reg_round.S
+ delete mode 100644 arch/x86/math-emu/reg_u_add.S
+ delete mode 100644 arch/x86/math-emu/reg_u_div.S
+ delete mode 100644 arch/x86/math-emu/reg_u_mul.S
+ delete mode 100644 arch/x86/math-emu/reg_u_sub.S
+ delete mode 100644 arch/x86/math-emu/round_Xsig.S
+ delete mode 100644 arch/x86/math-emu/shr_Xsig.S
+ delete mode 100644 arch/x86/math-emu/status_w.h
+ delete mode 100644 arch/x86/math-emu/version.h
+ delete mode 100644 arch/x86/math-emu/wm_shrx.S
+ delete mode 100644 arch/x86/math-emu/wm_sqrt.S
+ delete mode 100644 drivers/cpufreq/elanfreq.c
+ delete mode 100644 drivers/cpufreq/sc520_freq.c
+ delete mode 100644 drivers/gpio/gpio-rdc321x.c
+ delete mode 100644 drivers/mfd/rdc321x-southbridge.c
+ delete mode 100644 drivers/watchdog/rdc321x_wdt.c
+ delete mode 100644 include/linux/mfd/rdc321x.h
