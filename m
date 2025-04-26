@@ -1,78 +1,134 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31FD110F9;
-	Sat, 26 Apr 2025 02:11:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E9A11D514F;
+	Sat, 26 Apr 2025 04:07:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.136
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745633518; cv=none; b=ivEvJDhGkZkJ+c9XLFtiTrc0nwdE1HP66qQIlZvUhFfIqS1iYaHBuG+drGn5sTNP/+wvNmieyz2NPaHZo36P8Laq5COfoD0bgXc1zhY5QIbpTYLTufWuk6DfTHfAwb8yM3FvgzRtJzX3T1EZ1vjTyjGE1pgdGG3A/wb7ufvxwKI=
+	t=1745640457; cv=none; b=Po7alpEMsFm+huPq46Hf0Und6MBvy4vmEDMVmMRYvcGSqimf44WmQvvT4d0/7Ismcm+T2EKNdjUuW53/7pt1y682prknIDS+cW3XJHCmdLZZ7aILOJ8BOILVibMO48KhCrpNgTlO8q2NP/XPVqUjW6QbjuvnKf2Jtj2KNu9ljDY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745633518; c=relaxed/simple;
-	bh=fINprzh/TtN1ZLojNEawV4dlHAuKXAlsctSeK/3zSSc=;
-	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=J2gj7wR9DSD16FHccJ/SazaABrpp/xFUUxvr34TBPIfA+b0EsdkddHO+Fqf9nJLjZbFmEPGowXCEBAkq0YCvbE7kvl8CEVGl2RfqEeVw2Inu8jcaw+Ibx0gIOEF8hRpZh16Y7XhMi/UE6DhRKVwgU4ZbK4a18oaDIpb7fj7dH3A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=V5UEZnSf; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1745640457; c=relaxed/simple;
+	bh=bvZTb4A8ZeRpGi8n3Mi6IcgP1UF8axUgHWthR55RjRU=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
+	 MIME-Version:Content-Type; b=PGnixKMbn+O0SXGLdLcQIV6lolIfXg4uKZVOX8cApI6DVl/NwgzxR03QtRCtmJ+WBRjgfO2vbd6PV1loy7EbOKSyPoYLHz7PA+coMaz2aHyEDPXDmitUaR4scy12vs0Cg2Edo6kkZC4w4+0iQzx+OZmNqGnC6E9cFfXWLeiBpRs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com; spf=pass smtp.mailfrom=zytor.com; dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b=d6HNLXY0; arc=none smtp.client-ip=198.137.202.136
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zytor.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="V5UEZnSf"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FC1AC4CEE4;
-	Sat, 26 Apr 2025 02:11:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-	s=korg; t=1745633517;
-	bh=fINprzh/TtN1ZLojNEawV4dlHAuKXAlsctSeK/3zSSc=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=V5UEZnSfXFUZUOdR3IhLqvYRj1ojiBIiVmSIlpsHuDQbavYCshW1iY76vfyulhXk0
-	 LwcVZV84WXBumvLKOynLmkYNaEiAyaUUbUAoYBK19FU8B+aQYvZwCzbddrwnt2MOhC
-	 X7FI7mgxWFyk2u7T2VrUHm89hHEPOQLrkkrKy9H8=
-Date: Fri, 25 Apr 2025 19:11:56 -0700
-From: Andrew Morton <akpm@linux-foundation.org>
-To: "Huang, Ying" <ying.huang@linux.alibaba.com>
-Cc: Raghavendra K T <raghavendra.kt@amd.com>, Nikhil Dhama
- <nikhil.dhama@amd.com>, bharata@amd.com,
- raghavendra.kodsarathimmappa@amd.com, oe-lkp@lists.linux.dev,
- lkp@intel.com, Huang Ying <huang.ying.caritas@gmail.com>,
- linux-mm@kvack.org, linux-kernel@vger.kernel.org, Mel Gorman
- <mgorman@techsingularity.net>
-Subject: Re: [PATCH v3] mm: pcp: increase pcp->free_count threshold to
- trigger free_high
-Message-Id: <20250425191156.c83d082b1c15e46f77c122b3@linux-foundation.org>
-In-Reply-To: <87mscn5ilt.fsf@DESKTOP-5N7EMDA>
-References: <20250407105219.55351-1-nikhil.dhama@amd.com>
-	<87mscn8msp.fsf@DESKTOP-5N7EMDA>
-	<c8b2a3c9-2252-4c0a-85a9-26fa6b519757@amd.com>
-	<87mscn5ilt.fsf@DESKTOP-5N7EMDA>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b="d6HNLXY0"
+Received: from [127.0.0.1] ([76.133.66.138])
+	(authenticated bits=0)
+	by mail.zytor.com (8.18.1/8.17.1) with ESMTPSA id 53Q46rA63834692
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
+	Fri, 25 Apr 2025 21:06:53 -0700
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 53Q46rA63834692
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
+	s=2025042001; t=1745640415;
+	bh=eUtkfRrt/kZPiXPpcYPo5bw7Q8Aflz/KWe0BSAuir1Y=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
+	b=d6HNLXY0c08krUXtedWXoRD/twh6jElJ5k6IdQwTpXIO/BTYVBFnBzPGtKeR6+J7T
+	 QWr9v1axgK4SRmf+XCQjZ5yumrfBkzahqouLx4zQ44a4jh/O+LQyN4S3ZHDCGZCB9P
+	 EpvS4TNXzVXqIYXoT+U/Pfx5exTiMeLZWd7jsZI5zNuv8V6dXSHTlkLzcfKevGrQL9
+	 09y1C3efjWOnaMXkjy3mG/jNKx1KtUKSvXQQWWYVBxKlrpr5iHfUFgJ7qg2hoHm6g+
+	 EV6HYJWHIgPBzUKd+ZymhdpjsQMDK1Cuh4/9BKdxZ/5kRBRVPtVeVKbeXQtxQojKR9
+	 L90UpCUNi8Pag==
+Date: Fri, 25 Apr 2025 21:06:52 -0700
+From: "H. Peter Anvin" <hpa@zytor.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>,
+        Arnd Bergmann <arnd@arndb.de>
+CC: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+        kernel test robot <lkp@intel.com>, linux-kernel@vger.kernel.org,
+        Ingo Molnar <mingo@kernel.org>, John Stultz <jstultz@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>, Stephen Boyd <sboyd@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
+Subject: =?US-ASCII?Q?Re=3A_=5Blinus=3Amaster=5D_=5Bx86/cpu=5D_f388f60ca9=3A_B?=
+ =?US-ASCII?Q?UG=3Asoft=5Flockup-CPU=23=23s?=
+ =?US-ASCII?Q?tuck=5Ffor=23s!=5Bswapper=3A=23=5D?=
+User-Agent: K-9 Mail for Android
+In-Reply-To: <CAHk-=wi6k0wk89u+8vmOhcLHPmapK13DDsL2m+xeqEwR9iTd9A@mail.gmail.com>
+References: <202504211553.3ba9400-lkp@intel.com> <59198081-15e2-4b02-934f-c34dd1a0ac93@app.fastmail.com> <aAmeJmL0hUx2kcXC@xsang-OptiPlex-9020> <f1ccb8b4-bbe2-42bc-bb86-c2bf3f9c557d@app.fastmail.com> <CAHk-=wi6k0wk89u+8vmOhcLHPmapK13DDsL2m+xeqEwR9iTd9A@mail.gmail.com>
+Message-ID: <0976966F-F706-4EE3-B43E-D76958059E3F@zytor.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, 11 Apr 2025 14:15:42 +0800 "Huang, Ying" <ying.huang@linux.alibaba.com> wrote:
+On April 24, 2025 9:07:50 AM PDT, Linus Torvalds <torvalds@linux-foundation=
+=2Eorg> wrote:
+>On Thu, 24 Apr 2025 at 01:01, Arnd Bergmann <arnd@arndb=2Ede> wrote:
+>>
+>> Thanks for confirming=2E So a 486-targeted kernel still passes
+>> your tests on modern hardware if we force TSC and CX8 to
+>> be enabled, but the boot fails if the options are turned
+>> off in Kconfig (though available in emulated hardware)=2E
+>
+>I wouldn't expect CX8 to really matter - it causes us to generate
+>extra code to pick one over the other, but on modern hardware we'll
+>still always then dynamically pick the cmpxchg8b instruction=2E
+>
+>Could it trigger bugs in our alternatives, or some miscompilation due
+>to the extra complexity? Sure=2E But it does sound unlikely=2E
+>
+>> To be completely sure, you could re-run the same test with
+>> just one of these enabled, but I'm rather sure that the TSC
+>> is the root cause=2E
+>
+>Agreed=2E
+>
+>Particularly when the lockup is then in timekeeping_notify() during
+>the initial initcalls -> clocksource_select(), I'm pretty sure this is
+>purely about TSC=2E
+>
+>That said, maybe the problem is in the watchdog logic, because
+>clocksource_done_booting() is what starts the watchdog thread =2E
+>
+>So it might be the watchdog code itself that then gets confused
+>(because of some "don't use tsc" case that never gets any testing in
+>real life) and triggers immediately - and then points the finger at
+>the clocksource code only because that's what is still running=2E
+>
+>Because CONFIG_X86_TSC does cause some oddities: we end up still
+>*using* the TSC for many things if the hardware supports it (which
+>modern hardware obviously does), but then other things get disabled
+>entirely=2E
+>
+>For example, this:
+>
+>  /*
+>   * Boot-time check whether the TSCs are synchronized across
+>   * all CPUs/cores:
+>   */
+>  #ifdef CONFIG_X86_TSC
+>  extern bool tsc_store_and_check_tsc_adjust(bool bootcpu);
+>  extern void tsc_verify_tsc_adjust(bool resume);
+>  extern void check_tsc_sync_target(void);
+>  #else
+>  static inline bool tsc_store_and_check_tsc_adjust(bool bootcpu) {
+>return false; }
+>  static inline void tsc_verify_tsc_adjust(bool resume) { }
+>  static inline void check_tsc_sync_target(void) { }
+>  #endif
+>
+>So that tsc_store_and_check_tsc_adjust() thing etc never gets run,
+>even though we actually *do* use TSC for get_cycles() and friends,
+>because *that* code checks the runtime status too:
+>
+>Now, none of that should matter - because all *those* things are about
+>details that simply aren't relevant for any of this case - but maybe
+>there is some other situation that has similar "I'm actually using the
+>TSC through get_cycles(), but I didn't do some setup because X86_TSC
+>wasn't on=2E=2E"
+>
+>I really get the feeling that it's time to leave i486 support behind=2E
+>There's zero real reason for anybody to waste one second of
+>development effort on this kind of issue=2E
+>
+>                   Linus
 
-> >> in my analysis in
-> >> https://lore.kernel.org/all/875xjmuiup.fsf@DESKTOP-5N7EMDA/
-> >> If you think my analysis is correct, can you add that in patch
-> >> description too?  This makes it easier for people to know why the code
-> >> looks this way.
-> >> 
-> >
-> > Yes. This makes sense. Andrew has already included the patch in mm tree.
-> >
-> > Nikhil,
-> >
-> > Could you please help with the updated write up based on Ying's
-> > suggestion assuming it works for Andrew?
-> 
-> Thanks!
-> 
-> Just send a updated version, Andrew will update the patch in mm tree
-> unless it has been merged by mm-stable.
-
-[ two weeks pass ]
-
-Nikhil's attentions are presumably elsewhere.  Could someone (Ying or
-Raghavendra?) please send along altered changelog text which I can
-paste in there?
+Well, isn't the whole point that his patches remove the cx8 fallback code?
