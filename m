@@ -1,74 +1,86 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B50752580DB
-	for <oe-lkp@lists.linux.dev>; Mon, 12 May 2025 08:16:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBA4325B663
+	for <oe-lkp@lists.linux.dev>; Mon, 12 May 2025 09:19:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747037815; cv=none; b=h9yUZyYDzrumPF7hxhOjopEjDJMTVEk9P+aBTl+G1Bx0VDnWXQ6Pyug5jXXgS/e1nlLLB3Vbb2TJAC/VolxBuoXHIaXaBbVJZkzErT5kPIpOcU0gRIjLk1v63JRqXCctePM2/t3wxejWRF+VinqlD0ODzyqqbOhQk0cfVVyJ4yQ=
+	t=1747041574; cv=none; b=laUMxGuXmCB92MRCxn/jmI6SnZZC+vjKCft7DSFJEelFmDj11L851tP/4WfrJoHU5MdDPDqeYXfrmVKEGmMXUlzLKvXeUwAVecb5KDJxg0e2egnARGSQnG40T/r9ZRGbTBBOnYtzzx/IGwNQ7ioriCB6Kw5y1WZwOQkd0tenyBA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747037815; c=relaxed/simple;
-	bh=q4w3eBjkO7lMqBHv8ON/jKqYt8Hnt5phY3/R+rnronI=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=tVhPKYrcFn3vZgjfF+ec9idl+l4E7NolBnEVxCZCLUmR+V5+sE723N4mkDfIGBn5I6E3gM9M3ERdrerqueD/hIuuOwl7bwLIu3M4gsqVr20kKm9abjripZkSZJw2gPppovBxGmNeGekzvQCo6G/vufbKGs8Htg8AjeLC+QIIrTc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=C+BXnjje; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=IFenqYez; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1747041574; c=relaxed/simple;
+	bh=YxLD1j4n3jsjoJWjaT3zn792WhB6FdopTXqDGpDpVcI=;
+	h=From:In-Reply-To:References:To:Cc:Subject:MIME-Version:
+	 Content-Type:Date:Message-ID; b=pzvd/jiu+UMJH+MloeDsZWmAk+zWNbMSEqk4tVq/MSA1CuONQUFB2hz0GgMRjPdMz7r63EJJ60UOLCZd8EMWACUL1omXIrtagt5x+kEK1YCjMI21a9t0pSHKDJTJyHfYe7L2CFZtvoI4BEIJw85bp9RUr+EjXc3IT8BTg7nA3WY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=CouFx27X; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="C+BXnjje";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="IFenqYez"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1747037806;
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="CouFx27X"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1747041571;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=q4w3eBjkO7lMqBHv8ON/jKqYt8Hnt5phY3/R+rnronI=;
-	b=C+BXnjjejSQgYxEim2M6EDHXWpz+YM+ilvDVzOmEB4J/FntSTlni8iTh1VTecAM4U6y0JM
-	kmojFpxOgwy5q/KzNCPzajfBYscIP9q8Sv/cu84wxRrpGYSefE90IsJw0KLSgGrm9F3FS+
-	oO4qHg1uYjNnSiSyhvSKmyfql9TIH2n4UWGIY86t3tAjxEX1RxrCeongDVxtBar54uVsXe
-	5W86ZDZGDjg7Ij8JN8rqo89gYI3fNkX610Ih02MmNI9YuNQADIX+Dx4xeyyanoGJUhtldh
-	u+4GfgiJq8fNEoTRdPkAWGcRjnTkGZCGnSiN5e/LKd7qvwHnkJtsSg1BwWCMdg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1747037806;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=q4w3eBjkO7lMqBHv8ON/jKqYt8Hnt5phY3/R+rnronI=;
-	b=IFenqYez2nPuyazIehIImpPUvF7gw9Vmv5/vzvuiiu7dl/J9yOFWSxjyzUbYGK8BuQGVGI
-	pIVdAAt9oxmd8+Cw==
-To: Ryo Takakura <ryotkkr98@gmail.com>, pmladek@suse.com
-Cc: Jason@zx2c4.com, gregkh@linuxfoundation.org,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, lkp@intel.com,
- oe-lkp@lists.linux.dev, oliver.sang@intel.com, ryotkkr98@gmail.com
-Subject: Re: [PATCH] rslib: Add scheduling points during the test
-In-Reply-To: <20250510013515.69636-1-ryotkkr98@gmail.com>
-References: <20250510013515.69636-1-ryotkkr98@gmail.com>
-Date: Mon, 12 May 2025 10:22:45 +0206
-Message-ID: <84ldr2xmz6.fsf@jogness.linutronix.de>
+	bh=R7ANbHDvc+a0P3LueAyyoaMPrtCdaSJ4PfO4ZIxUKOQ=;
+	b=CouFx27XwZ6KCGwth7Nr8XYh6SQ6OR+M0Cpu6zHEvz+tW6dmv1nvxCPCFsq6+2pp83XQi+
+	6P0CMCRJ25zslqv5UbHS/+ffTT1LoRapLmYKd4RZOx1c3EY+Cz1OwTQh4w+aMWwhnvPRu+
+	hCpOCUkUvBtV0cS7Ymgx+mmi5wJ+TLc=
+Received: from mx-prod-mc-06.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-35-165-154-97.us-west-2.compute.amazonaws.com [35.165.154.97]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-107-mu5ziLm7P4OARDt12UYFfg-1; Mon,
+ 12 May 2025 05:19:26 -0400
+X-MC-Unique: mu5ziLm7P4OARDt12UYFfg-1
+X-Mimecast-MFC-AGG-ID: mu5ziLm7P4OARDt12UYFfg_1747041564
+Received: from mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.93])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-06.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id BF0A118001CC;
+	Mon, 12 May 2025 09:19:22 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.188])
+	by mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id 3397F1800570;
+	Mon, 12 May 2025 09:19:15 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+	Kingdom.
+	Registered in England and Wales under Company Registration No. 3798903
+From: David Howells <dhowells@redhat.com>
+In-Reply-To: <aB3OsMWScE2I9DhG@gondor.apana.org.au>
+References: <aB3OsMWScE2I9DhG@gondor.apana.org.au> <aBccz2nJs5Asg6cN@gondor.apana.org.au> <202505091721.245cbe78-lkp@intel.com>
+To: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: dhowells@redhat.com, kernel test robot <oliver.sang@intel.com>,
+    oe-lkp@lists.linux.dev, lkp@intel.com, keyrings@vger.kernel.org,
+    Jarkko Sakkinen <jarkko@kernel.org>, Lukas Wunner <lukas@wunner.de>,
+    Ignat Korchagin <ignat@cloudflare.com>,
+    "David S.
+ Miller" <davem@davemloft.net>,
+    Peter Huewe <peterhuewe@gmx.de>, Jason Gunthorpe <jgg@ziepe.ca>,
+    Paul Moore <paul@paul-moore.com>, James Morris <jmorris@namei.org>,
+    "Serge E. Hallyn" <serge@hallyn.com>,
+    James Bottomley <James.Bottomley@hansenpartnership.com>,
+    Mimi Zohar <zohar@linux.ibm.com>, linux-crypto@vger.kernel.org,
+    linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org,
+    linux-security-module@vger.kernel.org
+Subject: Re: [v3 PATCH] KEYS: Invert FINAL_PUT bit
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1960112.1747041554.1@warthog.procyon.org.uk>
+Date: Mon, 12 May 2025 10:19:14 +0100
+Message-ID: <1960113.1747041554@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.4.1 on 10.30.177.93
 
-On 2025-05-10, Ryo Takakura <ryotkkr98@gmail.com> wrote:
-> The test has been prone to softlockup but stayed unnoticed because
-> of the printk calls during the test resets the soflockup watchdog by
-> calling touch_nmi_watchdog(). With the commit b63e6f60eab4 ("serial:
-> 8250: Switch to nbcon console"), the printk calls no longer suppress
-> the softlockup and warnings can be observed more evidently that shows
-> the test needs more scheduling points.
->
-> Provide scheduling points by adding cond_resched() for each test
-> iteration on their up to/beyond error correction capacity.
->
-> Signed-off-by: Ryo Takakura <ryotkkr98@gmail.com>
+Herbert Xu <herbert@gondor.apana.org.au> wrote:
 
-FWIW:
+> Invert the FINAL_PUT bit so that test_bit_acquire and clear_bit_unlock
+> can be used instead of smp_mb.
+> 
+> Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 
-Reviewed-by: John Ogness <john.ogness@linutronix.de>
+Acked-by: David Howells <dhowells@redhat.com>
 
-Thanks for getting to the bottom of this.
