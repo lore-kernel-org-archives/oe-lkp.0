@@ -1,68 +1,68 @@
-Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E25C01C245C
-	for <oe-lkp@lists.linux.dev>; Mon, 12 May 2025 13:54:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C9181DEFDD
+	for <oe-lkp@lists.linux.dev>; Mon, 12 May 2025 13:57:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747058063; cv=none; b=p/dmhbw4l/sjHAWtHCMLATQQYVPTEO0ShHuHZcry75gLwxekEFimXD0wEHt4xodGvuEZA03G1YjM5LENTlLqFT/FmCbvgcctBjqzeWuRYe42XzrcMqBs+ocsC4Ic3UHHUYEAzXb+mGVq6XzESaxclMAxs1KU5Qoi/GnO6yUFo78=
+	t=1747058239; cv=none; b=cCNK2A+JZcU5Zo438IIPaLNZ8tUGpXoWIOzgPH0+NVZYhN/5HuGZUBRaMyFtdFZ443zxQ1AMYB6u+AMj95S3SFY+9UY/skeZ7727H3n2c69T2dZHteF3QXT6nx7QP2wUmuysAJ2gUmOryudWJscPq1+p+/jB/vSHiUdPIc+7Ak8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747058063; c=relaxed/simple;
-	bh=8GkWBNNnFESb8efDPn89Tm9awp56Urw0Vq6vCfo5XSs=;
+	s=arc-20240116; t=1747058239; c=relaxed/simple;
+	bh=05H8JpjKY35SdPO8KI6iVeXLxFQWAJS1wj4NnitynvE=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Qzj4CqofUmIoN0vRQUJ6ldOdworxmieDVwHAR+mwPsyo69b1ikIvjXvds5A7xEVknoUIn57mvsnX8HsrPQa0wlGjPyZV0rJvZoCJwn61qo5cwtKeiXWm9rJin3p82TKeZMqFDmHqew11IE/6vB4uoD6W4qqXCpOup90HBvoSVF8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Cs5uNQUD; arc=none smtp.client-ip=209.85.210.170
+	 MIME-Version; b=u4E7D2asep+LykUmpPX1FcxNwvTgfN+V4VYyyDv13qJXGDaze/aZBZ1WcXjod2gXC/6BeQupsp0JnHgbGvInrTWL0KOY5P+6rRuqIfrFlr3MET4JXXOyizYcAbkLh/2LA4M+Jw1dd806T3gJ+cvLcoTCcwqOTsLauC2eCLdJCTA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BdZ//1/C; arc=none smtp.client-ip=209.85.214.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Cs5uNQUD"
-Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-7398d65476eso3636059b3a.1
-        for <oe-lkp@lists.linux.dev>; Mon, 12 May 2025 06:54:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BdZ//1/C"
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-22e8e4423ecso39439415ad.0
+        for <oe-lkp@lists.linux.dev>; Mon, 12 May 2025 06:57:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1747058059; x=1747662859; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1747058236; x=1747663036; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=8GkWBNNnFESb8efDPn89Tm9awp56Urw0Vq6vCfo5XSs=;
-        b=Cs5uNQUDyv98qYL7ARkbGjCpEHdFl8shJbfnWsscKKsLTCXCj2thHtlXOoxshWZIKv
-         qYS6g75PknuhqMvEtG8sBjOYfpHNFLSw5mnsoidyxkgYXpaDGExIR9UDzvccA1xQsrhV
-         5aHF9gFnhlMFGeqcjp4CUtb1zdbgfpm8Sv95y1az4c4X1ZSeIpnPeIthub0r0VtU5cPx
-         c43MPSIl+5xd6ZnxT5A4het+SXkt1I/PYmrrWaVT5hDsRje3PCs+I7v4/h6V8sJh9J3Y
-         9wj8XfbcMqJWEMsd1X9IEpFdL19DKEtXj8MWvrXnggx2/2kFc3747qt3nafaDx/WqlCW
-         h3jA==
+        bh=dN5gSHLw3iiOyOm7rZHDOXQuNi2nQ5wWFGqnZaf6CLM=;
+        b=BdZ//1/CVEGXnsTBzwpEuG2YX1Nqh3GYQaqlWWhCr9ajs0iQJCbE0NwpqQdotjQ5xR
+         aevH/YaSt7iXnsbg+FST1OOS3n3Hr+8kTvqzrLVP5gMehTp4Gx9+x0XCUZQJA/Dv0Y8U
+         NUHp6Qi9FQ+mvXNU0IrxWWSiHxP+ohbXfqLpSCBHQxjFpOccr2jCQbkMeADN1BkAchnP
+         S8zwtg4aI6C2vbRGYFPtpq1eNkQP8rGIj1N3caAvCede0A02w5JmreKz3KG44sJvOjVq
+         mMwW7q/L5fa3vFlGHrow+T0uMGXHqS+YWvGZfy13GujAUGh/uaLInehg2qM8OVUdDLRe
+         XgZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747058059; x=1747662859;
+        d=1e100.net; s=20230601; t=1747058236; x=1747663036;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=8GkWBNNnFESb8efDPn89Tm9awp56Urw0Vq6vCfo5XSs=;
-        b=PIFlc3/hp5bWn1bLUPJY0IFLw++B9nm25ao+UCMqSNuxG6nSXaGvfZvQMff6s9q9yf
-         JiQ3IkywbWUwDNHB797NxFrW7x7rFGxAxhn0Gn3U222G/WwcvGmTfeTVThQbhjyzm1kY
-         aECoyrTeNJj/8FJYOCM3tzJzvdVAszpgdW7a4k6sI9DcAhFFZlB24XYdFFTf59fR8Jrc
-         uOmHI5AlubJ07WB8uvL0UNDEsKMM9jkkQL4eSR8oRo+sG8pz2yKEMbLVbFVDDBREiCrH
-         hHXzqIqg8MjJDh4Wzo7ehmQ4SWbpTA94apVLErQRzI8csbt5W4TgCu5UP5oiTiyc01GC
-         JjsQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXi+lZS6kaWCXAheCGL4VncqIBsi5/BorWEnGK2bo8stN2fJjQ390tAt2Dni3Ew2E5nVzeZihE=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw+LkoCHP0JotxaWQNHlb2f5seXUdBRFui/GcA6szcvOT36xa2r
-	5vWlNcwYtwAw5YZQg5kE8M8tWu1uxFW9t4n1nSQib6ERGn1qnoea
-X-Gm-Gg: ASbGncuSZhj36eJoonZF0LAmBZKp30QaAjC0KxuHPkd/PxNAMphO0sB2b+RHfGoW/GX
-	AeAQ4bBU6+04OqUB3x5n/YlvZdPlalyrzu5Nyux3lO8xYbqus8OrJFvdZpGhB2awDA0xSARTEvB
-	lnBfOTuMlXrF3fONrptmYvtH9VhDP5vpY+YVCCcRGurgNY7oy4/dToBlduQXTVG45yAYmGOer/V
-	7l9Uv60RFtnlJaqAnWrUcbFsBgzuqWVZAA+2Mg0AJXWQ8PvWhfP+vvEArDvtdDnTsAgYdY/75eC
-	ytUvj1B28S6B12+J+m43ShE1sUUeichAkQGF296V40crxVxFvmfIYdYvu9A5JbRvWraGqwSPSa8
-	dZB+e1JSuNjxOZT4aWiH4vnZe9m+34D2hobp+hMbKshp/JLXX
-X-Google-Smtp-Source: AGHT+IGcwH4xhgzu92EngbJgz8zitgY8MX8eSyq2ibCraSh/UyRp78E7gCvILjWHKR9masBZ0d4tkw==
-X-Received: by 2002:a05:6a00:3e20:b0:732:5875:eb95 with SMTP id d2e1a72fcca58-740a9316019mr30196519b3a.4.1747058059150;
-        Mon, 12 May 2025 06:54:19 -0700 (PDT)
+        bh=dN5gSHLw3iiOyOm7rZHDOXQuNi2nQ5wWFGqnZaf6CLM=;
+        b=sKO8903i7KSl8bdf9ucnlJlOuFDZxu31iYxyUW7/UEXCMYYUjTpyhiT1GsAfZ0um4l
+         Clvh/wZv9CnZoTk9wPkQisWxru+KAHJ/6eFVkeTU7uOZbBLvY75+gySojI7Wmgxg6MIr
+         YW5EfEt5ZLj2/tDral5r5BxDt6m3P0S5aEhC/UllVf+CDAqJL3Rd1q12Pi9m7dSQeQEr
+         XDEsSxhodXPJn5PVtNHtWZP/hdqcf4oFJRU1QLyT1X8lg1qrAUshVShJYVesTQtbbbzs
+         YpAQJxGwOzWtfbfRzDlLaWAiAHPOi28CfCm0IWDOfDV0r8/m7MGwoumPtVAWp5kQ6hzt
+         TXLQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWc6QMjdqJGfrIICrwdDqzUt8rmW7GXCi7k1yseIOXC4UjqAWKl/F134f25hN8hR3JM1nEZBF4=@lists.linux.dev
+X-Gm-Message-State: AOJu0YwXrsco/UrFtMFlseKjCv7nMKeDxz1GZ/ygEZOa3iboaVbc0tEK
+	K75aWI98X19Na18jtlvfvIosi9MnNzpaStf/2UDMLCw0bcmKKKce
+X-Gm-Gg: ASbGncv1a92F8uelWTUDuTvtBG34Hmx6uSwTfaiOE/La4VZf8swyVLtY3gwZMIAkRBe
+	+d2lbl/dvRzZHN18QlFEE0JxWAzYUwtXGjEd3fCWmBGyNH2GT4C+eLpKwZf3+znvEEe7wnvcWRR
+	x+PXAFP4G4zX3wXARyImE9OIuHPHMh7O8pKlaETyzE3FCl5qqfFxa4UPX0/w/jfE7hg0qfS0gvg
+	o4UmDggQFMs+o1qH2qWIx0WhriAEPKXSgKf9Wwm7xzWNJ1hMKNUf4KyxOvKX48C4zuYt4o9kgIW
+	DMbttuQnVVNsdioJ/BY4UcStSrqZh+hcggsoxpfVSZFeK27AAuDrPMspL6yRK7uh3Z/6ysvSmai
+	f7uaArZGDLrWL5azFJ1bkQfC08ltDenCJh3ENlM7cc3OW93ZMGIdE+KD9sI8=
+X-Google-Smtp-Source: AGHT+IFywl13Dph106GWlo1h3hEoMGAJaBIrJd19Hxw1kXTgrE5Xd4uuO/U4r97s3z0wwStvtpT8fw==
+X-Received: by 2002:a17:903:166b:b0:224:c47:b6c3 with SMTP id d9443c01a7336-22fc8b0fa27mr156037045ad.6.1747058235694;
+        Mon, 12 May 2025 06:57:15 -0700 (PDT)
 Received: from DESKTOP-NBGHJ1C.flets-east.jp (p12284229-ipxg45101marunouchi.tokyo.ocn.ne.jp. [60.39.60.229])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-74237a0cdf0sm6245501b3a.98.2025.05.12.06.54.16
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-22fc82a38ccsm62985465ad.235.2025.05.12.06.57.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 May 2025 06:54:18 -0700 (PDT)
+        Mon, 12 May 2025 06:57:15 -0700 (PDT)
 From: Ryo Takakura <ryotkkr98@gmail.com>
-To: john.ogness@linutronix.de,
-	pmladek@suse.com
+To: pmladek@suse.com
 Cc: Jason@zx2c4.com,
 	gregkh@linuxfoundation.org,
+	john.ogness@linutronix.de,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	lkp@intel.com,
@@ -70,11 +70,11 @@ Cc: Jason@zx2c4.com,
 	oliver.sang@intel.com,
 	ryotkkr98@gmail.com
 Subject: Re: [PATCH] rslib: Add scheduling points during the test
-Date: Mon, 12 May 2025 22:54:13 +0900
-Message-Id: <20250512135413.4558-1-ryotkkr98@gmail.com>
+Date: Mon, 12 May 2025 22:57:11 +0900
+Message-Id: <20250512135711.5307-1-ryotkkr98@gmail.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <84ldr2xmz6.fsf@jogness.linutronix.de>
-References: <84ldr2xmz6.fsf@jogness.linutronix.de>
+In-Reply-To: <aCHfvBOY0vQ58uaC@pathway.suse.cz>
+References: <aCHfvBOY0vQ58uaC@pathway.suse.cz>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -83,30 +83,37 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-On Mon, 12 May 2025 10:22:45 +0206, John Ogness wrote:
->On 2025-05-10, Ryo Takakura <ryotkkr98@gmail.com> wrote:
+On Mon, 12 May 2025 13:47:08 +0200, Petr Mladek wrote:
+>On Sat 2025-05-10 10:35:15, Ryo Takakura wrote:
 >> The test has been prone to softlockup but stayed unnoticed because
 >> of the printk calls during the test resets the soflockup watchdog by
 >> calling touch_nmi_watchdog(). With the commit b63e6f60eab4 ("serial:
 >> 8250: Switch to nbcon console"), the printk calls no longer suppress
 >> the softlockup and warnings can be observed more evidently that shows
 >> the test needs more scheduling points.
->>
+>> 
 >> Provide scheduling points by adding cond_resched() for each test
 >> iteration on their up to/beyond error correction capacity.
->>
+>> 
+>
+>We should add here:
+>
+>Reported-by: kernel test robot <oliver.sang@intel.com>
+>Closes: https://lore.kernel.org/oe-lkp/202501221029.fb0d574d-lkp@intel.com
+>
 >> Signed-off-by: Ryo Takakura <ryotkkr98@gmail.com>
 >
->FWIW:
+>Otherwise, it looks good to me:
 >
->Reviewed-by: John Ogness <john.ogness@linutronix.de>
+>Reviewed-by: Petr Mladek <pmladek@suse.com>
+>
+>Thanks a lot for nailing it down.
 
-I'll add it. Thanks!
-
->Thanks for getting to the bottom of this.
-
-I found it was quite interesting.
-So thanks John and Petr for many feedbacks!
+I totally forgot the Reported-by and Closes, thanks!
+I'll add them along with your Reviewed-by.
 
 Sincerely,
 Ryo Takakura
+
+>Best Regards,
+>Petr
