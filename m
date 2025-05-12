@@ -1,104 +1,89 @@
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EC89254B03
-	for <oe-lkp@lists.linux.dev>; Mon, 12 May 2025 11:47:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 399AC19E97C
+	for <oe-lkp@lists.linux.dev>; Mon, 12 May 2025 12:02:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747050434; cv=none; b=nZ58bngOYlBoI3EWIlCmT1zHxxF1zFK11Sh07Kf8S8zVgo4GYuqpDedea04sy6TSDBfsjY2QfQKnYaCGwFjpjKnYOrF4Tiv97hk7f+c0rklWAcylhXrtiT5EQw+seDlqQgY/NriWtqdnMyFQS0EfXzeR1rryuJIlMPbzuMTn0eY=
+	t=1747051325; cv=none; b=TyOpZpNvAwB4apYJ4DJdwBaGSEzr2yLAkHL+Yx3RLqHQePAypNIDfWefwVz6EZ68wE14l5EaKnqoydgy5BSH7ki2N5IL9IFrWHXsu0S+o3Sqf3ZlepduiJnEaxenu0cStBD+a6kILTc48glpLXqT7M4ScM1EqnfdkpVQBZ+omF8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747050434; c=relaxed/simple;
-	bh=dYdmcxtOT0PL3hJhNzp7IkiVHqpd2RzVPV4jjj8pTeo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=s3VbRwJ2YzIbYf2WNTNeQaxFb+L0TbvQP0+vXpOevZrEhdom5qrNEYN+oqWbzgrmql3UTZoJ24hc0yJE7VZUy2XOd5+X0Zxc78igp+XPxgRTCc3KNj6Xt8mp62YeyurKOzwdiaw1us1q0KRr7wRMlGO0n2y6wFQXLcHHoZjjr1c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=a55tspK7; arc=none smtp.client-ip=209.85.218.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1747051325; c=relaxed/simple;
+	bh=WJ35cHkcl7EwaoMV/F+cUNOLOdcVeGv+u7h1LoBBmTs=;
+	h=From:In-Reply-To:References:To:Cc:Subject:MIME-Version:
+	 Content-Type:Date:Message-ID; b=ghO0jSioHarB3Wlzr8Qy5pOKK0VXM2kfEOioEypwdqx2oAcQUrkqQ30OXbDrtKDsSOmSTTyLAQX785VAKSmST3G4C+fZej0dDooqXthCSbwqB1h6rIrAX/ccIDNH6To7QcsvT3l4+acGuCRhjejIeeXIIgiq4pi0CbLFcq6g9sc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=PZdcVFAA; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="a55tspK7"
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-ad21cc2594eso453762466b.1
-        for <oe-lkp@lists.linux.dev>; Mon, 12 May 2025 04:47:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1747050430; x=1747655230; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=VVLv+spmoaAvztxddjO2Hy7beQH8ngEJQDm25GE/NA4=;
-        b=a55tspK7Az6t+BR32kNveXE3HFg5S2xxE1z6E03UJTjyRE0OEGqS6ceOv2gDdob1DV
-         Gd6YUIs4KKzBmUGQhL7pQDr3bLw1rmWosFLSpE9F3vXlFTTYnzXFyehQFphdceCJgtSv
-         LVE7Sk2wanDfH7kZYo0f3C3MjasNuTkyWSTHg0GPjdXCNdSNbIedr5T/DlfPZFFG2xdI
-         25uxRzN+AeM3bLBh3gJfO3yQ7mjXSZVM0S9886GRFZzJG6HEEAZ7E4ZV+SGWrLiJPnQY
-         6COKPuDBX7t0NqQicWgqk5APaQNFrIdYRnVqzmoxtpaBX/IhIvdFm6WA7QOk7xzIccrG
-         Xu1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747050430; x=1747655230;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VVLv+spmoaAvztxddjO2Hy7beQH8ngEJQDm25GE/NA4=;
-        b=ZhvQleQC3hluprFblp0Um82xIjmZT34u0YG8QUn1HIv6A4AwaGZDngLmKDWhgBq+B2
-         CioEayfoxaZ5hCpBa+ZcD5vcHSPRXo5Pq3cX/q3yB8cPC1GkKn0gIP0x0xdKT+MmAYlZ
-         QDhPL57uugoPOVqcfO4kI9Qw3nmG1C4n1Hibex+Aj7ezwasmGM1jt9zDi9J3IvDtXYHX
-         yKlOUq3vuJIRgzQtR/J9WueMQgCcBr8H0eS1XLU65dS9fACBWQL9DDlFap00tsFUbZgg
-         8lKJwVmtCvN/6V/TZvKmJ5noDHTgRiO6aa23D2BFDz9fG1bti7Ir6ouDk7UgVL9IoqSd
-         Frvw==
-X-Forwarded-Encrypted: i=1; AJvYcCVUm6D8XezNFUeA+4nlWYFWXBIT6OJgk9JUTgG0v2aqFhdKTgorNioMbY7UZPT+ZLE/zLBHigE=@lists.linux.dev
-X-Gm-Message-State: AOJu0YwiNXPKK9E1gvbnWnjTaurv0j6+kghQrjZCwP2M8mPuKtSBKOBQ
-	ulMCto2QXaXrpnAv9RqZGGFshxWBoc2mNSmNfr+v9ue5d8xn/yC4vH/BMkcEmFY=
-X-Gm-Gg: ASbGnct7yR/0ducHANjvHN9AG3a1E15HUpcOtfd2DQKOIi9JqfZvaGvaJ0Lwp9mqL2X
-	IDOwQo76HrWPnAL6Ytcx3ts0w0EWqI2mjLI82HhV5KDdSaWXI2pZ+uGQOfzgc8/qzTGTmFdWeav
-	Gtzt0LlV5g9PxgOwDM6x9/sqmkAGKk9DR8GtItG/DuCULVbza6Shfu4qunOzG6FenhwaTmob6js
-	5h5FU79cY6YyQJ0NZaklUaUR6So6fniWpa6l7qa1N7F3R88kKSh82LQSC+kJm604OVXPdVx4Blo
-	4Zwk9m6hzL1qOOvAv7lTxZ+v+7W6l7Tnn6Z2vMcDHuoOMEiEuU3Mxo3vr1S5RTYK
-X-Google-Smtp-Source: AGHT+IE1VbmKMbNr2uygysNhb2Q2CrLOamNkk+qyab09zQFyHUhGx9xJDRQHSPfoK5VaWJdnc5BVDg==
-X-Received: by 2002:a17:907:7ea0:b0:aca:a688:fb13 with SMTP id a640c23a62f3a-ad219057ff1mr1315018666b.36.1747050430347;
-        Mon, 12 May 2025 04:47:10 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ad219346b85sm601439466b.49.2025.05.12.04.47.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 May 2025 04:47:10 -0700 (PDT)
-Date: Mon, 12 May 2025 13:47:08 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: Ryo Takakura <ryotkkr98@gmail.com>
-Cc: john.ogness@linutronix.de, Jason@zx2c4.com, gregkh@linuxfoundation.org,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	lkp@intel.com, oe-lkp@lists.linux.dev, oliver.sang@intel.com
-Subject: Re: [PATCH] rslib: Add scheduling points during the test
-Message-ID: <aCHfvBOY0vQ58uaC@pathway.suse.cz>
-References: <20250510013515.69636-1-ryotkkr98@gmail.com>
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="PZdcVFAA"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1747051323;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=yfNE5qaxwrvkSBrE/hsQSGFkpUc8RFkw9LSWDlgzHno=;
+	b=PZdcVFAAyPKLC5PzO5UKfNi9vqaUvrtPm4/uRz30iYNxhj2WgHLEQ6tFCeUNNb1Lt0JvE5
+	t736Qzi2SjlEU6WoDQ0JE1lqa+8PgcaJtZuSvKAnrxP+OrMWx6TdbloBD/yeVjylmUEoP2
+	puQoyzXD7OBB2VF1eeiJWMjE+K8VuhM=
+Received: from mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-480-NGlyw_0CPeCI5g_Z1cq5Pw-1; Mon,
+ 12 May 2025 08:02:01 -0400
+X-MC-Unique: NGlyw_0CPeCI5g_Z1cq5Pw-1
+X-Mimecast-MFC-AGG-ID: NGlyw_0CPeCI5g_Z1cq5Pw_1747051319
+Received: from mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.12])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id A53EE19560AF;
+	Mon, 12 May 2025 12:01:57 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.188])
+	by mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id 788FE19560AA;
+	Mon, 12 May 2025 12:01:51 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+	Kingdom.
+	Registered in England and Wales under Company Registration No. 3798903
+From: David Howells <dhowells@redhat.com>
+In-Reply-To: <aCHeoSBOLF-mcY7I@kernel.org>
+References: <aCHeoSBOLF-mcY7I@kernel.org> <aB3OsMWScE2I9DhG@gondor.apana.org.au> <aBccz2nJs5Asg6cN@gondor.apana.org.au> <202505091721.245cbe78-lkp@intel.com> <1960113.1747041554@warthog.procyon.org.uk>
+To: Jarkko Sakkinen <jarkko@kernel.org>
+Cc: dhowells@redhat.com, Herbert Xu <herbert@gondor.apana.org.au>,
+    kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+    lkp@intel.com, keyrings@vger.kernel.org,
+    Lukas Wunner <lukas@wunner.de>,
+    Ignat Korchagin <ignat@cloudflare.com>,
+    "David S. Miller" <davem@davemloft.net>,
+    Peter Huewe <peterhuewe@gmx.de>, Jason Gunthorpe <jgg@ziepe.ca>,
+    Paul Moore <paul@paul-moore.com>, James Morris <jmorris@namei.org>,
+    "Serge E. Hallyn" <serge@hallyn.com>,
+    James Bottomley <James.Bottomley@hansenpartnership.com>,
+    Mimi Zohar <zohar@linux.ibm.com>, linux-crypto@vger.kernel.org,
+    linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org,
+    linux-security-module@vger.kernel.org
+Subject: Re: [v3 PATCH] KEYS: Invert FINAL_PUT bit
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250510013515.69636-1-ryotkkr98@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <2020394.1747051310.1@warthog.procyon.org.uk>
+Date: Mon, 12 May 2025 13:01:50 +0100
+Message-ID: <2020395.1747051310@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.0 on 10.30.177.12
 
-On Sat 2025-05-10 10:35:15, Ryo Takakura wrote:
-> The test has been prone to softlockup but stayed unnoticed because
-> of the printk calls during the test resets the soflockup watchdog by
-> calling touch_nmi_watchdog(). With the commit b63e6f60eab4 ("serial:
-> 8250: Switch to nbcon console"), the printk calls no longer suppress
-> the softlockup and warnings can be observed more evidently that shows
-> the test needs more scheduling points.
+Jarkko Sakkinen <jarkko@kernel.org> wrote:
+
+> > Acked-by: David Howells <dhowells@redhat.com>
 > 
-> Provide scheduling points by adding cond_resched() for each test
-> iteration on their up to/beyond error correction capacity.
+> Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
 > 
+> David, are you going to pick this?
 
-We should add here:
+I can do unless Herbert wants to pass it through his tree?
 
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Closes: https://lore.kernel.org/oe-lkp/202501221029.fb0d574d-lkp@intel.com
+David
 
-> Signed-off-by: Ryo Takakura <ryotkkr98@gmail.com>
-
-Otherwise, it looks good to me:
-
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-
-Thanks a lot for nailing it down.
-
-Best Regards,
-Petr
