@@ -1,205 +1,294 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1306B22B59A;
-	Fri, 16 May 2025 21:12:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747429978; cv=none; b=X1WoqRkh1sTs1lJLpfwEbIzrJglqK17xL9wr3ZpadGTY6/0T+8/kOL5m/l4fGnVpu/Z66ybH44tfx9pKXcrlpTFqztrwH0FOeY7MG8XyPkQvt02hSy69EXr5DYyaFbSJIRHg64ZGkBiTpJ6qKRmOFZq68FJ9d5BpAjV/C5pFvV4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747429978; c=relaxed/simple;
-	bh=Fy4Y8kipSijwELgR6UsjOYS9RkWbQZVC+gC58ePPZLg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MiRBwEkEbqHesITh5I6DeRsMWN7vnPt3JSL83H1rJ8Q/pylBIkdUWvTP4oMf5wbrefrWvseBEnmQg0dyu/4TfdBCN1e6rbshG2R7Hr1Flf5leHjgD9l96lFSB1p7km+cKD76Ti0JwDORro6cDrOpe+PALoI06pbr7mEIzSxulH4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SNl6fTz9; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3BFE1E5B60;
+	Mon, 19 May 2025 04:50:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.13
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1747630241; cv=fail; b=F9UhAPIMQx/qVB47SVZttX1qaoJTcX88n0nAnO55BXwHiN5RNqmmit9iiDjsUEoWhrdd+gUs4hHHW0PrQjQWy5iWlka2ZBlIPMGgWCig/GtHAR17EllQzcjZBzmokDLc+ig6BpxobKfZk1UdZCcUovIVr4rb3QnbHOBR3wEJ8gk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1747630241; c=relaxed/simple;
+	bh=dqcjn+/8R67lrTk3c7rghO83CQLTDO5/lO1dzP3n9hg=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:MIME-Version; b=XQ0omlTY8ObU5RRZ/cz+SHgmMzL20yad7s+verdATyRgRUF4iprOnvA1k1DtejO37F2GAY4phReM+rk2j9P1ngWRhGdoWqpJgBFLviE9GeTZO6teTTU/I9fhhhI11JMMjlfgsd5YXpnmEfWt8EbvVpsEoR9f7w/EPc9mnn6O+2o=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CCJkWAOb; arc=fail smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SNl6fTz9"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64B76C4CEE4;
-	Fri, 16 May 2025 21:12:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1747429977;
-	bh=Fy4Y8kipSijwELgR6UsjOYS9RkWbQZVC+gC58ePPZLg=;
-	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-	b=SNl6fTz9uH+SOeIbbcCtvO1w9eJd9Ta1wE5TQMXvNMn0M8vJaFilkyJ3U0RZgBAnJ
-	 PP9D4Hl6Z38j6CSU90HE8SiPq0JkIaDZckRIpqZgQxrcDeQUEh9QPzRvydQg5lHjo2
-	 8NsLdjzzN0viiXyo4i4TpN6kKoRSFWVVoorC5maXf5K+Eg/Av+mfEv8VJys0clMMh7
-	 omAXsSVMuvCgAqnjw8Nc+Vy3cVwBnCIimP02CGVYguSutAG6zqBgDrZZBHV6mEV4Ix
-	 M2p2XZr/3PbpuLW6hc/x4Y8qUC0oWybFiW9BPDDVf42gXaARQM2m7xQK9rnNbm4gIo
-	 /BWNIy/sn2vvw==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-	id 6CF7CCE0C93; Fri, 16 May 2025 14:12:56 -0700 (PDT)
-Date: Fri, 16 May 2025 14:12:56 -0700
-From: "Paul E. McKenney" <paulmck@kernel.org>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
-	Joel Fernandes <joelagnelf@nvidia.com>,
-	Boqun Feng <boqun.feng@gmail.com>, linux-kernel@vger.kernel.org
-Subject: Re: [paulmckrcu:dev.2025.05.05a] [rcutorture]  54d0803f63:
- WARNING:at_kernel/rcu/rcutorture.c:#rcu_torture_stats_print[rcutorture]
-Message-ID: <7b11b0e1-9c96-4441-8905-a7fc5a3b49a0@paulmck-laptop>
-Reply-To: paulmck@kernel.org
-References: <202505131651.af6e81d7-lkp@intel.com>
- <620852c4-c2ae-4242-9996-1af248afba2c@paulmck-laptop>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CCJkWAOb"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1747630239; x=1779166239;
+  h=date:from:to:cc:subject:message-id:
+   content-transfer-encoding:mime-version;
+  bh=dqcjn+/8R67lrTk3c7rghO83CQLTDO5/lO1dzP3n9hg=;
+  b=CCJkWAOb+jStDqdcdLgvxEpIxGS2l5YOFgbNTzZ31arMnm1Tc3a+1n+P
+   1btT0ownJcQAEUl0yTpX7pfvP7UE7XksESf6D7snzwG1fMutYGenJnMKj
+   z+LkJ8i7dFRHe1pqE2m9apQJwhcRTD7ZuCQyXYDEEqk+xC5DBbfgXsCtB
+   6dQA/3d1NfQkjycltGV8rn4l4fgmwHKL6M/3JpeAeR3MqGlYxFvnqfW5E
+   0oaEMFubB6vNkaDgxwoU/7gO/g5pic2L2rhEiYKMncY9qYWRwW7Smu/t4
+   SQTbYj/wFQrnM1k1tVqy+m5b1g/lBA2BlMuePvv5/QlGXiRBc52s6Vtuh
+   Q==;
+X-CSE-ConnectionGUID: rCC3H00dSeCkuSzD+7TgoQ==
+X-CSE-MsgGUID: y8vsMv/5Siag118hm7YY2g==
+X-IronPort-AV: E=McAfee;i="6700,10204,11437"; a="60545078"
+X-IronPort-AV: E=Sophos;i="6.15,300,1739865600"; 
+   d="scan'208";a="60545078"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2025 21:50:38 -0700
+X-CSE-ConnectionGUID: R1wvr1zkRlCtx3lXGAWjXQ==
+X-CSE-MsgGUID: xkqw3guDSQ21waDnCHCplg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,300,1739865600"; 
+   d="scan'208";a="139668351"
+Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
+  by fmviesa008.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2025 21:50:36 -0700
+Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.25; Sun, 18 May 2025 21:50:35 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.25 via Frontend Transport; Sun, 18 May 2025 21:50:35 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.170)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.44; Sun, 18 May 2025 21:50:35 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=AbxdlbOF4Ajfyjx+peubYI0QBoERq6F1WoXqSBFjMV+ERItrjUnOk9dhYHugjTWMEJJ9+2oAW62w1ONHEBfpRNzz5XZRG36ch1BZITSDOFnKfJCVVG4ozHbmPFIKOZrh3y3LFVLM2gVB5LJVaG4tDwhxu34SebLZlFiJNOia7JgqI4I8xxeRcvQsylIKGHgdIDM0ngK2pSnFd5d/32EQiXeaXUgRWFgNkDwDJ43wu5y2TMP9VoGi4QwIiKs+ugkhJC2pJMJG22p3Ki7NW6njb940Fgp/U/L5CrkUKSFLoA5L3aKpW5XGo/f+duJkmLsdGsaa1rZVMgolI0P4yocdqw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=y8JxSKCc/xdcCWvk5fEkcoZ8Zygf+5b64mT/0g9m8j4=;
+ b=yGNu20nOOuCVwyj1S1SfEOm7Jg5txh6VR86QX4+O1qozqW8keluUhoo0l2HiiFduQZMUupwbs8SJZSKnOxBUN6kuLb8XjZDRxh0R+4EtsYw3l1M81uP+ZQbOI69QchPJrw9dAHPHxlh3tM5114MhoY3mhV+MXzeOlJfM2RxngVBVOZDvrUVboQsyRkcTzOMD8P58P+1UicW8XdbAkEiSrm/T8tnLU7OB4593hPnI6iKaSA3RLwooevvUccbgZHY78qSWaoiZkemkGx42aKUXDmfPLPRl+WRCbye06q4uQp0giB2IdnzeeOIWwOJGZD5CsZ8FgKwgjEhltCUGcZTVSQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by MN6PR11MB8148.namprd11.prod.outlook.com (2603:10b6:208:472::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8746.30; Mon, 19 May
+ 2025 04:50:13 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.8746.030; Mon, 19 May 2025
+ 04:50:13 +0000
+Date: Mon, 19 May 2025 12:50:03 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Christian Brauner <brauner@kernel.org>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Jan Kara <jack@suse.cz>,
+	<linux-f2fs-devel@lists.sourceforge.net>, <gfs2@lists.linux.dev>,
+	<linux-security-module@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
+	<linux-xfs@vger.kernel.org>, <oliver.sang@intel.com>
+Subject: [linux-next:master] [super]  1af3331764:
+ stress-ng.unlink.unlink_calls_per_sec 23.3% regression
+Message-ID: <202505191143.59950d28-lkp@intel.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SG2PR04CA0213.apcprd04.prod.outlook.com
+ (2603:1096:4:187::11) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <620852c4-c2ae-4242-9996-1af248afba2c@paulmck-laptop>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|MN6PR11MB8148:EE_
+X-MS-Office365-Filtering-Correlation-Id: 889608df-4ff6-480f-3953-08dd9690a456
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
+X-Microsoft-Antispam-Message-Info: =?iso-8859-1?Q?UqEnb++mYanJczJ8bTrFqx/ZuTOv+MtAMhItoS8gnwsnDPObviGUjjS8h8?=
+ =?iso-8859-1?Q?j+f4N+HINNocr1mwb4icx9W10sNkT2+8G9WOeixF2nPd14pbE9zTf681nl?=
+ =?iso-8859-1?Q?Dr70yKdGzJCg2DO9q452FWdMlK8crUugbi8AmcW/Clkor+uJ3KkYOGPGK5?=
+ =?iso-8859-1?Q?FnA4198sVJLQNPIvGaFW9YufVorUjutGjWj5igjC9AM9lFs8wki86JwBQu?=
+ =?iso-8859-1?Q?xsGAuqYQQ9pi1F+u0qsmZZZD8F3m2c4inqu4AJpLpShjxD1r2royAvd9Ki?=
+ =?iso-8859-1?Q?yTZcMHa6tckPsO3qDdib0dS2ouo/LGz7TaYkAzNL7B2LKbg12TT834CxtV?=
+ =?iso-8859-1?Q?qJ0IzALqVmm40bHfLNfSKYP+xNG0gNRwk2KMQsinnfOU90ijgHL1VA593v?=
+ =?iso-8859-1?Q?wUozl8INbBuF8dXCr+qZbSvSiQ6BOvm2HWipOdwMlgZ8mKn/YI777gxlOt?=
+ =?iso-8859-1?Q?V1DLbRV0AGKmZzLQCjdpPfM3ocTkvK0X/970kJsa5vtUNE2CiI461CFEu+?=
+ =?iso-8859-1?Q?35jhp8QTbKVatEsfzA/5jGS7R9rRoi4cF/tgqu+gpr49hi/xr1/Ifw5ORN?=
+ =?iso-8859-1?Q?jHcdmYdtlB869mAuFV4ZRJmdkt79SwNClVukalRHSSpytHY0I2eK5NiuJ5?=
+ =?iso-8859-1?Q?k263sgCcfarVmDhepGif85U3/74sODIEJiuJdRgiHFbWbPjom3lVFsqWtD?=
+ =?iso-8859-1?Q?Temmb5fsPLmm0iYPcz/Zxp9gARidPVIqf8TZlfJZJq+XPkoeLOZyYMO0cE?=
+ =?iso-8859-1?Q?Ijhbu8VrmB5DI0OjAa9554dXP+G1bRX1ctBqeo5EtmHTH31Rf8l8B0ufCH?=
+ =?iso-8859-1?Q?k4ooqDWS54Xxfy9iZWS0eAHiT71hmgkDUgXofQXHUoNw+w4sSpLdahixgI?=
+ =?iso-8859-1?Q?+5yWyw8EvJNO/gmsiFs+skKzHKORoXZ3WtJ3ploX2jqjM390ChEE6vcdc7?=
+ =?iso-8859-1?Q?ZwwYv8pzNf3oHon2G4MPa6FHDp0LU98Mf/eSV3DZjFzKiNl1tFYYrghy3J?=
+ =?iso-8859-1?Q?oElwQtaMcTlnhrGWcONgus4Q72lZ8QEja+fTB5baOqdJ0XMzLBi1XhnmRz?=
+ =?iso-8859-1?Q?0ogokCbnVQrhmEAhjscgEtL3CN5ax167+fJ2Rml2knPatDW6w9UEBJkAq1?=
+ =?iso-8859-1?Q?1/0PxdslY7ZzFuXuK0vO+GlbzBCyDnhM6H0LRWI18/isELhZ4v+8Pqh72u?=
+ =?iso-8859-1?Q?diPddt9RRo/Y8HbwUy884w9cQnr4Imm0ZikRC0jcta606WU+xcpA1YZTEH?=
+ =?iso-8859-1?Q?d7CQkTiUC+tO3wysXiGEGFSygCKMzp5IaRzdotU1hdlpiptSDVs+jsCJ78?=
+ =?iso-8859-1?Q?GF4xiLjUCrAh6VlYFF/E8/pbQss/pPKS1wycgF/StiKo+xzYqGgntdhP2u?=
+ =?iso-8859-1?Q?WSAtRDORNz3OaSuxzAGbCOo1tLnHE7bRN9dLoSQpuAZoGVsjtlznQ4oJAx?=
+ =?iso-8859-1?Q?eVgw7jqbFWyX8L03?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?FmuPnJJR9jDn/dvlkypwSX6hV9fE6kOvIO4qIuAqRJFucpsh4jD8Zk40Qs?=
+ =?iso-8859-1?Q?4YqH/GLPgTzToYNw3NdH5oipHHP2bt5fkRbVEaBAXhE0+sz53NuLkwP4S4?=
+ =?iso-8859-1?Q?7g+1yOZKEIvhcqvbsN4hg1cK0FfWEdCr32oYdYKzQ62OsClhaWTVsvpAvx?=
+ =?iso-8859-1?Q?mAr3ALWk2JPbhaXDHfbWvL9nfPXlR8rW5TV37lelcgNvHrLsG3GJzZ4sli?=
+ =?iso-8859-1?Q?PmuHN5Cu1EGyJw30r8O9D45XZyPgfObQ3CVdi2xcFJG+2DBxwApAuT+0YI?=
+ =?iso-8859-1?Q?ktJMaB048yXCZ1wbDeooFCaEFut6kCUpZJ1RY8J6qVmizhO76aNdmnnhcl?=
+ =?iso-8859-1?Q?iK3mF/PRjOhbelLz/Wdzp5iH6sx7I3fhijXKBjC/BHd81jR4mCE4CqA9ip?=
+ =?iso-8859-1?Q?gIhbE4LoHUTk4ApNYF2Cr1jUzj8oCDvROG627i/fxkY7fVquvMrW3k1jXd?=
+ =?iso-8859-1?Q?jtRmGR50ecGC5YT3Q6lGjh6vyQzxzocOC4D8yUxo4xSdeDY0Q+JLRyYyU7?=
+ =?iso-8859-1?Q?60HeT/3SunsvE11jsI//rxPRjQhos8NbBuR6XctlrIY4CBhS3bBLNDr4zs?=
+ =?iso-8859-1?Q?3rgow48jd3SxjgPgctC26P2/dkmBvJlUTmGVo4vrVhUojTDvbY5IAGsmmy?=
+ =?iso-8859-1?Q?P5xEcKP4v0GmhjlSCpzKK0QDQLM4xXD3nRmsYw14I3Wf7TjsymdOl86mUx?=
+ =?iso-8859-1?Q?8SljgyH6B3k4rsbykTzvVVxtq+RNJCNsJwATak1T3zOFv53jY4ee3rgRP5?=
+ =?iso-8859-1?Q?OQ3eVfgygJK/q5wKl39zK0gYXSOXEW/Ih0C93sWjkN6jGehHC1jXlyuyw6?=
+ =?iso-8859-1?Q?5mjyseb7k8WnRTsCZLbtx+UaKkSqDOhm2/L9LUZo+reVqzYIfh7IEZENC5?=
+ =?iso-8859-1?Q?Raqr0TtX/T2NH4zNFB1jdb5TBqg0qXEvnG9DSrN95VqTtSM7dw3nN826io?=
+ =?iso-8859-1?Q?XdVHiRe5i6jS/rHDNjFup5/o8eDbsCzNesMgiMrnUYQwzwsQhJJw5C5TMA?=
+ =?iso-8859-1?Q?IkWJm3WqdQc6z3f0yk6WgKsyx0iHAWypgWsiFmpkXuUG/ycsBuBwx7SwIo?=
+ =?iso-8859-1?Q?+8gubpORXaZ0/3VS6Uurmx9uvEnCsHs67WDwOT2zV6ZCcV7ae/uCWAeBbO?=
+ =?iso-8859-1?Q?MiYJiyf0+aaZVLaic1jDL9OMv2FombAjCW2WaMj+oJ45maACYiJOvlST9w?=
+ =?iso-8859-1?Q?fATcI5SMbF8aZDj1hL91uomDodLb95WCwsuJjfu6b/l1ipLofL07dYgWY4?=
+ =?iso-8859-1?Q?sXzOtk1ctShyPCoo7tjUU1InfEcPKqbCoT9OVQq4ryOwxDo86cL/UwcYwR?=
+ =?iso-8859-1?Q?Of6BMyZHfslcrCF+pCqCigUH7eC4bvxhuodGe6h/FpB8B0pGp4t7GZLK4q?=
+ =?iso-8859-1?Q?BBayOYBNSIgQtpXC5jH68S4oOvVappnL1e2Jvkn2fw/NBxeJZOWmeqjLwk?=
+ =?iso-8859-1?Q?TKzqrsl9Si29z6BF0BlozTTtQUS1nxI0VvPqHFqbeWVSU9ZrcJeoQ6RJ+x?=
+ =?iso-8859-1?Q?KSalwe+pJSRLY57sM20/4fbvOBT7SWH7z+9+ptIr7KlyShNTcqJQOcjqbU?=
+ =?iso-8859-1?Q?QKm1ClR9vPfvA6ab0dRmZfzlruoGdIiKBuyDEOeBau+Vy14skYmNCSK+Rz?=
+ =?iso-8859-1?Q?PgB++rnRn5juiKBDSfkfXeZsq1ZzE5K9I7sRCnxrHz1yHM69m6rGZ5yA?=
+ =?iso-8859-1?Q?=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 889608df-4ff6-480f-3953-08dd9690a456
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2025 04:50:13.4367
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: q2cMwH6Vy6rZQ6s+YWwderO1SLPzgmMUtkEyYuJkIqkSsDtAHgeTyqImCmbyNHGcB3x+nZmmfXgVH81YsgBGkw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN6PR11MB8148
+X-OriginatorOrg: intel.com
 
-On Thu, May 15, 2025 at 05:37:03PM -0700, Paul E. McKenney wrote:
-> On Wed, May 14, 2025 at 10:23:26AM +0800, kernel test robot wrote:
-> > 
-> > hi, Paul,
-> > 
-> > we noticed various issues for both 54d0803f63/parent in this test.
-> > 
-> > =========================================================================================
-> > tbox_group/testcase/rootfs/kconfig/compiler/runtime/test/torture_type:
-> >   vm-snb/rcutorture/debian-11.1-i386-20220923.cgz/i386-randconfig-061-20250510/clang-20/300s/default/trivial
-> > 
-> > ec3f43f72b268d44 54d0803f632b402e519c7d97a6b
-> > ---------------- ---------------------------
-> >        fail:runs  %reproduction    fail:runs
-> >            |             |             |
-> >            :100         71%          71:98    rcutorture.trivial.fail   <--- (1)
-> >            :100         71%          71:98    dmesg.EIP:rcu_torture_stats_print   <--- (2)
-> >          94:100          0%          94:98    dmesg.EIP:synchronize_rcu_trivial
-> >         100:100         -2%          98:98    dmesg.UBSAN:implicit-conversion_in_drivers/firewire/core-transaction.c
-> >         100:100         -2%          98:98    dmesg.UBSAN:negation-overflow_in_lib/sort.c
-> >         100:100         -2%          98:98    dmesg.UBSAN:negation-overflow_in_mm/memcontrol.c
-> >            :100         71%          71:98    dmesg.WARNING:at_kernel/rcu/rcutorture.c:#rcu_torture_stats_print[rcutorture]   <--- (3)
-> >          94:100          0%          94:98    dmesg.WARNING:at_kernel/rcu/rcutorture.c:#synchronize_rcu_trivial[rcutorture]
-> >         100:100         -2%          98:98    dmesg.boot_failures
-> > 
-> > 
-> > but seems (1)(2)(3) are quite persistent on 54d0803f63 and clean on parent.
-> > 
-> > 
-> > Hello,
-> > 
-> > kernel test robot noticed "WARNING:at_kernel/rcu/rcutorture.c:#rcu_torture_stats_print[rcutorture]" on:
-> > 
-> > commit: 54d0803f632b402e519c7d97a6b52d5ffb78ae78 ("rcutorture: Start rcu_torture_writer() after rcu_torture_reader()")
-> > https://github.com/paulmckrcu/linux dev.2025.05.05a
-> > 
-> > in testcase: rcutorture
-> > version: 
-> > with following parameters:
-> > 
-> > 	runtime: 300s
-> > 	test: default
-> > 	torture_type: trivial
-> 
-> Huh.  This is the trivial RCU implementation that is not used in the
-> Linux kernel (aside from rcutorture testing it), but verifies that my
-> slideware/textbook implementation actually works.
-> 
-> So you didn't manage to break the Linux kernel, just some of my
-> presentations.  ;-)
-> 
-> Still, this clearly needs to be fixed.
-> 
-> > config: i386-randconfig-061-20250510
-> > compiler: clang-20
-> > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> > 
-> > (please refer to attached dmesg/kmsg for entire log/backtrace)
-> > 
-> > 
-> > 
-> > If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> > the same patch/commit), kindly add following tags
-> > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> > | Closes: https://lore.kernel.org/oe-lkp/202505131651.af6e81d7-lkp@intel.com
-> > 
-> > 
-> > The kernel config and materials to reproduce are available at:
-> > https://download.01.org/0day-ci/archive/20250513/202505131651.af6e81d7-lkp@intel.com
-> > 
-> > 
-> > [  232.971337][  T965] trivial-torture: rtc: ef358cc0 ver: 9677 tfle: 0 rta: 9677 rtaf: 0 rtf: 9668 rtmbe: 0 rtmbkf: 0/0 rtbe: 0 rtbke: 0 rtbf: 0 rtb: 0 nt: 3782 onoff: 0/0:0/0 -1,0:-1,0 0:0 (HZ=300) barrier: 0/0:0 read-exits: 64 nocb-toggles: 0:0 gpwraps: 0
-> > [  232.974503][  T965] trivial-torture: !!! 
-> > [  232.974595][  T965] ------------[ cut here ]------------
-> > [  232.976982][  T965] WARNING: CPU: 0 PID: 965 at kernel/rcu/rcutorture.c:2730 rcu_torture_stats_print+0x8e4/0x8f0 [rcutorture]
-> 
-> And this is a too-short grace period...
-> 
-> > [  232.980999][  T965] Modules linked in: rcutorture torture
-> > [  232.982356][  T965] CPU: 0 UID: 0 PID: 965 Comm: rcu_torture_sta Tainted: G        W       T   6.15.0-rc1-00059-g54d0803f632b #1 PREEMPT(full)  5f9cb9cacb9aba8a18caee0ed4d4cf4452094bc2
-> > [  232.990730][  T965] Tainted: [W]=WARN, [T]=RANDSTRUCT
-> > [  232.992782][  T965] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> > [  232.995869][  T965] EIP: rcu_torture_stats_print+0x8e4/0x8f0 [rcutorture]
-> > [  232.997526][  T965] Code: ff ff 0f 0b 83 3d 88 8f 35 ef 00 0f 84 b0 fb ff ff 0f 0b 83 3d 8c 8f 35 ef 00 0f 84 ae fb ff ff 0f 0b 84 db 0f 84 ac fb ff ff <0f> 0b e9 a5 fb ff ff 00 00 00 00 00 55 89 e5 53 57 56 83 ec 14 e8
-> > [  233.002674][  T965] EAX: 00000004 EBX: 00000001 ECX: 00000000 EDX: 00000000
-> > [  233.004477][  T965] ESI: 00000000 EDI: 00000000 EBP: 47efbf58 ESP: 47efbedc
-> > [  233.006060][  T965] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00010202
-> > [  233.007496][  T965] CR0: 80050033 CR2: 353667f8 CR3: 7c473000 CR4: 000406d0
-> > [  233.009173][  T965] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-> > [  233.010612][  T965] DR6: fffe0ff0 DR7: 00000400
-> > [  233.011678][  T965] Call Trace:
-> > [  233.012511][  T965]  ? rcu_torture_stats+0x24/0x70 [rcutorture 7eef68a8ad9c4bc219a4bda0dc180602dd9a9416]
-> > [  233.014416][  T965]  ? kthread+0x1af/0x200
-> > [  233.016388][  T965]  ? rcu_nocb_toggle+0x1c0/0x1c0 [rcutorture 7eef68a8ad9c4bc219a4bda0dc180602dd9a9416]
-> > [  233.018427][  T965]  ? schedule_tail+0x79/0xf0
-> > [  233.019297][  T965]  ? kthread_blkcg+0x30/0x30
-> > [  233.020404][  T965]  ? kthread_blkcg+0x30/0x30
-> > [  233.021230][  T965]  ? ret_from_fork+0x2c/0x40
-> > [  233.022315][  T965]  ? ret_from_fork_asm+0x12/0x20
-> > [  233.023169][  T965]  ? entry_INT80_32+0x10d/0x10d
-> > [  233.024178][  T965] irq event stamp: 495
-> > [  233.024991][  T965] hardirqs last  enabled at (509): [<4f981d9b>] __console_unlock+0x5b/0x70
-> > [  233.026606][  T965] hardirqs last disabled at (520): [<4f981d82>] __console_unlock+0x42/0x70
-> > [  233.028125][  T965] softirqs last  enabled at (282): [<51ba356a>] __do_softirq+0xa/0xe
-> > [  233.029924][  T965] softirqs last disabled at (267): [<51ba356a>] __do_softirq+0xa/0xe
-> > [  233.031571][  T965] ---[ end trace 0000000000000000 ]---
-> > [  233.033193][  T965] Reader Pipe:  23875253 3963 1 0 0 0 0 0 0 0 0
-> 
-> ... as further indicated by the "1" after the "3963".  This means that
-> there was one too-short trivial-RCU grace period in not quite four
-> minutes of testing.
-> 
-> > [  233.034030][  T965] trivial-torture: Reader Batch:  23879217 0 0 0 0 0 0 0 0 0 0
-> > [  233.035198][  T965] trivial-torture: Free-Block Circulation:  9676 9676 9675 9674 9673 9672 9671 9670 9669 9668 0
-> > 
-> > ...
-> > 
-> > [  472.316419][ T2339] trivial-torture:--- End of test: FAILURE: nreaders=1 nfakewriters=4 stat_interval=60 verbose=1 test_no_idle_hz=1 shuffle_interval=3 stutter=5 irqreader=1 fqs_duration=0 fqs_holdoff=0 fqs_stutter=3 test_boost=1/0 test_boost_interval=7 test_boost_duration=4 test_boost_holdoff=0 shutdown_secs=0 stall_cpu=0 stall_cpu_holdoff=10 stall_cpu_irqsoff=0 stall_cpu_block=0 stall_cpu_repeat=0 n_barrier_cbs=0 onoff_interval=0 onoff_holdoff=0 read_exit_delay=13 read_exit_burst=16 reader_flavor=1 nocbs_nthreads=0 nocbs_toggle=1000 test_nmis=0 preempt_duration=0 preempt_interval=1000 n_up_down=32
-> 
-> And this is one possible reason why:  "shuffle_interval=3".
-> 
-> The way that trivial RCU works is to schedule itself on each online CPU
-> in turn in this function:
-> 
-> static void synchronize_rcu_trivial(void)
-> {
-> 	int cpu;
-> 
-> 	for_each_online_cpu(cpu) {
-> 		torture_sched_setaffinity(current->pid, cpumask_of(cpu), true);
-> 		WARN_ON_ONCE(raw_smp_processor_id() != cpu);
-> 	}
-> }
-> 
-> If torture_shuffle_tasks() moves this writer kthread just after the above
-> torture_sched_setaffinity() completes, then synchronize_rcu_trivial()
-> might miss its intended CPU, thus failing to wait for RCU readers on
-> that CPU.  This can in turn result in a too-short grace period.
-> 
-> Except that I would expect the WARN_ON_ONCE() to trigger in that scenario.
 
-Which you do have, now that I actually looked at the dmesg.  ;-)
 
-> I will play with this a bit.  I don't want to force-disable shuffle
-> in the torture_type=trivial case because it is a useful way of testing
-> rcutorture itself.  But perhaps I can make the complaint more explicit.
+Hello,
 
-And 200 hours of testing passed.  I am adding a change to splat, but to
-force these kernel boot parameters to zero so as to avoid the spurious
-grace-period failure.  I expect this to reach mainline during the v6.17
-merge window.
+kernel test robot noticed a 23.3% regression of stress-ng.unlink.unlink_calls_per_sec on:
 
-							Thanx, Paul
+
+commit: 1af3331764b9356fadc4652af77bbbc97f3d7f78 ("super: add filesystem freezing helpers for suspend and hibernate")
+https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+
+[test failed on linux-next/master 8566fc3b96539e3235909d6bdda198e1282beaed]
+
+testcase: stress-ng
+config: x86_64-rhel-9.4
+compiler: gcc-12
+test machine: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory
+parameters:
+
+	nr_threads: 100%
+	testtime: 60s
+	test: unlink
+	cpufreq_governor: performance
+
+
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202505191143.59950d28-lkp@intel.com
+
+
+Details are as below:
+-------------------------------------------------------------------------------------------------->
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20250519/202505191143.59950d28-lkp@intel.com
+
+=========================================================================================
+compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
+  gcc-12/performance/x86_64-rhel-9.4/100%/debian-12-x86_64-20240206.cgz/lkp-icl-2sp8/unlink/stress-ng/60s
+
+commit: 
+  62a2175ddf ("gfs2: pass through holder from the VFS for freeze/thaw")
+  1af3331764 ("super: add filesystem freezing helpers for suspend and hibernate")
+
+62a2175ddf7e7294 1af3331764b9356fadc4652af77 
+---------------- --------------------------- 
+         %stddev     %change         %stddev
+             \          |                \  
+     22349 ±  2%      +6.5%      23809        vmstat.system.cs
+    159467            +2.1%     162851        vmstat.system.in
+     67494           +12.8%      76141 ± 20%  proc-vmstat.nr_shmem
+   1367488            -2.8%    1329138        proc-vmstat.nr_slab_reclaimable
+    541527            -1.8%     531651        proc-vmstat.nr_slab_unreclaimable
+    316736           +17.4%     371828        stress-ng.time.voluntary_context_switches
+     47192            +1.4%      47854        stress-ng.unlink.ops
+    712.42            +1.8%     725.38        stress-ng.unlink.ops_per_sec
+     12343           -23.3%       9464        stress-ng.unlink.unlink_calls_per_sec
+ 1.376e+10            -1.5%  1.355e+10        perf-stat.i.branch-instructions
+     50.73            -1.6       49.16        perf-stat.i.cache-miss-rate%
+ 2.702e+08            +3.7%  2.802e+08        perf-stat.i.cache-references
+     23174 ±  2%      +6.2%      24600        perf-stat.i.context-switches
+      1565           +16.8%       1828        perf-stat.i.cpu-migrations
+ 6.418e+10            -1.5%  6.321e+10        perf-stat.i.instructions
+      0.29            -1.5%       0.29        perf-stat.i.ipc
+      2.11            +1.9%       2.15        perf-stat.overall.MPKI
+     50.08            -1.6       48.47        perf-stat.overall.cache-miss-rate%
+      3.52            +1.5%       3.58        perf-stat.overall.cpi
+      0.28            -1.5%       0.28        perf-stat.overall.ipc
+ 1.356e+10            -1.5%  1.336e+10        perf-stat.ps.branch-instructions
+ 2.664e+08            +3.7%  2.763e+08        perf-stat.ps.cache-references
+     22843 ±  2%      +6.2%      24252        perf-stat.ps.context-switches
+      1544           +16.8%       1803        perf-stat.ps.cpu-migrations
+ 6.328e+10            -1.5%  6.233e+10        perf-stat.ps.instructions
+ 4.344e+12            -1.8%  4.268e+12        perf-stat.total.instructions
+      7.93 ±  3%     -20.9%       6.27 ±  8%  perf-sched.sch_delay.avg.ms.__cond_resched.__dentry_kill.dput.lookup_one_qstr_excl.do_unlinkat
+      5.39 ±  2%     -24.0%       4.10 ±  3%  perf-sched.sch_delay.avg.ms.__cond_resched.dput.do_unlinkat.__x64_sys_unlink.do_syscall_64
+      7.22 ±  5%     -14.8%       6.15 ±  3%  perf-sched.sch_delay.avg.ms.__cond_resched.kmem_cache_alloc_lru_noprof.__d_alloc.d_alloc.lookup_one_qstr_excl
+      7.73 ±  3%      -8.9%       7.04        perf-sched.sch_delay.avg.ms.__cond_resched.mnt_want_write.do_unlinkat.__x64_sys_unlink.do_syscall_64
+      0.73 ±  5%     -22.1%       0.57 ±  8%  perf-sched.sch_delay.avg.ms.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
+      6.43 ±  2%     -14.6%       5.49 ±  3%  perf-sched.sch_delay.avg.ms.syscall_exit_to_user_mode.do_syscall_64.entry_SYSCALL_64_after_hwframe.[unknown]
+     15.68 ± 18%     +25.0%      19.60 ±  9%  perf-sched.sch_delay.max.ms.__cond_resched.down_read.unmap_mapping_range.simple_setattr.notify_change
+     24.13 ± 10%     +44.0%      34.75 ± 23%  perf-sched.sch_delay.max.ms.__cond_resched.down_write.do_truncate.do_open.path_openat
+     11.91 ±  2%     -22.2%       9.26 ±  3%  perf-sched.wait_and_delay.avg.ms.__cond_resched.dput.do_unlinkat.__x64_sys_unlink.do_syscall_64
+     71.98 ± 14%     -30.4%      50.09 ± 15%  perf-sched.wait_and_delay.avg.ms.anon_pipe_read.fifo_pipe_read.vfs_read.ksys_read
+     14.94 ±  5%     -14.2%      12.82 ±  3%  perf-sched.wait_and_delay.avg.ms.syscall_exit_to_user_mode.do_syscall_64.entry_SYSCALL_64_after_hwframe.[unknown]
+     27151           -18.5%      22138        perf-sched.wait_and_delay.count.__cond_resched.__dentry_kill.dput.__fput.__x64_sys_close
+      1001 ±  2%     +77.4%       1776 ±  2%  perf-sched.wait_and_delay.count.__cond_resched.down_write.vfs_unlink.do_unlinkat.__x64_sys_unlink
+      2584 ±  2%     +19.3%       3082 ±  3%  perf-sched.wait_and_delay.count.__cond_resched.dput.do_unlinkat.__x64_sys_unlink.do_syscall_64
+      1046 ±  2%     -21.0%     826.67 ±  3%  perf-sched.wait_and_delay.count.__cond_resched.dput.lookup_one_qstr_excl.do_unlinkat.__x64_sys_unlink
+     30647           -14.9%      26094        perf-sched.wait_and_delay.count.__cond_resched.dput.open_last_lookups.path_openat.do_filp_open
+    802.83 ±  3%     +94.0%       1557 ±  3%  perf-sched.wait_and_delay.count.__cond_resched.dput.simple_unlink.vfs_unlink.do_unlinkat
+      2993           +83.0%       5479 ±  2%  perf-sched.wait_and_delay.count.__cond_resched.dput.terminate_walk.path_openat.do_filp_open
+      1952 ±  2%     +19.9%       2341        perf-sched.wait_and_delay.count.__cond_resched.kmem_cache_alloc_lru_noprof.alloc_inode.new_inode.ramfs_get_inode
+      1026 ±  2%     +59.1%       1632 ±  2%  perf-sched.wait_and_delay.count.__cond_resched.kmem_cache_alloc_noprof.security_inode_alloc.inode_init_always_gfp.alloc_inode
+      1831 ±  2%     +70.4%       3120        perf-sched.wait_and_delay.count.__cond_resched.mnt_want_write.do_unlinkat.__x64_sys_unlink.do_syscall_64
+      1932 ±  2%     +38.5%       2677 ±  2%  perf-sched.wait_and_delay.count.__cond_resched.mnt_want_write.open_last_lookups.path_openat.do_filp_open
+    612.17 ± 15%     +45.3%     889.33 ± 19%  perf-sched.wait_and_delay.count.anon_pipe_read.fifo_pipe_read.vfs_read.ksys_read
+      7589 ±  2%     +21.7%       9237 ±  2%  perf-sched.wait_and_delay.count.schedule_preempt_disabled.rwsem_down_write_slowpath.down_write.do_unlinkat
+      3569 ±  2%     +20.4%       4299 ±  2%  perf-sched.wait_and_delay.count.schedule_preempt_disabled.rwsem_down_write_slowpath.down_write.filename_create
+      6.52 ±  2%     -20.8%       5.16 ±  3%  perf-sched.wait_time.avg.ms.__cond_resched.dput.do_unlinkat.__x64_sys_unlink.do_syscall_64
+     71.91 ± 14%     -30.4%      50.04 ± 15%  perf-sched.wait_time.avg.ms.anon_pipe_read.fifo_pipe_read.vfs_read.ksys_read
+      8.52 ±  7%     -13.9%       7.33 ±  3%  perf-sched.wait_time.avg.ms.syscall_exit_to_user_mode.do_syscall_64.entry_SYSCALL_64_after_hwframe.[unknown]
+     23.62 ±  9%     +26.8%      29.96 ±  8%  perf-sched.wait_time.max.ms.__cond_resched.down_read.unmap_mapping_range.truncate_pagecache.simple_setattr
+
+
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provided
+for informational purposes only. Any difference in system hardware or software
+design or configuration may affect actual performance.
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
