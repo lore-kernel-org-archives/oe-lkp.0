@@ -1,80 +1,95 @@
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F54110785
-	for <oe-lkp@lists.linux.dev>; Thu, 29 May 2025 00:01:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 075011552E0;
+	Thu, 29 May 2025 00:58:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748476867; cv=none; b=I5MaubD958rrBznvYNUAsiUetKknjw2XpHLoNY2IjSkYT9ZHBsIbT9aLZONYf4HfZK2mOCCXmgwW0ZhWSuj5iQEFIvt+SlJ9SfGho3yXtdQ9OV6v/7d7nBAYA5xxSpXZfdfiM7W6K5rSqDPAuo5OVhaf6tz29ik8EMY7sMytoHQ=
+	t=1748480293; cv=none; b=Y/8dDMt8r6h/tVBdhWDKiouDLcY+gTuQeE+lKvlysLjntio8lpQsy5Dg1ENtybrih9D3h7uQu2N14X0hxsoCPzjB371gyFbP62DUU1AlAUNH7FmbOMjPiT1OBZtwIioBETqVPkbYJxQIDBkvSgo0p0WWkP26toslYUjuK0axGC0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748476867; c=relaxed/simple;
-	bh=Fa0O1NjH1sjPtlGGyFIGirvKwYKd98rA44oZchWQu5s=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:
-	 Content-Type; b=Yq6Gcs1eiIIC6IwRYbMvimanEYPe3YYKScMrM3UUm09tb1hLSUjc9qmYQ4innJzASAGC4/b+N6TgFy5XATECwJtQba4GS9auO8DtC8khK0K0x1F9Na5bbQYNQLiOhlI4BHPZr2XeBNFYjEu/bknwpWFEmiD3GmK8VOcC+fG8iyM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.71
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-86cc7cdb86fso27873139f.1
-        for <oe-lkp@lists.linux.dev>; Wed, 28 May 2025 17:01:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1748476865; x=1749081665;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=stvlnMbcdcBYZLpd3w6+KPyvEkXRg2zxOy6ZStT7IJM=;
-        b=CH7qcsY50Por2WxOQ8frAK3q1zROm5qkbvufYTarKYQ4D3lsteRajWUF3aJXh4vW/+
-         EFuS6xiasT56hE+Wpd9glPdUuNTGq8wu4ZVHlnrONu/1Nm/XIF7tFkMRqLBYbynE8Uzx
-         CFdX9Gy79DJV4MdztFHG4g26btA7AIQYp5muuve076a72+/4qteZjNdTqLGobCfIa/jn
-         iHx02cywk1x7x9lUzTIov3l8/Wf0EeIz+1ckCrRG6p/QIU54jjytzq/F6nL81lvEhTgS
-         c2vguhXywNEoUc/LdFhE9/tmfC5jA8Fbfyh/T3lGbGfSn4aaetYzI+PmIxrFZYYnzqLU
-         kcCg==
-X-Forwarded-Encrypted: i=1; AJvYcCVtDy5Z80NhUAaPMrb9l9fx9aaxx2P4YnBl80uBtZSIn5OPh/OUCQQda6WW1AalK1VHjXK2YkY=@lists.linux.dev
-X-Gm-Message-State: AOJu0YwpAWSzLUAx9ibM92b1U8S+vhresCcA6Im9UojW/MkrG/wkEiTw
-	ipATlI1BLgDSupO/INPZw2r3eR3ZFcuCDswBLh+GwDz1RRSj1ndpXPVBNv0DNX6mKuaK7cXv5y0
-	pRG17IbRLzLDYLsT5la6qV3RCil/s11gIBF/B02UgWtjReQJ+HPr7RgokyDo=
-X-Google-Smtp-Source: AGHT+IE9VLpPsp2Q+7yXbHW9kBedtEHr+eCFJ1zkMmpIBTT0dGaXXX/zJ9vzHwbxhM7XEMjyiLyurnHeieiKw8oYYB24XJQopFoa
+	s=arc-20240116; t=1748480293; c=relaxed/simple;
+	bh=j0hXA8T74uv4Z+dSCRihfhK5a1WA8zDwnBn/QxmEGCM=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=I1HSovvscd21n7PM1wWdj1RCENiX08vCrTiLnsuMJR7/13fGAfL/yAA9d18nyhQQIKiT4AUGuPzvCJioW9saYOTD8vRzbHdCB4CKT1argnHCZH6Mx+RqFOyB8UDLM8S9WQQ5MAtM1B16WF/OkqN/P0lLYa4jkZfuJeAWXtma5v8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TVaE5b9y; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TVaE5b9y"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 328B7C4CEE3;
+	Thu, 29 May 2025 00:58:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1748480292;
+	bh=j0hXA8T74uv4Z+dSCRihfhK5a1WA8zDwnBn/QxmEGCM=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=TVaE5b9yUxYs/e5u6NA6w+wlYpV8OdeTMTkqeCBL2+sgQDeSKZAx9b+D0EHPxW8gT
+	 gTtgZl+CSZSV1rpX/29OzzOBb30yIwVSr7ERgkBRqzbUjdCftCyE4K+OvO3TXSrkti
+	 Pm7r4k7PeLG1bmh9EqZbXr43Mm04xFKBL6g2qC4B8GT+IJPMqqk8b7wftm0VLnaF5s
+	 RY40u9T/gL4SaDWeQ2iH7nI0rNFPGQ1Y75Mw3Spzt5PlJ7PgcPvgroEk/VCphjOWbE
+	 t1B4J6MQAktapWHUD3HgKVLteeVSOrB1qbJ0XHK2adjNn++a7dAUid50DbEK0qcikP
+	 HSeu7CvpaNM1g==
+Date: Wed, 28 May 2025 17:58:11 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: Bui Quang Minh <minhquangbui99@gmail.com>, oe-lkp@lists.linux.dev,
+ lkp@intel.com, "Michael S. Tsirkin" <mst@redhat.com>,
+ netdev@vger.kernel.org
+Subject: Re: [linux-next:master] [selftests] 59dd07db92:
+ kernel-selftests.drivers/net.queues.py.fail
+Message-ID: <20250528175811.5ff14ab0@kernel.org>
+In-Reply-To: <0bcbab9b-79c7-4396-8eb4-4ca3ebe274bc@gmail.com>
+References: <202505281004.6c3d0188-lkp@intel.com>
+	<0bcbab9b-79c7-4396-8eb4-4ca3ebe274bc@gmail.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:4c08:b0:85b:3f1a:30aa with SMTP id
- ca18e2360f4ac-86cbb8edda7mr2276380539f.9.1748476864762; Wed, 28 May 2025
- 17:01:04 -0700 (PDT)
-Date: Wed, 28 May 2025 17:01:04 -0700
-In-Reply-To: <00000000000039e8e1061bc7f16f@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6837a3c0.a70a0220.1765ec.017e.GAE@google.com>
-Subject: Re: [syzbot] [net?] possible deadlock in do_ip_setsockopt (4)
-From: syzbot <syzbot+e4c27043b9315839452d@syzkaller.appspotmail.com>
-To: alibuda@linux.alibaba.com, davem@davemloft.net, dsahern@kernel.org, 
-	dust.li@linux.alibaba.com, edumazet@google.com, horms@kernel.org, 
-	kuba@kernel.org, kuniyu@amazon.com, linux-kernel@vger.kernel.org, 
-	lkp@intel.com, netdev@vger.kernel.org, oe-lkp@lists.linux.dev, 
-	oliver.sang@intel.com, pabeni@redhat.com, schnelle@linux.ibm.com, 
-	srikarananta01@gmail.com, syzkaller-bugs@googlegroups.com, 
-	wenjia@linux.ibm.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-syzbot suspects this issue was fixed by commit:
+On Wed, 28 May 2025 15:43:17 +0700 Bui Quang Minh wrote:
+> > If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> > the same patch/commit), kindly add following tags
+> > | Reported-by: kernel test robot <oliver.sang@intel.com>
+> > | Closes: https://lore.kernel.org/oe-lkp/202505281004.6c3d0188-lkp@intel.com
+> >
+> >
+> >
+> > # timeout set to 300
+> > # selftests: drivers/net: queues.py
+> > # TAP version 13
+> > # 1..4
+> > # ok 1 queues.get_queues
+> > # ok 2 queues.addremove_queues
+> > # ok 3 queues.check_down
+> > # # Exception| Traceback (most recent call last):
+> > # # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-59dd07db92c166ca3947d2a1bf548d57b7f03316/tools/testing/selftests/net/lib/py/ksft.py", line 223, in ksft_run
+> > # # Exception|     case(*args)
+> > # # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-59dd07db92c166ca3947d2a1bf548d57b7f03316/tools/testing/selftests/drivers/net/./queues.py", line 33, in check_xsk
+> > # # Exception|     raise KsftFailEx('unable to create AF_XDP socket')
+> > # # Exception| net.lib.py.ksft.KsftFailEx: unable to create AF_XDP socket
+> > # not ok 4 queues.check_xsk
+> > # # Totals: pass:3 fail:1 xfail:0 xpass:0 skip:0 error:0
+> > not ok 7 selftests: drivers/net: queues.py # exit=1
+> >
+> >
+> >
+> > The kernel config and materials to reproduce are available at:
+> > https://download.01.org/0day-ci/archive/20250528/202505281004.6c3d0188-lkp@intel.com  
+> 
+> Looking at the log file, it seems like the xdp_helper in net/lib is not 
+> compiled so calling this helper from the test fails. There is similar 
+> failures where xdp_dummy.bpf.o in net/lib is not compiled either.
+> 
+> Error opening object 
+> /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-59dd07db92c166ca3947d2a1bf548d57b7f03316/tools/testing/selftests/net/lib/xdp_dummy.bpf.o: 
+> No such file or directory
+> 
+> I'm still not sure what the root cause is. On my machine, these files 
+> are compiled correctly.
 
-commit 752e2217d789be2c6a6ac66554b981cd71cd9f31
-Author: Kuniyuki Iwashima <kuniyu@amazon.com>
-Date:   Mon Apr 7 17:03:17 2025 +0000
-
-    smc: Fix lockdep false-positive for IPPROTO_SMC.
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17cd6bf4580000
-start commit:   88d324e69ea9 Merge tag 'spi-fix-v6.14-rc7' of git://git.ke..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=27515cfdbafbb90d
-dashboard link: https://syzkaller.appspot.com/bug?extid=e4c27043b9315839452d
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12b13e98580000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=131d9c4c580000
-
-If the result looks correct, please mark the issue as fixed by replying with:
-
-#syz fix: smc: Fix lockdep false-positive for IPPROTO_SMC.
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Same here. The get built and installed correctly for me.
+Oliver Sang, how does LKP build the selftests? I've looked at the
+artifacts and your repo for 10min, I can't find it.
+The net/lib has a slightly special way of getting included, maybe
+something goes wrong with that.
