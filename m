@@ -1,43 +1,48 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA43778F2B;
-	Thu,  5 Jun 2025 14:39:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 698B41A38E4
+	for <oe-lkp@lists.linux.dev>; Thu,  5 Jun 2025 15:54:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749134349; cv=none; b=fDQXDOiW3WEscG1xRlphklmL4P2jBn/Cqz2l6O1G62nC//IQxZ8BLMLpe3u9J5K5ynJKWR+fj0tiJxtn4irNnKBx4jJ2E/rgVA7Dc1ijkcrqWic1tJF/p251kjWuTlworczgbTO0WZ3MIBx8LHpNeyimPLAJ8LKe0rWY5Kbi2bk=
+	t=1749138851; cv=none; b=nHdbbEYAEJ0LzqEoN15zFi9ltm1Bjj78m6DfJCutP2Qdi9vswLOFlw8c00rvQ3WxtHmZzK5GgDzJe+W0h8ju6TwpXfEVbiDmEi7TWTOVsX0l2f42NnHrIsqXDjyknhsQvTBHOSZRCKW0eSlpnjxiDOBSbh8d6euQ0btEaSkv1/E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749134349; c=relaxed/simple;
-	bh=xLpKEOc8fA92QFRjW1J6rRuu45Xm62oHNsj8UqAmlzA=;
+	s=arc-20240116; t=1749138851; c=relaxed/simple;
+	bh=GG5pH0WumM+1EtuumeUEtMhwO7i52Jn7UO0eiIvnzoc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tOe/YVxvKxqnX+DEHHI1fz42DfIx6wYq0OB9MmlBWOLk/1DcqO/Gjeb0XfpfEpQjSHf9CIbPW3DQ37q/RpKcVOFsPy/k8CLQX/bK3BT8RKRchpaPh3V9Q0Wij0IOboqp5toNKw0L6YG65X1g0pACtY+i1SVYME5j9YvhTVn5rHs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=GuCjIDEA; arc=none smtp.client-ip=90.155.50.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=LPDh1NMLqYFHVDgQ2V99O9RJuSC+Ke/g9qx1hbmL1t2bWJWuzjZjm9H1ZLOQZ98BcqY5pkSKdKGs82Ud4TIUK267fR2zGRSdY7uwAZDlAa+/nyKA5Nf3ahkNp5D1FOlhZA3o6bEXxbjMatgBUO+9sRIMZIpJ6qfgOrowmrRpaWQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=HyIhVUcB; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=TFQv1fIq; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="GuCjIDEA"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=7aizhFKosYRXj/8cXtw1gmVuAjL4hzqqXZZX38VaLYU=; b=GuCjIDEAIG1HbRH58bql6xqyV8
-	90UmDU4JJtQF/WNHqOP77Nqu5xkYG8Yn+z4dF6wXA7vWpblIGEhsHuCDTXLWAJpkspcHCNV5gs4zu
-	rOK19VcfR/zcGT7OrybHj6y969jfu4myNQlgr5+thc2hF7kbZKVPuL1H5o2LDNEctxTesAUgcdY3K
-	IoPlvEPKm9ke418mrZcKK6c0+P16h9T5tdV6SKgJIrCNzq9VjI4rAx5HHRAHSfM/z2F7uHkVg+WyZ
-	194Rjn0oa4J0gaq0iJhs/LKYBYTYhWA5GbsRFxkk3WOUrCvHpu80IRo8WCEnMD72MJV0PaOBw7+cr
-	VAoHdaMw==;
-Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
-	by casper.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1uNBkD-00000004Kor-33hj;
-	Thu, 05 Jun 2025 14:39:01 +0000
-Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
-	id E5E1330057C; Thu,  5 Jun 2025 16:39:00 +0200 (CEST)
-Date: Thu, 5 Jun 2025 16:39:00 +0200
-From: Peter Zijlstra <peterz@infradead.org>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="HyIhVUcB";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="TFQv1fIq"
+Date: Thu, 5 Jun 2025 17:54:05 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1749138847;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=eUZKiCDB3kruCoH3meBGYpAjvuH1dsB48dpAegEVExA=;
+	b=HyIhVUcBRunFL+9nv9XcR33JwHfWW6DX1qu4vYh6buxnGMLY4ZHnx7xjt6Zu2VA0F7E4/M
+	Gec6JWwVk/Wki4z+D2+4LOBW/glSFhxSwHZaaisrYoCXffM3VmtZymfMcIZ1S2EbU3+V/i
+	55G9TcJ1zb89JLdfL7FisVctMHjg4YYHw/6fvAFLFU3Xs+KZjP8tn/RA95IqlWhDimF+FM
+	HuDs9KIGjEgQt7jgJ0WUU9kwasw/kw7uA5V2GTseK3wW6zGqYnyc3HWd1U9to3p5ZrY5IO
+	yrIdzT/x6UbwfmOnfpTaU6P1Rg0sDGQeKwh3Ait4vCsUwhO2le7AJrAdl93LIg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1749138847;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=eUZKiCDB3kruCoH3meBGYpAjvuH1dsB48dpAegEVExA=;
+	b=TFQv1fIqG2rR9BuyhfqHSruT9hCxu8iBZVCvPsWvP7P8zrc4RO+xIwZUK3pDpha3FNap7l
+	3HXm19ax10u6I5CQ==
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 To: Petr Pavlu <petr.pavlu@suse.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	linux-modules@vger.kernel.org, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-kernel@vger.kernel.org,
+Cc: linux-modules@vger.kernel.org, oe-lkp@lists.linux.dev, lkp@intel.com,
+	linux-kernel@vger.kernel.org,
 	kernel test robot <oliver.sang@intel.com>,
 	Paolo Abeni <pabeni@redhat.com>,
 	Allison Henderson <allison.henderson@oracle.com>,
@@ -45,10 +50,11 @@ Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
 	rds-devel@oss.oracle.com, Luis Chamberlain <mcgrof@kernel.org>,
 	Sami Tolvanen <samitolvanen@google.com>,
 	Daniel Gomez <da.gomez@samsung.com>,
+	Peter Zijlstra <peterz@infradead.org>,
 	Thomas Gleixner <tglx@linutronix.de>
 Subject: Re: [PATCH v2] module: Make sure relocations are applied to the
  per-CPU section
-Message-ID: <20250605143900.GV39944@noisy.programming.kicks-ass.net>
+Message-ID: <20250605155405.3BiTtQej@linutronix.de>
 References: <202506041623.e45e4f7d-lkp@intel.com>
  <20250604152707.CieD9tN0@linutronix.de>
  <20250605060738.SzA3UESe@linutronix.de>
@@ -59,14 +65,82 @@ List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 In-Reply-To: <beb343ec-6349-4f9c-9fea-588b04eb49ee@suse.com>
 
-On Thu, Jun 05, 2025 at 03:44:23PM +0200, Petr Pavlu wrote:
+On 2025-06-05 15:44:23 [+0200], Petr Pavlu wrote:
+> Isn't this broken earlier by "Don't relocate non-allocated regions in mod=
+ules."
+> (pre-Git, [1])?
+
+Looking further back into the history, we have
+	21af2f0289dea ("[PATCH] per-cpu support inside modules (minimal)")
+
+which does
+
++       if (pcpuindex) {
++               /* We have a special allocation for this section. */
++               mod->percpu =3D percpu_modalloc(sechdrs[pcpuindex].sh_size,
++                                             sechdrs[pcpuindex].sh_addrali=
+gn);
++               if (!mod->percpu) {
++                       err =3D -ENOMEM;
++                       goto free_mod;
++               }
++               sechdrs[pcpuindex].sh_flags &=3D ~(unsigned long)SHF_ALLOC;
++       }
+
+so this looks like the origin.
+
+=E2=80=A6
+> > --- a/kernel/module/main.c
+> > +++ b/kernel/module/main.c
+> > @@ -2816,6 +2816,10 @@ static struct module *layout_and_allocate(struct=
+ load_info *info, int flags)
+> >  	if (err)
+> >  		return ERR_PTR(err);
+> > =20
+> > +	/* Add SHF_ALLOC back so that relocations are applied. */
+> > +	if (IS_ENABLED(CONFIG_SMP) && info->index.pcpu)
+> > +		info->sechdrs[info->index.pcpu].sh_flags |=3D SHF_ALLOC;
+> > +
+> >  	/* Module has been copied to its final place now: return it. */
+> >  	mod =3D (void *)info->sechdrs[info->index.mod].sh_addr;
+> >  	kmemleak_load_module(mod, info);
+>=20
+> This looks like a valid fix. The info->sechdrs[info->index.pcpu].sh_addr
+> is set by rewrite_section_headers() to point to the percpu data in the
+> userspace-passed ELF copy. The section has SHF_ALLOC reset, so it
+> doesn't move and the sh_addr isn't adjusted by move_module(). The
+> function apply_relocations() then applies the relocations in the initial
+> ELF copy. Finally, post_relocation() copies the relocated percpu data to
+> their final per-CPU destinations.
+>=20
+> However, I'm not sure if it is best to manipulate the SHF_ALLOC flag in
+> this way. It is ok to reset it once, but if we need to set it back again
+> then I would reconsider this.
+
+I had the other way around but this flag is not considered anywhere
+else other than the functions called here. So I decided to add back what
+was taken once.
+
+> An alternative approach could be to teach apply_relocations() that the
+> percpu section is special and should be relocated even though it doesn't
+> have SHF_ALLOC set. This would also allow adding a comment explaining
+> that we're relocating the data in the original ELF copy, which I find
+> useful to mention as it is different to other relocation processing.
+
+Not sure if this makes it better. It looks like it continues a
+workaround=E2=80=A6
+The only reason why it has been removed in the first place is to skip
+the copy process.
+We could also keep the flag and skip the section during the copy
+process based on its id. This was the original intention.
 
 > For instance:
-> 
+>=20
 > 	/*
 > 	 * Don't bother with non-allocated sections.
 > 	 *
@@ -75,10 +149,10 @@ On Thu, Jun 05, 2025 at 03:44:23PM +0200, Petr Pavlu wrote:
 > 	 * ELF template and subsequently copy it to the per-CPU destinations.
 > 	 */
 > 	if (!(info->sechdrs[infosec].sh_flags & SHF_ALLOC) &&
-> 	    infosec != info->index.pcpu)
+> 	    infosec !=3D info->index.pcpu)
 > 		continue;
+>=20
 
-Right, and pcpu is a data section and should not have relative
-relocations, only absolute.
+If you insist but=E2=80=A6
 
-So copying things should not be a problem.
+Sebastian
