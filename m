@@ -1,231 +1,120 @@
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D93A91946DF
-	for <oe-lkp@lists.linux.dev>; Wed,  4 Jun 2025 22:53:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 715751C3C11
+	for <oe-lkp@lists.linux.dev>; Thu,  5 Jun 2025 06:07:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749077628; cv=none; b=AAJOcOb87rRBIa//2nTqKoaknL7kpDEjLMua39vnowCz5wXM+Rv68k1BxTUl1ftmynd9khgk/OYiI97OPcMkUAfcNeMzbzZtj/4u7SAlrOWeBm0UfDOF8ZWn2S1cKD3Sz3v87cNSLe7ws3vCd6NBInhMO0g2UVcOiBYgf8maDYg=
+	t=1749103664; cv=none; b=HXzqH/Rz9J+Is0X02mcQmeCXxb5j5tK0+wh/+gSAzdWBjkUtoUL250TjNdmdBNdGxG/m3rovaPOiwqFbZvFwAs6r+9wGcFYnV/2xp8Mq/b/mnZoMZA8WH7MCFk2P+ei+qtai7NEXK6/aJEJw2pbLvYGZaLBkrVFdAxssZe/xdls=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749077628; c=relaxed/simple;
-	bh=v7sGuBc0u5XZMp8KHHODHm/vC3BCSm2pohi9WU+V6y8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YH6AXrU6T9BXsXUlTRC8rkVl7t06zR7vmqu9WrX3Jy8WFeA2y7lOSeYkRXi33EMsho+RG6/wUfdbt+3kh6R84QN3cJvDUQm3dYrT3Ea3RdK21jZ6dDxPxu2dFFpLDwHgwQCIGcNn6g7UgMSKvrygy1UB/kagMDIkS8GPK+wU+wQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.com; spf=pass smtp.mailfrom=gmx.com; dkim=pass (2048-bit key) header.d=gmx.com header.i=quwenruo.btrfs@gmx.com header.b=sRlcpays; arc=none smtp.client-ip=212.227.17.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.com
+	s=arc-20240116; t=1749103664; c=relaxed/simple;
+	bh=+uBO42iXZqtDYIQMA9gA6/zv4IsrwRUl3RAt4NSUZlo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=pI/D2d8kU9yO5HTicS5xYTTMuMx6h2BlgDyAmrTZaWgd4QwbYqxFj3ac3lVOgxJMPeaxNUtzt8i9OzWbC0bL17w6lS6Y+VhetD2SjkO3va2q0uC8T+MHO2rU9TR+aUj3NLT8cg8JXY/EJHH/qM2opR78GDhOakT68+JNGHBNBhA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=yhNiMwGK; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=t+p8jzgb; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.com header.i=quwenruo.btrfs@gmx.com header.b="sRlcpays"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.com;
-	s=s31663417; t=1749077620; x=1749682420; i=quwenruo.btrfs@gmx.com;
-	bh=+kDA7NAJkW+p8vIYFTmsWVXRqVvxNLhV0K2T7UJrcGk=;
-	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
-	 References:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding:cc:content-transfer-encoding:
-	 content-type:date:from:message-id:mime-version:reply-to:subject:
-	 to;
-	b=sRlcpaysHGvt+ScqlPPAlXJQ7vb3btwK0kOl65g3y+OgNLYsIpbK1E8xZvk7Ruxp
-	 atB9Uptfjg77x+DSOJ0b9bLjv0lgh7du8qadqL9QUvcShX5EcUPD70SvUzJmsJv+T
-	 Al/A34OhkRah5BPoTKPRkodAjBDzA8JCkiecn/8hzUylMysqIXZKKov5fy6vkDQtZ
-	 EZ9v+RcwJs+hJ9VBGckfowl8ivgKiXHLnessTSKRAAlk6qtT72mmnnU6+ZmePb9NC
-	 DXtMb5aN8Rgnvdfn10oYHJLVZKroz9/e2+TU2XwZvxuMio1gBWEXJnYWgPcoHr4IT
-	 d2qzSvwycbKg91PQIw==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [172.16.0.229] ([159.196.52.54]) by mail.gmx.net (mrgmx105
- [212.227.17.174]) with ESMTPSA (Nemesis) id 1MiJZO-1v24Un29pe-00qMA3; Thu, 05
- Jun 2025 00:53:40 +0200
-Message-ID: <d188b1ef-5e84-438c-863b-807e534fb67d@gmx.com>
-Date: Thu, 5 Jun 2025 08:23:34 +0930
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="yhNiMwGK";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="t+p8jzgb"
+Date: Thu, 5 Jun 2025 08:07:38 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1749103660;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=8HZ71isqmSlxdQ2pUqhCUqFJFnnu4E61MVtczgwOP6Q=;
+	b=yhNiMwGKmUXfkBKAQLXO/d3mTwEE3QnYl4xV5r+GwmyOgacZhEdCH7UCbTWj+WIOfYhk7o
+	gMraDmikgcjndOHfvnKxjxPOaTbfnnyN2P8T2/SaoLlq8pKh8Hp5+BDOBXkPnVhAPxsxH0
+	sxK6rmYkHRbOPKejL8DCcCzBE8tHNjquvrFCIxCrVTdpX7lp/zVRECytzKf7oGfji/aeYW
+	e5lNKkifBjnHRKlop2T3odJ7zO5va2eIdPb5hny7XhhWUatVJi2kKA/Ix4305mWU9nODAw
+	kVD6s8qRcaMxsSAs387s0Xr3jdXVnt/Vb18P9nt/OtaIzh0FFxajK8AFrdfWPA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1749103660;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=8HZ71isqmSlxdQ2pUqhCUqFJFnnu4E61MVtczgwOP6Q=;
+	b=t+p8jzgbDKKet5/oPbEz5/zhqjCZj2Q3KQu7QZtaWafXE22DK5hbl4cjUZPD8GgwU2y4rb
+	fgWZI2jQ5RTsTmBA==
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: linux-modules@vger.kernel.org
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	kernel test robot <oliver.sang@intel.com>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Allison Henderson <allison.henderson@oracle.com>,
+	netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+	rds-devel@oss.oracle.com, Luis Chamberlain <mcgrof@kernel.org>,
+	Petr Pavlu <petr.pavlu@suse.com>,
+	Sami Tolvanen <samitolvanen@google.com>,
+	Daniel Gomez <da.gomez@samsung.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH v2] module: Make sure relocations are applied to the per-CPU
+ section
+Message-ID: <20250605060738.SzA3UESe@linutronix.de>
+References: <202506041623.e45e4f7d-lkp@intel.com>
+ <20250604152707.CieD9tN0@linutronix.de>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [linus:master] [btrfs] 8af94e772e: xfstests.btrfs.220.fail
-To: kernel test robot <oliver.sang@intel.com>, Qu Wenruo <wqu@suse.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
- David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org
-References: <202506042235.7e3a37da-lkp@intel.com>
-Content-Language: en-US
-From: Qu Wenruo <quwenruo.btrfs@gmx.com>
-Autocrypt: addr=quwenruo.btrfs@gmx.com; keydata=
- xsBNBFnVga8BCACyhFP3ExcTIuB73jDIBA/vSoYcTyysFQzPvez64TUSCv1SgXEByR7fju3o
- 8RfaWuHCnkkea5luuTZMqfgTXrun2dqNVYDNOV6RIVrc4YuG20yhC1epnV55fJCThqij0MRL
- 1NxPKXIlEdHvN0Kov3CtWA+R1iNN0RCeVun7rmOrrjBK573aWC5sgP7YsBOLK79H3tmUtz6b
- 9Imuj0ZyEsa76Xg9PX9Hn2myKj1hfWGS+5og9Va4hrwQC8ipjXik6NKR5GDV+hOZkktU81G5
- gkQtGB9jOAYRs86QG/b7PtIlbd3+pppT0gaS+wvwMs8cuNG+Pu6KO1oC4jgdseFLu7NpABEB
- AAHNIlF1IFdlbnJ1byA8cXV3ZW5ydW8uYnRyZnNAZ214LmNvbT7CwJQEEwEIAD4CGwMFCwkI
- BwIGFQgJCgsCBBYCAwECHgECF4AWIQQt33LlpaVbqJ2qQuHCPZHzoSX+qAUCZxF1YAUJEP5a
- sQAKCRDCPZHzoSX+qF+mB/9gXu9C3BV0omDZBDWevJHxpWpOwQ8DxZEbk9b9LcrQlWdhFhyn
- xi+l5lRziV9ZGyYXp7N35a9t7GQJndMCFUWYoEa+1NCuxDs6bslfrCaGEGG/+wd6oIPb85xo
- naxnQ+SQtYLUFbU77WkUPaaIU8hH2BAfn9ZSDX9lIxheQE8ZYGGmo4wYpnN7/hSXALD7+oun
- tZljjGNT1o+/B8WVZtw/YZuCuHgZeaFdhcV2jsz7+iGb+LsqzHuznrXqbyUQgQT9kn8ZYFNW
- 7tf+LNxXuwedzRag4fxtR+5GVvJ41Oh/eygp8VqiMAtnFYaSlb9sjia1Mh+m+OBFeuXjgGlG
- VvQFzsBNBFnVga8BCACqU+th4Esy/c8BnvliFAjAfpzhI1wH76FD1MJPmAhA3DnX5JDORcga
- CbPEwhLj1xlwTgpeT+QfDmGJ5B5BlrrQFZVE1fChEjiJvyiSAO4yQPkrPVYTI7Xj34FnscPj
- /IrRUUka68MlHxPtFnAHr25VIuOS41lmYKYNwPNLRz9Ik6DmeTG3WJO2BQRNvXA0pXrJH1fN
- GSsRb+pKEKHKtL1803x71zQxCwLh+zLP1iXHVM5j8gX9zqupigQR/Cel2XPS44zWcDW8r7B0
- q1eW4Jrv0x19p4P923voqn+joIAostyNTUjCeSrUdKth9jcdlam9X2DziA/DHDFfS5eq4fEv
- ABEBAAHCwHwEGAEIACYCGwwWIQQt33LlpaVbqJ2qQuHCPZHzoSX+qAUCZxF1gQUJEP5a0gAK
- CRDCPZHzoSX+qHGpB/kB8A7M7KGL5qzat+jBRoLwB0Y3Zax0QWuANVdZM3eJDlKJKJ4HKzjo
- B2Pcn4JXL2apSan2uJftaMbNQbwotvabLXkE7cPpnppnBq7iovmBw++/d8zQjLQLWInQ5kNq
- Vmi36kmq8o5c0f97QVjMryHlmSlEZ2Wwc1kURAe4lsRG2dNeAd4CAqmTw0cMIrR6R/Dpt3ma
- +8oGXJOmwWuDFKNV4G2XLKcghqrtcRf2zAGNogg3KulCykHHripG3kPKsb7fYVcSQtlt5R6v
- HZStaZBzw4PcDiaAF3pPDBd+0fIKS6BlpeNRSFG94RYrt84Qw77JWDOAZsyNfEIEE0J6LSR/
-In-Reply-To: <202506042235.7e3a37da-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:TxDBeL26Xax1jDircGl5E+qo6JjRzAFuHZAo+aUnVOTeNCOX7kH
- t5u/oSAmJu2kdmgqv7HTXJZcguen7QPThvxsR6HRllb8qSeWUYoEHuqW6VXKJUxL81IdLfT
- 5WunUMsmj52CYIQOdsRguvERUqnHEMgaCLkENLY0WpGf4Hrho581XwNHgIhh7XkCeCBy2CD
- wEaUOcEs/p4fIJmJ4Ynww==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:NkefiVpwn+U=;SRrJq1IUkdumoKCxKIfRIAGDuGc
- RakEONIO+nzr2KLOfT+VhljW2gdFbiqAvwpUxxZk1vP/FkQW6vthxchY2uHWp2c27AdsTBZss
- IwmLnuPkxd+4c8PaBIS/mMCYBOv8FYdZPKDDiB6+U6EgnHRjWKfopffhuDmkKEsaqx1+uaqix
- Liv4PcOHjFlbj0G/jKU09QoVSOX3TZ/jRNFqBYkT9WMXqQ/PZ4p3z8jBtKoClxE1nATMw645k
- jLP3WY+KC24E5LtqrWD7+5RSBoMWrggxjXmpRcuPItyK87YGCWgmLbBgDDVgL/vxHKN81A7tb
- 5Rkje2QpFRwvBJTeTUNu6VTYH9SDBMsJGK9ho4TRF5VKWBx5wnLno8TvzmdWOnF1P+uyAaWfF
- t214P5Y3oYeFIZ6Nq4e3z+/6LGtBSrvGyRvumm+WRRY4pL/VmgUW5H65axnoRk2pyfQm9gS/6
- 7M2Hp0ySu978QoBn4VwwBSV7Z9VU0LF9HiuCVCJYuFYqh2TBo5LuQC0Mks1Ty6HwqwLWajqSv
- uTC/udqYvD0JfA/qojKbOYGWkJFSNofiuseK2bbg3ZNCThEB+unZO10S6hvUss9bpYG1d8606
- YhlFmIMlNNhGOjH68QttNYV9uJEekor48hq8oNLrW/MaQGGooM5Lsa1A42ntvmv6j08AC5uqD
- qlX9nsky0iONJhzuNWgMi4lLXOHwL8if380J1dL6xY96GgIM/YvhawJ0z+JooDZvuFYo5lxZQ
- Q09QbidH2ierZ/I9QQ7wQcGcPVd1oXeBk9yIO4TWEPZqDIbyEC5cJEvT0rInXH51LVeCuzO69
- U4+A4wZNGaPyjq0Hvs49FxrcWVIr8ekVY7cLztsvgPXtAcqN6sUYjV0jtZmsWS2UKWP0eR6kG
- bnE/M0+ePNSqmgULjG42Tqvx9rZJD3ZQVrf+FtWA67GyzTlDjPXIO2xT3xqq2pJyKeNa/d0YK
- 77iSwvQrXFE1gTzuGN0GC06WHvUi+sOWOJgjJjntj+in5Cjn1RDEAjrDEJsz+R1raCy6ZuvNm
- gQH+5sF6aPVqeTMY40Ks4bGElXuWrs807uhO2vQiNqxwy+rGzG8Sy4w8/DbbP7rScUSzPklje
- kueOhL4yTPLki7TqgOF0tXq1ufc1gxDMrBLMy07de7Nm20lU7aR92r2BR+kWFaJYmlIvt+YMZ
- 0X/TtuLBa7ynvvjPgJCryCSL4X8LZPG4xGD7UTbsc+XRJczqvJ66PLh+wlzxhcQjgramlHBOr
- Al9VNy/cSJ+R/Z70wF0UJSGBbMRUW6K9d97C9fLYWSTxRwW1LE6jDpJO7lJCtsdOTrAvwbs5V
- brd4u7k07BgLFV83SNOoe7Mp/kWbt5wqDSKmarsuAd3D+ciEQH/lkwwvCNKQyg6KZRVBx5nLO
- v9K3GVTSUxpdAQ4Q3ZzYLaHU6xDAMPSXfB2EB0mZYcEegXSwdbEiD9C6EKrB1bHePaZt7cNXw
- fnhBXnuqsk/isOLM8YFu4ZaPNnGSe0fY/Cv7YVCKdQxeatGlNWpFvuUBXHL4um5sVuLm0MEhk
- s76H7yUIFH/C5LyyPLMiTwRHkNrLqYiYIeax2LDVRyo1fACNYultICD4alhslnhN3XED9JApi
- eWlmX+BaSLPe3OSgbubEUP+aXSWjAap7wjzsD4LTnL7JN88lQ/4j/MsBK31zJE90HCwP6sPDt
- fb7kRTJ3vdBcvU0rN/LOa4z02T4SCu/e2vmM32JfDiqQwtO35RdnFzO+hMHEHvSaBqjo0SjHW
- uSTDJEc2sfSHecS8MeIdFQ4+ZT5XLMYx8zccP8fGb/d96yBt/fYVFTB7NsHnMFGVce07xkI3+
- 7WCKwVdgrZusdZtaDmqqZs2gYSIHNb+Jh2z27A3x440nbawdl032fXm4ydIg3THwz/lIu7dKW
- wB/vviquYFxrRiDHOd/uPMlydmM0Z+Lc44qt1RuCAUVkdu53uqIMmZCGBoVprP/d8AInJp4wO
- DXpHEuIh1pUJqpBysCw+YasCO/7JkSqUufSm4vixZQd2ukMCM8rb84yAz2RfpwyYJbjC32ZR8
- sN+FcOwvoC8E3HLbje6lHU7uM2joWGEPBqWPdwmGOqYj0OLvbB+H2EbeGJra8pv9q5mPnjDwL
- y7397D43nzeByRcj0upOTr8LB4qKQlZSWFOFy8sracD5OO1W7ltSykB9sjZiYe8lQHgHVgTRB
- 3P/zwDsjbN0GqJ7Q+plb1kkMZykkW5GJ4zICSvXjQQs7bfpWxoKRwefRCp+yZ10gdM9G2Zj/Z
- AKzy1956ZvM9mvZMvOMRYitWnzrde9zQ0JJdNv/u0uiNNK0u1WF3W3AXOwhAHdrTKzIziHJuM
- ha+KE/Xh6CTmoP8vEDubwadmW0iJajvkdVDEnhQl6B28LiSu/b4e+b92w0RG+cp1Uvmqykzp+
- gqgF3cXxif4DqDPBiiABO1kPsucL7w5lIp9LIKBivMSFCDsSALR/WlHl9KotfeXnlRFFt6lIp
- 4OY9SxA27+xm3juHrdE54wvdLRWkOeKFfNazNXiqMZ5NBnZ21xOlbOJDSzjy4yXJQ4MeTNmru
- Bu4xMONCITwGPxOs1548ZTjHaWJoGipzISORk4ufvRWdPWBeFzaaUh7XZ3hO+BExaoJPllo2V
- KoGisuyViKcCMwPQg6AU/8/Hk50qf5TAcMRhtsCzeIAE7PXJkd97fPqa3H5J6rrWwVe2cCVqg
- M/SDjfmD/R3SVcgdEmrOFRvVuTAqsmxACZaBQiafUAoN4nUUqUCG4HGHmX6zbdl+u5OUOOUVq
- zZv436jvwhHreG4zl5uy54c9meRXxe8IkCaf0G3hIvk3q9B4VwgawG7DhcEbfg8i1V1QtDAAg
- fjGdUSFDu1iW5oZS3Ws02jbUDKdY4Cndu+WFgrJoLYF4yb5ElcEt+u/7JhzdxwJQGzZLl9Bwi
- yCRawvieIK68bnqef4YdhDKsDz82fZeu7LgdPgoB3Rhk/xGtxE+U3/ERTZRX5UnWnrOWuTaqs
- AIU8nc8he0N+DFpXN8DcpGCNeBM+GT0zRf/ODVPhOcpzS+/V1LefoWgIPTFDmayeAuefQTLxR
- Qp9ln4+CqMfFYK/8S7jti9Ut8ybMP7ulhZvU9Kxhq/DOdfeRbUoW7lTaPRR7hLW+11Cdy8Tn8
- uZkvNNnW+UW4G8NGc93QNmvJoIigi4VpL/hzd9IbmEpQQVFeqsyZjNcSk2ExoXAGWF1LbLk8t
- +iKi6DpeRUThmSJ0HqDiViZyzrs7yGuvZCulm2WleJJx5s/dI6j4XDtQsDCW3dH+1NE0=
+In-Reply-To: <20250604152707.CieD9tN0@linutronix.de>
 
+The per-CPU data section is handled differently than the other sections.
+The memory allocations requires a special __percpu pointer and then the
+section is copied into the view of each CPU. Therefore the SHF_ALLOC
+flag is removed to ensure move_module() skips it.
 
+Later, relocations are applied and apply_relocations() skips sections
+without SHF_ALLOC because they have not been copied. This also skips the
+per-CPU data section.
+The missing relocations result in a NULL pointer on x86-64 and very
+small values on x86-32. This results in a crash because it is not
+skipped like NULL pointer would and can't be dereferenced.
 
-=E5=9C=A8 2025/6/5 00:21, kernel test robot =E5=86=99=E9=81=93:
->=20
->=20
-> Hello,
->=20
-> kernel test robot noticed "xfstests.btrfs.220.fail" on:
->=20
-> commit: 8af94e772ef7bede90895318a3fda6c68a652774 ("btrfs: remove standal=
-one "nologreplay" mount option")
+Such an assignment happens during static per-CPU lock initialisation
+with lockdep enabled.
 
-That is fixed by fstests commit: 49170253afef ("fstests: btrfs/220: do=20
-not use nologreplay when possible"), which is in patches-in-queue branch=
+Add the SHF_ALLOC flag back for the per-CPU section (if found) after
+move_module().
+
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Closes: https://lore.kernel.org/oe-lkp/202506041623.e45e4f7d-lkp@intel.com
+Fixes: 8d8022e8aba85 ("module: do percpu allocation after uniqueness check.=
+  No, really!")
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+v1=E2=80=A6v2: https://lore.kernel.org/all/20250604152707.CieD9tN0@linutron=
+ix.de/
+  - Add the flag back only on SMP if the per-CPU section was found.
+
+ kernel/module/main.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index 5c6ab20240a6d..4f6554dedf8ea 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -2816,6 +2816,10 @@ static struct module *layout_and_allocate(struct loa=
+d_info *info, int flags)
+ 	if (err)
+ 		return ERR_PTR(err);
 =20
-already.
-
-Thanks,
-Qu
-
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->=20
-> [test failed on linus/master      7d4e49a77d9930c69751b9192448fda6ff9100=
-f1]
-> [test failed on linux-next/master 3a83b350b5be4b4f6bd895eecf9a92080200ee=
-5d]
->=20
-> in testcase: xfstests
-> version: xfstests-x86_64-e161fc34-1_20250526
-> with following parameters:
->=20
-> 	disk: 6HDD
-> 	fs: btrfs
-> 	test: btrfs-220
->=20
->=20
->=20
-> config: x86_64-rhel-9.4-func
-> compiler: gcc-12
-> test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 3.40GH=
-z (Haswell) with 8G memory
->=20
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
->=20
->=20
->=20
->=20
-> If you fix the issue in a separate patch/commit (i.e. not just a new ver=
-sion of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202506042235.7e3a37da-lkp@intel=
-.com
->=20
-> 2025-06-01 10:11:00 export TEST_DIR=3D/fs/sdb1
-> 2025-06-01 10:11:00 export TEST_DEV=3D/dev/sdb1
-> 2025-06-01 10:11:00 export FSTYP=3Dbtrfs
-> 2025-06-01 10:11:00 export SCRATCH_MNT=3D/fs/scratch
-> 2025-06-01 10:11:00 mkdir /fs/scratch -p
-> 2025-06-01 10:11:00 export SCRATCH_DEV_POOL=3D"/dev/sdb2 /dev/sdb3 /dev/=
-sdb4 /dev/sdb5 /dev/sdb6"
-> 2025-06-01 10:11:01 echo btrfs/220
-> 2025-06-01 10:11:01 ./check btrfs/220
-> FSTYP         -- btrfs
-> PLATFORM      -- Linux/x86_64 lkp-hsw-d01 6.15.0-rc6-00302-g8af94e772ef7=
- #1 SMP PREEMPT_DYNAMIC Sun May 18 15:54:12 CST 2025
-> MKFS_OPTIONS  -- /dev/sdb2
-> MOUNT_OPTIONS -- /dev/sdb2 /fs/scratch
->=20
-> btrfs/220       [failed, exit status 1]- output mismatch (see /lkp/bench=
-marks/xfstests/results//btrfs/220.out.bad)
->      --- tests/btrfs/220.out	2025-05-26 16:25:04.000000000 +0000
->      +++ /lkp/benchmarks/xfstests/results//btrfs/220.out.bad	2025-06-01 =
-10:11:04.131877139 +0000
->      @@ -1,2 +1,5 @@
->       QA output created by 220
->      -Silence is golden
->      +mount: /fs/scratch: wrong fs type, bad option, bad superblock on /=
-dev/sdb2, missing codepage or helper program, or other error.
->      +       dmesg(1) may have more information after failed mount syste=
-m call.
->      +mount -o nologreplay,ro /dev/sdb2 /fs/scratch failed
->      +(see /lkp/benchmarks/xfstests/results//btrfs/220.full for details)
->      ...
->      (Run 'diff -u /lkp/benchmarks/xfstests/tests/btrfs/220.out /lkp/ben=
-chmarks/xfstests/results//btrfs/220.out.bad'  to see the entire diff)
-> Ran: btrfs/220
-> Failures: btrfs/220
-> Failed 1 of 1 tests
->=20
->=20
->=20
->=20
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20250604/202506042235.7e3a37da-l=
-kp@intel.com
->=20
->=20
->=20
++	/* Add SHF_ALLOC back so that relocations are applied. */
++	if (IS_ENABLED(CONFIG_SMP) && info->index.pcpu)
++		info->sechdrs[info->index.pcpu].sh_flags |=3D SHF_ALLOC;
++
+ 	/* Module has been copied to its final place now: return it. */
+ 	mod =3D (void *)info->sechdrs[info->index.mod].sh_addr;
+ 	kmemleak_load_module(mod, info);
+--=20
+2.49.0
 
