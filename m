@@ -1,129 +1,125 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.2])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C44F023CE
-	for <oe-lkp@lists.linux.dev>; Fri, 20 Jun 2025 03:09:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.2
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A471D27A93B
+	for <oe-lkp@lists.linux.dev>; Fri, 20 Jun 2025 08:47:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750388995; cv=none; b=JuAlk0ubSXZ7kC1m2e6jnXZ64NBjWAYL5rQHjdbQI2hZgxPl1LmnjDHEwuPQ8N8ImgNNorVCVbe9xHfOLq7+HqWTD7zw9wOihXCgiBh4v2GObiQ3Ch6sFgtyxDHYQ0sg5CINYB5R7sanAO9y2MNCViTXLrLnufCeBWJ7K/HUBO4=
+	t=1750409262; cv=none; b=e0St48ia4e+hf1Q5dYmajVhOKhpnWkkIf6zQnm5eImef7p4Ip+RMLO80l0WYTeJO4c83r8D7RKNe+aLUvmz9q2ozppCuePm7uHgDOEKK4LolUYy8lIFoZWJrd99U3qsqP6GaOwnc5Gf3aL046zvM9EpaPC8kldbHdSfmn6BWMlc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750388995; c=relaxed/simple;
-	bh=lO4QmT/fFHuqxqgIxrZc27qDOymya8+pHG4c53DfZ1c=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
-	 MIME-Version:Message-ID; b=AsceWbCBPPwqKw5CJ+QPwBcsxeU9GeFoUpf34OhX05luaF9OYIdLq0+Iit19cTz5LyZ7INWx/sm+evR+sLQBk37nznuUKJGPt/qg5+o6gHW68vlKcc79h8g88C47gJdK9cMcznYB9DsSBpbhOzaJt5eTJgpgjsdAK5IbD8GrR2c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=fail (1024-bit key) header.d=163.com header.i=@163.com header.b=cdV+8AsD reason="signature verification failed"; arc=none smtp.client-ip=220.197.31.2
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1750409262; c=relaxed/simple;
+	bh=SGobpLuVUs7D23HfBqLMyecSiLQVVDb3avZcnsTrn9o=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=sAXutLXf1ktkb2ehrGpcnIgYxj49xc/vGMcXN2ykJdI/i3CT08yd8xCxDKl/0wJhMf6lTreQ64T4/X7VC5D9iFOyYozvNUNXEIJ/a21h4Fzy0ogctQPfnc1qWgFZnlgYP5T7fmr7M+wd9fEAOCQYNZ/Jm2bJdqp6bBDiQXoor10=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kPGZA2iU; arc=none smtp.client-ip=209.85.167.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=163.com header.i=@163.com header.b="cdV+8AsD"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=Date:From:To:Subject:Content-Type:MIME-Version:
-	Message-ID; bh=OWcE59YJGa8DROCEmuHO2j1rutk1w203ZSefEDu7juw=; b=c
-	dV+8AsD8GcsY36gKwgf4v4GtQW846rNyA3ige9h4/0fUA/lhF4jg7GeHQoF+IN2l
-	MnvTWfrnpjdpvSZ/7rc96omRr/4Q6nWjHbPKqFwpAChQmdSmJ2CnCecPOdJ9zvDZ
-	b5Pr1/tSBxYiaRPb4yQjynBG3QcEOMxe7SabIS6Pi4=
-Received: from 00107082$163.com ( [111.35.191.131] ) by
- ajax-webmail-wmsvr-40-100 (Coremail) ; Fri, 20 Jun 2025 11:09:16 +0800
- (CST)
-Date: Fri, 20 Jun 2025 11:09:16 +0800 (CST)
-From: "David Wang" <00107082@163.com>
-To: "Harry Yoo" <harry.yoo@oracle.com>
-Cc: akpm@linux-foundation.org, surenb@google.com, kent.overstreet@linux.dev,
-	oliver.sang@intel.com, cachen@purestorage.com, linux-mm@kvack.org,
-	oe-lkp@lists.linux.dev
-Subject: Re:[PATCH] lib/alloc_tag: do not acquire nonexistent lock when mem
- profiling is disabled
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20240801(9da12a7b)
- Copyright (c) 2002-2025 www.mailtech.cn 163com
-In-Reply-To: <20250620004032.771289-1-harry.yoo@oracle.com>
-References: <20250620004032.771289-1-harry.yoo@oracle.com>
-X-NTES-SC: AL_Qu2eAv+Tt0Eu4CaZZ+kXn0oTju85XMCzuv8j3YJeN500siT/wxIqZm9nMUPI9863NjihoAiOUh5szudHW5RzT6WYkkuAZAtJFbqhl6aMAPMH
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kPGZA2iU"
+Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-553ba7f11cbso1866805e87.1
+        for <oe-lkp@lists.linux.dev>; Fri, 20 Jun 2025 01:47:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1750409259; x=1751014059; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=NaWs4xvvPpeaCjJCWs098f2+kCHkcJzonLJVPQ9irHg=;
+        b=kPGZA2iUx/hCAgZVUbSoHGUAFi7fgcHpfyAJONAZqr9Izn+lQ6srxBhSHvd0GNy42d
+         WyOkvuNhNvBiE9BfGHPZtaDj/s5ksAO/OKXQnvtwJS4FhkuothJwNe3tsf89MyxJDnDx
+         9eKsdJCzvuC+nr1LtF70S3KydujHSZwlkXo1jJWIulpWDZLF7XLmhQ+iMGTC4Uan95z7
+         H8xBR7KaRfRy+Q+E30zfUF3iEkBy1H2nXdYZE0FX5e5jF2P/SQOX9OsDRzSJ1nRnq/83
+         pNZcSc/idJkpJYsMvKqZ4bJS1L+qiAJEuCDa/P8OSA6+O8plNxWSYuFrvlBmInX03VN7
+         8JGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750409259; x=1751014059;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=NaWs4xvvPpeaCjJCWs098f2+kCHkcJzonLJVPQ9irHg=;
+        b=mpiHrQWLR0IpggFNdNXGXPUWT+6CWaFhDO60XuX5AZB/49CPDmHzO0AF/h/9M3McAG
+         R03aHLCjxvgTPnCQO6Oy2+xkxpYBJZJbuIyVca6TQvx1L+e1gpn8rOwGKplV8Uk7riUH
+         l2uFMECL33Jeq+1dPGUZoz8K9k8NW7wEfYjrPVBgop4I+UVRp0OqeGWuxWMckiOMuDwP
+         oNcBYf5oXbECrtRPV65oC/T4hQqVcqM25c2cqyWcclZ5Qyu42/k8wozAahzNSsFj3B2T
+         J/VoQ+KgLy0cPpTD1clcbfcxCDjFZJzKNuFbfllgeqoJcXRGuQkbCl//sRuSADvEpUyB
+         h9VQ==
+X-Forwarded-Encrypted: i=1; AJvYcCX2hCepy07eSWVe/foNZOet/KzSP+CtDu6NJquy0bGtRq52w7DnJkgQkAVs+bsd4YLky1ce0bU=@lists.linux.dev
+X-Gm-Message-State: AOJu0YzAbFHoCDDlFk1DoeSbfGEg4bQhYiINgQrPhdpDRJ+f17h1tb/I
+	lzFP7O8Q9ZYLtSMXFzPXTx0x0QGDL4s+3zYOG7UG5JRixEIutM4sDdsL
+X-Gm-Gg: ASbGncsLlnTADvt6eQSCVm4Cap1wDeFNXx8Uiw8egwoV2ndnnhf//uiWYxc1SFOTsT3
+	/UcKN4snvd3BGOyNE6Q36jHUliUpPhrTb/w4IO83kAe9WELGMD4uU56y+vt9BkFa2LJcCeeZ41D
+	Kk8fhDGCEIq0ooOAKEFFGnr1q2yyqN+8E7K5RzI/28d/BxeYHCQUKXi0n/cOW4dwAJHoVGb9kFK
+	xQhpzC8pSL9DZvE1Mh4i2Ded5nQqiyXkYskqo252LpTIVswNeNhORqgh/E9fGVNnH3q6n7lfO0N
+	rSiOlhscQ/0uQjaCV33Eh8Ql4xtdShl/7mckuypk/pbh8aQF3/wswHKqoU3f5vkqBz099+RClfa
+	88bbCwcZFNjsiFxg3
+X-Google-Smtp-Source: AGHT+IFOvPmfqOBZOG5VL73wW51rn1KE6VYniA2GZLKFP8gJr25s/3ya10MiUT7/JdsCkGykUpR+/A==
+X-Received: by 2002:a05:6512:4014:b0:553:acf9:c430 with SMTP id 2adb3069b0e04-553e3ba865emr810575e87.17.1750409258480;
+        Fri, 20 Jun 2025 01:47:38 -0700 (PDT)
+Received: from pc636 (host-95-193-182-189.mobileonline.telia.com. [95.193.182.189])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-553e41d73f9sm204956e87.252.2025.06.20.01.47.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Jun 2025 01:47:37 -0700 (PDT)
+From: Uladzislau Rezki <urezki@gmail.com>
+X-Google-Original-From: Uladzislau Rezki <urezki@pc636>
+Date: Fri, 20 Jun 2025 10:47:34 +0200
+To: Harry Yoo <harry.yoo@oracle.com>
+Cc: kernel test robot <oliver.sang@intel.com>,
+	Uladzislau Rezki <urezki@gmail.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-kernel@vger.kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Baoquan He <bhe@redhat.com>, Adrian Huang <ahuang12@lenovo.com>,
+	Christop Hellwig <hch@infradead.org>,
+	Mateusz Guzik <mjguzik@gmail.com>, linux-mm@kvack.org,
+	Suren Baghdasaryan <surenb@google.com>,
+	Kent Overstreet <kent.overstreet@linux.dev>
+Subject: Re: Kernel crash due to alloc_tag_top_users() being called when
+ !mem_profiling_support?
+Message-ID: <aFUgJgrc_eIHRy5-@pc636>
+References: <202506181351.bba867dd-lkp@intel.com>
+ <aFQaY4Bxle8-GT6O@harry>
+ <aFQnEj0UASzl2Lxa@hyeyoo>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Message-ID: <625a80ab.3352.1978b4fddc8.Coremail.00107082@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:ZCgvCgD33zbd0FRosbYgAA--.23794W
-X-CM-SenderInfo: qqqrilqqysqiywtou0bp/xtbBkAhyqmhUz-EV7AABs6
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aFQnEj0UASzl2Lxa@hyeyoo>
 
-CgpBdCAyMDI1LTA2LTIwIDA4OjQwOjMyLCAiSGFycnkgWW9vIiA8aGFycnkueW9vQG9yYWNsZS5j
-b20+IHdyb3RlOgo+YWxsb2NfdGFnX3RvcF91c2VycygpIGF0dGVtcHRzIHRvIGFjcXVpcmUgYWxs
-b2NfdGFnX2N0eXBlLT5tb2RfbG9jawo+ZXZlbiB3aGVuIG1lbW9yeSBhbGxvY2F0aW9uIHByb2Zp
-bGluZyBmZWF0dXJlIGlzIGRpc2FibGVkIGF0IHJ1bnRpbWUuCj5JZiB0aGUgZmVhdHVyZSBpcyBj
-b21waWxlZCBpbiBidXQgbm90IGVuYWJsZWQgYXQgYm9vdCwgYWxsb2NfdGFnX2luaXQoKQo+ZG9l
-cyBub3QgcHJvcGVybHkgYWxsb2NhdGUgYW5kIGluaXRpYWxpemUgdGhlIGFsbG9jX3RhZ19jdHR5
-cGUgdmFyaWFibGUuCj4KPlRoaXMgbGVhZHMgdG8gYSBjcmFzaCBvbiBtZW1vcnkgYWxsb2NhdGlv
-biBmYWlsdXJlIGJ5IGF0dGVtcHRpbmcgdG8KPmFjcXVpcmUgYSBzZW1hcGhvcmUgdGhhdCBkb2Vz
-IG5vdCBleGlzdDoKPgo+ICBPb3BzOiBnZW5lcmFsIHByb3RlY3Rpb24gZmF1bHQsIHByb2JhYmx5
-IGZvciBub24tY2Fub25pY2FsIGFkZHJlc3MgMHhkZmZmZmMwMDAwMDAwMDFiOiAwMDAwIFsjM10g
-U01QIEtBU0FOIE5PUFRJCj4gIEtBU0FOOiBudWxsLXB0ci1kZXJlZiBpbiByYW5nZSBbMHgwMDAw
-MDAwMDAwMDAwMGQ4LTB4MDAwMDAwMDAwMDAwMDBkZl0KPiAgQ1BVOiAyIFVJRDogMCBQSUQ6IDEg
-Q29tbTogc3lzdGVtZCBUYWludGVkOiBHICAgICAgRCAgICAgICAgICAgICA2LjE2LjAtcmMyICMx
-IFZPTFVOVEFSWQo+ICBUYWludGVkOiBbRF09RElFCj4gIEhhcmR3YXJlIG5hbWU6IFFFTVUgU3Rh
-bmRhcmQgUEMgKGk0NDBGWCArIFBJSVgsIDE5OTYpLCBCSU9TIDEuMTYuMi1kZWJpYW4tMS4xNi4y
-LTEgMDQvMDEvMjAxNAo+ICBSSVA6IDAwMTA6ZG93bl9yZWFkX3RyeWxvY2srMHhhYS8weDNiMAo+
-ICBDb2RlOiBkMCA3YyAwOCA4NCBkMiAwZiA4NSBhMCAwMiAwMCAwMCA4YiAwZCBkZiAzMSBkZCAw
-NCA4NSBjOSA3NSAyOSA0OCBiOCAwMCAwMCAwMCAwMCAwMCBmYyBmZiBkZiA0OCA4ZCA2YiA2OCA0
-OCA4OSBlYSA0OCBjMSBlYSAwMyA8ODA+IDNjIDAyIDAwIDBmIDg1IDg4IDAyIDAwIDAwIDQ4IDNi
-IDViIDY4IDBmIDg1IDUzIDAxIDAwIDAwIDY1IGZmCj4gIFJTUDogMDAwMDpmZmZmODg4MTAwMmNl
-OWI4IEVGTEFHUzogMDAwMTAwMTYKPiAgUkFYOiBkZmZmZmMwMDAwMDAwMDAwIFJCWDogMDAwMDAw
-MDAwMDAwMDA3MCBSQ1g6IDAwMDAwMDAwMDAwMDAwMDAKPiAgUkRYOiAwMDAwMDAwMDAwMDAwMDFi
-IFJTSTogMDAwMDAwMDAwMDAwMDAwYSBSREk6IDAwMDAwMDAwMDAwMDAwNzAKPiAgUkJQOiAwMDAw
-MDAwMDAwMDAwMGQ4IFIwODogMDAwMDAwMDAwMDAwMDAwMSBSMDk6IGZmZmZlZDEwN2RkZTQ5ZDEK
-PiAgUjEwOiBmZmZmODg4M2VlZjI0ZThiIFIxMTogZmZmZjg4ODEwMDJjZWMyMCBSMTI6IDFmZmZm
-MTEwMjAwNTlkMzcKPiAgUjEzOiAwMDAwMDAwMDAwM2ZmZjdiIFIxNDogZmZmZjg4ODEwMDJjZWMy
-MCBSMTU6IGRmZmZmYzAwMDAwMDAwMDAKPiAgRlM6ICAwMDAwN2Y5NjNmMjFkOTQwKDAwMDApIEdT
-OmZmZmY4ODg0NThjYTYwMDAoMDAwMCkga25sR1M6MDAwMDAwMDAwMDAwMDAwMAo+ICBDUzogIDAw
-MTAgRFM6IDAwMDAgRVM6IDAwMDAgQ1IwOiAwMDAwMDAwMDgwMDUwMDMzCj4gIENSMjogMDAwMDdm
-OTYzZjVlZGY3MSBDUjM6IDAwMDAwMDAxMDY3MmMwMDAgQ1I0OiAwMDAwMDAwMDAwMzUwZWYwCj4g
-IENhbGwgVHJhY2U6Cj4gICA8VEFTSz4KPiAgIGNvZGV0YWdfdHJ5bG9ja19tb2R1bGVfbGlzdCsw
-eGQvMHgyMAo+ICAgYWxsb2NfdGFnX3RvcF91c2VycysweDM2OS8weDRiMAo+ICAgX19zaG93X21l
-bSsweDFjZC8weDZlMAo+ICAgd2Fybl9hbGxvYysweDJiMS8weDM5MAo+ICAgX19hbGxvY19mcm96
-ZW5fcGFnZXNfbm9wcm9mKzB4MTJiOS8weDIxYTAKPiAgIGFsbG9jX3BhZ2VzX21wb2wrMHgxMzUv
-MHgzZTAKPiAgIGFsbG9jX3NsYWJfcGFnZSsweDgyLzB4ZTAKPiAgIG5ld19zbGFiKzB4MjEyLzB4
-MjQwCj4gICBfX19zbGFiX2FsbG9jKzB4ODJhLzB4ZTAwCj4gICA8L1RBU0s+Cj4KPkFzIERhdmlk
-IFdhbmcgcG9pbnRzIG91dCwgdGhpcyBpc3N1ZSB3YXMgaW50cm9kdWNlZCBieSBjb21taXQKPjc4
-MDEzOGIxMjM4MSAoImFsbG9jX3RhZzogY2hlY2sgbWVtX3Byb2ZpbGluZ19zdXBwb3J0IGluIGFs
-bG9jX3RhZ19pbml0IikuCj5CZWZvcmUgdGhlIGNvbW1pdCwgYWxsb2MgdGFnZ2luZyBzdWJzeXN0
-ZW0gdW5jb25kaXRpb25hbGx5IGFsbG9jYXRlcwo+dGhlIHNlbWFwaG9yZS4KPgo+QWZ0ZXIgdGhl
-IGNvbW1pdCwgYWxsb2NfdGFnX3RvcF91c2VycygpIG11c3QgY2hlY2sgd2hldGhlciBpdCB3YXMK
-PmFjdHVhbGx5IGluaXRpYWxpemVkLiBGaXggaXQgYnkgYWRkaW5nIHRoZSBhcHByb3ByaWF0ZSBj
-aGVjayBpbgo+YWxsb2NfdGFnX3RvcF91c2VycygpLgo+Cj5SZXBvcnRlZC1ieToga2VybmVsIHRl
-c3Qgcm9ib3QgPG9saXZlci5zYW5nQGludGVsLmNvbT4KPkNsb3NlczogaHR0cHM6Ly9sb3JlLmtl
-cm5lbC5vcmcvb2UtbGtwLzIwMjUwNjE4MTM1MS5iYmE4NjdkZC1sa3BAaW50ZWwuY29tCgpJIGFt
-IG5vdCBxdWl0ZSBzdXJlIHRoaXMgY2FuIGJlIGNsb3NlZCwgYWNjb3JkaW5nIHRvIHRoZSBjb25m
-aWcgZmlsZQpodHRwczovL2Rvd25sb2FkLjAxLm9yZy8wZGF5LWNpL2FyY2hpdmUvMjAyNTA2MTgv
-MjAyNTA2MTgxMzUxLmJiYTg2N2RkLWxrcEBpbnRlbC5jb20vY29uZmlnLTYuMTUuMC1yYzYtMDAx
-NDItZzJkNzZlNzkzMTVlNAoKQ09ORklHX01FTV9BTExPQ19QUk9GSUxJTkc9eQpDT05GSUdfTUVN
-X0FMTE9DX1BST0ZJTElOR19FTkFCTEVEX0JZX0RFRkFVTFQ9eSAgPC0tLQpDT05GSUdfTUVNX0FM
-TE9DX1BST0ZJTElOR19ERUJVRz15CgptZW1fcHJvZmlsaW5nX3N1cHBvcnQgaXMgdHJ1ZSBvbiBi
-b290LCBhbmQgYWxsb2NfdGFnX2N0eXBlIGlzIHByb3Blcmx5IGluaXRpYWxpemVkLgoKTWF5YmUg
-dGhlcmUgaXMgb3RoZXIgaXNzdWUgbHVya2luZyBzb21ld2hlcmUuLi4uCgoKPkNsb3NlczogaHR0
-cHM6Ly9sb3JlLmtlcm5lbC5vcmcvb2UtbGtwLzIwMjUwNTA3MTU1NS5lNzU3ZjFlMC1sa3BAaW50
-ZWwuY29tCgpUaGlzIG9uZSBzaG91bGQgbm90IGJlIGNsb3NlZCwgYmVjYXVzZSAiIyBDT05GSUdf
-TUVNX0FMTE9DX1BST0ZJTElORyBpcyBub3Qgc2V0Ii4KaHR0cHM6Ly9kb3dubG9hZC4wMS5vcmcv
-MGRheS1jaS9hcmNoaXZlLzIwMjUwNTA3LzIwMjUwNTA3MTU1NS5lNzU3ZjFlMC1sa3BAaW50ZWwu
-Y29tL2NvbmZpZy02LjE1LjAtcmMyLTAwNDkxLWc3ZmM4NWI5MmRiOTYKCgo+Rml4ZXM6IDc4MDEz
-OGIxMjM4MSAoImFsbG9jX3RhZzogY2hlY2sgbWVtX3Byb2ZpbGluZ19zdXBwb3J0IGluIGFsbG9j
-X3RhZ19pbml0IikKPlNpZ25lZC1vZmYtYnk6IEhhcnJ5IFlvbyA8aGFycnkueW9vQG9yYWNsZS5j
-b20+Cj4tLS0KPgo+SSBtYW51YWxseSBjb25maXJtZWQgdGhhdCB0aGUgY3Jhc2ggaW4gdGhlIHZt
-YWxsb2MgdGVzdCBtb2R1bGUgbm8gbG9uZ2VyCj5vY2N1cnMgd2l0aCB0aGlzIHBhdGNoIHdoZW4g
-dGhlIG1lbW9yeSBwcm9maWxpbmcgZmVhdHVyZSBpcyBjb21waWxlZAo+YnV0IG5vdCBlbmFibGVk
-IGF0IGJvb3QuCj4KPk5vIENjOiBzdGFibGUgYmVjYXVzZSB0aGUgb2ZmZW5kaW5nIGNvbW1pdCB3
-YXMgaW50cm9kdWNlZCBpbiB2Ni4xNi1yYzEuCj4KPiBsaWIvYWxsb2NfdGFnLmMgfCA0ICsrKy0K
-PiAxIGZpbGUgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pCj4KPmRpZmYg
-LS1naXQgYS9saWIvYWxsb2NfdGFnLmMgYi9saWIvYWxsb2NfdGFnLmMKPmluZGV4IDY2YTQ2Mjgx
-ODVmNy4uMjBjNjI3MTkxZDNlIDEwMDY0NAo+LS0tIGEvbGliL2FsbG9jX3RhZy5jCj4rKysgYi9s
-aWIvYWxsb2NfdGFnLmMKPkBAIC0xMjQsNyArMTI0LDkgQEAgc2l6ZV90IGFsbG9jX3RhZ190b3Bf
-dXNlcnMoc3RydWN0IGNvZGV0YWdfYnl0ZXMgKnRhZ3MsIHNpemVfdCBjb3VudCwgYm9vbCBjYW5f
-c2wKPiAJc3RydWN0IGNvZGV0YWdfYnl0ZXMgbjsKPiAJdW5zaWduZWQgaW50IGksIG5yID0gMDsK
-PiAKPi0JaWYgKGNhbl9zbGVlcCkKPisJaWYgKCFtZW1fcHJvZmlsaW5nX3N1cHBvcnQpCj4rCQly
-ZXR1cm4gMDsKPisJZWxzZSBpZiAoY2FuX3NsZWVwKQo+IAkJY29kZXRhZ19sb2NrX21vZHVsZV9s
-aXN0KGFsbG9jX3RhZ19jdHR5cGUsIHRydWUpOwo+IAllbHNlIGlmICghY29kZXRhZ190cnlsb2Nr
-X21vZHVsZV9saXN0KGFsbG9jX3RhZ19jdHR5cGUpKQo+IAkJcmV0dXJuIDA7Cj4tLSAKPjIuNDMu
-MAo=
+On Fri, Jun 20, 2025 at 12:04:50AM +0900, Harry Yoo wrote:
+> On Thu, Jun 19, 2025 at 11:10:43PM +0900, Harry Yoo wrote:
+> > On Wed, Jun 18, 2025 at 02:25:37PM +0800, kernel test robot wrote:
+> > > 
+> > > Hello,
+> > > 
+> > > for this change, we reported
+> > > "[linux-next:master] [lib/test_vmalloc.c]  7fc85b92db: Mem-Info"
+> > > in
+> > > https://lore.kernel.org/all/202505071555.e757f1e0-lkp@intel.com/
+> > > 
+> > > at that time, we made some tests with x86_64 config which runs well.
+> > > 
+> > > now we noticed the commit is in mainline now.
+> > 
+> > (Re-sending due to not Ccing people and the list...)
+> > 
+> > Hi, I'm facing the same error on my testing environment.
+> 
+> I should have clarified that the reason the kernel failed to allocate
+> memory on my machine was due to running out of memory, not because of the
+> vmalloc test module.
+> 
+> But based on the fact that the test case (align_shift_alloc_test) is
+> expected to fail, the issue here is not memory allocation failure
+> itself, but rather that the kernel crashes when the allocation fails.
+> 
+It looks someone tries to test the CONFIG_TEST_VMALLOC=y as built-in
+approach test-cases. Yes, it will trigger a lot of warnings as some
+use cases are supposed to be failed. This will trigger a lot of kernel
+warnings which can be considered by test-robot or people as problem.
+
+In this case i can exclude those use cases or even not run at all unless
+boot-parameters properly sets if built-in.
+
+--
+Uladzislau Rezki
