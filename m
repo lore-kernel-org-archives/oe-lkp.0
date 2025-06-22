@@ -1,146 +1,238 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.4])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1ECA142A96
-	for <oe-lkp@lists.linux.dev>; Sat, 21 Jun 2025 03:44:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.4
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4939A6136
+	for <oe-lkp@lists.linux.dev>; Sun, 22 Jun 2025 22:24:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750477481; cv=none; b=K824Hs1sS6+o/QoiQIzvENdrEUa+kWiGQQAzT+MYN8YybudFGyozTim4WGg3byHFwa2B7Eyn7Pv4YMIwos+7DMdger56Y38b2y5GoBN/LNlQ4UTFgLJCSqqEvINNGESW5ibMt6KZXMQUlrcDOMV0Z1dg8yUQSrV/ctoMf7Ji0QI=
+	t=1750631063; cv=none; b=Ib7NBdMdQwBSJiFHPPckhGJGCAioqa4iuorL+H7X05PPlEqX80A/rtyVoKX/0brlo1/nH1Au4deVA4sNK9W0onFhXYtdxB4IjgYbzYptYz2PioGC36wVFjYgj3YhhixGrpPCEis8L3CmdgzuQyasbDX0/zhTrSJVaf8K8UCkyOA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750477481; c=relaxed/simple;
-	bh=KHE1RGxlZbqayc+nMuGnHq60wVeDkPth6JLt40uNj04=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
-	 MIME-Version:Message-ID; b=Z/+FZgAkRc+Xp74Zlb4Ar6pnMpV15q+pbO/SvWspN1RtYtYZBepwBoCRj6ReFxDeDiN1QIU7y6xc5BJ81U40zJbbuI73XqjEwFk2eaGam6ZLQzYFLkYyKrKBN4u9PCCMvGayOtXcNzhGEDtvLa19PfHgu9axkhP0LTqPs/wplkc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=fail (1024-bit key) header.d=163.com header.i=@163.com header.b=VlYIwLxM reason="signature verification failed"; arc=none smtp.client-ip=220.197.31.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1750631063; c=relaxed/simple;
+	bh=mr0vzL6f4v2foHwwXLma3LkzpJdNCBXCnJoa983E1Hg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ngbqqBd+1sA8wz1yQh+ot9PXZuErrAvzAG1XgK6lc4KIlMeaBPGHmvkFLYKFbpveJOUXohbtp4oRaUFbCeJfaXEa1XGHVwzbKIem1jEtsUF+TgoPPyf9j2JUjIufzMiKeREdAXIbVRWu158jylPQlDoR4XWVbmtx96NS/q+chyY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=AzIfGJRk; arc=none smtp.client-ip=209.85.160.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=163.com header.i=@163.com header.b="VlYIwLxM"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=Date:From:To:Subject:Content-Type:MIME-Version:
-	Message-ID; bh=a2xMF5by6Spy4BwD2zx1MleqDUq3ZYIIC0lbMQgrJJE=; b=V
-	lYIwLxMm5Rh/SQXl+DudM94Yug0ptQ8bwXDLXB+MR/9OYw64rXuEEKFgcGp+4d8z
-	6uTQwe4cHkUYvqOWw/1SDpl/XhJEKaiDHg92F/qK1KxILDCuzpFWYopo3bhSfTNy
-	MeC/dZZ5xWK1TRoBrmcWQokJxlrnr/C1kmq8lUt8o4=
-Received: from 00107082$163.com ( [111.35.191.131] ) by
- ajax-webmail-wmsvr-40-139 (Coremail) ; Sat, 21 Jun 2025 11:43:03 +0800
- (CST)
-Date: Sat, 21 Jun 2025 11:43:03 +0800 (CST)
-From: "David Wang" <00107082@163.com>
-To: "Harry Yoo" <harry.yoo@oracle.com>
-Cc: akpm@linux-foundation.org, surenb@google.com, kent.overstreet@linux.dev,
-	oliver.sang@intel.com, cachen@purestorage.com, linux-mm@kvack.org,
-	oe-lkp@lists.linux.dev, stable@vger.kernel.org
-Subject: Re:[PATCH v2] lib/alloc_tag: do not acquire non-existent lock in
- alloc_tag_top_users()
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20240801(9da12a7b)
- Copyright (c) 2002-2025 www.mailtech.cn 163com
-In-Reply-To: <20250620195305.1115151-1-harry.yoo@oracle.com>
-References: <20250620195305.1115151-1-harry.yoo@oracle.com>
-X-NTES-SC: AL_Qu2eAvicuEsj5SCYbekXn0oTju85XMCzuv8j3YJeN500iSXmxj4KeXBpN3v6wcOkLiqSvxexUSlfwel8UrNbcKPbiAR5z8kW2rWFuMGfiBYH
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="AzIfGJRk"
+Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-4a5ac8fae12so480151cf.0
+        for <oe-lkp@lists.linux.dev>; Sun, 22 Jun 2025 15:24:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1750631060; x=1751235860; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=z2GI2494rUC/2TZW0ywCzgu9F19ggR5YUviGIVZ+qfY=;
+        b=AzIfGJRkRfEUKN4R7hjNnwwPYdd7ZDFeXW8Ozq2n+DAZk88Su/To+pjWniQA0+HyoP
+         DyF2aQOGsxRgIlvTl5Tcnj8Go3YtioGaKHGw/9UvFxpCjsrR0gB7+GKoMu+lnjE9st4L
+         dhJFxga73m8ohjTxBiroGSVaEbZu0tIwxLvAYW475UyrgmlnJgrO1qlNuemJHTfS5elF
+         7d2wggZ1sXKe7ioXaLVRLCVa4Dh/Qwi+tZpSYRBV3HV7GU1+jBwP9agpOzQiSc1C1ZxP
+         AFO3EfqE6s9m3+5axo8UURZUjInqQNEbvPaiW6kanOBlALFUijYhrZuULvVpqfwz8qXA
+         NPyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750631060; x=1751235860;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=z2GI2494rUC/2TZW0ywCzgu9F19ggR5YUviGIVZ+qfY=;
+        b=EbCwtKb6JK7mc7+zxibp2AZAeulo/1tqXRa9RkrLoJURrIfbvKGM3Tn9+M0SsjB/i4
+         FEBVU3vjzGenptnlLzMFkkhy5vsrSY5KWCu5m027iQhkX8CcdMQM1fgEYGlKEKPjhA4h
+         2W2uUFN/rmUn3GTXTr/D4omDYQ9yZn611+z2aEocxMzArkfH/Gc2/svJie0g0gabuO53
+         5KJ8uJgXSOtrm4CXCONADV5b7FULChrndXwHD1Twm2xqTzIXFDwmOPYAlBHFkkUJbEQ8
+         cQcOVmtuvNapyEEPGs40dU5VM7GHJ1MjUrfxllta8tgd/7iVCIImAgmNoXRFJP6AcKxs
+         s2KA==
+X-Forwarded-Encrypted: i=1; AJvYcCW1dRMBweqkJlxSCEkrCO/ykDe9AUPLiiiIDa0NuwFLogKJxlsspVbZ7cWXbDiDYdEIrE1eCZk=@lists.linux.dev
+X-Gm-Message-State: AOJu0YztRXVHSbc8ZoMji0MTzwtAaT91UWIWi/I8Nav2cjRFX2o/9o2u
+	XXHISw53o9LIC/Qa8mpPz7yqVnyDGRjk3wACzc7/RsUnr95uIU7hqFQo7hZUsp27CZFd8HLmnXE
+	2wV9qwbCQQS7Y4SiSb2v1BxGMf81biF8I8LgB9AX/
+X-Gm-Gg: ASbGncuPKnwAq6q9uJn/Psj/rzG5X2yz4c/SFCYSmDQ8hIcJwoih6SaG+JN1e9mVtZY
+	sd/l0Jrin1uf2OJ3mN2I6++Urymd5a2rCtlIr4ctLjjloqA7HiO0R+4jqdfGn6oNazuQD1LqFnt
+	g6/AdBZQM68Msjb1//dpRAlykyAuA9J+oD74DfTSlRLg==
+X-Google-Smtp-Source: AGHT+IFXpfw+xB4qC+6F0GtwYxkvSjZPT2sqzoTBpbCRyfAg/E0SGXmExBTMb8qlx3auQmultRnj8mhUyA+FgakccdY=
+X-Received: by 2002:a05:622a:11ca:b0:48a:42fa:78fa with SMTP id
+ d75a77b69052e-4a7852dba43mr5237071cf.2.1750631059676; Sun, 22 Jun 2025
+ 15:24:19 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Message-ID: <7935cfb1.1432.19790952566.Coremail.00107082@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:iygvCgD3_zlIKlZo4HEhAA--.53835W
-X-CM-SenderInfo: qqqrilqqysqiywtou0bp/xtbB0hxzqmhWHhUi-wACs9
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+References: <20250620195305.1115151-1-harry.yoo@oracle.com> <7935cfb1.1432.19790952566.Coremail.00107082@163.com>
+In-Reply-To: <7935cfb1.1432.19790952566.Coremail.00107082@163.com>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Sun, 22 Jun 2025 15:24:08 -0700
+X-Gm-Features: Ac12FXxuGqxZZyKQhgH0eqA4IJBrgYI4hYeartJ-8Oj8skCpD3dIFoo0_U2Xlwc
+Message-ID: <CAJuCfpG3=0MCac2jTVM9LiJWDwWdLE3vrcJp52x4ZX5XdSEv1A@mail.gmail.com>
+Subject: Re: [PATCH v2] lib/alloc_tag: do not acquire non-existent lock in alloc_tag_top_users()
+To: David Wang <00107082@163.com>
+Cc: Harry Yoo <harry.yoo@oracle.com>, akpm@linux-foundation.org, 
+	kent.overstreet@linux.dev, oliver.sang@intel.com, cachen@purestorage.com, 
+	linux-mm@kvack.org, oe-lkp@lists.linux.dev, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-CkF0IDIwMjUtMDYtMjEgMDM6NTM6MDUsICJIYXJyeSBZb28iIDxoYXJyeS55b29Ab3JhY2xlLmNv
-bT4gd3JvdGU6Cj5hbGxvY190YWdfdG9wX3VzZXJzKCkgYXR0ZW1wdHMgdG8gbG9jayBhbGxvY190
-YWdfY3R0eXBlLT5tb2RfbG9jawo+ZXZlbiB3aGVuIHRoZSBhbGxvY190YWdfY3R0eXBlIGlzIG5v
-dCBhbGxvY2F0ZWQgYmVjYXVzZToKPgo+ICAxKSBhbGxvYyB0YWdnaW5nIGlzIGRpc2FibGVkIGJl
-Y2F1c2UgbWVtIHByb2ZpbGluZyBpcyBkaXNhYmxlZAo+ICAgICAoIWFsbG9jX3RhZ19jdHR5cGUp
-Cj4gIDIpIGFsbG9jIHRhZ2dpbmcgaXMgZW5hYmxlZCwgYnV0IG5vdCB5ZXQgaW5pdGlhbGl6ZWQg
-KCFhbGxvY190YWdfY3R0eXBlKQo+ICAzKSBhbGxvYyB0YWdnaW5nIGlzIGVuYWJsZWQsIGJ1dCBm
-YWlsZWQgaW5pdGlhbGl6YXRpb24KPiAgICAgKCFhbGxvY190YWdfY3R0eXBlIG9yIElTX0VSUihh
-bGxvY190YWdfY3R0eXBlKSkKPgo+SW4gYWxsIGNhc2VzLCBhbGxvY190YWdfY3R0eXBlIGlzIG5v
-dCBhbGxvY2F0ZWQsIGFuZCB0aGVyZWZvcmUKPmFsbG9jX3RhZ190b3BfdXNlcnMoKSBzaG91bGQg
-bm90IGF0dGVtcHQgdG8gYWNxdWlyZSB0aGUgc2VtYXBob3JlLgo+Cj5UaGlzIGxlYWRzIHRvIGEg
-Y3Jhc2ggb24gbWVtb3J5IGFsbG9jYXRpb24gZmFpbHVyZSBieSBhdHRlbXB0aW5nIHRvCj5hY3F1
-aXJlIGEgbm9uLWV4aXN0ZW50IHNlbWFwaG9yZToKPgo+ICBPb3BzOiBnZW5lcmFsIHByb3RlY3Rp
-b24gZmF1bHQsIHByb2JhYmx5IGZvciBub24tY2Fub25pY2FsIGFkZHJlc3MgMHhkZmZmZmMwMDAw
-MDAwMDFiOiAwMDAwIFsjM10gU01QIEtBU0FOIE5PUFRJCj4gIEtBU0FOOiBudWxsLXB0ci1kZXJl
-ZiBpbiByYW5nZSBbMHgwMDAwMDAwMDAwMDAwMGQ4LTB4MDAwMDAwMDAwMDAwMDBkZl0KPiAgQ1BV
-OiAyIFVJRDogMCBQSUQ6IDEgQ29tbTogc3lzdGVtZCBUYWludGVkOiBHICAgICAgRCAgICAgICAg
-ICAgICA2LjE2LjAtcmMyICMxIFZPTFVOVEFSWQo+ICBUYWludGVkOiBbRF09RElFCj4gIEhhcmR3
-YXJlIG5hbWU6IFFFTVUgU3RhbmRhcmQgUEMgKGk0NDBGWCArIFBJSVgsIDE5OTYpLCBCSU9TIDEu
-MTYuMi1kZWJpYW4tMS4xNi4yLTEgMDQvMDEvMjAxNAo+ICBSSVA6IDAwMTA6ZG93bl9yZWFkX3Ry
-eWxvY2srMHhhYS8weDNiMAo+ICBDb2RlOiBkMCA3YyAwOCA4NCBkMiAwZiA4NSBhMCAwMiAwMCAw
-MCA4YiAwZCBkZiAzMSBkZCAwNCA4NSBjOSA3NSAyOSA0OCBiOCAwMCAwMCAwMCAwMCAwMCBmYyBm
-ZiBkZiA0OCA4ZCA2YiA2OCA0OCA4OSBlYSA0OCBjMSBlYSAwMyA8ODA+IDNjIDAyIDAwIDBmIDg1
-IDg4IDAyIDAwIDAwIDQ4IDNiIDViIDY4IDBmIDg1IDUzIDAxIDAwIDAwIDY1IGZmCj4gIFJTUDog
-MDAwMDpmZmZmODg4MTAwMmNlOWI4IEVGTEFHUzogMDAwMTAwMTYKPiAgUkFYOiBkZmZmZmMwMDAw
-MDAwMDAwIFJCWDogMDAwMDAwMDAwMDAwMDA3MCBSQ1g6IDAwMDAwMDAwMDAwMDAwMDAKPiAgUkRY
-OiAwMDAwMDAwMDAwMDAwMDFiIFJTSTogMDAwMDAwMDAwMDAwMDAwYSBSREk6IDAwMDAwMDAwMDAw
-MDAwNzAKPiAgUkJQOiAwMDAwMDAwMDAwMDAwMGQ4IFIwODogMDAwMDAwMDAwMDAwMDAwMSBSMDk6
-IGZmZmZlZDEwN2RkZTQ5ZDEKPiAgUjEwOiBmZmZmODg4M2VlZjI0ZThiIFIxMTogZmZmZjg4ODEw
-MDJjZWMyMCBSMTI6IDFmZmZmMTEwMjAwNTlkMzcKPiAgUjEzOiAwMDAwMDAwMDAwM2ZmZjdiIFIx
-NDogZmZmZjg4ODEwMDJjZWMyMCBSMTU6IGRmZmZmYzAwMDAwMDAwMDAKPiAgRlM6ICAwMDAwN2Y5
-NjNmMjFkOTQwKDAwMDApIEdTOmZmZmY4ODg0NThjYTYwMDAoMDAwMCkga25sR1M6MDAwMDAwMDAw
-MDAwMDAwMAo+ICBDUzogIDAwMTAgRFM6IDAwMDAgRVM6IDAwMDAgQ1IwOiAwMDAwMDAwMDgwMDUw
-MDMzCj4gIENSMjogMDAwMDdmOTYzZjVlZGY3MSBDUjM6IDAwMDAwMDAxMDY3MmMwMDAgQ1I0OiAw
-MDAwMDAwMDAwMzUwZWYwCj4gIENhbGwgVHJhY2U6Cj4gICA8VEFTSz4KPiAgIGNvZGV0YWdfdHJ5
-bG9ja19tb2R1bGVfbGlzdCsweGQvMHgyMAo+ICAgYWxsb2NfdGFnX3RvcF91c2VycysweDM2OS8w
-eDRiMAo+ICAgX19zaG93X21lbSsweDFjZC8weDZlMAo+ICAgd2Fybl9hbGxvYysweDJiMS8weDM5
-MAo+ICAgX19hbGxvY19mcm96ZW5fcGFnZXNfbm9wcm9mKzB4MTJiOS8weDIxYTAKPiAgIGFsbG9j
-X3BhZ2VzX21wb2wrMHgxMzUvMHgzZTAKPiAgIGFsbG9jX3NsYWJfcGFnZSsweDgyLzB4ZTAKPiAg
-IG5ld19zbGFiKzB4MjEyLzB4MjQwCj4gICBfX19zbGFiX2FsbG9jKzB4ODJhLzB4ZTAwCj4gICA8
-L1RBU0s+Cj4KPkFzIERhdmlkIFdhbmcgcG9pbnRzIG91dCwgdGhpcyBpc3N1ZSBiZWNhbWUgZWFz
-aWVyIHRvIHRyaWdnZXIgYWZ0ZXIgY29tbWl0Cj43ODAxMzhiMTIzODEgKCJhbGxvY190YWc6IGNo
-ZWNrIG1lbV9wcm9maWxpbmdfc3VwcG9ydCBpbiBhbGxvY190YWdfaW5pdCIpLgo+Cj5CZWZvcmUg
-dGhlIGNvbW1pdCwgdGhlIGlzc3VlIG9jY3VycmVkIG9ubHkgd2hlbiBpdCBmYWlsZWQgdG8gYWxs
-b2NhdGUKPmFuZCBpbml0aWFsaXplIGFsbG9jX3RhZ19jdHR5cGUgb3IgaWYgYSBtZW1vcnkgYWxs
-b2NhdGlvbiBmYWlscyBiZWZvcmUKPmFsbG9jX3RhZ19pbml0KCkgaXMgY2FsbGVkLiBBZnRlciB0
-aGUgY29tbWl0LCBpdCBjYW4gYmUgZWFzaWx5IHRyaWdnZXJlZAo+d2hlbiBtZW1vcnkgcHJvZmls
-aW5nIGlzIGNvbXBpbGVkIGJ1dCBkaXNhYmxlZCBhdCBib290Lgo+Cj5UbyBwcm9wZXJseSBkZXRl
-cm1pbmUgd2hldGhlciBhbGxvY190YWdfaW5pdCgpIGhhcyBiZWVuIGNhbGxlZCBhbmQKPml0cyBk
-YXRhIHN0cnVjdHVyZXMgaW5pdGlhbGl6ZWQsIHZlcmlmeSB0aGF0IGFsbG9jX3RhZ19jdHR5cGUg
-aXMgYSB2YWxpZAo+cG9pbnRlciBiZWZvcmUgYWNxdWlyaW5nIHRoZSBzZW1hcGhvcmUuIElmIHRo
-ZSB2YXJpYWJsZSBpcyBOVUxMIG9yIGFuIGVycm9yCj52YWx1ZSwgaXQgaGFzIG5vdCBiZWVuIHBy
-b3Blcmx5IGluaXRpYWxpemVkLiBJbiBzdWNoIGEgY2FzZSwganVzdCBza2lwCj5hbmQgZG8gbm90
-IGF0dGVtcHQgYWNxdWlyZSB0aGUgc2VtYXBob3JlLgo+Cj5SZXBvcnRlZC1ieToga2VybmVsIHRl
-c3Qgcm9ib3QgPG9saXZlci5zYW5nQGludGVsLmNvbT4KPkNsb3NlczogaHR0cHM6Ly9sb3JlLmtl
-cm5lbC5vcmcvb2UtbGtwLzIwMjUwNjE4MTM1MS5iYmE4NjdkZC1sa3BAaW50ZWwuY29tCj5GaXhl
-czogNzgwMTM4YjEyMzgxICgiYWxsb2NfdGFnOiBjaGVjayBtZW1fcHJvZmlsaW5nX3N1cHBvcnQg
-aW4gYWxsb2NfdGFnX2luaXQiKQo+Rml4ZXM6IDE0MzhkMzQ5ZDE2YiAoImxpYjogYWRkIG1lbW9y
-eSBhbGxvY2F0aW9ucyByZXBvcnQgaW4gc2hvd19tZW0oKSIpCj5DYzogc3RhYmxlQHZnZXIua2Vy
-bmVsLm9yZwo+U2lnbmVkLW9mZi1ieTogSGFycnkgWW9vIDxoYXJyeS55b29Ab3JhY2xlLmNvbT4K
-Ckp1c3Qgbm90aWNlIGFub3RoZXIgdGhyZWFkIGNhbiBiZSBjbG9zZWQgYXMgd2VsbDoKaHR0cHM6
-Ly9sb3JlLmtlcm5lbC5vcmcvYWxsLzIwMjUwNjEzMTcxMS41YjQxOTMxYy1sa3BAaW50ZWwuY29t
-LwpUaGlzIGNvaW5jaWRlIHdpdGggc2NlbmFyaW8gIzEsIHdoZXJlIE9PTSBoYXBwZW5lZCB3aXRo
-CkNPTkZJR19NRU1fQUxMT0NfUFJPRklMSU5HPXkKIyBDT05GSUdfTUVNX0FMTE9DX1BST0ZJTElO
-R19FTkFCTEVEX0JZX0RFRkFVTFQgaXMgbm90IHNldAojIENPTkZJR19NRU1fQUxMT0NfUFJPRklM
-SU5HX0RFQlVHIGlzIG5vdCBzZXQKCj4tLS0KPgo+djEgLT4gdjI6Cj4KPi0gdjEgZml4ZWQgdGhl
-IGJ1ZyBvbmx5IHdoZW4gTUVNX0FMTE9DX1BST0ZJTElOR19FTkFCTEVEX0JZX0RFRkFVTFQ9bi4K
-PiAgCj4gIHYyIG5vdyBmaXhlcyB0aGUgYnVnIGV2ZW4gd2hlbiBNRU1fQUxMT0NfUFJPRklMSU5H
-X0VOQUJMRURfQllfREVGQVVMVD15Lgo+ICBJIGRpZG4ndCBleHBlY3QgYWxsb2NfdGFnX2N0dHlw
-ZSB0byBiZSBOVUxMIHdoZW4KPiAgbWVtX3Byb2ZpbGluZ19zdXBwb3J0IGlzIHRydWUsIGJ1dCBh
-cyBEYXZpZCBwb2ludHMgb3V0IChUaGFua3MgRGF2aWQhKQo+ICBpZiBhIG1lbW9yeSBhbGxvY2F0
-aW9uIGZhaWxzIGJlZm9yZSBhbGxvY190YWdfaW5pdCgpLCBpdCBjYW4gYmUgTlVMTC4KPgo+ICBT
-byBpbnN0ZWFkIG9mIGluZGlyZWN0bHkgY2hlY2tpbmcgbWVtX3Byb2ZpbGluZ19zdXBwb3J0LCBq
-dXN0IGRpcmVjdGx5Cj4gIGNoZWNrIGlmIGFsbG9jX3RhZ19jdHR5cGUgaXMgYWxsb2NhdGVkLgo+
-Cj4tIENsb3NlczogaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvb2UtbGtwLzIwMjUwNTA3MTU1NS5l
-NzU3ZjFlMC1sa3BAaW50ZWwuY29tCj4gIHRhZyB3YXMgcmVtb3ZlZCBiZWNhdXNlIGl0IHdhcyBu
-b3QgYSBjcmFzaCBhbmQgbm90IHJlbGV2YW50IHRvIHRoaXMKPiAgcGF0Y2guCj4KPi0gQWRkZWQg
-Q2M6IHN0YWJsZSBiZWNhdXNlLCBpZiBhbiBhbGxvY2F0aW9uIGZhaWxzIGJlZm9yZQo+ICBhbGxv
-Y190YWdfaW5pdCgpLCBpdCBjYW4gYmUgdHJpZ2dlcmVkIGV2ZW4gcHJpb3ItNzgwMTM4YjEyMzgx
-Lgo+ICBJIHZlcmlmaWVkIHRoYXQgdGhlIGJ1ZyBjYW4gYmUgdHJpZ2dlcmVkIGluIHY2LjEyIGFu
-ZCBmaXhlZCBieSB0aGlzCj4gIHBhdGNoLgo+Cj4gIEl0IHNob3VsZCBiZSBxdWl0ZSBkaWZmaWN1
-bHQgdG8gdHJpZ2dlciBpbiBwcmFjdGljZSwgdGhvdWdoLgo+ICBNYXliZSBJJ20gYSBiaXQgcGFy
-YW5vaWQ/Cj4KPiBsaWIvYWxsb2NfdGFnLmMgfCA0ICsrKy0KPiAxIGZpbGUgY2hhbmdlZCwgMyBp
-bnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pCj4KPmRpZmYgLS1naXQgYS9saWIvYWxsb2NfdGFn
-LmMgYi9saWIvYWxsb2NfdGFnLmMKPmluZGV4IDY2YTQ2MjgxODVmNy4uZDhlYzRjMDNiN2QyIDEw
-MDY0NAo+LS0tIGEvbGliL2FsbG9jX3RhZy5jCj4rKysgYi9saWIvYWxsb2NfdGFnLmMKPkBAIC0x
-MjQsNyArMTI0LDkgQEAgc2l6ZV90IGFsbG9jX3RhZ190b3BfdXNlcnMoc3RydWN0IGNvZGV0YWdf
-Ynl0ZXMgKnRhZ3MsIHNpemVfdCBjb3VudCwgYm9vbCBjYW5fc2wKPiAJc3RydWN0IGNvZGV0YWdf
-Ynl0ZXMgbjsKPiAJdW5zaWduZWQgaW50IGksIG5yID0gMDsKPiAKPi0JaWYgKGNhbl9zbGVlcCkK
-PisJaWYgKElTX0VSUl9PUl9OVUxMKGFsbG9jX3RhZ19jdHR5cGUpKQo+KwkJcmV0dXJuIDA7Cj4r
-CWVsc2UgaWYgKGNhbl9zbGVlcCkKPiAJCWNvZGV0YWdfbG9ja19tb2R1bGVfbGlzdChhbGxvY190
-YWdfY3R0eXBlLCB0cnVlKTsKPiAJZWxzZSBpZiAoIWNvZGV0YWdfdHJ5bG9ja19tb2R1bGVfbGlz
-dChhbGxvY190YWdfY3R0eXBlKSkKPiAJCXJldHVybiAwOwo+LS0gCj4yLjQzLjAK
+On Fri, Jun 20, 2025 at 8:43=E2=80=AFPM David Wang <00107082@163.com> wrote=
+:
+>
+>
+> At 2025-06-21 03:53:05, "Harry Yoo" <harry.yoo@oracle.com> wrote:
+> >alloc_tag_top_users() attempts to lock alloc_tag_cttype->mod_lock
+> >even when the alloc_tag_cttype is not allocated because:
+> >
+> >  1) alloc tagging is disabled because mem profiling is disabled
+> >     (!alloc_tag_cttype)
+> >  2) alloc tagging is enabled, but not yet initialized (!alloc_tag_cttyp=
+e)
+> >  3) alloc tagging is enabled, but failed initialization
+> >     (!alloc_tag_cttype or IS_ERR(alloc_tag_cttype))
+> >
+> >In all cases, alloc_tag_cttype is not allocated, and therefore
+> >alloc_tag_top_users() should not attempt to acquire the semaphore.
+> >
+> >This leads to a crash on memory allocation failure by attempting to
+> >acquire a non-existent semaphore:
+> >
+> >  Oops: general protection fault, probably for non-canonical address 0xd=
+ffffc000000001b: 0000 [#3] SMP KASAN NOPTI
+> >  KASAN: null-ptr-deref in range [0x00000000000000d8-0x00000000000000df]
+> >  CPU: 2 UID: 0 PID: 1 Comm: systemd Tainted: G      D             6.16.=
+0-rc2 #1 VOLUNTARY
+> >  Tainted: [D]=3DDIE
+> >  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-deb=
+ian-1.16.2-1 04/01/2014
+> >  RIP: 0010:down_read_trylock+0xaa/0x3b0
+> >  Code: d0 7c 08 84 d2 0f 85 a0 02 00 00 8b 0d df 31 dd 04 85 c9 75 29 4=
+8 b8 00 00 00 00 00 fc ff df 48 8d 6b 68 48 89 ea 48 c1 ea 03 <80> 3c 02 00=
+ 0f 85 88 02 00 00 48 3b 5b 68 0f 85 53 01 00 00 65 ff
+> >  RSP: 0000:ffff8881002ce9b8 EFLAGS: 00010016
+> >  RAX: dffffc0000000000 RBX: 0000000000000070 RCX: 0000000000000000
+> >  RDX: 000000000000001b RSI: 000000000000000a RDI: 0000000000000070
+> >  RBP: 00000000000000d8 R08: 0000000000000001 R09: ffffed107dde49d1
+> >  R10: ffff8883eef24e8b R11: ffff8881002cec20 R12: 1ffff11020059d37
+> >  R13: 00000000003fff7b R14: ffff8881002cec20 R15: dffffc0000000000
+> >  FS:  00007f963f21d940(0000) GS:ffff888458ca6000(0000) knlGS:0000000000=
+000000
+> >  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> >  CR2: 00007f963f5edf71 CR3: 000000010672c000 CR4: 0000000000350ef0
+> >  Call Trace:
+> >   <TASK>
+> >   codetag_trylock_module_list+0xd/0x20
+> >   alloc_tag_top_users+0x369/0x4b0
+> >   __show_mem+0x1cd/0x6e0
+> >   warn_alloc+0x2b1/0x390
+> >   __alloc_frozen_pages_noprof+0x12b9/0x21a0
+> >   alloc_pages_mpol+0x135/0x3e0
+> >   alloc_slab_page+0x82/0xe0
+> >   new_slab+0x212/0x240
+> >   ___slab_alloc+0x82a/0xe00
+> >   </TASK>
+> >
+> >As David Wang points out, this issue became easier to trigger after comm=
+it
+> >780138b12381 ("alloc_tag: check mem_profiling_support in alloc_tag_init"=
+).
+> >
+> >Before the commit, the issue occurred only when it failed to allocate
+> >and initialize alloc_tag_cttype or if a memory allocation fails before
+> >alloc_tag_init() is called. After the commit, it can be easily triggered
+> >when memory profiling is compiled but disabled at boot.
+
+Thanks for the fix and sorry about the delay with reviewing it.
+
+> >
+> >To properly determine whether alloc_tag_init() has been called and
+> >its data structures initialized, verify that alloc_tag_cttype is a valid
+> >pointer before acquiring the semaphore. If the variable is NULL or an er=
+ror
+> >value, it has not been properly initialized. In such a case, just skip
+> >and do not attempt acquire the semaphore.
+
+nit: s/attempt acquire/attempt to acquire
+
+> >
+> >Reported-by: kernel test robot <oliver.sang@intel.com>
+> >Closes: https://lore.kernel.org/oe-lkp/202506181351.bba867dd-lkp@intel.c=
+om
+> >Fixes: 780138b12381 ("alloc_tag: check mem_profiling_support in alloc_ta=
+g_init")
+> >Fixes: 1438d349d16b ("lib: add memory allocations report in show_mem()")
+> >Cc: stable@vger.kernel.org
+> >Signed-off-by: Harry Yoo <harry.yoo@oracle.com>
+>
+> Just notice another thread can be closed as well:
+> https://lore.kernel.org/all/202506131711.5b41931c-lkp@intel.com/
+> This coincide with scenario #1, where OOM happened with
+> CONFIG_MEM_ALLOC_PROFILING=3Dy
+> # CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT is not set
+> # CONFIG_MEM_ALLOC_PROFILING_DEBUG is not set
+>
+> >---
+> >
+> >v1 -> v2:
+> >
+> >- v1 fixed the bug only when MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT=3Dn.
+> >
+> >  v2 now fixes the bug even when MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT=
+=3Dy.
+> >  I didn't expect alloc_tag_cttype to be NULL when
+> >  mem_profiling_support is true, but as David points out (Thanks David!)
+> >  if a memory allocation fails before alloc_tag_init(), it can be NULL.
+> >
+> >  So instead of indirectly checking mem_profiling_support, just directly
+> >  check if alloc_tag_cttype is allocated.
+> >
+> >- Closes: https://lore.kernel.org/oe-lkp/202505071555.e757f1e0-lkp@intel=
+.com
+> >  tag was removed because it was not a crash and not relevant to this
+> >  patch.
+> >
+> >- Added Cc: stable because, if an allocation fails before
+> >  alloc_tag_init(), it can be triggered even prior-780138b12381.
+> >  I verified that the bug can be triggered in v6.12 and fixed by this
+> >  patch.
+> >
+> >  It should be quite difficult to trigger in practice, though.
+> >  Maybe I'm a bit paranoid?
+> >
+> > lib/alloc_tag.c | 4 +++-
+> > 1 file changed, 3 insertions(+), 1 deletion(-)
+> >
+> >diff --git a/lib/alloc_tag.c b/lib/alloc_tag.c
+> >index 66a4628185f7..d8ec4c03b7d2 100644
+> >--- a/lib/alloc_tag.c
+> >+++ b/lib/alloc_tag.c
+> >@@ -124,7 +124,9 @@ size_t alloc_tag_top_users(struct codetag_bytes *tag=
+s, size_t count, bool can_sl
+> >       struct codetag_bytes n;
+> >       unsigned int i, nr =3D 0;
+> >
+> >-      if (can_sleep)
+> >+      if (IS_ERR_OR_NULL(alloc_tag_cttype))
+> >+              return 0;
+
+So, AFAIKT alloc_tag_cttype will be NULL when memory profiling is
+disabled and it will be ENOMEM if codetag_register_type() fails. I
+think it would be good to add a pr_warn() in the alloc_tag_init() when
+codetag_register_type() fails so that the user can determine the
+reason why show_mem() report is missing allocation tag information.
+
+> >+      else if (can_sleep)
+
+nit: the above extra "else" is not really needed. The following should
+work just fine, is more readable and produces less churn:
+
++      if (IS_ERR_OR_NULL(alloc_tag_cttype))
++              return 0;
++
+      if (can_sleep)
+               codetag_lock_module_list(alloc_tag_cttype, true);
+       else if (!codetag_trylock_module_list(alloc_tag_cttype))
+               return 0;
+
+> >               codetag_lock_module_list(alloc_tag_cttype, true);
+> >       else if (!codetag_trylock_module_list(alloc_tag_cttype))
+> >               return 0;
+> >--
+> >2.43.0
