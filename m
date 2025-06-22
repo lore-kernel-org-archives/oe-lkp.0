@@ -1,238 +1,199 @@
-Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
+Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4939A6136
-	for <oe-lkp@lists.linux.dev>; Sun, 22 Jun 2025 22:24:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07CEE1C700C
+	for <oe-lkp@lists.linux.dev>; Sun, 22 Jun 2025 22:50:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750631063; cv=none; b=Ib7NBdMdQwBSJiFHPPckhGJGCAioqa4iuorL+H7X05PPlEqX80A/rtyVoKX/0brlo1/nH1Au4deVA4sNK9W0onFhXYtdxB4IjgYbzYptYz2PioGC36wVFjYgj3YhhixGrpPCEis8L3CmdgzuQyasbDX0/zhTrSJVaf8K8UCkyOA=
+	t=1750632658; cv=none; b=nroTy3gl7ji/rq53HAN5IEcirY0YFA3K6JpZaEMLSFwWOB0Y6FmMQMNo2oX/9+frPtkfJyjUUdWdTFvpdFXzFkLgm5mGq8mNbo5LMjMRb+sFoDKwnWNrn+E6kKCla1zbiOwzeWYpdAX33NRW+s/eEq+B1xCQ8lLXgMSOhS9rGWE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750631063; c=relaxed/simple;
-	bh=mr0vzL6f4v2foHwwXLma3LkzpJdNCBXCnJoa983E1Hg=;
+	s=arc-20240116; t=1750632658; c=relaxed/simple;
+	bh=glegXgBvIj6/nhiB8cR6JlIJ8F8DQw8vk2YdK4Y46Qs=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ngbqqBd+1sA8wz1yQh+ot9PXZuErrAvzAG1XgK6lc4KIlMeaBPGHmvkFLYKFbpveJOUXohbtp4oRaUFbCeJfaXEa1XGHVwzbKIem1jEtsUF+TgoPPyf9j2JUjIufzMiKeREdAXIbVRWu158jylPQlDoR4XWVbmtx96NS/q+chyY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=AzIfGJRk; arc=none smtp.client-ip=209.85.160.177
+	 To:Cc:Content-Type; b=Ry0fUT+MGCgAPRwP8Nd5PrBUC+Z9Bf3AdQpajywQuV+ToReILiOdBJEWHWgR983srL9DRlA9cmgkmeddRjKMiwz0N8GOZiaRmGVvxJrYMKImkqH5Lg/YgRCuzYuuyRnEYu/vSkdCAL8hFqYBM78P8y+4LYGHq8diIBf+tzWvPq8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=qGmP+neP; arc=none smtp.client-ip=209.85.160.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="AzIfGJRk"
-Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-4a5ac8fae12so480151cf.0
-        for <oe-lkp@lists.linux.dev>; Sun, 22 Jun 2025 15:24:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="qGmP+neP"
+Received: by mail-qt1-f176.google.com with SMTP id d75a77b69052e-4a5ac8fae12so482511cf.0
+        for <oe-lkp@lists.linux.dev>; Sun, 22 Jun 2025 15:50:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1750631060; x=1751235860; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1750632656; x=1751237456; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=z2GI2494rUC/2TZW0ywCzgu9F19ggR5YUviGIVZ+qfY=;
-        b=AzIfGJRkRfEUKN4R7hjNnwwPYdd7ZDFeXW8Ozq2n+DAZk88Su/To+pjWniQA0+HyoP
-         DyF2aQOGsxRgIlvTl5Tcnj8Go3YtioGaKHGw/9UvFxpCjsrR0gB7+GKoMu+lnjE9st4L
-         dhJFxga73m8ohjTxBiroGSVaEbZu0tIwxLvAYW475UyrgmlnJgrO1qlNuemJHTfS5elF
-         7d2wggZ1sXKe7ioXaLVRLCVa4Dh/Qwi+tZpSYRBV3HV7GU1+jBwP9agpOzQiSc1C1ZxP
-         AFO3EfqE6s9m3+5axo8UURZUjInqQNEbvPaiW6kanOBlALFUijYhrZuULvVpqfwz8qXA
-         NPyQ==
+        bh=FCkkmse9j7jIkQr/HtdtMMiFnJZl5VTksMugObu1Hv8=;
+        b=qGmP+nePwbG07tzsJWbV03LdOMzkedf5v1I5OBWFUSdRu+UtvYMWY/RCCYuIpTnJje
+         beCqtPNk5k31U/WtKXbBZwzmJcy3qNJ9M6BQSN0rujxBtlAF+gd7pvLdC8XEeTEmAJ36
+         ocZG2u8MVQY4gzticRHeJIRmk/tL4qS335UuXCgOt16s4lawVWJ4OkCJBRb8PqxTUIy1
+         EScT1t+XCrEunA3pff7uqlbaR4PjF5sprBuA58I/w7LgUs5rizs29Q9aKdZoZkvMENSe
+         i4u/GdAG7BwGCI+XLlsVQ6i351+yC5tOXfAVq4c5c+4fAcqyC/1w8eBPDIEjg57JpXxU
+         i1qQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750631060; x=1751235860;
+        d=1e100.net; s=20230601; t=1750632656; x=1751237456;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=z2GI2494rUC/2TZW0ywCzgu9F19ggR5YUviGIVZ+qfY=;
-        b=EbCwtKb6JK7mc7+zxibp2AZAeulo/1tqXRa9RkrLoJURrIfbvKGM3Tn9+M0SsjB/i4
-         FEBVU3vjzGenptnlLzMFkkhy5vsrSY5KWCu5m027iQhkX8CcdMQM1fgEYGlKEKPjhA4h
-         2W2uUFN/rmUn3GTXTr/D4omDYQ9yZn611+z2aEocxMzArkfH/Gc2/svJie0g0gabuO53
-         5KJ8uJgXSOtrm4CXCONADV5b7FULChrndXwHD1Twm2xqTzIXFDwmOPYAlBHFkkUJbEQ8
-         cQcOVmtuvNapyEEPGs40dU5VM7GHJ1MjUrfxllta8tgd/7iVCIImAgmNoXRFJP6AcKxs
-         s2KA==
-X-Forwarded-Encrypted: i=1; AJvYcCW1dRMBweqkJlxSCEkrCO/ykDe9AUPLiiiIDa0NuwFLogKJxlsspVbZ7cWXbDiDYdEIrE1eCZk=@lists.linux.dev
-X-Gm-Message-State: AOJu0YztRXVHSbc8ZoMji0MTzwtAaT91UWIWi/I8Nav2cjRFX2o/9o2u
-	XXHISw53o9LIC/Qa8mpPz7yqVnyDGRjk3wACzc7/RsUnr95uIU7hqFQo7hZUsp27CZFd8HLmnXE
-	2wV9qwbCQQS7Y4SiSb2v1BxGMf81biF8I8LgB9AX/
-X-Gm-Gg: ASbGncuPKnwAq6q9uJn/Psj/rzG5X2yz4c/SFCYSmDQ8hIcJwoih6SaG+JN1e9mVtZY
-	sd/l0Jrin1uf2OJ3mN2I6++Urymd5a2rCtlIr4ctLjjloqA7HiO0R+4jqdfGn6oNazuQD1LqFnt
-	g6/AdBZQM68Msjb1//dpRAlykyAuA9J+oD74DfTSlRLg==
-X-Google-Smtp-Source: AGHT+IFXpfw+xB4qC+6F0GtwYxkvSjZPT2sqzoTBpbCRyfAg/E0SGXmExBTMb8qlx3auQmultRnj8mhUyA+FgakccdY=
-X-Received: by 2002:a05:622a:11ca:b0:48a:42fa:78fa with SMTP id
- d75a77b69052e-4a7852dba43mr5237071cf.2.1750631059676; Sun, 22 Jun 2025
- 15:24:19 -0700 (PDT)
+        bh=FCkkmse9j7jIkQr/HtdtMMiFnJZl5VTksMugObu1Hv8=;
+        b=PGKS/OSWXwKVCXj+iF0ka/tz6sFKywF4IHF/2j4ji1bZcSd1xxZ8WO7MymR6GKKm3q
+         YjGBQ73ZXbGvHbNAq/kRBWr4T0Oh0IroDPTEe6Tue8gbROZFIugBA9ETxzaZOmlsT+6t
+         Q0XcCOXvAupVWKesUXDHSNjSY2PTYMAF/V+fDsVBa3p+0Ae9N8cigWkeyO1H6pTu1AT1
+         Nh2EaXDu/pPsX9fqie4CK5w0j3daqvkdiARmuEt9e8AlFFH0n8XbtDj16E0wefCN8rgj
+         5j+QWYbYYpdu4enwhOA1CQvGT+Vn4RsBCIyf6yel8+I3EKWLPS30FFMNzNdAgR6X0y0l
+         N70A==
+X-Forwarded-Encrypted: i=1; AJvYcCUAM6Pi3FuJ6s7s0tLX3sJE1lR19bm9apDrSfrybhIbOxN5+huQPpT9DqlYMbUUQuGuhexe0MQ=@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy1h2RVsddKIWqifoKVWuYY+yDg5AuYVw8Fe1pgXU0v3VEbyDO1
+	ElrlvPezXHI/EfB3NolwyIH0TYoDZTHQlQaZmUnRFnMY9G1IAypOW6poI5yIITAsACKGIi5KzLr
+	TK4jgcg5VD6qIbPyg4mjSke9buJ1WOXMRjgSZ/mT7lKDjyVzlA10DK2neY00=
+X-Gm-Gg: ASbGncsLhRh628lVxGP8o3mWIJKZTqxKso3KTm2qJEe/uOAKGr1bNew8hv3eViOM9wy
+	AH8zRI4GmEp/HA7ymFKRiRWhT29aeLNDDEDvJN+qmA60OZrr5O9tZDv7P3JR7O4+6lfXhjIzg/Y
+	vGEItuouirKw6HBOV9tJiRwEoaUGxQwqD7/tvRfHAdiw==
+X-Google-Smtp-Source: AGHT+IHVv0cByUMuTtv+78NCbFEK8nCvWjD02fb+bjcGOT1F2fltAhal6PAAqK/gJ767TYT0EG9fKYVyt5sjERXqch8=
+X-Received: by 2002:a05:622a:1b0b:b0:479:1958:d81a with SMTP id
+ d75a77b69052e-4a7852db91amr5530501cf.6.1750632655398; Sun, 22 Jun 2025
+ 15:50:55 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250620195305.1115151-1-harry.yoo@oracle.com> <7935cfb1.1432.19790952566.Coremail.00107082@163.com>
-In-Reply-To: <7935cfb1.1432.19790952566.Coremail.00107082@163.com>
+References: <202506181351.bba867dd-lkp@intel.com> <20250620100258.595495-1-00107082@163.com>
+In-Reply-To: <20250620100258.595495-1-00107082@163.com>
 From: Suren Baghdasaryan <surenb@google.com>
-Date: Sun, 22 Jun 2025 15:24:08 -0700
-X-Gm-Features: Ac12FXxuGqxZZyKQhgH0eqA4IJBrgYI4hYeartJ-8Oj8skCpD3dIFoo0_U2Xlwc
-Message-ID: <CAJuCfpG3=0MCac2jTVM9LiJWDwWdLE3vrcJp52x4ZX5XdSEv1A@mail.gmail.com>
-Subject: Re: [PATCH v2] lib/alloc_tag: do not acquire non-existent lock in alloc_tag_top_users()
+Date: Sun, 22 Jun 2025 15:50:44 -0700
+X-Gm-Features: Ac12FXyniPz2R1npjK7ZfMtWGYaO4vFnkCBjbTvEwI2RPxVobAu7_RLwcpb6AtA
+Message-ID: <CAJuCfpFLKR7CqAHG+QjHt4wCLgWmP7dD+f5D8Jx6gHUoXSe1AA@mail.gmail.com>
+Subject: Re: CONFIG_TEST_VMALLOC=y conflict/race with alloc_tag_init
 To: David Wang <00107082@163.com>
-Cc: Harry Yoo <harry.yoo@oracle.com>, akpm@linux-foundation.org, 
-	kent.overstreet@linux.dev, oliver.sang@intel.com, cachen@purestorage.com, 
-	linux-mm@kvack.org, oe-lkp@lists.linux.dev, stable@vger.kernel.org
+Cc: oliver.sang@intel.com, urezki@gmail.com, ahuang12@lenovo.com, 
+	akpm@linux-foundation.org, bhe@redhat.com, hch@infradead.org, 
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org, lkp@intel.com, 
+	mjguzik@gmail.com, oe-lkp@lists.linux.dev, harry.yoo@oracle.com, 
+	kent.overstreet@linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jun 20, 2025 at 8:43=E2=80=AFPM David Wang <00107082@163.com> wrote=
+On Fri, Jun 20, 2025 at 3:03=E2=80=AFAM David Wang <00107082@163.com> wrote=
 :
 >
+> On Wed, Jun 18, 2025 at 02:25:37PM +0800, kernel test robot wrote:
+> >
+> > Hello,
+> >
+> > for this change, we reported
+> > "[linux-next:master] [lib/test_vmalloc.c]  7fc85b92db: Mem-Info"
+> > in
+> > https://lore.kernel.org/all/202505071555.e757f1e0-lkp@intel.com/
+> >
+> > at that time, we made some tests with x86_64 config which runs well.
+> >
+> > now we noticed the commit is in mainline now.
 >
-> At 2025-06-21 03:53:05, "Harry Yoo" <harry.yoo@oracle.com> wrote:
-> >alloc_tag_top_users() attempts to lock alloc_tag_cttype->mod_lock
-> >even when the alloc_tag_cttype is not allocated because:
+> > the config still has expected diff with parent:
 > >
-> >  1) alloc tagging is disabled because mem profiling is disabled
-> >     (!alloc_tag_cttype)
-> >  2) alloc tagging is enabled, but not yet initialized (!alloc_tag_cttyp=
-e)
-> >  3) alloc tagging is enabled, but failed initialization
-> >     (!alloc_tag_cttype or IS_ERR(alloc_tag_cttype))
+> > --- /pkg/linux/x86_64-randconfig-161-20250614/gcc-12/7a73348e5d4715b556=
+5a53f21c01ea7b54e46cbd/.config   2025-06-17 14:40:29.481052101 +0800
+> > +++ /pkg/linux/x86_64-randconfig-161-20250614/gcc-12/2d76e79315e403aab5=
+95d4c8830b7a46c19f0f3b/.config   2025-06-17 14:41:18.448543738 +0800
+> > @@ -7551,7 +7551,7 @@ CONFIG_TEST_IDA=3Dm
+> >  CONFIG_TEST_MISC_MINOR=3Dm
+> >  # CONFIG_TEST_LKM is not set
+> >  CONFIG_TEST_BITOPS=3Dm
+> > -CONFIG_TEST_VMALLOC=3Dm
+> > +CONFIG_TEST_VMALLOC=3Dy
+> >  # CONFIG_TEST_BPF is not set
+> >  CONFIG_FIND_BIT_BENCHMARK=3Dm
+> >  # CONFIG_TEST_FIRMWARE is not set
 > >
-> >In all cases, alloc_tag_cttype is not allocated, and therefore
-> >alloc_tag_top_users() should not attempt to acquire the semaphore.
 > >
-> >This leads to a crash on memory allocation failure by attempting to
-> >acquire a non-existent semaphore:
+> > then we noticed similar random issue with x86_64 randconfig this time.
 > >
-> >  Oops: general protection fault, probably for non-canonical address 0xd=
-ffffc000000001b: 0000 [#3] SMP KASAN NOPTI
-> >  KASAN: null-ptr-deref in range [0x00000000000000d8-0x00000000000000df]
-> >  CPU: 2 UID: 0 PID: 1 Comm: systemd Tainted: G      D             6.16.=
-0-rc2 #1 VOLUNTARY
-> >  Tainted: [D]=3DDIE
-> >  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-deb=
-ian-1.16.2-1 04/01/2014
-> >  RIP: 0010:down_read_trylock+0xaa/0x3b0
-> >  Code: d0 7c 08 84 d2 0f 85 a0 02 00 00 8b 0d df 31 dd 04 85 c9 75 29 4=
-8 b8 00 00 00 00 00 fc ff df 48 8d 6b 68 48 89 ea 48 c1 ea 03 <80> 3c 02 00=
- 0f 85 88 02 00 00 48 3b 5b 68 0f 85 53 01 00 00 65 ff
-> >  RSP: 0000:ffff8881002ce9b8 EFLAGS: 00010016
-> >  RAX: dffffc0000000000 RBX: 0000000000000070 RCX: 0000000000000000
-> >  RDX: 000000000000001b RSI: 000000000000000a RDI: 0000000000000070
-> >  RBP: 00000000000000d8 R08: 0000000000000001 R09: ffffed107dde49d1
-> >  R10: ffff8883eef24e8b R11: ffff8881002cec20 R12: 1ffff11020059d37
-> >  R13: 00000000003fff7b R14: ffff8881002cec20 R15: dffffc0000000000
-> >  FS:  00007f963f21d940(0000) GS:ffff888458ca6000(0000) knlGS:0000000000=
-000000
-> >  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> >  CR2: 00007f963f5edf71 CR3: 000000010672c000 CR4: 0000000000350ef0
-> >  Call Trace:
-> >   <TASK>
-> >   codetag_trylock_module_list+0xd/0x20
-> >   alloc_tag_top_users+0x369/0x4b0
-> >   __show_mem+0x1cd/0x6e0
-> >   warn_alloc+0x2b1/0x390
-> >   __alloc_frozen_pages_noprof+0x12b9/0x21a0
-> >   alloc_pages_mpol+0x135/0x3e0
-> >   alloc_slab_page+0x82/0xe0
-> >   new_slab+0x212/0x240
-> >   ___slab_alloc+0x82a/0xe00
-> >   </TASK>
+> > 7a73348e5d4715b5 2d76e79315e403aab595d4c8830
+> > ---------------- ---------------------------
+> >        fail:runs  %reproduction    fail:runs
+> >            |             |             |
+> >            :199         34%          67:200   dmesg.KASAN:null-ptr-dere=
+f_in_range[#-#]
+> >            :199         34%          67:200   dmesg.Kernel_panic-not_sy=
+ncing:Fatal_exception
+> >            :199         34%          67:200   dmesg.Mem-Info
+> >            :199         34%          67:200   dmesg.Oops:general_protec=
+tion_fault,probably_for_non-canonical_address#:#[##]SMP_KASAN
+> >            :199         34%          67:200   dmesg.RIP:down_read_trylo=
+ck
 > >
-> >As David Wang points out, this issue became easier to trigger after comm=
-it
-> >780138b12381 ("alloc_tag: check mem_profiling_support in alloc_tag_init"=
-).
+> > we don't have enough knowledge to understand the relationship between c=
+ode
+> > change and the random issues. just report what we obsverved in our test=
+s FYI.
 > >
-> >Before the commit, the issue occurred only when it failed to allocate
-> >and initialize alloc_tag_cttype or if a memory allocation fails before
-> >alloc_tag_init() is called. After the commit, it can be easily triggered
-> >when memory profiling is compiled but disabled at boot.
-
-Thanks for the fix and sorry about the delay with reviewing it.
-
-> >
-> >To properly determine whether alloc_tag_init() has been called and
-> >its data structures initialized, verify that alloc_tag_cttype is a valid
-> >pointer before acquiring the semaphore. If the variable is NULL or an er=
-ror
-> >value, it has not been properly initialized. In such a case, just skip
-> >and do not attempt acquire the semaphore.
-
-nit: s/attempt acquire/attempt to acquire
-
-> >
-> >Reported-by: kernel test robot <oliver.sang@intel.com>
-> >Closes: https://lore.kernel.org/oe-lkp/202506181351.bba867dd-lkp@intel.c=
-om
-> >Fixes: 780138b12381 ("alloc_tag: check mem_profiling_support in alloc_ta=
-g_init")
-> >Fixes: 1438d349d16b ("lib: add memory allocations report in show_mem()")
-> >Cc: stable@vger.kernel.org
-> >Signed-off-by: Harry Yoo <harry.yoo@oracle.com>
 >
-> Just notice another thread can be closed as well:
-> https://lore.kernel.org/all/202506131711.5b41931c-lkp@intel.com/
-> This coincide with scenario #1, where OOM happened with
+> I think this is caused by a race between vmalloc_test_init and alloc_tag_=
+init.
+>
+> vmalloc_test actually depends on alloc_tag via alloc_tag_top_users, becau=
+se when
+> memory allocation fails show_mem() would invoke alloc_tag_top_users.
+>
+> With following configuration:
+>
+> CONFIG_TEST_VMALLOC=3Dy
 > CONFIG_MEM_ALLOC_PROFILING=3Dy
-> # CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT is not set
-> # CONFIG_MEM_ALLOC_PROFILING_DEBUG is not set
+> CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT=3Dy
+> CONFIG_MEM_ALLOC_PROFILING_DEBUG=3Dy
 >
-> >---
-> >
-> >v1 -> v2:
-> >
-> >- v1 fixed the bug only when MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT=3Dn.
-> >
-> >  v2 now fixes the bug even when MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT=
-=3Dy.
-> >  I didn't expect alloc_tag_cttype to be NULL when
-> >  mem_profiling_support is true, but as David points out (Thanks David!)
-> >  if a memory allocation fails before alloc_tag_init(), it can be NULL.
-> >
-> >  So instead of indirectly checking mem_profiling_support, just directly
-> >  check if alloc_tag_cttype is allocated.
-> >
-> >- Closes: https://lore.kernel.org/oe-lkp/202505071555.e757f1e0-lkp@intel=
-.com
-> >  tag was removed because it was not a crash and not relevant to this
-> >  patch.
-> >
-> >- Added Cc: stable because, if an allocation fails before
-> >  alloc_tag_init(), it can be triggered even prior-780138b12381.
-> >  I verified that the bug can be triggered in v6.12 and fixed by this
-> >  patch.
-> >
-> >  It should be quite difficult to trigger in practice, though.
-> >  Maybe I'm a bit paranoid?
-> >
-> > lib/alloc_tag.c | 4 +++-
-> > 1 file changed, 3 insertions(+), 1 deletion(-)
-> >
-> >diff --git a/lib/alloc_tag.c b/lib/alloc_tag.c
-> >index 66a4628185f7..d8ec4c03b7d2 100644
-> >--- a/lib/alloc_tag.c
-> >+++ b/lib/alloc_tag.c
-> >@@ -124,7 +124,9 @@ size_t alloc_tag_top_users(struct codetag_bytes *tag=
-s, size_t count, bool can_sl
-> >       struct codetag_bytes n;
-> >       unsigned int i, nr =3D 0;
-> >
-> >-      if (can_sleep)
-> >+      if (IS_ERR_OR_NULL(alloc_tag_cttype))
-> >+              return 0;
+> If vmalloc_test_init starts before alloc_tag_init, show_mem() would cause
+> a NULL deference because alloc_tag_cttype was not init yet.
+>
+> I add some debug to confirm this theory
+> diff --git a/lib/alloc_tag.c b/lib/alloc_tag.c
+> index d48b80f3f007..9b8e7501010f 100644
+> --- a/lib/alloc_tag.c
+> +++ b/lib/alloc_tag.c
+> @@ -133,6 +133,8 @@ size_t alloc_tag_top_users(struct codetag_bytes *tags=
+, size_t count, bool can_sl
+>         struct codetag *ct;
+>         struct codetag_bytes n;
+>         unsigned int i, nr =3D 0;
+> +       pr_info("memory profiling alloc top %d: %llx\n", mem_profiling_su=
+pport, (long long)alloc_tag_cttype);
+> +       return 0;
+>
+>         if (can_sleep)
+>                 codetag_lock_module_list(alloc_tag_cttype, true);
+> @@ -831,6 +833,7 @@ static int __init alloc_tag_init(void)
+>                 shutdown_mem_profiling(true);
+>                 return PTR_ERR(alloc_tag_cttype);
+>         }
+> +       pr_info("memory profiling ready %d: %llx\n", mem_profiling_suppor=
+t, (long long)alloc_tag_cttype);
+>
+>         return 0;
+>  }
+>
+> When bootup the kernel, the log shows:
+>
+> $ sudo dmesg -T | grep profiling
+> [Fri Jun 20 17:29:35 2025] memory profiling alloc top 1: 0  <--- alloc_ta=
+g_cttype =3D=3D NULL
+> [Fri Jun 20 17:30:24 2025] memory profiling ready 1: ffff9b1641aa06c0
+>
+>
+> vmalloc_test_init should happened after alloc_tag_init if CONFIG_TEST_VMA=
+LLOC=3Dy,
+> or mem_show() should check whether alloc_tag is done initialized when cal=
+ling
+> alloc_tag_top_users
 
-So, AFAIKT alloc_tag_cttype will be NULL when memory profiling is
-disabled and it will be ENOMEM if codetag_register_type() fails. I
-think it would be good to add a pr_warn() in the alloc_tag_init() when
-codetag_register_type() fails so that the user can determine the
-reason why show_mem() report is missing allocation tag information.
+Thanks for reporting!
+So, IIUC https://lore.kernel.org/all/20250620195305.1115151-1-harry.yoo@ora=
+cle.com/
+will address this issue as well. Is that correct?
 
-> >+      else if (can_sleep)
-
-nit: the above extra "else" is not really needed. The following should
-work just fine, is more readable and produces less churn:
-
-+      if (IS_ERR_OR_NULL(alloc_tag_cttype))
-+              return 0;
-+
-      if (can_sleep)
-               codetag_lock_module_list(alloc_tag_cttype, true);
-       else if (!codetag_trylock_module_list(alloc_tag_cttype))
-               return 0;
-
-> >               codetag_lock_module_list(alloc_tag_cttype, true);
-> >       else if (!codetag_trylock_module_list(alloc_tag_cttype))
-> >               return 0;
-> >--
-> >2.43.0
+>
+>
+>
+> David
+>
