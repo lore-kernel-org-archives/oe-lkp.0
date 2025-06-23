@@ -1,156 +1,139 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.3])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1286B1A08AF
-	for <oe-lkp@lists.linux.dev>; Mon, 23 Jun 2025 04:40:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.3
+Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C6D617F7
+	for <oe-lkp@lists.linux.dev>; Mon, 23 Jun 2025 11:29:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750653643; cv=none; b=K3nSE6igItfXB8DfQjCuO5KRGbS8yM5Bwq+Fox1O4Hu0p3lwbymin9pro16J+IQKD48h8a9wJJcM8YgpoiDuujTzCCMjW3lzaQaYnFm3JuzuZSxC89Tml0dcZSd+nsOFvGiS4+tki+3L2DZioCKLdZqdlsHMAoqgXs2VC89a44s=
+	t=1750678170; cv=none; b=ZC5IVN9FrPhv483qxLIdIB5YPoGyU+jCavHbs88ZRCeH8d8Ied9wc5buD5nLoF8c4fmUyGvMAQpk2QzPHvCvphf9Z7+uR1Hson4IFATvhyqPDOJztasQeWXOJ01p7lZ4IBYW+zd8oESbudInX48jwLORnM+tcD4fqep9tBYQ86I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750653643; c=relaxed/simple;
-	bh=GOkLV9AicYw3lNtVLdK7/kQufd9IeYEobM6mh4TDV/8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
-	 MIME-Version:Message-ID; b=Xn23ASupnvrs6QN08J8Iff4AZwx6NsOBypoqoavoJ2KOqa+WYMwkRDgkRh4aWJTD608kTuTokh/V1ZtevpB/6UZWPnlNqhUaTubyMJp1qQzxNwEHvqNoQfPYArPe3ixQuC1D3L0IhBpFsjWipM4P5r0DqmLj/NhrD19UWzJBhT8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=fail (1024-bit key) header.d=163.com header.i=@163.com header.b=VoI1wMS1 reason="signature verification failed"; arc=none smtp.client-ip=220.197.31.3
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1750678170; c=relaxed/simple;
+	bh=wLQFKtSJGzFg4lKtATX7H7j9UPlk+P13KegXT5k15Eo=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=TwyVlRKZ6arpAMPLhSlhT0vaDuCr9OZsriEGJV9lKtP+a+N527iINCIrzYWZUkMO7qyPd7/IFHNv7RHjADR5ll7KzSlKg5aVnwIjFGm90XqUrDTfcM2QZmOSNeYD1PPj4RIXoehaNqQxBxwDYVUB3unZz8KQmMBxvRDYo3EisPI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IFIKamBY; arc=none smtp.client-ip=209.85.208.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=163.com header.i=@163.com header.b="VoI1wMS1"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=Date:From:To:Subject:Content-Type:MIME-Version:
-	Message-ID; bh=xj4GeCgBM5tPVtIGF37DgI83aQYFIknfRMsftuZapC0=; b=V
-	oI1wMS1V5a7h3NCCqlQJqsc9/0DMUFPUOgxXCf6zllL6r9Kn07uql1mQBO6NSfPj
-	buKxJyEb7w7Q63aDfefakp4BpfrJa/vJ6zFxuEbGqHGPjCmOjHSUmltJo8FYBghz
-	0yW+22tkH4YBYBHu/2col0XFBYEqIxjL3xiDV6falY=
-Received: from 00107082$163.com ( [111.35.191.131] ) by
- ajax-webmail-wmsvr-40-133 (Coremail) ; Mon, 23 Jun 2025 12:39:33 +0800
- (CST)
-Date: Mon, 23 Jun 2025 12:39:33 +0800 (CST)
-From: "David Wang" <00107082@163.com>
-To: "Suren Baghdasaryan" <surenb@google.com>
-Cc: oliver.sang@intel.com, urezki@gmail.com, ahuang12@lenovo.com,
-	akpm@linux-foundation.org, bhe@redhat.com, hch@infradead.org,
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org, lkp@intel.com,
-	mjguzik@gmail.com, oe-lkp@lists.linux.dev, harry.yoo@oracle.com,
-	kent.overstreet@linux.dev
-Subject: Re: CONFIG_TEST_VMALLOC=y conflict/race with alloc_tag_init
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20240801(9da12a7b)
- Copyright (c) 2002-2025 www.mailtech.cn 163com
-In-Reply-To: <190052a4.36d4.1979ac95438.Coremail.00107082@163.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IFIKamBY"
+Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-32b43cce9efso32451581fa.3
+        for <oe-lkp@lists.linux.dev>; Mon, 23 Jun 2025 04:29:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1750678167; x=1751282967; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:date:from:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=YgfPRIB+BYAuUXDEK/9DOfwH7aJtQFPBBRMLIHLTgX8=;
+        b=IFIKamBYdUr829ePP9SO0Bt0mSC4euJ63MisYtbntW9akjz8YgJ4z1Wxz2GcTmZ6Aq
+         MHjI2A2g2f+JJAK0lctjirCNITRskjEvRGii7MXVwHvRARUgAmFGFlOH2AXP9s0D74ZL
+         Uvd3yABUIjPWXdBKC9XB4SCrIPbztVouvQ4W2byx/9EGVtp0Yjv2G/J3ROHa6fQ/NIcK
+         +ImsWvVqlsO+d7aPwThnxKTf7webgSOxoQPfJJk/z8+3raFfreLGxNs+4WheeK5Gi/bn
+         smfTdbIjRxoqk12gkckECbDwF3BeTgW0duqYsj6/NAcdZQ4IDA5mdQcn2PQiPuTdkyFq
+         2SGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750678167; x=1751282967;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:date:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=YgfPRIB+BYAuUXDEK/9DOfwH7aJtQFPBBRMLIHLTgX8=;
+        b=EUs8Cms92jLGK8G5VD6Kayuw7ePU7cdkH4m/6D3oCJkPMPK6U9avJJrdpBpaDziMtc
+         uMhkVZg9T0I//7i98u4X/B2SL8JEzoUBupdGN9wGW/5517Ux1apzJ3wG3aBwqm85wjTW
+         LHSumFc6P7REUZngfgFLyYVEcgeJM8Ehi7RkuX/p7VP792GYUzOI0kPvohy7+pJo+KXv
+         SA77qq9jyvc9eyhEVveQh3mFnamnDuxEBIOERVfWWVvJm23npSh0y8xbk8OolYueXxpn
+         agDck04P+Ne8NL4enT8qI4rHA82CzoV+WMk/hdq2VviT0ucw8NTRYOuxrHJ3cuPy4dAU
+         gjXQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWHo/ywuIRT7dfR2SLj7Ms2yXwHoz2jurv9NlR00LUSAYSiXU6/4R9Q+gBrtUOTB1Z7tjehNX4=@lists.linux.dev
+X-Gm-Message-State: AOJu0YzmAAn6iO4hGBzVeV2mEOpF+czN/NbTBuB+1VGVMGLaeQiZKqiw
+	0Shr5CnsIA9TzhzTeR0Nd5bSkZuzfY84l0mU0EehOKAVV8t9JyTTJplX
+X-Gm-Gg: ASbGncsMPl5j2/HRXHlNVRDVvU2k3NEYX4ESwsIC9G9QmYLNkpFVYc88/iHSdSVFFZD
+	pzNi4sSgA4rQh0B6TsNPt+GSFrtHd8uTcFRy/7zG6fIi2IKiQb1i8qbEOvRN30OnB/NYpaP3/1G
+	ItHiQ0haO3Mz39aSiGHWrFnqpgigo7RWrRzymvSVY5lIclg5lOPQBTmlkToHOhEs1jk0BNH/RUy
+	JLxeD7HnntwdFKQgxqm09vcqbs915LjwBDmEcrSUuqy4a0RvSjRFdZX8YjQweFRgvIXn1iaP/qU
+	ur3hN2q/D0Iev1UfHIw6BmM26L9rkcEOsH/l6YahwtXEwgeZe20kVyeS5xADOR9O1g1zROfTADw
+	rNwfZRvEdpR0=
+X-Google-Smtp-Source: AGHT+IE1MZF6wlC72ECSHVOr+2VOUjVmkH4XiG30NEvX7gqf7FRE361lIOqKCXeUz4nUIgSU9qz8Zg==
+X-Received: by 2002:a05:6512:3186:b0:553:34ea:fc41 with SMTP id 2adb3069b0e04-553e3d0ecdcmr3278922e87.56.1750678166243;
+        Mon, 23 Jun 2025 04:29:26 -0700 (PDT)
+Received: from pc636 (host-95-203-1-180.mobileonline.telia.com. [95.203.1.180])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-553e41cc0d4sm1359864e87.197.2025.06.23.04.29.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Jun 2025 04:29:25 -0700 (PDT)
+From: Uladzislau Rezki <urezki@gmail.com>
+X-Google-Original-From: Uladzislau Rezki <urezki@pc636>
+Date: Mon, 23 Jun 2025 13:29:22 +0200
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: Uladzislau Rezki <urezki@gmail.com>, Harry Yoo <harry.yoo@oracle.com>,
+	kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-kernel@vger.kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Baoquan He <bhe@redhat.com>, Adrian Huang <ahuang12@lenovo.com>,
+	Christop Hellwig <hch@infradead.org>,
+	Mateusz Guzik <mjguzik@gmail.com>, linux-mm@kvack.org,
+	Kent Overstreet <kent.overstreet@linux.dev>
+Subject: Re: Kernel crash due to alloc_tag_top_users() being called when
+ !mem_profiling_support?
+Message-ID: <aFk6krRwyMtbH0y4@pc636>
 References: <202506181351.bba867dd-lkp@intel.com>
- <20250620100258.595495-1-00107082@163.com>
- <CAJuCfpFLKR7CqAHG+QjHt4wCLgWmP7dD+f5D8Jx6gHUoXSe1AA@mail.gmail.com>
- <375419f4.2ba1.1979aad313a.Coremail.00107082@163.com>
- <190052a4.36d4.1979ac95438.Coremail.00107082@163.com>
-X-NTES-SC: AL_Qu2eAvqevE0s5SacYekZnEYQheY4XMKyuPkg1YJXOp80mSXy+iYnZ25qPV7/9PmhFD2moQmnSjRn68FjTbJCXInUOIxMmf3JnQHP/20+l0zX
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+ <aFQaY4Bxle8-GT6O@harry>
+ <aFQnEj0UASzl2Lxa@hyeyoo>
+ <aFUgJgrc_eIHRy5-@pc636>
+ <CAJuCfpHRVq+T8v-7J0kJ=mnbSJYX2kjG_8spgZFdfe4Tzbcs4g@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Message-ID: <42114c84.46d0.1979b159a13.Coremail.00107082@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:hSgvCgCHfbeG2lho+TYiAA--.7271W
-X-CM-SenderInfo: qqqrilqqysqiywtou0bp/xtbBEgF1qmhYtSo62gAIsL
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAJuCfpHRVq+T8v-7J0kJ=mnbSJYX2kjG_8spgZFdfe4Tzbcs4g@mail.gmail.com>
 
-CkF0IDIwMjUtMDYtMjMgMTE6MTY6MTUsICJEYXZpZCBXYW5nIiA8MDAxMDcwODJAMTYzLmNvbT4g
-d3JvdGU6Cj4KPkF0IDIwMjUtMDYtMjMgMTA6NDU6MzEsICJEYXZpZCBXYW5nIiA8MDAxMDcwODJA
-MTYzLmNvbT4gd3JvdGU6Cj4+Cj4+QXQgMjAyNS0wNi0yMyAwNjo1MDo0NCwgIlN1cmVuIEJhZ2hk
-YXNhcnlhbiIgPHN1cmVuYkBnb29nbGUuY29tPiB3cm90ZToKPj4+T24gRnJpLCBKdW4gMjAsIDIw
-MjUgYXQgMzowM+KAr0FNIERhdmlkIFdhbmcgPDAwMTA3MDgyQDE2My5jb20+IHdyb3RlOgo+Pj4+
-Cj4+Pj4gT24gV2VkLCBKdW4gMTgsIDIwMjUgYXQgMDI6MjU6MzdQTSArMDgwMCwga2VybmVsIHRl
-c3Qgcm9ib3Qgd3JvdGU6Cj4+Pj4gPgo+Pj4+ID4gSGVsbG8sCj4+Pj4gPgo+Pj4+ID4gZm9yIHRo
-aXMgY2hhbmdlLCB3ZSByZXBvcnRlZAo+Pj4+ID4gIltsaW51eC1uZXh0Om1hc3Rlcl0gW2xpYi90
-ZXN0X3ZtYWxsb2MuY10gIDdmYzg1YjkyZGI6IE1lbS1JbmZvIgo+Pj4+ID4gaW4KPj4+PiA+IGh0
-dHBzOi8vbG9yZS5rZXJuZWwub3JnL2FsbC8yMDI1MDUwNzE1NTUuZTc1N2YxZTAtbGtwQGludGVs
-LmNvbS8KPj4+PiA+Cj4+Pj4gPiBhdCB0aGF0IHRpbWUsIHdlIG1hZGUgc29tZSB0ZXN0cyB3aXRo
-IHg4Nl82NCBjb25maWcgd2hpY2ggcnVucyB3ZWxsLgo+Pj4+ID4KPj4+PiA+IG5vdyB3ZSBub3Rp
-Y2VkIHRoZSBjb21taXQgaXMgaW4gbWFpbmxpbmUgbm93Lgo+Pj4+Cj4+Pj4gPiB0aGUgY29uZmln
-IHN0aWxsIGhhcyBleHBlY3RlZCBkaWZmIHdpdGggcGFyZW50Ogo+Pj4+ID4KPj4+PiA+IC0tLSAv
-cGtnL2xpbnV4L3g4Nl82NC1yYW5kY29uZmlnLTE2MS0yMDI1MDYxNC9nY2MtMTIvN2E3MzM0OGU1
-ZDQ3MTViNTU2NWE1M2YyMWMwMWVhN2I1NGU0NmNiZC8uY29uZmlnICAgMjAyNS0wNi0xNyAxNDo0
-MDoyOS40ODEwNTIxMDEgKzA4MDAKPj4+PiA+ICsrKyAvcGtnL2xpbnV4L3g4Nl82NC1yYW5kY29u
-ZmlnLTE2MS0yMDI1MDYxNC9nY2MtMTIvMmQ3NmU3OTMxNWU0MDNhYWI1OTVkNGM4ODMwYjdhNDZj
-MTlmMGYzYi8uY29uZmlnICAgMjAyNS0wNi0xNyAxNDo0MToxOC40NDg1NDM3MzggKzA4MDAKPj4+
-PiA+IEBAIC03NTUxLDcgKzc1NTEsNyBAQCBDT05GSUdfVEVTVF9JREE9bQo+Pj4+ID4gIENPTkZJ
-R19URVNUX01JU0NfTUlOT1I9bQo+Pj4+ID4gICMgQ09ORklHX1RFU1RfTEtNIGlzIG5vdCBzZXQK
-Pj4+PiA+ICBDT05GSUdfVEVTVF9CSVRPUFM9bQo+Pj4+ID4gLUNPTkZJR19URVNUX1ZNQUxMT0M9
-bQo+Pj4+ID4gK0NPTkZJR19URVNUX1ZNQUxMT0M9eQo+Pj4+ID4gICMgQ09ORklHX1RFU1RfQlBG
-IGlzIG5vdCBzZXQKPj4+PiA+ICBDT05GSUdfRklORF9CSVRfQkVOQ0hNQVJLPW0KPj4+PiA+ICAj
-IENPTkZJR19URVNUX0ZJUk1XQVJFIGlzIG5vdCBzZXQKPj4+PiA+Cj4+Pj4gPgo+Pj4+ID4gdGhl
-biB3ZSBub3RpY2VkIHNpbWlsYXIgcmFuZG9tIGlzc3VlIHdpdGggeDg2XzY0IHJhbmRjb25maWcg
-dGhpcyB0aW1lLgo+Pj4+ID4KPj4+PiA+IDdhNzMzNDhlNWQ0NzE1YjUgMmQ3NmU3OTMxNWU0MDNh
-YWI1OTVkNGM4ODMwCj4+Pj4gPiAtLS0tLS0tLS0tLS0tLS0tIC0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLQo+Pj4+ID4gICAgICAgIGZhaWw6cnVucyAgJXJlcHJvZHVjdGlvbiAgICBmYWlsOnJ1
-bnMKPj4+PiA+ICAgICAgICAgICAgfCAgICAgICAgICAgICB8ICAgICAgICAgICAgIHwKPj4+PiA+
-ICAgICAgICAgICAgOjE5OSAgICAgICAgIDM0JSAgICAgICAgICA2NzoyMDAgICBkbWVzZy5LQVNB
-TjpudWxsLXB0ci1kZXJlZl9pbl9yYW5nZVsjLSNdCj4+Pj4gPiAgICAgICAgICAgIDoxOTkgICAg
-ICAgICAzNCUgICAgICAgICAgNjc6MjAwICAgZG1lc2cuS2VybmVsX3BhbmljLW5vdF9zeW5jaW5n
-OkZhdGFsX2V4Y2VwdGlvbgo+Pj4+ID4gICAgICAgICAgICA6MTk5ICAgICAgICAgMzQlICAgICAg
-ICAgIDY3OjIwMCAgIGRtZXNnLk1lbS1JbmZvCj4+Pj4gPiAgICAgICAgICAgIDoxOTkgICAgICAg
-ICAzNCUgICAgICAgICAgNjc6MjAwICAgZG1lc2cuT29wczpnZW5lcmFsX3Byb3RlY3Rpb25fZmF1
-bHQscHJvYmFibHlfZm9yX25vbi1jYW5vbmljYWxfYWRkcmVzcyM6I1sjI11TTVBfS0FTQU4KPj4+
-PiA+ICAgICAgICAgICAgOjE5OSAgICAgICAgIDM0JSAgICAgICAgICA2NzoyMDAgICBkbWVzZy5S
-SVA6ZG93bl9yZWFkX3RyeWxvY2sKPj4+PiA+Cj4+Pj4gPiB3ZSBkb24ndCBoYXZlIGVub3VnaCBr
-bm93bGVkZ2UgdG8gdW5kZXJzdGFuZCB0aGUgcmVsYXRpb25zaGlwIGJldHdlZW4gY29kZQo+Pj4+
-ID4gY2hhbmdlIGFuZCB0aGUgcmFuZG9tIGlzc3Vlcy4ganVzdCByZXBvcnQgd2hhdCB3ZSBvYnN2
-ZXJ2ZWQgaW4gb3VyIHRlc3RzIEZZSS4KPj4+PiA+Cj4+Pj4KPj4+PiBJIHRoaW5rIHRoaXMgaXMg
-Y2F1c2VkIGJ5IGEgcmFjZSBiZXR3ZWVuIHZtYWxsb2NfdGVzdF9pbml0IGFuZCBhbGxvY190YWdf
-aW5pdC4KPj4+Pgo+Pj4+IHZtYWxsb2NfdGVzdCBhY3R1YWxseSBkZXBlbmRzIG9uIGFsbG9jX3Rh
-ZyB2aWEgYWxsb2NfdGFnX3RvcF91c2VycywgYmVjYXVzZSB3aGVuCj4+Pj4gbWVtb3J5IGFsbG9j
-YXRpb24gZmFpbHMgc2hvd19tZW0oKSB3b3VsZCBpbnZva2UgYWxsb2NfdGFnX3RvcF91c2Vycy4K
-Pj4+Pgo+Pj4+IFdpdGggZm9sbG93aW5nIGNvbmZpZ3VyYXRpb246Cj4+Pj4KPj4+PiBDT05GSUdf
-VEVTVF9WTUFMTE9DPXkKPj4+PiBDT05GSUdfTUVNX0FMTE9DX1BST0ZJTElORz15Cj4+Pj4gQ09O
-RklHX01FTV9BTExPQ19QUk9GSUxJTkdfRU5BQkxFRF9CWV9ERUZBVUxUPXkKPj4+PiBDT05GSUdf
-TUVNX0FMTE9DX1BST0ZJTElOR19ERUJVRz15Cj4+Pj4KPj4+PiBJZiB2bWFsbG9jX3Rlc3RfaW5p
-dCBzdGFydHMgYmVmb3JlIGFsbG9jX3RhZ19pbml0LCBzaG93X21lbSgpIHdvdWxkIGNhdXNlCj4+
-Pj4gYSBOVUxMIGRlZmVyZW5jZSBiZWNhdXNlIGFsbG9jX3RhZ19jdHR5cGUgd2FzIG5vdCBpbml0
-IHlldC4KPj4+Pgo+Pj4+IEkgYWRkIHNvbWUgZGVidWcgdG8gY29uZmlybSB0aGlzIHRoZW9yeQo+
-Pj4+IGRpZmYgLS1naXQgYS9saWIvYWxsb2NfdGFnLmMgYi9saWIvYWxsb2NfdGFnLmMKPj4+PiBp
-bmRleCBkNDhiODBmM2YwMDcuLjliOGU3NTAxMDEwZiAxMDA2NDQKPj4+PiAtLS0gYS9saWIvYWxs
-b2NfdGFnLmMKPj4+PiArKysgYi9saWIvYWxsb2NfdGFnLmMKPj4+PiBAQCAtMTMzLDYgKzEzMyw4
-IEBAIHNpemVfdCBhbGxvY190YWdfdG9wX3VzZXJzKHN0cnVjdCBjb2RldGFnX2J5dGVzICp0YWdz
-LCBzaXplX3QgY291bnQsIGJvb2wgY2FuX3NsCj4+Pj4gICAgICAgICBzdHJ1Y3QgY29kZXRhZyAq
-Y3Q7Cj4+Pj4gICAgICAgICBzdHJ1Y3QgY29kZXRhZ19ieXRlcyBuOwo+Pj4+ICAgICAgICAgdW5z
-aWduZWQgaW50IGksIG5yID0gMDsKPj4+PiArICAgICAgIHByX2luZm8oIm1lbW9yeSBwcm9maWxp
-bmcgYWxsb2MgdG9wICVkOiAlbGx4XG4iLCBtZW1fcHJvZmlsaW5nX3N1cHBvcnQsIChsb25nIGxv
-bmcpYWxsb2NfdGFnX2N0dHlwZSk7Cj4+Pj4gKyAgICAgICByZXR1cm4gMDsKPj4+Pgo+Pj4+ICAg
-ICAgICAgaWYgKGNhbl9zbGVlcCkKPj4+PiAgICAgICAgICAgICAgICAgY29kZXRhZ19sb2NrX21v
-ZHVsZV9saXN0KGFsbG9jX3RhZ19jdHR5cGUsIHRydWUpOwo+Pj4+IEBAIC04MzEsNiArODMzLDcg
-QEAgc3RhdGljIGludCBfX2luaXQgYWxsb2NfdGFnX2luaXQodm9pZCkKPj4+PiAgICAgICAgICAg
-ICAgICAgc2h1dGRvd25fbWVtX3Byb2ZpbGluZyh0cnVlKTsKPj4+PiAgICAgICAgICAgICAgICAg
-cmV0dXJuIFBUUl9FUlIoYWxsb2NfdGFnX2N0dHlwZSk7Cj4+Pj4gICAgICAgICB9Cj4+Pj4gKyAg
-ICAgICBwcl9pbmZvKCJtZW1vcnkgcHJvZmlsaW5nIHJlYWR5ICVkOiAlbGx4XG4iLCBtZW1fcHJv
-ZmlsaW5nX3N1cHBvcnQsIChsb25nIGxvbmcpYWxsb2NfdGFnX2N0dHlwZSk7Cj4+Pj4KPj4+PiAg
-ICAgICAgIHJldHVybiAwOwo+Pj4+ICB9Cj4+Pj4KPj4+PiBXaGVuIGJvb3R1cCB0aGUga2VybmVs
-LCB0aGUgbG9nIHNob3dzOgo+Pj4+Cj4+Pj4gJCBzdWRvIGRtZXNnIC1UIHwgZ3JlcCBwcm9maWxp
-bmcKPj4+PiBbRnJpIEp1biAyMCAxNzoyOTozNSAyMDI1XSBtZW1vcnkgcHJvZmlsaW5nIGFsbG9j
-IHRvcCAxOiAwICA8LS0tIGFsbG9jX3RhZ19jdHR5cGUgPT0gTlVMTAo+Pj4+IFtGcmkgSnVuIDIw
-IDE3OjMwOjI0IDIwMjVdIG1lbW9yeSBwcm9maWxpbmcgcmVhZHkgMTogZmZmZjliMTY0MWFhMDZj
-MAo+Pj4+Cj4+Pj4KPj4+PiB2bWFsbG9jX3Rlc3RfaW5pdCBzaG91bGQgaGFwcGVuZWQgYWZ0ZXIg
-YWxsb2NfdGFnX2luaXQgaWYgQ09ORklHX1RFU1RfVk1BTExPQz15LAo+Pj4+IG9yIG1lbV9zaG93
-KCkgc2hvdWxkIGNoZWNrIHdoZXRoZXIgYWxsb2NfdGFnIGlzIGRvbmUgaW5pdGlhbGl6ZWQgd2hl
-biBjYWxsaW5nCj4+Pj4gYWxsb2NfdGFnX3RvcF91c2Vycwo+Pj4KPj4+VGhhbmtzIGZvciByZXBv
-cnRpbmchCj4+PlNvLCBJSVVDIGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2FsbC8yMDI1MDYyMDE5
-NTMwNS4xMTE1MTUxLTEtaGFycnkueW9vQG9yYWNsZS5jb20vCj4+PndpbGwgYWRkcmVzcyB0aGlz
-IGlzc3VlIGFzIHdlbGwuIElzIHRoYXQgY29ycmVjdD8KPj4KPj5ZZXMsIHRoZSBwYW5pYyBjYW4g
-YmUgZml4IGJ5IHRoYXQgcGF0Y2guCj4+Cj4+SSBzdGlsbCBmZWVsIGl0IGJldHRlciB0byBkZWxh
-eSB2bWFsbG9jX3Rlc3RfaW5pdCwgbWFrZSBpdCBoYXBwZW4gYWZ0ZXIgYWxsb2NfdGFnX2luaXQu
-Cj4+T3IsIG1heWJlIHdlIGNhbiBwcm9tb3RlIGFsbG9jX3RhZ19pbml0IHRvIHNvbWUgZWFybHkg
-aW5pdD8gSSByZW1lbWJlciByZXBvcnRpbmcgc29tZSBhbGxvY2F0aW9uCj4+bm90IHJlZ2lzdGVy
-ZWQgYnkgbWVtb3J5IHByb2ZpbGluZyBkdXJpbmcgYm9vdCwgIAo+Pmh0dHBzOi8vbG9yZS5rZXJu
-ZWwub3JnL2FsbC8yMTNmZjdkMi43YzZjLjE5NDVlYjBjMmZmLkNvcmVtYWlsLjAwMTA3MDgyQDE2
-My5jb20vCj4+Cj4+SSB3aWxsIG1ha2Ugc29tZSB0ZXN0cywgYW5kIHVwZGF0ZSBsYXRlcgo+Cj5U
-aGUgbWVtb3J5IGFsbG9jYXRpb25zIGluIHNjaGVkX2luaXRfZG9tYWlucyBoYXBwZW5lZCBxdWl0
-ZSBlYXJseSwgbWF5YmUgaXQgaXMgY29yZV9pbml0Y2FsbCwgd2hpbGUKPiBhbGxvY190YWdfaW5p
-dCBuZWVkcyByb290ZnMsIGl0IG5lZWRzIHRvIGJlIGFmdGVyIHJvb3Rmc19pbml0Y2FsbCwgc28g
-bm8gcmVhc29uYWJsZSBwbGFjZSB0byBwcm9tb3RlLi4uLi4uLgo+QnV0IEkgdGhpbmsgdGhpcyBl
-eHBsYWluIHdoeSBzb21lIGFsbG9jYXRpb24gY291bnRlciBtaXNzZWQgZHVyaW5nIGJvb3Q6IHRo
-ZSBhbGxvY2F0aW9uIGhhcHBlbmVkIGJlZm9yZSBhbGxvY190YWdfaW5pdAoKLi4uLi4gU29ycnks
-IEkgdGhpbmsgSSB3YXMgd3JvbmcuLi4uLiBUaGUgY291bnRlcnMgZG9lcyBub3QgbmVlZCBhbGxv
-Y190YWdfaW5pdC4uLgoKc29ycnkgZm9yIGJvdGhlcmluZywgcGxlYXNlIGlnbm9yZSBteSBtdW1i
-byBqdW1iby4KCkRhdmlkCgo+Cj4KPlRoYW5rcwo+RGF2aWQKPgo+Pgo+Pgo+PkRhdmlkCj4+Cj4+
-Cj4+Pgo+Pj4+Cj4+Pj4KPj4+Pgo+Pj4+IERhdmlkCj4+Pj4K
+On Sun, Jun 22, 2025 at 03:54:51PM -0700, Suren Baghdasaryan wrote:
+> On Fri, Jun 20, 2025 at 1:47 AM Uladzislau Rezki <urezki@gmail.com> wrote:
+> >
+> > On Fri, Jun 20, 2025 at 12:04:50AM +0900, Harry Yoo wrote:
+> > > On Thu, Jun 19, 2025 at 11:10:43PM +0900, Harry Yoo wrote:
+> > > > On Wed, Jun 18, 2025 at 02:25:37PM +0800, kernel test robot wrote:
+> > > > >
+> > > > > Hello,
+> > > > >
+> > > > > for this change, we reported
+> > > > > "[linux-next:master] [lib/test_vmalloc.c]  7fc85b92db: Mem-Info"
+> > > > > in
+> > > > > https://lore.kernel.org/all/202505071555.e757f1e0-lkp@intel.com/
+> > > > >
+> > > > > at that time, we made some tests with x86_64 config which runs well.
+> > > > >
+> > > > > now we noticed the commit is in mainline now.
+> > > >
+> > > > (Re-sending due to not Ccing people and the list...)
+> > > >
+> > > > Hi, I'm facing the same error on my testing environment.
+> > >
+> > > I should have clarified that the reason the kernel failed to allocate
+> > > memory on my machine was due to running out of memory, not because of the
+> > > vmalloc test module.
+> > >
+> > > But based on the fact that the test case (align_shift_alloc_test) is
+> > > expected to fail, the issue here is not memory allocation failure
+> > > itself, but rather that the kernel crashes when the allocation fails.
+> > >
+> > It looks someone tries to test the CONFIG_TEST_VMALLOC=y as built-in
+> > approach test-cases. Yes, it will trigger a lot of warnings as some
+> > use cases are supposed to be failed. This will trigger a lot of kernel
+> > warnings which can be considered by test-robot or people as problem.
+> >
+> > In this case i can exclude those use cases or even not run at all unless
+> > boot-parameters properly sets if built-in.
+> 
+> Sorry, I'm catching up on my email backlog. IIUC
+> https://lore.kernel.org/all/20250620195305.1115151-1-harry.yoo@oracle.com/
+> addresses this issue. Is my understanding correct?
+> 
+I checked/tested the .config from the test-robot in order to reproduce
+the kernel crash. Unfortunately i can not trigger this. But, people from
+the another thread already confirmed that it solves the crash.
+
+--
+Uladzislau Rezki
