@@ -1,319 +1,184 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 792952153C1
-	for <oe-lkp@lists.linux.dev>; Tue, 24 Jun 2025 11:00:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.177.32
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750762834; cv=fail; b=jPtHFMYR2/kG0QJTLL+2ib9jM7WDtackT+IK+EXbAAnOXD3HV5ST0z6IKcxTGYR8dk5Pn3t1qG7UmsWZV/5Gl3OGwRN0EFHNtrKMpz8YSI+npnq4alxjb2qC4VyoNA/PFMNcA3+HTgRzyYAYwH/azhuKYaDCmuIkZiQwxrjZlt4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750762834; c=relaxed/simple;
-	bh=ysEOYoa1yjA8WV6M/Ntv195noAhZFZjPBk9qR2GCkTk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=g2o90RAa7CE4JMyCq+nJcAoer0mjDPVqpWTBSrpUim/1sxquEQWcSU5faD1I6hrFnrD+vQrN4Xoi3dUAUHHwGQlGPaE7CdSznvWsD8q9sU54Sicl+pEfVlZ0G8iLHAlDsqKEJx9Q9rlIwaKK8ct5V9oKU5XOHsg1SDIZL+ItqzU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=Z8ISugQf; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=pSRUaaZo; arc=fail smtp.client-ip=205.220.177.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.4])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8392D248F6F
+	for <oe-lkp@lists.linux.dev>; Tue, 24 Jun 2025 11:28:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.4
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1750764530; cv=none; b=WkO2DqIwhAkEmJGsoq+d2SIg+26F4WUSrbCetbLBJkuKLfi0j+vZPmbO2Fn3bfdIFMQYI4/QC5d0/JtkvsugDo3yEV0lctuM8CIoeFTBNZB9t8PpkkRvBQdPTzWBxv87kjXgCxZ3R7n+vGH0Kkjf/mOe9YDUSJd0Gsjb2v3oqUk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1750764530; c=relaxed/simple;
+	bh=6D3kjNofb+f7w+IQHGPQnVbvLFgy9DbmvR2zxBthjkU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
+	 MIME-Version:Message-ID; b=sb5zbN8BynUQbzMaJwhtTkw+xPWbx+70Pzp6fpey8xfp4g+qKq4WK3LWvtSVjtfpjOkd5sgmM8zBmlCo45BqAqkXGGTZcL6v27KnCy7RJt2u3UGGJ3OPoXCQzwxtoF+E1R0Qkh8RvVG7jrjlhd0VAkpTKSpc9xxEsyn0kn18ySc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=fail (1024-bit key) header.d=163.com header.i=@163.com header.b=eXjORiGw reason="signature verification failed"; arc=none smtp.client-ip=117.135.210.4
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="Z8ISugQf";
-	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="pSRUaaZo"
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 55O8iclO008253;
-	Tue, 24 Jun 2025 11:00:00 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
-	:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=corp-2025-04-25; bh=fFS19/lASDH8DwdOJ7
-	gj925bdvd1AjtimebgqpKDHnk=; b=Z8ISugQfhn/SupTfRjdxbxWQV84vAGS3t7
-	lCJ9Hr2Uq1hLsI68RNTUqthsONhvP/PW1nnlYr60nTJpKfaWsOVZoLFG9pHdVTYx
-	2LpYp5X+9tP6TBJp+JkMv8e459T16kNyEcbBnThT83ux1ImtEEq6KxWkL1ta5Itg
-	2EoLOX1jLZw3r44bb1s/WF6wgPXItA77f7rca3xOkcR1pK2yBezv79WX9wYgly4u
-	R4WxHlZjGrW5KRLZMDQXgBS+a/CVAQRPZrxb3CixstdebDDlDqGlJzIpft40CTxQ
-	ItLVwMaZKEy8r7AJEaZmgwpv0VC0Gh6YO5m8h/TiR9WXVmaa43wg==
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 47egt1bqf5-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 24 Jun 2025 11:00:00 +0000 (GMT)
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 55OAP3cF025119;
-	Tue, 24 Jun 2025 10:59:59 GMT
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10on2067.outbound.protection.outlook.com [40.107.92.67])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 47ehvw0985-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 24 Jun 2025 10:59:59 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=nYKi6vLV9TbqpXpv+Q0CWWv/RVDXWyDBNxXHl7OWJtlr+w3JQM7IPmj5WlMOTHvTRfZHOAft/s3MckQzn4sPiu1+s6EcB+cA3ZpEnviY55VZntL39TkpKWJHDvKK+d16cbtgPs5nklDwxgzYl1MGUczNBEgHaMHxK4jHrOZP6p4T/NKP6SSu2hW9f/XroJjhB9YSO5270Qy2Sf/uOUYY/YS/u9fFkSZ3HW11ZbxZkEKglN5kl9041z8SPy/JYMWf6sjBMhzdx1WLLjPZ9/ElvPbV9RCPlQ0wAQc2t3FobqIaZmJG8pfHZjjMfPaZHbsCwEM7g3vwLlN1DJwe20u/3w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fFS19/lASDH8DwdOJ7gj925bdvd1AjtimebgqpKDHnk=;
- b=PcKhrvYA84BQE8/nVM6sO/28DPUs1T4EtRgmWJDXctQtyWtUrOf6bpr1bjRrQj5O3SjccRZMRNQPXVVeTOPjGWJzJwiVftj0isA1R4nIpqzDz0qe5rocytwNPByZGwqxuPq3MS64S0UlsYv4gf/KS/aRJUeIaWj7B9yenCzdfi9pKqWhZppi8uiEKeO1XdtVdNBIslGLbSUXKvexw+cKq0qdgGpBX9lITgXo0KboZPwCTzSydYDSw3FNewOxMK18QbHvdCuEMMtrcHdMYxViHAgjVrtaQFTO2eahQMKImn4h9zQlP/E50RQCm86tgkKoTRPg2nXrmGBXtDJ7jH1Z9w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fFS19/lASDH8DwdOJ7gj925bdvd1AjtimebgqpKDHnk=;
- b=pSRUaaZoQLPS2n1TgatN0dCeu2bP8ehYmnal8iliJQWbPhbO5u4rQOdWDeWZ92pCWgw3cY+H4auWlzTtGv74Q3O+wtxV4ozhnNUggwEP2PhobHBD9v+fVJXrJ5EezdSIC4ZoYAEwBAb8Ztd1CwsnPwDPJhdHEuqyyqx8CYp1fSk=
-Received: from CH3PR10MB7329.namprd10.prod.outlook.com (2603:10b6:610:12c::16)
- by SA1PR10MB5688.namprd10.prod.outlook.com (2603:10b6:806:23e::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8857.28; Tue, 24 Jun
- 2025 10:59:57 +0000
-Received: from CH3PR10MB7329.namprd10.prod.outlook.com
- ([fe80::c2a4:fdda:f0c2:6f71]) by CH3PR10MB7329.namprd10.prod.outlook.com
- ([fe80::c2a4:fdda:f0c2:6f71%6]) with mapi id 15.20.8857.025; Tue, 24 Jun 2025
- 10:59:57 +0000
-Date: Tue, 24 Jun 2025 19:59:52 +0900
-From: Harry Yoo <harry.yoo@oracle.com>
-To: David Wang <00107082@163.com>
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=163.com header.i=@163.com header.b="eXjORiGw"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=Date:From:To:Subject:Content-Type:MIME-Version:
+	Message-ID; bh=agaPycld8r7LXK25BoaE7ykOlUaZsD04YAWHhmtH3tw=; b=e
+	XjORiGwN+xWQK0DnTLe/wQ9r2D1pmpKv+kmDp7gNeJkKvMHDYsf9PKhWgceH7JBC
+	Yqkt/wsaprfpwREmeIdRaD6h3pk9aQqzHyiw9hCK1hE/+dbfhZkGH3y5kDMkiksl
+	mET04NF+0VetFjei0LBEM/Oqgqv/p0ShP3hllT7olc=
+Received: from 00107082$163.com ( [111.35.191.166] ) by
+ ajax-webmail-wmsvr-40-130 (Coremail) ; Tue, 24 Jun 2025 19:28:18 +0800
+ (CST)
+Date: Tue, 24 Jun 2025 19:28:18 +0800 (CST)
+From: "David Wang" <00107082@163.com>
+To: "Harry Yoo" <harry.yoo@oracle.com>
 Cc: akpm@linux-foundation.org, surenb@google.com, kent.overstreet@linux.dev,
-        oliver.sang@intel.com, cachen@purestorage.com, linux-mm@kvack.org,
-        oe-lkp@lists.linux.dev, stable@vger.kernel.org
+	oliver.sang@intel.com, cachen@purestorage.com, linux-mm@kvack.org,
+	oe-lkp@lists.linux.dev, stable@vger.kernel.org
 Subject: Re: [PATCH v3] lib/alloc_tag: do not acquire non-existent lock in
  alloc_tag_top_users()y
-Message-ID: <aFqFKLpkfbduVoAy@hyeyoo>
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20240801(9da12a7b)
+ Copyright (c) 2002-2025 www.mailtech.cn 163com
+In-Reply-To: <aFqFKLpkfbduVoAy@hyeyoo>
 References: <20250624072513.84219-1-harry.yoo@oracle.com>
  <4f12c217.7a79.197a1070f55.Coremail.00107082@163.com>
  <aFprYu5H_ztouxw2@hyeyoo>
  <23eb5af1.9692.197a145e5c2.Coremail.00107082@163.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <23eb5af1.9692.197a145e5c2.Coremail.00107082@163.com>
-X-ClientProxiedBy: SE2P216CA0131.KORP216.PROD.OUTLOOK.COM
- (2603:1096:101:2c7::9) To CH3PR10MB7329.namprd10.prod.outlook.com
- (2603:10b6:610:12c::16)
+ <aFqFKLpkfbduVoAy@hyeyoo>
+X-NTES-SC: AL_Qu2eAvudu0wi7iKcYOkZnEYQheY4XMKyuPkg1YJXOp80mCXT3g8YZ25cIlzV9PmlDSSmoQmRfDFE8ed/V5lTW6KisgWgY6mVm7liByrpKYJN
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR10MB7329:EE_|SA1PR10MB5688:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5765fb3c-8cf8-4f75-c206-08ddb30e41f3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014|13003099007;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?Ir/5LwBykWaHK1I2D/a50UYzn88JQOZ2KQiMgyqNa6zTJihTs2Gb5eZpjAHQ?=
- =?us-ascii?Q?eY6bOLwZPR13efh6ownZwyZ/0hAAZiaKtqpdQr7DP3bX2Z+AJoGG3iUjKx5H?=
- =?us-ascii?Q?lt+1lCexKYbsiIbqiVDVGrf2ZwJPHwGNVYB6L2qN1KzSSaGUjO633ioejVRW?=
- =?us-ascii?Q?7cmAzclwmAkWRrfgQjajdU6wnFPE5Kk9QpDW/JaglvhAEWJscDP+mA4AvSsv?=
- =?us-ascii?Q?BFH4psnLCWV1o2tqo/qOVaFKtVw88mYXRrBWXzP8lUZJCj8DMH1PbyyhJdUW?=
- =?us-ascii?Q?vsHvGc3OuvIH/irbQwAqykPOZKcnHQnmMY5vaTpoGy/u5SEEOEODq7R1LjKZ?=
- =?us-ascii?Q?Xq7pAD9jrXW/xY0WHR4x7v/BY70gdU5MtLQVj5aLZ6FypmuaHmurTeFZWKNr?=
- =?us-ascii?Q?I1fPMdo7MIc39s1NTr4YmlgDZudBo7QSFUCJK74oMXMDqogHdS7bu+dJ9sHn?=
- =?us-ascii?Q?ByPGDXjOs2srMmPvfwyvcExJfqpZ9Kpz/kLG9SDthzPXS7Gz4Ug2VCixUIBf?=
- =?us-ascii?Q?6xW3wwUEgfGzE9htqjrgvRGMgcHUT2P7r9Ogy1kqfxoRKtu+btpu5XKkqbve?=
- =?us-ascii?Q?yqPYuiIbCN9uzkmP1Ps9bK/dd0AQpYvqSetOlS+IyNEp/ST/VN29ljFPdsdR?=
- =?us-ascii?Q?H1UKCG7ReGKtHpQV/YYgBYiGmC1qcIUWNi3v2OjfedDzGg+vvIQ8sFFGrfY6?=
- =?us-ascii?Q?Ggr+TWNrCtfJ/3qwYdFJf3jhuDgBl5I0eLUrl5sh4+b5SvTm50Hx21/UQePn?=
- =?us-ascii?Q?Y+MZuRu0Pcgg5+OB2PWqjMTcb33/trUafn26R0Niq+ZdXpSgeM4ot+VS0euF?=
- =?us-ascii?Q?jwLXw3xOR4rADz5gmuLihxAlbKHgiEH4UKRLmAogbt4yKAQ/p0T/LL9kLBfX?=
- =?us-ascii?Q?Z+PHDrRR24hYV+mRhhEn7wi4QkpnnP74ueBsrq5lw0hOSPCx+Qrm8mJ9bLNx?=
- =?us-ascii?Q?K9XvbAp2De/AugoDmzsycwm2P2BiwhgPcb96aKJiVfIwpwQyCesPuene0Jty?=
- =?us-ascii?Q?DzOvoEnFw/+dpKaYBhypFGZvw2I+JzB1Bi3E2x+bgpjQwERbaQLZr6HifPZS?=
- =?us-ascii?Q?l5jcXY+WqsiNFbjq3DYpVR6vrMXkbATHo4kDueWHXlWjSQyNofNgztbI5eZT?=
- =?us-ascii?Q?OiVTGmw1TJGSGvINpQr5Ty/OCjG4C3Byr0JvBHxgVxAGpto3K+Ij5Pp+yLpC?=
- =?us-ascii?Q?57nHx7DARxAUm5SlyoEvjABNWg/NFqIsI6hUZb96LgSMh9Cre5jeMHfQ9JBW?=
- =?us-ascii?Q?nXm2QFYDxZcw4+XkTOyLh5mTwgGSTNIWPEWEJDCNljKyOpaJ6ZNmcKoBhcgO?=
- =?us-ascii?Q?AOf+08U8fML74xS8BvwRO5KqnlKulswqAVnLJeTcn0oL2tnCJolPibhkt8ma?=
- =?us-ascii?Q?6cPgj/aTO1pDuQKiJ80OeRZEzOBnjnAjaCDeEgIeQXn6tGQdsq6sEKPxXM8Q?=
- =?us-ascii?Q?mto8v3N/FEc=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR10MB7329.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(13003099007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?b/UqP8+XDDxJ7F/Y99mpv9zl3ptGkKuh8N+t2o9HOxZ3NreEL2hjhw6ikwAV?=
- =?us-ascii?Q?FH9JesbmelIXr2IgDDoe4w1P4oGRT6kNVrYwFrjIQaZUxaKAM2H8sQNZiQT1?=
- =?us-ascii?Q?h3WKIHSqDsGspguHKCPOSG1P6/QBChCI9PkuyrQpDWUOI3ysF59VFcaPXDAb?=
- =?us-ascii?Q?nVrq1NRyRdWT5DtZ8tqabuLzzkWcRt9mBEPQdlxJoAs26s2AkuclwmBzQMdm?=
- =?us-ascii?Q?STbXmSZShZm3//Si86EM5G6s+Er0J9XmVuG8yViNhFMEidq8cS1N30JSDcl7?=
- =?us-ascii?Q?CQ+5hPL/Ar6HptKNtUSBGty7qbu8eNw0lhoKwfLI518HqAcXkOJNvwguYfcb?=
- =?us-ascii?Q?zPd0PzZGPxIdW9jPL+15ugcUmuzaNNjytWSyBPmUpUBERp7950QwZvxCGrg1?=
- =?us-ascii?Q?VrvDjK4CQcz/onAcSyXbOfxoaJNnGKJyMolO6YWte1efroeS37T9NazCQYBF?=
- =?us-ascii?Q?MgMGmzq5IMI8F1LcaKcOCJgKTyNmCU/2a9/dznKLaDEGJxoh9cLz+NNYlaPK?=
- =?us-ascii?Q?v11+t790yjzg+156RTLiq/KlZcfnyQvGyPTF7z68gSK4+TEsEpg0mJekduaP?=
- =?us-ascii?Q?h8seY0S+gVAImnXRJHnUmRxwTZrpsxWVJ+GJyW4eAfedxanaGr/jnthH9aok?=
- =?us-ascii?Q?GeDo5BOGECWQTEehqjzB1kboA5dzPBIJGcph2bDxdXyYgOxoB+KBIoAk/RM3?=
- =?us-ascii?Q?CYAsmMLwBaXUT/Ta1VasX50t+/1qcg1GwIuLjNvcsSjRBssAeXBC1xmT8AEY?=
- =?us-ascii?Q?H1XZMRWxb56BKYhxHMECCzgGJRgXqWNKu2R/YCZgtAra4EWie/EiDhMNtc/T?=
- =?us-ascii?Q?2TBGeBAUhehVS6JcWgtyXNn6hDshYEswzf+uj1ftq5AJS5OyqaR2OQEFJkNG?=
- =?us-ascii?Q?tI8Ar5sdr+lR3mYfBUk+9a3MlqMyZXjuDo83zmP3gzeQaNN3HnuE3SfFGXFG?=
- =?us-ascii?Q?BRySZWeHA9OuBtWTozR0G2sKEeLGmWHKw0zM4RMzN4mRR7LP0oDYe6WIvWJh?=
- =?us-ascii?Q?qXFv3hwrBnCSM+jxh633f4ya1CXIKrV67XBQ0F89sAKuKap1DxGJC5jMMUKf?=
- =?us-ascii?Q?0Z5nmjIpvoVvZUyBeg/FK3NCB6yq1bGXboYT4p1xCsotVkEFE+qORtQcnkpI?=
- =?us-ascii?Q?0WGA+BnBFm6OA0v2eYwHue+z6xX/62J8yBZD2GJJOuSe4CS6IW0EYX3eZzjq?=
- =?us-ascii?Q?gm8cmSSUlFi6nlW9NKqDlbJCO4Cg0IQxndc4R1ODunbrUwrm4Z0LwgOl73GM?=
- =?us-ascii?Q?HgHOnhFTvnmwhBzYvdwhpQU8zCCyLeg6AnznHlSwyydH8QXz+qYQe44dzNHZ?=
- =?us-ascii?Q?xbBXmeSm8P86TcX9aiCG9xN2LcwFMxmw3W5JGynFLLSMEAM/L37O5eQAi6do?=
- =?us-ascii?Q?GNikRQ466GMzqfRWSSz6boE77r7+TKtUxAWx4ZoJLiJqSaywyvXdaTH4p+Q9?=
- =?us-ascii?Q?OPlTmetq0m2/VHPrnoe9S0wlQxWHycHP0J37rdQrUQL+9s9qR8FZ3A0ymTiF?=
- =?us-ascii?Q?+RuqTLMwv0/4HhBAbLekkeX9gHju5jWMM8V6ZLKxX4p7uy3lS6xAyw0QOUYV?=
- =?us-ascii?Q?RybXXcHuSb8rdBHx1ZbPb/+ORwJG4Wq+Q4cNia+a?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
-	SI4yO445asGdA2Ez+ohpwaPxqwKZf6kJ51TLaWIpoxkJUF7GT7zxtexKnt+w/A5y9bRXN0VN57vz/6/gYdaiLQbC0TMrtrcDWmYr7ZZaXLHr5vc6r9XPJxtlTLgD04qmaDd2wrltDq0glDB4pvNTfi0ceWhCSw8wCtpCUF7sVZDkbiEwM4uklTJfGRzNlFt1VAoiQdCJf1T1UVs6RpI4nzujDPjtp6N8UzLPEh2Pmr9eIfz/8NTW4mutrsLVnSpYq6e9TyvZhapY2mc3C//2PyQ/K/EbwYG3WqxBY3IbwqRVIQ00d3nrrwkyhx+D9wQvJ609BniNsL7XYb9TFn3KoKwUGElKWv5OoLk8hRooWzwXmeqeZIihPnrqMTNUdOSpt4H8xEuF//Y4XTJiYcI7eKnAlMitDS02NpcfAvIM3oGCvbASwDzW/jgz1WxkShhUbl75eLSZtYsRNywMS+llS8heve3mHu9xmDY3HEMp8y1Lbj9SiQU7ei9ufMZLNXltU4qX/LkWAP105bm0CjzRh66xWt2M6My/Q/Qro7lwtFGL7tyFLhfMK8TzzTvVc/PXRZgWVtPHoiTKiPRYjWiKvS+SbK2FxqU6N6wlfYUPio0=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5765fb3c-8cf8-4f75-c206-08ddb30e41f3
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR10MB7329.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2025 10:59:57.5809
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +9ti2X2i09yYiiI29N5bBq/O7i7bJnX9glXRi99EfOsHlios56IBntcyhZ6Uslj8hA8Cvd6qTfRgeTSOJf8z8A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR10MB5688
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.7,FMLib:17.12.80.40
- definitions=2025-06-24_04,2025-06-23_07,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 bulkscore=0 spamscore=0
- phishscore=0 adultscore=0 malwarescore=0 suspectscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2505160000
- definitions=main-2506240093
-X-Proofpoint-GUID: XqquAgVOVn-SX2go6uWQLRE8Fm2Oq6f5
-X-Proofpoint-ORIG-GUID: XqquAgVOVn-SX2go6uWQLRE8Fm2Oq6f5
-X-Authority-Analysis: v=2.4 cv=cpebk04i c=1 sm=1 tr=0 ts=685a8530 b=1 cx=c_pps a=e1sVV491RgrpLwSTMOnk8w==:117 a=e1sVV491RgrpLwSTMOnk8w==:17 a=6eWqkTHjU83fiwn7nKZWdM+Sl24=:19 a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19 a=wKuvFiaSGQ0qltdbU6+NXLB8nM8=:19
- a=Ol13hO9ccFRV9qXi2t6ftBPywas=:19 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10 a=6IFa9wvqVegA:10 a=GoEa3M9JfhUA:10 a=VwQbUJbxAAAA:8 a=QyXUC8HyAAAA:8 a=yPCof4ZbAAAA:8 a=kuw8PXs_DZxZli7PUSUA:9 a=CjuIK1q_8ugA:10 cc=ntf awl=host:14714
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjI0MDA5MiBTYWx0ZWRfX/193RhOHOaBG TGOJ9k5dXofTXKyiD8AQzi2CkfdT/33m61vka18MHHDvh4HBC9Y/9dnpJLLofvyJCcGopPZWK2D eWdHzdoIa8328286XX5Y66+F+jnUMbvIYq6lRyABsFGl8S1FfkFceBrlRyXR3BY4nxbRsZtGoFE
- sCieXH78TIgO6Um8CZpWV9aSzTGOfzoK3hoyvS+GHiIOf8okWn3bS+uyIne3Mzx7noOcIYykQCS dstmIQGUiVKnwFZ16l5V9IAC3fuon5tUz80kAWHf8SJo1KyKwSa+uHGMm0/atQHft7nHEQoQOrK ZsbOjGyjCWDJerHuxJDqoPrjNVdOuT5h1LWUXL/UDBx1bKDvVyki+u4cS6WXlXGqfRTgf1E7g/5
- vSaFRb4cuojiwTT3k71sNXqeHdjG1Smcp177Cqi80bi2a98NPjjK6UYxNPfuREUq7Ih/8b6x
+Message-ID: <f7aa8d6.a294.197a1b22d4e.Coremail.00107082@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:gigvCgD3P43Ti1po1tkjAA--.8884W
+X-CM-SenderInfo: qqqrilqqysqiywtou0bp/xtbBkBB2qmhagDF+fQACse
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 
-On Tue, Jun 24, 2025 at 05:30:02PM +0800, David Wang wrote:
-> 
-> At 2025-06-24 17:09:54, "Harry Yoo" <harry.yoo@oracle.com> wrote:
-> >On Tue, Jun 24, 2025 at 04:21:23PM +0800, David Wang wrote:
-> >> At 2025-06-24 15:25:13, "Harry Yoo" <harry.yoo@oracle.com> wrote:
-> >> >alloc_tag_top_users() attempts to lock alloc_tag_cttype->mod_lock
-> >> >even when the alloc_tag_cttype is not allocated because:
-> >> >
-> >> >  1) alloc tagging is disabled because mem profiling is disabled
-> >> >     (!alloc_tag_cttype)
-> >> >  2) alloc tagging is enabled, but not yet initialized (!alloc_tag_cttype)
-> >> >  3) alloc tagging is enabled, but failed initialization
-> >> >     (!alloc_tag_cttype or IS_ERR(alloc_tag_cttype))
-> >> >
-> >> >In all cases, alloc_tag_cttype is not allocated, and therefore
-> >> >alloc_tag_top_users() should not attempt to acquire the semaphore.
-> >> >
-> >> >This leads to a crash on memory allocation failure by attempting to
-> >> >acquire a non-existent semaphore:
-> >> >
-> >> >  Oops: general protection fault, probably for non-canonical address 0xdffffc000000001b: 0000 [#3] SMP KASAN NOPTI
-> >> >  KASAN: null-ptr-deref in range [0x00000000000000d8-0x00000000000000df]
-> >> >  CPU: 2 UID: 0 PID: 1 Comm: systemd Tainted: G      D             6.16.0-rc2 #1 VOLUNTARY
-> >> >  Tainted: [D]=DIE
-> >> >  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> >> >  RIP: 0010:down_read_trylock+0xaa/0x3b0
-> >> >  Code: d0 7c 08 84 d2 0f 85 a0 02 00 00 8b 0d df 31 dd 04 85 c9 75 29 48 b8 00 00 00 00 00 fc ff df 48 8d 6b 68 48 89 ea 48 c1 ea 03 <80> 3c 02 00 0f 85 88 02 00 00 48 3b 5b 68 0f 85 53 01 00 00 65 ff
-> >> >  RSP: 0000:ffff8881002ce9b8 EFLAGS: 00010016
-> >> >  RAX: dffffc0000000000 RBX: 0000000000000070 RCX: 0000000000000000
-> >> >  RDX: 000000000000001b RSI: 000000000000000a RDI: 0000000000000070
-> >> >  RBP: 00000000000000d8 R08: 0000000000000001 R09: ffffed107dde49d1
-> >> >  R10: ffff8883eef24e8b R11: ffff8881002cec20 R12: 1ffff11020059d37
-> >> >  R13: 00000000003fff7b R14: ffff8881002cec20 R15: dffffc0000000000
-> >> >  FS:  00007f963f21d940(0000) GS:ffff888458ca6000(0000) knlGS:0000000000000000
-> >> >  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> >> >  CR2: 00007f963f5edf71 CR3: 000000010672c000 CR4: 0000000000350ef0
-> >> >  Call Trace:
-> >> >   <TASK>
-> >> >   codetag_trylock_module_list+0xd/0x20
-> >> >   alloc_tag_top_users+0x369/0x4b0
-> >> >   __show_mem+0x1cd/0x6e0
-> >> >   warn_alloc+0x2b1/0x390
-> >> >   __alloc_frozen_pages_noprof+0x12b9/0x21a0
-> >> >   alloc_pages_mpol+0x135/0x3e0
-> >> >   alloc_slab_page+0x82/0xe0
-> >> >   new_slab+0x212/0x240
-> >> >   ___slab_alloc+0x82a/0xe00
-> >> >   </TASK>
-> >> >
-> >> >As David Wang points out, this issue became easier to trigger after commit
-> >> >780138b12381 ("alloc_tag: check mem_profiling_support in alloc_tag_init").
-> >> >
-> >> >Before the commit, the issue occurred only when it failed to allocate
-> >> >and initialize alloc_tag_cttype or if a memory allocation fails before
-> >> >alloc_tag_init() is called. After the commit, it can be easily triggered
-> >> >when memory profiling is compiled but disabled at boot.
-> >> >
-> >> >To properly determine whether alloc_tag_init() has been called and
-> >> >its data structures initialized, verify that alloc_tag_cttype is a valid
-> >> >pointer before acquiring the semaphore. If the variable is NULL or an error
-> >> >value, it has not been properly initialized. In such a case, just skip
-> >> >and do not attempt to acquire the semaphore.
-> >> >
-> >> >Reported-by: kernel test robot <oliver.sang@intel.com>
-> >> >Closes: https://urldefense.com/v3/__https://lore.kernel.org/oe-lkp/202506181351.bba867dd-lkp@intel.com__;!!ACWV5N9M2RV99hQ!PxJNKp4Bj6h0XIWpRXcmFeIz51jORtRRAo1j23ZnRgvTm0E0Mp5l6UrLNCkiHww6AVWOSfbDDdBwKgJ9_Q$ 
-> >> >Closes: https://urldefense.com/v3/__https://lore.kernel.org/oe-lkp/202506131711.5b41931c-lkp@intel.com__;!!ACWV5N9M2RV99hQ!PxJNKp4Bj6h0XIWpRXcmFeIz51jORtRRAo1j23ZnRgvTm0E0Mp5l6UrLNCkiHww6AVWOSfbDDdC-7OiUsg$ 
-> >> >Fixes: 780138b12381 ("alloc_tag: check mem_profiling_support in alloc_tag_init")
-> >> >Fixes: 1438d349d16b ("lib: add memory allocations report in show_mem()")
-> >> >Cc: stable@vger.kernel.org
-> >> >Signed-off-by: Harry Yoo <harry.yoo@oracle.com>
-> >> >---
-> >> >
-> >> >@Suren: I did not add another pr_warn() because every error path in
-> >> >alloc_tag_init() already has pr_err().
-> >> >
-> >> >v2 -> v3:
-> >> >- Added another Closes: tag (David)
-> >> >- Moved the condition into a standalone if block for better readability
-> >> >  (Suren)
-> >> >- Typo fix (Suren)
-> >> >
-> >> > lib/alloc_tag.c | 3 +++
-> >> > 1 file changed, 3 insertions(+)
-> >> >
-> >> >diff --git a/lib/alloc_tag.c b/lib/alloc_tag.c
-> >> >index 41ccfb035b7b..e9b33848700a 100644
-> >> >--- a/lib/alloc_tag.c
-> >> >+++ b/lib/alloc_tag.c
-> >> >@@ -127,6 +127,9 @@ size_t alloc_tag_top_users(struct codetag_bytes *tags, size_t count, bool can_sl
-> >> > 	struct codetag_bytes n;
-> >> > 	unsigned int i, nr = 0;
-> >> > 
-> >> >+	if (IS_ERR_OR_NULL(alloc_tag_cttype))
-> >> 
-> >> Should a warning  added here? indicating  codetag module not ready yet and the memory failure happened during boot:
-> >>  if (mem_profiling_support) pr_warn("...
-> >
-> >I think you're saying we need to print a warning when alloc tagging
-> >can't provide "top users".
-> 
-> I just meant printing a warning when show_mem is needed before codetag module initialized, 
-> as reported in https://urldefense.com/v3/__https://lore.kernel.org/oe-lkp/202506181351.bba867dd-lkp@intel.com/__;!!ACWV5N9M2RV99hQ!J2waTUro8owaYlpAZJ6fnrHZvcGMbY6qAO5QvvIGZzUv-ryWjCjhO-maTOolfpPvPSr6CpqOgkRalCwJow$ 
-> where mem_profiling_support is 1, but alloc_tag_cttype is still NULL.
-> This can tell we do have a memory failure during boot before codetag_init, even with memory profiling activated.
-
-Ok. You didn't mean that.
-
-But still I think it's better to handle all cases and print distinct
-warnings, rather than handling only the specific case where memory profiling
-is enabled but not yet initialized.
-
-Users will want to know why allocation information is not available,
-and there can be multiple reasons including the one you mentioned.
-
-What do you think?
-
-> >And there can be three different reasons why it can't provide them:
-> >
-> >1) alloc_tag_cttype is not ready yet or mem profiling is disabled.
-> >2) the context can't sleep and trylock failed.
-> 
-> This case is not just about warning, it is a bug if possible.
-
-Why do you think it is a bug? If trylock fails, alloc_tag_top_users()
-returns 0 and do nothing.
-
-> >3) alloc tags do not exist.
-> >
-> 
-> >-- 
-> >Cheers,
-> >Harry / Hyeonggon
-
--- 
-Cheers,
-Harry / Hyeonggon
+CkF0IDIwMjUtMDYtMjQgMTg6NTk6NTIsICJIYXJyeSBZb28iIDxoYXJyeS55b29Ab3JhY2xlLmNv
+bT4gd3JvdGU6Cj5PbiBUdWUsIEp1biAyNCwgMjAyNSBhdCAwNTozMDowMlBNICswODAwLCBEYXZp
+ZCBXYW5nIHdyb3RlOgo+PiAKPj4gQXQgMjAyNS0wNi0yNCAxNzowOTo1NCwgIkhhcnJ5IFlvbyIg
+PGhhcnJ5Lnlvb0BvcmFjbGUuY29tPiB3cm90ZToKPj4gPk9uIFR1ZSwgSnVuIDI0LCAyMDI1IGF0
+IDA0OjIxOjIzUE0gKzA4MDAsIERhdmlkIFdhbmcgd3JvdGU6Cj4+ID4+IEF0IDIwMjUtMDYtMjQg
+MTU6MjU6MTMsICJIYXJyeSBZb28iIDxoYXJyeS55b29Ab3JhY2xlLmNvbT4gd3JvdGU6Cj4+ID4+
+ID5hbGxvY190YWdfdG9wX3VzZXJzKCkgYXR0ZW1wdHMgdG8gbG9jayBhbGxvY190YWdfY3R0eXBl
+LT5tb2RfbG9jawo+PiA+PiA+ZXZlbiB3aGVuIHRoZSBhbGxvY190YWdfY3R0eXBlIGlzIG5vdCBh
+bGxvY2F0ZWQgYmVjYXVzZToKPj4gPj4gPgo+PiA+PiA+ICAxKSBhbGxvYyB0YWdnaW5nIGlzIGRp
+c2FibGVkIGJlY2F1c2UgbWVtIHByb2ZpbGluZyBpcyBkaXNhYmxlZAo+PiA+PiA+ICAgICAoIWFs
+bG9jX3RhZ19jdHR5cGUpCj4+ID4+ID4gIDIpIGFsbG9jIHRhZ2dpbmcgaXMgZW5hYmxlZCwgYnV0
+IG5vdCB5ZXQgaW5pdGlhbGl6ZWQgKCFhbGxvY190YWdfY3R0eXBlKQo+PiA+PiA+ICAzKSBhbGxv
+YyB0YWdnaW5nIGlzIGVuYWJsZWQsIGJ1dCBmYWlsZWQgaW5pdGlhbGl6YXRpb24KPj4gPj4gPiAg
+ICAgKCFhbGxvY190YWdfY3R0eXBlIG9yIElTX0VSUihhbGxvY190YWdfY3R0eXBlKSkKPj4gPj4g
+Pgo+PiA+PiA+SW4gYWxsIGNhc2VzLCBhbGxvY190YWdfY3R0eXBlIGlzIG5vdCBhbGxvY2F0ZWQs
+IGFuZCB0aGVyZWZvcmUKPj4gPj4gPmFsbG9jX3RhZ190b3BfdXNlcnMoKSBzaG91bGQgbm90IGF0
+dGVtcHQgdG8gYWNxdWlyZSB0aGUgc2VtYXBob3JlLgo+PiA+PiA+Cj4+ID4+ID5UaGlzIGxlYWRz
+IHRvIGEgY3Jhc2ggb24gbWVtb3J5IGFsbG9jYXRpb24gZmFpbHVyZSBieSBhdHRlbXB0aW5nIHRv
+Cj4+ID4+ID5hY3F1aXJlIGEgbm9uLWV4aXN0ZW50IHNlbWFwaG9yZToKPj4gPj4gPgo+PiA+PiA+
+ICBPb3BzOiBnZW5lcmFsIHByb3RlY3Rpb24gZmF1bHQsIHByb2JhYmx5IGZvciBub24tY2Fub25p
+Y2FsIGFkZHJlc3MgMHhkZmZmZmMwMDAwMDAwMDFiOiAwMDAwIFsjM10gU01QIEtBU0FOIE5PUFRJ
+Cj4+ID4+ID4gIEtBU0FOOiBudWxsLXB0ci1kZXJlZiBpbiByYW5nZSBbMHgwMDAwMDAwMDAwMDAw
+MGQ4LTB4MDAwMDAwMDAwMDAwMDBkZl0KPj4gPj4gPiAgQ1BVOiAyIFVJRDogMCBQSUQ6IDEgQ29t
+bTogc3lzdGVtZCBUYWludGVkOiBHICAgICAgRCAgICAgICAgICAgICA2LjE2LjAtcmMyICMxIFZP
+TFVOVEFSWQo+PiA+PiA+ICBUYWludGVkOiBbRF09RElFCj4+ID4+ID4gIEhhcmR3YXJlIG5hbWU6
+IFFFTVUgU3RhbmRhcmQgUEMgKGk0NDBGWCArIFBJSVgsIDE5OTYpLCBCSU9TIDEuMTYuMi1kZWJp
+YW4tMS4xNi4yLTEgMDQvMDEvMjAxNAo+PiA+PiA+ICBSSVA6IDAwMTA6ZG93bl9yZWFkX3RyeWxv
+Y2srMHhhYS8weDNiMAo+PiA+PiA+ICBDb2RlOiBkMCA3YyAwOCA4NCBkMiAwZiA4NSBhMCAwMiAw
+MCAwMCA4YiAwZCBkZiAzMSBkZCAwNCA4NSBjOSA3NSAyOSA0OCBiOCAwMCAwMCAwMCAwMCAwMCBm
+YyBmZiBkZiA0OCA4ZCA2YiA2OCA0OCA4OSBlYSA0OCBjMSBlYSAwMyA8ODA+IDNjIDAyIDAwIDBm
+IDg1IDg4IDAyIDAwIDAwIDQ4IDNiIDViIDY4IDBmIDg1IDUzIDAxIDAwIDAwIDY1IGZmCj4+ID4+
+ID4gIFJTUDogMDAwMDpmZmZmODg4MTAwMmNlOWI4IEVGTEFHUzogMDAwMTAwMTYKPj4gPj4gPiAg
+UkFYOiBkZmZmZmMwMDAwMDAwMDAwIFJCWDogMDAwMDAwMDAwMDAwMDA3MCBSQ1g6IDAwMDAwMDAw
+MDAwMDAwMDAKPj4gPj4gPiAgUkRYOiAwMDAwMDAwMDAwMDAwMDFiIFJTSTogMDAwMDAwMDAwMDAw
+MDAwYSBSREk6IDAwMDAwMDAwMDAwMDAwNzAKPj4gPj4gPiAgUkJQOiAwMDAwMDAwMDAwMDAwMGQ4
+IFIwODogMDAwMDAwMDAwMDAwMDAwMSBSMDk6IGZmZmZlZDEwN2RkZTQ5ZDEKPj4gPj4gPiAgUjEw
+OiBmZmZmODg4M2VlZjI0ZThiIFIxMTogZmZmZjg4ODEwMDJjZWMyMCBSMTI6IDFmZmZmMTEwMjAw
+NTlkMzcKPj4gPj4gPiAgUjEzOiAwMDAwMDAwMDAwM2ZmZjdiIFIxNDogZmZmZjg4ODEwMDJjZWMy
+MCBSMTU6IGRmZmZmYzAwMDAwMDAwMDAKPj4gPj4gPiAgRlM6ICAwMDAwN2Y5NjNmMjFkOTQwKDAw
+MDApIEdTOmZmZmY4ODg0NThjYTYwMDAoMDAwMCkga25sR1M6MDAwMDAwMDAwMDAwMDAwMAo+PiA+
+PiA+ICBDUzogIDAwMTAgRFM6IDAwMDAgRVM6IDAwMDAgQ1IwOiAwMDAwMDAwMDgwMDUwMDMzCj4+
+ID4+ID4gIENSMjogMDAwMDdmOTYzZjVlZGY3MSBDUjM6IDAwMDAwMDAxMDY3MmMwMDAgQ1I0OiAw
+MDAwMDAwMDAwMzUwZWYwCj4+ID4+ID4gIENhbGwgVHJhY2U6Cj4+ID4+ID4gICA8VEFTSz4KPj4g
+Pj4gPiAgIGNvZGV0YWdfdHJ5bG9ja19tb2R1bGVfbGlzdCsweGQvMHgyMAo+PiA+PiA+ICAgYWxs
+b2NfdGFnX3RvcF91c2VycysweDM2OS8weDRiMAo+PiA+PiA+ICAgX19zaG93X21lbSsweDFjZC8w
+eDZlMAo+PiA+PiA+ICAgd2Fybl9hbGxvYysweDJiMS8weDM5MAo+PiA+PiA+ICAgX19hbGxvY19m
+cm96ZW5fcGFnZXNfbm9wcm9mKzB4MTJiOS8weDIxYTAKPj4gPj4gPiAgIGFsbG9jX3BhZ2VzX21w
+b2wrMHgxMzUvMHgzZTAKPj4gPj4gPiAgIGFsbG9jX3NsYWJfcGFnZSsweDgyLzB4ZTAKPj4gPj4g
+PiAgIG5ld19zbGFiKzB4MjEyLzB4MjQwCj4+ID4+ID4gICBfX19zbGFiX2FsbG9jKzB4ODJhLzB4
+ZTAwCj4+ID4+ID4gICA8L1RBU0s+Cj4+ID4+ID4KPj4gPj4gPkFzIERhdmlkIFdhbmcgcG9pbnRz
+IG91dCwgdGhpcyBpc3N1ZSBiZWNhbWUgZWFzaWVyIHRvIHRyaWdnZXIgYWZ0ZXIgY29tbWl0Cj4+
+ID4+ID43ODAxMzhiMTIzODEgKCJhbGxvY190YWc6IGNoZWNrIG1lbV9wcm9maWxpbmdfc3VwcG9y
+dCBpbiBhbGxvY190YWdfaW5pdCIpLgo+PiA+PiA+Cj4+ID4+ID5CZWZvcmUgdGhlIGNvbW1pdCwg
+dGhlIGlzc3VlIG9jY3VycmVkIG9ubHkgd2hlbiBpdCBmYWlsZWQgdG8gYWxsb2NhdGUKPj4gPj4g
+PmFuZCBpbml0aWFsaXplIGFsbG9jX3RhZ19jdHR5cGUgb3IgaWYgYSBtZW1vcnkgYWxsb2NhdGlv
+biBmYWlscyBiZWZvcmUKPj4gPj4gPmFsbG9jX3RhZ19pbml0KCkgaXMgY2FsbGVkLiBBZnRlciB0
+aGUgY29tbWl0LCBpdCBjYW4gYmUgZWFzaWx5IHRyaWdnZXJlZAo+PiA+PiA+d2hlbiBtZW1vcnkg
+cHJvZmlsaW5nIGlzIGNvbXBpbGVkIGJ1dCBkaXNhYmxlZCBhdCBib290Lgo+PiA+PiA+Cj4+ID4+
+ID5UbyBwcm9wZXJseSBkZXRlcm1pbmUgd2hldGhlciBhbGxvY190YWdfaW5pdCgpIGhhcyBiZWVu
+IGNhbGxlZCBhbmQKPj4gPj4gPml0cyBkYXRhIHN0cnVjdHVyZXMgaW5pdGlhbGl6ZWQsIHZlcmlm
+eSB0aGF0IGFsbG9jX3RhZ19jdHR5cGUgaXMgYSB2YWxpZAo+PiA+PiA+cG9pbnRlciBiZWZvcmUg
+YWNxdWlyaW5nIHRoZSBzZW1hcGhvcmUuIElmIHRoZSB2YXJpYWJsZSBpcyBOVUxMIG9yIGFuIGVy
+cm9yCj4+ID4+ID52YWx1ZSwgaXQgaGFzIG5vdCBiZWVuIHByb3Blcmx5IGluaXRpYWxpemVkLiBJ
+biBzdWNoIGEgY2FzZSwganVzdCBza2lwCj4+ID4+ID5hbmQgZG8gbm90IGF0dGVtcHQgdG8gYWNx
+dWlyZSB0aGUgc2VtYXBob3JlLgo+PiA+PiA+Cj4+ID4+ID5SZXBvcnRlZC1ieToga2VybmVsIHRl
+c3Qgcm9ib3QgPG9saXZlci5zYW5nQGludGVsLmNvbT4KPj4gPj4gPkNsb3NlczogaHR0cHM6Ly91
+cmxkZWZlbnNlLmNvbS92My9fX2h0dHBzOi8vbG9yZS5rZXJuZWwub3JnL29lLWxrcC8yMDI1MDYx
+ODEzNTEuYmJhODY3ZGQtbGtwQGludGVsLmNvbV9fOyEhQUNXVjVOOU0yUlY5OWhRIVB4Sk5LcDRC
+ajZoMFhJV3BSWGNtRmVJejUxak9SdFJSQW8xajIzWm5SZ3ZUbTBFME1wNWw2VXJMTkNraUh3dzZB
+VldPU2ZiRERkQndLZ0o5X1EkIAo+PiA+PiA+Q2xvc2VzOiBodHRwczovL3VybGRlZmVuc2UuY29t
+L3YzL19faHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvb2UtbGtwLzIwMjUwNjEzMTcxMS41YjQxOTMx
+Yy1sa3BAaW50ZWwuY29tX187ISFBQ1dWNU45TTJSVjk5aFEhUHhKTktwNEJqNmgwWElXcFJYY21G
+ZUl6NTFqT1J0UlJBbzFqMjNablJndlRtMEUwTXA1bDZVckxOQ2tpSHd3NkFWV09TZmJERGRDLTdP
+aVVzZyQgCj4+ID4+ID5GaXhlczogNzgwMTM4YjEyMzgxICgiYWxsb2NfdGFnOiBjaGVjayBtZW1f
+cHJvZmlsaW5nX3N1cHBvcnQgaW4gYWxsb2NfdGFnX2luaXQiKQo+PiA+PiA+Rml4ZXM6IDE0Mzhk
+MzQ5ZDE2YiAoImxpYjogYWRkIG1lbW9yeSBhbGxvY2F0aW9ucyByZXBvcnQgaW4gc2hvd19tZW0o
+KSIpCj4+ID4+ID5DYzogc3RhYmxlQHZnZXIua2VybmVsLm9yZwo+PiA+PiA+U2lnbmVkLW9mZi1i
+eTogSGFycnkgWW9vIDxoYXJyeS55b29Ab3JhY2xlLmNvbT4KPj4gPj4gPi0tLQo+PiA+PiA+Cj4+
+ID4+ID5AU3VyZW46IEkgZGlkIG5vdCBhZGQgYW5vdGhlciBwcl93YXJuKCkgYmVjYXVzZSBldmVy
+eSBlcnJvciBwYXRoIGluCj4+ID4+ID5hbGxvY190YWdfaW5pdCgpIGFscmVhZHkgaGFzIHByX2Vy
+cigpLgo+PiA+PiA+Cj4+ID4+ID52MiAtPiB2MzoKPj4gPj4gPi0gQWRkZWQgYW5vdGhlciBDbG9z
+ZXM6IHRhZyAoRGF2aWQpCj4+ID4+ID4tIE1vdmVkIHRoZSBjb25kaXRpb24gaW50byBhIHN0YW5k
+YWxvbmUgaWYgYmxvY2sgZm9yIGJldHRlciByZWFkYWJpbGl0eQo+PiA+PiA+ICAoU3VyZW4pCj4+
+ID4+ID4tIFR5cG8gZml4IChTdXJlbikKPj4gPj4gPgo+PiA+PiA+IGxpYi9hbGxvY190YWcuYyB8
+IDMgKysrCj4+ID4+ID4gMSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKQo+PiA+PiA+Cj4+
+ID4+ID5kaWZmIC0tZ2l0IGEvbGliL2FsbG9jX3RhZy5jIGIvbGliL2FsbG9jX3RhZy5jCj4+ID4+
+ID5pbmRleCA0MWNjZmIwMzViN2IuLmU5YjMzODQ4NzAwYSAxMDA2NDQKPj4gPj4gPi0tLSBhL2xp
+Yi9hbGxvY190YWcuYwo+PiA+PiA+KysrIGIvbGliL2FsbG9jX3RhZy5jCj4+ID4+ID5AQCAtMTI3
+LDYgKzEyNyw5IEBAIHNpemVfdCBhbGxvY190YWdfdG9wX3VzZXJzKHN0cnVjdCBjb2RldGFnX2J5
+dGVzICp0YWdzLCBzaXplX3QgY291bnQsIGJvb2wgY2FuX3NsCj4+ID4+ID4gCXN0cnVjdCBjb2Rl
+dGFnX2J5dGVzIG47Cj4+ID4+ID4gCXVuc2lnbmVkIGludCBpLCBuciA9IDA7Cj4+ID4+ID4gCj4+
+ID4+ID4rCWlmIChJU19FUlJfT1JfTlVMTChhbGxvY190YWdfY3R0eXBlKSkKPj4gPj4gCj4+ID4+
+IFNob3VsZCBhIHdhcm5pbmcgIGFkZGVkIGhlcmU/IGluZGljYXRpbmcgIGNvZGV0YWcgbW9kdWxl
+IG5vdCByZWFkeSB5ZXQgYW5kIHRoZSBtZW1vcnkgZmFpbHVyZSBoYXBwZW5lZCBkdXJpbmcgYm9v
+dDoKPj4gPj4gIGlmIChtZW1fcHJvZmlsaW5nX3N1cHBvcnQpIHByX3dhcm4oIi4uLgo+PiA+Cj4+
+ID5JIHRoaW5rIHlvdSdyZSBzYXlpbmcgd2UgbmVlZCB0byBwcmludCBhIHdhcm5pbmcgd2hlbiBh
+bGxvYyB0YWdnaW5nCj4+ID5jYW4ndCBwcm92aWRlICJ0b3AgdXNlcnMiLgo+PiAKPj4gSSBqdXN0
+IG1lYW50IHByaW50aW5nIGEgd2FybmluZyB3aGVuIHNob3dfbWVtIGlzIG5lZWRlZCBiZWZvcmUg
+Y29kZXRhZyBtb2R1bGUgaW5pdGlhbGl6ZWQsIAo+PiBhcyByZXBvcnRlZCBpbiBodHRwczovL3Vy
+bGRlZmVuc2UuY29tL3YzL19faHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvb2UtbGtwLzIwMjUwNjE4
+MTM1MS5iYmE4NjdkZC1sa3BAaW50ZWwuY29tL19fOyEhQUNXVjVOOU0yUlY5OWhRIUoyd2FUVXJv
+OG93YVlscEFaSjZmbnJIWnZjR01iWTZxQU81UXZ2SUdaelV2LXJ5V2pDamhPLW1hVE9vbGZwUHZQ
+U3I2Q3BxT2drUmFsQ3dKb3ckIAo+PiB3aGVyZSBtZW1fcHJvZmlsaW5nX3N1cHBvcnQgaXMgMSwg
+YnV0IGFsbG9jX3RhZ19jdHR5cGUgaXMgc3RpbGwgTlVMTC4KPj4gVGhpcyBjYW4gdGVsbCB3ZSBk
+byBoYXZlIGEgbWVtb3J5IGZhaWx1cmUgZHVyaW5nIGJvb3QgYmVmb3JlIGNvZGV0YWdfaW5pdCwg
+ZXZlbiB3aXRoIG1lbW9yeSBwcm9maWxpbmcgYWN0aXZhdGVkLgo+Cj5Pay4gWW91IGRpZG4ndCBt
+ZWFuIHRoYXQuCj4KPkJ1dCBzdGlsbCBJIHRoaW5rIGl0J3MgYmV0dGVyIHRvIGhhbmRsZSBhbGwg
+Y2FzZXMgYW5kIHByaW50IGRpc3RpbmN0Cj53YXJuaW5ncywgcmF0aGVyIHRoYW4gaGFuZGxpbmcg
+b25seSB0aGUgc3BlY2lmaWMgY2FzZSB3aGVyZSBtZW1vcnkgcHJvZmlsaW5nCj5pcyBlbmFibGVk
+IGJ1dCBub3QgeWV0IGluaXRpYWxpemVkLgo+Cj5Vc2VycyB3aWxsIHdhbnQgdG8ga25vdyB3aHkg
+YWxsb2NhdGlvbiBpbmZvcm1hdGlvbiBpcyBub3QgYXZhaWxhYmxlLAo+YW5kIHRoZXJlIGNhbiBi
+ZSBtdWx0aXBsZSByZWFzb25zIGluY2x1ZGluZyB0aGUgb25lIHlvdSBtZW50aW9uZWQuCj4KPldo
+YXQgZG8geW91IHRoaW5rPwoKSSBhbSBub3Qgc3VyZS4uLi4gCkkgdGhpbmsgbW9zdCBjYXNlcyB5
+b3UgbWVudGlvbmVkIGlzIGp1c3QgYSBwcl9pbmZvLCAgdGhvc2UgYXJlIGV4cGVjdGVkIGJlaGF2
+aW9yIG9yIGRlc2lnbmVkIHRoYXQgd2F5LgpCdXQgd2hlbiAgbWVtX3Byb2ZpbGluZ19zdXBwb3J0
+PT0xICYmIGFsbG9jX3RhZ19jdHR5cGU9PU5VTEwsIHRoaXMgaXMgYW4gdW5leHBlY3RlZCBiZWhh
+dmlvciwgd2hpY2ggaXMgYSBwcl93YXJuLgoKCgo+Cj4+ID5BbmQgdGhlcmUgY2FuIGJlIHRocmVl
+IGRpZmZlcmVudCByZWFzb25zIHdoeSBpdCBjYW4ndCBwcm92aWRlIHRoZW06Cj4+ID4KPj4gPjEp
+IGFsbG9jX3RhZ19jdHR5cGUgaXMgbm90IHJlYWR5IHlldCBvciBtZW0gcHJvZmlsaW5nIGlzIGRp
+c2FibGVkLgo+PiA+MikgdGhlIGNvbnRleHQgY2FuJ3Qgc2xlZXAgYW5kIHRyeWxvY2sgZmFpbGVk
+Lgo+PiAKPj4gVGhpcyBjYXNlIGlzIG5vdCBqdXN0IGFib3V0IHdhcm5pbmcsIGl0IGlzIGEgYnVn
+IGlmIHBvc3NpYmxlLgo+Cj5XaHkgZG8geW91IHRoaW5rIGl0IGlzIGEgYnVnPyBJZiB0cnlsb2Nr
+IGZhaWxzLCBhbGxvY190YWdfdG9wX3VzZXJzKCkKPnJldHVybnMgMCBhbmQgZG8gbm90aGluZy4K
+Ck9oLCBJIHdhcyB3cm9uZywgSSB0aG91Z2h0IHRoaXMgaXMgYWJvdXQgZmFpbHVyZSB0byBhY3F1
+aXJlIGEgbG9jay4gKG5vdCB0cnlsb2NrLikKCgoKPgo+PiA+MykgYWxsb2MgdGFncyBkbyBub3Qg
+ZXhpc3QuCj4+ID4KPj4gCj4+ID4tLSAKPj4gPkNoZWVycywKPj4gPkhhcnJ5IC8gSHllb25nZ29u
+Cj4KPi0tIAo+Q2hlZXJzLAo+SGFycnkgLyBIeWVvbmdnb24K
