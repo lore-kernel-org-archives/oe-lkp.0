@@ -1,107 +1,86 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CF6025228F
-	for <oe-lkp@lists.linux.dev>; Tue, 24 Jun 2025 08:51:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 257C82222CC
+	for <oe-lkp@lists.linux.dev>; Tue, 24 Jun 2025 09:11:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.165.32
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750755087; cv=fail; b=U4Vj2baHrEb/mvYaaG5/RIKmbAPoiOWecajcVwQydMCMbi9VLFKhg0tLa6tNl8R1ywPhPeK3JVdfq82lzBfcvHs0E8wLQxCdLekzwPpuQT0EIwZJQz8UwISA8nCY3y3uqJEEKfW0/qoCBsO2lYGkFQYb34tMLxJrLlJlZcsTR4M=
+	t=1750756289; cv=fail; b=oJsKRiW6u/cop+bCreNbljK/08ko6XImM+LPzJpTZ/ysVWJmZX6mxTuxQuujU0ECXSaaBV7DrWDqKxlTukQXOp2MyrV94KXgmU9oQpym3AScjKpp7wSHx76tsGMVjrUBNpMbfdFf2gumO+IijckrRW0BaACa7z+o6/0PnbtOlQs=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750755087; c=relaxed/simple;
-	bh=wkkMOwuwhH9C3p+g1HrV3t5onXn4ZCIZgaYX2opFrXI=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=ZYd9xuENQEw9SVSSxHuKCXsUs+rI8TDlmK5Es/XDVzgJ++V6VqBxHZbAP68jDjaqimG7Zk39OcP0lLOJmcr84AFisCNLwvVRjUwZCe3yJdBIaaUsgeh3rpwx9S1Op67uxs8qijsgI2IC2zDZqrqeF1y0FlBi+ARAihsx5wioTHM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EWdpvHOZ; arc=fail smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1750756289; c=relaxed/simple;
+	bh=VC6oNbnvLjB6KFCE4sLOtPV/f5JRbEMoSbjbWWFJ3ts=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=qA6UmSBD2Uzp2fo5UBGGZFJallBSvkEc2Qd4MNVjevFMYc+xoiq6WD1gAwbXHXovmnz4O3xOrOwKTIMLsDBOxrLlOJIQyR9DIvm2XitC4nSF30SpyKJMoiO90mt10CLYeYF/CfXq708D+asQzxeoEGNxs81/YfJM0eWWWKkNeTA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=KT6NHc3t; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=JCyxWk70; arc=fail smtp.client-ip=205.220.165.32
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EWdpvHOZ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1750755085; x=1782291085;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   mime-version;
-  bh=wkkMOwuwhH9C3p+g1HrV3t5onXn4ZCIZgaYX2opFrXI=;
-  b=EWdpvHOZriQy19ETGluRM708kDrhjl6kx6UGGGX1F8rAQ25qMQJ7RKJA
-   iHjyEjagR/WPSs1rZ//ktrBqXr2ZWCj7HOyUrdSGo8bblky2jOMetkCzZ
-   TjXn8Vt36wOskC0UhNQImdHWSvK0AvlzpvTs7+JzWZ6GZsdYVxNH/bgY+
-   NOH/XRHgDHcV47r4PBCTvU+38hmkUU5AcpvZA25u/I4Ez+VgMtW/XLb3G
-   9v+0OsjVAu+FT1omwrm57BVelAwAYWHxyVPpnnNpGbRjH5x/fC5mReu5e
-   HOs73ffuJBOWvKSQ2jaPqcSQBSkADBeEmXyRN+bW4VzOEFHBFu/ks5q5y
-   Q==;
-X-CSE-ConnectionGUID: PTl+zzaTSoG8DvFQY+iVMw==
-X-CSE-MsgGUID: U4mbFbKfTMu/BcX46jo9ww==
-X-IronPort-AV: E=McAfee;i="6800,10657,11473"; a="63680025"
-X-IronPort-AV: E=Sophos;i="6.16,261,1744095600"; 
-   d="scan'208";a="63680025"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2025 01:51:25 -0700
-X-CSE-ConnectionGUID: pIVDKXPfRS2vzPv/9Dwt/Q==
-X-CSE-MsgGUID: yKZ/6sIlRWmxaZhvridHvg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,261,1744095600"; 
-   d="scan'208";a="155884229"
-Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
-  by fmviesa003.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2025 01:51:23 -0700
-Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
- ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.25; Tue, 24 Jun 2025 01:51:23 -0700
-Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
- ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.25 via Frontend Transport; Tue, 24 Jun 2025 01:51:23 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (40.107.244.72)
- by edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.25; Tue, 24 Jun 2025 01:51:21 -0700
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="KT6NHc3t";
+	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="JCyxWk70"
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 55O8icAa028837;
+	Tue, 24 Jun 2025 09:10:12 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
+	:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=corp-2025-04-25; bh=+fvj+gY8KM4H+4dtDg
+	U3BEIfEM80BECt8dCydx6uD4I=; b=KT6NHc3tOM7wae/nwZjOuLkSVZliFzlAhe
+	JpD2fl0BbBAkKzw2VQMryqYrb/ZBG/7UvqlKNPKiqHQAJ5Y8Ge+7zqjvUMXZEY71
+	/bE94yOmihH/dLFuNjCGRN8jYVn0lE0rEBOfkYBjFwtcWX7soMWK2hu+yCIOwwyd
+	04h0hcN9TOlW34J9CTWrk+rsvXypUMlCR78wxd9qv7j2HfXFnv9r9nc8fvBNr4e+
+	LV02md0sJHrl0oe5hQNI9fC10Y9rIEJLzox4UIVIpUjkwavXXwK4JVGyWjeP8q4q
+	/prf1t8oN+7Q0xsaBCuNc9NOiopiHvcVLZGFCUWFACVXAzJpT8AQ==
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 47ds7uvp23-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 24 Jun 2025 09:10:12 +0000 (GMT)
+Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 55O8ALoF025253;
+	Tue, 24 Jun 2025 09:10:11 GMT
+Received: from sn4pr2101cu001.outbound.protection.outlook.com (mail-southcentralusazon11012064.outbound.protection.outlook.com [40.93.195.64])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 47ehvvw86t-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 24 Jun 2025 09:10:10 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=xuTai4YTzfQzssLkdSyq6NQD5YKapoas9DOJhNPqASe/2CEH6vCcHmdsUyuRepkYAdYs3UankBpM2cJb++VPlDOELT0wpI0PpoaAgt+NZltD/hq7oOO8pkO5ojPt9pFmW6U7y6prKO+LXWJH+C64X7ABxR4Vx99ZFzco6pByYuPh9Q73dqVWQCct/p65kvjyFo+CFyVm0oz7j4/UxfBh24Dg8DjACz/21bamEm6afSTlO7mbomdadr6u6wiiwFCX6OlCFTghnv83J3aKINTjl6j0JCNT4zJMQ3AJ4vfwmZqwLuEmYAzvgmbhYMcmbz4zl6jSdk2XjFpe5SaPh+1Tvg==
+ b=QyX7SRkNOCv3+QmALyGwuxxkHKs7s87/31jNWCY29nunDljSPAyINgFSUaFvYybe03t7LldAM9RyGzJ14Byx1oUenMJ7mF3lTGSsWe+7gQLvNcqZDiAeSfIIdYaMMcfD7szr2VXj/Y7cThjp4fGAyy+CxTFrabDOZW4VJ2DrTVXi92HIIgYW7qO75bs1SrkSID+6eX6teoil7PugzdeP7GhgnRS7Y66sFyEyi9Ffm/fsTQr+hab1KUmKkJcf58TiXmxeTYMoi+wPZ8WOrnR6/Ud203/32u7G2bivvrtM3vct/zcXKiseDIlwMaWBQYmKYcGkm+HDqHFzYdiCEfh/lA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UzfClqpNVFukNpQCaCH8CDZ29+NNcqGJwv5WmzLs8Xg=;
- b=jXIFdu7A3cYytSJ4S7ueG0p1md5lXeHQLY+LUdgrvx1o9GhDHhA9AboOyx4qiDAcSB0oB4faBTB7UoEUUWXzAMGnOMl7XImsAngYzQO7RjrYcMsPLPQ5Ok2JAST6AFeHiN2CpdXN1qS90PFt0uVi0CldLnIc9mNLCg6/uI4Ef1oDFurutFRpNCzZJaBgWygF55emd/bhldCj7RUUVT0dmT47BCGT4KKjxu+WiwMlFxncK0GYvLZmmbVnhKTDzgghTvahas3vFMHVRi9skrkubheeG0DL01kRm/ynygUGNWTZyYTRs4a+XlaVM1UaDM1Q7T5SRwm1NkVjjaSx1Djjug==
+ bh=+fvj+gY8KM4H+4dtDgU3BEIfEM80BECt8dCydx6uD4I=;
+ b=Pse8u9KFh6DXeQnW7WyIfy3uWt0dEZ7H5l5oZrjhjITVoyyhkViZ6QIj63OUSwvafRUh/iE7k7NCRxVxmyNgSUyA0rkXEkIY8JzYZt2HkjDyxdRfyEZ1gFUomQf2R6Og+lnC/qQdc0qbpwFaEi30427usbz5R/1oVB/hATc5doU2agZKiHCDHC9OwsxPvGVs/ASFotyP1DFhVjUbmPqMFWqZuvBrCtqCpwTu7/vcJLuIhH6frOBJzyDmINBcjnkVZkcaCHF8aCQUxhtY3BrnJpT3WSgxhqtJQHVxL1cxYPtTtadiJl8c+ZMVbgEtZDJNZX/EpbU4X5HZ++Jwfc5/pA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by PH7PR11MB6055.namprd11.prod.outlook.com (2603:10b6:510:1d3::19) with
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+fvj+gY8KM4H+4dtDgU3BEIfEM80BECt8dCydx6uD4I=;
+ b=JCyxWk70Z5ZUar79H7oXFLow6zEb+gjLyPP5dQ/gglE1nfZOoTWZSoDx6S/lh2a7Yhel/1uHm6+qC/7q9JLR5nKIHTqBsBbq+Nc3SSYUh2RanTt0kNgd1IcXHq71mIxG+Ovu8sUNWRHMNI2EsotyYX+Hzst5OKSqDRhrQKuCAbg=
+Received: from CH3PR10MB7329.namprd10.prod.outlook.com (2603:10b6:610:12c::16)
+ by CY8PR10MB6658.namprd10.prod.outlook.com (2603:10b6:930:54::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8857.27; Tue, 24 Jun
- 2025 08:51:19 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%3]) with mapi id 15.20.8857.025; Tue, 24 Jun 2025
- 08:51:18 +0000
-Date: Tue, 24 Jun 2025 16:51:02 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Pankaj Raghav <p.raghav@samsung.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, David Hildenbrand
-	<david@redhat.com>, <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-	Suren Baghdasaryan <surenb@google.com>, Ryan Roberts <ryan.roberts@arm.com>,
-	Mike Rapoport <rppt@kernel.org>, Michal Hocko <mhocko@suse.com>, "Thomas
- Gleixner" <tglx@linutronix.de>, Nico Pache <npache@redhat.com>, Dev Jain
-	<dev.jain@arm.com>, Baolin Wang <baolin.wang@linux.alibaba.com>, "Borislav
- Petkov" <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>, "H . Peter Anvin"
-	<hpa@zytor.com>, Vlastimil Babka <vbabka@suse.cz>, Zi Yan <ziy@nvidia.com>,
-	Dave Hansen <dave.hansen@linux.intel.com>, Lorenzo Stoakes
-	<lorenzo.stoakes@oracle.com>, Andrew Morton <akpm@linux-foundation.org>,
-	"Liam R . Howlett" <Liam.Howlett@oracle.com>, Jens Axboe <axboe@kernel.dk>,
-	<willy@infradead.org>, <x86@kernel.org>, <linux-block@vger.kernel.org>,
-	<linux-fsdevel@vger.kernel.org>, "Darrick J . Wong" <djwong@kernel.org>,
-	<mcgrof@kernel.org>, <gost.dev@samsung.com>, <kernel@pankajraghav.com>,
-	<hch@lst.de>, Pankaj Raghav <p.raghav@samsung.com>, <oliver.sang@intel.com>
-Subject: Re: [PATCH 3/5] mm: add static PMD zero page
-Message-ID: <202506201441.2f96266-lkp@intel.com>
-Content-Type: text/plain; charset="us-ascii"
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8857.28; Tue, 24 Jun
+ 2025 09:10:08 +0000
+Received: from CH3PR10MB7329.namprd10.prod.outlook.com
+ ([fe80::c2a4:fdda:f0c2:6f71]) by CH3PR10MB7329.namprd10.prod.outlook.com
+ ([fe80::c2a4:fdda:f0c2:6f71%6]) with mapi id 15.20.8857.025; Tue, 24 Jun 2025
+ 09:10:08 +0000
+Date: Tue, 24 Jun 2025 18:09:54 +0900
+From: Harry Yoo <harry.yoo@oracle.com>
+To: David Wang <00107082@163.com>
+Cc: akpm@linux-foundation.org, surenb@google.com, kent.overstreet@linux.dev,
+        oliver.sang@intel.com, cachen@purestorage.com, linux-mm@kvack.org,
+        oe-lkp@lists.linux.dev, stable@vger.kernel.org
+Subject: Re: [PATCH v3] lib/alloc_tag: do not acquire non-existent lock in
+ alloc_tag_top_users()y
+Message-ID: <aFprYu5H_ztouxw2@hyeyoo>
+References: <20250624072513.84219-1-harry.yoo@oracle.com>
+ <4f12c217.7a79.197a1070f55.Coremail.00107082@163.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250612105100.59144-4-p.raghav@samsung.com>
-X-ClientProxiedBy: SI2PR01CA0035.apcprd01.prod.exchangelabs.com
- (2603:1096:4:192::13) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+In-Reply-To: <4f12c217.7a79.197a1070f55.Coremail.00107082@163.com>
+X-ClientProxiedBy: SEWP216CA0018.KORP216.PROD.OUTLOOK.COM
+ (2603:1096:101:2b6::13) To CH3PR10MB7329.namprd10.prod.outlook.com
+ (2603:10b6:610:12c::16)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -109,220 +88,242 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|PH7PR11MB6055:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4565976e-a8d5-4e3e-4be9-08ddb2fc4948
+X-MS-TrafficTypeDiagnostic: CH3PR10MB7329:EE_|CY8PR10MB6658:EE_
+X-MS-Office365-Filtering-Correlation-Id: 795e8c52-5c82-4b33-3967-08ddb2fee9fc
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|7416014|376014|366016|7053199007;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?A+XRMYjLu5NT1KF7k7hyv+c8QEPcBvlBplYVSb6ec23o2yqmFaelPQA5CuYc?=
- =?us-ascii?Q?Jo6EcYbvodejBOJVQ2MzzwNPg7x8q9L36MRQ/p2oP7Z+JlhgdegDN5gQi6hJ?=
- =?us-ascii?Q?DVFV56qVOgE1/GpHT0bjcQivW7juQpYUPbUsyn2mc462+bHgQc+WMiitMn/R?=
- =?us-ascii?Q?8HCwQAageX8c2mMTRSs4pe+TsavVImFNjhqNyLY0p8zhKHsbr+O4ZULZFCWp?=
- =?us-ascii?Q?RCQKwgMLxtwkUk1GXl7iWXL9sCjx55Nl/UJYdcaBbsY51B3BDd4HsE4RXEnG?=
- =?us-ascii?Q?PH0HD0lXfsSnc0TpjeRsgbgqjR52het4aaH0IrAMCZ1lxUStuYlKmtFe7y9h?=
- =?us-ascii?Q?K7luH1I7bQM2U1CFMOwtW7Y20vEX2SIG7MV9Pb2ocFATXXU3iueqUzxc9ZLz?=
- =?us-ascii?Q?pDEdK9UbH/ZW/f5imqQJYz025k1aBnMmOSeY38Vo3M7FUA3w7rYoJy8Qrwcj?=
- =?us-ascii?Q?emF9i73LbjVMNvp0p6v/yyicdU40Nt+IwUqipELpTHT6eOMHcUFgJC/+pXHO?=
- =?us-ascii?Q?9O01CtCjXHhQYpdcFYTQg9iaTQpqis87zxIhzyUewLoy3+ofreOmsaVqPnsd?=
- =?us-ascii?Q?6aajyZoXkJFbrKHux/zTrVuvZBiYsDJWnnZw8YtZZKZiZj8wn/a/ozhhIYiz?=
- =?us-ascii?Q?4BVQ6gsqazmDdrr+DXzPfcMYHQbZNJLzMMvht1j51RYojIRstP4bmeHmUZnJ?=
- =?us-ascii?Q?0mrir/wF8ZRlOjSLAI8kYHc0/4ZAaZGxmbjt8j4kNekuwf3jrLvbLXAONGvo?=
- =?us-ascii?Q?IsTPvICS+t6Z2hM/hflBxOA+N86W/PfyDt05o754qMwAEx7vFZ96ReM2bYns?=
- =?us-ascii?Q?BN0bsMaaHBaDreb/8xQnIr6h7B+8D8d0OwSUA/FS8nh0qsLat+eiGq6YMyDG?=
- =?us-ascii?Q?fFCJngamwcCjNzsK0bM8Ys6rsDMBEnNMV6b12qekoFEfF3amrBoO0+tJk+6t?=
- =?us-ascii?Q?HLjNH9GQ51JUydM2fTKY18pPc/7FyoMo6N6v1Amw5Q/3wbafiOfrnIBspobX?=
- =?us-ascii?Q?OPj7UBpnW0aa7wMXBBgLla74ZhLEyp9vtkYAQvzNZma8PLHSQEDxxESTNusj?=
- =?us-ascii?Q?7lRER72y/L//qDysOx2teNERSjJj3Lu7MYFDhd3QGs9h8rFc6W+wOB/feabY?=
- =?us-ascii?Q?LWXePXIuOuN/rp23meLxpTKMIyiDv2wGwkDXcZyoRJBKBEZNxAZs2xRzgXp/?=
- =?us-ascii?Q?LXoTaFDmggrwEKCXOpDqtwabUpUQes+6IWEPKdqImicRvG4ouakTiqpRlhAI?=
- =?us-ascii?Q?27gG4rX02SAsOQ93H9uPioavcFrym+Z2/SI4JUw06IE2OVEhmR4r2Gg6PoNc?=
- =?us-ascii?Q?fwCMEYkZST3mDMICDXPvg/19tCqPUVVouq+301ilu5uysQisX4wSs+RSOZ7F?=
- =?us-ascii?Q?NxcQ7ic+SWfbF5CiXB8R9GPaFXzZ?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016)(7053199007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?PVTAQCggZrXsLxym+4aegpr76jAwYQkUuI+0btJVxtA16+nh0SDtpsKvFvUE?=
+ =?us-ascii?Q?MUB6BQHDbKAyehu+tjl/aQKr61E/rOkcABCA+QYT/R5pN6rHVgVQsTC902AK?=
+ =?us-ascii?Q?EY2dpUAYZ3Y3MfOVrrFQPxNRgps2OmBZQdAgVbeZxiwLivmxyPf9/+UFZmza?=
+ =?us-ascii?Q?RBOmuiBNvphak6AaYvWjCGaeFi/S2d3FgnSxZW/Oe3jo5LEtRbKoVAcDqixi?=
+ =?us-ascii?Q?MFnBRgEO6+9+Xpn5Vx8JnWtaWQHSPtAq3lsCZX5kA4IJ2dEQ29e5A4z4Qr/K?=
+ =?us-ascii?Q?nCqvzMbCOW7IyAjzTwhFQwR9I4Xw2j8PNm6o3rncttXU8KKVffDcW582mLhD?=
+ =?us-ascii?Q?tmX+2jLSK387C9mVI+F44IhvUO4OIVhEeQTXbNKc+oZ6cauaIOtzENE8xKPd?=
+ =?us-ascii?Q?FAqg1GxD+RcwHrfum3+ExP7nv5NEDv65jTFiki4Q7cWiBdbF4KWZhHcw/b4p?=
+ =?us-ascii?Q?d30dssgYYcunRLvoskvWhiBYSF1LGjYYBs+5Rz6WiAtQU9+qOQC1+Bc8EycT?=
+ =?us-ascii?Q?qnCA15AbIHs1AbGsEWuogVmOvPC9u/0snzbiXJWrgchuEfZwLKx0JNK+esr8?=
+ =?us-ascii?Q?XVBJMOpJQK0que7QPgNAToCdZVO8BdhYcltrgeMFTx9jbjx3pcOcwdeygAx/?=
+ =?us-ascii?Q?dDC+J9p/zNP+oMYgcEFNjyH7K0wKTy2jOt9BNWtV7M0RrZlxNwn1SWXZX8U0?=
+ =?us-ascii?Q?u90oSiyg8Fd7MXypSpOy2JDKHZqqISUkgOGkZtERrVaM0e2OJrbUOKxXPtyo?=
+ =?us-ascii?Q?2F2Ch3339J4/50xdC9RTMIRXlk9OEf57dkp/JIW8A8nH7VX3fMMXVuuODxxI?=
+ =?us-ascii?Q?76V8Ufg8pzulMvll8tWnAIDO+Ck2Q6yT8yoD3esRahbNwRIYEolR7fupuJx5?=
+ =?us-ascii?Q?W0r9ggDDKdZMVxVthJanvY7N4KUvUpDkzt4HNRGNn48Xx1myqchDT2qlPPX2?=
+ =?us-ascii?Q?94AhRnZPG+jA4Y4x39gnMPZIY6gZoqn/kZ0wlQ4fL0Zk+FzWUP+vwdJfr6RZ?=
+ =?us-ascii?Q?/Q750rJW8Wj4FFvIjFKjbJH1ESMawoAC9zl3KU/3fyFOmnQ90uDsusHe99Bw?=
+ =?us-ascii?Q?b6jcfgBobBa4xIGBnd7fcxNa4kKT+AuoZtB9EgwmLwbn/P6FfqlQb0KGToxJ?=
+ =?us-ascii?Q?ils5TO4gZm2SXdhzC5wUm8M4fOZDOtUXt+saVFMpdFhSeBctOw6n/2W1DvoC?=
+ =?us-ascii?Q?eSdNuU8bz59CqSfBA9ex/5zMh4fftIr+gGvYmRNt+5h6hWdFgfvq+r/A+l1u?=
+ =?us-ascii?Q?OwmfWaccWYUcdvaeG02fciPSPjY7aEh/71nGKdXaRJniNQYzTQUc2J7gFbwM?=
+ =?us-ascii?Q?6FBUBV8/QoK0GP7q9zFtfJYH+uNO2n0biL8/VdWOvRz7DtTSoAkhVJXLvHaa?=
+ =?us-ascii?Q?AmJDqRyZlP5dENkD7VfBHX84EzEBi14f3ZRrV60JsQo+4BOaRf8gxBtX8Y/O?=
+ =?us-ascii?Q?wKzsCmO+VzU=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR10MB7329.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?mvs9k+MJuQqaTy5gMvC9hC8fDw7/S1m5vMuLNUn9r3QuD5/YOp7cIqJXNtRG?=
- =?us-ascii?Q?YSvM+KACfJE5ZgaM0XxdWZnf5L+JOEG5IVvbVAdQ6c/MUKVfiXmw2NXycLow?=
- =?us-ascii?Q?sPbJzM8H9ne+h2N6jauhFwyCTYOBW35l7wJcMbMw0L5yyjEU5UlkB8d+t+q5?=
- =?us-ascii?Q?uCwImb5d5zW0ttTM8sq1KD3UdR48DVtcjQIsBM/sOSEjhsH5r4NDmvwY3rW5?=
- =?us-ascii?Q?98lSS2F+7O7u38j/cwfQGvhCYfQNKp990tPOGidO6arYhqyhEPQNeRbKsaf/?=
- =?us-ascii?Q?EnFenPD0JHjJlZaz6i5VQN1NzqP44zhhh0kdcEUBBauZAeQaZPmeuz16CqPw?=
- =?us-ascii?Q?6urUaKH48Hfm/CdAcwTydx1/HLtx/BqFs29k79NC1cIKBMDS7KY2BfpLzp8X?=
- =?us-ascii?Q?9Cojofdl+jPBtpc3S+PRHvq6Zoyq4mJnVR46belwKeTw1YT0JDwkpZoJfH+p?=
- =?us-ascii?Q?6J8191hFTL2ucC4VTE4c9QlRFXNJYrStw5cDc5Ktp2esAVLX79jpusH33vyv?=
- =?us-ascii?Q?OF9S+vD3OZ8ZQKfXWkiYBqKjrS7yocyp3dVGa4l8/I4Yw6e15bLTJ8llJbI4?=
- =?us-ascii?Q?PUzKb+0ZssKzpg80kES/RIiq9wJ9ZK81dmTue8kbkZGRNzi8WeWLQYYaaszP?=
- =?us-ascii?Q?JgP+Z07JlY0XBU4v/KJcB92V7Z4vasxUqDzWzZGTZwFhrQC4tdo+t9d4oxls?=
- =?us-ascii?Q?gEm+UCYVbhcGwB2t7KcgMYh9zmBEii8DFMEOXx270Q+jn53MPHtQOjfAY6eQ?=
- =?us-ascii?Q?gu+Fn9DW6aOh7VoWl6sZylHRHAuh3B95s+L64Bk7cl5w/pOUsxAffzKlzPOC?=
- =?us-ascii?Q?XaOe1A25vsL+UPWcMpoAH/vUDmu4vpXXFZIZUfY0U0knxf5oZvK1k/EflV8T?=
- =?us-ascii?Q?ImP++IFyRnoXUF+CplLeaYnFNLReIxRmAXdx4emlERkbR3B4EjYU2s7mAF1m?=
- =?us-ascii?Q?ggcvKrHdPfPspfofWpbVmIseCsXo+JwqFWWB9Fjpx7chMwfOdSN8FWlCG6B0?=
- =?us-ascii?Q?RKtpJU4Y7iSOz2cEtH0+3bEGBGcLbW6gyKD3oIR2XwoWEm4GDlHO7JVxEhav?=
- =?us-ascii?Q?y2kY7idZtdn5yELDeNUL1G8vUCaVZDsclkvMSxgILnAeM3EaUh5OJfDmqYwW?=
- =?us-ascii?Q?OUuvbRRHkVAcGYRXLrHH9YeCi/P8d12KPx18TFwBlbyHObHz148epUc7d8of?=
- =?us-ascii?Q?UwpMFFnc2aVgwVj9MC9gyGiunaiKI9iL7w/OgC2Ra7DWJmIVWnwAPRDzfMYV?=
- =?us-ascii?Q?ieWUcFkXzp+nCwu+tYLE08s5hP5O12uOzy2DDgKOqP/6KsQSdjMdv3Y6Ms5Q?=
- =?us-ascii?Q?0H1rGqW+v8TeXZsb/WJrTvDttffYlX24MiXcZEl8Mtnb64QhMzYeaANJY/QQ?=
- =?us-ascii?Q?RTCUTx1jHyOf6hfsCcPOxYIAcV1/UdIYxc1MqniKiCtT9HkRHuljoR8DKJkU?=
- =?us-ascii?Q?f63WyS6M8+z92nbg+Kib5UQYqljhvi6Ml55L/iUdJVZckoO15cQJ8w30woap?=
- =?us-ascii?Q?LJWq3dJeVZ0JNTBnEkkpMhcatIS0UAVU6LF51FeoK1AzGdEnab7nvh9m4RGo?=
- =?us-ascii?Q?fwU0SrA5aQYllY4xBYvnW064nbB5M1Ancb+yPB85FmqPW0s4Eidx2lNjmf4B?=
- =?us-ascii?Q?dw=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4565976e-a8d5-4e3e-4be9-08ddb2fc4948
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?wc0vnR64x5OxUc2vwaZW7d1lHHnnNc1UvHSb6OAey5IsZX6I5WkXwiOtpGPW?=
+ =?us-ascii?Q?B1nE0AXlamx+evjUSwUtMLIT3x7dXo2+nQcdH0dFiyFps5vKHCNPYRJ6HtBn?=
+ =?us-ascii?Q?mRv/lUcEMjARSRW2AL22jXzWANdHBz+9YDGN2hHaMPyYplaAca0ThAiHr7DO?=
+ =?us-ascii?Q?qWaF6zMrE8EbKymZPPPN1QvVc4HdamBoV9pxOwvWMDQEz5CBrjSgBjBm/rR9?=
+ =?us-ascii?Q?Y9GHjkBsdx81+jScoCTYYPtuNyeUkCtTgfUWbSNdXUSTg7oLTZEdrfuzVW5c?=
+ =?us-ascii?Q?rjtJb3PlkFJrI4AC871Pb69fwr5ctvgjpOwfWuEJqUTF/DsEQDrfOBewfyI5?=
+ =?us-ascii?Q?4eSqgT9zaQ5lWdWARBszsTTE1TCHfPoEOp1QiRCfnYjhfe9Uh7qLp28ElU3e?=
+ =?us-ascii?Q?x5/GDmBiBQb7WVOcJ9gzf9YsLrb5Xof0tK5lAHRmCPJlW7RieNq2i7eD2f8f?=
+ =?us-ascii?Q?Vw54iveE23XTRFs82znMpXENtGzow3ee2jcdmSqvc0jXVX6psHJWGZJr7gLD?=
+ =?us-ascii?Q?PLcFgPJKsiiaec30h2evTw/tZIaEub8DjezGMBekdIrm+EdMBAx7zSRb45ba?=
+ =?us-ascii?Q?2iCEmuDdtxM8Xy+RN202hepjNKHBN7XW7i10xu1NlNnTleefeuuxkRudwsNG?=
+ =?us-ascii?Q?JRx5xDOZg7/iIV/+YLjurhTNcNM2y2ql8+EvVSPg0CAHQhWeAorhB0ZJBfZ4?=
+ =?us-ascii?Q?tM3RCZtRCUHsSKDSaFpiOcAB3xsvCFEpY3ZpzY7XBO5t7LhXSxxp2WnTtymz?=
+ =?us-ascii?Q?Jnbok4+4ymseHDebxI0n1AAN9gW9U3KJXRGleBmiTRs9cKPVK/ZaR2QPHFi2?=
+ =?us-ascii?Q?jLYTk8JKXLIPfEmyF/VEksfoNXcJh6G2VlaRjc3VREo0hLo7AnUr7DpUYwNK?=
+ =?us-ascii?Q?ArzWBd8wNO7b/s6lK5tKcFTDzNDS9v1xVfwEUHSO068ocOVIVvog+0RgwGVL?=
+ =?us-ascii?Q?nZulL7l8UkA9EsfLrXbyjhGVHnsEl55T7GbV2tjeyAU/0KxSmGqChTigWvbE?=
+ =?us-ascii?Q?uvFAcsNRu1ZAWcwHpVK9TdO/VQ98UbtpTnze4QktkBYuu4rO0NT66QiHwLNc?=
+ =?us-ascii?Q?wKsI+liyjiG0+FLQ1LVLjeN05xxwI09gwP+mMOhxzoGq/iiC7iXMacGKG5d6?=
+ =?us-ascii?Q?6lCMOFAUjBhuEYUEzgq48OYjpUmdejeI+WBXoEHIgQJ1HfYJr3dFouJwRxxP?=
+ =?us-ascii?Q?u0N6BWwUJ3oQW3S9dX675D0Qh4kr0nWDWpjqsv8YiwFnTU2yVMEncNwnfzC8?=
+ =?us-ascii?Q?u2KFvBoHPJWtW1Lcik4accTSfcbh9A8Ep+nXZ+Yprk+wV15nprhZYlRQlUHN?=
+ =?us-ascii?Q?OksqOM7nXRsR/1FaQJyAmhzV9+eRFyhsiULMiQ7rqK68QpVtM112NFl32m+S?=
+ =?us-ascii?Q?+ocR76q/RwePqimmUUu2cFcoAijebpCxvQdsl/39MgoIsLsigaAIMBeCQHR+?=
+ =?us-ascii?Q?TmZU8ROj3YcZJacqnURtDUi5TltsKHqUuk5F7+/y6JniaHaoJokSui4wQzHR?=
+ =?us-ascii?Q?SPLuckOZ49CZXRt+0YqolpPCJOEnHq6auCEDb/w8wvsYPZIiRd1bBfdJUO4A?=
+ =?us-ascii?Q?ghbIP4oEzCe/uM5RyPSoC85jgN7hSqoeFMx2qlOK?=
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
+	4bm4IdC3gRa7tapVjFqpSR+xKhHOQAk4OQ4ZamDJ1Bu1UuxtkFXtKeHk8tZdULwlicakcP1umRT1aPSjkyUlw4rcmstqUh93yDXRqlp8m1EPbNxPGdk24rr9Is7N6M1rchdBu8Wg0VAdO9RBFvSdaLk4rEWZAHHROXbdYxY5S46XPEJhZUh0ezIpsik+Y7usL0wsDN4ADVpFKVwzJ16KHei7p9d+PbdaGKWd1nuuItT9WqKq2q7lIiKxmYBnUPC5WAy/VYqoftjVIys+Rkc2NuDdTWMoEE6GzWg1s2mwzZNSNEiNow/rBn+1DX3RR1Lka8BeHW3RdaBME0ra36jUH8X/LODpV+N3PWo6vL0zeRmX0+b3JuTG54cuy3mTxEmFbs1ovi3LrBGHEGszh2fVgYhIl//+E3pBFf+NX/6P1HhrmVL0vZ8dZd1eifX0PrL+pbg6O6GZjdnZupvmyf52XbfvRzMUIGMrafudYZYHZ+Ve6o4icGEIs8icEG4egxEumIIaDo1Vre56282UjyqLO/yCjEImyISCOfbqgZAQAJek7sD5qhOmRsYaJVNWWGUM9BLE0yt0qB1mDAkTCUucYjcf5WO3smHo4Yt3VMhVxhY=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 795e8c52-5c82-4b33-3967-08ddb2fee9fc
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR10MB7329.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2025 08:51:18.9089
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2025 09:10:07.7862
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iGQKkGUBMYyU7wBy6DDvlkUBBVd6wfi4hsgOkQr06hXPCf1gqvW3n6ZKE/Ij0oXlMTxv2xeaatpbos7uGR1TeQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB6055
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-UserPrincipalName: N5NcHLAowWdPA5aDUMRoiDMwtxWFz5noXv2Axtd5pevJI0jVL2Ttho3CdSYW2wotws5XaSiHeGjXY0pXkQDC7A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR10MB6658
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.7,FMLib:17.12.80.40
+ definitions=2025-06-24_03,2025-06-23_07,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 bulkscore=0 spamscore=0
+ phishscore=0 adultscore=0 malwarescore=0 suspectscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2505160000
+ definitions=main-2506240077
+X-Proofpoint-GUID: 4bn4MLU7tegqAfaDLd6mDpd63GKUKhFU
+X-Authority-Analysis: v=2.4 cv=CeII5Krl c=1 sm=1 tr=0 ts=685a6b74 b=1 cx=c_pps a=e1sVV491RgrpLwSTMOnk8w==:117 a=e1sVV491RgrpLwSTMOnk8w==:17 a=6eWqkTHjU83fiwn7nKZWdM+Sl24=:19 a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19 a=wKuvFiaSGQ0qltdbU6+NXLB8nM8=:19
+ a=Ol13hO9ccFRV9qXi2t6ftBPywas=:19 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10 a=6IFa9wvqVegA:10 a=GoEa3M9JfhUA:10 a=VwQbUJbxAAAA:8 a=QyXUC8HyAAAA:8 a=yPCof4ZbAAAA:8 a=G13zY8NQ0wE9Wk4UL0sA:9 a=CjuIK1q_8ugA:10 cc=ntf awl=host:14714
+X-Proofpoint-ORIG-GUID: 4bn4MLU7tegqAfaDLd6mDpd63GKUKhFU
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjI0MDA3NyBTYWx0ZWRfX1d2J8joLfdys U2sJzNkqGeF233ge7i6SpwP23PeYpxmfv+lVxEB1vQRzF6mFYHZpGfI/xzPphf/uieWqXha4SVp 5NKIrlv8sTxulEP2qitL6T5oslC/Dp5qpP6Dnmf3dvFZ74/fjKZVESujJSkOS01dic9sUqX0oBk
+ kN348nAL6TjoGSBaV82ynxtu4Mgy6SkqPpoqWKWdujGF9cbUkQE9jw/7WjdPqQsHsjTyLr6jvKr Ng4OdkGrA2BgsC9t7V9E+M3VxzTPsplcr8+bvv65kduyihmzfIWeVzGWzyv7Mll6YZf9qA/pjmG TidULQr7CdKMfZhzOtiLBlgf+UPjze8WHiYT1rCCWPnGvUIXZ4aaMXc+gJvOvTO75YnpuVmEM/o
+ DTJdoBMVhjPeMeBBYRVqIR6bWPo9wVSLNLAiEeR9410pN/Dh62ZJg3dTrvmwJ8obsdAVxqb9
 
+On Tue, Jun 24, 2025 at 04:21:23PM +0800, David Wang wrote:
+> At 2025-06-24 15:25:13, "Harry Yoo" <harry.yoo@oracle.com> wrote:
+> >alloc_tag_top_users() attempts to lock alloc_tag_cttype->mod_lock
+> >even when the alloc_tag_cttype is not allocated because:
+> >
+> >  1) alloc tagging is disabled because mem profiling is disabled
+> >     (!alloc_tag_cttype)
+> >  2) alloc tagging is enabled, but not yet initialized (!alloc_tag_cttype)
+> >  3) alloc tagging is enabled, but failed initialization
+> >     (!alloc_tag_cttype or IS_ERR(alloc_tag_cttype))
+> >
+> >In all cases, alloc_tag_cttype is not allocated, and therefore
+> >alloc_tag_top_users() should not attempt to acquire the semaphore.
+> >
+> >This leads to a crash on memory allocation failure by attempting to
+> >acquire a non-existent semaphore:
+> >
+> >  Oops: general protection fault, probably for non-canonical address 0xdffffc000000001b: 0000 [#3] SMP KASAN NOPTI
+> >  KASAN: null-ptr-deref in range [0x00000000000000d8-0x00000000000000df]
+> >  CPU: 2 UID: 0 PID: 1 Comm: systemd Tainted: G      D             6.16.0-rc2 #1 VOLUNTARY
+> >  Tainted: [D]=DIE
+> >  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> >  RIP: 0010:down_read_trylock+0xaa/0x3b0
+> >  Code: d0 7c 08 84 d2 0f 85 a0 02 00 00 8b 0d df 31 dd 04 85 c9 75 29 48 b8 00 00 00 00 00 fc ff df 48 8d 6b 68 48 89 ea 48 c1 ea 03 <80> 3c 02 00 0f 85 88 02 00 00 48 3b 5b 68 0f 85 53 01 00 00 65 ff
+> >  RSP: 0000:ffff8881002ce9b8 EFLAGS: 00010016
+> >  RAX: dffffc0000000000 RBX: 0000000000000070 RCX: 0000000000000000
+> >  RDX: 000000000000001b RSI: 000000000000000a RDI: 0000000000000070
+> >  RBP: 00000000000000d8 R08: 0000000000000001 R09: ffffed107dde49d1
+> >  R10: ffff8883eef24e8b R11: ffff8881002cec20 R12: 1ffff11020059d37
+> >  R13: 00000000003fff7b R14: ffff8881002cec20 R15: dffffc0000000000
+> >  FS:  00007f963f21d940(0000) GS:ffff888458ca6000(0000) knlGS:0000000000000000
+> >  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> >  CR2: 00007f963f5edf71 CR3: 000000010672c000 CR4: 0000000000350ef0
+> >  Call Trace:
+> >   <TASK>
+> >   codetag_trylock_module_list+0xd/0x20
+> >   alloc_tag_top_users+0x369/0x4b0
+> >   __show_mem+0x1cd/0x6e0
+> >   warn_alloc+0x2b1/0x390
+> >   __alloc_frozen_pages_noprof+0x12b9/0x21a0
+> >   alloc_pages_mpol+0x135/0x3e0
+> >   alloc_slab_page+0x82/0xe0
+> >   new_slab+0x212/0x240
+> >   ___slab_alloc+0x82a/0xe00
+> >   </TASK>
+> >
+> >As David Wang points out, this issue became easier to trigger after commit
+> >780138b12381 ("alloc_tag: check mem_profiling_support in alloc_tag_init").
+> >
+> >Before the commit, the issue occurred only when it failed to allocate
+> >and initialize alloc_tag_cttype or if a memory allocation fails before
+> >alloc_tag_init() is called. After the commit, it can be easily triggered
+> >when memory profiling is compiled but disabled at boot.
+> >
+> >To properly determine whether alloc_tag_init() has been called and
+> >its data structures initialized, verify that alloc_tag_cttype is a valid
+> >pointer before acquiring the semaphore. If the variable is NULL or an error
+> >value, it has not been properly initialized. In such a case, just skip
+> >and do not attempt to acquire the semaphore.
+> >
+> >Reported-by: kernel test robot <oliver.sang@intel.com>
+> >Closes: https://urldefense.com/v3/__https://lore.kernel.org/oe-lkp/202506181351.bba867dd-lkp@intel.com__;!!ACWV5N9M2RV99hQ!PxJNKp4Bj6h0XIWpRXcmFeIz51jORtRRAo1j23ZnRgvTm0E0Mp5l6UrLNCkiHww6AVWOSfbDDdBwKgJ9_Q$ 
+> >Closes: https://urldefense.com/v3/__https://lore.kernel.org/oe-lkp/202506131711.5b41931c-lkp@intel.com__;!!ACWV5N9M2RV99hQ!PxJNKp4Bj6h0XIWpRXcmFeIz51jORtRRAo1j23ZnRgvTm0E0Mp5l6UrLNCkiHww6AVWOSfbDDdC-7OiUsg$ 
+> >Fixes: 780138b12381 ("alloc_tag: check mem_profiling_support in alloc_tag_init")
+> >Fixes: 1438d349d16b ("lib: add memory allocations report in show_mem()")
+> >Cc: stable@vger.kernel.org
+> >Signed-off-by: Harry Yoo <harry.yoo@oracle.com>
+> >---
+> >
+> >@Suren: I did not add another pr_warn() because every error path in
+> >alloc_tag_init() already has pr_err().
+> >
+> >v2 -> v3:
+> >- Added another Closes: tag (David)
+> >- Moved the condition into a standalone if block for better readability
+> >  (Suren)
+> >- Typo fix (Suren)
+> >
+> > lib/alloc_tag.c | 3 +++
+> > 1 file changed, 3 insertions(+)
+> >
+> >diff --git a/lib/alloc_tag.c b/lib/alloc_tag.c
+> >index 41ccfb035b7b..e9b33848700a 100644
+> >--- a/lib/alloc_tag.c
+> >+++ b/lib/alloc_tag.c
+> >@@ -127,6 +127,9 @@ size_t alloc_tag_top_users(struct codetag_bytes *tags, size_t count, bool can_sl
+> > 	struct codetag_bytes n;
+> > 	unsigned int i, nr = 0;
+> > 
+> >+	if (IS_ERR_OR_NULL(alloc_tag_cttype))
+> 
+> Should a warning  added here? indicating  codetag module not ready yet and the memory failure happened during boot:
+>  if (mem_profiling_support) pr_warn("...
 
+I think you're saying we need to print a warning when alloc tagging
+can't provide "top users".
 
-Hello,
+And there can be three different reasons why it can't provide them:
 
-kernel test robot noticed "WARNING:at_mm/gup.c:#try_grab_folio" on:
+1) alloc_tag_cttype is not ready yet or mem profiling is disabled.
+2) the context can't sleep and trylock failed.
+3) alloc tags do not exist.
 
-commit: 8e628a9d6cc5c377ae06b7821f8280cd6ff2a20f ("[PATCH 3/5] mm: add static PMD zero page")
-url: https://github.com/intel-lab-lkp/linux/commits/Pankaj-Raghav/mm-move-huge_zero_page-declaration-from-huge_mm-h-to-mm-h/20250612-185248
-patch link: https://lore.kernel.org/all/20250612105100.59144-4-p.raghav@samsung.com/
-patch subject: [PATCH 3/5] mm: add static PMD zero page
+I think that makes sense, but it should be a new feature (as a separate
+patch) and not a -stable material?
 
-in testcase: trinity
-version: trinity-x86_64-ba2360ed-1_20241228
-with following parameters:
+If you're interested in doing this, please feel free to proceed.
 
-	runtime: 300s
-	group: group-03
-	nr_groups: 5
+It will look like this:
 
+sh invoked oom-killer: gfp_mask=0x140dca(GFP_HIGHUSER_MOVABLE|_0
+[... snip ...]
+Mem-Info:
+active_anon:467412 inactive_anon:0 isolated_anon:0
+ active_file:0 inactive_file:0 isolated_file:0
+ unevictable:0 dirty:0 writeback:0
+ slab_reclaimable:872 slab_unreclaimable:4769
+ mapped:833 shmem:49252 pagetables:930
+ sec_pagetables:0 bounce:0
+ kernel_misc_reclaimable:0
+ free:15416 free_pcp:7714 free_cma:0
+[... snip ...]
+0 pages in swap cache
+Free swap  = 0kB
+Total swap = 0kB
+524158 pages RAM
+0 pages HighMem/MovableOnly
+22064 pages reserved
+0 pages cma reserved
+0 pages hwpoisoned
+No memory allocation info available: Alloc tagging subsystem not initialized || Context cannot sleep || No alloc tags recorded
+[  pid  ]   uid  tgid total_vm      rss rss_anon rss_file rss_shmem pgtables_bytes swapents oom_score_adj name
+[    105]     0   105     3065     1003      402        0       601    65536        0             0 systemd-udevd
+[    171]     0   171   775610   418124   417661        0       463  3416064        0             0 sh
+oom-kill:constraint=CONSTRAINT_NONE,nodemask=(null),cpuset=/,mems_allowed=0-1,global_oom,task_memcg=/,task=sh,pid=171,uid=0
+Out of memory: Killed process 171 (sh) total-vm:3102440kB, anon-rss:1670644kB, file-rss:0kB, shmem-rss:1852kB, UID:0 pgtables:3336kB oom_score_adj:0
 
-
-config: x86_64-randconfig-077-20250618
-compiler: clang-20
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202506201441.2f96266-lkp@intel.com
-
-
-[  379.105772][ T4274] ------------[ cut here ]------------
-[ 379.107617][ T4274] WARNING: CPU: 0 PID: 4274 at mm/gup.c:148 try_grab_folio (mm/gup.c:148 (discriminator 12)) 
-[  379.109660][ T4274] Modules linked in:
-[  379.111018][ T4274] CPU: 0 UID: 65534 PID: 4274 Comm: trinity-c3 Not tainted 6.16.0-rc1-00003-g8e628a9d6cc5 #1 PREEMPT(voluntary)
-[  379.113741][ T4274] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[ 379.116285][ T4274] RIP: 0010:try_grab_folio (mm/gup.c:148 (discriminator 12)) 
-[ 379.117678][ T4274] Code: 00 48 01 1d 6f 95 3f 0b 48 c7 c7 38 95 55 8f be 08 00 00 00 e8 76 98 0f 00 48 01 1d 47 08 ac 0d e9 e4 fe ff ff e8 c5 2c cd ff <0f> 0b b8 f4 ff ff ff e9 d5 fe ff ff 44 89 f1 80 e1 07 80 c1 03 38
-All code
-========
-   0:	00 48 01             	add    %cl,0x1(%rax)
-   3:	1d 6f 95 3f 0b       	sbb    $0xb3f956f,%eax
-   8:	48 c7 c7 38 95 55 8f 	mov    $0xffffffff8f559538,%rdi
-   f:	be 08 00 00 00       	mov    $0x8,%esi
-  14:	e8 76 98 0f 00       	call   0xf988f
-  19:	48 01 1d 47 08 ac 0d 	add    %rbx,0xdac0847(%rip)        # 0xdac0867
-  20:	e9 e4 fe ff ff       	jmp    0xffffffffffffff09
-  25:	e8 c5 2c cd ff       	call   0xffffffffffcd2cef
-  2a:*	0f 0b                	ud2		<-- trapping instruction
-  2c:	b8 f4 ff ff ff       	mov    $0xfffffff4,%eax
-  31:	e9 d5 fe ff ff       	jmp    0xffffffffffffff0b
-  36:	44 89 f1             	mov    %r14d,%ecx
-  39:	80 e1 07             	and    $0x7,%cl
-  3c:	80 c1 03             	add    $0x3,%cl
-  3f:	38                   	.byte 0x38
-
-Code starting with the faulting instruction
-===========================================
-   0:	0f 0b                	ud2
-   2:	b8 f4 ff ff ff       	mov    $0xfffffff4,%eax
-   7:	e9 d5 fe ff ff       	jmp    0xfffffffffffffee1
-   c:	44 89 f1             	mov    %r14d,%ecx
-   f:	80 e1 07             	and    $0x7,%cl
-  12:	80 c1 03             	add    $0x3,%cl
-  15:	38                   	.byte 0x38
-[  379.122288][ T4274] RSP: 0018:ffffc90003eafc00 EFLAGS: 00010246
-[  379.123803][ T4274] RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
-[  379.125678][ T4274] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-[  379.127640][ T4274] RBP: 0000000000210008 R08: 0000000000000000 R09: 0000000000000000
-[  379.129505][ T4274] R10: 0000000000000000 R11: 0000000000000000 R12: dffffc0000000000
-[  379.131448][ T4274] R13: ffffea0000398000 R14: ffffea0000398034 R15: ffffea0000398000
-[  379.133373][ T4274] FS:  00007f8feed44740(0000) GS:0000000000000000(0000) knlGS:0000000000000000
-[  379.135522][ T4274] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  379.137151][ T4274] CR2: 000000000000006e CR3: 0000000157d77000 CR4: 00000000000406f0
-[  379.139063][ T4274] Call Trace:
-[  379.139969][ T4274]  <TASK>
-[ 379.140739][ T4274] follow_huge_pmd (mm/gup.c:767) 
-[ 379.141902][ T4274] __get_user_pages (mm/gup.c:993) 
-[ 379.143221][ T4274] populate_vma_page_range (mm/gup.c:1926 (discriminator 1)) 
-[ 379.144519][ T4274] __mm_populate (mm/gup.c:2029) 
-[ 379.145559][ T4274] vm_mmap_pgoff (include/linux/mm.h:? mm/util.c:584) 
-[ 379.146769][ T4274] ? entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130) 
-[ 379.148226][ T4274] do_syscall_64 (arch/x86/entry/syscall_64.c:?) 
-[ 379.149357][ T4274] ? lockdep_hardirqs_on_prepare (kernel/locking/lockdep.c:473 (discriminator 3)) 
-[ 379.150866][ T4274] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130) 
-[  379.152205][ T4274] RIP: 0033:0x7f8feee48719
-[ 379.153354][ T4274] Code: 08 89 e8 5b 5d c3 66 2e 0f 1f 84 00 00 00 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b7 06 0d 00 f7 d8 64 89 01 48
-All code
-========
-   0:	08 89 e8 5b 5d c3    	or     %cl,-0x3ca2a418(%rcx)
-   6:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
-   d:	00 00 00 
-  10:	90                   	nop
-  11:	48 89 f8             	mov    %rdi,%rax
-  14:	48 89 f7             	mov    %rsi,%rdi
-  17:	48 89 d6             	mov    %rdx,%rsi
-  1a:	48 89 ca             	mov    %rcx,%rdx
-  1d:	4d 89 c2             	mov    %r8,%r10
-  20:	4d 89 c8             	mov    %r9,%r8
-  23:	4c 8b 4c 24 08       	mov    0x8(%rsp),%r9
-  28:	0f 05                	syscall
-  2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping instruction
-  30:	73 01                	jae    0x33
-  32:	c3                   	ret
-  33:	48 8b 0d b7 06 0d 00 	mov    0xd06b7(%rip),%rcx        # 0xd06f1
-  3a:	f7 d8                	neg    %eax
-  3c:	64 89 01             	mov    %eax,%fs:(%rcx)
-  3f:	48                   	rex.W
-
-Code starting with the faulting instruction
-===========================================
-   0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
-   6:	73 01                	jae    0x9
-   8:	c3                   	ret
-   9:	48 8b 0d b7 06 0d 00 	mov    0xd06b7(%rip),%rcx        # 0xd06c7
-  10:	f7 d8                	neg    %eax
-  12:	64 89 01             	mov    %eax,%fs:(%rcx)
-  15:	48                   	rex.W
-[  379.157899][ T4274] RSP: 002b:00007ffc477ec658 EFLAGS: 00000246 ORIG_RAX: 0000000000000009
-[  379.159864][ T4274] RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007f8feee48719
-[  379.161627][ T4274] RDX: 0000000000000004 RSI: 0000000000200000 RDI: 0000000000000000
-[  379.163409][ T4274] RBP: 00007f8fed769058 R08: ffffffffffffffff R09: 0000000000000000
-[  379.165255][ T4274] R10: 0000000004008862 R11: 0000000000000246 R12: 0000000000000009
-[  379.167147][ T4274] R13: 00007f8feed446c0 R14: 00007f8fed769058 R15: 00007f8fed769000
-[  379.169043][ T4274]  </TASK>
-[  379.169891][ T4274] irq event stamp: 771243
-[ 379.170971][ T4274] hardirqs last enabled at (771255): __console_unlock (arch/x86/include/asm/irqflags.h:42 arch/x86/include/asm/irqflags.h:119 arch/x86/include/asm/irqflags.h:159 kernel/printk/printk.c:344 kernel/printk/printk.c:2885) 
-[ 379.173320][ T4274] hardirqs last disabled at (771278): __console_unlock (kernel/printk/printk.c:342 (discriminator 9) kernel/printk/printk.c:2885 (discriminator 9)) 
-[ 379.175642][ T4274] softirqs last enabled at (771272): handle_softirqs (arch/x86/include/asm/preempt.h:27 kernel/softirq.c:426 kernel/softirq.c:607) 
-[ 379.177979][ T4274] softirqs last disabled at (771263): __irq_exit_rcu (arch/x86/include/asm/jump_label.h:36 kernel/softirq.c:682) 
-[  379.180133][ T4274] ---[ end trace 0000000000000000 ]---
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20250620/202506201441.2f96266-lkp@intel.com
-
-
+> >+		return 0;
+> >+
+> > 	if (can_sleep)
+> > 		codetag_lock_module_list(alloc_tag_cttype, true);
+> > 	else if (!codetag_trylock_module_list(alloc_tag_cttype))
+> >-- 
+> >2.43.0
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+Cheers,
+Harry / Hyeonggon
