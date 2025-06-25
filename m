@@ -1,217 +1,418 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A4BF1DE889
-	for <oe-lkp@lists.linux.dev>; Wed, 25 Jun 2025 05:27:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750829235; cv=none; b=YvYT08H9wnpM+gOTmPRQwR5I0EtbN1OwvjmcJzNUBfmq9TDnrfPVfi4sAxMKpQTfoJ/hMeWqc6P98z6CPwFMBuCjBuMdNJ01fHisFzJRQ5iImmrhz8/fhk2jte/jiWtEzPEFcWGknUmXrV+p4NRmGehSXrUVcDTQPhuWdx+Q0gE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750829235; c=relaxed/simple;
-	bh=LbnRgsJqaYQR3w0VmAPK39nvGAGLmgdt/bvT0e9diq8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=SeFw21UNWQoFmmHFDfS8twBlLkrYkWdyiKliA9RLsPj3uu623NCf3cBos6QoET6mffH+CgaG0LttwGxSnSlBXQ1BnFIG4kJtttJHHXmhXvaFYj1/1HnybJlijdRpmOGXk3y4BSn8t++wpY+roR8LHs8CbPxcmfVNS7auZ3Usx6I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=CW1C+kLT; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD601189B8C
+	for <oe-lkp@lists.linux.dev>; Wed, 25 Jun 2025 06:24:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.7
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1750832693; cv=fail; b=puAf47RX7m6uT0YPREd9IbZcV9leqv4+CtjA5TAq/vZhaKNl6TklGNOHrxbjEkAVckaBOCOQfae3Toua16fBwRw8qyVyYaZECDt66vKdh9cfavBkeXslutbJClC24NAla4qpKivuAAvQYDqZaaN9BqmqF6cJNnAn26aOhU2zQwE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1750832693; c=relaxed/simple;
+	bh=8bo3KGHlqoAP7XEJg7VRQe8ADEiytQ8aHtlcIgoIrdg=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:MIME-Version; b=FQU0B1RqLFo1G7E2vEOEhyDJo1KF88k3kcaAsuYAY/w9eesOf3DeNyscoajOSQvVZu9Xx1rMTrPqbcxujmPu5WbPpRbTpWp9LXsZwxaRgdcJXYn3aXjjaGTfyIifg1mSl7oDUGEw4V3h2qAhS/mHnG6dNae3SG2A8gQNVqxvt0s=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ax5gPXKP; arc=fail smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="CW1C+kLT"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1750829232;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=mpRDJtOibAN+hjHG0vQSfnGW8FBJuEequnOWRE9i4jE=;
-	b=CW1C+kLTYkj53hL9be6LxsE5d1qo2LdiCLeXS442AufZQXTM1qr5q3D7S8TZMr5usdVJSK
-	ICPXDyZS9oaCh+gNYx65KsWwmGKE1QrdTxAuBHRslyO+YN3nC4BbUKP+MUhc4z1eubgTvu
-	xMAdC+AfgtuH2QMlq3XZTFNTS3CHyaI=
-Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
- [209.85.208.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-364-xpiqbCy_NmOD5L3GXdx3Lg-1; Wed, 25 Jun 2025 01:27:10 -0400
-X-MC-Unique: xpiqbCy_NmOD5L3GXdx3Lg-1
-X-Mimecast-MFC-AGG-ID: xpiqbCy_NmOD5L3GXdx3Lg_1750829229
-Received: by mail-lj1-f198.google.com with SMTP id 38308e7fff4ca-32b500a9a28so25194661fa.1
-        for <oe-lkp@lists.linux.dev>; Tue, 24 Jun 2025 22:27:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750829228; x=1751434028;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mpRDJtOibAN+hjHG0vQSfnGW8FBJuEequnOWRE9i4jE=;
-        b=Cc6CSDLAJRBMqkcKDCp08w6itFvY7z09769Hd8Xhq+J7WV0s6B+IqEy8y2JEmERtrg
-         MWlctyeiAqsUA5KcRQiuQH+ylvlQSp2IBXE2YqBpy0ozUDrGYJwhDL7zwOcFY7CU3IT5
-         Pp7t4jfO1U0JUPvSJ3ViPxLFJgZEIZTCh05gDjHEqLVnRF1/A2/SFScSl0Ncolnn9o2p
-         6K0nUVMLt/k/Mah5s985wOHN4dn1i8augUlDbExKCInQL1GpiPhCsRJW9tRxRLVyo2Z8
-         7W6ExL4onnY5iIi7o4QWh4vRX1S0+DguC5spUMCuN02AuYRCT0P4eNOMRUXG37+evUFY
-         UPkQ==
-X-Gm-Message-State: AOJu0YxU5Kh93oopynLZ/Fge0REBrXeoyVQTC3DQZoHv+/+IttDYcTzW
-	kf60x9w3mo4vX8Fz5qsa/JbIweXPk35zEFyI0UJ6e5jFeO6s5sI5N3ZVTxxtl1k2jZRMX1T7zUK
-	0x3K9EpvLiHrRQ9sJmhJ2dC3xF/+MBtVjzmFSV/6XIm86Da6pxmSTbNLj1p+Bqi3Zz9y/YizTO4
-	dwITAZ/bul3SRO1GaYu6R1qdLQjdcdW3c1
-X-Gm-Gg: ASbGnctPK3YKwFrakhZWyv4a0yqvhegK5ImfEvnnSXdnmyI80FMyD62LTV73G0mOpJ9
-	OWkm0hIUGWwyHFxTMTCrMHYzU79XWLpoF1KkzNRppELSu3NCR/qIuNAgC9vngeNrpcmre/APvf6
-	JcQGV0
-X-Received: by 2002:a05:651c:2105:b0:32b:8e39:b0c7 with SMTP id 38308e7fff4ca-32cc65c8421mr3102391fa.40.1750829228029;
-        Tue, 24 Jun 2025 22:27:08 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IE4iD6cGnxdZpUazM6a1CSqutw5GLV74iOBbDL8UdlQVnJmXxorI9+IC+cjSOu6aWAn2nDVewdVsiUwVpu04+c=
-X-Received: by 2002:a05:651c:2105:b0:32b:8e39:b0c7 with SMTP id
- 38308e7fff4ca-32cc65c8421mr3102331fa.40.1750829227527; Tue, 24 Jun 2025
- 22:27:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ax5gPXKP"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1750832692; x=1782368692;
+  h=date:from:to:cc:subject:message-id:
+   content-transfer-encoding:mime-version;
+  bh=8bo3KGHlqoAP7XEJg7VRQe8ADEiytQ8aHtlcIgoIrdg=;
+  b=ax5gPXKPGmHLKxkyU8RBLNuqRUk126ytmDxSx+icsCmFZnJzZ+DrPLn6
+   5peEEO1WefJP7UAWKU4eGB6Yi0kYAMFnNw0Dov23UvNcfhtP+ggZmLBn1
+   Nh3/Ft8HjnoEz+CU2RpKWH5owXp4I97F1weCmPo//67iXgK9u4saiOA0P
+   Bncpaft1r9Ah0wQp718o1F1DB5HUFbxXZvAV0CAmyuV8dIDtgCNXjWO4t
+   ASw0MsiQFax+INTG+h50CsOZNuGjuRZRGmCwGhFVt0xO8z8HKIDA+zzCi
+   lG+sGW2QTMn9M2hYNKXSD84tT2qyX+RZNDpDFZI214Yo9Bh46ILnXLZd4
+   Q==;
+X-CSE-ConnectionGUID: FEMtKUN0RSS/2dhT1CmIuQ==
+X-CSE-MsgGUID: hIAmGrnMTz6D3lrS7tXvhw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11474"; a="78510994"
+X-IronPort-AV: E=Sophos;i="6.16,264,1744095600"; 
+   d="scan'208";a="78510994"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2025 23:24:51 -0700
+X-CSE-ConnectionGUID: WNKqzwa3TdmbsfJwwpNJhg==
+X-CSE-MsgGUID: jaPF/y6kTJOASSmnLkmABw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,264,1744095600"; 
+   d="scan'208";a="157886180"
+Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
+  by orviesa005.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2025 23:24:51 -0700
+Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.25; Tue, 24 Jun 2025 23:24:50 -0700
+Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.25 via Frontend Transport; Tue, 24 Jun 2025 23:24:50 -0700
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (40.107.96.69) by
+ edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.25; Tue, 24 Jun 2025 23:24:49 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=dWpC5ZyxsVZQIZYANiqFczggJI0xaY3/myVp03kvfk2icrjFB22DKVr0KrR44JMN0FXSVii71lrulx1M5Sttpjjel6JNFlt13gzj5KgZBEV+OV+QPB+Q8SNM1EneVdxpXGvL+Racpug/S+cuc2iqDm19NsHewGBzH3tHYNbHAAhqc8q+J1dAsex3RO9Y60vyNtEg/DhWF+9LAE91reObXIlIYXAv1C3GPXx10+oKbhW3rZ6ds2ojjs4CbLE8d6kQMhTPaKUqLeixgARZz2wx/7HtXkMqLGNBk7cSvwnHXhUpwtDQeOjluejU1R5Gn+Z4xgwFrZ9GApWqLGRsBBA//w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3JwamGQxS3y4ehq4X/BCzi4n4GtbDBQe2Fs+OoSv/0M=;
+ b=IIZlWHet80UlRGa+JPSVfhEEO7d7FBdKh6YkG1Ir+LrLsYHAKAFlKcwT7BO3Ax6hrHNTzZdQwDevexFyPxtJNq2NNQ0Uw95JB/S6rVXHsLdvdB4+z0muhf8/vqwdmRFl2MmplCuxfG+bfTZ+X0XJXqM2WSZB+CJxbh/S3U8uHBpH5MaLJ+6q/Nu7VjeIHHLzWHfvXs3qSqIC9UIsOga5zAqPYRixE0rjIjeDth+f8eHMoe0DxLcv0vHm/KSQpHLxlDKRoYs7es0TbrBPpq0I7BDdrstzOq20LP+9Qmzmq+ebgaiIh30omty/IDJB0KaFeKhcyjaDtJupKyEwb3ho5A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by LV8PR11MB8748.namprd11.prod.outlook.com (2603:10b6:408:200::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8857.25; Wed, 25 Jun
+ 2025 06:24:41 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%3]) with mapi id 15.20.8857.025; Wed, 25 Jun 2025
+ 06:24:41 +0000
+Date: Wed, 25 Jun 2025 14:24:32 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Fuad Tabba <tabba@google.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Sean Christopherson
+	<seanjc@google.com>, Ackerley Tng <ackerleytng@google.com>,
+	<kvm@vger.kernel.org>, <oliver.sang@intel.com>
+Subject: [sean-jc:rev/map_gmem] [KVM]  4f0f45b2ed: kvm-unit-tests.x2apic.fail
+Message-ID: <202506251406.5ff35080-lkp@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+X-ClientProxiedBy: SG2PR02CA0008.apcprd02.prod.outlook.com
+ (2603:1096:3:17::20) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202506201427.baf6fdc2-lkp@intel.com> <CALTww2-0v=60uxbgd=ideL8XQM0Tp_ZOwOkNhTrthC-U+zt4Hg@mail.gmail.com>
- <aFtgsw+bARwZSQQI@xsang-OptiPlex-9020>
-In-Reply-To: <aFtgsw+bARwZSQQI@xsang-OptiPlex-9020>
-From: Xiao Ni <xni@redhat.com>
-Date: Wed, 25 Jun 2025 13:26:55 +0800
-X-Gm-Features: Ac12FXyOmw8RcnOj0aLzkzz5hWpInf0qH4Sz2bl3LkDQ77l25u-JtaLCzbSh4hQ
-Message-ID: <CALTww2_xT2Awcn4V+NS1kwsWv0p2z+e+Y155Y-LhKm9cGPrH3A@mail.gmail.com>
-Subject: Re: [mdraid:md-6.16] [md] bc8ce8eaa2: mdadm-selftests.05r1-failfast.fail
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, Yu Kuai <yukuai3@huawei.com>, 
-	linux-raid@vger.kernel.org
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: ynaPWo31GZoaIK1qysE1RRZiagIofpVbF_Lo4wqT-O0_1750829229
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|LV8PR11MB8748:EE_
+X-MS-Office365-Filtering-Correlation-Id: 59e87584-f7e5-4b08-9c12-08ddb3b0f81d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?YDdcSPGDfwL1SxmxjHpGhz6+pmUipeW2Ak5JW/flwdbko5vObRlLj6SbhUxU?=
+ =?us-ascii?Q?w2SjtAxq5mYSXW9crRd8LCVcuT7rdFIdfRBJtuNeTGHr6FWnK6QK6RftyxI7?=
+ =?us-ascii?Q?CU6kM5KemOYlq0GWmneGTLJJ7XCH8lbfXfYlgbeyR6nmLd957pn11zkINnMk?=
+ =?us-ascii?Q?G7auYMjMq5SsIgakhLorsfax1dxnlH0p573ucDRY2u3xJIDqJer49P5/moOH?=
+ =?us-ascii?Q?1a64PpjyFELaa/eJpgYd5LEYU5AVsUcFYPSRK8ts4v7wMy1AYuXh6roCrcz4?=
+ =?us-ascii?Q?5rWt9tDUyI+ye5XZwA5G0qvLQmljveTK4V0KfRigFMlNtHdvf7jkFj2ze+vY?=
+ =?us-ascii?Q?H9lohb1pq0uUW9j4LDoXKxXYZa4r1jb7ZA6/7JV64KbfsJn3zyG5N62ISG9l?=
+ =?us-ascii?Q?1sWAxvvBqaOr4ko4UlLaCv8NpeliQw966ZJNeAisltel//mCCQEyWb5el8SY?=
+ =?us-ascii?Q?C2qqNvB/DYkOdiosww/DLp+WSPOhfRrrF46ozDcpm7jZI7HE+aYMKWg/Isz3?=
+ =?us-ascii?Q?uC4MhjW3l3k0vGZjWkcqTGannRD8AIXvejPZ4fDH7QuAyYtCCWYvy1zSNGXl?=
+ =?us-ascii?Q?zN8HkS9lqDYPkoy8pIcwFsZb9y8brkDwpmZU2Tu3CwsjLHwU5k0N9FJqo4qm?=
+ =?us-ascii?Q?OZKe090cM7QK2a/JGUd7Ftq3iMyNEBOBOs7XVk89P4WvbK70eWu4zJ4+z40i?=
+ =?us-ascii?Q?3/nMliIeXzJ6LnvAwaKeWkjtOQcL6ky9VTXzFQ8SB+ZoLxY9JKhutbJUJyWZ?=
+ =?us-ascii?Q?rbL0w7FDxUS3Sl/Ic5rd4b/nmVn6UiUGFyHArjpS7svhzIs26DRtD9KglSzf?=
+ =?us-ascii?Q?96ZFs7N51S67pZ3Wvh+fhZvhRGnp6Wj41M3pfaeMFjmoDmpdeo2s0ii02Ijk?=
+ =?us-ascii?Q?Scq9sscbUgXrLa0mnLnFsYPMad+oFWs47VWyeVv7nLDF5fh1Y6fcRiXxaGU6?=
+ =?us-ascii?Q?aBGu3mpC8B8XMwZf0XNV0rJX24lZE426Z/DE/xogjwuhhDGayCuJDosSdnSZ?=
+ =?us-ascii?Q?VCAFbq9DJ4PfgXb8DjePd8AodX60+7bfDQpGObFQLM/sdJrIDoM3a5BOIB4H?=
+ =?us-ascii?Q?PZl9WsQNUpOuGYz0N00UcBBZbcMQXRUA2CTzMrV8MBC9TqbqSjtV/I3hViI8?=
+ =?us-ascii?Q?ZORFnTb91C0/argJpE7VNxO/kQN2Wxa7NC1FCDsljrm3klLCtEB1o4lPcQCH?=
+ =?us-ascii?Q?OICceLdR0+0y0iB+zL+Mu+fGSfO7sQHr6OFiXlPv/v0Zmw86KwciOwQcBUzx?=
+ =?us-ascii?Q?siY9B0dm1C9hg42cKeaUYnskmkrasUYG8r6+pl/g3WN9VBF62wn4G86og3YZ?=
+ =?us-ascii?Q?ff4Hxnl0pJzkMZcT5jOv4DzLb2TrRu9VIeK2tfKC9pVG2qmejLKQZ5CH7z7i?=
+ =?us-ascii?Q?u23jzQI/zk7pFhc4CRGb7XpqiKvl?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FG6lUOTttTecMSbLqbjTdKp+VZ2cj1B4a3I0TTaP9A/foWHvJpyHefjRfjwg?=
+ =?us-ascii?Q?g+VD3upxFBa/hXp8aBiem4ctZTz7+8OKvI942PGxMqMrBNEGQQRxgASg+u5v?=
+ =?us-ascii?Q?RsDivBxxYyd2qsvTvqpBr63ZHB2RUfKpf0XzGFm40FXk78m2EXfOiXXjVkhK?=
+ =?us-ascii?Q?HIFTZzo6P+rVDB05R7AwO16Cf2Rwpua4apZmkITwl13Veo0hzDLZaHvoyQIi?=
+ =?us-ascii?Q?QTAyTwXq3u8C3vc1swpaCFHYReacMzek/yjlf3UP5bq3ewQuTpLgDHnODF1d?=
+ =?us-ascii?Q?H/D2ZILnifm2ro4Y7cUtewAOYX4xcLmRUwfcrm0JqFfGoWlWwKK5Pkb444si?=
+ =?us-ascii?Q?qLzKwDhrBi6d+kVvdwt8Go9F2DJKXqkMXtvQ2kxpNoD/qW6lk0VeG+wjXC8b?=
+ =?us-ascii?Q?Mj5uL9NYrOiB40CTZJq54x2T4jT6mxjRlWXfeSck5I8eENc9ehXIy+q+4vRp?=
+ =?us-ascii?Q?n+UA7JUtzet5iOdTew47L8zJfDLkdBdCeM8McJMZCeI9hVGCOHqbHprkkyHf?=
+ =?us-ascii?Q?KrnZhiWq9YNC+UwB9G3XSB0zIgRZZ6rhqtIMExY2miPuJMjzrrcu/VBEdDuS?=
+ =?us-ascii?Q?AgUkK26dji62sTlgBevyqagiENJI7/dM8Ts1ZS/XzjMrOISHKF/5ss8Kt6K6?=
+ =?us-ascii?Q?f4aCFTkwQpj4nSOAcSFUGcRwJZpyeslRaWN5laLee5buYDBhrZG4YmbYNVP9?=
+ =?us-ascii?Q?EsoxY6WZ3kutuHW6iOBn/gwhvfB5e+w+EzxjsTuvA9WpDO+kNRCLxtgazU5N?=
+ =?us-ascii?Q?LgXmyrSMeEtzkxnje3A0oXOcStOn1EjBuNOLaVqGT/ooYL8NxfgiCWE2Wlha?=
+ =?us-ascii?Q?oAYMscvhxsm3oCvmXrgvuesKBG71kmpA1DHGA/isRJhkLGXRu2PEg/YH3R0A?=
+ =?us-ascii?Q?H/FR43FaFN2+I14GD4qHomi6B3SLk1MtMDF6qmyml75alY3dXrLBUe6+R6lo?=
+ =?us-ascii?Q?bMP3yWgMfvx6A3zxdV0SLoDp0QIQzi73fXAvcQLTAMi9M+LI/dVb4o7DQMRH?=
+ =?us-ascii?Q?A/7tWIFvRkNKYY4QwmVZFA1aCCjjtkhVWcHbJOqbEgE/8q98+QM99ZPUTIxV?=
+ =?us-ascii?Q?4kUe21DSvOqoNVkv83x0zRvgJ7Z0XKWQZns04cjdPwMGaFPLAjUwvJjXTsUu?=
+ =?us-ascii?Q?G7RygLwSjjZJHLV+quB0rgUy+3/XhEvjVopN8n4+ePSsmeOhtoZx4px6dgMT?=
+ =?us-ascii?Q?6lauvoiSCeYo2RkCEYJzSfLnqJ/7BXtmE+qC3LjFfIWKE6M2l57m1uRuxxO9?=
+ =?us-ascii?Q?yAlNKMV4ByzxOegTQMypdbQ8VMrneWH3ddbcyK8XFRB4GNwNhtZGY+SwHLFp?=
+ =?us-ascii?Q?S4bVs1iTj++nRA0q6O4T27yKE/ptzClZUZXlhWXK+zHR/WP+KCseX04D8ijJ?=
+ =?us-ascii?Q?MwkdGnibEeTAXQrvNCHJjDHsEE7oy3JuCwGx5cN6kA4erKenTPSFcwchHk2i?=
+ =?us-ascii?Q?T5dUIU17v8iSUh5cuPZbI220sTlpMvY998E+bjwInkFxqu00lXdUM4/ZdhcB?=
+ =?us-ascii?Q?X0G5Ga0Xz5SxeBIHRoU8023/I7z6kDqwSvwzrg73thYi9/Ct5E5eUUW1syNZ?=
+ =?us-ascii?Q?B98T00wUOmwiYq96L8g7q8lZ7whBRTW0Uhn9lEX+miG5a//ltd0OupwDC9aq?=
+ =?us-ascii?Q?fQ=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 59e87584-f7e5-4b08-9c12-08ddb3b0f81d
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jun 2025 06:24:41.6971
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: RZex4VZtKuodjQn1YiajS0UrskgTeJwErZCwq/u9c+cQyHPHYbdcYbEw3YDW/ophqGF1oIkEZnfopqJ3BSD0Mg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR11MB8748
+X-OriginatorOrg: intel.com
 
-On Wed, Jun 25, 2025 at 10:37=E2=80=AFAM Oliver Sang <oliver.sang@intel.com=
-> wrote:
->
-> hi, Xiao,
->
-> On Tue, Jun 24, 2025 at 04:36:45PM +0800, Xiao Ni wrote:
-> > Hi
-> >
-> > It needs to use the https://github.com/md-raid-utilities/mdadm/ to do
-> > regression tests
->
-> just FYI. we really use test from this link:
->
-> https://github.com/intel/lkp-tests/blob/master/programs/mdadm-selftests/p=
-kg/PKGBUILD
->
-> pkgname=3Dmdadm-selftests
-> pkgver=3Dgit
-> pkgrel=3D1
-> url=3D'https://github.com/md-raid-utilities/mdadm'
-> arch=3D('i386' 'x86_64' 'aarch64')
-> license=3D('GPL')
-> source=3D('mdadm-selftests'::'https://github.com/md-raid-utilities/mdadm.=
-git')
-> md5sums=3D('SKIP')
 
-Thanks for the clarification. I'm looking at this problem.
+Hello,
 
-Regards
-Xiao
->
-> >
-> > Best Regards
-> > Xiao
-> >
-> > On Tue, Jun 24, 2025 at 3:55=E2=80=AFPM kernel test robot <oliver.sang@=
-intel.com> wrote:
-> > >
-> > >
-> > >
-> > > Hello,
-> > >
-> > > kernel test robot noticed "mdadm-selftests.05r1-failfast.fail" on:
-> > >
-> > > commit: bc8ce8eaa290a198cb5303181041aad037299b7f ("md: call del_gendi=
-sk in control path")
-> > > https://git.kernel.org/cgit/linux/kernel/git/mdraid/linux md-6.16
-> > >
-> > > in testcase: mdadm-selftests
-> > > version: mdadm-selftests-x86_64-0550fb37-1_20250518
-> > > with following parameters:
-> > >
-> > >         disk: 1HDD
-> > >         test_prefix: 05r1-failfast
-> > >
-> > >
-> > >
-> > > config: x86_64-rhel-9.4-func
-> > > compiler: gcc-12
-> > > test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4790T CPU @ 2.=
-70GHz (Haswell) with 16G memory
-> > >
-> > > (please refer to attached dmesg/kmsg for entire log/backtrace)
-> > >
-> > >
-> > >
-> > >
-> > > If you fix the issue in a separate patch/commit (i.e. not just a new =
-version of
-> > > the same patch/commit), kindly add following tags
-> > > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> > > | Closes: https://lore.kernel.org/oe-lkp/202506201427.baf6fdc2-lkp@in=
-tel.com
-> > >
-> > > 2025-06-19 10:07:43 mkdir -p /var/tmp
-> > > 2025-06-19 10:07:43 mke2fs -t ext3 -b 4096 -J size=3D4 -q /dev/sda1
-> > > 2025-06-19 10:08:14 mount -t ext3 /dev/sda1 /var/tmp
-> > > /usr/bin/install -D  -m 755 mdadm /sbin/mdadm
-> > > /usr/bin/install -D  -m 755 mdmon /sbin/mdmon
-> > > sed -e 's/{DEFAULT_METADATA}/1.2/g' \
-> > > -e 's,{MAP_PATH},/run/mdadm/map,g' -e 's,{CONFFILE},/etc/mdadm.conf,g=
-' \
-> > > -e 's,{CONFFILE2},/etc/mdadm/mdadm.conf,g'  mdadm.8.in > mdadm.8
-> > > sed -e 's,{CONFFILE},/etc/mdadm.conf,g' \
-> > > -e 's,{CONFFILE2},/etc/mdadm/mdadm.conf,g'  mdadm.conf.5.in > mdadm.c=
-onf.5
-> > > /usr/bin/install -D -m 644 mdadm.8 /usr/share/man/man8/mdadm.8
-> > > /usr/bin/install -D -m 644 mdmon.8 /usr/share/man/man8/mdmon.8
-> > > /usr/bin/install -D -m 644 md.4 /usr/share/man/man4/md.4
-> > > /usr/bin/install -D -m 644 mdadm.conf.5 /usr/share/man/man5/mdadm.con=
-f.5
-> > > /usr/bin/install -D -m 644 udev-md-raid-creating.rules /lib/udev/rule=
-s.d/01-md-raid-creating.rules
-> > > /usr/bin/install -D -m 644 udev-md-raid-arrays.rules /lib/udev/rules.=
-d/63-md-raid-arrays.rules
-> > > /usr/bin/install -D -m 644 udev-md-raid-assembly.rules /lib/udev/rule=
-s.d/64-md-raid-assembly.rules
-> > > /usr/bin/install -D -m 644 udev-md-clustered-confirm-device.rules /li=
-b/udev/rules.d/69-md-clustered-confirm-device.rules
-> > >  [1;33mWarning! Tests are performed on system level mdadm!
-> > >  [0mIf you want to test local build, you need to install it first!
-> > > test: skipping tests for multipath, which is removed in upstream 6.8+=
- kernels
-> > >  [1;33mWarning! Test suite will set up systemd environment!
-> > >  [0mUse "systemctl show-environment" to show systemd environment vari=
-ables
-> > > Added IMSM_DEVNAME_AS_SERIAL=3D1 to systemd environment, use "systemc=
-tl unset-environment IMSM_DEVNAME_AS_SERIAL=3D1" to remove it.
-> > > Added IMSM_NO_PLATFORM=3D1 to systemd environment, use "systemctl uns=
-et-environment IMSM_NO_PLATFORM=3D1" to remove it.
-> > > Testing on linux-6.15.0-02014-gbc8ce8eaa290 kernel
-> > > /lkp/benchmarks/mdadm-selftests/tests/05r1-failfast... Execution time=
- (seconds): 8  [0;31mFAILED [0m - see /var/tmp/05r1-failfast.log and /var/t=
-mp/fail05r1-failfast.log for details
-> > > Removed IMSM_DEVNAME_AS_SERIAL=3D1 from systemd environment.
-> > > Removed IMSM_NO_PLATFORM=3D1 from systemd environment.
-> > >
-> > >
-> > >
-> > > The kernel config and materials to reproduce are available at:
-> > > https://download.01.org/0day-ci/archive/20250620/202506201427.baf6fdc=
-2-lkp@intel.com
-> > >
-> > >
-> > >
-> > > --
-> > > 0-DAY CI Kernel Test Service
-> > > https://github.com/intel/lkp-tests/wiki
-> > >
-> > >
-> >
->
+kernel test robot noticed "kvm-unit-tests.x2apic.fail" on:
+
+commit: 4f0f45b2eddaf5c476302a35cae8962fc3142419 ("KVM: x86: Enable guest_m=
+emfd shared memory for non-CoCo VMs")
+https://github.com/sean-jc/linux rev/map_gmem
+
+in testcase: kvm-unit-tests
+version: kvm-unit-tests-x86_64-50761232-1_20250606
+with following parameters:
+
+
+config: x86_64-rhel-9.4-func
+compiler: gcc-12
+test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480+ (Sapphi=
+re Rapids) with 256G memory
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+besides, we observed more cases failed on this commit but pass on parent.
+
+0b2874537210b158 4f0f45b2eddaf5c476302a35cae
+---------------- ---------------------------
+       fail:runs  %reproduction    fail:runs
+           |             |             |
+           :9           67%           6:6     kvm-unit-tests.access-reduced=
+-maxphyaddr.fail
+           :9           67%           6:6     kvm-unit-tests.access.fail
+           :9           67%           6:6     kvm-unit-tests.apic-split.fai=
+l
+           :9           67%           6:6     kvm-unit-tests.asyncpf.fail
+           :9           67%           6:6     kvm-unit-tests.debug.fail
+           :9           67%           6:6     kvm-unit-tests.emulator.fail
+           :9           67%           6:6     kvm-unit-tests.ept.fail
+           :9           67%           6:6     kvm-unit-tests.eventinj.fail
+           :9           67%           6:6     kvm-unit-tests.hypercall.fail
+           :9           67%           6:6     kvm-unit-tests.hyperv_clock.f=
+ail
+           :9           67%           6:6     kvm-unit-tests.hyperv_connect=
+ions.fail
+           :9           67%           6:6     kvm-unit-tests.hyperv_stimer.=
+fail
+           :9           67%           6:6     kvm-unit-tests.hyperv_stimer_=
+direct.fail
+           :9           67%           6:6     kvm-unit-tests.hyperv_synic.f=
+ail
+           :9           67%           6:6     kvm-unit-tests.idt_test.fail
+           :9           67%           6:6     kvm-unit-tests.intel_iommu.fa=
+il
+           :9           67%           6:6     kvm-unit-tests.ioapic-split.f=
+ail
+           :9           67%           6:6     kvm-unit-tests.ioapic.fail
+           :9           67%           6:6     kvm-unit-tests.kvmclock_test.=
+fail
+           :9           67%           6:6     kvm-unit-tests.la57.fail
+           :9           67%           6:6     kvm-unit-tests.lam.fail
+           :9           67%           6:6     kvm-unit-tests.memory.fail
+           :9           67%           6:6     kvm-unit-tests.msr.fail
+           :9           67%           6:6     kvm-unit-tests.pcid-asymmetri=
+c.fail
+           :9           67%           6:6     kvm-unit-tests.pcid-disabled.=
+fail
+           :9           67%           6:6     kvm-unit-tests.pcid-enabled.f=
+ail
+           :9           67%           6:6     kvm-unit-tests.pku.fail
+           :9           67%           6:6     kvm-unit-tests.pmu.fail
+           :9           67%           6:6     kvm-unit-tests.rdpru.fail
+           :9           67%           6:6     kvm-unit-tests.realmode.fail
+           :9           67%           6:6     kvm-unit-tests.rmap_chain.fai=
+l
+           :9           67%           6:6     kvm-unit-tests.s3.fail
+           :9           67%           6:6     kvm-unit-tests.setjmp.fail
+           :9           67%           6:6     kvm-unit-tests.sieve.fail
+           :9           67%           6:6     kvm-unit-tests.smap.fail
+           :9           67%           6:6     kvm-unit-tests.smptest.fail
+           :9           67%           6:6     kvm-unit-tests.smptest3.fail
+           :9           67%           6:6     kvm-unit-tests.syscall.fail
+           :9           67%           6:6     kvm-unit-tests.tsc.fail
+           :9           67%           6:6     kvm-unit-tests.tsc_adjust.fai=
+l
+           :9           67%           6:6     kvm-unit-tests.tsx-ctrl.fail
+           :9           67%           6:6     kvm-unit-tests.umip.fail
+           :9           67%           6:6     kvm-unit-tests.vmexit_cpuid.f=
+ail
+           :9           67%           6:6     kvm-unit-tests.vmexit_cr0_wp.=
+fail
+           :9           67%           6:6     kvm-unit-tests.vmexit_cr4_pge=
+.fail
+           :9           67%           6:6     kvm-unit-tests.vmexit_inl_pmt=
+imer.fail
+           :9           67%           6:6     kvm-unit-tests.vmexit_ipi.fai=
+l
+           :9           67%           6:6     kvm-unit-tests.vmexit_ipi_hal=
+t.fail
+           :9           67%           6:6     kvm-unit-tests.vmexit_mov_fro=
+m_cr8.fail
+           :9           67%           6:6     kvm-unit-tests.vmexit_mov_to_=
+cr8.fail
+           :9           67%           6:6     kvm-unit-tests.vmexit_ple_rou=
+nd_robin.fail
+           :9           67%           6:6     kvm-unit-tests.vmexit_tscdead=
+line.fail
+           :9           67%           6:6     kvm-unit-tests.vmexit_tscdead=
+line_immed.fail
+           :9           67%           6:6     kvm-unit-tests.vmexit_vmcall.=
+fail
+           :9           67%           6:6     kvm-unit-tests.vmware_backdoo=
+rs.fail
+           :9           67%           6:6     kvm-unit-tests.vmx_apic_passt=
+hrough_thread.fail
+           :9           67%           6:6     kvm-unit-tests.vmx_apic_passt=
+hrough_tpr_threshold_test.fail
+           :9           67%           6:6     kvm-unit-tests.vmx_apicv_test=
+.fail
+           :9           67%           6:6     kvm-unit-tests.vmx_eoi_bitmap=
+_ioapic_scan.fail
+           :9           67%           6:6     kvm-unit-tests.vmx_hlt_with_r=
+vi_test.fail
+           :9           67%           6:6     kvm-unit-tests.vmx_init_signa=
+l_test.fail
+           :9           67%           6:6     kvm-unit-tests.vmx_pf_excepti=
+on_test.fail
+           :9           67%           6:6     kvm-unit-tests.vmx_pf_excepti=
+on_test_reduced_maxphyaddr.fail
+           :9           67%           6:6     kvm-unit-tests.vmx_posted_int=
+r_test.fail
+           :9           67%           6:6     kvm-unit-tests.vmx_sipi_signa=
+l_test.fail
+           :9           67%           6:6     kvm-unit-tests.vmx_vmcs_shado=
+w_test.fail
+           :9           67%           6:6     kvm-unit-tests.x2apic.fail
+           :9           67%           6:6     kvm-unit-tests.xapic.fail
+           :9           67%           6:6     kvm-unit-tests.xsave.fail
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new versio=
+n of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202506251406.5ff35080-lkp@intel.co=
+m
+
+QEMU emulator version 7.2.17 (Debian 1:7.2+dfsg-7+deb12u13)
+Copyright (c) 2003-2022 Fabrice Bellard and the QEMU Project developers
+2025-06-23 19:14:12 ./run_tests.sh
+=1B[31mFAIL=1B[0m apic-split (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m ioapic-split (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m x2apic (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m xapic (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m ioapic (terminated on SIGABRT)
+=1B[33mSKIP=1B[0m cmpxchg8b (i386 only)
+=1B[31mFAIL=1B[0m smptest (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m smptest3 (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m vmexit_cpuid (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m vmexit_vmcall (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m vmexit_mov_from_cr8 (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m vmexit_mov_to_cr8 (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m vmexit_inl_pmtimer (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m vmexit_ipi (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m vmexit_ipi_halt (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m vmexit_ple_round_robin (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m vmexit_tscdeadline (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m vmexit_tscdeadline_immed (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m vmexit_cr0_wp (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m vmexit_cr4_pge (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m access (terminated on SIGABRT)
+=1B[33mSKIP=1B[0m access_fep (test marked as manual run only)
+=1B[31mFAIL=1B[0m access-reduced-maxphyaddr (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m smap (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m pku (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m pks (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m asyncpf (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m emulator (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m eventinj (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m hypercall (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m idt_test (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m memory (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m msr (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m pmu (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m pmu_lbr (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m pmu_pebs (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m vmware_backdoors (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m realmode (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m s3 (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m setjmp (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m sieve (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m syscall (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m tsc (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m tsc_adjust (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m xsave (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m rmap_chain (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m svm (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m svm_pause_filter (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m svm_npt (terminated on SIGABRT)
+=1B[33mSKIP=1B[0m taskswitch (i386 only)
+=1B[33mSKIP=1B[0m taskswitch2 (i386 only)
+=1B[31mFAIL=1B[0m kvmclock_test (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m pcid-enabled (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m pcid-disabled (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m pcid-asymmetric (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m rdpru (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m umip (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m la57 (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m vmx (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m ept (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m vmx_eoi_bitmap_ioapic_scan (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m vmx_hlt_with_rvi_test (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m vmx_apicv_test (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m vmx_posted_intr_test (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m vmx_apic_passthrough_thread (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m vmx_init_signal_test (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m vmx_sipi_signal_test (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m vmx_apic_passthrough_tpr_threshold_test (terminated on SI=
+GABRT)
+=1B[31mFAIL=1B[0m vmx_vmcs_shadow_test (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m vmx_pf_exception_test (terminated on SIGABRT)
+=1B[33mSKIP=1B[0m vmx_pf_exception_test_fep (test marked as manual run only=
+)
+=1B[33mSKIP=1B[0m vmx_pf_vpid_test (test marked as manual run only)
+=1B[33mSKIP=1B[0m vmx_pf_invvpid_test (test marked as manual run only)
+=1B[33mSKIP=1B[0m vmx_pf_no_vpid_test (test marked as manual run only)
+=1B[31mFAIL=1B[0m vmx_pf_exception_test_reduced_maxphyaddr (terminated on S=
+IGABRT)
+=1B[31mFAIL=1B[0m debug (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m hyperv_synic (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m hyperv_connections (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m hyperv_stimer (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m hyperv_stimer_direct (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m hyperv_clock (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m intel_iommu (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m tsx-ctrl (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m intel_cet (terminated on SIGABRT)
+=1B[31mFAIL=1B[0m lam (terminated on SIGABRT)
+
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20250625/202506251406.5ff35080-lkp@=
+intel.com
+
+
+
+--=20
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
 
