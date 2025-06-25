@@ -1,354 +1,291 @@
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8B516BB5B
-	for <oe-lkp@lists.linux.dev>; Wed, 25 Jun 2025 00:52:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750812751; cv=none; b=GwnWlC4fR8JUQr/OVIfHc3Z6hoOBksasI2MQRezBOphX5u2OTxNlBDl8doBA1DwspWGNZE2ZyMPmfAVer/ivaWiqjYkwOOfFepMAQU0ZDRYi9M/+MhLmoyz42bGfMKYBMqe054OTtsMzRiXhYQ5xLvP7yCgqbPJ/4BFITbS4pYU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750812751; c=relaxed/simple;
-	bh=mb7Xuz7qvrtEcnx8SzYze1NDi9Ly8GnpsrNre7WHoDI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=EWQArMXVJf7MBhFxKFOhvxlMCG8Fx/Loi/KaGW5Zx60XMv7V3aKXHBrOpI/sKW/fCpmzxI+ZJo4o34FqRN2SDF3y0aoCJbEcaU+vrAUiNA6u4E4PQCYmJzxdwDGhf9AOhRodCZaYtvC36PAA7EJ2QU0LZ1X6X+JAM8B3vADJYUg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=n29jaKJv; arc=none smtp.client-ip=209.85.160.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EB052AC17
+	for <oe-lkp@lists.linux.dev>; Wed, 25 Jun 2025 02:36:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.16
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1750819017; cv=fail; b=RXmOrtvspQTjxSuST4tzq/vnZXuMc4R+vM0j7xemg5E6ywj1GmcDAxTRXPHODARleft3+ZGsXfvTLKAe21mzMRGfPWm7RFmFLARD9Eo5vwNBciMGLxPJKjk0q0qCdeBgKANbjUrMxslhUaBdWnd4wXJ3aV56hG9RNLSV7orYuno=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1750819017; c=relaxed/simple;
+	bh=tVudsIyud7tSmD021NBFrEGzG4pED0DOlYg8NBziuM0=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=J+Aaz+RktyH4gZ/G26mJvr3SGlwTX6mZCocX/HwXeKc0Tm0yHDtiKOuPQGtm72ieWpsyktHE2LguOYJLQknKVUWaJkyMo9FzFk8jiYzvUytLNiu/bHwyomwZtO18hG2ePbSb7kSK8qkSsPq8Lt8kF0TQtpSkImCmHOcT7+IMXJc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bSebeTgz; arc=fail smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="n29jaKJv"
-Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-4a58197794eso52211cf.1
-        for <oe-lkp@lists.linux.dev>; Tue, 24 Jun 2025 17:52:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1750812749; x=1751417549; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WSwW+xIhvHfP2n82ypS/Wn9Qq6NX23eYFIUnCLJFSpw=;
-        b=n29jaKJv7usZTqKM4adXT9E5tcDNNa/iBROg3xiFKKwbQgpjc8OEhZBlrRVVwTVa7z
-         RLWTmp4SgI11hj2t6RwFaaxrqQ9edgtt338vd7gjBrfg+WNgDTOPECRgCsT3kgGY8cRf
-         ES8o2QotR+4srlSyh75uUiDTCvwBjd528k+GSkHxTBdA7kXEZeGYe8uapEPDV6OUDHpe
-         mAFZjIhElaB2f1+I+JQtevKBdRoXMJ7734lLl2fcv1WWZ+JPdwqsLwMZCZFrEuYMKSqP
-         PXG4pdnv5OYkwtCcSIsdASv1aAGz4Hf5UItf256BokTyzeVI3V5pjiiSl0Qech362DEN
-         bc9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750812749; x=1751417549;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=WSwW+xIhvHfP2n82ypS/Wn9Qq6NX23eYFIUnCLJFSpw=;
-        b=Iwqr1Lxcicfyl80shcneqRyafeycbedCd1onlBeSqrBCYEI4aW2IxbTS7aCGTMEhyS
-         lbFxdC9yBs39wSqnR19X/GeIoW6D76mJ4JlSix1BsICk+LrAuapdtZzIwbeNiSlsy/1g
-         5/MnJAjk7v7AwR7C4waaYQC3cGKYJMwuWBI5SnBm+jrkiQZiz6CoJeNyaeHuBdgybctk
-         3u/+YvdTt5wzQfVOGzw86cL4g99mHjOI9Zgl+pZT0+RXDvQeZVSigic8HntXVkV7IzcU
-         xJ1M3dPCs5YamP18OTyKLB81voyytl4w5PWsmsjDwsUCrOfSnCC0ax49uiHrrX8IUKIT
-         MnAA==
-X-Forwarded-Encrypted: i=1; AJvYcCU+Qv9o/xubkiIe0xWb40+FNSWRQqpwg3S+0dF4ienNfCMnaPE5WMFXdDdntYklU6GjhYv2LI0=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy5VNvyzPMIizvOu9K7Z6kPkOCMXAc3hC11DVrPYicNa2obw/+v
-	lB4OQNHlzjpD1BJ+x8xB2H8QsTkhx+wr1EvJRjJBd9XCAfd3B5q6qc17Glq8uAttDxNAYgzquh/
-	NankXFqKg8m3eg2gKsBWI6SxDpCnlv5tMObZP54mP
-X-Gm-Gg: ASbGncuQ7CxpWLOYxodZq8i2fSkvIM6rdJXm4HKMh58+nRbGmZnSDBpHMNU8j/3zYXD
-	FB+V9u0nutltACGUbzxP/Lfy3mfEObkDspPKItWh7gfpyd/+jQYUCVC00KHhXFQ7pqImDLYLLtD
-	Efxz8raIPp3dDGpwSgkVHGELVXWRVuG/C3tHcLDGbFlBeIT9sfMhiy
-X-Google-Smtp-Source: AGHT+IGW0s3Z21zLhutKE3Q2yJQO+RbEUgzPYht2EC0rHYCJKwd1wxOQmJduNe16htpPIhpza8ZyjWrC924RETnjIpU=
-X-Received: by 2002:a05:622a:1917:b0:479:1958:d81a with SMTP id
- d75a77b69052e-4a7c231bc81mr688391cf.6.1750812748318; Tue, 24 Jun 2025
- 17:52:28 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bSebeTgz"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1750819014; x=1782355014;
+  h=date:from:to:cc:subject:message-id:references:
+   content-transfer-encoding:in-reply-to:mime-version;
+  bh=tVudsIyud7tSmD021NBFrEGzG4pED0DOlYg8NBziuM0=;
+  b=bSebeTgzQrDd/SRgoPoF6ppCfP5WmMa/uULuLaQxYWYHDN+SxXOktPyq
+   aDppHjgPrUaUVvaF39iHLTTQtELXByMHeM8cm4+6sbvtWZ0K43Pb4kvUB
+   9NDDdBtPJm0EEqt/jal0/UcAx65+kcGHeRmWrAzoaGnwvZUaUe90idXsV
+   796r2Sfq+e+jSDX7UudNStQ5e+rP17TtLayan/ZctWOBuQzckZhatcu6X
+   hdHiRWZNdJNbfgN1g7n1PdegXBcvLJufbpJIBbyiRmF2T1cHJErNBoweu
+   GvCkkbdYq2+i5n9rLqP1/ktpSO1BVuJk12xq9r+ZpMcWsqWZmX3g14DOa
+   A==;
+X-CSE-ConnectionGUID: hk+HaeceTYu/aVY9eB65pw==
+X-CSE-MsgGUID: zSZuzF5fTm+wXdNWiqsCDA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11474"; a="40696265"
+X-IronPort-AV: E=Sophos;i="6.16,263,1744095600"; 
+   d="scan'208";a="40696265"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2025 19:36:54 -0700
+X-CSE-ConnectionGUID: VLgNDFyTRWybEj6ogzlH7Q==
+X-CSE-MsgGUID: 6Qfp2JhmR7CkKjl82D2Lrg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,263,1744095600"; 
+   d="scan'208";a="156115659"
+Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
+  by fmviesa003.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2025 19:36:53 -0700
+Received: from ORSMSX903.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.25; Tue, 24 Jun 2025 19:36:52 -0700
+Received: from ORSEDG902.ED.cps.intel.com (10.7.248.12) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.25 via Frontend Transport; Tue, 24 Jun 2025 19:36:52 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (40.107.243.53)
+ by edgegateway.intel.com (134.134.137.112) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.25; Tue, 24 Jun 2025 19:36:52 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=d9yh2s2iqrGrnypzbZjn8BA8bDNj6nAwXMBQiwH0ojYiqLogjUv1y8j9OnY77pH6yrjqC5R6+wvyFqAnwF27Wk/Cn6Ox59zDHwp6JZaz9eEXJR6Z0NMBiIdQgIYIa7rRl5R9kfAbZexxod3Df6EhnBpjtng9lJhDe2S9ERVWEWv1B5qJgFg70s75j6tjmLkb1LJwNenAPNsUue5BQwroDvDIWJ2POlzjSt6Q94ggZxFkUb8Rv3vDi2qw1cFhNP6yrP5IzOC2nZFxKtbCE7yILk+ww7LBW9oe7EK7ItYBZuiA4+mVsf6Eqs6RE478fI4L5nD6wKtXII0qe83ySjWOLQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xpLEt2iHC5WkziXMNn20gw+StubW7jpb6a68VRN7aDs=;
+ b=sVxbjOCQmTRieuOv+I34MXmZ7oucPorGeeW+PEC6R2xPTD9wtd44JS0t+/bwFay9+1JwdbanedmRwBneCRb1ZaAy2HYIhdb0adR4ZG+1fxWdsBkcPDQr05zHWa5PmEUGcVSiYDRur7/LWm0KmhmgQ/Z4xUvoOwaS0goLIuSaULjKX+XSBboGR9XsnxAgZboYvLrI1L+mA69LdbN5W7wCQ8JgtUngx/mK6ppVDsHBtgGc2RZ3bP/rCJ8VXjsJCj9Wy1pPUUNkmeIav/TXQLeYx4u31Mr3ix9arTdIrEJeD6Gwd7aF0KQuSxNqXYvKSJWngcrdzSdIzUTes4FASPlkDQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by LV2PR11MB5997.namprd11.prod.outlook.com (2603:10b6:408:17f::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8857.28; Wed, 25 Jun
+ 2025 02:36:44 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%3]) with mapi id 15.20.8857.025; Wed, 25 Jun 2025
+ 02:36:43 +0000
+Date: Wed, 25 Jun 2025 10:36:35 +0800
+From: Oliver Sang <oliver.sang@intel.com>
+To: Xiao Ni <xni@redhat.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Yu Kuai <yukuai3@huawei.com>,
+	<linux-raid@vger.kernel.org>, <oliver.sang@intel.com>
+Subject: Re: [mdraid:md-6.16] [md] bc8ce8eaa2:
+ mdadm-selftests.05r1-failfast.fail
+Message-ID: <aFtgsw+bARwZSQQI@xsang-OptiPlex-9020>
+References: <202506201427.baf6fdc2-lkp@intel.com>
+ <CALTww2-0v=60uxbgd=ideL8XQM0Tp_ZOwOkNhTrthC-U+zt4Hg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CALTww2-0v=60uxbgd=ideL8XQM0Tp_ZOwOkNhTrthC-U+zt4Hg@mail.gmail.com>
+X-ClientProxiedBy: SG2P153CA0010.APCP153.PROD.OUTLOOK.COM (2603:1096::20) To
+ LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250624072513.84219-1-harry.yoo@oracle.com> <7f2f180f.a643.197a21de68c.Coremail.00107082@163.com>
- <aFqtCoz1t359Kjp1@hyeyoo> <2dba37c6.b15a.197a23dcce2.Coremail.00107082@163.com>
- <aFqynd6CyJiq8NNF@hyeyoo> <3942323b.b31d.197a2572832.Coremail.00107082@163.com>
- <CAJuCfpGd+jHoCdyuEbk5h-dbQ7_wqgX=S4azyb6Aou8spzv0=w@mail.gmail.com>
- <aFrAwJEkjYFAuVOa@hyeyoo> <CAJuCfpEXAX5BJiA94pYYAqe22uo-Ngfw-+ZFZkt57SnHPMsY5w@mail.gmail.com>
- <aFrn1pZJ09N7xNOb@hyeyoo>
-In-Reply-To: <aFrn1pZJ09N7xNOb@hyeyoo>
-From: Suren Baghdasaryan <surenb@google.com>
-Date: Tue, 24 Jun 2025 17:52:17 -0700
-X-Gm-Features: Ac12FXzl7cdhs3-J3HO9jp1NRd-686pg1FYiAY_L-CUy2cf6uWBIJvEKOSvtC-M
-Message-ID: <CAJuCfpHKCAkw73t=Dbu_6w1cCMVS=6owJVjD5OhtbM755skA_A@mail.gmail.com>
-Subject: Re: [PATCH v3] lib/alloc_tag: do not acquire non-existent lock in alloc_tag_top_users()
-To: Harry Yoo <harry.yoo@oracle.com>
-Cc: David Wang <00107082@163.com>, akpm@linux-foundation.org, kent.overstreet@linux.dev, 
-	oliver.sang@intel.com, cachen@purestorage.com, linux-mm@kvack.org, 
-	oe-lkp@lists.linux.dev, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|LV2PR11MB5997:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0254906e-1a0b-4a10-676e-08ddb3911f77
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024|13003099007;
+X-Microsoft-Antispam-Message-Info: =?utf-8?B?VDQvYUtMRDBHQjBQbE9WVC84TzduR1BQSFFpM3U0VFpIS2ZITC94OTEwbERD?=
+ =?utf-8?B?QURvd3Y5L1h5S0taRE0xYlZGdzdYN2h3SEI1RXJyYlUvZTR0eUQ0a2xaaFdJ?=
+ =?utf-8?B?VWpubHJRZEt5OUxXYmNHTUI4MnhFdzBQS0s1bmlsWXRwN21ESkxILzhtL1hQ?=
+ =?utf-8?B?SitjT3JtbnlXeVAySFNJYTY3N0NQY3grVCtjWlRTcGc0bTZEMXBxVlRDdlY3?=
+ =?utf-8?B?S0JyQlpIaVRHUTFLZlVwWTlmOEs0RHhYMUJKak1wck5lMzRGZFdvNDV0bE5T?=
+ =?utf-8?B?UmJHdFJ5d0ZqSnhYR1drVGoxUGV2RkdqSjlBNnVzVmRiNFY4MmdxaS8rK3hZ?=
+ =?utf-8?B?bmxyTGlkVVJiZlVXenkwOC9xcUJxSDZsK1gwL1FaL3kzRXJVaVB4ZDJudEVF?=
+ =?utf-8?B?SEVvUWVQaW1GVjByejNYeDFweHZiUEFyUisvOHJndXVUc2V6WmhpU3FQU1Bw?=
+ =?utf-8?B?TStOVGgvYnZWNzdjL1NYYjlnSnR4SEtwaEFOS1JMMWs4WWM0cUlxYm9IdzhS?=
+ =?utf-8?B?VUpiRFJLQzZHdWUwamF0YkNCM0dOdlFldGYxNVZiTGZkdGdiSThrWlAzMmxt?=
+ =?utf-8?B?TGU5ZzdhbytlVkI2MjFvbFVWblVXd1ozUE9TbzRXOGQyeW9pLzVTOVZrdnNM?=
+ =?utf-8?B?N1dYRXVnL014Z2FWUnFCUXVNUFNraS9jcm8xazhpeEwwWXJuQkcwY3ZBcFlE?=
+ =?utf-8?B?aDNEb0Z4a045eWM5cC9SMEU3VlpZbUF2NlhqVDlVN2JzN0xoRzdCSlZTc1Rj?=
+ =?utf-8?B?ZUJPSVkrV2IySEZZTzZENGxxTWVOaitQTE9lY0FkZGt0RGxoSnd6SlFrM0JM?=
+ =?utf-8?B?Qm5WUnhhT0J5OXdiSXlEZHVEZTh3dmVDbTZWQ0ZPbTdSN2k0VnJKWFFuVjZ2?=
+ =?utf-8?B?WnJ3V09IckxzTkpqYTREcUVxM294LzY1azFDSFNoQng3TFR4SExkYlBFbTBo?=
+ =?utf-8?B?MG9VNkRIRkZFVWkrNEhIcE1zWWxSUGlYek1ib1psRjlnQVBzUFFLQkRpaXBv?=
+ =?utf-8?B?NUlpRkpCOTdscERXQU9ROStYYVV1WFpKaXIyZkJ1V0FJcHVJKzNLMzk2a2N0?=
+ =?utf-8?B?T0ZSMHFkS2Y0Y2t4c0lZQURjSnduTlZYR09kMWFPd3B2dU1vNEdtak1Bcm83?=
+ =?utf-8?B?ZHRoNlQ4N011aGpNOVA2MVZ1OEZHd0tVa1l0d1hwb0pzSWljTDNUc0RYanFD?=
+ =?utf-8?B?SzZaaDVLd2ZsWTZBTWgwSWZEaXJldnBZUi9ISStrU3VQVDlOYlRCVS96Q2p1?=
+ =?utf-8?B?aGFoWFFEZkppdFZOL2hNTHBGaXEyZ2IzRllXWm0xRDFreVhwamorcFhaYVU3?=
+ =?utf-8?B?WnhhM2xvVHhtUHY5WE1tTERWcHlXTlpoRG53aFNBVjl4ckNmRlhFVnU0L1dQ?=
+ =?utf-8?B?dVpzQ3pkdWFnRlk1a3doaFR6blpldk1QUUg2N2RVNkFFTTRLT1FETEhwUFhx?=
+ =?utf-8?B?VHhPbHNWU0JTRXlIU1V0T2JYY3I3WkZsNlZWektLMmZGVDBnRmFuRy9OWEpo?=
+ =?utf-8?B?S0tIdUk1OXlnb2U5bkZycWF1dHBiMDYwRVdGSHUvcHVZQjkrVUhqeHhLaTNN?=
+ =?utf-8?B?TkdoKzZJRVdpTEZITmFMeU44eU0vSzVPWjV2WnYySzU3NElMN3kwYVI4K0ln?=
+ =?utf-8?B?MHMxL0NTT3U1QWxKeTZUOTZzd21uV2xOTXpUeE5zbFk2VGJLcGZ3NEUrcFI0?=
+ =?utf-8?B?U25uZXBsdzhYakhTMHpEa1UyOUYxNFcwRHAxRVdGK2g3WmVaeVo3K2lJUkIx?=
+ =?utf-8?B?MW1jSWpqeWdvUi9HMHoxeDdxQnJTNm1RNXRXY1pBZFE5T0k3VzF0QmpUSWRn?=
+ =?utf-8?B?Y1JtQkl1TTVNblBoa3Mxck9PRWdnNko2MUxsa0Fmc2VQMlRDVmpiL1RLUFZk?=
+ =?utf-8?Q?3XCDUHgEzmYrz?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(13003099007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?aXlVbEhsTVNuYi9mWmR5bWtubUpZejVZMVRPRXdUUUNWa3Jvd1pXSlIvNlNy?=
+ =?utf-8?B?RFd3dUlKUEtSQytZQWFUNHJueEMzSmFXcUdIV2tNeWpTTXdUcmE2aDBxSnFz?=
+ =?utf-8?B?RkJmbzFSSGoybVFXMXN5SXdVdmx6U2YxcnkyYUdlbEF3SkpGTGliVTlRNTFW?=
+ =?utf-8?B?NWlIczhtallXMXV3aGF4NlUwYkk2TTVVandvc1FScW5nV3ljaW5pOGEvbEEr?=
+ =?utf-8?B?SWdlS1dNZmlvME4zVG1Wc3VaSTN2cTU3bklOS0dQcy9Db3NrSm51c0lZRmJL?=
+ =?utf-8?B?ejR1aUt2SlRMcC9XLzFVQU5oTW1xd2dKZ2lCem1XS2IvK0ZSc1lZRW1EdWov?=
+ =?utf-8?B?d1lJald5cmM1RWoyTUUvTEVQVk9sNWVuWFZac0k5NThBRGdFZCsxa2lvRk9B?=
+ =?utf-8?B?ejRTZkRScDQzRmYwRVk1Z1UxelozSXd6V3hpb29zWENPKzVPbGl4aXpGRDVE?=
+ =?utf-8?B?aWRhR0xTQllUekw1RVJveUhocFA5NTdhT3o0cjhjOU1JaGtwS01icVQ2QzNI?=
+ =?utf-8?B?eGdmK2c4Mi9RWXVSclE0aFQzNGR1a2NsOWFlWlVwdHFsT2I0U2tVcnczcWFU?=
+ =?utf-8?B?T2FEcUtHSXk4Ukl1Yk9mMFRoYkp5VlVWYmNHNk13VTNVV3Z6QzF6YytqVGxE?=
+ =?utf-8?B?Z3VRRWJsUjg1WFRiT2xZeHhZMEEvbGNlZDh0S2d1Mk1GUm5PeEhxdDJyRVVi?=
+ =?utf-8?B?UHlKZ0dyb1EwazZGbkg2UnRtMzhLYmtTQUZXZHAycUhnTGwyYXh5djlnTGJw?=
+ =?utf-8?B?NCtWMnVodkFuVURNU0FJWU1FSm9qblNlY1NmSUlzSlVOUzlpLytPUDFtSXho?=
+ =?utf-8?B?czRpTWdzMmNsUWpVa1ZwRU9tRjIvbW1Ea0kvL28zcUI1Z2Fib2dsVlFWMy9F?=
+ =?utf-8?B?cUM1TUJhaDQ3a0FzNWRxKzFqaHFwNFVEaGxTUk1aRTREWENjMGRkOWdmU0ZU?=
+ =?utf-8?B?RDZIbmFidGN6TXZvWUczclEwT3VzVGIyVytDZjlEWEx6M0w3VTJOcjFDU3h4?=
+ =?utf-8?B?L1Y0OUZzcW4yR0JUaWZPU3lyeXUwdURuVWJpYit5RmF5UFlMZEo2d1dQNkIr?=
+ =?utf-8?B?YnhLNWFiYTRIakZ5all3QjJrZTlUMmNremZqVmlqTW4wak9Ya05JTlliREp3?=
+ =?utf-8?B?SU9ab1pvRlpuWUNRcjVNajZUcnJhNDk0TE9GbmlUUkJ2anB5QUN3SzE2ME1O?=
+ =?utf-8?B?OGZhTVJxekdzMG9UTjJaWmdVOUdGdEQwWVBhYlQwWWF0ZThOUTZpY0k4TlpH?=
+ =?utf-8?B?c2RHaXNkcmNuVTkrTXpTZ3JVRmZNMktkUHNiWVdOdlpCbHAyekwzRGZZbCtN?=
+ =?utf-8?B?VHhwWmlnTldnWlhQL2tFeVVUQmdscmFNS01URG01Y0VMak00b0xXTXU0ajNX?=
+ =?utf-8?B?WmJKVUdpSlRXVWYzZUNhajlxdGxNUDVGb2Y3UGtVcVVhR3RiR3VYOTROaS9B?=
+ =?utf-8?B?MGdlQXJ4V05OZXR2c2cxQW56YnQxckc0RWlmSzFsRFZkbzMwa2lJejA2WVpM?=
+ =?utf-8?B?OW9CaEhMdXQvVm11ajdacjkvMzhRZVFkRFdXb1JHNGdLNEpxSTVTekF5SnlZ?=
+ =?utf-8?B?NTJFV2pYK2JSWjZlOVl4WGc0allBeWtFclJ5NHRnaFlPWGxza3BneUcxVUtu?=
+ =?utf-8?B?NFFkeWpOaGhlM3EzbSsxc1NGQ05jaHNaUklzSXgxNk9LK2tFQlNpR3Y2L0RC?=
+ =?utf-8?B?aGFkQWlmc28vT000Q211U3QxaEhWenhhTkVNTUYxMWxEbEVXeG1VWExrNzYw?=
+ =?utf-8?B?eHJwWmdvNjBkT3didDEwMS83ZDZPM0FLQTh4djV6TXJwdFJoWS9xbG9xRTUr?=
+ =?utf-8?B?QmltYmFoRm9YdG13dnBZREMxV0NLTy9rZWtSbEYvTWJsOVNOK0xKMzJXcTVG?=
+ =?utf-8?B?Sk5uVnhLajQ5aXM0SEFockhGR1NYMy9MeWlnRnJydjNhUVRhNXRGMVZiVkJF?=
+ =?utf-8?B?SkovLzY0VXRQRGtqN0E3UENtTFNKdnBNTldCNEtJekROd2c3eCtRYUQwUUNQ?=
+ =?utf-8?B?OXFISlZGNUg3OHUvMTJxMVRHL29GTDZKUFk5QmtPazZpN3JkUnUwbG5FajU5?=
+ =?utf-8?B?YUlEd0IwTHlBWm43WVd3bW9ndHl5Z1NCQmx0V1c4dHBhWjkzL2FIWWtBUCth?=
+ =?utf-8?B?Mlh5ZXR3N1NsK2FXdkVFZm9pSW1HcnYvSCtoNHBYNUptaFh3N0xhUHFJKzlN?=
+ =?utf-8?B?ZlE9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0254906e-1a0b-4a10-676e-08ddb3911f77
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jun 2025 02:36:43.8036
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Jbu+IsT+4wX56do7HZGGERjMKbznzxHv0W8I5rPA9z6t4p9J9AVSmDbx/P6byXgk8LyIQPgk3zHGsUWbM4i13Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR11MB5997
+X-OriginatorOrg: intel.com
 
-On Tue, Jun 24, 2025 at 11:01=E2=80=AFAM Harry Yoo <harry.yoo@oracle.com> w=
-rote:
->
-> On Tue, Jun 24, 2025 at 08:38:05AM -0700, Suren Baghdasaryan wrote:
-> > On Tue, Jun 24, 2025 at 8:14=E2=80=AFAM Harry Yoo <harry.yoo@oracle.com=
-> wrote:
-> > >
-> > > On Tue, Jun 24, 2025 at 07:57:40AM -0700, Suren Baghdasaryan wrote:
-> > > > On Tue, Jun 24, 2025 at 7:28=E2=80=AFAM David Wang <00107082@163.co=
-m> wrote:
-> > > > >
-> > > > >
-> > > > > At 2025-06-24 22:13:49, "Harry Yoo" <harry.yoo@oracle.com> wrote:
-> > > > > >On Tue, Jun 24, 2025 at 10:00:48PM +0800, David Wang wrote:
-> > > > > >>
-> > > > > >> At 2025-06-24 21:50:02, "Harry Yoo" <harry.yoo@oracle.com> wro=
-te:
-> > > > > >> >On Tue, Jun 24, 2025 at 09:25:58PM +0800, David Wang wrote:
-> > > > > >> >>
-> > > > > >> >> At 2025-06-24 15:25:13, "Harry Yoo" <harry.yoo@oracle.com> =
-wrote:
-> > > > > >> >> >alloc_tag_top_users() attempts to lock alloc_tag_cttype->m=
-od_lock
-> > > > > >> >> >even when the alloc_tag_cttype is not allocated because:
-> > > > > >> >> >
-> > > > > >> >> >  1) alloc tagging is disabled because mem profiling is di=
-sabled
-> > > > > >> >> >     (!alloc_tag_cttype)
-> > > > > >> >> >  2) alloc tagging is enabled, but not yet initialized (!a=
-lloc_tag_cttype)
-> > > > > >> >> >  3) alloc tagging is enabled, but failed initialization
-> > > > > >> >> >     (!alloc_tag_cttype or IS_ERR(alloc_tag_cttype))
-> > > > > >> >> >
-> > > > > >> >> >In all cases, alloc_tag_cttype is not allocated, and there=
-fore
-> > > > > >> >> >alloc_tag_top_users() should not attempt to acquire the se=
-maphore.
-> > > > > >> >> >
-> > > > > >> >> >This leads to a crash on memory allocation failure by atte=
-mpting to
-> > > > > >> >> >acquire a non-existent semaphore:
-> > > > > >> >> >
-> > > > > >> >> >  Oops: general protection fault, probably for non-canonic=
-al address 0xdffffc000000001b: 0000 [#3] SMP KASAN NOPTI
-> > > > > >> >> >  KASAN: null-ptr-deref in range [0x00000000000000d8-0x000=
-00000000000df]
-> > > > > >> >> >  CPU: 2 UID: 0 PID: 1 Comm: systemd Tainted: G      D    =
-         6.16.0-rc2 #1 VOLUNTARY
-> > > > > >> >> >  Tainted: [D]=3DDIE
-> > > > > >> >> >  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), B=
-IOS 1.16.2-debian-1.16.2-1 04/01/2014
-> > > > > >> >> >  RIP: 0010:down_read_trylock+0xaa/0x3b0
-> > > > > >> >> >  Code: d0 7c 08 84 d2 0f 85 a0 02 00 00 8b 0d df 31 dd 04=
- 85 c9 75 29 48 b8 00 00 00 00 00 fc ff df 48 8d 6b 68 48 89 ea 48 c1 ea 03=
- <80> 3c 02 00 0f 85 88 02 00 00 48 3b 5b 68 0f 85 53 01 00 00 65 ff
-> > > > > >> >> >  RSP: 0000:ffff8881002ce9b8 EFLAGS: 00010016
-> > > > > >> >> >  RAX: dffffc0000000000 RBX: 0000000000000070 RCX: 0000000=
-000000000
-> > > > > >> >> >  RDX: 000000000000001b RSI: 000000000000000a RDI: 0000000=
-000000070
-> > > > > >> >> >  RBP: 00000000000000d8 R08: 0000000000000001 R09: ffffed1=
-07dde49d1
-> > > > > >> >> >  R10: ffff8883eef24e8b R11: ffff8881002cec20 R12: 1ffff11=
-020059d37
-> > > > > >> >> >  R13: 00000000003fff7b R14: ffff8881002cec20 R15: dffffc0=
-000000000
-> > > > > >> >> >  FS:  00007f963f21d940(0000) GS:ffff888458ca6000(0000) kn=
-lGS:0000000000000000
-> > > > > >> >> >  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > > > > >> >> >  CR2: 00007f963f5edf71 CR3: 000000010672c000 CR4: 0000000=
-000350ef0
-> > > > > >> >> >  Call Trace:
-> > > > > >> >> >   <TASK>
-> > > > > >> >> >   codetag_trylock_module_list+0xd/0x20
-> > > > > >> >> >   alloc_tag_top_users+0x369/0x4b0
-> > > > > >> >> >   __show_mem+0x1cd/0x6e0
-> > > > > >> >> >   warn_alloc+0x2b1/0x390
-> > > > > >> >> >   __alloc_frozen_pages_noprof+0x12b9/0x21a0
-> > > > > >> >> >   alloc_pages_mpol+0x135/0x3e0
-> > > > > >> >> >   alloc_slab_page+0x82/0xe0
-> > > > > >> >> >   new_slab+0x212/0x240
-> > > > > >> >> >   ___slab_alloc+0x82a/0xe00
-> > > > > >> >> >   </TASK>
-> > > > > >> >> >
-> > > > > >> >> >As David Wang points out, this issue became easier to trig=
-ger after commit
-> > > > > >> >> >780138b12381 ("alloc_tag: check mem_profiling_support in a=
-lloc_tag_init").
-> > > > > >> >> >
-> > > > > >> >> >Before the commit, the issue occurred only when it failed =
-to allocate
-> > > > > >> >> >and initialize alloc_tag_cttype or if a memory allocation =
-fails before
-> > > > > >> >> >alloc_tag_init() is called. After the commit, it can be ea=
-sily triggered
-> > > > > >> >> >when memory profiling is compiled but disabled at boot.
-> > > > > >> >> >
-> > > > > >> >> >To properly determine whether alloc_tag_init() has been ca=
-lled and
-> > > > > >> >> >its data structures initialized, verify that alloc_tag_ctt=
-ype is a valid
-> > > > > >> >> >pointer before acquiring the semaphore. If the variable is=
- NULL or an error
-> > > > > >> >> >value, it has not been properly initialized. In such a cas=
-e, just skip
-> > > > > >> >> >and do not attempt to acquire the semaphore.
-> > > > > >> >> >
-> > > > > >> >> >Reported-by: kernel test robot <oliver.sang@intel.com>
-> > > > > >> >> >Closes: https://urldefense.com/v3/__https://lore.kernel.or=
-g/oe-lkp/202506181351.bba867dd-lkp@intel.com__;!!ACWV5N9M2RV99hQ!MADvGKtvTv=
-lLXNxlrJ4BdOSnbsJlyrSroPUGJ3JQHs_IF-gxxqfQ89OTZ21aN96DbmjG9qH3Wi1MlgtiSA$
-> > > > > >> >> >Closes: https://urldefense.com/v3/__https://lore.kernel.or=
-g/oe-lkp/202506131711.5b41931c-lkp@intel.com__;!!ACWV5N9M2RV99hQ!MADvGKtvTv=
-lLXNxlrJ4BdOSnbsJlyrSroPUGJ3JQHs_IF-gxxqfQ89OTZ21aN96DbmjG9qH3Wi0o2OoynA$
-> > > > > >> >> >Fixes: 780138b12381 ("alloc_tag: check mem_profiling_suppo=
-rt in alloc_tag_init")
-> > > > > >> >> >Fixes: 1438d349d16b ("lib: add memory allocations report i=
-n show_mem()")
-> > > > > >> >> >Cc: stable@vger.kernel.org
-> > > > > >> >> >Signed-off-by: Harry Yoo <harry.yoo@oracle.com>
-> > > > > >> >> >---
-> > > > > >> >> >
-> > > > > >> >> >@Suren: I did not add another pr_warn() because every erro=
-r path in
-> > > > > >> >> >alloc_tag_init() already has pr_err().
-> > > > > >> >> >
-> > > > > >> >> >v2 -> v3:
-> > > > > >> >> >- Added another Closes: tag (David)
-> > > > > >> >> >- Moved the condition into a standalone if block for bette=
-r readability
-> > > > > >> >> >  (Suren)
-> > > > > >> >> >- Typo fix (Suren)
-> > > > > >> >> >
-> > > > > >> >> > lib/alloc_tag.c | 3 +++
-> > > > > >> >> > 1 file changed, 3 insertions(+)
-> > > > > >> >> >
-> > > > > >> >> >diff --git a/lib/alloc_tag.c b/lib/alloc_tag.c
-> > > > > >> >> >index 41ccfb035b7b..e9b33848700a 100644
-> > > > > >> >> >--- a/lib/alloc_tag.c
-> > > > > >> >> >+++ b/lib/alloc_tag.c
-> > > > > >> >> >@@ -127,6 +127,9 @@ size_t alloc_tag_top_users(struct code=
-tag_bytes *tags, size_t count, bool can_sl
-> > > > > >> >> >         struct codetag_bytes n;
-> > > > > >> >> >         unsigned int i, nr =3D 0;
-> > > > > >> >> >
-> > > > > >> >> >+        if (IS_ERR_OR_NULL(alloc_tag_cttype))
-> > > > > >> >> >+                return 0;
-> > > > > >> >>
-> > > > > >> >> What about mem_profiling_support set to 0 after alloc_tag_i=
-nit, in this case:
-> > > > > >> >> alloc_tag_cttype !=3D NULL && mem_profiling_support=3D=3D0
-> > > > > >> >>
-> > > > > >> >> I kind of think alloc_tag_top_users should return 0 in this=
- case....and  both mem_profiling_support and alloc_tag_cttype should be che=
-cked....
-> > > > > >> >
-> > > > > >> >After commit 780138b12381, alloc_tag_cttype is not allocated =
-if
-> > > > > >> >!mem_profiling_support. (And that's  why this bug showed up)
-> > > > > >>
-> > > > > >> There is a sysctl(/proc/sys/vm/mem_profiling) which can overri=
-de mem_profiling_support and set it to 0, after alloc_tag_init with mem_pro=
-filing_support=3D1
-> > > >
-> > > > Wait, /proc/sys/vm/mem_profiling is changing mem_alloc_profiling_ke=
-y,
-> > > > not mem_profiling_support. Am I missing something?
-> > >
-> > > Feels like it should call shutdown_mem_profiling() instead of
-> > > proc_do_static_key() (and also remove /proc/allocinfo)?
-> >
-> > No, we should be able to re-enable it later on.
->
-> A few questions that came up while reading this,
-> please feel free to ignore :)
->
-> - What is the expected output of /proc/allocinfo when it's disabled?
->   Should it print old data or nothing? I think it should be consistent
->   with the behavior of alloc_tag_top_users().
->
-> - When it's disabled and re-enabled again, can we see inconsistent
->   data if some memory has been freed in the meantime?
->
-> > You can't do that if you call shutdown_mem_profiling().
->
-> Because setting mem_profiling_support =3D false mean it's not supported.
-> And you can't re-enable if it's not supported. Gotcha!
->
-> > mem_profiling_support is very different from mem_alloc_profiling_key.
-> > mem_profiling_support means memory profiling is not supported while
-> > mem_alloc_profiling_key means it's enabled or disabled and can be
-> > changed later.
->
-> Okay. Now I see why I was confused. Perhaps I should have guessed that
-> from the name, but I was not 100% sure about the meaning.
->
-> > > > > >
-> > > > > >Ok. Maybe it shouldn't report memory allocation information that=
- is
-> > > > > >collected before mem profiling was disabled. (I'm not sure why i=
-t disabling
-> > > > > >at runtime is allowed, though)
-> > > > > >
-> > > > > >That's a good thing to have, but I think that's a behavioral cha=
-nge in
-> > > > > >mem profiling, irrelevant to this bug and not a -stable thing.
-> > > > > >
-> > > > > >Maybe as a follow-up patch?
-> > > > >
-> > > > > Only a little more changes needed, I was suggesting:
-> > > > >
-> > > > > @@ -134,6 +122,14 @@ size_t alloc_tag_top_users(struct codetag_by=
-tes *tags, size_t count, bool can_sl
-> > > > >         struct codetag_bytes n;
-> > > > >         unsigned int i, nr =3D 0;
-> > > > >
-> > > > > +       if (!mem_profiling_support)
-> > > > > +               return 0;
-> > > >
-> > > > David is right that with /proc/sys/vm/mem_profiling memory profilin=
-g
-> > > > can be turned off at runtime but the above condition should be:
-> > > > if (!mem_alloc_profiling_enabled())
-> > > >         return 0;
-> > >
-> > > I agree that this change is a useful addition, but adding it to the p=
-atch
-> > > doesn't look right. It's doing two different things.
-> >
-> > You might be right, calling alloc_tag_top_users() while
-> > !mem_alloc_profiling_enabled() will print older data but it won't lead
-> > to UAF.
->
-> Yes and I think it'll be great if David could post it after the fix lands
-> maineline.
->
-> Aside from that, any feedback on the v3 of the patch?
->
-> If yes, I'll adjust it.
-> If not, please consider an ack ;)
+hi, Xiao,
 
-LGTM.
-Acked-by: Suren Baghdasaryan <surenb@google.com>
+On Tue, Jun 24, 2025 at 04:36:45PM +0800, Xiao Ni wrote:
+> Hi
+> 
+> It needs to use the https://github.com/md-raid-utilities/mdadm/ to do
+> regression tests
 
->
-> > > > > +
-> > > > > +       if (IS_ERR_OR_NULL(alloc_tag_cttype)) {
-> > > > > +               pr_warn("alloctag module is not ready yet.\n");
-> > > >
-> > > > I don't think spitting out this warning on every show_mem() is usef=
-ul.
-> > > > If alloc_tag_cttype is invalid because codetag_register_type() fail=
-ed
-> > > > then we already print an error here:
-> > > > https://elixir.bootlin.com/linux/v6.16-rc3/source/lib/alloc_tag.c#L=
-829,
-> > > > so user has the logs to track this down.
-> > > > If show_mem() is called so early that alloc_tag_init() hasn't been
-> > > > called yet then missing allocation tag information would not be
-> > > > surprising I think, considering it's early boot. I don't think it's
-> > > > worth detecting and reporting such a state.
-> > > >
-> > > > > +               return 0;
-> > > > > +       }
-> > > > > +
-> > >
-> > > --
-> > > Cheers,
-> > > Harry / Hyeonggon
+just FYI. we really use test from this link:
+
+https://github.com/intel/lkp-tests/blob/master/programs/mdadm-selftests/pkg/PKGBUILD
+
+pkgname=mdadm-selftests
+pkgver=git
+pkgrel=1
+url='https://github.com/md-raid-utilities/mdadm'
+arch=('i386' 'x86_64' 'aarch64')
+license=('GPL')
+source=('mdadm-selftests'::'https://github.com/md-raid-utilities/mdadm.git')
+md5sums=('SKIP')
+
+> 
+> Best Regards
+> Xiao
+> 
+> On Tue, Jun 24, 2025 at 3:55 PM kernel test robot <oliver.sang@intel.com> wrote:
 > >
->
-> --
-> Cheers,
-> Harry / Hyeonggon
+> >
+> >
+> > Hello,
+> >
+> > kernel test robot noticed "mdadm-selftests.05r1-failfast.fail" on:
+> >
+> > commit: bc8ce8eaa290a198cb5303181041aad037299b7f ("md: call del_gendisk in control path")
+> > https://git.kernel.org/cgit/linux/kernel/git/mdraid/linux md-6.16
+> >
+> > in testcase: mdadm-selftests
+> > version: mdadm-selftests-x86_64-0550fb37-1_20250518
+> > with following parameters:
+> >
+> >         disk: 1HDD
+> >         test_prefix: 05r1-failfast
+> >
+> >
+> >
+> > config: x86_64-rhel-9.4-func
+> > compiler: gcc-12
+> > test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4790T CPU @ 2.70GHz (Haswell) with 16G memory
+> >
+> > (please refer to attached dmesg/kmsg for entire log/backtrace)
+> >
+> >
+> >
+> >
+> > If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> > the same patch/commit), kindly add following tags
+> > | Reported-by: kernel test robot <oliver.sang@intel.com>
+> > | Closes: https://lore.kernel.org/oe-lkp/202506201427.baf6fdc2-lkp@intel.com
+> >
+> > 2025-06-19 10:07:43 mkdir -p /var/tmp
+> > 2025-06-19 10:07:43 mke2fs -t ext3 -b 4096 -J size=4 -q /dev/sda1
+> > 2025-06-19 10:08:14 mount -t ext3 /dev/sda1 /var/tmp
+> > /usr/bin/install -D  -m 755 mdadm /sbin/mdadm
+> > /usr/bin/install -D  -m 755 mdmon /sbin/mdmon
+> > sed -e 's/{DEFAULT_METADATA}/1.2/g' \
+> > -e 's,{MAP_PATH},/run/mdadm/map,g' -e 's,{CONFFILE},/etc/mdadm.conf,g' \
+> > -e 's,{CONFFILE2},/etc/mdadm/mdadm.conf,g'  mdadm.8.in > mdadm.8
+> > sed -e 's,{CONFFILE},/etc/mdadm.conf,g' \
+> > -e 's,{CONFFILE2},/etc/mdadm/mdadm.conf,g'  mdadm.conf.5.in > mdadm.conf.5
+> > /usr/bin/install -D -m 644 mdadm.8 /usr/share/man/man8/mdadm.8
+> > /usr/bin/install -D -m 644 mdmon.8 /usr/share/man/man8/mdmon.8
+> > /usr/bin/install -D -m 644 md.4 /usr/share/man/man4/md.4
+> > /usr/bin/install -D -m 644 mdadm.conf.5 /usr/share/man/man5/mdadm.conf.5
+> > /usr/bin/install -D -m 644 udev-md-raid-creating.rules /lib/udev/rules.d/01-md-raid-creating.rules
+> > /usr/bin/install -D -m 644 udev-md-raid-arrays.rules /lib/udev/rules.d/63-md-raid-arrays.rules
+> > /usr/bin/install -D -m 644 udev-md-raid-assembly.rules /lib/udev/rules.d/64-md-raid-assembly.rules
+> > /usr/bin/install -D -m 644 udev-md-clustered-confirm-device.rules /lib/udev/rules.d/69-md-clustered-confirm-device.rules
+> >  [1;33mWarning! Tests are performed on system level mdadm!
+> >  [0mIf you want to test local build, you need to install it first!
+> > test: skipping tests for multipath, which is removed in upstream 6.8+ kernels
+> >  [1;33mWarning! Test suite will set up systemd environment!
+> >  [0mUse "systemctl show-environment" to show systemd environment variables
+> > Added IMSM_DEVNAME_AS_SERIAL=1 to systemd environment, use "systemctl unset-environment IMSM_DEVNAME_AS_SERIAL=1" to remove it.
+> > Added IMSM_NO_PLATFORM=1 to systemd environment, use "systemctl unset-environment IMSM_NO_PLATFORM=1" to remove it.
+> > Testing on linux-6.15.0-02014-gbc8ce8eaa290 kernel
+> > /lkp/benchmarks/mdadm-selftests/tests/05r1-failfast... Execution time (seconds): 8  [0;31mFAILED [0m - see /var/tmp/05r1-failfast.log and /var/tmp/fail05r1-failfast.log for details
+> > Removed IMSM_DEVNAME_AS_SERIAL=1 from systemd environment.
+> > Removed IMSM_NO_PLATFORM=1 from systemd environment.
+> >
+> >
+> >
+> > The kernel config and materials to reproduce are available at:
+> > https://download.01.org/0day-ci/archive/20250620/202506201427.baf6fdc2-lkp@intel.com
+> >
+> >
+> >
+> > --
+> > 0-DAY CI Kernel Test Service
+> > https://github.com/intel/lkp-tests/wiki
+> >
+> >
+> 
