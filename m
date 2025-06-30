@@ -1,365 +1,280 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2075.outbound.protection.outlook.com [40.107.101.75])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 455DE1E502
-	for <oe-lkp@lists.linux.dev>; Mon, 30 Jun 2025 05:33:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751261586; cv=none; b=QF+ZLpw56rXEodKAJiaIvXPD5HoXszgGbR25ikY5c7FLgNVIQrLUzyWSMBfW0fyj8j7aLfYq+GMh2I3ZriEBaJetNcA1qeNuxqer9JP13R5AandqU65Lz6eIuNiTzkjOeh8AVLeAgVpfptxQ9xBxDUownjN5nWANy3OJk5vbi7o=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751261586; c=relaxed/simple;
-	bh=0H5fJp3gO+4zFRgzqkRzDWHqvihb62c6uVJucZHR2YM=;
-	h=From:Message-ID:Date:MIME-Version:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=mpkJ4Tqhl+aVOzhDSZfAhAjTEl9wMTduyFYO8MSPwT2uxdXRA2psgcVKlCKrQ/jrWJfjNvPGiJ4+Mg1JSUkZqpeGL0SxT+RUL7GjRCOCIQcBp1e9V9IBF5i24XCoQoBsocSptMzG5ATblVaAw9S2Ftdpk1yvLVOUDgxrBvnjgfc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=gcvRwkJC; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D73C19CC28
+	for <oe-lkp@lists.linux.dev>; Mon, 30 Jun 2025 06:25:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.101.75
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1751264720; cv=fail; b=jjlAkOG87W1R7QIuF06ecilhQuGTAjDSnH7++i//rgL6gmYfnpcVlSlgLHjWh8YgCP3pRvNUxxv6+qiDlhUc3N2JVOhji0IU5Z1L1HJD1P+N3hxZcmLtBeOYWKgmibBY5ST/NqRw+Phxqm6lP7kUMO5aN8nbqu1PZxa50rI6Z0E=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1751264720; c=relaxed/simple;
+	bh=kJFTMf6YKBbY+RE8Ws6CeQ+phBcAEOjp2OZHxWAJxpQ=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=Ov5r3LMA+EUPaVfKX/ZHnb6jNz81fzj7hHrgqS3IR0R3ksabsh7LIgPlkAulwM9PnB5BgCPEprkFet3ZXU6EUSZzvS3u+RZqGIWw0RwU7rKeYOwslIFYbVLe8k+W9cYvn9IGSIYyeR+2VpCNbCreAqZZVPun0Qdf/XBcSHK0H1s=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=AepaKXQx; arc=fail smtp.client-ip=40.107.101.75
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="gcvRwkJC"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1751261582;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=nLPYeo0qoqf09LDPaZaiDqNfei05s1/6tpeqiyDf/vA=;
-	b=gcvRwkJCpiGhJVo+ELewOvZhFrQR+JpPs9A0YUUNLKjSWLnit1a8xwcwmJNUqTQEF9wEp0
-	e/wbFZZH2DVRx996hYlAqYlhG8NFh0jAVFkfInbm6Sw1ccA9cmTXm9piPf0F0KJYLQXRrr
-	s/SFxqF+wKqAWKxo9DUDzp8GgYtfUek=
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com
- [209.85.167.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-317-8NMG5o1-P16dTeZLlCwYkQ-1; Mon, 30 Jun 2025 01:33:00 -0400
-X-MC-Unique: 8NMG5o1-P16dTeZLlCwYkQ-1
-X-Mimecast-MFC-AGG-ID: 8NMG5o1-P16dTeZLlCwYkQ_1751261579
-Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-4033c872b60so1823411b6e.2
-        for <oe-lkp@lists.linux.dev>; Sun, 29 Jun 2025 22:33:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751261579; x=1751866379;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:subject:user-agent:mime-version:date:message-id:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nLPYeo0qoqf09LDPaZaiDqNfei05s1/6tpeqiyDf/vA=;
-        b=ifckUiZ3tnnyKGFH0KN4gZtro1egM7e6Y3JIRh0EGxfakEMgl+V6+F+2F/egt95cQj
-         x5RW817NEfg68gT5x3oIdbTBt385jaGyVwwebvoN2ONuSP/4MERnL9KQ0xKQhu1bpKct
-         rXJta5FVJCTIAJhTHtQqrVJAJ0RLhfpqk/DtDgk7ZWapo5I+BpIpSSpTwx6BSMWDqidj
-         PeOIB4nySQG4SXgaVjfFwdc8OsXfiUdYdon4AHTk69UoFwtNX7i++daxy4flD+L37MAw
-         +nnUufIBWFgz/HBpdNLxD1EYCJVc+Kz+5N5nH/lvVpoREJ6OZ0eAPwE7Bhp4bffnOxPv
-         pCCg==
-X-Gm-Message-State: AOJu0YzkQcf9arx8zlndkr0CSzoYCYHLLavvpLYP4B1dm2KV1ogX3JDj
-	AEfkB/s468noGb8N41NYhRuaqP+8HOIacx9yoJLceJQJlI8VyR940Tab4ztdzN+Y0HhpHRv9XVv
-	KSJN23QIiTkJVAq0te7+QHWxry7l0sYxcWmyqCzXbDdoxBtDkxkQ+JBkAeQ==
-X-Gm-Gg: ASbGncvNOHfydL5oUDIoAiiqiDDpth9EeWnZnHKj7RYTgm8aa56tA85T/LYv8/ifpac
-	jd1lMbWjN7+ZyyjPPINn4LqSeOoJ+pcqe62EGjZV2mNfXv7H1gaAMSqOuHTEz2FVpz47C4wbJos
-	GOLAZ1BhpJakZs/vPYmHNkOAWYedJ6ROtlkBEGUCiQQy7gbGj4GuUgv4IFviEiMmlKEGHMN8UUe
-	TiaYqEI1Ysx75DxoFwrFckY17oipG9SSnboyA+4HimLj2jxH1GgcCe+H8OFhhpTNOkNX6YqMrNw
-	STZ+nbVSAAusQ0OP5QAAECb+zHFrGyeUs4qyifX6RwNIA1ZK+GBkgc9nD/jinzeriXkS
-X-Received: by 2002:a05:6808:2f11:b0:3f7:28ac:8068 with SMTP id 5614622812f47-40b33d739famr8404112b6e.13.1751261579336;
-        Sun, 29 Jun 2025 22:32:59 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEAPnSmK0h+Bu/PWP9BFRLdQCyZMG2CT9ABThJxSQG9/yb6VZL5COXMbvln/zBTLSYl1C13xw==
-X-Received: by 2002:a05:6808:2f11:b0:3f7:28ac:8068 with SMTP id 5614622812f47-40b33d739famr8404100b6e.13.1751261578897;
-        Sun, 29 Jun 2025 22:32:58 -0700 (PDT)
-Received: from ?IPV6:2601:600:947f:f020:85dc:d2b2:c5ee:e3c4? ([2601:600:947f:f020:85dc:d2b2:c5ee:e3c4])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-40b3240548csm1531368b6e.28.2025.06.29.22.32.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 29 Jun 2025 22:32:58 -0700 (PDT)
-From: Waiman Long <llong@redhat.com>
-X-Google-Original-From: Waiman Long <longman@redhat.com>
-Message-ID: <df0a0896-6a16-4240-97dc-c85eb51908b9@redhat.com>
-Date: Mon, 30 Jun 2025 01:32:56 -0400
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="AepaKXQx"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=DXCHNahDABQNvWQ6z1YxJ6f4pJ/veBXrzzvg2Wfhm0do6vMOZyaTp8T5vQexLXf4xcHF+8zly2ZA5Zwsk8tsnU3QLwLXkDY/01nK6aUwpbC7g93QyP7pNJ9oHzpj3IW91vnNdrC+tKNkOluF8brSUZc5QQzAOZp5ZiZct3IpvAeOxfFIMClqeDZ2uDNLYY2JXg3qQGLns8yCKM5JjROBISAjGzDACFKPX9ivvNDSVggQmdMyyiOSTIHHtBb0H8Nfgk8soQ8lQQzq00CchxBMJ7To92DgJfvG2l6EiN1sCa0HkRNgYFJ6yE21iekhbpf0MwpRtO703c/64I47E1aCYQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zyxs2VHEOkTflu56Q3b8teWV4j3MNbyJzNwv8YbF5nU=;
+ b=orDToc8/qcJpIztv57KC0eceyvIJQOcR7hmav8F7iHDHCoxeJLG6BWVUpP0DqIz8iORwXr7vaIx+M4jt592iNl1k7FEXYiZEqJ3zL6Sp1Y0VbcC8fXREGpMPuy3/4OgU+x/shMWFzv8a0TjaDrgKBeVUD9nq9yNBy5mJdoJQOoJ7WYYMiZoSmzs5+vefC6Zkh7SSVQCbMGcnDyRamxrajvd3xrYwcBWY/bDn1uMCGWgDjBSNqulHBiR6Iiqv2Mllu67Qvk6bQwchIrpFBXGngTnJG83gtGZguGusN7WD6xYDFAJ+EtxNUJYQ+4zUNlxe68C+ID3utDZ1CNJWOS47ew==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zyxs2VHEOkTflu56Q3b8teWV4j3MNbyJzNwv8YbF5nU=;
+ b=AepaKXQxPDahSaOL3nwqAowScizYbNzTIzo9P3w3zBNQLpMIGk93J1n72iZXi19V0jgI64uEHbWLHK53oMGdpoRgyNd66VCGIypA1HCL97LeDyknuRScoACou5ivOwlqil0cZr6Mw+3QCrEcKTkgPydHyPTYpEvbSNm7bn9liaU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from PH7PR12MB5805.namprd12.prod.outlook.com (2603:10b6:510:1d1::13)
+ by PH7PR12MB7161.namprd12.prod.outlook.com (2603:10b6:510:200::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8813.38; Mon, 30 Jun
+ 2025 06:25:14 +0000
+Received: from PH7PR12MB5805.namprd12.prod.outlook.com
+ ([fe80::11c7:4914:62f4:f4a3]) by PH7PR12MB5805.namprd12.prod.outlook.com
+ ([fe80::11c7:4914:62f4:f4a3%4]) with mapi id 15.20.8857.026; Mon, 30 Jun 2025
+ 06:25:14 +0000
+Message-ID: <491a68b9-a2ca-4ca8-8d36-5775762088cd@amd.com>
+Date: Mon, 30 Jun 2025 11:55:06 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3] lib/alloc_tag: do not acquire non-existent lock in
+ alloc_tag_top_users()
+To: Harry Yoo <harry.yoo@oracle.com>, akpm@linux-foundation.org,
+ surenb@google.com, kent.overstreet@linux.dev
+Cc: oliver.sang@intel.com, 00107082@163.com, cachen@purestorage.com,
+ linux-mm@kvack.org, oe-lkp@lists.linux.dev, stable@vger.kernel.org
+References: <20250624072513.84219-1-harry.yoo@oracle.com>
+Content-Language: en-US
+From: Raghavendra K T <raghavendra.kt@amd.com>
+In-Reply-To: <20250624072513.84219-1-harry.yoo@oracle.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN3PR01CA0095.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:9b::8) To PH7PR12MB5805.namprd12.prod.outlook.com
+ (2603:10b6:510:1d1::13)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [linus:master] [locking/lockdep] de4b59d652:
- BUG:KASAN:slab-use-after-free_in_raw_spin_lock_irq
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
- Ingo Molnar <mingo@kernel.org>, Marco Elver <elver@google.com>,
- Boqun Feng <boqun.feng@gmail.com>, Andrey Konovalov <andreyknvl@gmail.com>
-References: <202506300447.102c9e45-lkp@intel.com>
- <c2115579-46cb-4984-adc6-3b117c0b4225@redhat.com>
-In-Reply-To: <c2115579-46cb-4984-adc6-3b117c0b4225@redhat.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: vt8jF-YcHWzvpv3NCEK2tFYj-BmTPbtetv6NgIxDFDs_1751261579
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5805:EE_|PH7PR12MB7161:EE_
+X-MS-Office365-Filtering-Correlation-Id: a6fe4971-a2b2-4f68-e7d5-08ddb79edf4d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|1800799024|376014|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?dGZaV3NKc0ZYRjhZa1BjOThIVUk0WmwxWjQvNmpXeVZUMGlKa2R0U29jSGlo?=
+ =?utf-8?B?NkRXUHlIK0VKb25CeDFiUW15SHVwcGVJWGI0NFhpWEJIcDc3K0lWU2tYSkhZ?=
+ =?utf-8?B?Z2htN01jdEQyRGRYWjY5SW5BN0kvdGgwWEZTU3hFNkRhZTdMSUNRVGg0b2w3?=
+ =?utf-8?B?UG1wcWp2NkxOQldMWWFYN25tbVJHcENwODcweWtEOHlaVWdMMTF6OU1jRm5H?=
+ =?utf-8?B?TlpIVXh4NWhEVXZoek5JT3ZVam1YdUFMb0MrUnJ6VUwrZGdqMUFYSHFqMzdp?=
+ =?utf-8?B?NmtZSDYrQm05dWxxeC9mSDY1OGVIb0ErczdNbkZCNjBMNXpmN0M1cS9Lem1k?=
+ =?utf-8?B?emZ6RWg2NjBrU0RIMUFTek9YREt2dWx4ZUc4R1MvRkZ1SllxeXJzNjFWaUFC?=
+ =?utf-8?B?MnZKYzM3ZlZ2cEg0QlJOSVRURzRrRjBrUnNjc1JKZUdhNmlPL2ErdThsODBr?=
+ =?utf-8?B?OVZqYWVZMHZTaHZYTUpXZ3JpYmpuL2JHZGJnNE5WWU8reEp4UlhoUkNIT2di?=
+ =?utf-8?B?N3IvRzI0WUtoMThrVHpZUkJEOWovU2R5dkErNXpFbkJYZ295L2I2a3J2MUZp?=
+ =?utf-8?B?bW90WXRBcU5rZEN6WEVBcDA5OVFoT0Qxai82WlFUbzBaZ1lsWWJ1RHFJdGlB?=
+ =?utf-8?B?WUIyRGpWd1JiQ05BQ3docE1XUE9tOUF6L3NKc3lrb0Q5WVZuMlpVb0ZqN2VC?=
+ =?utf-8?B?b01OUVdKc3VIcHZvVUZ4TEFWdXIrRVdocklFQnhvb0RFcVU3aUZNN0tvTFFv?=
+ =?utf-8?B?TEo5Z2JXQ0NISkd3VFhlN2UvTUkydUhyWkY4ejB0NDRJdVhJV1RRV2lhbHpK?=
+ =?utf-8?B?YlRldm93SGhCenM3UWt0UVZTajJTVEdnQVdJSGZ5OC9mSXZCZVcvd1Erc00z?=
+ =?utf-8?B?TExmT1F4eHFyT0xkbmg4MXR6UGVwWEF6QlE2TkNHQmxkWnZ5blNRaC9GWk1H?=
+ =?utf-8?B?cFBESjh4cFNpTHR1elVCZzQ3OEJZZFRVNGlRRHdLcnJyQU9QRXJBQm1GT202?=
+ =?utf-8?B?bm5nNHlaaEJ2NnQrQ3RGeTlSYWVUR2ZhNXpzeTNlZU9nL3hDYTN1OWxURjVs?=
+ =?utf-8?B?anVvaWwvQlVLdzhlVENPNFQ2Sk1qQS9XQk5PV09vS0hPY1NjYzN3cjl6Wlh4?=
+ =?utf-8?B?b0xMYVpQaDFmcDBWcW1kNHgvT3BMYSs3MzhiYkYxVHNaZjZ0eElKRTNid0ZF?=
+ =?utf-8?B?T1lmb2QyOWFSMnZOMldSd1F2QkwzRXVNQ0p3ajJReFRlR1YrNFl4NVBqSk1B?=
+ =?utf-8?B?NHYwc1c0azNGUXViUDBKbjhYWFFGZU8rTzdMdnQ0Ny9OU2pIWkhFckYyZFVE?=
+ =?utf-8?B?OEVGSGpRQ09UeGdjQUVmSWNldjZHdTRsMGZ6b0VwMkNjaGErdVpEb2VTRTkv?=
+ =?utf-8?B?OGoxSTZmME5TQlJzL0V0cmtvM0MrVUJqejVJS1BWZkpOUGlldTZvZjEvb2ZT?=
+ =?utf-8?B?Y2NvRFhtb2NYbTgwdG9qUHZqOE00OGZ5K2tFWWpGRGxXaTUyWndPaGYrcVov?=
+ =?utf-8?B?aFJmRWhWTlp5WktHT0YrTWFrdFlaVTVFM0ZyZC8zamw3dTBxWC9wM3hjQzIv?=
+ =?utf-8?B?bUVOMGFlSkdyb2JkQnN0czdZK0ZnRFkxUmpDWlFVRzNMOFVUeW02OEdMRHMz?=
+ =?utf-8?B?MmtubXE1MnZHeXFKQjZQcmtOVzRmSUorU0ZUdnU1cEJ0dUxvR1ZnM3JoM1Y2?=
+ =?utf-8?B?a1IyVDBsWkVMVEVwaXIyazdGeDBZTzF2SlVrNWNxalFDRnZhTktBUVlqZG5N?=
+ =?utf-8?B?cDROTkZtYnVjcXNzRXcvMWVjOWxzUmVFSGVxMml5WSsvL3JZOEx3VlAwNld3?=
+ =?utf-8?B?RHNrMGxJSDgxRkg0UWc0a3JUS2tjR3p6ajJ5VXhvVHIreXJxeWU5SXl3Qnkz?=
+ =?utf-8?B?WFdiMzByZWhQVlkxUi9wNnB3dDFTZ0tUQTlkd1l6QUw4cXRYUmtOaVZ4cWJN?=
+ =?utf-8?Q?Nz30Pw0slko=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5805.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?S2pZQjVRVUZGYzdMZ3paRjFMZnRGTkpRRzJRaUxJTFRxZklobnc0STNieEd4?=
+ =?utf-8?B?Q1U1cFR6OThPYmxXRG1vZzFoNTZwajNKOTQxOGJTSEZrVk1YZStSNEVMaXNa?=
+ =?utf-8?B?cjgrZERKREt5bFRCdi91NVNCOFZUMlZGTk12d0Q5TnlDeFBteS9WOUlqYXB0?=
+ =?utf-8?B?YkJPTkJORHZKMlRtOG90YmRZamttMXd5bWNzT2w3OGZHZGJqam90eTN3aHVI?=
+ =?utf-8?B?Z0N2SzJaTEcxdW9GQ25mZ1RYYTdYWGFEMUFzYkN4MXhvRVpndFZBS2lIamJ0?=
+ =?utf-8?B?LzFPQ1JlZ1prWEhWSHgvTWttTWlja3JRQUl0QkhmVkFIamNLKzZldDVLY1NR?=
+ =?utf-8?B?dHVRT2RFUndmQnl0SDFXZ3FhU05BbXJnYTV2Rm55SFVXNFM5a1BuandaeE1a?=
+ =?utf-8?B?MU1aUFptOExiZC9GamNMSHhGVk5wYnhSc0xoa2dBMVNoNFowdExObnZlMFAy?=
+ =?utf-8?B?QkdNbFR1QzNxaFF0eEVmYTN2YUpnMHYzeExWckV5Mi9iRGZBeGhoRzI2bnE5?=
+ =?utf-8?B?S1c1NG1jVjJjdFp5QmFSbWx2bzhqVWoxVHFreGUrM05yMHhrNlhudHVaRkI1?=
+ =?utf-8?B?WlllaGlvOS9uV0N2MVk5Y3d2dFZiSjQ4eGdNOVhoOUV2d3BsaXVCTDkwNG9v?=
+ =?utf-8?B?NlJyaUQzODdObmh3YmZxUWJJcFN1TjlockZrb1g5Vit4MVI1OXE4OENna2xv?=
+ =?utf-8?B?a3F3UUVqaVpFSTVKZ09LK1hnL1A5VUtseW9RK09jdnRXWEIwa0pJYUZVQk51?=
+ =?utf-8?B?N1JkaG5mdXRsMWsrWFNlZ2d4SWEvL2xZaytxUnlqcXFJcnhsNlNRcnowTVNu?=
+ =?utf-8?B?b0hDcEVtMEpTc044azJlbXZacjlsY0cyV3hScWc2aDdjSlRpaFdxcnpCaTlJ?=
+ =?utf-8?B?SDZOQmluYnR6enpGNUQwcGZXYlRDNy8yVm1sWDl6MlBtSC90eithK2UwKzNR?=
+ =?utf-8?B?ai9GUnBtYWVtMit3QnMxZXBnYWdnSFUvSnFMTHR5OEp0YmNtak9hdGM0RTNW?=
+ =?utf-8?B?STdBSXF6a1YvR3A3ZHpLZUp1ZWhZU2s0dlZBTTcrTlhZc2JObFdDMmJNQ1U4?=
+ =?utf-8?B?cHFPdnBSazFlWU9wVzdtekxweVlGZG5xNko2dHlTTzdYcnMveDRSMWtZTXN3?=
+ =?utf-8?B?a0krNThvYUovUncreVBjSUlwZkxjOFNIWUxBNTdxMkdFRDVmUzM5SGQ1eVpm?=
+ =?utf-8?B?U1hUN1J3a1kxZkpWZGMzSUJ2S05iTjVQYkMvSUJkRmc0QVhGN2d4WC9CUExh?=
+ =?utf-8?B?VzRnOWgyREo0L0cvM1E1NVIxaDdQYko2MkpvcGNFTkhsUDFHZUtVVmVBYTZJ?=
+ =?utf-8?B?elJUQy9hMHpOczRYbU84VkhVTmp4RXV4SkkxZVVwdm5uUUZkSEdNMmZyd3pI?=
+ =?utf-8?B?bXBNenp5KytxeUpZZlV1MWtjb2ZJWWp2dUw2VkszaE82Z21ub3Y5Nm9mck1J?=
+ =?utf-8?B?SnprK0VoVytBVVgvVmRLQ3pJL25uV3k5TEVGK3ErdmIzdW54Vy9oRnQ1c09S?=
+ =?utf-8?B?MG9wWG5jY3c2eTBhekNzeHVHVzVuclVpWHZ4QkhQSzlEYW05MzJ4clZqZ0c4?=
+ =?utf-8?B?dXQvVjBvaS9YSXlTVjdQdDE1OW56R1l2b1pkdll3Slk0MWFWOGhNbXNUSXRu?=
+ =?utf-8?B?MHJnb1Bod0dZS2M4UkR1MEsvYnpmQlFIbUZJRmt3bHM0ZmllWWgyYXVRb1ZK?=
+ =?utf-8?B?T3ZGTlQ3a25xbGM2aWkvNXdwekVWak15ckZaZ3hzc0JwcWk3Wm5xVzE3bFRH?=
+ =?utf-8?B?RVVGeFh0SjZweTUxaGFRYUJxcjZEZE80eEZXbVRFTHQza3JrTzRKbkFyVlY0?=
+ =?utf-8?B?VnBvazRLRUVYSjg5UTFPTjVmenptNE5zRUprYjVMc2ZUSnpkVXJpcGN3eEtI?=
+ =?utf-8?B?ZzI4ZjZ0c3YvK0ROUWNPalBBNDhGK1FhV25Cdi9BcWFpQ0xxZXlWN001MWdQ?=
+ =?utf-8?B?MG1qSERFMHNiRHErdEJ6OFFWdFIrenlKRUpQcUVvUDdrRXBMalBOY2J4NUtY?=
+ =?utf-8?B?YVlTNzFyTm1YaWdacTZsMyt0Z2dQcUhYbVp6dkxzTUNnOGdPVm5xQnlXSXVu?=
+ =?utf-8?B?SmYyb1BGSVBsNTV1ZVlLeVVTZFpzUkRVU2xCaUxhdDdxS1dqcEV3L1JVV0F5?=
+ =?utf-8?Q?BGYvJGHSFedVOZu1dQSfY7Mdm?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a6fe4971-a2b2-4f68-e7d5-08ddb79edf4d
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5805.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jun 2025 06:25:13.9762
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9rly0osfz8VFmSWosWwSgUNyEfqu2/A2/rWZECOZq/pjw9UFHtcLsdPoSLj8FS5ixMsRlvFe0Bei0mFok6DfdA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7161
 
-On 6/30/25 12:13 AM, Waiman Long wrote:
-> On 6/29/25 10:34 PM, kernel test robot wrote:
->>
->> Hello,
->>
->> kernel test robot noticed 
->> "BUG:KASAN:slab-use-after-free_in_raw_spin_lock_irq" on:
->>
->> commit: de4b59d652646cf00cf632174348ca2266099edc ("locking/lockdep: 
->> Add kasan_check_byte() check in lock_acquire()")
->> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->
-> I don't believe commit de4b59d65264 ("locking/lockdep: Add 
-> kasan_check_byte() check in lock_acquire()") is the cause of the KASAN 
-> error. The previous commit ee57ab5a3212 ("locking/lockdep: Disable 
-> KASAN instrumentation of lockdep.c") explicitly disables KASAN 
-> instrumentation to improve lockdep performance. If bisection happens 
-> to land in between these two commits, the bisection algorithm can 
-> incorrectly think commit de4b59d65264 is the culprit.
->
-> Anyway, it is the caller of the spin_lock_irq() that passes in a lock 
-> pointer that are in a memory area that has been freed. In this 
-> particular case, kmod_dup_request_exists_wait() is handling a 
-> duplicated kmod_req returned by kmod_dup_request_lookup(). The 
-> duplicated kmod_req has been freed somehow.
->
-> Cheers,
-> Longman
->
->
->
->>
->> [test failed on linus/master afa9a6f4f5744d907954f5b708d76c9bffa43234]
->> [test failed on linux-next/master 
->> 2aeda9592360c200085898a258c4754bfe879921]
->>
->> in testcase: trinity
->> version:
->> with following parameters:
->>
->>     runtime: 600s
->>
->>
->> config: x86_64-randconfig-104-20250415
->> compiler: gcc-12
->> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 
->> -m 16G
->>
->> (please refer to attached dmesg/kmsg for entire log/backtrace)
->>
->>
->> the issue does not always happen. 23 times out of 142 runs as below.
->> parent keeps clean.
->>
->>
->> ee57ab5a32129f59 de4b59d652646cf00cf63217434
->> ---------------- ---------------------------
->>         fail:runs  %reproduction    fail:runs
->>             |             |             |
->>             :142         16%          23:142 
->> dmesg.BUG:KASAN:slab-use-after-free_in_raw_spin_lock_irq
->>
->>
->> If you fix the issue in a separate patch/commit (i.e. not just a new 
->> version of
->> the same patch/commit), kindly add following tags
->> | Reported-by: kernel test robot <oliver.sang@intel.com>
->> | Closes: 
->> https://lore.kernel.org/oe-lkp/202506300447.102c9e45-lkp@intel.com
->>
->>
->> [ 154.326222][ T1658] BUG: KASAN: slab-use-after-free in 
->> _raw_spin_lock_irq (include/linux/spinlock_api_smp.h:120 
->> kernel/locking/spinlock.c:170)
->> [  154.327485][ T1658] Read of size 1 at addr ffff888101655868 by 
->> task trinity-c3/1658
->> [  154.328688][ T1658]
->> [  154.329089][ T1658] CPU: 0 UID: 536870912 PID: 1658 Comm: 
->> trinity-c3 Tainted: G                T 6.14.0-rc5-00228-gde4b59d65264 #1
->> [  154.330915][ T1658] Tainted: [T]=RANDSTRUCT
->> [  154.331547][ T1658] Call Trace:
->> [  154.332090][ T1658]  <TASK>
->> [ 154.332553][ T1658] dump_stack_lvl (lib/dump_stack.c:123)
->> [ 154.333291][ T1658] print_address_description+0x8a/0x34b
->> [ 154.334384][ T1658] print_report (mm/kasan/report.c:522)
->> [ 154.335159][ T1658] ? __virt_addr_valid (arch/x86/mm/physaddr.c:66)
->> [ 154.335979][ T1658] ? _raw_spin_lock_irq 
->> (include/linux/spinlock_api_smp.h:120 kernel/locking/spinlock.c:170)
->> [ 154.336775][ T1658] kasan_report (mm/kasan/report.c:636)
->> [ 154.337475][ T1658] ? _raw_spin_lock_irq 
->> (include/linux/spinlock_api_smp.h:120 kernel/locking/spinlock.c:170)
->> [ 154.338283][ T1658] ? _raw_spin_lock_irq 
->> (include/linux/spinlock_api_smp.h:120 kernel/locking/spinlock.c:170)
->> [ 154.339112][ T1658] ? __wait_for_common 
->> (kernel/sched/completion.c:84 kernel/sched/completion.c:116)
->> [ 154.339920][ T1658] __kasan_check_byte (mm/kasan/common.c:561)
->> [ 154.340707][ T1658] lock_acquire (include/trace/events/lock.h:24 
->> include/trace/events/lock.h:24 kernel/locking/lockdep.c:5829)
->> [ 154.341554][ T1658] ? pci_mmcfg_reserved (kernel/sched/core.c:6646)
->> [ 154.342337][ T1658] ? __sanitizer_cov_trace_pc (kernel/kcov.c:217)
->> [ 154.343252][ T1658] ? irq_trace (kernel/trace/trace_irqsoff.c:59 
->> (discriminator 6))
->> [ 154.343968][ T1658] ? write_comp_data (kernel/kcov.c:246)
->> [ 154.344741][ T1658] ? usleep_range_state 
->> (kernel/time/sleep_timeout.c:62)
->> [ 154.345597][ T1658] _raw_spin_lock_irq 
->> (include/linux/spinlock_api_smp.h:120 kernel/lockinspinlock.c:170)
->> [ 154.346429][ T1658] ? __wait_for_common 
->> (kernel/sched/completion.c:84 kernel/sched/completion.c:116)
->> [ 154.347266][ T1658] __wait_for_common (kernel/sched/completion.c:84 
->> kernel/sched/completion.c:116)
+On 6/24/2025 12:55 PM, Harry Yoo wrote:
+> alloc_tag_top_users() attempts to lock alloc_tag_cttype->mod_lock
+> even when the alloc_tag_cttype is not allocated because:
+> 
+>    1) alloc tagging is disabled because mem profiling is disabled
+>       (!alloc_tag_cttype)
+>    2) alloc tagging is enabled, but not yet initialized (!alloc_tag_cttype)
+>    3) alloc tagging is enabled, but failed initialization
+>       (!alloc_tag_cttype or IS_ERR(alloc_tag_cttype))
+> 
+> In all cases, alloc_tag_cttype is not allocated, and therefore
+> alloc_tag_top_users() should not attempt to acquire the semaphore.
+> 
+> This leads to a crash on memory allocation failure by attempting to
+> acquire a non-existent semaphore:
+> 
+>    Oops: general protection fault, probably for non-canonical address 0xdffffc000000001b: 0000 [#3] SMP KASAN NOPTI
+>    KASAN: null-ptr-deref in range [0x00000000000000d8-0x00000000000000df]
+>    CPU: 2 UID: 0 PID: 1 Comm: systemd Tainted: G      D             6.16.0-rc2 #1 VOLUNTARY
+>    Tainted: [D]=DIE
+>    Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+>    RIP: 0010:down_read_trylock+0xaa/0x3b0
+>    Code: d0 7c 08 84 d2 0f 85 a0 02 00 00 8b 0d df 31 dd 04 85 c9 75 29 48 b8 00 00 00 00 00 fc ff df 48 8d 6b 68 48 89 ea 48 c1 ea 03 <80> 3c 02 00 0f 85 88 02 00 00 48 3b 5b 68 0f 85 53 01 00 00 65 ff
+>    RSP: 0000:ffff8881002ce9b8 EFLAGS: 00010016
+>    RAX: dffffc0000000000 RBX: 0000000000000070 RCX: 0000000000000000
+>    RDX: 000000000000001b RSI: 000000000000000a RDI: 0000000000000070
+>    RBP: 00000000000000d8 R08: 0000000000000001 R09: ffffed107dde49d1
+>    R10: ffff8883eef24e8b R11: ffff8881002cec20 R12: 1ffff11020059d37
+>    R13: 00000000003fff7b R14: ffff8881002cec20 R15: dffffc0000000000
+>    FS:  00007f963f21d940(0000) GS:ffff888458ca6000(0000) knlGS:0000000000000000
+>    CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>    CR2: 00007f963f5edf71 CR3: 000000010672c000 CR4: 0000000000350ef0
+>    Call Trace:
+>     <TASK>
+>     codetag_trylock_module_list+0xd/0x20
+>     alloc_tag_top_users+0x369/0x4b0
+>     __show_mem+0x1cd/0x6e0
+>     warn_alloc+0x2b1/0x390
+>     __alloc_frozen_pages_noprof+0x12b9/0x21a0
+>     alloc_pages_mpol+0x135/0x3e0
+>     alloc_slab_page+0x82/0xe0
+>     new_slab+0x212/0x240
+>     ___slab_alloc+0x82a/0xe00
+>     </TASK>
+> 
+> As David Wang points out, this issue became easier to trigger after commit
+> 780138b12381 ("alloc_tag: check mem_profiling_support in alloc_tag_init").
+> 
+> Before the commit, the issue occurred only when it failed to allocate
+> and initialize alloc_tag_cttype or if a memory allocation fails before
+> alloc_tag_init() is called. After the commit, it can be easily triggered
+> when memory profiling is compiled but disabled at boot.
+> 
+> To properly determine whether alloc_tag_init() has been called and
+> its data structures initialized, verify that alloc_tag_cttype is a valid
+> pointer before acquiring the semaphore. If the variable is NULL or an error
+> value, it has not been properly initialized. In such a case, just skip
+> and do not attempt to acquire the semaphore.
+> 
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> Closes: https://lore.kernel.org/oe-lkp/202506181351.bba867dd-lkp@intel.com
+> Closes: https://lore.kernel.org/oe-lkp/202506131711.5b41931c-lkp@intel.com
+> Fixes: 780138b12381 ("alloc_tag: check mem_profiling_support in alloc_tag_init")
+> Fixes: 1438d349d16b ("lib: add memory allocations report in show_mem()")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Harry Yoo <harry.yoo@oracle.com>
+> ---
+> 
+> @Suren: I did not add another pr_warn() because every error path in
+> alloc_tag_init() already has pr_err().
+> 
+> v2 -> v3:
+> - Added another Closes: tag (David)
+> - Moved the condition into a standalone if block for better readability
+>    (Suren)
+> - Typo fix (Suren)
+> 
+>   lib/alloc_tag.c | 3 +++
+>   1 file changed, 3 insertions(+)
+> 
+> diff --git a/lib/alloc_tag.c b/lib/alloc_tag.c
+> index 41ccfb035b7b..e9b33848700a 100644
+> --- a/lib/alloc_tag.c
+> +++ b/lib/alloc_tag.c
+> @@ -127,6 +127,9 @@ size_t alloc_tag_top_users(struct codetag_bytes *tags, size_t count, bool can_sl
+>   	struct codetag_bytes n;
+>   	unsigned int i, nr = 0;
+>   
+> +	if (IS_ERR_OR_NULL(alloc_tag_cttype))
+> +		return 0;
+> +
+>   	if (can_sleep)
+>   		codetag_lock_module_list(alloc_tag_cttype, true);
+>   	else if (!codetag_trylock_module_list(alloc_tag_cttype))
 
-Taking a deeper look in __wait_for_common():
+Hello,
+I have hit this while digging one of the TEST_VMALLOC test.
+(specifically align_shift_alloc_test which is expected to fail and
+give similar splat)
 
-  94 raw_spin_unlock_irq(&x->wait.lock);
-  95                         timeout = action(timeout);
-  96 raw_spin_lock_irq(&x->wait.lock);
+I can confirm that with
+CONFIG_MEM_ALLOC_PROFILING=y
+CONFIG_TEST_VMALLOC=y
 
-The raw_spin_lock_irq() call before calling __wait_for_common() is OK. 
-So the memory free likely happens after the unlock in the action() call 
-here. After that, the raw_spin_lock_irq() call hits the KASAN bug.
+system does not boot (for v6.16+).
 
-Cheers,
-Longman
+with this patch system boots fine.
 
->> [ 154.348111][ T1658] ? _printk (kernel/printk/printk.c:2452)
->> [ 154.348825][ T1658] ? out_of_line_wait_on_bit_lock 
->> (kernel/sched/completion.c:110)
->> [ 154.349775][ T1658] wait_for_completion_state 
->> (kernel/sched/completion.c:268)
->> [ 154.350731][ T1658] kmod_dup_request_exists_wait 
->> (kernel/module/dups.c:210)
->> [ 154.351725][ T1658] ? inet_create (net/ipv4/af_inet.c:1382)
->> [ 154.352749][ T1658] __request_module (kernel/module/kmod.c:167)
->> [ 154.353587][ T1658] ? free_modprobe_argv (kernel/module/kmod.c:132)
->> [ 154.354406][ T1658] ? mark_lock (kernel/locking/lockdep.c:4726 
->> (discriminator 3))
->> [ 154.355134][ T1658] ? __lock_acquire (kernel/locking/lockdep.c:5235)
->> [ 154.355920][ T1658] ? rcu_read_unlock (include/linux/rcupdate.h:347 
->> include/linux/rcupdate.h:880)
->> [ 154.356711][ T1658] ? kvm_sched_clock_read 
->> (arch/x86/kernel/kvmclock.c:91)
->> [ 154.357535][ T1658] ? local_clock_noinstr (kernel/sched/clock.c:301)
->> [ 154.358370][ T1658] ? __lock_release+0xc0/0x16f
->> [ 154.358993][ T1658] ? inet_create (net/ipv4/af_inet.c:1382)
->> [ 154.359749][ T1658] inet_create (net/ipv4/af_inet.c:1382)
->> [ 154.360375][ T1658] ? kvm_sched_clock_read 
->> (arch/x86/kernel/kvmclock.c:91)
->> [ 154.360824][ T1658] inet_create (net/ipv4/af_inet.c:266)
->> [ 154.361197][ T1658] ? rcu_read_unlock (include/linux/rcupdate.h:878)
->> [ 154.361659][ T1658] __sock_create (net/socket.c:1549)
->> [ 154.362058][ T1658] __sys_socket_create (net/socket.c:1644)
->> [ 154.362599][ T1658] ? sock_create (net/socket.c:1629)
->> [ 154.363222][ T1658] ? rcu_read_unlock (include/linux/rcupdate.h:347 
->> include/linux/rcupdate.h:880)
->> [ 154.363796][ T1658] __sys_socket (net/socket.c:1692)
->> [ 154.364376][ T1658] __x64_sys_socket (net/socket.c:1702)
->> [ 154.364848][ T1658] do_syscall_64 (arch/x86/entry/common.c:52 
->> arch/x86/entry/common.c:83)
->> [ 154.365258][ T1658] ? lockdep_hardirqs_on_prepare 
->> (kernel/locking/lockdep.c:4663)
->> [ 154.366074][ T1658] ? syscall_exit_to_user_mode 
->> (include/linux/entry-common.h:362 kernel/entry/common.c:220)
->> [ 154.366845][ T1658] ? do_syscall_64 (arch/x86/entry/common.c:102)
->> [ 154.367412][ T1658] ? rcu_read_unlock (include/linux/rcupdate.h:347 
->> include/linux/rcupdate.h:880)
->> [ 154.367834][ T1658] ? kvm_sched_clock_read 
->> (arch/x86/kernel/kvmclock.c:91)
->> [ 154.368274][ T1658] ? local_clock_noinstr (kernel/sched/clock.c:301)
->> [ 154.368702][ T1658] ? local_clock 
->> (arch/x86/include/asm/preempt.h:84 kernel/sched/clock.c:316)
->> [ 154.369074][ T1658] ? __lock_release+0xc0/0x16f
->> [ 154.369792][ T1658] ? __sanitizer_cov_trace_pc (kernel/kcov.c:217)
->> [ 154.370652][ T1658] ? __sanitizer_cov_trace_pc (kernel/kcov.c:217)
->> [ 154.371504][ T1658] ? irq_trace (kernel/trace/trace_irqsoff.c:59 
->> (discriminator 6))
->> [ 154.372218][ T1658] ? write_comp_data (kernel/kcov.c:246)
->> [ 154.372976][ T1658] ? tracer_hardirqs_on 
->> (kernel/trace/trace_irqsoff.c:630)
->> [ 154.373837][ T1658] ? lockdep_hardirqs_on_prepare 
->> (kernel/locking/lockdep.c:4663)
->> [ 154.374908][ T1658] ? syscall_exit_to_user_mode 
->> (include/linux/entry-common.h:362 kernel/entry/common.c:220)
->> [ 154.375824][ T1658] ? do_syscall_64 (arch/x86/entry/common.c:102)
->> [ 154.376619][ T1658] ? __sanitizer_cov_trace_pc (kernel/kcov.c:217)
->> [ 154.377531][ T1658] ? __sanitizer_cov_trace_pc (kernel/kcov.c:217)
->> [ 154.378445][ T1658] ? irq_trace (kernel/trace/trace_irqsoff.c:59 
->> (discriminator 6))
->> [ 154.379157][ T1658] ? write_comp_data (kernel/kcov.c:246)
->> [ 154.379923][ T1658] ? tracer_hardirqs_on 
->> (kernel/trace/trace_irqsoff.c:630)
->> [ 154.380723][ T1658] ? lockdep_hardirqs_on_prepare 
->> (kernel/locking/lockdep.c:4663)
->> [ 154.381723][ T1658] ? syscall_exit_to_user_mode 
->> (include/linux/entry-common.h:362 kernel/entry/common.c:220)
->> [ 154.382608][ T1658] ? do_syscall_64 (arch/x86/entry/common.c:102)
->> [ 154.383220][ T1658] ? rcu_read_unlock (include/linux/rcupdate.h:347 
->> include/linux/rcupdate.h:880)
->> [ 154.383811][ T1658] ? kvm_sched_clock_read 
->> (arch/x86/kernel/kvmclock.c:91)
->> [ 154.384524][ T1658] ? local_clock_noinstr (kernel/sched/clock.c:301)
->> [ 154.385261][ T1658] ? local_clock 
->> (arch/x86/include/asm/preempt.h:84 kernel/sched/clock.c:316)
->> [ 154.385979][ T1658] ? __lock_release+0xc0/0x16f
->> [ 154.386876][ T1658] ? __sanitizer_cov_trace_pc (kernel/kcov.c:217)
->> [ 154.387784][ T1658] ? __sanitizer_cov_trace_pc (kernel/kcov.c:217)
->> [ 154.388666][ T1658] ? irq_trace (kernel/trace/trace_irqsoff.c:59 
->> (discriminator 6))
->> [ 154.389383][ T1658] ? write_comp_data (kernel/kcov.c:246)
->> [ 154.390168][ T1658] ? tracer_hardirqs_on 
->> (kernel/trace/trace_irqsoff.c:630)
->> [ 154.390997][ T1658] ? lockdep_hardirqs_on_prepare 
->> (kernel/locking/lockdep.c:4663)
->> [ 154.392108][ T1658] ? syscall_exit_to_user_mode 
->> (include/linux/entry-common.h:362 kernel/entry/common.c:220)
->> [ 154.393047][ T1658] ? clear_bhb_loop (arch/x86/entry/entry_64.S:1538)
->> [ 154.393829][ T1658] ? clear_bhb_loop (arch/x86/entry/entry_64.S:1538)
->> [ 154.394600][ T1658] ? clear_bhb_loop (arch/x86/entry/entry_64.S:1538)
->> [ 154.395191][ T1658] ? clear_bhb_loop (arch/x86/entry/entry_64.S:1538)
->> [ 154.395845][ T1658] entry_SYSCALL_64_after_hwframe 
->> (arch/x86/entry/entry_64.S:130)
->> [  154.396678][ T1658] RIP: 0033:0x463519
->> [ 154.397279][ T1658] Code: 00 f3 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 
->> 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 
->> 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db 59 00 00 c3 66 2e 0f 1f 
->> 84 00 00 00 00
->> All code
->> ========
->>     0:    00 f3                    add    %dh,%bl
->>     2:    c3                       ret
->>     3:    66 2e 0f 1f 84 00 00     cs nopw 0x0(%rax,%rax,1)
->>     a:    00 00 00
->>     d:    0f 1f 40 00              nopl   0x0(%rax)
->>    11:    48 89 f8                 mov    %rdi,%rax
->>    14:    48 89 f7                 mov    %rsi,%rdi
->>    17:    48 89 d6                 mov    %rdx,%rsi
->>    1a:    48 89 ca                 mov    %rcx,%rdx
->>    1d:    4d 89 c2                 mov    %r8,%r10
->>    20:    4d 89 c8                 mov    %r9,%r8
->>    23:    4c 8b 4c 24 08           mov    0x8(%rsp),%r9
->>    28:    0f 05                    syscall
->>    2a:*    48 3d 01 f0 ff ff        cmp 
->> $0xfffffffffffff001,%rax        <-- trapping instruction
->>    30:    0f 83 db 59 00 00        jae    0x5a11
->>    36:    c3                       ret
->>    37:    66                       data16
->>    38:    2e                       cs
->>    39:    0f                       .byte 0xf
->>    3a:    1f                       (bad)
->>    3b:    84 00                    test   %al,(%rax)
->>    3d:    00 00                    add    %al,(%rax)
->>     ...
->>
->> Code starting with the faulting instruction
->> ===========================================
->>     0:    48 3d 01 f0 ff ff        cmp $0xfffffffffffff001,%rax
->>     6:    0f 83 db 59 00 00        jae    0x59e7
->>     c:    c3                       ret
->>     d:    66                       data16
->>     e:    2e                       cs
->>     f:    0f                       .byte 0xf
->>    10:    1f                       (bad)
->>    11:    84 00                    test   %al,(%rax)
->>    13:    00 00                    add    %al,(%rax)
->>
->>
->> The kernel config and materials to reproduce are available at:
->> https://download.01.org/0day-ci/archive/20250630/202506300447.102c9e45-lkp@intel.com 
->>
->>
->>
->>
+and thus seems to be a mandatory fix. (for the above CONFIG combination)
+
+Fell free to add:
+
+Tested-by: Raghavendra K T <raghavendra.kt@amd.com>
+
+Thanks and Regards
+- Raghu
+
+
+
+
 
