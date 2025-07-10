@@ -1,44 +1,50 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A4832D661F;
-	Thu, 10 Jul 2025 10:13:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44D5D1FBEA2
+	for <oe-lkp@lists.linux.dev>; Thu, 10 Jul 2025 10:47:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752142406; cv=none; b=XI+UCjbmofGxfXvsXpdBCJkRVvhkB2V5ODjxNPpUmvKMG5BZLegAM1j6T1izny0CM4gFNGeYo0guMQ5wa63EnAsaesNzyobArqjpy72++l43WckOZu7dsSGHujA1Epi1q17y8G64FqVTNLWw7K4LOuUI+anvFi4EIAu3JF4khgs=
+	t=1752144465; cv=none; b=JhEObL47jl6rMoisYMN6idsAwstprLnA6CToJeWM4hSZPMsGm/hmxeGHOMrdzIRMIQShVRGXHRUhPfgjWLAArAB7F0RyCx8Wdl7/AR4eg7bB+1Z31KwdBoBpP9OsZxGnRQnj7d2WJe5PG48XddoBDjWQVokq1frYS8KH7lJlJqo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752142406; c=relaxed/simple;
-	bh=F9Zn38Ia5P+j2FJQVJkhDRVVfMYoxSFosPDOuypiIMA=;
+	s=arc-20240116; t=1752144465; c=relaxed/simple;
+	bh=PagKpfrg/CoVjOCw2gulRvIjEDVrXdnTDmoAFAYLbnw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VoqhT2ECSbsTiB47+X+lmrZjcb4GnywhiREMJ0Gf4PwXgPIjmuSsoE85tO3A9lLuV9c7kfTaR8WOebwM/F3JtbLeye7R9P0gVWyO/cZtsgA4+MAJd6WHCrVh+scKUsJ2W2/hawxJbg9Z6/fovrPq3mbUeyOiYGEFGnWFm76cpcU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=RadJuAWg; arc=none smtp.client-ip=90.155.50.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=h9ipB3Yzoq7w6sTYkjQZ6wVIBYHT+8IIQSYGAg9YhVMT0EdyyWdEA/bD2BmGiJzHFC6m+otV2Wx2siNC7VhM7HSb3g7rpEJQZP02THBVkKhnRNIdFWG/qIPKY/afYUBYytppTacbWSaKgLOPo91ADekSiav4asc24H+2tH/v1uU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=jAUJfQ1E; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=2+vSIxPP; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="RadJuAWg"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=ENYhfh0yC13BHVhZjvhSu3orUCwcKZQ5QjaaRVv3TS4=; b=RadJuAWgSyMYaLX8M7SGTm5T7v
-	LZaYlLHu5zA2FYrYvjLwRFAjjh8xZAS5uEizug0oqKd10Ybnfw1zt0kdsGIopqn8e9e6egwke6bQo
-	fRjArkm0xUiErhdJCWUy3mvnap9Mx8FQCO92a0rapwUmoPXQxl5Irxh4+s7MEgyW2JCHI/+aacXxn
-	NtYO5aYS7RBx67Mg0J5F4CcCMzzS/wBg7cTvBO/PHLeZ9zEhDVVGJF6zcsXcLFl7j5pfBv8eNRU/M
-	gPgqGbn6fV+Hhv3Jg2VLdTtD4pc5ypw4B8QMjIbeicwe/CE89+Yi1lQ+l990Jht0IUI/n3caLYY9X
-	zdbTKUSw==;
-Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
-	by casper.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1uZoHF-00000008Rvt-053y;
-	Thu, 10 Jul 2025 10:13:17 +0000
-Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
-	id 9720030023C; Thu, 10 Jul 2025 12:13:16 +0200 (CEST)
-Date: Thu, 10 Jul 2025 12:13:16 +0200
-From: Peter Zijlstra <peterz@infradead.org>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="jAUJfQ1E";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="2+vSIxPP"
+Date: Thu, 10 Jul 2025 12:47:40 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1752144462;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=PagKpfrg/CoVjOCw2gulRvIjEDVrXdnTDmoAFAYLbnw=;
+	b=jAUJfQ1EsTwFcysThuS+KO9PEGuqZEh8nGOZoo43TMNHng3gpe2oFLkTUJkWD4cm1Y2ODq
+	KTD+oTny42JjNrXzm5glxn8ojp4m+SR5pHIbSqBVuTDJkyAZPlzehHaRrAFEbQEEIoh4wr
+	UUHxuZqwPaffva1EWAZeY7AzUhBc7qTSWru2uaSVcv7sjlzDd1WIt/bIRmOTpamqvkwj6h
+	LUuKFwPryCWMuVeWvissTzVbrnbqijztda1jM3HkJAtRK0KQbNnZ9Zi9EhYriilWuz00rz
+	a/HqFeglH/Wvzuo2jdRUzEiPgmurVwll7zCZ1WfLQBK7+HTnYyuo8DKspRMmkg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1752144462;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=PagKpfrg/CoVjOCw2gulRvIjEDVrXdnTDmoAFAYLbnw=;
+	b=2+vSIxPPORjjdSfzFFX7diVuu+QwkLrVLn6SAUealHMHy8JhJt9CiQe6FLy2xp3L/OEbfF
+	ipygo0MoeCe4M6DA==
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 To: "Chen, Yu C" <yu.c.chen@intel.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Ingo Molnar <mingo@kernel.org>,
-	kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+Cc: kernel test robot <oliver.sang@intel.com>,
+	Ingo Molnar <mingo@kernel.org>, oe-lkp@lists.linux.dev,
 	lkp@intel.com, linux-kernel@vger.kernel.org, x86@kernel.org,
+	Peter Zijlstra <peterz@infradead.org>,
 	Dietmar Eggemann <dietmar.eggemann@arm.com>,
 	Juri Lelli <juri.lelli@redhat.com>,
 	Linus Torvalds <torvalds@linux-foundation.org>,
@@ -48,48 +54,36 @@ Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
 	Valentin Schneider <vschneid@redhat.com>,
 	Vincent Guittot <vincent.guittot@linaro.org>,
 	aubrey.li@linux.intel.com
-Subject: Re: [PATCH] lib/smp_processor_id: Make migration check unconditional
- of SMP
-Message-ID: <20250710101316.GJ1613376@noisy.programming.kicks-ass.net>
+Subject: Re: [tip:sched/core] [sched/smp] 06ddd17521:
+ BUG:using_smp_processor_id()in_preemptible
+Message-ID: <20250710104740.XLv9MRX1@linutronix.de>
 References: <202507100448.6b88d6f1-lkp@intel.com>
  <6cf071f3-ff5b-4025-8ce7-2f2cceb03984@intel.com>
  <20250710062528.T-Obm39T@linutronix.de>
  <292e70ed-aae5-4f52-8f85-80cba7ff301d@intel.com>
  <20250710081114.5wnABNG7@linutronix.de>
- <20250710082748.-DPO1rjO@linutronix.de>
- <cf437def-4542-4b73-b62b-ae9b304d40be@intel.com>
+ <99573578-95e8-4b97-b2c8-d8229e4816e5@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <cf437def-4542-4b73-b62b-ae9b304d40be@intel.com>
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <99573578-95e8-4b97-b2c8-d8229e4816e5@intel.com>
 
-On Thu, Jul 10, 2025 at 04:32:57PM +0800, Chen, Yu C wrote:
-> On 7/10/2025 4:27 PM, Sebastian Andrzej Siewior wrote:
-> > Commit cac5cefbade90 ("sched/smp: Make SMP unconditional")
-> > migrate_disable() even on UP builds.
-> > Commit 06ddd17521bf1 ("sched/smp: Always define is_percpu_thread() and
-> > scheduler_ipi()") made is_percpu_thread() check the affinity mask
-> > instead replying always true for UP mask.
-> > 
-> > As a consequence smp_processor_id() now complains if invoked within a
-> > migrate_disable() section because is_percpu_thread() checks its mask and
-> > the migration check is left out.
-> > 
-> > Make migration check unconditional of SMP.
-> > 
-> > Fixes: cac5cefbade90 ("sched/smp: Make SMP unconditional")
-> > Reported-by: kernel test robot <oliver.sang@intel.com>
-> > Closes: https://lore.kernel.org/oe-lkp/202507100448.6b88d6f1-lkp@intel.com
-> > Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> > ---
-> 
-> From my understanding,
-> 
-> Reviewed-by: Chen Yu <yu.c.chen@intel.com>
+On 2025-07-10 16:29:51 [+0800], Chen, Yu C wrote:
+> I see. So there is still a CONFIG_SMP to check migrate_disbled
+> in debug_smp_processor_id(), and that was skipped if we do not
+> have CONFIG_SMP set.
 
-Thanks; let me go stick this in a tree somewhere.
+Exactly, sorry for that.
+I planned to let you do the figuring out and sending the patch but got
+confused midway, had to look it up and then had the patch ready and
+decided to send it=E2=80=A6
+
+> thanks,
+> Chenyu>> Thanks,
+Sebastian
