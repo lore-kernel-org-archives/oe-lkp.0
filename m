@@ -1,114 +1,95 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B42E94A11
-	for <oe-lkp@lists.linux.dev>; Thu, 10 Jul 2025 09:50:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A4832D661F;
+	Thu, 10 Jul 2025 10:13:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752141048; cv=none; b=RKtxQvjzFXMoRNiRpctTrAWwC4ACMKw4LtkzK+rUv+wq/YZDG8YHhd4HyP/qOfh2mTRC5urZvmTqjKLsz2mM+wfhjzga3ML7Xty2jWg0tUIVKqnAKMCTAZam0nNuzkHo9AHMey3nGOUwXLQTSiiNnlqv4LRE8iJAWKsDGz3vUOs=
+	t=1752142406; cv=none; b=XI+UCjbmofGxfXvsXpdBCJkRVvhkB2V5ODjxNPpUmvKMG5BZLegAM1j6T1izny0CM4gFNGeYo0guMQ5wa63EnAsaesNzyobArqjpy72++l43WckOZu7dsSGHujA1Epi1q17y8G64FqVTNLWw7K4LOuUI+anvFi4EIAu3JF4khgs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752141048; c=relaxed/simple;
-	bh=FpT+jkighMwN4936cVVCdocWGRGjYS5xU037MXQrt8I=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=B1vDm5Rpn0bDSZqa9NniFQUEzglxsmR0RVclhdyyhkTNH9y8miSpLQ7C9n/fsYcfY83QesYjibSnEailHyGerHygidlrz6rah1VAWfNPjf9ij23wufR5PTndkgujd9H7lJSU1aZLlrMdSEo3OIUu16Tik4EA23vmL/LTZYveyvs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=dz/tHtfs; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	s=arc-20240116; t=1752142406; c=relaxed/simple;
+	bh=F9Zn38Ia5P+j2FJQVJkhDRVVfMYoxSFosPDOuypiIMA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=VoqhT2ECSbsTiB47+X+lmrZjcb4GnywhiREMJ0Gf4PwXgPIjmuSsoE85tO3A9lLuV9c7kfTaR8WOebwM/F3JtbLeye7R9P0gVWyO/cZtsgA4+MAJd6WHCrVh+scKUsJ2W2/hawxJbg9Z6/fovrPq3mbUeyOiYGEFGnWFm76cpcU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=RadJuAWg; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="dz/tHtfs"
-Received: from pps.filterd (m0360083.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 56A1PjcK003075;
-	Thu, 10 Jul 2025 09:50:43 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=yS+RP2
-	AH/ulsBTN4WON0HsS7IC9PRhmNrkj7+r3DxWM=; b=dz/tHtfsyT1AV2jFLk/fmu
-	YSqMwM2fSCS0AqTNDGb+oeF/VSlJP8x2L3RivTMqL4IfC42KyN5VYhlXOiSvMOy1
-	xUj/qFMmKx1NuKT6dKUBsru/G2H/BbPTC1+MN3+TrGEI2ad3JggBHrCybcBJzaxZ
-	nasmn9KnCr5wLQZlJdVdbPPvYAzg1oOicyl1f6s2Wj7P2RaPIad9HACAxZnrdt8v
-	d4Ovd/IOSzYl5/dKvyR7HEQnXf1cXHhIBeE3fQBTGyf+ACEca4QqyRGlYcpMNR6g
-	H76aM5SZrpRZyCrHCH/EC5UqKaDFbJfHzZlKY+C34lnKNHquM4TK58qvFWoWpCrg
-	==
-Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 47puk4c39h-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 10 Jul 2025 09:50:43 +0000 (GMT)
-Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma13.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 56A7nPE3013555;
-	Thu, 10 Jul 2025 09:50:42 GMT
-Received: from smtprelay06.wdc07v.mail.ibm.com ([172.16.1.73])
-	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 47qgkm4t2g-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 10 Jul 2025 09:50:42 +0000
-Received: from smtpav02.dal12v.mail.ibm.com (smtpav02.dal12v.mail.ibm.com [10.241.53.101])
-	by smtprelay06.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 56A9ofS351773742
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 10 Jul 2025 09:50:41 GMT
-Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 6B4565805E;
-	Thu, 10 Jul 2025 09:50:41 +0000 (GMT)
-Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 8B1EA58051;
-	Thu, 10 Jul 2025 09:50:38 +0000 (GMT)
-Received: from [9.79.194.103] (unknown [9.79.194.103])
-	by smtpav02.dal12v.mail.ibm.com (Postfix) with ESMTP;
-	Thu, 10 Jul 2025 09:50:38 +0000 (GMT)
-Message-ID: <c7a7998c-2a40-4d0d-bc73-91794ce75632@linux.ibm.com>
-Date: Thu, 10 Jul 2025 15:20:36 +0530
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="RadJuAWg"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=ENYhfh0yC13BHVhZjvhSu3orUCwcKZQ5QjaaRVv3TS4=; b=RadJuAWgSyMYaLX8M7SGTm5T7v
+	LZaYlLHu5zA2FYrYvjLwRFAjjh8xZAS5uEizug0oqKd10Ybnfw1zt0kdsGIopqn8e9e6egwke6bQo
+	fRjArkm0xUiErhdJCWUy3mvnap9Mx8FQCO92a0rapwUmoPXQxl5Irxh4+s7MEgyW2JCHI/+aacXxn
+	NtYO5aYS7RBx67Mg0J5F4CcCMzzS/wBg7cTvBO/PHLeZ9zEhDVVGJF6zcsXcLFl7j5pfBv8eNRU/M
+	gPgqGbn6fV+Hhv3Jg2VLdTtD4pc5ypw4B8QMjIbeicwe/CE89+Yi1lQ+l990Jht0IUI/n3caLYY9X
+	zdbTKUSw==;
+Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
+	by casper.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1uZoHF-00000008Rvt-053y;
+	Thu, 10 Jul 2025 10:13:17 +0000
+Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
+	id 9720030023C; Thu, 10 Jul 2025 12:13:16 +0200 (CEST)
+Date: Thu, 10 Jul 2025 12:13:16 +0200
+From: Peter Zijlstra <peterz@infradead.org>
+To: "Chen, Yu C" <yu.c.chen@intel.com>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Ingo Molnar <mingo@kernel.org>,
+	kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-kernel@vger.kernel.org, x86@kernel.org,
+	Dietmar Eggemann <dietmar.eggemann@arm.com>,
+	Juri Lelli <juri.lelli@redhat.com>,
+	Linus Torvalds <torvalds@linux-foundation.org>,
+	Mel Gorman <mgorman@suse.de>,
+	Shrikanth Hegde <sshegde@linux.ibm.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Valentin Schneider <vschneid@redhat.com>,
+	Vincent Guittot <vincent.guittot@linaro.org>,
+	aubrey.li@linux.intel.com
+Subject: Re: [PATCH] lib/smp_processor_id: Make migration check unconditional
+ of SMP
+Message-ID: <20250710101316.GJ1613376@noisy.programming.kicks-ass.net>
+References: <202507100448.6b88d6f1-lkp@intel.com>
+ <6cf071f3-ff5b-4025-8ce7-2f2cceb03984@intel.com>
+ <20250710062528.T-Obm39T@linutronix.de>
+ <292e70ed-aae5-4f52-8f85-80cba7ff301d@intel.com>
+ <20250710081114.5wnABNG7@linutronix.de>
+ <20250710082748.-DPO1rjO@linutronix.de>
+ <cf437def-4542-4b73-b62b-ae9b304d40be@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [linus:master] [block] 245618f8e4: stress-ng.fpunch.fail
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-        Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
-        Hannes Reinecke <hare@suse.de>, Ming Lei <ming.lei@redhat.com>,
-        cgroups@vger.kernel.org, linux-block@vger.kernel.org
-References: <202505221030.760980df-lkp@intel.com>
- <95753732-9714-42e0-8097-e2b4c3dd5820@linux.ibm.com>
- <aDe9y3Ef+TEacRr3@xsang-OptiPlex-9020>
- <f33af0f8-6d7b-479c-9d57-e5fd485d0f6e@linux.ibm.com>
- <aG98fj7phkM1PojW@xsang-OptiPlex-9020>
-Content-Language: en-US
-From: Nilay Shroff <nilay@linux.ibm.com>
-In-Reply-To: <aG98fj7phkM1PojW@xsang-OptiPlex-9020>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNzEwMDA4MyBTYWx0ZWRfXzBz5LolWDTdz p6uSJMUW2pty20yyNwboW2V2KHMCN87f6zee6qoNBPoGgxNmO9LpBiqFFjFAurhNQTBex/mTO3O Y5WEsd8YamnkULxcQ0CxUt4CZLICuRPluUo1+Aweeo9OH8YJnVdDRyWIy84HUd5nmorpXjamE5B
- VnH+F9CjRKz+EBriHFhnWeG6EwAbZIA/MaLip6SHs2D70WQcuLXEd3cThnXEvNx46iYg6oCFRna A1+hn5z4kK39x558gY+CJDNQh2biKxT5fPyrFUsCR+DkFsDa2F+FHvLcl84VdUr8W3iBEpleM8X fMY+hvN+PIkM2zZOiCPPrSK8ucK18YEhJbRghMjHpHzsFMFu47pVscMMZnAZjdRWF5SdpLEnTT2
- kbdZj/kEqOVTcaBEtyzUhHKZMfUuxlgGPdvvFXy6ejN91K//TqsmDOMxSx/j8/6NaAIQdLox
-X-Authority-Analysis: v=2.4 cv=XYeJzJ55 c=1 sm=1 tr=0 ts=686f8cf3 cx=c_pps a=AfN7/Ok6k8XGzOShvHwTGQ==:117 a=AfN7/Ok6k8XGzOShvHwTGQ==:17 a=IkcTkHD0fZMA:10 a=Wb1JkmetP80A:10 a=rX9-azYFNISHy5ivgxsA:9 a=QEXdDO2ut3YA:10 a=ZXulRonScM0A:10
-X-Proofpoint-ORIG-GUID: r6s97XftVFUxg5xm3UKul7t8KUfSAJ56
-X-Proofpoint-GUID: r6s97XftVFUxg5xm3UKul7t8KUfSAJ56
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.7,FMLib:17.12.80.40
- definitions=2025-07-10_01,2025-07-09_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- lowpriorityscore=0 adultscore=0 priorityscore=1501 suspectscore=0
- mlxscore=0 impostorscore=0 phishscore=0 bulkscore=0 clxscore=1011
- spamscore=0 mlxlogscore=999 classifier=spam authscore=0 authtc=n/a authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505280000
- definitions=main-2507100083
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cf437def-4542-4b73-b62b-ae9b304d40be@intel.com>
 
-
-
-On 7/10/25 2:10 PM, Oliver Sang wrote:
-> hi, Nilay,
+On Thu, Jul 10, 2025 at 04:32:57PM +0800, Chen, Yu C wrote:
+> On 7/10/2025 4:27 PM, Sebastian Andrzej Siewior wrote:
+> > Commit cac5cefbade90 ("sched/smp: Make SMP unconditional")
+> > migrate_disable() even on UP builds.
+> > Commit 06ddd17521bf1 ("sched/smp: Always define is_percpu_thread() and
+> > scheduler_ipi()") made is_percpu_thread() check the affinity mask
+> > instead replying always true for UP mask.
+> > 
+> > As a consequence smp_processor_id() now complains if invoked within a
+> > migrate_disable() section because is_percpu_thread() checks its mask and
+> > the migration check is left out.
+> > 
+> > Make migration check unconditional of SMP.
+> > 
+> > Fixes: cac5cefbade90 ("sched/smp: Make SMP unconditional")
+> > Reported-by: kernel test robot <oliver.sang@intel.com>
+> > Closes: https://lore.kernel.org/oe-lkp/202507100448.6b88d6f1-lkp@intel.com
+> > Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> > ---
 > 
-> really sorry for long delay. we are blocked by other issues for a long time.
+> From my understanding,
 > 
-> for this report, the test machine is redeployed for other usages, and I tried
-> the same stress-ng fpunch test on another Ice Lake server, cannot reproduce the
-> issue again on 245618f8e4 or latest mainline.
-> 
-> seems the previous test machine has some problem. sorry for our env problem.
+> Reviewed-by: Chen Yu <yu.c.chen@intel.com>
 
-Okay, no issues... glad to know that you're no longer encountering the same issue.
-
-Thanks,
---Nilay
+Thanks; let me go stick this in a tree somewhere.
