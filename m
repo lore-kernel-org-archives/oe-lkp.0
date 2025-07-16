@@ -1,45 +1,48 @@
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [62.89.141.173])
+Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDCBD2F2376
-	for <oe-lkp@lists.linux.dev>; Wed, 16 Jul 2025 10:22:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.89.141.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F309B2F4331;
+	Wed, 16 Jul 2025 11:25:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.92.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752661374; cv=none; b=U6vwwhlbR0kHwaLO+gGCmAjtwA5huGjo2UNRJi7SxDduN1bCLHdn7iZwddHqMvAOQoZcbQ2vgt5lG4ce8GtS+oDyEz/jtAcpgKjIJsQPD3Cm75giH7FxHc5HWOqSrrNg0R+GO7TF/4Y2on5m2BgmXBQcfeA9JeAGOgjxfNDHTeo=
+	t=1752665141; cv=none; b=uxub0/uE6/hbnZGMO8dZ0nNgufUtjWRLu623PlHuhc4JwN88HaXmtwERtYkoq9WR9ErzrPNRSt8W26GONBNmguKthxpJbtp+XPZkJWU9aFhXyaJKgscrg43clWJHFID8O3w7XZG6sS9LvC7URyd6JH3zgGqjiSyuYAB31vxPN4U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752661374; c=relaxed/simple;
-	bh=mh4QN/pQI8kv3T84L7WPM6VYt2X8kdwZCZyulfwsxss=;
+	s=arc-20240116; t=1752665141; c=relaxed/simple;
+	bh=EYFfKSlO9xERXs/iTfLLgx0rGMidUjSz1xXZscwEqA0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=J8oT54IBQ1516oPZsaZpDc2+rSCCFSi7CR33Mu9wY/xxJuFZhKcIlAaCb2CtGuTNA8UF7Z9xpGp7ESqaFL3oG3f6dmZdMCx5NgdBus9RWdxKhLCzjM0glTE8LdSqZAvPtrbxZ0PVojCRTWWE3J3Ar7XGEm2OLQOuKptm0B4YUbI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk; spf=none smtp.mailfrom=ftp.linux.org.uk; dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b=hiy6i1Fn; arc=none smtp.client-ip=62.89.141.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ftp.linux.org.uk
+	 Content-Type:Content-Disposition:In-Reply-To; b=uZHfx/DqI41miiGSrqEev225wIJT9x26hYKPLvT+aCJNkCUmdWLbi4w6yZLxXsT5/xFTC0dJ2ILTfA/VHaBZtRhhOk4l6vPU1Cj+/8UV2G0I/BSxk8sfveTBPKzGym814y5PaM/kcXzxPRh6ENLQ21SMr+iyjb/F3lv6A8Ar4Cs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=fa4gKJ2h; arc=none smtp.client-ip=90.155.92.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b="hiy6i1Fn"
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="fa4gKJ2h"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
 	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=QcNL6cD8KQj1v/iL+HcqTkKaCpbv0HKfajEd5M3kwPk=; b=hiy6i1FnXYMWk02NJ7l1xLyPSy
-	b7shScuOn+gkERtxYratiyycSCkll2yGG0EzorTQNa0pO4/jHXWhb2mPs5F3mB9iYRmM+bzELuqE8
-	HMLS8mtPMopIvAkIl/E2o/81QdHMNK3tOezVwYmTbBALi9Daf+hFD3MUQaMn78Yw3ETclBQUsXzL9
-	ARTxy4dqCZniuv8DzmlvL6KLb2llwuQ7qoIp5ayOtGYLL1XlSXVvc5gyXnSIqUP6kRMMhtQnjNQuq
-	JDvD3pwC1f7NNWmtJ4/06AztUp2OKnEW95iJLdbV9tSMxsmomTr7atftAst59oZ+4H2sHPlPqlEIh
-	pGtvZS5g==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1ubzHj-00000008eIQ-0ho4;
-	Wed, 16 Jul 2025 10:22:47 +0000
-Date: Wed, 16 Jul 2025 11:22:47 +0100
-From: Al Viro <viro@zeniv.linux.org.uk>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Matthew Wilcox <willy@infradead.org>, linux-mm@kvack.org,
-	xudong.hao@intel.com
-Subject: Re: [linux-next:master] [vmscan]  a7694ff11a:
- kernel-selftests.kvm.access_tracking_perf_test.fail
-Message-ID: <20250716102247.GB2580412@ZenIV>
-References: <202507160818.49e37313-lkp@intel.com>
+	bh=gkZqUKwDbsV/2dL8YJLKH5dlMnuryzNCRhd3vysEFm4=; b=fa4gKJ2hF5gpoA01tjLnk2eIHt
+	RCL6bj/GuUx/+nYFbbLaPZycyPZ8G8kCeblqfgeMGlfW+beH51C+GLZNQFROLHgy0jr6XnG8CZJdZ
+	zZ2n++m9thcaLObnDTqNLl88/PJY7vkrEGeDrJYApnrpapbHH12EKZUwlKaSYlOEYQQhPA1N1o2jt
+	24v3tLUYeZ4jOLSNCZTryT61CM/8VsmKV07STQ4T+ZPQHFKLB0oL9c2edZ6zMkwxthSaIFxT5RQQT
+	Ee3NL9MUylQhHrE5dIZmoxjKvXwYmTvSnxWMJZgZvJIdvke0S2p8Ilk3h0K59FIxBlR/FysuVPV2y
+	uR03+9Dw==;
+Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
+	by desiato.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1uc0GU-0000000A5iS-2lKi;
+	Wed, 16 Jul 2025 11:25:35 +0000
+Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
+	id 5CA3C300186; Wed, 16 Jul 2025 13:25:33 +0200 (CEST)
+Date: Wed, 16 Jul 2025 13:25:33 +0200
+From: Peter Zijlstra <peterz@infradead.org>
+To: "Chen, Yu C" <yu.c.chen@intel.com>
+Cc: kernel test robot <oliver.sang@intel.com>, Chris Mason <clm@fb.com>,
+	oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	aubrey.li@linux.intel.com, vincent.guittot@linaro.org
+Subject: Re: [PATCH v2] sched/fair: bump sd->max_newidle_lb_cost when newidle
+ balance fails
+Message-ID: <20250716112533.GS1613200@noisy.programming.kicks-ass.net>
+References: <202507150846.538fc133-lkp@intel.com>
+ <10abe013-98d6-4080-ac43-0f1e02aa41f9@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -48,21 +51,78 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202507160818.49e37313-lkp@intel.com>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+In-Reply-To: <10abe013-98d6-4080-ac43-0f1e02aa41f9@intel.com>
 
-On Wed, Jul 16, 2025 at 03:54:05PM +0800, kernel test robot wrote:
+On Tue, Jul 15, 2025 at 06:08:43PM +0800, Chen, Yu C wrote:
+> On 7/15/2025 3:08 PM, kernel test robot wrote:
+> > 
+> > 
+> > Hello,
+> > 
+> > kernel test robot noticed a 22.9% regression of unixbench.throughput on:
+> > 
+> > 
+> > commit: ac34cb39e8aea9915ec2f4e08c979eb2ed1d7561 ("[PATCH v2] sched/fair: bump sd->max_newidle_lb_cost when newidle balance fails")
+> > url: https://github.com/intel-lab-lkp/linux/commits/Chris-Mason/sched-fair-bump-sd-max_newidle_lb_cost-when-newidle-balance-fails/20250626-224805
+> > base: https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git 5bc34be478d09c4d16009e665e020ad0fcd0deea
+> > patch link: https://lore.kernel.org/all/20250626144017.1510594-2-clm@fb.com/
+> > patch subject: [PATCH v2] sched/fair: bump sd->max_newidle_lb_cost when newidle balance fails
+> > 
+> > testcase: unixbench
+> > config: x86_64-rhel-9.4
+> > compiler: gcc-12
+> > test machine: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory
+> > parameters:
+> > 
+> > 	runtime: 300s
+> > 	nr_task: 100%
+> > 	test: shell1
+> > 	cpufreq_governor: performance
+> > 
+> > 
+> ...
 > 
+> > 
+> > commit:
+> >    5bc34be478 ("sched/core: Reorganize cgroup bandwidth control interface file writes")
+> >    ac34cb39e8 ("sched/fair: bump sd->max_newidle_lb_cost when newidle balance fails")
+> > 
+> > 5bc34be478d09c4d ac34cb39e8aea9915ec2f4e08c9
+> > ---------------- ---------------------------
+> >           %stddev     %change         %stddev
+> >               \          |                \
+> ...
 > 
-> Hello,
+> >       40.37           +16.9       57.24        mpstat.cpu.all.idle%
 > 
-> kernel test robot noticed "kernel-selftests.kvm.access_tracking_perf_test.fail" on:
-> 
-> commit: a7694ff11aa9d97d0f690351a964544849e5158d ("vmscan: don't bother with debugfs_real_fops()")
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> 
-> [test failed on linux-next/master 0be23810e32e6d0a17df7c0ebad895ba2c210fc4]
+> This commit inhibits the newidle balance. 
 
-Argh...  See https://lore.kernel.org/all/20250704040720.GP1880847@ZenIV/
+When not successful. So when newidle balance is not succeeding to pull
+tasks, it is backing off and doing less of it.
 
-Sorry, hadn't checked if the updated variant got picked ;-/
+> It seems that some workloads
+> do not like newlyidle balance, like schbench, which is short duration
+> task. While other workloads want the newidle balance to pull at its best
+> effort, like unixbench shell test case.
+> Just wonder if we can check the sched domain's average utilization to
+> decide how hard we should trigger the newly idle balance, or can we check
+> the overutilized flag to decide whether we should launch the
+> new idle balance, something I was thinking of:
+
+Looking at the actual util signal might be interesting, but as Chris
+already noted, overutilized isn't the right thing to look at. Simply
+taking rq->cfs.avg.util_avg might be more useful. Very high util and
+failure to pull might indicate new-idle just isn't very important /
+effective. While low util and failure might mean we should try harder.
+
+Other things to look at:
+
+ - if the sysctl_sched_migration_cost limit isn't artificially limiting
+   actual scanning costs. Eg. very large domains might perhaps have
+   costs that are genuinely larger than that somewhat random number.
+
+ - if despite the apparent failure to pull, we do already have something
+   to run (eg. wakeups).
+
+ - if the 3/2 backoff is perhaps too aggressive vs the 1% per second
+   decay.
