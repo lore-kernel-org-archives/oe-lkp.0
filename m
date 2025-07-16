@@ -1,98 +1,92 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66669270ED5
-	for <oe-lkp@lists.linux.dev>; Wed, 16 Jul 2025 02:34:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A18F98634A
+	for <oe-lkp@lists.linux.dev>; Wed, 16 Jul 2025 06:10:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.17
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752633273; cv=fail; b=hvJKqPMEtPQ41FoGmZZgSR/5cuGf/U1hT6VFO4cH8wGyxy9pThkY912vewqwzAmAgH7ijuzCIKug1VWZGHAXDNGg1sgMNhbn9SFn1tjSqVufqwVx9XxwnnJG0Zy7kEheIxrWPBiQ6bfrtACwPUnqPh3hwVytWss5SfBh1XVhc6s=
+	t=1752646228; cv=fail; b=iH3dLrjdilC0xMXWDIpPERhO0+225p/iUqbQjCwLjU3oc6FVMBEOk24LeTIkYpt7ybJyiKRogQB0Gxq4FLKiQEARc20Xb44qYF6cGc2BZSAJzTYZC7+7YCDTKDhjHa6Q5d2gl8hAmvusuW3m1GTjxAL94b/N8q+aPty5n9w+rvs=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752633273; c=relaxed/simple;
-	bh=N9DXdqV994IA21UHmsELmQOkGdBuim/ymx0HC5xV4Rs=;
+	s=arc-20240116; t=1752646228; c=relaxed/simple;
+	bh=kH8qO7+WNgWguM52lw9XV+IBbmgfFDye5UvetVIk+54=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=lBt2hwFeHCgrSTEtOBXxbAuX1vUwbHYj9RH7l7ucaIknU+bdB9M7A3QP+f9s/Iw7IICLN4yAZYny/k109qA359+M9283Rsv2rSUzapqiS4eDYhkbSika2dkgnUk7QUP2+cnqh1jl9LxtT4f0jcZ6uoWiPJ+OjDuDayww1clApqQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EE8Co+QW; arc=fail smtp.client-ip=192.198.163.16
+	 Content-Disposition:MIME-Version; b=PMY/8HfQenyNVGn4VdUY6EHc2vCWUzprgxMzf1qpEkI1z+mSCwd5VHV5b7gst0HiU1Zx6ML04QmDjGdHRjvLCrcFLfLNVkBnBeFadePkxFJVNzhxhyYAS8YEZQ7GsQTu5650R0/7kC51Bli4PWPwV2RIWz0dwQlW24Q2cJyx2fM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bD4NdEeh; arc=fail smtp.client-ip=192.198.163.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EE8Co+QW"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bD4NdEeh"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1752633272; x=1784169272;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   mime-version;
-  bh=N9DXdqV994IA21UHmsELmQOkGdBuim/ymx0HC5xV4Rs=;
-  b=EE8Co+QWm66zKSAEIsZ+zYaXed1gCWX/PuGtile6WyaKNvRpdZn+dhKC
-   gqJX0YWdE756kdNdWUQcTv7MJ9L/ivIBjQsEM13Pez5deD2xXient/1hb
-   7DBvmbM+J3bDxG+qbsmJzyQzfH6YXyqzNvRCwwu205fA+nT6hrHqjxKEA
-   wMR+U7BSbohnmKqTFCWsiphc5I44nvnrJWrNZsHRgLM8tAeSwkr8hUg76
-   qiwROpD5mMvtm3GC3QiCbSthYhps7m8glgblTPczQqDBLYYIzfvvgU8yJ
-   B70Nzj3CyF46Rjo7ZmPMRebUps++uYDURoquiGtfkW39Gzg5/Fdkaipg5
-   Q==;
-X-CSE-ConnectionGUID: YiEZ82hxT8WoQ6gbIJ8wjA==
-X-CSE-MsgGUID: PElHeIFoSaq1bSv2T+6+hg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11493"; a="42497998"
+  t=1752646225; x=1784182225;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=kH8qO7+WNgWguM52lw9XV+IBbmgfFDye5UvetVIk+54=;
+  b=bD4NdEehsRRjZlbiU66qacRawVMvaAGqS0p33/5VvcaO09eYbv4P5gvy
+   YA+Pu/jFP/Z/vvwEajhyrNkVHLkiCrbTCVPsejTo2Knkql+OMGyckM4Jh
+   A7aBY86GMXDLcYsn8ps4ZKiU/PGPf2NgNHtPzuqJCAG8xwEiUUsI3PcrW
+   fwLdXNH3LsrpnXaWUSYmWwF2HnYLpUg8aiOipySBaWUuL4Q0XlmM14fIi
+   OIv7z6I4Kl8tAQb/CpQCeh88mCZ+tEA8/00MotlB0vVJpjxRgORkRxWyv
+   g41OFaml4RgbTcb9FadgcDrjLHhhQlETUJ1euv9BvXxSU1L3K2UHTcwi+
+   A==;
+X-CSE-ConnectionGUID: uRWg5/kfThS5sNGHM1yPJA==
+X-CSE-MsgGUID: 0iaWh3JbQlitPYdNWsBKqQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11493"; a="54817194"
 X-IronPort-AV: E=Sophos;i="6.16,315,1744095600"; 
-   d="scan'208";a="42497998"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2025 19:34:31 -0700
-X-CSE-ConnectionGUID: w+VEmoqAQseAeZJ49imQfQ==
-X-CSE-MsgGUID: 4dXKgKxKQKyqIG/MhGuVZw==
+   d="scan'208";a="54817194"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2025 23:10:25 -0700
+X-CSE-ConnectionGUID: 98tgQGfDRQu/7pYntYLFJg==
+X-CSE-MsgGUID: qKgjiaJ2TL+oiy2ul2EC4w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,315,1744095600"; 
-   d="scan'208";a="158101440"
-Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
-  by fmviesa010.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2025 19:34:30 -0700
+   d="scan'208";a="161726037"
+Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
+  by fmviesa005.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2025 23:10:25 -0700
 Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
- ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.26; Tue, 15 Jul 2025 19:34:29 -0700
-Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
  ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.26 via Frontend Transport; Tue, 15 Jul 2025 19:34:29 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (40.107.244.51)
- by edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
+ 15.2.1748.26; Tue, 15 Jul 2025 23:10:24 -0700
+Received: from ORSEDG902.ED.cps.intel.com (10.7.248.12) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.26; Tue, 15 Jul 2025 19:34:27 -0700
+ 15.2.1748.26 via Frontend Transport; Tue, 15 Jul 2025 23:10:24 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (40.107.92.48) by
+ edgegateway.intel.com (134.134.137.112) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.25; Tue, 15 Jul 2025 23:10:22 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=GiLdAC8yvaxFzY7tzdPoImqG5ZvwLPzR0lB6IIQ4e77xJ6Cs58jo3VbFCEIM2d5uAGRiJW+QPHq6Fnhs9k02/oJkFHXYauCes09WxDyR12GmnYvbo+JSgCP1WHC89A7AqN3grn/dGOmoZiaYiY8vNSBmMQzIYXUedVUB0Nk0eLlNAKBC/ZOnDGnQOvyfhDfabMBsPxJqmyVlOVgpKYlaJ7h9yeyvR4c7z49HvTpXt5R/P/lzJGFFMWxhbfmSQJp1MtN2qwd7Vi1ufa3VOyTKfVTS8NSw0skrDCqfFJHFX+aO1Lw5euF9mISvhNidA0YbB2So/UXo02uTc9ZqEo7tqw==
+ b=rNypRpDnD2Ui98C1zj6rlUl0LdhFdLyORPmWz1AE/xIXtkbOrXKySQM0v4dfq8M8WSP4ETTU59z+Yi8CE1Iyr+QdatJNqaOjyJHOn2G3Qw0cOTYneEVD5BGZ6SEgOECLXTDW70I9YOEpL9wFfuKV+OuMZ/p3q2lzQdjt839KJjuXYVKQsdRqXO1QyZjZQXtv3SMjEv0aeF0t5jhEqdj2XmAoSHy9GWL2xZGF01D5XK0sLh+oQLjrY9k9yshfO2zkNWuGdWJnaQ5zwqPerjcFvCe5OXX7zIMMdB+iZnvAHwJgOZLa5b5yX3A52VLQNzgIu/mRCKiYGd0fe6Wxg41xOA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BzG9WrBPEkEQa2IeBaxUK0NCYmCn5svURuIAlzd0U54=;
- b=FzRujrPQASIViGxlN9R3jIxFJwbUoKKCKpGDGoR1WpgkFnXkrjlG5y8NVTMCqym3zH0Uq1GyHkb3KeLCnnRAmmjOV3OYreBUWmxMFdTTfkt9sRS7O9cmCPWVSyBNjrxZ4XZ08dTau8q5J/tiIqMga0S0Fbtz2/TP/5vjHwg6NodbZzIW+gg0fZVrexw92Ni1D0lSf87R53o+wqXfR29t9uKCk8wxE6+0IoSfp6iLRX2GL3fzfcgcTm1hfOFuuuHiwncDW6c3ye1zRI/Lm0pRHEXYQZLNzTx1kwylYXCWr7lgVxf60zxUncVvIR+rrhF+o19UgtzpqRhKXWNWDjnq3w==
+ bh=UQM7YtojdXg8u+Fob/uLS8eBUVjpeekEj1sW7rj+vp8=;
+ b=wHNZpb/RgxlAmIA0ZIVkHtf8JfyDOklmM6tDt70g6y8gFY7z9CWqw/oLx9xmnJge3YX5SvZsGKWYrLntZzID5F8vqCwpyG9F1TAO2wIhpIdtKu0lr73R96oNLxhm20jA9QFrrN3iV5pFyPemLnXZGfkFwJDNw1xt9PgcsMV0W25cF8YKJzgJyNzYDMKShcF+F4kg0hKm4unr5pv5XNlPCT/VF4biX93fGA1xmTCjPDSYH4QedyHDeh5j6t0eUJFE7E2wDqqA9DiQYe4TPeIkP3Jc7hP0o3tjjYCWQBVEb0c7vvaJX7fGBLJO/kLFOrC1eCiAEp6Vk1ypmjt5sJEVpA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by IA1PR11MB7811.namprd11.prod.outlook.com (2603:10b6:208:3f9::21) with
+ by SN7PR11MB6921.namprd11.prod.outlook.com (2603:10b6:806:2a8::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8901.35; Wed, 16 Jul
- 2025 02:34:20 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8922.25; Wed, 16 Jul
+ 2025 06:10:15 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c%3]) with mapi id 15.20.8901.018; Wed, 16 Jul 2025
- 02:34:20 +0000
-Date: Wed, 16 Jul 2025 10:34:08 +0800
+ 06:10:15 +0000
+Date: Wed, 16 Jul 2025 14:10:07 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Haoxiang Li <haoxiang_li2024@163.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>,
-	<dri-devel@lists.freedesktop.org>, <maarten.lankhorst@linux.intel.com>,
-	<mripard@kernel.org>, <tzimmermann@suse.de>, <airlied@gmail.com>,
-	<simona@ffwll.ch>, <sam@ravnborg.org>, <linux-kernel@vger.kernel.org>,
-	Haoxiang Li <haoxiang_li2024@163.com>, <stable@vger.kernel.org>,
-	<oliver.sang@intel.com>
-Subject: Re: [PATCH RESEND] drm: Fix potential null pointer dereference
- issues in drm_managed.c
-Message-ID: <202507160354.21a14db0-lkp@intel.com>
+To: Steev Klimaszewski <steev@kali.org>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <oliver.sang@intel.com>
+Subject: [steev:lenovo-x13s-6.16.0-rc5] [linux6.15.y] e9c2688b12:
+ WARNING:possible_recursive_locking_detected
+Message-ID: <202507160735.72c4502b-lkp@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20250703092819.2535786-1-haoxiang_li2024@163.com>
-X-ClientProxiedBy: SGBP274CA0006.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::18)
- To LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+X-ClientProxiedBy: SG2PR06CA0243.apcprd06.prod.outlook.com
+ (2603:1096:4:ac::27) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -100,376 +94,210 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|IA1PR11MB7811:EE_
-X-MS-Office365-Filtering-Correlation-Id: 922e65a4-a04a-4e42-6e1a-08ddc4114481
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SN7PR11MB6921:EE_
+X-MS-Office365-Filtering-Correlation-Id: 50275832-244a-4487-ffaf-08ddc42f6e9e
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7416014|7053199007;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?X9DksMMqzPhaHeggX3U4t35YRx5pqnqZTRu2uAiz4OH6E0mn7xp0ZJ581gPJ?=
- =?us-ascii?Q?YWFGW5hY6VcSMynMNSDrInbA3+pvt2XqGqTuCu3zbedPrOFpjZN+mam4ttVR?=
- =?us-ascii?Q?ALnVzrOvNnSKjwIWlclxgBm019khpt15U6YvUkAzQvgv7Eo7EA0xZ2xjQfxF?=
- =?us-ascii?Q?GgvJJdTU21Zmp4NFKn7sAjrfmRiQd+ptlNzoIrLrXylvXEUqHqypqljB2+FK?=
- =?us-ascii?Q?zJSuJwJiRPx+GEsA8Xq2NcP0lz91VC0YaoP66vgq8dkjroKJ4ZhND2QrfFsH?=
- =?us-ascii?Q?2slQVvfHy2cXIwnYBwkdH3iugP78xhnxF2PqI9KmuJjVB2GMb05Tn8vqC2A5?=
- =?us-ascii?Q?HWnJt0eUJs/VybsbWWgnHZzVbZx0OKvADWS9aZrctOb/3GSHK55hbGuYtE1d?=
- =?us-ascii?Q?1ck03h39N1AAY/oTFrs+OOdn1oovd749LQcBs11tDL7NMONKDGXjPgW+9GZf?=
- =?us-ascii?Q?DE3uVp925uRrSAYbOaRjoV/vx1oJ5l/A1LVm85jm4ylXo3evhiFmrkKJM/+5?=
- =?us-ascii?Q?5Sg8FSPhgtHTY5kyFzlSTcl8JQ5QDlerNT4O8nnNQD0wEa8ZbZLD7J3Y6YH9?=
- =?us-ascii?Q?wmsork/G+Lp4sxSaZLj3SPcJUFFVmOAR/TVrp0a6NaMuWGQ4lE7NxYEReBIl?=
- =?us-ascii?Q?HDcKcgGmuFZ5wt0x2QmJc+1JCVYpf3Q/2K+H8JNXwBzhGDpv9hk01Z1Jx/Gz?=
- =?us-ascii?Q?IdB3R9SkItxjAM87nJNBVe5ingUo7VlViczVkRCyDSQNXhVgwPTdfrsnEqux?=
- =?us-ascii?Q?EfCpKNvgPv50MpZbiwotngMCIE/Sn0ri24wMFat1roVOjeyxxgdgbvJojkyg?=
- =?us-ascii?Q?afFIG+DBvG6G9jtbtIkTphnsfmvqan1TK58kXTinVe5gLeMBbl9m3oEtebTG?=
- =?us-ascii?Q?dwFtzulgmGE9HKxoOyp6yTRbwdARUBgbSj+F9kXSH74YyiNSQLBsrkdSroaZ?=
- =?us-ascii?Q?OZwLZjpvF9+BzKEGJUQlqD5UO3UzCCtMfQ/aBhxNK+YD7mK8xyMDHrBgCjKR?=
- =?us-ascii?Q?+sSNrfHKlMvzF/j+L5SCvXAOkG5AjlIve3ksPD4B2TWaIdDG0VQ6RNs9FAe2?=
- =?us-ascii?Q?Q+5K8Y50cL0zyKtIekY7ZYP/rhAnZJaKfQtkX7QW8Rrc31UoAxKvOCiSk4aV?=
- =?us-ascii?Q?Vu1DpwJqRjtMZryJkFUgPVc8HDT4o3gBO0KNxCJj03PYzd8TYpML2TSnd3UY?=
- =?us-ascii?Q?+vXClXAyowBqN5zyeOmGlZBlJZ2fN/o/GA9I6vc72d0KzaDMoDLRpE6TSf3L?=
- =?us-ascii?Q?v+yqx2tq3RoC3tfKey7LQl/mUkjqZSKB6DDp5Fv1Ta/1HCOR3M+FIeRAG7uD?=
- =?us-ascii?Q?fOiwTLtgrd4tyVI6yh5XYhW2CEBFKwBrxlLfcmaXHtWGUw4qiTUrVHKTHjDF?=
- =?us-ascii?Q?jD5c9hPShgJcvFGu/MKzYoZpXi2x?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014)(7053199007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?TRvsgROwvGzyEzVUlB7dMp7y7PPd+uZIglYDJRCiV3+IvQB20GMG12u1Q7v8?=
+ =?us-ascii?Q?wxmgWtvD4kNhlgPZmpSBM2pNK+xgQa0XGM2/8+eXPyRmBH+DO+elHxq3qN94?=
+ =?us-ascii?Q?Q7w+jyaJ7vXIuYUXSg0D9Wbq63wUKTGb74kcU1oNQDoDf1ocIgq8uVu2fyQD?=
+ =?us-ascii?Q?mJcwskEpVRurs9kIYuFexIjFfNqMOrmpErjDEd0clrDicB/Umd+P8HuLtMax?=
+ =?us-ascii?Q?w8hIG9q8wzOm1P/8MueVejSW95xIwzunNWIR6eN6RtXdFWzt2utmuvmsXXIB?=
+ =?us-ascii?Q?5lec70wJ2iHLGaK2MP6c6LY+ExNluTsMfIOCux8LJSeKCLY1NRHvWKUAfTlg?=
+ =?us-ascii?Q?IcSYS8PQkHN0kzOWav/Vhs9tm5Ld0vNZG96/Ah+57RbCn0neYSe0ajc5Qvoa?=
+ =?us-ascii?Q?H7FDlIBtm2GKIowrVY9qtu+iwFnzEXs89zkuDWleYtoTH0ywORF0t6ZM/6aw?=
+ =?us-ascii?Q?LNxLXWcI3FEW88uuNsDhmvvmlPJt+xwWJ1ZJVsi5jUQXQAby6xZWfCKj68Je?=
+ =?us-ascii?Q?4FA2PPfVcyXdbd7XFJ9nVUeewLph9vFllA78u/zjrCpeaChWGNHID5kNke7B?=
+ =?us-ascii?Q?Hts4OMh9muhy68eITMz85+pXMnC84Nwz6LBgufbfZf9qD7gcI1R2RfJgB4jQ?=
+ =?us-ascii?Q?Zk+se+zvRu0fS/obE3xiHe6Nd2lblE2Agv7bKlf991E7JJJ7btFku0fk10dh?=
+ =?us-ascii?Q?LPl2e/nPoF0Wiu5KEoOv79LqwdFxdLGNcoKOt5i8FGKzfgam8OQoeg6JirIJ?=
+ =?us-ascii?Q?TzxC3Xi+d05ITgKWuDlc+rDrfgBA1h57NTmUSPnpj7FHKs2/Roam7wthCfeh?=
+ =?us-ascii?Q?SYXYIystK3wucN6aA0UXDAUaUUMUPk/UFwUhNJb2IEenQAbxiXDCnpyus469?=
+ =?us-ascii?Q?XiEA8mWluwPf7EKL/IlOLyEriF8wsMPDXFwGxC+Cgri+w7KOqFCpyA4QrOoq?=
+ =?us-ascii?Q?mqcB3Qwg7DSbEqrUFJR0mil1UYT8p3B9y3P11cKyDdBUw8xOpp0py+sknhhu?=
+ =?us-ascii?Q?U4tNIh2HSZGf7eE8ImQTJC6ZnStiR+gSdf3uLLGp/43P+TzGQ1KTVeV3h9NJ?=
+ =?us-ascii?Q?m7PccVMeiLh7Hg8MfwyPhZAJPhp/qiY1hVNNUJCYqT4iYOkScrukOF0p9eDU?=
+ =?us-ascii?Q?m88k7zn5eNgJ7YZXUhFBy9ImDTAARofcF2C+KFs6eVkAajHs6nbOmENm7lEU?=
+ =?us-ascii?Q?TkhK8WuYGdO42zfCIi8ck1777KO7k7L4rZG/nRknJcPB+xs81eyIA9hfUQsq?=
+ =?us-ascii?Q?dqzWGpLbR8VxjOLyHVA4Lzr6yO0RTO1xpjKs03MjP7HpnPtw8vzOZokjNHMW?=
+ =?us-ascii?Q?UeVs4/xe0g+Wjj+Ux5WVsjAUB+yz52ZqyvYGpBG5bUvgHg5Z2dBt5wZYkjTr?=
+ =?us-ascii?Q?Fa4Ih62bskNuEuyskIwCy0yGxXSu?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?DaMZNPIEliFghccSNsdO3Eu0m5AxL0HJy+d7SXWxR8l3/zSntk+hqXB1T2Zm?=
- =?us-ascii?Q?sWfBPqJC7lKqORMC2Ubf7obVtUmjjfbn7iiJiCNwAMZdP2c5Cux+Kaq/jtJR?=
- =?us-ascii?Q?4/XPYKUeKeB5Lb1Q7Tx8u0jaE4N2qfhp14Pfrk3kNWDe+gExW0h8PI1Aqzr9?=
- =?us-ascii?Q?bP4RhBXvga6AJaeESNF0zapmxnqxX47LgoPhN+Qp/sizPpc12YIK6XWlTq+i?=
- =?us-ascii?Q?NdEn7mofkjoTT+nBlGDJsspPU0Xls53EFbZPQyfory/PjiskbnyaNj2pufql?=
- =?us-ascii?Q?X1FnLJf/yHEGzY2S6PXMHWPAn72Yr/RyHUeMJFw/RTLJ94saqJQBA7GxhOIl?=
- =?us-ascii?Q?SqfaCNs/DUblIzR9nOL3uy3YA9OAesarsBL10vATJgBBeislZzZOyDPFxcCy?=
- =?us-ascii?Q?qr88v+jee7ruXRQsgQe5cpXqENqB2KU7WhtG/NWsvvMiIjd8wF621u70ujlD?=
- =?us-ascii?Q?R/YyiEOH9tvczzaU3OLUlTcHQPFUCaatbL+vXsmvzwqnVXA3nwsu4NNshbPT?=
- =?us-ascii?Q?CL7BLM6IDZkGh/Bwap1NHBPKId0kyoBp7uVP5J1x9CPihuweWPff5kYHz2I8?=
- =?us-ascii?Q?gAd71jfYoldxMlVKPpRLBy2UxbgjNgvi5Ku0kwKdOMI5imxjOBkhhtTFmwtY?=
- =?us-ascii?Q?dD83tzqGKgWlq0PGIUwuaYha0EDtbvKn2LjFEQF93azXTfOSleofCVKe+Nrk?=
- =?us-ascii?Q?j8pdnVirc9nDHiX+YOckSBrhEJE87ZZPLqIf8h2XdWE5VlYAjjEUFSBG/wnf?=
- =?us-ascii?Q?sXJjBy0grXzra1Qze5yeP4/UymrxIn4AXTXKzzdvmvz3ODkdxqOP2dOC3YCm?=
- =?us-ascii?Q?nz4Ds4LC2MZVfdZXgJu1eZYShAPQyGjBYZ1NZylrMrGtoaiPG/4wETRaE8qd?=
- =?us-ascii?Q?jOegqw5NhtHXnR3Kxo0jackQudpUUfMzYt5qrQOX0SP2ctPz42jbAPbl4gEA?=
- =?us-ascii?Q?OKnycmwi+XMTDkZK7nW4U45AYu/1NXhuQ3LJCntG6B8H4ifJn3DdRmXF2m2N?=
- =?us-ascii?Q?HghhdNbSqVV3bWwtO6uZ2YvEd9W5cwtZuLI3fpp2WAH/xvShXVE9Q4AI/DHI?=
- =?us-ascii?Q?SteFMVOkn3OADJBWv8i9BJhBkMtq8NWDYdexAGczFevU7V6YKTThbziDE5vX?=
- =?us-ascii?Q?bFcMmSDJ6Nf0qnkGyM51LQsEZy4eXJ3Kflk9Y3QkCL9RrbyUaPyiSWKIN0mY?=
- =?us-ascii?Q?Xem6liCa8BT5YUQuFZcCo5z1cJIwaGoTdTlg/6BBymSPQqh87oSvREBjZgrp?=
- =?us-ascii?Q?tkyvIzkTARDIrXCZ9e0RJxceqhbCc6wwbexRqILmsRsmQM+y33nxdIx72YNy?=
- =?us-ascii?Q?EPwwoNcRD3WuufMT6vtAsUmt+IH9ahS7Sqe5NkVMAMeNKaSfKoFSicSmQDO5?=
- =?us-ascii?Q?WVGouAPs+4L8XqQngGeknrnJWdnitMscKGVI+bdKjUIgl1uuzDSQHlwO3GwJ?=
- =?us-ascii?Q?S5yHx+S0FjUPNd5CGEDyTOUXTwHSHslBNza2MmFBDeUS7Ck8ibLrgDCCxP73?=
- =?us-ascii?Q?JtPY8heaG3qCVHkTfy9zXxRfPWTzZvF5bbMAR9DFRP3NHnBt/AHoH3D8jH2J?=
- =?us-ascii?Q?XyqRmxOcdPMyhnBQ2xvHPM00F4wT1Q5yMJB30I83XumI9Hij0NHbQlct0lZQ?=
- =?us-ascii?Q?jg=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 922e65a4-a04a-4e42-6e1a-08ddc4114481
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?5K6hWpDYUN9+PXu6aSRlS09muTKQ3uw+EJQvre7O5G8LZR1mkJle5zOGE1kt?=
+ =?us-ascii?Q?1mc6cYyvzsgC7zgD2cwJQVVyEMHTGhhmMqf4cfGPKfUtsDYkmZFfuU9tfJ+s?=
+ =?us-ascii?Q?ergod49sNlWf/W4sOkZhsAG+vJS8tfRScF23Iq9aukJVYwUbi3u+GrqeEotY?=
+ =?us-ascii?Q?EDXBRBGPfBZF3mHtGMwMpCS9doi9M+ut/nuh1DpzVyLNeLcveOg69g013xVO?=
+ =?us-ascii?Q?KJ2VtN/CSHe5NGDLJoSOl/U4LdsCTeI6L6/Z40JlezDZlDUmhJ/JRdUYRzr+?=
+ =?us-ascii?Q?cN3uI/Oy9F9aT+yhceJjxc4BaV20gXASbn5BDImI+EnPgrjCop83NrkYbjSp?=
+ =?us-ascii?Q?rWgVeZK3vYzViCqXglhCdbnYqj5RAcgF6Oyp0muvjX4Hy3AD5BfEmPx7X+nw?=
+ =?us-ascii?Q?0td+6t31HWvNG2Knj0t+KBEC9LhLf5LiPrgnpt8iHq95D+cRcAaoZ2vEfGg3?=
+ =?us-ascii?Q?oV+9btwu8GJU/iiGk8gNzo+oxTItXwaAx5qBc6jdnU4j9zCSgwPLlnwxSwRB?=
+ =?us-ascii?Q?+ikvvcI9omF4CEYOoOrnbLr7o9/J/8NA9X3PP4u8g25pZ3KUHjwp4t8JNlB2?=
+ =?us-ascii?Q?ZUQoZPPSWw4MZOhwH3/e1QTGgPuqpCzK9O/CaftsP1g+If5N7Zs3ROcGVal6?=
+ =?us-ascii?Q?za1puv3FJ76khv9EeUg/yQDDzsGJs+wwlpd1M+XIyGLEy+1J2GxGwDLJHexh?=
+ =?us-ascii?Q?EcOgt85ZiE3ug+NBXErV/YrN8G90MaHClbhnogcLCnA1rSwsF2Z0xF+t6xel?=
+ =?us-ascii?Q?cW3j1PvOcuXxo/9K1IqQPBwFvbmI/s6kkZ0QSEYyqcKJ5bLb87wLvHYuk2RG?=
+ =?us-ascii?Q?BuDN5CvvN9f5qvd1j4l7PnY5poa0O4xVYpdc/LXxNdj4TLrnpJQu1rvoFQ6b?=
+ =?us-ascii?Q?Z5HK8bsTyfTzSYkGOLAhOoXjs6mvPt7k+Cny5fso5sQ9sVz+cec80dYU2a33?=
+ =?us-ascii?Q?Tn2lncyCdZB+gP/TB7G/jDKbMPfP2GZtbTVfbfqFBannKi2WtI0KB5kL9dcT?=
+ =?us-ascii?Q?RmGFBE8T5Gxs8LXX28GOw16+uJt0xj501rjlAV+o5fgIcrk7fl3HR1/h2anr?=
+ =?us-ascii?Q?17hAqKP1aIscNdZ+iNgGL0k0ph4zd+nUSoQfbFDfYEjROwU+xqbOi38PGU4C?=
+ =?us-ascii?Q?MUrNGkxy9qnTahqgEn/mGleVJRjDqWAbAVAcRUZxymGGl+VspnjOqaUo79nc?=
+ =?us-ascii?Q?IfZbr1X/7LNqxSk6/1hQOYbKG/X861dz9HDT+dy4TylSvcm/+VhTfwWyOjc9?=
+ =?us-ascii?Q?M1AeJDbH3dFtDLR3gdyhS4B8f8W4jYeXZ/FTT11ujzAyuuSPewz4pznNIaQF?=
+ =?us-ascii?Q?TeatJiRtIjrfu9kXgQVW5ocYEF9vXF7oJgx2plB4asJZRf99skQM1RHi8jEf?=
+ =?us-ascii?Q?H+R0Al/11w+bgXHSYHJa7uXOytU+DXG5O2JOo3VtI722CCBHXWcB2+pCq3AV?=
+ =?us-ascii?Q?i0UZcfucxJDYxnMgad/x1cPk1JKkiRFFQkukbTeeL/uFt4BJVsH0QMagu5IH?=
+ =?us-ascii?Q?CBhjdbyHnZUPai6VtO2Jd9OJcOZ2eHCc6wsw+AnzkAg88iRsIFNtPZKYeKH3?=
+ =?us-ascii?Q?QzO9eennz60eatqOQS3IeDIM6UDBKv4XYtDMmupvKRQ0bYRf/UDxI3m6UDS3?=
+ =?us-ascii?Q?nA=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 50275832-244a-4487-ffaf-08ddc42f6e9e
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jul 2025 02:34:20.4591
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jul 2025 06:10:15.6832
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FMkp1u9kIhFf5tiE4BvsbErbV3WKsAmzdk/TMfM1lZaxFqkiHZUUMRJM7U1qx1em6ZDh8+niqQD0TqKyw45gaw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB7811
+X-MS-Exchange-CrossTenant-UserPrincipalName: /F7V9mtO4B8XgxKmK+UaVlpBYtEYlFiMciFbUnf2zLc1RiCsSL6NXhqn3oAnejeARibb8YXsUpdsN5bH33dj6w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB6921
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
-kernel test robot noticed "kunit.drm_test_framebuffer_create.ABGR8888_pitch_less_than_min_required.fail" on:
+kernel test robot noticed "WARNING:possible_recursive_locking_detected" on:
 
-commit: e33530ce8ac50d5155aa7a83f6dcd8b8372279d0 ("[PATCH RESEND] drm: Fix potential null pointer dereference issues in drm_managed.c")
-url: https://github.com/intel-lab-lkp/linux/commits/Haoxiang-Li/drm-Fix-potential-null-pointer-dereference-issues-in-drm_managed-c/20250703-173209
-base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git b4911fb0b060899e4eebca0151eb56deb86921ec
-patch link: https://lore.kernel.org/all/20250703092819.2535786-1-haoxiang_li2024@163.com/
-patch subject: [PATCH RESEND] drm: Fix potential null pointer dereference issues in drm_managed.c
+commit: e9c2688b128a46792eb108d001cd0e56b247cf27 ("linux6.15.y-bore5.9.6")
+https://github.com/steev/linux lenovo-x13s-6.16.0-rc5
 
-in testcase: kunit
-version: 
+in testcase: trinity
+version: trinity-i386-abe9de86-1_20230429
 with following parameters:
 
-	group: group-00
+	runtime: 600s
 
 
 
-config: x86_64-rhel-9.4-kunit
-compiler: gcc-12
-test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (Haswell) with 16G memory
+config: x86_64-randconfig-r111-20250712
+compiler: gcc-11
+test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
 
-
-besides, more issues are observed
-
-b4911fb0b060899e e33530ce8ac50d5155aa7a83f6d
----------------- ---------------------------
-       fail:runs  %reproduction    fail:runs
-           |             |             |
-           :6          100%           6:6     kunit.drm_test_fb_build_fourcc_list.XRGB8888_as_native_format.fail
-           :6          100%           6:6     kunit.drm_test_fb_build_fourcc_list.convert_alpha_formats.fail
-           :6          100%           6:6     kunit.drm_test_fb_build_fourcc_list.fail
-           :6          100%           6:6     kunit.drm_test_fb_build_fourcc_list.no_native_formats.fail
-           :6          100%           6:6     kunit.drm_test_fb_build_fourcc_list.random_formats.fail
-           :6          100%           6:6     kunit.drm_test_fb_build_fourcc_list.remove_duplicates.fail
-           :6          100%           6:6     kunit.drm_test_fb_memcpy.drm_format_helper_test.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_check_src_coords.Fail_overflowing_fb_with_source_height.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_check_src_coords.Fail_overflowing_fb_with_source_width.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_check_src_coords.Fail_overflowing_fb_with_x-axis_coordinate.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_check_src_coords.Fail_overflowing_fb_with_y-axis_coordinate.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_check_src_coords.Success_source_fits_into_fb.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_check_src_coords.drm_test_framebuffer_cleanup.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_check_src_coords.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.ABGR8888_Buffer_offset_for_inexistent_plane.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.ABGR8888_Extra_pitches_with_DRM_MODE_FB_MODIFIERS.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.ABGR8888_Extra_pitches_without_DRM_MODE_FB_MODIFIERS.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.ABGR8888_Height_0.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.ABGR8888_Invalid_buffer_handle.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.ABGR8888_Invalid_buffer_modifier_DRM_FORMAT_MOD_SAMSUNG_64_32_TILE.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.ABGR8888_Invalid_flag.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.ABGR8888_Invalid_width.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.ABGR8888_Large_buffer_offset.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.ABGR8888_Out_of_bound_height_*_pitch_combination.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.ABGR8888_Set_DRM_MODE_FB_MODIFIERS_without_modifiers.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.ABGR8888_Valid_buffer_modifier.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.ABGR8888_Width_0.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.ABGR8888_max_sizes.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.ABGR8888_normal_sizes.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.ABGR8888_pitch_greater_than_min_required.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.ABGR8888_pitch_less_than_min_required.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.NV12_Handle_for_inexistent_plane.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.NV12_Handle_for_inexistent_plane_without_DRM_MODE_FB_MODIFIERS.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.NV12_Invalid_modifier/missing_DRM_MODE_FB_MODIFIERS_flag.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.NV12_Invalid_pitch.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.NV12_Max_sizes.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.NV12_Modifier_for_inexistent_plane.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.NV12_Normal_sizes.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.NV12_Valid_modifiers_without_DRM_MODE_FB_MODIFIERS.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.NV12_different_modifier_per-plane.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.NV12_with_DRM_FORMAT_MOD_SAMSUNG_64_32_TILE.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.No_pixel_format.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.X0L2_Handle_for_inexistent_plane.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.X0L2_Invalid_pitch.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.X0L2_Max_sizes.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.X0L2_Modifier_for_inexistent_plane.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.X0L2_Modifier_without_DRM_MODE_FB_MODIFIERS_set.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.X0L2_Normal_sizes.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.X0L2_Offset_for_inexistent_plane_without_DRM_MODE_FB_MODIFIERS_set.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.X0L2_Pitch_greater_than_minimum_required.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.X0L2_Valid_modifier.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.YUV420_10BIT_Invalid_modifier_DRM_FORMAT_MOD_LINEAR.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.YVU420_DRM_MODE_FB_MODIFIERS_set_without_modifier.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.YVU420_Different_buffer_offsets/pitches.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.YVU420_Different_modifiers_per_plane.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.YVU420_Different_pitches.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.YVU420_Invalid_pitch.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.YVU420_Max_sizes.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.YVU420_Modifier_for_inexistent_plane.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.YVU420_Modifier_set_just_for_plane_0_1_with_DRM_MODE_FB_MODIFIERS.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.YVU420_Modifier_set_just_for_plane_0_without_DRM_MODE_FB_MODIFIERS.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.YVU420_Modifier_set_just_for_planes_0_1_without_DRM_MODE_FB_MODIFIERS.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.YVU420_Normal_sizes.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.YVU420_Valid_modifier.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.drm_framebuffer.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.drm_test_framebuffer_free.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.drm_test_framebuffer_init.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.drm_test_framebuffer_init_bad_format.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.drm_test_framebuffer_init_dev_mismatch.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.drm_test_framebuffer_lookup.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.drm_test_framebuffer_lookup_inexistent.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.drm_test_framebuffer_modifiers_not_supported.fail
-           :6          100%           6:6     kunit.drm_test_framebuffer_create.fail
 
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202507160354.21a14db0-lkp@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202507160735.72c4502b-lkp@intel.com
 
 
-(part of full log)
+[   12.932716][    T1] WARNING: possible recursive locking detected
+[   12.933071][    T1] 6.16.0-rc5-00115-ge9c2688b128a #1 Not tainted
+[   12.933429][    T1] --------------------------------------------
+[   12.933782][    T1] systemd/1 is trying to acquire lock:
+[ 12.934096][ T1] ffff9adac0328130 (&p->se.child_burst.lock){+.+.}-{3:3}, at: update_child_burst_topological (kernel/sched/bore.c:168 kernel/sched/bore.c:226) 
+[   12.934756][    T1]
+[   12.934756][    T1] but task is already holding lock:
+[ 12.935175][ T1] ffffffff9061f3f0 (&p->se.child_burst.lock){+.+.}-{3:3}, at: sched_clone_bore (kernel/sched/bore.c:168 kernel/sched/bore.c:266 kernel/sched/bore.c:312) 
+[   12.935747][    T1]
+[   12.935747][    T1] other info that might help us debug this:
+[   12.936214][    T1]  Possible unsafe locking scenario:
+[   12.936214][    T1]
+[   12.936638][    T1]        CPU0
+[   12.936829][    T1]        ----
+[   12.937020][    T1]   lock(&p->se.child_burst.lock);
+[   12.937313][    T1]   lock(&p->se.child_burst.lock);
+[   12.937607][    T1]
+[   12.937607][    T1]  *** DEADLOCK ***
+[   12.937607][    T1]
+[   12.938066][    T1]  May be due to missing lock nesting notation
+[   12.938066][    T1]
+[   12.950833][    T1] 3 locks held by systemd/1:
+[ 12.951242][ T1] #0: ffffffff90ac9c20 (cgroup_threadgroup_rwsem){++++}-{0:0}, at: cgroup_can_fork (kernel/cgroup/cgroup.c:6671) 
+[ 12.952118][ T1] #1: ffffffff906080d8 (tasklist_lock){.+.+}-{3:3}, at: sched_clone_bore (kernel/sched/bore.c:311) 
+[ 12.952919][ T1] #2: ffffffff9061f3f0 (&p->se.child_burst.lock){+.+.}-{3:3}, at: sched_clone_bore (kernel/sched/bore.c:168 kernel/sched/bore.c:266 kernel/sched/bore.c:312) 
+[   12.953794][    T1]
+[   12.953794][    T1] stack backtrace:
+[   12.954284][    T1] CPU: 1 UID: 0 PID: 1 Comm: systemd Not tainted 6.16.0-rc5-00115-ge9c2688b128a #1 PREEMPT(full)
+[   12.954289][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+[   12.954291][    T1] Call Trace:
+[   12.954295][    T1]  <TASK>
+[ 12.954298][ T1] dump_stack_lvl (lib/dump_stack.c:123) 
+[ 12.955284][ T1] print_deadlock_bug (kernel/locking/lockdep.c:3047) 
+[ 12.955291][ T1] validate_chain (kernel/locking/lockdep.c:3901) 
+[ 12.955295][ T1] __lock_acquire (kernel/locking/lockdep.c:5240) 
+[ 12.955299][ T1] ? print_bad_irq_dependency (kernel/locking/lockdep.c:2600) 
+[ 12.955303][ T1] lock_acquire (kernel/locking/lockdep.c:473 kernel/locking/lockdep.c:5873) 
+[ 12.955306][ T1] ? update_child_burst_topological (kernel/sched/bore.c:168 kernel/sched/bore.c:226) 
+[ 12.955312][ T1] ? lock_acquire (kernel/locking/lockdep.c:473 kernel/locking/lockdep.c:5873) 
+[ 12.955316][ T1] _raw_spin_lock (include/linux/spinlock_api_smp.h:134 kernel/locking/spinlock.c:154) 
+[ 12.955320][ T1] ? update_child_burst_topological (kernel/sched/bore.c:168 kernel/sched/bore.c:226) 
+[ 12.955324][ T1] update_child_burst_topological (kernel/sched/bore.c:168 kernel/sched/bore.c:226) 
+[ 12.955329][ T1] sched_clone_bore (kernel/sched/bore.c:267 kernel/sched/bore.c:312) 
+[ 12.955334][ T1] copy_process (kernel/fork.c:2321) 
+[ 12.955341][ T1] kernel_clone (include/linux/random.h:26 kernel/fork.c:2606) 
+[ 12.955344][ T1] ? kvm_sched_clock_read (arch/x86/kernel/kvmclock.c:91) 
+[ 12.955347][ T1] ? local_clock_noinstr (kernel/sched/clock.c:301) 
+[ 12.955350][ T1] ? local_clock (arch/x86/include/asm/preempt.h:95 kernel/sched/clock.c:316) 
+[ 12.955352][ T1] ? __lock_release+0x12c/0x240 
+[ 12.955356][ T1] ? trace_preempt_on (include/trace/events/preemptirq.h:53 kernel/trace/trace_preemptirq.c:120) 
+[ 12.955363][ T1] __do_compat_sys_ia32_clone (arch/x86/kernel/sys_ia32.c:254) 
+[ 12.955371][ T1] do_int80_emulation (arch/x86/entry/syscall_32.c:83 arch/x86/entry/syscall_32.c:172) 
+[ 12.955379][ T1] ? trace_irq_disable+0x25/0xc0 
+[ 12.955382][ T1] ? do_int80_emulation (include/linux/entry-common.h:119 arch/x86/entry/syscall_32.c:145) 
+[ 12.955386][ T1] asm_int80_emulation (arch/x86/include/asm/idtentry.h:626) 
+[   12.955390][    T1] RIP: 0023:0xf7f1e092
+[ 12.955395][ T1] Code: 00 00 00 e9 90 ff ff ff ff a3 24 00 00 00 68 30 00 00 00 e9 80 ff ff ff ff a3 f8 ff ff ff 66 90 00 00 00 00 00 00 00 00 cd 80 <c3> 8d b4 26 00 00 00 00 8d b6 00 00 00 00 8b 1c 24 c3 8d b4 26 00
+All code
+========
+   0:	00 00                	add    %al,(%rax)
+   2:	00 e9                	add    %ch,%cl
+   4:	90                   	nop
+   5:	ff                   	(bad)
+   6:	ff                   	(bad)
+   7:	ff                   	(bad)
+   8:	ff a3 24 00 00 00    	jmp    *0x24(%rbx)
+   e:	68 30 00 00 00       	push   $0x30
+  13:	e9 80 ff ff ff       	jmp    0xffffffffffffff98
+  18:	ff a3 f8 ff ff ff    	jmp    *-0x8(%rbx)
+  1e:	66 90                	xchg   %ax,%ax
+	...
+  28:	cd 80                	int    $0x80
+  2a:*	c3                   	ret		<-- trapping instruction
+  2b:	8d b4 26 00 00 00 00 	lea    0x0(%rsi,%riz,1),%esi
+  32:	8d b6 00 00 00 00    	lea    0x0(%rsi),%esi
+  38:	8b 1c 24             	mov    (%rsp),%ebx
+  3b:	c3                   	ret
+  3c:	8d                   	.byte 0x8d
+  3d:	b4 26                	mov    $0x26,%ah
+	...
 
-[  137.733532]         KTAP version 1
-[  137.743385]         # Subtest: drm_test_framebuffer_create
-[  137.744157]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  137.767882]         not ok 1 ABGR8888 normal sizes
-[  137.768882]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  137.791777]         not ok 2 ABGR8888 max sizes
-[  137.792684]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  137.815217]         not ok 3 ABGR8888 pitch greater than min required
-[  137.816102]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  137.840600]         not ok 4 ABGR8888 pitch less than min required
-[  137.841336]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  137.865608]         not ok 5 ABGR8888 Invalid width
-[  137.866324]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  137.889284]         not ok 6 ABGR8888 Invalid buffer handle
-[  137.890013]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  137.913751]         not ok 7 No pixel format
-[  137.914407]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  137.936719]         not ok 8 ABGR8888 Width 0
-[  137.937549]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  137.960134]         not ok 9 ABGR8888 Height 0
-[  137.961342]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  137.983942]         not ok 10 ABGR8888 Out of bound height * pitch combination
-[  137.984877]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.010085]         not ok 11 ABGR8888 Large buffer offset
-[  138.010805]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.034402]         not ok 12 ABGR8888 Buffer offset for inexistent plane
-[  138.035121]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.060049]         not ok 13 ABGR8888 Invalid flag
-[  138.061100]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.084131]         not ok 14 ABGR8888 Set DRM_MODE_FB_MODIFIERS without modifiers
-[  138.084993]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.110649]         not ok 15 ABGR8888 Valid buffer modifier
-[  138.111393]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.135217]         not ok 16 ABGR8888 Invalid buffer modifier(DRM_FORMAT_MOD_SAMSUNG_64_32_TILE)
-[  138.135933]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.162947]         not ok 17 ABGR8888 Extra pitches without DRM_MODE_FB_MODIFIERS
-[  138.163630]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.189522]         not ok 18 ABGR8888 Extra pitches with DRM_MODE_FB_MODIFIERS
-[  138.190235]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.215622]         not ok 19 NV12 Normal sizes
-[  138.216403]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.239195]         not ok 20 NV12 Max sizes
-[  138.240023]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.262575]         not ok 21 NV12 Invalid pitch
-[  138.263258]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.286058]         not ok 22 NV12 Invalid modifier/missing DRM_MODE_FB_MODIFIERS flag
-[  138.287019]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.313103]         not ok 23 NV12 different  modifier per-plane
-[  138.313926]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.337915]         not ok 24 NV12 with DRM_FORMAT_MOD_SAMSUNG_64_32_TILE
-[  138.339024]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.363845]         not ok 25 NV12 Valid modifiers without DRM_MODE_FB_MODIFIERS
-[  138.364927]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.390321]         not ok 26 NV12 Modifier for inexistent plane
-[  138.390992]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.415040]         not ok 27 NV12 Handle for inexistent plane
-[  138.415717]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.439640]         not ok 28 NV12 Handle for inexistent plane without DRM_MODE_FB_MODIFIERS
-[  138.440361]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.467024]         not ok 29 YVU420 DRM_MODE_FB_MODIFIERS set without modifier
-[  138.467691]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.493216]         not ok 30 YVU420 Normal sizes
-[  138.494137]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.516948]         not ok 31 YVU420 Max sizes
-[  138.517886]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.540344]         not ok 32 YVU420 Invalid pitch
-[  138.541003]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.563878]         not ok 33 YVU420 Different pitches
-[  138.564688]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.587901]         not ok 34 YVU420 Different buffer offsets/pitches
-[  138.589052]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.613521]         not ok 35 YVU420 Modifier set just for plane 0, without DRM_MODE_FB_MODIFIERS
-[  138.614198]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.641089]         not ok 36 YVU420 Modifier set just for planes 0, 1, without DRM_MODE_FB_MODIFIERS
-[  138.642154]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.669373]         not ok 37 YVU420 Modifier set just for plane 0, 1, with DRM_MODE_FB_MODIFIERS
-[  138.670279]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.697162]         not ok 38 YVU420 Valid modifier
-[  138.697838]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.720852]         not ok 39 YVU420 Different modifiers per plane
-[  138.721447]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.746307]         not ok 40 YVU420 Modifier for inexistent plane
-[  138.747165]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.771457]         not ok 41 YUV420_10BIT Invalid modifier(DRM_FORMAT_MOD_LINEAR)
-[  138.772098]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.798108]         not ok 42 X0L2 Normal sizes
-[  138.798677]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.821384]         not ok 43 X0L2 Max sizes
-[  138.822002]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.844273]         not ok 44 X0L2 Invalid pitch
-[  138.844919]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.867733]         not ok 45 X0L2 Pitch greater than minimum required
-[  138.868358]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.893003]         not ok 46 X0L2 Handle for inexistent plane
-[  138.893837]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.917784]         not ok 47 X0L2 Offset for inexistent plane, without DRM_MODE_FB_MODIFIERS set
-[  138.918775]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.945711]         not ok 48 X0L2 Modifier without DRM_MODE_FB_MODIFIERS set
-[  138.946324]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.971458]         not ok 49 X0L2 Valid modifier
-[  138.972065]     # drm_test_framebuffer_create: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  138.995030]         not ok 50 X0L2 Modifier for inexistent plane
-[  138.995048]     # drm_test_framebuffer_create: pass:0 fail:50 skip:0 total:50
-[  139.001755]     not ok 3 drm_test_framebuffer_create
-[  139.010357]     # drm_test_framebuffer_free: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  139.033318]     not ok 4 drm_test_framebuffer_free
-[  139.034199]     # drm_test_framebuffer_init: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  139.056932]     not ok 5 drm_test_framebuffer_init
-[  139.057721]     # drm_test_framebuffer_init_bad_format: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  139.081362]     not ok 6 drm_test_framebuffer_init_bad_format
-[  139.082208]     # drm_test_framebuffer_init_dev_mismatch: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  139.107079]     not ok 7 drm_test_framebuffer_init_dev_mismatch
-[  139.108058]     # drm_test_framebuffer_lookup: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  139.132003]     not ok 8 drm_test_framebuffer_lookup
-[  139.133189]     # drm_test_framebuffer_lookup_inexistent: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  139.157294]     not ok 9 drm_test_framebuffer_lookup_inexistent
-[  139.158145]     # drm_test_framebuffer_modifiers_not_supported: ASSERTION FAILED at drivers/gpu/drm/tests/drm_framebuffer_test.c:389
-                   Expected priv is not error, but is: -12
-[  139.183665]     not ok 10 drm_test_framebuffer_modifiers_not_supported
-[  139.183680] # drm_framebuffer: pass:0 fail:10 skip:0 total:10
-[  139.190902] # Totals: pass:0 fail:63 skip:0 total:63
-[  139.197336] not ok 1 drm_framebuffer
-
+Code starting with the faulting instruction
+===========================================
+   0:	c3                   	ret
+   1:	8d b4 26 00 00 00 00 	lea    0x0(%rsi,%riz,1),%esi
+   8:	8d b6 00 00 00 00    	lea    0x0(%rsi),%esi
+   e:	8b 1c 24             	mov    (%rsp),%ebx
+  11:	c3                   	ret
+  12:	8d                   	.byte 0x8d
+  13:	b4 26                	mov    $0x26,%ah
+	...
+[   12.955398][    T1] RSP: 002b:00000000ffddbf1c EFLAGS: 00200282 ORIG_RAX: 0000000000000078
+[   12.955401][    T1] RAX: ffffffffffffffda RBX: 0000000001200011 RCX: 0000000000000000
+[   12.955403][    T1] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 00000000f72808a8
+[   12.955405][    T1] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+[   12.955406][    T1] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+[   12.955407][    T1] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+[   12.955412][    T1]  </TASK>
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20250716/202507160354.21a14db0-lkp@intel.com
+https://download.01.org/0day-ci/archive/20250716/202507160735.72c4502b-lkp@intel.com
 
 
 
