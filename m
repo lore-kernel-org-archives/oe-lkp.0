@@ -1,128 +1,277 @@
-Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F309B2F4331;
-	Wed, 16 Jul 2025 11:25:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.92.199
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752665141; cv=none; b=uxub0/uE6/hbnZGMO8dZ0nNgufUtjWRLu623PlHuhc4JwN88HaXmtwERtYkoq9WR9ErzrPNRSt8W26GONBNmguKthxpJbtp+XPZkJWU9aFhXyaJKgscrg43clWJHFID8O3w7XZG6sS9LvC7URyd6JH3zgGqjiSyuYAB31vxPN4U=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752665141; c=relaxed/simple;
-	bh=EYFfKSlO9xERXs/iTfLLgx0rGMidUjSz1xXZscwEqA0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uZHfx/DqI41miiGSrqEev225wIJT9x26hYKPLvT+aCJNkCUmdWLbi4w6yZLxXsT5/xFTC0dJ2ILTfA/VHaBZtRhhOk4l6vPU1Cj+/8UV2G0I/BSxk8sfveTBPKzGym814y5PaM/kcXzxPRh6ENLQ21SMr+iyjb/F3lv6A8Ar4Cs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=fa4gKJ2h; arc=none smtp.client-ip=90.155.92.199
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C8C31D5CEA
+	for <oe-lkp@lists.linux.dev>; Wed, 16 Jul 2025 15:57:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.16
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1752681447; cv=fail; b=VhEmRCdxVf5STM/RDdkDjLqVEQWEYsYywpYN/e3OTVoinS0m3yltsCTd+7rtI+YwPKQblPPCXlapZMvqXqYO0Rk5ybp2y+Ta9U3VfMdyYTckH0jfgydzOEX7IEahKu1HmAz1ws4yCT0zFoDqhaE9KOVqmHUn9Cw2559KjL/hd58=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1752681447; c=relaxed/simple;
+	bh=xeeBpRqXoliHILvdZkD6XLJhhcL3XEb7FkXR6EHqot8=;
+	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=IuZ8MGjreVxk417sg5o0GngSP4kvKVjqfKMBtzPWdHwy70CMgSLgy45i7IlnsAQkD074wRS6qIQ/DYw8NZ/xAvR7agwBFEMlMsK6Qeek7KNexIzyZWnYi9IstylAUQusDca9OjBoaLV11pAdrErJRL5WATNzRfzKnd65A6ldB4Y=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Wz6A39hr; arc=fail smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="fa4gKJ2h"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=gkZqUKwDbsV/2dL8YJLKH5dlMnuryzNCRhd3vysEFm4=; b=fa4gKJ2hF5gpoA01tjLnk2eIHt
-	RCL6bj/GuUx/+nYFbbLaPZycyPZ8G8kCeblqfgeMGlfW+beH51C+GLZNQFROLHgy0jr6XnG8CZJdZ
-	zZ2n++m9thcaLObnDTqNLl88/PJY7vkrEGeDrJYApnrpapbHH12EKZUwlKaSYlOEYQQhPA1N1o2jt
-	24v3tLUYeZ4jOLSNCZTryT61CM/8VsmKV07STQ4T+ZPQHFKLB0oL9c2edZ6zMkwxthSaIFxT5RQQT
-	Ee3NL9MUylQhHrE5dIZmoxjKvXwYmTvSnxWMJZgZvJIdvke0S2p8Ilk3h0K59FIxBlR/FysuVPV2y
-	uR03+9Dw==;
-Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
-	by desiato.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1uc0GU-0000000A5iS-2lKi;
-	Wed, 16 Jul 2025 11:25:35 +0000
-Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
-	id 5CA3C300186; Wed, 16 Jul 2025 13:25:33 +0200 (CEST)
-Date: Wed, 16 Jul 2025 13:25:33 +0200
-From: Peter Zijlstra <peterz@infradead.org>
-To: "Chen, Yu C" <yu.c.chen@intel.com>
-Cc: kernel test robot <oliver.sang@intel.com>, Chris Mason <clm@fb.com>,
-	oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	aubrey.li@linux.intel.com, vincent.guittot@linaro.org
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Wz6A39hr"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1752681446; x=1784217446;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=xeeBpRqXoliHILvdZkD6XLJhhcL3XEb7FkXR6EHqot8=;
+  b=Wz6A39hrii5uHy0fW70LEgQeE5o3qCMRuihVM46C7HB3IUfQ8GG5QSRq
+   mSR/suR6w/UP8Az/EG2zo1tTurSJ6Iey9/j5vNE2sDhxwOP9pxF1+xKQz
+   zGsjZc3/PZ1d7ziKzlYgVve1/CDESBvuJNMuI+Zj1QK4i+POLzUHLXsql
+   LkwW9wZPTSoObLdFnm2qtnj3fDx4BgByXj/FTm+dAnc7/cxmN2eKS81aC
+   z+x6n77XiC/zRS3kzANq/WNBD2I6ONRj1OD6p/FJMW6rHfon9AK8JknC9
+   l0hWRD0WvYPKHJ0gAFYhRElW7R9LM96OUQouTxeeWFn8PAdpL3zIUjZq9
+   Q==;
+X-CSE-ConnectionGUID: W7vXjN8BQ2ieaHfYpKJ6wg==
+X-CSE-MsgGUID: ou48xkiwQhOybDYa5M3gOA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11493"; a="55080987"
+X-IronPort-AV: E=Sophos;i="6.16,316,1744095600"; 
+   d="scan'208";a="55080987"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2025 08:56:47 -0700
+X-CSE-ConnectionGUID: qrjShXEpTl+y+4HWdPnoiQ==
+X-CSE-MsgGUID: FzkbfGQHSWeV68VJW6Pn1A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,316,1744095600"; 
+   d="scan'208";a="156948639"
+Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
+  by orviesa010.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2025 08:56:47 -0700
+Received: from ORSMSX903.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.26; Wed, 16 Jul 2025 08:56:46 -0700
+Received: from ORSEDG903.ED.cps.intel.com (10.7.248.13) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.26 via Frontend Transport; Wed, 16 Jul 2025 08:56:46 -0700
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (40.107.95.63) by
+ edgegateway.intel.com (134.134.137.113) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.26; Wed, 16 Jul 2025 08:56:45 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=GYuvWkL6iRvmMIs7eovqZCYdalWyUJeRosyNfuddAoOtlzKR/kQTgIiS2iRSgWmjQOzcGqRGdfqwUUi1dVX4SkA0bs/swsyy+WccLFt6Jjah/ESF3IxSteceS5VBjTMZa84dY2c+2OGx1NbGGaXlYNTEyTMbmMzwDLuHi8S8mvp827NmWUxTdf8I4DazS3TxP0W3AESv5l79e/oUl1By2Hr+jb6sOehqgjG5sRROv7nTYLHumNVUQgC+0+vp7MJjZWiFH9/h7jJdzaY3WtF0CBrz5lDOVD+WiErZ8LIKslPEKMTPpCUd9Ac1ZuKsu1oR/DWi0U6rKH4dxy3/T/Bf8g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dNgL7zbId4uwen9hPfPxZH2drWkykGXqjRGk42EtuJU=;
+ b=HwQXaI/fCtAZGz/HXRLfj+bPOF0UV5hsM7tZYeNE5xMh9Kzfk0TjfdZmrO0exw0yBOKYta8mfzq9nNyv62TtP28KZLByklDj3zAu4vDb616Pgb/ub9z+FvOmsXZIOeyyQwvpvgPKy/gG1OKcpqQBKv/DGuueTZy/yegq1ax8Tg9CHnHy5xmSKRCtjMqk119O+OSMKJ+fT/eEuMrqNb+BXKQF1F3am/e7NEcVtQGHgj/ZI4Km6IC4vt9V37pu7mC5x36S/DUlgYrS/v2QPf77evnfH9yc7MWNbVrsCnf90HCIbODo1tkdAx1Vo+6OWxbpAYu6JAD+MyDXO9R3EEaY4g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM4PR11MB6020.namprd11.prod.outlook.com (2603:10b6:8:61::19) by
+ CY5PR11MB6161.namprd11.prod.outlook.com (2603:10b6:930:2a::10) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8922.25; Wed, 16 Jul 2025 15:56:39 +0000
+Received: from DM4PR11MB6020.namprd11.prod.outlook.com
+ ([fe80::4af6:d44e:b6b0:fdce]) by DM4PR11MB6020.namprd11.prod.outlook.com
+ ([fe80::4af6:d44e:b6b0:fdce%6]) with mapi id 15.20.8857.026; Wed, 16 Jul 2025
+ 15:56:39 +0000
+Message-ID: <5e9789ae-9a2d-4c95-a1c3-db489d132559@intel.com>
+Date: Wed, 16 Jul 2025 23:56:30 +0800
+User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v2] sched/fair: bump sd->max_newidle_lb_cost when newidle
  balance fails
-Message-ID: <20250716112533.GS1613200@noisy.programming.kicks-ass.net>
+To: Chris Mason <clm@meta.com>, Chris Mason <clm@fb.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	<aubrey.li@linux.intel.com>, <peterz@infradead.org>,
+	<vincent.guittot@linaro.org>, kernel test robot <oliver.sang@intel.com>
 References: <202507150846.538fc133-lkp@intel.com>
  <10abe013-98d6-4080-ac43-0f1e02aa41f9@intel.com>
+ <c8c89226-f9a0-4cc8-bf7a-fa65a1fe790a@meta.com>
+Content-Language: en-US
+From: "Chen, Yu C" <yu.c.chen@intel.com>
+In-Reply-To: <c8c89226-f9a0-4cc8-bf7a-fa65a1fe790a@meta.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SG2PR01CA0140.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:8f::20) To DM4PR11MB6020.namprd11.prod.outlook.com
+ (2603:10b6:8:61::19)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <10abe013-98d6-4080-ac43-0f1e02aa41f9@intel.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM4PR11MB6020:EE_|CY5PR11MB6161:EE_
+X-MS-Office365-Filtering-Correlation-Id: ff38cd15-1f0d-4b40-b91e-08ddc481599a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
+X-Microsoft-Antispam-Message-Info: =?utf-8?B?eWxnU2FDa0wvcUxwdzc5QkZiNmhyWDBSSFBhb0RIaTJ3aVpFSDZ6UlJzc3pn?=
+ =?utf-8?B?Wjdyd1JqTS9sMGZ6aTFBaCt1eUYvV0dMazd3c05IZ2c1MnArWGM2ZXpLQ3F1?=
+ =?utf-8?B?RlRzZmk1VHA4NjI2SUh1RndQTjV1Sm4vQW1FVVFWUG4vNDIvaWxuekg2ZnBR?=
+ =?utf-8?B?OTBrb2VXWWxMelp4UEExMDd5OVQxQUFtK3JKT25OZ3BZQWtQdDYvb1VjWWVm?=
+ =?utf-8?B?cmhkckdsV2U0RTU1TTh4K1hTRndYSjRaR0xDeGVoSUg5ZHFyK0dybFRycGZB?=
+ =?utf-8?B?b3JwaitqSW9QN2VUUjA1WjFWbDZrMDFKTjhtcU0vRWlWeXU2Z0s5a0ErMWQx?=
+ =?utf-8?B?MHhyWHFEbGZEcjlOOXBiY0oxaGMycUVNZ3c0Qlllc0RZVzJSSWxSaStuUWk5?=
+ =?utf-8?B?blZBNUFleUZ6WWg4QU0rL1Z0eWplcytUK1FwRzh3L0Rlck4wSmNSVnllbG4v?=
+ =?utf-8?B?UVNycHpHcnNzTzZwWjhWVEZIdGkzM08xUEdyMFNxY3hDbHNrajNFZkRlamNq?=
+ =?utf-8?B?QzQ5QUZ3QktJYlJXM2xpMUtZNEU5czl4Q3lsVER2VUpwVS9YV1ZTNTFESDJa?=
+ =?utf-8?B?azlORlIzT0trL2FFVmxhc3B5V3A0UlgzL01Pd0hCUUM3Y29GTENjV2FXREJk?=
+ =?utf-8?B?ZFVOZjQxSytOR3BENEZScG9iSXhFQkx0YUtPUDBBWENGdUNudHQxcU9qTEpZ?=
+ =?utf-8?B?QTZFcmZjWnAwYkxVbUpja0FJM1o2QS9sWitvOHFlYVNNRkdXMncxSDlTQWh6?=
+ =?utf-8?B?Uy83SllKMjNsZDM0blFkYitJTW90ZkhrVlVSOXpzclRaSGw5RVk4U0w0SFdn?=
+ =?utf-8?B?eEZEbzhqU3F1dktLU2hYZ2U4OWs1ZWN5aWtqMzNOUk1BV2J1WFphY3hDcE9O?=
+ =?utf-8?B?QUM0OEg3NVNrdzR5QlpvSiszdjYwY20zdVl1U1ZtbENZcDJvZGc5Tm9QdHR4?=
+ =?utf-8?B?S2k1OEpVMGx2N1RpL1AvWEJEQk9EdllmNytSdkd5bmVSdlJoV3BobkFGamFV?=
+ =?utf-8?B?WU9QV0M4MG5hNEJ4TmtBVFlaS0ZaNW5lUWhXU253UzRWY011ekRVcU11cDBm?=
+ =?utf-8?B?ZEFDa2VMcG5uVGttZjhhRWVweWU1Y0hySkV5UnprenNTVTJBZkdYQWNEOGhR?=
+ =?utf-8?B?Z042T1c1dmVXUlBPTkEzVDNPc1NpSVhnQThtb3oyVGZEU2x1bmRPVzVDL05E?=
+ =?utf-8?B?UDNOVmZjaXdubUVMZ0RmeGx1V3pCQVRleldUNlNrK01id1B1WVFGUmpWWkEx?=
+ =?utf-8?B?WFpkc1ZzeUJPc2NEZHZzTzFHaXJ2ZFNZMkFmc1BZUngzOGZ1dElCcU54K2h6?=
+ =?utf-8?B?RzZ6S2tCY25jdi8wTCtEVEgzTGtyL0hlUkFsbGJnR0ZTWXQzQ1UyRXhRYTRh?=
+ =?utf-8?B?SjVJVkNGTkhXTy9PUEx3MDBHZlB6RXNKTHlOWHhYTzdTVnhOTVpoTmYzMzda?=
+ =?utf-8?B?cWtTNzY2S0ZBY203dEhCWWtyMW5nSmdZNU84Y01EaFJlem9Wd25JUmdtQkVT?=
+ =?utf-8?B?VTlpQy9RcUJFZmdvUkFDYnlaSVVWdDBaM0JuU01rT3JpekQ3R2xvVUxoN3RZ?=
+ =?utf-8?B?WnBaV3Z1VERnKzBjQVVrTHUvUDQxSEVrSWwrMmN5WWtKMktqMkE1d2VOWTdV?=
+ =?utf-8?B?YlMxVmp4SnNaYkFCbXNLeVlVaDMzWnY3dnptcDN0eGROOHBrMlQ5T3FSbkJT?=
+ =?utf-8?B?WXhkM0s3Z0NTZUREVnJyZlF3dkEwYmdwQmEya3N1VEx1OVRqWkxFQXJhOWFr?=
+ =?utf-8?B?SFp6ckc1RWJINXc1MzQ4elVvUFIwSEN5dTNvWmt0aFZ1TzZSTS9McDFlc2pw?=
+ =?utf-8?B?M0lXK2NQNzFHUTFUSDBNU3dSamwyZyt0eXBEVWVnRE9SbWVxMG5FbGZtQ1dB?=
+ =?utf-8?B?bjFFZENIOFVGdG5nOXV4bkd3SVF3V1l5eHkwODBNTkJPa1JNYk9FM0lhNzB6?=
+ =?utf-8?Q?q2Ygp9WfJsI=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6020.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VGticFdEOEM1bUVkSysrVUIxQTVrVEpkK3Qyb0wzcjVVSVQxcWYzWE44bzhv?=
+ =?utf-8?B?cThuU21USS9qTzk2eVkvQjRpMVFOWHd2OFFtSmI0NnJPa2dpT0J0Rm16bzdq?=
+ =?utf-8?B?dC9tNlFZWEtQYXFkLzlNWld3UC9ZMDFKL0h6cHp1Y1lSTlZwTkNKRktXS1dn?=
+ =?utf-8?B?VjE4aFRsZVJiV2h6dDJUbE50enY5OE1PclZQNTlBN3Q2SFNwVXZocUM5Vy81?=
+ =?utf-8?B?Zk4yc3kxNVZ3NC8xelZnK0lydUY2R0xGTlpFdlZUZGVZQzZadDZ5MHdocFFj?=
+ =?utf-8?B?Vk5LZ1gvdW9wWnNmSU1RQ2lFVWVkWVFZVWZYREMvM0tYTzdzcWxoRnlzSmdI?=
+ =?utf-8?B?aGhiZzQxdUlxUFlaUVpsZUVFZ3owSGVpQitYbXhSaVhLaXFQdkQyNi9KWUNC?=
+ =?utf-8?B?c3ZqUFJCVnFRUXpYR1JNRE96cVVxd3dvQVV6V1Q3am1ITkpPbXRNSGRLemEz?=
+ =?utf-8?B?b2kvdjR1Qy9CRnQxSEUycnZBUjBGZ2cxS01td1RocEl3OU5vcXp1QklBdGVQ?=
+ =?utf-8?B?dWU1RUgwWFhpMzd6eTc4RWpLUkdKVi9GMzJpR1laOGtlbnA5SXVSTFN3YXZH?=
+ =?utf-8?B?aDNJV2YzRy8zZkY0azdqSU81c201M0d0UU5sUDQ2VHhkYmhhcVJWNXk2SWY2?=
+ =?utf-8?B?a0RkQkJDU3lKcGl5SGFaeXg3RWJLTnpTZjlUdTBNV045QytyaU1pSW5rSHc2?=
+ =?utf-8?B?aFlFdlQyNGJTT2lEeVFZQnZGN3FCUEY0ejA1dWgvWWhPbFpJeWhwaXZGa3JS?=
+ =?utf-8?B?QWFydVJPcG9ZR0dwVjNQYnJvTHNiaitqREJjbmZnMXZFSjVTUFRlVzgxNUUy?=
+ =?utf-8?B?VndBbW5nWDRTSE5CV0xoL2JBWjBQY0dGZXBXR2hjL3N4aUFwVHc5R0I3U25N?=
+ =?utf-8?B?NTJ4YVhOTlJTSnovVGhncVhHRjlJdXE1aDBjclVCZ0tsdkRtT3hmRnFFNmlR?=
+ =?utf-8?B?TEx5dy9LZi9IejhlNkZYdFo5dVpTQlo3eklrdkh3VWV1UW5PUE9DY3F0VUQ0?=
+ =?utf-8?B?bXBZVWZ2MnZkcjhnUnllYkRHT1A1Sk1XUjZSUXV2aVE1UjZnUUFSOUVHU0dn?=
+ =?utf-8?B?RS9PUzdvZnBWckdUV29jWTlyRHdLTTgxWWRCZ0F6ZmpSQ0Z3Tmh4RWZONlBy?=
+ =?utf-8?B?b1hUdFE4djBmUk5HYkZ4RTVXT2NCbXlVeGQ4V204Q1VvMGxmNnlScVMwd0th?=
+ =?utf-8?B?SklGQkdtRG9MaVNWQngvQ0VjYTQwamRQbkJObjdyNlRCOUdaOGRnQ2kyeEox?=
+ =?utf-8?B?aXBKTTllYU1GSW5jTmhLUE1XVHFPY3hRdG05VVRsNXdTZGZHdE0vTU9BeEdj?=
+ =?utf-8?B?ZVc3aGlFbHY3aGtIZ3YzUWtqZUhVdk8wenV3K0JBSCtLQXRsWFhwdktrM3BD?=
+ =?utf-8?B?QlZpTkQrR05STHBOMFVYU0paM3BqS2xrdkZLU0hwSE5hRWtJMERLVjcyRFdv?=
+ =?utf-8?B?T0hZVnRLUk8wMDc1cWt2dThoSEtvUlo5Y3hpamNNMlUzVmJSdm9RVDZHQVhR?=
+ =?utf-8?B?WVBJTDNlNHF5bTM5RVM0ZVI1M3Qvamh5NVFZSU43eCsxbHlRSmtIeGRvaDhV?=
+ =?utf-8?B?NjJ2N0tMTC9xdnhRTkMvWmpSd2V1NmsxWlBXVnY2TUc4N1ZSbko5azlGZXlN?=
+ =?utf-8?B?YlZhalpmckMxK290N1dVSFBzTm5tem9IRWcxUnhCNVBZSExSZ1Q0NFlLYkwz?=
+ =?utf-8?B?SGI3cjcyZHdKaUtJZmVScld1ZFpxc0FzSG1vNGNmQmhUUDhTMC90K0UwWDRX?=
+ =?utf-8?B?NXNqcVUzZGZrQ0dNMUF3amkwQS9lcGVDREJtWWFSMU1MMXNBR1FaWUxVeVgy?=
+ =?utf-8?B?dG9OL2JQNFByN01YbmtwV3QzTStLN2ZoVDFXUVlCV2tYOTRmb3p2VDJZN0Qx?=
+ =?utf-8?B?MjF6K0N2QUFPWEF4Q3dheEk3M1BybHhhcWtOcnBONHN5UExqVVMrMWd5THZX?=
+ =?utf-8?B?bFFGMG5oc0VNUlZPRkhhRXhUSVVPN20vZGYvejZyYjN3NzFWMHJ4cnNmYnV6?=
+ =?utf-8?B?bXp3VVpkQng5U0Y5Z1ZYY29FUmtYdEJiaDlhT3BFUjF0V0ZGMUYvRHl5OSsr?=
+ =?utf-8?B?RzQ4UE5OK1VoMVJaWU42YW5zK2JSNzJQS0o3YjZCaWV2UHF3VHVZdjZOWlZC?=
+ =?utf-8?Q?zd7zin+vgvLd7jQUot7XTiVKr?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: ff38cd15-1f0d-4b40-b91e-08ddc481599a
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6020.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jul 2025 15:56:39.3569
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: o/SUelOK21eP36JnVzpfcfnGFVp8imazYjDBvEetuB2ZJlWqEQYDlzLqowcL0yQ2W0AuIk/Ef3IbDgjVN2EF8g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR11MB6161
+X-OriginatorOrg: intel.com
 
-On Tue, Jul 15, 2025 at 06:08:43PM +0800, Chen, Yu C wrote:
-> On 7/15/2025 3:08 PM, kernel test robot wrote:
-> > 
-> > 
-> > Hello,
-> > 
-> > kernel test robot noticed a 22.9% regression of unixbench.throughput on:
-> > 
-> > 
-> > commit: ac34cb39e8aea9915ec2f4e08c979eb2ed1d7561 ("[PATCH v2] sched/fair: bump sd->max_newidle_lb_cost when newidle balance fails")
-> > url: https://github.com/intel-lab-lkp/linux/commits/Chris-Mason/sched-fair-bump-sd-max_newidle_lb_cost-when-newidle-balance-fails/20250626-224805
-> > base: https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git 5bc34be478d09c4d16009e665e020ad0fcd0deea
-> > patch link: https://lore.kernel.org/all/20250626144017.1510594-2-clm@fb.com/
-> > patch subject: [PATCH v2] sched/fair: bump sd->max_newidle_lb_cost when newidle balance fails
-> > 
-> > testcase: unixbench
-> > config: x86_64-rhel-9.4
-> > compiler: gcc-12
-> > test machine: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory
-> > parameters:
-> > 
-> > 	runtime: 300s
-> > 	nr_task: 100%
-> > 	test: shell1
-> > 	cpufreq_governor: performance
-> > 
-> > 
-> ...
+On 7/15/2025 11:38 PM, Chris Mason wrote:
+> On 7/15/25 6:08 AM, Chen, Yu C wrote:
+>> On 7/15/2025 3:08 PM, kernel test robot wrote:
+>>>
+>>>
+>>> Hello,
+>>>
+>>> kernel test robot noticed a 22.9% regression of unixbench.throughput on:
+>>>
+>>>
+>>> commit: ac34cb39e8aea9915ec2f4e08c979eb2ed1d7561 ("[PATCH v2] sched/
+>>> fair: bump sd->max_newidle_lb_cost when newidle balance fails")
+>>> url: https://github.com/intel-lab-lkp/linux/commits/Chris-Mason/sched-
+>>> fair-bump-sd-max_newidle_lb_cost-when-newidle-balance-
+>>> fails/20250626-224805 base: https://git.kernel.org/cgit/linux/kernel/
+>>> git/tip/tip.git  5bc34be478d09c4d16009e665e020ad0fcd0deea
+>>> patch link: https://lore.kernel.org/all/20250626144017.1510594-2-
+>>> clm@fb.com/ patch subject: [PATCH v2] sched/fair: bump sd-
+>>>> max_newidle_lb_cost when newidle balance fails
 > 
-> > 
-> > commit:
-> >    5bc34be478 ("sched/core: Reorganize cgroup bandwidth control interface file writes")
-> >    ac34cb39e8 ("sched/fair: bump sd->max_newidle_lb_cost when newidle balance fails")
-> > 
-> > 5bc34be478d09c4d ac34cb39e8aea9915ec2f4e08c9
-> > ---------------- ---------------------------
-> >           %stddev     %change         %stddev
-> >               \          |                \
-> ...
+> [ ... ]
 > 
-> >       40.37           +16.9       57.24        mpstat.cpu.all.idle%
+>>>
+>>> commit:
+>>>     5bc34be478 ("sched/core: Reorganize cgroup bandwidth control
+>>> interface file writes")
+>>>     ac34cb39e8 ("sched/fair: bump sd->max_newidle_lb_cost when newidle
+>>> balance fails")
+>>>
+>>> 5bc34be478d09c4d ac34cb39e8aea9915ec2f4e08c9
+>>> ---------------- ---------------------------
+>>>            %stddev     %change         %stddev
+>>>                \          |                \
+>> ...
+>>
+>>>        40.37           +16.9       57.24        mpstat.cpu.all.idle%
+>>
+>> This commit inhibits the newidle balance. It seems that some workloads
+>> do not like newlyidle balance, like schbench, which is short duration
+>> task. While other workloads want the newidle balance to pull at its best
+>> effort, like unixbench shell test case.
+>> Just wonder if we can check the sched domain's average utilization to
+>> decide how hard we should trigger the newly idle balance, or can we check
+>> the overutilized flag to decide whether we should launch the
+>> new idle balance, something I was thinking of:
 > 
-> This commit inhibits the newidle balance. 
+> Thanks for looking at this.
+> 
+>>
+>> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+>> index 9e24038fa000..6c7420ed484e 100644
+>> --- a/kernel/sched/fair.c
+>> +++ b/kernel/sched/fair.c
+>> @@ -13759,7 +13759,8 @@ static int sched_balance_newidle(struct rq
+>> *this_rq, struct rq_flags *rf)
+>>          sd = rcu_dereference_check_sched_domain(this_rq->sd);
+>>
+>>          if (!get_rd_overloaded(this_rq->rd) ||
+>> -           (sd && this_rq->avg_idle < sd->max_newidle_lb_cost)) {
+>> +           (sd && this_rq->avg_idle < sd->max_newidle_lb_cost &&
+>> +            !READ_ONCE(this_rq->rd->overutilized))) {
+>>
+>>                  if (sd)
+>>                          update_next_balance(sd, &next_balance);
+>>
+> 
+> 
+> Looking at rd->overutilized, I think we only set it when
+> sched_energy_enabled().  I'm not sure if that's true often enough to use
+> as a fix for hackbench?
+> 
 
-When not successful. So when newidle balance is not succeeding to pull
-tasks, it is backing off and doing less of it.
+OK, overutilized is only used for EAS.
 
-> It seems that some workloads
-> do not like newlyidle balance, like schbench, which is short duration
-> task. While other workloads want the newidle balance to pull at its best
-> effort, like unixbench shell test case.
-> Just wonder if we can check the sched domain's average utilization to
-> decide how hard we should trigger the newly idle balance, or can we check
-> the overutilized flag to decide whether we should launch the
-> new idle balance, something I was thinking of:
+I just had a try but can not reproduce this issue on a 240 CPUs system
+using unixbench:
+./Run shell1 -i 30 -c  240
+will need to double check with lkp/0day to figure out.
 
-Looking at the actual util signal might be interesting, but as Chris
-already noted, overutilized isn't the right thing to look at. Simply
-taking rq->cfs.avg.util_avg might be more useful. Very high util and
-failure to pull might indicate new-idle just isn't very important /
-effective. While low util and failure might mean we should try harder.
+thanks,
+Chenyu
 
-Other things to look at:
 
- - if the sysctl_sched_migration_cost limit isn't artificially limiting
-   actual scanning costs. Eg. very large domains might perhaps have
-   costs that are genuinely larger than that somewhat random number.
-
- - if despite the apparent failure to pull, we do already have something
-   to run (eg. wakeups).
-
- - if the 3/2 backoff is perhaps too aggressive vs the 1% per second
-   decay.
+> -chris
+> 
