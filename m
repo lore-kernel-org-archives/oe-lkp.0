@@ -1,67 +1,92 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F9EB2E975D;
-	Fri, 25 Jul 2025 15:08:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20EA224418D
+	for <oe-lkp@lists.linux.dev>; Fri, 25 Jul 2025 15:45:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753456100; cv=none; b=di80xmoV9x9nq6JnQxC7THsVcTRibDODmyvPAkRSoWkh7YOmIETcA3ZWoWFvXVyX//yomB4GK6WJpyq8EVoste+dMd91wvhbPGIvAzAoCcOTw5/3z3VTp84XUXdFDj54xO8av9YvuhdeHkB9DFiWKchi5oBG+2pEt9wO6biLIuU=
+	t=1753458308; cv=none; b=nPbfxQ2bTzg9vYvZk1Og5JEzB10HXOlgSBzOroij9gGaSt8OqCKJketfksORktiD6w6L3WnV/17f9GlYf9YL6zoZZ1js+GJVyo53QEbeIdvIx/gG5/XPcq505BI9VcTDkvwrQuYuh8mdZtUo8HLHaOLTB7sG45ZCWgv6TGEfNjc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753456100; c=relaxed/simple;
-	bh=RgP/I5xzFjHokNJb2q0Vr3LX2nhBVZvuO6jEeTUvmi8=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ARwSHQVyk3WVUsztSy+Q47cy3CoRf5uURSt+s0zSdj6mCT3i7t5OgwURf7BpBuRlAvUDEvMC8UM8bKCOMldgXw+WFApab71wwtYIGK0b5A5+ZE0V8AKNB23rzNlbrA0za9FeQF1v9dEWtLSvvMWkft8j2d+4H9p5IRBXHCj75Fs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=t69suO+u; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1753458308; c=relaxed/simple;
+	bh=ENJE94gAKBn4rYfbHDvsOYQ2vda2+iFCm68UABQzqmI=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=W09LtKIeRiJLwnRsiD/im+vUEkHn8kgv2an0T3Mh/5NdXCjwc7wJpIi90dtoITv2cqax8tCGyWRwolwidWPB2oP0kVrV1bBPF3d2DDm8CkhVPyoQLDfMryQ4brVeUyIUzknQ+THVmA/ruM/iaJvSpZpKAdFRa8G0I5FsfxMULeI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=nWi+22jj; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=2wlev3Mb; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="t69suO+u"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADC46C4CEEB;
-	Fri, 25 Jul 2025 15:08:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1753456099;
-	bh=RgP/I5xzFjHokNJb2q0Vr3LX2nhBVZvuO6jEeTUvmi8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=t69suO+ugCmAN4V0i0ihJYjYA5wxZLSAzzPaPo2FyiW2grf/gfby8L4+y11uf/p30
-	 ceIi/CnOXoJqtd5FULOEVl9VWhKZYZ9L95HhCOyiYEXPVw28cbkGQEBhTEu2/NjQ0Y
-	 P0SibnvlKAL9Adr+e97i7vaa5lCGP6o/s9JYP0ejpvW1HRGo88Zlkbclg2NY6icVYq
-	 URFI8Wz/w5Xu9wneTkDIlhWDiz6HiQssTwB632H7PWjDxnWiJRf3LVQEpUD4zgKTZl
-	 0VLA+Tm6j7HOWDijUae7sTCKd1aVEjNLD9TmSfdVNYH91SMklECQHGicaQ6+zpQEHo
-	 UFI3e492dg6RQ==
-Date: Fri, 25 Jul 2025 08:08:18 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: Carolina Jubran <cjubran@nvidia.com>, <oe-lkp@lists.linux.dev>,
- <lkp@intel.com>, Cosmin Ratiu <cratiu@nvidia.com>, Tariq Toukan
- <tariqt@nvidia.com>, Mark Bloch <mbloch@nvidia.com>,
- <netdev@vger.kernel.org>
-Subject: Re: [linux-next:master] [selftest]  236156d80d:
- kernel-selftests.drivers/net/netdevsim.devlink.sh.rate_test.fail
-Message-ID: <20250725080818.3b1581c5@kernel.org>
-In-Reply-To: <202507251144.b4d9d40b-lkp@intel.com>
-References: <202507251144.b4d9d40b-lkp@intel.com>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="nWi+22jj";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="2wlev3Mb"
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1753458305;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=zfNlU9QkQSDk6X3acZW9Zv6watdmS4XLb2lpyLgX3PU=;
+	b=nWi+22jj/D7vpJ3jHZNLznk1KJL9waj+gQWBvee9c3DCDjBGRQxnd34ePojIYdP6v+eVKG
+	yG5tj6U0W7XvzcafeahhiJ7DsZKZL6kJKmzMVL+Ks4v2x2urTkyCLbR1OnkDjrqoOl6sj+
+	VnOF6P3Ga+8BpoAwTI8VywKIdWY0K+7xbhld/p0uekv7pnRBIEx6fFFyji+bMunGgJuuVR
+	URcoNjbaLEWjMDmaTrtJMO4834tjUkaAgIjqQOLkccuir0WvwA/yq2VibB7phjMZHWuSQX
+	g2prDMKR6GuQEP0js+MSZVdBI+cCC7zeSkfA3PhRO2hIPyB1B09Vv+ZLZ/v7ww==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1753458305;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=zfNlU9QkQSDk6X3acZW9Zv6watdmS4XLb2lpyLgX3PU=;
+	b=2wlev3Mb1+z/3Pnnum1fsrCZ/wKE+6fI5t7UzhlvwaPmKxn6SEQEbGzJg3YvvNkBEQ1RKj
+	qNo7Fzzu1wV4ZADg==
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: Peter Zijlstra <peterz@infradead.org>, oe-lkp@lists.linux.dev,
+ lkp@intel.com, linux-kernel@vger.kernel.org, x86@kernel.org, Sebastian
+ Andrzej Siewior <bigeasy@linutronix.de>, linux-mm@kvack.org,
+ ltp@lists.linux.it, oliver.sang@intel.com
+Subject: Re: [tip:locking/futex] [futex]  56180dd20c:
+ BUG:sleeping_function_called_from_invalid_context_at_kernel/nsproxy.c
+In-Reply-To: <aINKAQt3qcj2s38N@xsang-OptiPlex-9020>
+References: <202507231021.dcf24373-lkp@intel.com> <87a54usty4.ffs@tglx>
+ <aINKAQt3qcj2s38N@xsang-OptiPlex-9020>
+Date: Fri, 25 Jul 2025 17:45:04 +0200
+Message-ID: <87seikp94v.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 
-On Fri, 25 Jul 2025 20:34:58 +0800 kernel test robot wrote:
-> kernel test robot noticed "kernel-selftests.drivers/net/netdevsim.devlink.sh.rate_test.fail" on:
-> 
-> commit: 236156d80d5efd942fc395a078d6ec6d810c2c40 ("selftest: netdevsim: Add devlink rate tc-bw test")
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> 
-> [test failed on linux-next/master 97987520025658f30bb787a99ffbd9bbff9ffc9d]
+Oliver!
 
-This is not helpful, you have old tools in your environment.
+On Fri, Jul 25 2025 at 17:10, Oliver Sang wrote:
+> On Wed, Jul 23, 2025 at 07:22:43PM +0200, Thomas Gleixner wrote:
+>> > [  286.673775][   C97] BUG: sleeping function called from invalid context at kernel/nsproxy.c:233   <---- (1)
+>> > [  286.673784][   C97] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 6748, name: oom03
+>> > [  286.673787][   C97] preempt_count: 7ffffffe, expected: 0
+>> 
+>> Ooops. That's a corrupted preempt counter, which has underflown twice.
+>> 
+>> Can you please enable CONFIG_DEBUG_PREEMPT, so we can see where this
+>> happens?
+>
+> after enable CONFIG_DEBUG_PREEMPT, the config is as attached
+> config-6.16.0-rc5-00002-g56180dd20c19
 
-Ideally you'd report regressions in existing test _cases_ 
-(I mean an individial [ OK ] turning into a [FAIL]).
+Thank you for trying, but I just realized that it tells us only when it
+underflows, but we don't see where the actual extra decrement happens
+before that.
 
-The bash tests depend on too many CLI tools to be expected
-to pass. Having to detect the tool versions is an unnecessary
-burden on the test author. Tools usually get updated within
-3 months and then all these checks become dead code for the
-rest of time...
+Can you please enable CONFIG_PREEMPT_TRACER and add
+
+'trace_event=preemptirq:preempt_disable,preemptirq:preempt_enable ftrace_dump_on_oops'
+
+to the kernel command line. The latter will dump the recorded
+preempt_enable/disable events and we can pinpoint the function which is
+responsible for that.
+
+Thanks,
+
+        tglx
+
+
