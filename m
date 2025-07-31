@@ -1,42 +1,42 @@
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FD35208CA
-	for <oe-lkp@lists.linux.dev>; Thu, 31 Jul 2025 12:34:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A56E2244670
+	for <oe-lkp@lists.linux.dev>; Thu, 31 Jul 2025 14:03:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753965261; cv=none; b=rd2s5LMpiZAT+FXW2tUlZCLXj66PBARmEiwggKigv6aL6xGl0ZwGcB5o7C3wRqNtO76UoXaeE7fSh8YiF6Bsdh7Ql2HFqgB5DtZ1hE37FwPUvuuH5FQKAlWv2FdYgiuffpIN9kX7c+KfTciIPke2MjDHBB06RIBdWATDVNGMUoI=
+	t=1753970586; cv=none; b=fWk8H0aOWVUH/0UnwZoNBP9dDDhb0FMQe7ccgUWO5xc9XEYjlPhlqALJypfTAlCvOc0JZUbhwZhv2W8+QhmPCzBQu6oHcI2nkf1dgixuPK+khtuANNwX0D8A+NGVfnQ43GJgwN3/JcnBkRlCYzG7C/y0IFnDm6vb5Rigekg7gRI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753965261; c=relaxed/simple;
-	bh=rSCXRgHcs2dB8mW64lEFFzUSj87HxZJq3hBFWyGj4vo=;
+	s=arc-20240116; t=1753970586; c=relaxed/simple;
+	bh=0oh8wo7xVTT76cmvuEvmodoOVeXkQ2vO9iJXyx4T76k=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=WJVm8X16jmrHgHTlR79F+Xnct9OqChJ1s8xq/cpMxQar+aogo4VQ0lUEsB0AKEB5r5M4kI5glAObgP7IWfSCO5W34XXI16XeZNtd7XraeMWXLP3NPw96yhxGCidmZF4NpIgeEZynUajhP+0WBEDXoyR6MfkCSnrSlXYAxJztFZc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=4kozBWDA; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=xdAvVktV; arc=none smtp.client-ip=193.142.43.55
+	 MIME-Version:Content-Type; b=hJ1mvBpDRjVRb27hEBauaRIAqptWyFWZOo7zUhMVUhhgRS4V6hbT5MWQx1qZSRG1XQEPx49N+eIMi/htv35ncx3Nfgm66PmwKCAyqPn8FY+hUGLuwL4QsGAMsgYCDGlEBXQZPa01CMwRI2nHeiPnak24VFyEx8ZSiggR2BYuTpw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=XR/CQQqI; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=jWUiEbiO; arc=none smtp.client-ip=193.142.43.55
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="4kozBWDA";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="xdAvVktV"
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="XR/CQQqI";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="jWUiEbiO"
 From: Thomas Gleixner <tglx@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1753965257;
+	s=2020; t=1753970582;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=piJPPQK15+eacRq11wpIMXBC/ANS/3ROU0AjgU8/DEw=;
-	b=4kozBWDACIVhk4AgSuW/LaKzqZqADa6eKZMGovRkMoOf/hzdNjOpwtk8qagoGPrIWVZAG9
-	xissf/I8eiGpk7XaKSz90Ag8avWnR19R5ZV0tUKIih9Uv5pi8r91+7Nym6Qdaeqle85DL/
-	xzxbzFCkWyqVOZSFGS9xveczlMO4v85xXNe2DJR5NbHvSVrLnojhHUzOAhWphaLMtaVBbi
-	Wiwj+t2kt1kO3PXeebnupBSEbO/shcHDWGoYVGr06cvfIgQWpTSq3g/WIUoWLlxmQawxbR
-	SfbXH6Z68mTgyNSnCoztqDKb/kbtz2nB1ISFaEjTf5VypiWKVXhs/1T4BXmpcQ==
+	bh=y/jUB7+mqJ6vOu9bYPCfa2+TuZR2QobbeGi99NqhPw0=;
+	b=XR/CQQqIxkjhty4gyYn0+QF9INSWICBtL2FypdYnrwc4hg2mR4T9S+zZ2RpJGGtJt7Ft+B
+	sKLh8ShWlR3Jvf24Cps5Pq46OPAA/VHZlQfU7ggBUIrpGBRzVtl1Njq9NQ8rSgDTBt+OR7
+	n4LQJCSzIfAEK1CiQ6mS8waHwJcuGsrOVw3YoeAGu51bDB8Gwv19kcFdAYliNmHpFUmPS9
+	NYoeReZdwFq1Xicy1srlPhNUl7q9KIj07FjoRlvb+folf54IJ2ABloMhov//8jQ//kQ5yt
+	mTCzCRgepYusHQRG4xj9FgVK2LX0hRHEPO3BkW/pmLwUfYoMzM8IAdVQCzeS2g==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1753965257;
+	s=2020e; t=1753970582;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=piJPPQK15+eacRq11wpIMXBC/ANS/3ROU0AjgU8/DEw=;
-	b=xdAvVktV1g1FyNPxMs0xsHnY1ekC79OJ0tsUeBduMM8PqPzOb1qQE+MUlHSyRMdQAHFOn9
-	jgz20NZw3U6fN3DQ==
+	bh=y/jUB7+mqJ6vOu9bYPCfa2+TuZR2QobbeGi99NqhPw0=;
+	b=jWUiEbiOLeOjbqF1VT1CubB8dEPFjkaZ1Lx4rkLHzDxAoyhUrhkiOwsAdjM3hLCBAjM/8u
+	k1YesinPBnEyc7CQ==
 To: Oliver Sang <oliver.sang@intel.com>
 Cc: Peter Zijlstra <peterz@infradead.org>, oe-lkp@lists.linux.dev,
  lkp@intel.com, linux-kernel@vger.kernel.org, x86@kernel.org, Sebastian
@@ -44,13 +44,13 @@ Cc: Peter Zijlstra <peterz@infradead.org>, oe-lkp@lists.linux.dev,
  ltp@lists.linux.it, oliver.sang@intel.com
 Subject: Re: [tip:locking/futex] [futex]  56180dd20c:
  BUG:sleeping_function_called_from_invalid_context_at_kernel/nsproxy.c
-In-Reply-To: <aIrJipeLsGUM92+R@xsang-OptiPlex-9020>
+In-Reply-To: <87cy9gilo8.ffs@tglx>
 References: <202507231021.dcf24373-lkp@intel.com> <87a54usty4.ffs@tglx>
  <aINKAQt3qcj2s38N@xsang-OptiPlex-9020> <87seikp94v.ffs@tglx>
  <aIgUUhKWesDpM0BJ@xsang-OptiPlex-9020> <87wm7ro3r7.ffs@tglx>
- <aIrJipeLsGUM92+R@xsang-OptiPlex-9020>
-Date: Thu, 31 Jul 2025 14:34:15 +0200
-Message-ID: <87cy9gilo8.ffs@tglx>
+ <aIrJipeLsGUM92+R@xsang-OptiPlex-9020> <87cy9gilo8.ffs@tglx>
+Date: Thu, 31 Jul 2025 16:03:01 +0200
+Message-ID: <874iusihka.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -59,28 +59,22 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
 
-Oliver!
-
-On Thu, Jul 31 2025 at 09:40, Oliver Sang wrote:
-> On Tue, Jul 29, 2025 at 09:27:56AM +0200, Thomas Gleixner wrote:
->> > but bot seems not be able to capture other new dmesg stats.
->> 
->> Ah. The tracer does not dump on warnings by default. You need
->> 'panic_on_warn' on the command line as well. Forgot about that earlier.
+On Thu, Jul 31 2025 at 14:34, Thomas Gleixner wrote:
+> On Thu, Jul 31 2025 at 09:40, Oliver Sang wrote:
+>> On Tue, Jul 29, 2025 at 09:27:56AM +0200, Thomas Gleixner wrote:
+>>> > but bot seems not be able to capture other new dmesg stats.
+>>> 
+>>> Ah. The tracer does not dump on warnings by default. You need
+>>> 'panic_on_warn' on the command line as well. Forgot about that earlier.
+>>
+>> attached one dmesg FYI.
 >
-> attached one dmesg FYI.
+> Hmm, that trace dump was cut off before it completed by a reset
+> (probably your test timeout).
+>
+> Either you make the timeout longer or try the following on the kernel
+> command line instead of 'ftrace_dump_on_cpu':
 
-Hmm, that trace dump was cut off before it completed by a reset
-(probably your test timeout).
+  instead of 'ftrace_dump_ooops'
 
-Either you make the timeout longer or try the following on the kernel
-command line instead of 'ftrace_dump_on_cpu':
-
-       ftrace_dump_on_oops=orig_cpu trace_buf_size=100K
-
-That reduces the output to the CPU which triggers the problem and with a
-smaller buffer.
-
-Thanks,
-
-        tglx
+obviously
