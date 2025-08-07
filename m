@@ -1,73 +1,73 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41A6743AA1
-	for <oe-lkp@lists.linux.dev>; Thu,  7 Aug 2025 17:59:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09FA61FCF41
+	for <oe-lkp@lists.linux.dev>; Thu,  7 Aug 2025 18:01:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754589587; cv=none; b=DvcytJf793y6chgnBQDHMk+6TiqP/bxHASaVO/rPqQk9sqXBN5AroxEyqEOpik48TPFcsqSiWNEMw/tPvLWwN8iQCfthXotEvUdd9mLatmfzaii/THzLQuuohu4ZoBjHhOAYj/RQ/LsauQQZeraZBuTTr4wtcg6oIuE8Yee37og=
+	t=1754589721; cv=none; b=pWI5QTTwyXuD6VpRVvEpbrYTgLFtjniPpD0OEeuEvXX4PxMOiex9YX26WyeMaJN5sdY+PDoI08HcU/VXTDe+SFHCbgq0uPMw6ycpCA1YXHpnf0QE9BHyaA9Q+4kdDOImZGwApgWFl4rHjhRO2B7E/13XPk+ltt4/Uk/QIASy9zI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754589587; c=relaxed/simple;
-	bh=r5jXZtVpLIkTTs0nhtHenLPnARs3ev3d8Mjt+ujMm4o=;
+	s=arc-20240116; t=1754589721; c=relaxed/simple;
+	bh=q3CNsz9tOfecntu9d/V65Vv9GgNI01Z6fqbb8cjo1Co=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=BAB8rB9KiBVkKHqeN0MEBllHwzDpDbPllp+MZDW4vcmTM628OTC8q6RftxFfcNglsv1ZkENI4a7CZAkNjmTjYBncF7VQeW7BOKA3TKHTAMHOj8wKtWWTOW1hvpnRm0YTbGTIrRZvbaGRNCrdKTCJWLHhxxAgZVJSbZOoMyXa/gs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=f9hxdFf0; arc=none smtp.client-ip=170.10.133.124
+	 In-Reply-To:Content-Type; b=Rgoa0t6RFexDGJe1X3P/7ygSq11i2vrnV3IPbybnj4tnDdwA3JuMz6zALPqNB2bF+XpHwpYFJkIFM22BAC622qGDHPg9Oj+10IVkojhnKFuGcsErzrCf+O2Vwt5AVOsWx/CzOWw05sQxKjQn0PpKuCGFYMkA74+9GrYaM40JR5o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=U8njI4zX; arc=none smtp.client-ip=170.10.129.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="f9hxdFf0"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="U8njI4zX"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1754589585;
+	s=mimecast20190719; t=1754589719;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=Wk6a/pPPJhrMqThE6QoVfYpodt1UgZPfr4F28Ot7H28=;
-	b=f9hxdFf0Zc2/QhbmKujdXkWQvB+vMPjFkeGicJJY+tkHJ1Mrhb+5zdqceZExPHBBTzAq80
-	Wl9MARmX9bWoVK4E//CbiXGHSPoGQnFrmUHooS+hJwNP70gL0URyunj1AgFsAlU1uH8xa8
-	cRkjcPVo7+2gqMwBcGyRQuXtgDFj49E=
+	bh=mhUS2sM+ExcCQ6yCHHvb67H8y6ZDFz4/8Rje0oa/xWU=;
+	b=U8njI4zXjWpDZWTPBngiZo/+uZvx2VcQSOvC6rnleRy6mfT5J6SU0Yu0Dr4k2kTwkjzAA1
+	VXHtZcG+C/gLIIS7GVl6ZLfY0Wlya5KMz58Cf7kb2sbeHbFk6Lo/1Mjf9e8jBwS6fU1OmG
+	1odoG0ee0R9F7zSZjFzeodtG1vy9ewY=
 Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
  [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-582-g-IU5jTpNfO0vtZPGdFKvg-1; Thu, 07 Aug 2025 13:59:43 -0400
-X-MC-Unique: g-IU5jTpNfO0vtZPGdFKvg-1
-X-Mimecast-MFC-AGG-ID: g-IU5jTpNfO0vtZPGdFKvg_1754589582
-Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-45891629648so6493075e9.0
-        for <oe-lkp@lists.linux.dev>; Thu, 07 Aug 2025 10:59:43 -0700 (PDT)
+ us-mta-127-wH7ZMkyJMBqhLQKp_5pQow-1; Thu, 07 Aug 2025 14:01:55 -0400
+X-MC-Unique: wH7ZMkyJMBqhLQKp_5pQow-1
+X-Mimecast-MFC-AGG-ID: wH7ZMkyJMBqhLQKp_5pQow_1754589714
+Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-458bb0e68c6so6995645e9.1
+        for <oe-lkp@lists.linux.dev>; Thu, 07 Aug 2025 11:01:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754589582; x=1755194382;
+        d=1e100.net; s=20230601; t=1754589714; x=1755194514;
         h=content-transfer-encoding:in-reply-to:organization:autocrypt
          :content-language:from:references:cc:to:subject:user-agent
          :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=Wk6a/pPPJhrMqThE6QoVfYpodt1UgZPfr4F28Ot7H28=;
-        b=SxgZAx68MbC5asd8zlx31rA78/2SyVbq6HK8pkuaMoF0BtmxQuiUO5ipDBOx/yVtN0
-         dC3oWHt7JJ7uQixK00JL5j14zJLfJivRXFq2mdYQN3R1cR8/KnfTesbn3JRLIzZe/eWb
-         50y+mFa8WyFMdYiy+6hGCKXAGeOX3QpR5w+UpnBF5eBkzREqSup3jHTvZKOMT+/0yLIW
-         RTZu4W0X7a/Xh7lr1RQHmYeGrQk3yZNum/rNZtBEgGYHhFkqjlQ3uv+iF9D84AnCJfSl
-         Fv5D60fuhdWDwkYPIRfwyYVDVUkq9QUgIIeueMPRQrAJVlmWeem8ritwnTilkU2IZK+Z
-         0cyg==
-X-Forwarded-Encrypted: i=1; AJvYcCVWznQxq5PO0gi9UWe7/ToiuNrclk1wQ9zTJqMrwHw9aKYbEAoLfVFQSt39JlWFPfIzF/bYiO0=@lists.linux.dev
-X-Gm-Message-State: AOJu0YxE9as7fGGmoY/wBDgp0qUAYLAEGOxWuuu6C8zDNbpcqcSkKJ4+
-	mHhJ0gXIvabbmiYUt1EZzuIaZGPf+edYAzN5gR4ijujwfog0JtvIAREHWuapOTCpRusJ1UU5Io+
-	1KJbfHS039s1q4izX5jR9Y72tE6NAopXme5PhbOPMwnah/2FUQimDaMizng==
-X-Gm-Gg: ASbGncua0K0s+NrowOBYWyFEfesK0ruIwIzyeGs5/bSDLcKQPZsd/sFdraKDNWOOiM6
-	FGT3luwNSeKb65AcG652bucTW6zNQwl4umta/hQxBvrievULpFe1exxknkpFZq8CbpHSGHVnvsm
-	gVfMZ6WwLTns7oxzUSa3HvKIHy0UiyAAb2QHbzelSgW8r1kisBddfrBZTXm9LKde5cwCbIENcX/
-	DDPYXiiAf5KPVCp3vDX/yev2NX0fkWFW9GIfaLqq8Sfi8hOeTSt0RA5++VvjRPqKxpsFbcgrAPH
-	EU+docUgiLM+YEcwjeKAaIwP9r3/NvTpYy3xkXjV3yaF1Y03ml4yZvvtnGriy0pVePfjXHsLK25
-	mZy00HxumJhczOKO1XUyRBAOksH+Yz3dxtQqYV/yr6LJ7AlWzHnCELaBcwrnc0je/80A=
-X-Received: by 2002:a05:600c:64c3:b0:459:e39e:e5a5 with SMTP id 5b1f17b1804b1-459ede945a6mr45490565e9.5.1754589582463;
-        Thu, 07 Aug 2025 10:59:42 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFn0NJBCGt4/Rk/NEdnJWnNlQiQuizOhALHDnhgSLWYNhieS2DmpQ+fxa0tiLbFyO8ObvlS7w==
-X-Received: by 2002:a05:600c:64c3:b0:459:e39e:e5a5 with SMTP id 5b1f17b1804b1-459ede945a6mr45490405e9.5.1754589582034;
-        Thu, 07 Aug 2025 10:59:42 -0700 (PDT)
+        bh=mhUS2sM+ExcCQ6yCHHvb67H8y6ZDFz4/8Rje0oa/xWU=;
+        b=mC8vVOrrbdxA1oqK8jf0/pyYa1sxGWaRR7FyyJ09UuyAYZimMV4L9/Mf+dxVSgQMrO
+         F2wLa6SoSjCFnuoX+uEjB4wgt0S3j+5ARkE/GTz9Sgz6pNDO65rakOzgctI9e2KrkSis
+         gJPRLB51jI04N0Uy1+T4/nM/2Pel7HE3zkoYk9ZaHNuqPaKEWYccnBnfMYH/fxI86DHN
+         ELzVn5/VoNCztNHzAzuEPwYeHTZM/sJ+Y8sSAEdQDlkz0+eJ0gsvsEAsua9M0De5FEzC
+         LGxK6X8aoDg5Y8P/yEmXoZE6j2x0KxIHc15ML+HM87mEWLZd9mYhlRArqXqgsaxnNFqT
+         +oZQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWYn6GUXxkubtwn5snXosfaWHoTnKvpSNeF7hmOhyY0VGyoe8JblDsZ8cmNDbkTd8BLPX8V4MY=@lists.linux.dev
+X-Gm-Message-State: AOJu0YxeFhd7isc642QmLNf3KzMnqKudWqDQ8/bIgT4E+6ycEjCoFvfV
+	hZPzO9rQlIWPsZ9VMPxzd76atsXjPVm3NuOuc8Bm708ydgufwZvaR6MuhLKNxWYmLkmCSE6/x1g
+	oAR4SFv9p8CYepZi9HuDrJXcPZ2o7uC+gMNJs8RKcUxmWKlQHwxEYgg2GVQ==
+X-Gm-Gg: ASbGnctZOnbytPkgV62Lx7nyKdRbphOxnyWEaTj9s0LHiEmeg/SDvIMArCrJDMt1EL1
+	w83NCXCunOi3sQmic0wjXlPvK0SEEDNQpFZwdEhfpdGep7V5HixfFtyctCl5uk1Dwi76q0T3gcw
+	oNzRgJ61OPNAfq5AqTR0u/GyNlzZNr0rIqJsroU2dEVlcpLGroKhsAaSvXM+SA6/Ii1T8fs6etD
+	+k+dOhYOHKAkyfOUH/qy5NixDuyxRQ4GyH5SD7znFSXoaZhdJdF6asdDuNBjXaqLVOPFs2BhWmv
+	j59TSUDp7yK/IQr/5t4jR+qn3zDaJlG7ue3yCGT/6fY6wG+yFVTjso3+gyX5KUr3YOAPNa4Smyd
+	HsTBGKmbeReLDMaXbN+ZTI7qHdJBTHmjVODu1r8eM/bQC7yisOOXQu5VBcYa13FduBL4=
+X-Received: by 2002:a05:600c:46c8:b0:459:ddad:a3a3 with SMTP id 5b1f17b1804b1-459e74a4ad6mr64013415e9.25.1754589714410;
+        Thu, 07 Aug 2025 11:01:54 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGxcVatWP7rFIfVWx9CqdmH8FLM3Nm306vOiRTmVXgWVKdqiIY4890kJtBR5KGb3c604MXHrw==
+X-Received: by 2002:a05:600c:46c8:b0:459:ddad:a3a3 with SMTP id 5b1f17b1804b1-459e74a4ad6mr64012855e9.25.1754589713826;
+        Thu, 07 Aug 2025 11:01:53 -0700 (PDT)
 Received: from ?IPV6:2003:d8:2f49:bc00:12fa:1681:c754:1630? (p200300d82f49bc0012fa1681c7541630.dip0.t-ipconnect.de. [2003:d8:2f49:bc00:12fa:1681:c754:1630])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3b8e0b2d2fasm17231775f8f.50.2025.08.07.10.59.39
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3b79c3c33fesm27989570f8f.29.2025.08.07.11.01.52
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Aug 2025 10:59:40 -0700 (PDT)
-Message-ID: <8416922c-4198-45cf-b5c2-dc39587bbf68@redhat.com>
-Date: Thu, 7 Aug 2025 19:59:39 +0200
+        Thu, 07 Aug 2025 11:01:53 -0700 (PDT)
+Message-ID: <cbc2e23d-69ab-4820-9942-c7abf2066ff7@redhat.com>
+Date: Thu, 7 Aug 2025 20:01:51 +0200
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -95,6 +95,8 @@ References: <202508071609.4e743d7c-lkp@intel.com>
  <9e3a59b2-11c0-43ca-aff3-414091f04aa4@lucifer.local>
  <CAG48ez3=8f3eShjAe9hrvivP+Dvyisw=X_Tr_phc-OX_4MzeDw@mail.gmail.com>
  <be074809-e1fd-43a2-9396-8f7264532c4d@lucifer.local>
+ <CAG48ez3=kLL4wBxAVSa2Ugrws+-RFQMdNY9jx5FAdbhpNt8fGg@mail.gmail.com>
+ <e4f5faea-ccec-4cc7-83de-1a3c7013b81b@lucifer.local>
 From: David Hildenbrand <david@redhat.com>
 Autocrypt: addr=david@redhat.com; keydata=
  xsFNBFXLn5EBEAC+zYvAFJxCBY9Tr1xZgcESmxVNI/0ffzE/ZQOiHJl6mGkmA1R7/uUpiCjJ
@@ -141,71 +143,87 @@ Autocrypt: addr=david@redhat.com; keydata=
  WBe5lqcozu9LpNDH/brVSzHCSb7vjNGvvSVESDuoiHK8gNlf0v+epy5WYd7CGAgODPvDShGN
  g3eXuA==
 Organization: Red Hat
-In-Reply-To: <be074809-e1fd-43a2-9396-8f7264532c4d@lucifer.local>
+In-Reply-To: <e4f5faea-ccec-4cc7-83de-1a3c7013b81b@lucifer.local>
 X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: fHTYdRbRo3JJboK20JpmhAx5ujM2YJIVfIX-1AYvLqk_1754589582
+X-Mimecast-MFC-PROC-ID: LsqUoDyMGzBuwljK91sGgPvjRooty-vrbl9KkXwsYx4_1754589714
 X-Mimecast-Originator: redhat.com
 Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 07.08.25 19:41, Lorenzo Stoakes wrote:
-> On Thu, Aug 07, 2025 at 07:37:38PM +0200, Jann Horn wrote:
->> On Thu, Aug 7, 2025 at 10:28 AM Lorenzo Stoakes
+On 07.08.25 19:51, Lorenzo Stoakes wrote:
+> On Thu, Aug 07, 2025 at 07:46:39PM +0200, Jann Horn wrote:
+>> On Thu, Aug 7, 2025 at 7:41 PM Lorenzo Stoakes
 >> <lorenzo.stoakes@oracle.com> wrote:
->>> On Thu, Aug 07, 2025 at 04:17:09PM +0800, kernel test robot wrote:
->>>> 94dab12d86cf77ff f822a9a81a31311d67f260aea96
->>>> ---------------- ---------------------------
->>>>           %stddev     %change         %stddev
->>>>               \          |                \
->>>>       13777 ą 37%     +45.0%      19979 ą 27%  numa-vmstat.node1.nr_slab_reclaimable
->>>>      367205            +2.3%     375703        vmstat.system.in
->>>>       55106 ą 37%     +45.1%      79971 ą 27%  numa-meminfo.node1.KReclaimable
->>>>       55106 ą 37%     +45.1%      79971 ą 27%  numa-meminfo.node1.SReclaimable
->>>>      559381           -37.3%     350757        stress-ng.bigheap.realloc_calls_per_sec
->>>>       11468            +1.2%      11603        stress-ng.time.system_time
->>>>      296.25            +4.5%     309.70        stress-ng.time.user_time
->>>>        0.81 ą187%    -100.0%       0.00        perf-sched.sch_delay.avg.ms.__cond_resched.zap_pte_range.zap_pmd_range.isra.0
->>>>        9.36 ą165%    -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.zap_pte_range.zap_pmd_range.isra.0
->>>>        0.81 ą187%    -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.zap_pte_range.zap_pmd_range.isra.0
->>>>        9.36 ą165%    -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.zap_pte_range.zap_pmd_range.isra.0
->>>>        5.50 ą 17%    +390.9%      27.00 ą 56%  perf-c2c.DRAM.local
->>>>      388.50 ą 10%    +114.7%     834.17 ą 33%  perf-c2c.DRAM.remote
->>>>        1214 ą 13%    +107.3%       2517 ą 31%  perf-c2c.HITM.local
->>>>      135.00 ą 19%    +130.9%     311.67 ą 32%  perf-c2c.HITM.remote
->>>>        1349 ą 13%    +109.6%       2829 ą 31%  perf-c2c.HITM.total
+>>> On Thu, Aug 07, 2025 at 07:37:38PM +0200, Jann Horn wrote:
+>>>> On Thu, Aug 7, 2025 at 10:28 AM Lorenzo Stoakes
+>>>> <lorenzo.stoakes@oracle.com> wrote:
+>>>>> On Thu, Aug 07, 2025 at 04:17:09PM +0800, kernel test robot wrote:
+>>>>>> 94dab12d86cf77ff f822a9a81a31311d67f260aea96
+>>>>>> ---------------- ---------------------------
+>>>>>>           %stddev     %change         %stddev
+>>>>>>               \          |                \
+>>>>>>       13777 ą 37%     +45.0%      19979 ą 27%  numa-vmstat.node1.nr_slab_reclaimable
+>>>>>>      367205            +2.3%     375703        vmstat.system.in
+>>>>>>       55106 ą 37%     +45.1%      79971 ą 27%  numa-meminfo.node1.KReclaimable
+>>>>>>       55106 ą 37%     +45.1%      79971 ą 27%  numa-meminfo.node1.SReclaimable
+>>>>>>      559381           -37.3%     350757        stress-ng.bigheap.realloc_calls_per_sec
+>>>>>>       11468            +1.2%      11603        stress-ng.time.system_time
+>>>>>>      296.25            +4.5%     309.70        stress-ng.time.user_time
+>>>>>>        0.81 ą187%    -100.0%       0.00        perf-sched.sch_delay.avg.ms.__cond_resched.zap_pte_range.zap_pmd_range.isra.0
+>>>>>>        9.36 ą165%    -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.zap_pte_range.zap_pmd_range.isra.0
+>>>>>>        0.81 ą187%    -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.zap_pte_range.zap_pmd_range.isra.0
+>>>>>>        9.36 ą165%    -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.zap_pte_range.zap_pmd_range.isra.0
+>>>>>>        5.50 ą 17%    +390.9%      27.00 ą 56%  perf-c2c.DRAM.local
+>>>>>>      388.50 ą 10%    +114.7%     834.17 ą 33%  perf-c2c.DRAM.remote
+>>>>>>        1214 ą 13%    +107.3%       2517 ą 31%  perf-c2c.HITM.local
+>>>>>>      135.00 ą 19%    +130.9%     311.67 ą 32%  perf-c2c.HITM.remote
+>>>>>>        1349 ą 13%    +109.6%       2829 ą 31%  perf-c2c.HITM.total
+>>>>>
+>>>>> Yeah this also looks pretty consistent too...
+>>>>
+>>>> FWIW, HITM hat different meanings depending on exactly which
+>>>> microarchitecture that test happened on; the message says it is from
+>>>> Sapphire Rapids, which is a successor of Ice Lake, so HITM is less
+>>>> meaningful than if it came from a pre-IceLake system (see
+>>>> https://lore.kernel.org/all/CAG48ez3RmV6SsVw9oyTXxQXHp3rqtKDk2qwJWo9TGvXCq7Xr-w@mail.gmail.com/).
+>>>>
+>>>> To me those numbers mainly look like you're accessing a lot more
+>>>> cache-cold data. (On pre-IceLake they would indicate cacheline
+>>>> bouncing, but I guess here they probably don't.) And that makes sense,
+>>>> since before the patch, this path was just moving PTEs around without
+>>>> looking at the associated pages/folios; basically more or less like a
+>>>> memcpy() on x86-64. But after the patch, for every 8 bytes that you
+>>>> copy, you have to load a cacheline from the vmemmap to get the page.
 >>>
->>> Yeah this also looks pretty consistent too...
+>>> Yup this is representative of what my investigation is showing.
+>>>
+>>> I've narrowed it down but want to wait to report until I'm sure...
+>>>
+>>> But yeah we're doing a _lot_ more work.
+>>>
+>>> I'm leaning towards disabling except for arm64 atm tbh, seems mremap is
+>>> especially sensitive to this (I found issues with this with my abortive mremap
+>>> anon merging stuff too, but really expected it there...)
 >>
->> FWIW, HITM hat different meanings depending on exactly which
->> microarchitecture that test happened on; the message says it is from
->> Sapphire Rapids, which is a successor of Ice Lake, so HITM is less
->> meaningful than if it came from a pre-IceLake system (see
->> https://lore.kernel.org/all/CAG48ez3RmV6SsVw9oyTXxQXHp3rqtKDk2qwJWo9TGvXCq7Xr-w@mail.gmail.com/).
->>
->> To me those numbers mainly look like you're accessing a lot more
->> cache-cold data. (On pre-IceLake they would indicate cacheline
->> bouncing, but I guess here they probably don't.) And that makes sense,
->> since before the patch, this path was just moving PTEs around without
->> looking at the associated pages/folios; basically more or less like a
->> memcpy() on x86-64. But after the patch, for every 8 bytes that you
->> copy, you have to load a cacheline from the vmemmap to get the page.
+>> Another approach would be to always read and write PTEs in
+>> contpte-sized chunks here, without caring whether they're actually
+>> contiguous or whatever, or something along those lines.
 > 
-> Yup this is representative of what my investigation is showing.
+> Not sure I love that, you'd have to figure out offset without cont pte batch and
+> can it vary? And we're doing this on non-arm64 arches for what reason?
 > 
-> I've narrowed it down but want to wait to report until I'm sure...
+> And would it solve anything really? We'd still be looking at folio, yes less
+> than now, but uselessly for arches that don't benefit?
 > 
-> But yeah we're doing a _lot_ more work.
-> 
-> I'm leaning towards disabling except for arm64 atm tbh, seems mremap is
-> especially sensitive to this (I found issues with this with my abortive mremap
-> anon merging stuff too, but really expected it there...)
-> 
-> On assumption arm64 is _definitely_ faster. I wonder if older arm64 arches might
-> suffer?
+> The basis of this series was (and I did explicitly ask) that it wouldn't harm
+> other arches.
 
-Are we sure it's not also slower on arm64 with small folios? I would be 
-surprised if it isn't.
+We'd need some hint to detect "this is either small" or "this is 
+unbatchable".
+
+Sure, we could use pte_batch_hint(), but I'm curious if x86 would also 
+benefit with larger folios (e.g., 64K, 128K) with this patch.
 
 -- 
 Cheers,
