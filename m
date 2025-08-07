@@ -1,217 +1,328 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11010068.outbound.protection.outlook.com [52.101.84.68])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF07025A2A5;
-	Thu,  7 Aug 2025 14:34:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754577281; cv=none; b=sBQ2NIowhpo8Do71Zt4vixR5klGhbwcJFIEFCOEyw59+hGApqSDUXs81xn0XQtG1Tc5Ie9ZAktjOUl1Ut3Yb34Ua0vGr9I4BcghdQSJUWONMnZ7Eqx56aivlIAJo2qwFXY1odZhm3tD5hALOYzIBgWB6mqVD2xWGTvXGFYhSi28=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754577281; c=relaxed/simple;
-	bh=OADzQsGA7rTi4IYU+ps4SuknTfXkYmd7pXQor5qY7QI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iwuIxg/mOt1BCy6BI8ima/V8bqIMwbkGftfjxv1hvsxoSBIaucw2hZ0/pNqDtnsu9uFcv0QQTYzJbhiij204GvtESSl0DnaNSjw8qMBZFMHD0cy+gsgNSNbomM61Wpt9voBkRzg5ByalImc9snj1pyjLUX6VQeeV2K3gRAuJ9Mk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SW4f6hoV; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 884B4146A72
+	for <oe-lkp@lists.linux.dev>; Thu,  7 Aug 2025 16:07:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.84.68
+ARC-Seal:i=3; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1754582846; cv=fail; b=D5VtWyrJUXAx6hnFsnff+ECAuX2tFX5IbleUr3KQHdINvdeQPb6fSPvdArcK50MUeP1X9yM3mQp34hRSR9aRPEn43g3idAL93/4yidLz0IXvT5PxnCuxHvXo/p1jWQ052zWrh2kfD5cah9ApGtZHxW3mX835CiUEodzx0eG5DBc=
+ARC-Message-Signature:i=3; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1754582846; c=relaxed/simple;
+	bh=xi2OaRCk6dEev84Q6JC9GIc1G7VDslgcI0yuu4tJXL0=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=DjxYlJi9uXCIouGW94PXSmrhVq9bCFmyb7HAMUOg3r7AQRgNsaeqGQZTl/NaHYfL7wV4np1aQxKk5M9KU2GHJnBn7AQxWniEkJKdFShfbzyxdwqptClQVhgxW7Z2n0SjcKGptwDaF6zwWtJimSAPy0hgLQdxhXiHRC0lUvFjzK8=
+ARC-Authentication-Results:i=3; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=YTWZ/DoR; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=YTWZ/DoR; arc=fail smtp.client-ip=52.101.84.68
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SW4f6hoV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C278C4CEEB;
-	Thu,  7 Aug 2025 14:34:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1754577281;
-	bh=OADzQsGA7rTi4IYU+ps4SuknTfXkYmd7pXQor5qY7QI=;
-	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-	b=SW4f6hoVgupT++oZ8GKPhcoC3ItxKtODcxqdf+sYTrXFC060LkTlfRklBA6N9dS8K
-	 srYu/5m7ebPQ2kwZfHYPBCFSi/Al5TrKxmD39JtPuPYPPtnaGk0yGzYgHSvHmQxFPw
-	 /dVy3z9LkFftinWk/t/ZuXxDIyhi0U/BllM0WuR1jaaWApwhX0laRf+kn4il+5tK2X
-	 v/Oqtnoj3BIVljO+ve9OJILr3dai+Y8vlMSLum8NH/UybTgcQoieg5nF15gZYgGAb1
-	 nzTWcuu4dlE12FEe/9WNPdP3TXhSiThOP31di6hJVXgyV51mUlx5RTQCXCHMKGPLJc
-	 655BI6zdnn6/w==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-	id E28B2CE0AD7; Thu,  7 Aug 2025 07:34:40 -0700 (PDT)
-Date: Thu, 7 Aug 2025 07:34:40 -0700
-From: "Paul E. McKenney" <paulmck@kernel.org>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
-	Neeraj Upadhyay <neeraj.upadhyay@kernel.org>,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	linux-kernel@vger.kernel.org, linux-trace-kernel@vger.kernel.org
-Subject: Re: [rcu:dev.30.07.2025a] [tracing]  7f4591b8cb:
- BUG:using_smp_processor_id()in_preemptible
-Message-ID: <b9c13c67-ac2d-4d71-899a-68eba943c726@paulmck-laptop>
-Reply-To: paulmck@kernel.org
-References: <202508071000.47c89ff-lkp@intel.com>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="YTWZ/DoR";
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="YTWZ/DoR"
+ARC-Seal: i=2; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=pass;
+ b=kZfsJZgrlLAybb9SLBDeAu3zRpIrempQq2zkkgXbsDvBkGT6Vn7c3nCxFlIO52y5FYkGNgogBUID5SIXdiET1/1zyODuIDPTSsxHBgfouHdCk+IfoU4V9l0M6tySe4AGrYq3ivVFMlMEwRfrIhQw5yyPD/Bvhq0VJ5B91R7eWe5gwwLn5/h3fZpzeCNPtkUG+QXLMOCuX3+tRN6LVVEMATDcHpubr/w65Aj+ixisx4HF23aVMbbxvpIxM1tHG27tUj2XlV5+Gsak4cM26LbZ9zo7Wqc4ppovwJrjfAuO+zQUvfkzEK/MP0Go5CFSq0c4djy4OkqlkEmAEcrSBuQR/g==
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CwEzOa4T1ieSq6lg7gigg+PoEo9lpc+RwKlTIjvvFQY=;
+ b=QoxTopxUQFhuY23V8nz8vMIX2ScBjbD62ygFNM938VzVff98ItcJOkG1Yx5SuNSYCX9g9AAaFwMFRS+gU95ZUd2x90utbJtfi9sDadGQBRVJit+VRFKblmj7hrrZ4AV8rSnf1OOKwLzRYTUd3x4YSQ2ZKQ0eqe0snCeiJ1OsB/Aan4VEUq+dnMMubh+H4+Idi5rODibYESmAAqfylupzEjx3Ls1qCDA2jnaDAKTY6ObLJsiCNq8v8y7Q05ISbrgpng8Ehh3LR/L+zFmdnKxwMlnyFEcbFVAqheF77AOgh30oZLbhby1UGxLooX/8+itO894JxVyW8D7s+d4R9HBekA==
+ARC-Authentication-Results: i=2; mx.microsoft.com 1; spf=pass (sender ip is
+ 4.158.2.129) smtp.rcpttodomain=redhat.com smtp.mailfrom=arm.com; dmarc=pass
+ (p=none sp=none pct=100) action=none header.from=arm.com; dkim=pass
+ (signature was verified) header.d=arm.com; arc=pass (0 oda=1 ltdi=1
+ spf=[1,1,smtp.mailfrom=arm.com] dkim=[1,1,header.d=arm.com]
+ dmarc=[1,1,header.from=arm.com])
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arm.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CwEzOa4T1ieSq6lg7gigg+PoEo9lpc+RwKlTIjvvFQY=;
+ b=YTWZ/DoRqfQ4oMrfi3C4NmRANg+ReFTYMSo3OBKLqmNvt6lAw2ZcxRH1LvF9hte+dy9iVRpcmnAAJ4JCrPodeTvyDJIWxJeJERVzQTEaIxu6c9bY114ZFFXeUaa3YdFvfnqz635sq3Z4f8L6fyXUjBZGSywyA9GRDu8YCmL86yA=
+Received: from DU2PR04CA0288.eurprd04.prod.outlook.com (2603:10a6:10:28c::23)
+ by AM9PR08MB6706.eurprd08.prod.outlook.com (2603:10a6:20b:303::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9009.17; Thu, 7 Aug
+ 2025 16:07:19 +0000
+Received: from DB3PEPF00008859.eurprd02.prod.outlook.com
+ (2603:10a6:10:28c:cafe::17) by DU2PR04CA0288.outlook.office365.com
+ (2603:10a6:10:28c::23) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8989.21 via Frontend Transport; Thu,
+ 7 Aug 2025 16:07:18 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 4.158.2.129)
+ smtp.mailfrom=arm.com; dkim=pass (signature was verified)
+ header.d=arm.com;dmarc=pass action=none header.from=arm.com;
+Received-SPF: Pass (protection.outlook.com: domain of arm.com designates
+ 4.158.2.129 as permitted sender) receiver=protection.outlook.com;
+ client-ip=4.158.2.129; helo=outbound-uk1.az.dlp.m.darktrace.com; pr=C
+Received: from outbound-uk1.az.dlp.m.darktrace.com (4.158.2.129) by
+ DB3PEPF00008859.mail.protection.outlook.com (10.167.242.4) with Microsoft
+ SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.20.9009.8
+ via Frontend Transport; Thu, 7 Aug 2025 16:07:18 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=vRKN6bhZix3XaWXMVOYn8B66DxgwIVzigCooYEg0UF16qkyrDBuj6TpApbacxx0mgAh145vdf9BbZY/C+76JFUAYh29x5zARzQkGB9i1KxnHEIqf1xayhK8XrKVWDIsnUhdbZj4gefEPTQ+flod8eTA/AVhXXilAq6nCmt2PnG/iUOqIHEaC1kM8P46tDvNKUA8cxfi1UKA4G6OnQcRKy7HEIFyDoXKRHTRCWG+dxGqJf1l9mqXE6SLJS8sn/hSEdSAg/6ihyLColYwB/85S83ZntyfUng5fVjpKVbAU7CbtUo6UtHnAYQwrrIX6UuP0WuqTCGGt9E7muoXRQZcaiw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CwEzOa4T1ieSq6lg7gigg+PoEo9lpc+RwKlTIjvvFQY=;
+ b=QF7lLLI4lSBgoyk3zev1VLXnphrYI2sk5rukJnkjIZiZinX415pSfo5SiLH9biaoPZJSNkvjROS/qqlcP6LhaAoxLBDXkpBChRLVe2lgzjJZCs7tgra678jtobBnXT1ymJsQumhopUv6bKpRCr5B7yBAY125OVjXY9kuN1UR1eWSCUrYzFUdUOqJ/HDLxzl9cY4WbFZ02j0D/jYPlmUgBSST84x0IH26tW+fgNoT05/Zk/g8fRZqWcIMLI6PXwA5XewuhltBZz94MsgsFhZTHSVoGS7K5304LgGEpbZizqpy1fBpV9oJ2r3LtSmJevL1v+Fcm5NfQE6aqxZHL9+yIA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
+ header.d=arm.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arm.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CwEzOa4T1ieSq6lg7gigg+PoEo9lpc+RwKlTIjvvFQY=;
+ b=YTWZ/DoRqfQ4oMrfi3C4NmRANg+ReFTYMSo3OBKLqmNvt6lAw2ZcxRH1LvF9hte+dy9iVRpcmnAAJ4JCrPodeTvyDJIWxJeJERVzQTEaIxu6c9bY114ZFFXeUaa3YdFvfnqz635sq3Z4f8L6fyXUjBZGSywyA9GRDu8YCmL86yA=
+Authentication-Results-Original: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=arm.com;
+Received: from AM9PR08MB7120.eurprd08.prod.outlook.com (2603:10a6:20b:3dc::22)
+ by DB8PR08MB5418.eurprd08.prod.outlook.com (2603:10a6:10:116::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9009.16; Thu, 7 Aug
+ 2025 16:06:47 +0000
+Received: from AM9PR08MB7120.eurprd08.prod.outlook.com
+ ([fe80::2933:29aa:2693:d12e]) by AM9PR08MB7120.eurprd08.prod.outlook.com
+ ([fe80::2933:29aa:2693:d12e%5]) with mapi id 15.20.9009.013; Thu, 7 Aug 2025
+ 16:06:46 +0000
+Message-ID: <96e931a6-c70e-4a11-9e8c-c5a08da7f512@arm.com>
+Date: Thu, 7 Aug 2025 21:36:38 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [linus:master] [mm] f822a9a81a:
+ stress-ng.bigheap.realloc_calls_per_sec 37.3% regression
+To: David Hildenbrand <david@redhat.com>,
+ Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+ kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+ Andrew Morton <akpm@linux-foundation.org>, Barry Song <baohua@kernel.org>,
+ Pedro Falcato <pfalcato@suse.de>,
+ Anshuman Khandual <anshuman.khandual@arm.com>,
+ Bang Li <libang.li@antgroup.com>, Baolin Wang
+ <baolin.wang@linux.alibaba.com>, bibo mao <maobibo@loongson.cn>,
+ Hugh Dickins <hughd@google.com>, Ingo Molnar <mingo@kernel.org>,
+ Jann Horn <jannh@google.com>, Lance Yang <ioworker0@gmail.com>,
+ Liam Howlett <liam.howlett@oracle.com>, Matthew Wilcox
+ <willy@infradead.org>, Peter Xu <peterx@redhat.com>,
+ Qi Zheng <zhengqi.arch@bytedance.com>, Ryan Roberts <ryan.roberts@arm.com>,
+ Vlastimil Babka <vbabka@suse.cz>, Yang Shi <yang@os.amperecomputing.com>,
+ Zi Yan <ziy@nvidia.com>, linux-mm@kvack.org
+References: <202508071609.4e743d7c-lkp@intel.com>
+ <9e3a59b2-11c0-43ca-aff3-414091f04aa4@lucifer.local>
+ <97419aca-af5f-4328-84dc-c97bb73ca1ac@redhat.com>
+Content-Language: en-US
+From: Dev Jain <dev.jain@arm.com>
+In-Reply-To: <97419aca-af5f-4328-84dc-c97bb73ca1ac@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: MA0P287CA0005.INDP287.PROD.OUTLOOK.COM
+ (2603:1096:a01:d9::17) To AM9PR08MB7120.eurprd08.prod.outlook.com
+ (2603:10a6:20b:3dc::22)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202508071000.47c89ff-lkp@intel.com>
+X-MS-TrafficTypeDiagnostic:
+	AM9PR08MB7120:EE_|DB8PR08MB5418:EE_|DB3PEPF00008859:EE_|AM9PR08MB6706:EE_
+X-MS-Office365-Filtering-Correlation-Id: 01042c0b-1f90-481e-726b-08ddd5cc7c18
+x-checkrecipientrouted: true
+NoDisclaimer: true
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam-Untrusted:
+ BCL:0;ARA:13230040|1800799024|376014|7416014|366016;
+X-Microsoft-Antispam-Message-Info-Original:
+ =?utf-8?B?amhlRW1za1FPQ2hxeHZTc1FIZDE1eUVsZ0FScHJCYkVSaEUwbG10dGM5ano2?=
+ =?utf-8?B?T1YzZEo2M2w0ZVZWa1BwK3E0QXd0dEc0ZC9wVXo3R0NKZ1RFZVkxVjFUNnFQ?=
+ =?utf-8?B?RHNhVHNHTVVVT0ZzamowSlVGMVMya2xYSDV5NkFPdi9McmVJRVZwbEwrb1ZK?=
+ =?utf-8?B?WlpZb21ha2JTYmZqM3AyTCtDcmdHd0ZqdW5jQ3U5aDZvZHY2Vi9pZTFQbjMv?=
+ =?utf-8?B?RnBjTngzTzBGRlArbExHR0YvU1RIYU9xeHJlcWZOTHpKWWY2OU1OMStyOUoy?=
+ =?utf-8?B?YnQ0UENRenpDOGxMVVc0Q1lHcW1QRGsvUHJYQjJQNy9JS0cwdjdrTEVGbnRV?=
+ =?utf-8?B?NXVENlJIQUhjNmNoSGlIZnFqaUJHYlkzcjhmdzI0a2V3akl3aTZFdE5zbE44?=
+ =?utf-8?B?RUpDM3VZY1J1L0RuQktYaUxNbmdNbGZhM0pFQUZBd2tGY3A5RFZ5enR6bVJL?=
+ =?utf-8?B?NFdZQ0pWUWp3QWFLMkJsWm5VUzNzRE9SRyt6dUlOV2Evc3pxQW00NEhlajZ4?=
+ =?utf-8?B?OVhMaCtGb3Rad1Z6b2diRVF4ZXd2UDA0RmNQcENYLzBFWTVDZEozRURLVk4x?=
+ =?utf-8?B?Q3FSZXlMTnI3N3B2dGZiSWVyZ0I0Q0ZjSkhiTDBwcFpNZHEyaUw4QzlWOWJq?=
+ =?utf-8?B?Q2tvSTBvRm1YRWNxV0dGdnRDdDd6b0U5dExRR0tqNnQ0TWVIZ0hzZ01EZXc5?=
+ =?utf-8?B?ZHlvSGlQUFB4S1NvalkrVkJ6TUo1Mm5rRjZsbUVPcUVWbjhkb0gzTUdIWTNK?=
+ =?utf-8?B?SDN1eERWWmdLdHlKQjVLRGJEQlBrS0NpeWdReS9vMFdmOE4ycjc0eS9GSkNv?=
+ =?utf-8?B?Vk5KN04wTDc2WGVyb1ZUQzhWTFNpenZGOWJOUXhQN3FFK1dUUmdTTU1SRGpz?=
+ =?utf-8?B?Z2hrOWdvL3BxSlBPVnJ5bzNXVUFsaTYrSHBpeGtiY1F4SEFWTHpxS3pESVlj?=
+ =?utf-8?B?dXRaY2pyQmtJRE1DSkx4OTdEamNRTVFzME1jaXg4djF1V1J0YlRYVTNCalJV?=
+ =?utf-8?B?WFNTMDd3UFV6TFdZK1d1YWNPZUVhS0UwSTlKYVM3S3lSSFg5Z0o5Wjh6TVZV?=
+ =?utf-8?B?QjBxN0JyY1BKc0NVck1JVVN3ZmR3SVdxekswVEh6NEVEZ1I2RU1wSUpIM05n?=
+ =?utf-8?B?VlVTWWcrSzJSekFkWjRxOEFHaUtLN2VsSU5BL3IzN2U3dERWZXJXVlkxK0JI?=
+ =?utf-8?B?Vlc2ZU43c3R0d1FyTGl2K3VmN09VNTFBOGtqUVc3akk2QlRiZnBXVlRCdWt2?=
+ =?utf-8?B?VWZhUzB1NUhOSlBEd2wvUEtGVWtaUXB4ZXBJT1QxVHI1UFZSYnlkdjl1VDlI?=
+ =?utf-8?B?WVBJOEN2K1BBYWJEelRCOFFIUVlWakZpQmxBRlVXdjJicGErdzd6NENEMzdw?=
+ =?utf-8?B?NDZZWHdzZXlTYVZtMm9HTENPWGxVQjNCc0ZGUEt6bXYzUFBacFJoRGQwNmEy?=
+ =?utf-8?B?UmNLUjl6UFZHdlVadGdmVUVySm1oL0NQdU9qV3RnYzd2aTZWUkZtdmRWdXZq?=
+ =?utf-8?B?eXVQU1JGTjBtZ0U5N0pERTMxeWtYVy9kSnV3QzkxN2JqeDJBK2Y4Q1VhdTM3?=
+ =?utf-8?B?bW9hWkpkRk85Wkh4Q1dwS01odkUxNGFOUllUaGtsMUhISHRFTmlrR2U1UDNq?=
+ =?utf-8?B?bGZDRnZkeVE4R0V4ell4cGhjVkpDdTNJSGFod3c0MUtLUEl0eVU1RkdtNDVw?=
+ =?utf-8?B?b3NoNGkrYXZaakRtTWM4Wjh5MDdocmhSYmVuQ01mQkFuYU5EUCtKNTkyL0xI?=
+ =?utf-8?B?cS93ajhwVmJ2cWs1aG5rL0lKOURUZ1ZPWlBsdjZUYUNWenVJZEFiODVLSEF5?=
+ =?utf-8?B?ZW1uQ3VyYnFpbGVOVnBlcjNJT29mQm5neldjU1I4eTdjVCtiaHJZRnhPMnBI?=
+ =?utf-8?Q?kNSz8C00hf6jK?=
+X-Forefront-Antispam-Report-Untrusted:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR08MB7120.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR08MB5418
+X-EOPAttributedMessage: 0
+X-MS-Exchange-Transport-CrossTenantHeadersStripped:
+ DB3PEPF00008859.eurprd02.prod.outlook.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id-Prvs:
+	4dd76ab2-5af3-423a-189e-08ddd5cc68ba
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|14060799003|36860700013|35042699022|376014|7416014|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?QUx3dmZOTWlWZTlrb2dYcG4xTmJIYXlGWTJaa3BqU05vdlFRZGpZQW5NNW0w?=
+ =?utf-8?B?UzA4eHdra0oyY09vTkdyTmxkU3YrSFZlclVvMGorQThTMjFsTVFuek52UFYy?=
+ =?utf-8?B?VW85bWllWGp6ang2ZEVDNWlGeS96MkVtUnQxN0hUc2tzV2JYbm9PSnFKVGp0?=
+ =?utf-8?B?bE1PT2NiTTRSYktHNWRQZW9WVDNIeWd0OUZHTlR4eGRQdURtNU84NVZtaSs5?=
+ =?utf-8?B?ay9PellXUEt1RGQwdGFjWTZYeUZaWjZLWGlTRXZHeTM3WGwxUnpVcFlOSmZL?=
+ =?utf-8?B?cUJEcE9LUGJnb2JoYm1jVk5VbTUwQmtHVEd3b05wOGZHT3lsQjIwOTdDYXl3?=
+ =?utf-8?B?R2FwK1hIY255UVNFY1RyTm1mQWRKKzBWbFYrNGdHdG5XcnRuR3QvcHYrQ01C?=
+ =?utf-8?B?cFpDcnVnNkFLMWVLMmt1bjVOQlpzKzNMMVBZdnFBWWlNa2grME95ZEFJSnFZ?=
+ =?utf-8?B?R3A3eW1McE00OHRLdmJlNUNXbmdaREdkNk43ZUFJMUV1bEpOd0p1YXFrd3VL?=
+ =?utf-8?B?YzZNQ05oR3dPMmt0d2poNGE5WHdNa1J1L1RXUHl2MGRoY0pFWGsvMGtubHpN?=
+ =?utf-8?B?aWp4SSsvbkczcFg5ZE9iWWxoT2tEZXZ5VU9PbUV1L1lZemg4N0YyYnl5L0lJ?=
+ =?utf-8?B?YWp3bmVybGFkYTFZY1M1ZXRQMkc0Vmt4TDRubEgrNXROOXVJYzFYZnZ6b0tE?=
+ =?utf-8?B?N0o2MVZYc3lNZVl3aHpuRHJYaFBGRnROalVkakx2aHdsSWczYVFRajhjQjJr?=
+ =?utf-8?B?YnNaZ3Y4ZElHMWhIbTQ0V2lkcStDTUFwam9DOHBFcHl4cDIrQzRnSExabUxY?=
+ =?utf-8?B?S2Fkc2RTYlU3Wnc3R05sL0FhVjl1U0ZiYkJvV2xjZkVCaFhJTnZ4bDlySmxs?=
+ =?utf-8?B?WEZEVS82ZXh5NkhuSkkvdW9xSnBSZlpJalovZXo0WHNZNkwzRWhIZ3pJbWpF?=
+ =?utf-8?B?OEZoUHFrTjlxazk2QjR4VGRTMDJwR2ZaT3NlQStmK3dkaUF2dHhZUW90dFBT?=
+ =?utf-8?B?akVEWVhINTViMXlUTCtBQXJWQlpLSVhZdSt2Z25mNHNXSFArQVRkazJCbGRZ?=
+ =?utf-8?B?TnNISS96dkVlZEVtU1VJdjNiWGdXSDcyMzN5S0RUeGo0NkVPRkNNdU1MblZK?=
+ =?utf-8?B?dW5za0Q2MWNvbFBFMHU3VWJGNHNvaUdVaFdNYldWUm1qcDNPalFUZzQ2NFVX?=
+ =?utf-8?B?MjZOM3o0VmhodHdCamZSRTVCUXhnMm5YZHRvaDhVSVg5NUJJZm55QW81aE54?=
+ =?utf-8?B?elF0ZENJcXI3YU53N1pOdkJBcmlXdXF5R2J6OE5qaFIzQ0lJZkVXOEo3bU1y?=
+ =?utf-8?B?c2ZQY1BCc01EdGxHd2xpZGE0WXJ0aG1GcGtET2F0N0dGVlYvTzdCTUpqUGxX?=
+ =?utf-8?B?WnBLYXNockR2U3orREM1YndTdWRrbS9JM3ZOSGRSWHJOYjZwYXpSdEVVbUNS?=
+ =?utf-8?B?U1V4OWZ2bGI4U0RBR0FtUGgyeitWRVhaSFQ0RUJyYkRoMnZZOVRITFNOenFt?=
+ =?utf-8?B?dkNVQVVtd1k3d1lkanV6K1d2UFJ6QmxQOHBqaFh6RTRONGVUV2JiR0RRMGhT?=
+ =?utf-8?B?em0zRFJpUGVMK25zZVJjRmNPUUd0YlA2cHJEV0hkSE5CMkUvaWdaM1J5ZnNN?=
+ =?utf-8?B?STVGZ0VmRWpaNnE1Wi9uRXJKYTVjZk1YZVpxU2pObXAxRkJSczVxSDUxMWdV?=
+ =?utf-8?B?YzNOR3NFMW9tUytmNFlyU25JUGo5YzRJYlRQTmlVclgxbTZUR2h1aVVRNGpT?=
+ =?utf-8?B?VmVqenUzTTNqNmxrMlFaUk5pOCtVMnZTUXRZclIrVXMyc3pVOHZHTjhJUGhs?=
+ =?utf-8?B?Y0c5eXhkWGtyRVZqWkRCNHV4cDJ1elJpSTBQa0hnK3dabTFLUUpIWlVCd3JQ?=
+ =?utf-8?B?SXhlSW5vYzQvUDgxTEQ2UUxNbkNPM1dURG5mdTdtYmRkWHM5TFM4ZGlhSDAz?=
+ =?utf-8?B?T0Q3K2xlWUI0eDd0TktGYiszWkE2VFJLdklGaVpmTlpiL0NIS09zSGJsRWdI?=
+ =?utf-8?Q?IrnJfZRgGetGc79B727LQ2E7OXPPAM=3D?=
+X-Forefront-Antispam-Report:
+	CIP:4.158.2.129;CTRY:GB;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:outbound-uk1.az.dlp.m.darktrace.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(14060799003)(36860700013)(35042699022)(376014)(7416014)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: arm.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Aug 2025 16:07:18.7321
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 01042c0b-1f90-481e-726b-08ddd5cc7c18
+X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d;Ip=[4.158.2.129];Helo=[outbound-uk1.az.dlp.m.darktrace.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DB3PEPF00008859.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR08MB6706
 
-On Thu, Aug 07, 2025 at 04:23:56PM +0800, kernel test robot wrote:
-> 
-> 
-> Hello,
-> 
-> kernel test robot noticed "BUG:using_smp_processor_id()in_preemptible" on:
-> 
-> commit: 7f4591b8cb9c4682dd20ce624bb090e2a634cf9b ("tracing: Guard __DECLARE_TRACE() use of __DO_TRACE_CALL() with SRCU-fast")
-> https://git.kernel.org/cgit/linux/kernel/git/rcu/linux.git dev.30.07.2025a
 
-This is a real bug, but has since been fixed in 7e7acbb7dceb ("tracing:
-Guard __DECLARE_TRACE() use of __DO_TRACE_CALL() with SRCU-fast").
+On 07/08/25 3:51 pm, David Hildenbrand wrote:
+> On 07.08.25 10:27, Lorenzo Stoakes wrote:
+>> On Thu, Aug 07, 2025 at 04:17:09PM +0800, kernel test robot wrote:
+>>>
+>>>
+>>> Hello,
+>>>
+>>> kernel test robot noticed a 37.3% regression of 
+>>> stress-ng.bigheap.realloc_calls_per_sec on:
+>>>
+>>
+>> Dev - could you please investigate and provide a fix for this as a
+>> priority? As these numbers are quite scary (unless they're somehow super
+>> synthetic or not meaningful or something).
+>>
+>>>
+>>> commit: f822a9a81a31311d67f260aea96005540b18ab07 ("mm: optimize 
+>>> mremap() by PTE batching")
+>>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>>>
+>>> [still regression on      linus/master 
+>>> 186f3edfdd41f2ae87fc40a9ccba52a3bf930994]
+>>> [still regression on linux-next/master 
+>>> b9ddaa95fd283bce7041550ddbbe7e764c477110]
+>>>
+>>> testcase: stress-ng
+>>> config: x86_64-rhel-9.4
+>>> compiler: gcc-12
+>>> test machine: 192 threads 2 sockets Intel(R) Xeon(R) Platinum 8468V  
+>>> CPU @ 2.4GHz (Sapphire Rapids) with 384G memory
+>>> parameters:
+>>>
+>>>     nr_threads: 100%
+>>>     testtime: 60s
+>>>     test: bigheap
+>>>     cpufreq_governor: performance
+>>>
+>>>
+>>>
+>>>
+>>> If you fix the issue in a separate patch/commit (i.e. not just a new 
+>>> version of
+>>> the same patch/commit), kindly add following tags
+>>> | Reported-by: kernel test robot <oliver.sang@intel.com>
+>>> | Closes: 
+>>> https://lore.kernel.org/oe-lkp/202508071609.4e743d7c-lkp@intel.com
+>>>
+>>>
+>>> Details are as below:
+>>> --------------------------------------------------------------------------------------------------> 
+>>>
+>>>
+>>>
+>>> The kernel config and materials to reproduce are available at:
+>>> https://download.01.org/0day-ci/archive/20250807/202508071609.4e743d7c-lkp@intel.com 
+>>>
+>>>
+>>> ========================================================================================= 
+>>>
+>>> compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime: 
+>>>
+>>> gcc-12/performance/x86_64-rhel-9.4/100%/debian-12-x86_64-20240206.cgz/igk-spr-2sp1/bigheap/stress-ng/60s
+>>>
+>>> commit:
+>>>    94dab12d86 ("mm: call pointers to ptes as ptep")
+>>>    f822a9a81a ("mm: optimize mremap() by PTE batching")
+>>>
+>>> 94dab12d86cf77ff f822a9a81a31311d67f260aea96
+>>> ---------------- ---------------------------
+>>>           %stddev     %change         %stddev
+>>>               \          |                \
+>>>       13777 ± 37%     +45.0%      19979 ± 27% 
+>>> numa-vmstat.node1.nr_slab_reclaimable
+>>>      367205            +2.3%     375703 vmstat.system.in
+>>>       55106 ± 37%     +45.1%      79971 ± 27% 
+>>> numa-meminfo.node1.KReclaimable
+>>>       55106 ± 37%     +45.1%      79971 ± 27% 
+>>> numa-meminfo.node1.SReclaimable
+>>>      559381           -37.3%     350757 
+>>> stress-ng.bigheap.realloc_calls_per_sec
+>>>       11468            +1.2%      11603 stress-ng.time.system_time
+>>>      296.25            +4.5%     309.70 stress-ng.time.user_time
+>>>        0.81 ±187%    -100.0%       0.00 
+>>> perf-sched.sch_delay.avg.ms.__cond_resched.zap_pte_range.zap_pmd_range.isra.0
+>>>        9.36 ±165%    -100.0%       0.00 
+>>> perf-sched.sch_delay.max.ms.__cond_resched.zap_pte_range.zap_pmd_range.isra.0
+>>>        0.81 ±187%    -100.0%       0.00 
+>>> perf-sched.wait_time.avg.ms.__cond_resched.zap_pte_range.zap_pmd_range.isra.0
+>>>        9.36 ±165%    -100.0%       0.00 
+>>> perf-sched.wait_time.max.ms.__cond_resched.zap_pte_range.zap_pmd_range.isra.0
+>>>        5.50 ± 17%    +390.9%      27.00 ± 56% perf-c2c.DRAM.local
+>>>      388.50 ± 10%    +114.7%     834.17 ± 33% perf-c2c.DRAM.remote
+>>>        1214 ± 13%    +107.3%       2517 ± 31% perf-c2c.HITM.local
+>>>      135.00 ± 19%    +130.9%     311.67 ± 32% perf-c2c.HITM.remote
+>>>        1349 ± 13%    +109.6%       2829 ± 31% perf-c2c.HITM.total
+>>
+>> Yeah this also looks pretty consistent too...
+>
+> It almost looks like some kind of NUMA effects?
+>
+> I would have expected that it's the overhead of the vm_normal_folio(), 
+> but not sure how that corresponds to the SLAB + local vs. remote 
+> stats. Maybe they are just noise?
+Is there any way of making the robot test again? As you said, the only 
+suspect is vm_normal_folio(), nothing seems to pop up...
 
-We expect to get this updated commit into -next shortly after v6.17-rc1
-comes out.  As always, thank you for your testing!
-
-							Thanx, Paul
-
-> in testcase: trinity
-> version: trinity-i386-abe9de86-1_20230429
-> with following parameters:
-> 
-> 	runtime: 300s
-> 	group: group-00
-> 	nr_groups: 5
-> 
-> 
-> 
-> config: i386-randconfig-002-20250801
-> compiler: clang-20
-> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> 
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
-> 
-> 
-> +--------------------------------------------+------------+------------+
-> |                                            | 97b572666e | 7f4591b8cb |
-> +--------------------------------------------+------------+------------+
-> | BUG:using_smp_processor_id()in_preemptible | 0          | 12         |
-> +--------------------------------------------+------------+------------+
-> 
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202508071000.47c89ff-lkp@intel.com
-> 
-> 
-> [   32.787484][ T3676] BUG: using smp_processor_id() in preemptible [00000000] code: meminfo/3676
-> [ 32.788206][ T3676] caller is debug_smp_processor_id (lib/smp_processor_id.c:60) 
-> [   32.788627][ T3676] CPU: 0 UID: 0 PID: 3676 Comm: meminfo Not tainted 6.16.0-rc3-00057-g7f4591b8cb9c #1 PREEMPT(lazy)
-> [   32.788631][ T3676] Call Trace:
-> [ 32.788633][ T3676] __dump_stack (lib/dump_stack.c:95) 
-> [ 32.788638][ T3676] dump_stack_lvl (lib/dump_stack.c:123) 
-> [ 32.788644][ T3676] dump_stack (lib/dump_stack.c:129) 
-> [ 32.788647][ T3676] check_preemption_disabled (lib/smp_processor_id.c:?) 
-> [ 32.788654][ T3676] debug_smp_processor_id (lib/smp_processor_id.c:60) 
-> [ 32.788657][ T3676] perf_trace_sched_prepare_exec (include/trace/events/sched.h:458) 
-> [ 32.788672][ T3676] begin_new_exec (include/linux/srcutree.h:300 include/linux/srcu.h:419 include/linux/srcu.h:519 include/trace/events/sched.h:458 include/trace/events/sched.h:458 fs/exec.c:1110) 
-> [ 32.788682][ T3676] load_elf_binary (fs/binfmt_elf.c:?) 
-> [ 32.788693][ T3676] ? __this_cpu_preempt_check (lib/smp_processor_id.c:67) 
-> [ 32.788698][ T3676] ? bprm_execve (fs/exec.c:1665 fs/exec.c:1697 fs/exec.c:1749) 
-> [ 32.788707][ T3676] bprm_execve (fs/exec.c:1665 fs/exec.c:1697 fs/exec.c:1749) 
-> [ 32.788719][ T3676] do_execveat_common (fs/exec.c:?) 
-> [ 32.788724][ T3676] __ia32_sys_execve (fs/exec.c:1929 fs/exec.c:2005 fs/exec.c:2000 fs/exec.c:2000) 
-> [ 32.788731][ T3676] ia32_sys_call (kbuild/obj/consumer/i386-randconfig-002-20250801/./arch/x86/include/generated/asm/syscalls_32.h:?) 
-> [ 32.788735][ T3676] __do_fast_syscall_32 (arch/x86/entry/syscall_32.c:?) 
-> [ 32.788740][ T3676] ? __lock_acquire (kernel/locking/lockdep.c:4677) 
-> [ 32.788745][ T3676] ? __lock_acquire (kernel/locking/lockdep.c:4677) 
-> [ 32.788763][ T3676] ? get_page_from_freelist (mm/page_alloc.c:1714 mm/page_alloc.c:3669) 
-> [ 32.788766][ T3676] ? __this_cpu_preempt_check (lib/smp_processor_id.c:67) 
-> [ 32.788773][ T3676] ? lock_acquire (kernel/locking/lockdep.c:5871) 
-> [ 32.788779][ T3676] ? local_lock_release (include/linux/local_lock_internal.h:54) 
-> [ 32.788786][ T3676] ? __this_cpu_preempt_check (lib/smp_processor_id.c:67) 
-> [ 32.788790][ T3676] ? local_lock_release (include/linux/local_lock_internal.h:54) 
-> [ 32.788800][ T3676] ? __this_cpu_preempt_check (lib/smp_processor_id.c:67) 
-> [ 32.788805][ T3676] ? rcu_lock_acquire (include/linux/rcupdate.h:340) 
-> [ 32.788814][ T3676] ? handle_mm_fault (include/linux/rcupdate.h:? include/linux/pgtable.h:136 mm/memory.c:3670 mm/memory.c:4030 mm/memory.c:6105 mm/memory.c:6232 mm/memory.c:6401) 
-> [ 32.788827][ T3676] ? __this_cpu_preempt_check (lib/smp_processor_id.c:67) 
-> [ 32.788830][ T3676] ? preempt_count_add (include/linux/ftrace.h:1091 kernel/sched/core.c:5852 kernel/sched/core.c:5877) 
-> [ 32.788837][ T3676] ? irqentry_exit (kernel/entry/common.c:320) 
-> [ 32.788840][ T3676] ? __this_cpu_preempt_check (lib/smp_processor_id.c:67) 
-> [ 32.788843][ T3676] ? lockdep_hardirqs_on (kernel/locking/lockdep.c:4475) 
-> [ 32.788849][ T3676] ? irqentry_exit_to_user_mode (kernel/entry/common.c:187) 
-> [ 32.788856][ T3676] do_fast_syscall_32 (arch/x86/entry/syscall_32.c:331) 
-> [ 32.788860][ T3676] do_SYSENTER_32 (arch/x86/entry/syscall_32.c:369) 
-> [ 32.788862][ T3676] entry_SYSENTER_32 (arch/x86/entry/entry_32.S:836) 
-> [   32.788865][ T3676] EIP: 0xb7f4c539
-> [ 32.788868][ T3676] Code: 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90
-> All code
-> ========
->    0:	03 74 b4 01          	add    0x1(%rsp,%rsi,4),%esi
->    4:	10 07                	adc    %al,(%rdi)
->    6:	03 74 b0 01          	add    0x1(%rax,%rsi,4),%esi
->    a:	10 08                	adc    %cl,(%rax)
->    c:	03 74 d8 01          	add    0x1(%rax,%rbx,8),%esi
-> 	...
->   20:*	00 51 52             	add    %dl,0x52(%rcx)		<-- trapping instruction
->   23:	55                   	push   %rbp
->   24:	89 e5                	mov    %esp,%ebp
->   26:	0f 34                	sysenter
->   28:	cd 80                	int    $0x80
->   2a:	5d                   	pop    %rbp
->   2b:	5a                   	pop    %rdx
->   2c:	59                   	pop    %rcx
->   2d:	c3                   	ret
->   2e:	90                   	nop
->   2f:	90                   	nop
->   30:	90                   	nop
->   31:	90                   	nop
->   32:	90                   	nop
->   33:	90                   	nop
->   34:	90                   	nop
->   35:	90                   	nop
->   36:	90                   	nop
->   37:	90                   	nop
->   38:	90                   	nop
->   39:	90                   	nop
->   3a:	90                   	nop
->   3b:	90                   	nop
->   3c:	90                   	nop
->   3d:	90                   	nop
->   3e:	90                   	nop
->   3f:	90                   	nop
-> 
-> Code starting with the faulting instruction
-> ===========================================
->    0:	5d                   	pop    %rbp
->    1:	5a                   	pop    %rdx
->    2:	59                   	pop    %rcx
->    3:	c3                   	ret
->    4:	90                   	nop
->    5:	90                   	nop
->    6:	90                   	nop
->    7:	90                   	nop
->    8:	90                   	nop
->    9:	90                   	nop
->    a:	90                   	nop
->    b:	90                   	nop
->    c:	90                   	nop
->    d:	90                   	nop
->    e:	90                   	nop
->    f:	90                   	nop
->   10:	90                   	nop
->   11:	90                   	nop
->   12:	90                   	nop
->   13:	90                   	nop
->   14:	90                   	nop
->   15:	90                   	nop
-> [   32.788871][ T3676] EAX: ffffffda EBX: 01e25d34 ECX: 01e25c00 EDX: 01e25c0c
-> [   32.788873][ T3676] ESI: 01e25d34 EDI: 01e25c00 EBP: bffe5404 ESP: bffe52d8
-> [   32.788874][ T3676] DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 007b EFLAGS: 00000296
-> 
-> 
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20250807/202508071000.47c89ff-lkp@intel.com
-> 
-> 
-> 
-> -- 
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
-> 
