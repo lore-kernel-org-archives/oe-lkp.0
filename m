@@ -1,116 +1,202 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4A7F27467A;
-	Fri,  8 Aug 2025 11:28:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7790AD528;
+	Fri,  8 Aug 2025 17:34:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754652514; cv=none; b=utlfOKeP08TWyoJXnOdMJK2vOuppbsYd6ka/AmRDJVf0Lu/WxsWyM/6LwfDtLec0Df3Pa+KDMY1tFoj166q+rIAj6Edo3PU1lKhk3bl6ylDcI4fXTSu6pk6yQEm6flXB1TBrkiQiZw8fLNkzf9w7f1s0G33D4vGChhiD9WEhFIM=
+	t=1754674450; cv=none; b=GXeTrkEauEPsaByPkeIbccfUg2D7Wc/jgdDPnbToHkcxKoXgUcPssvg5YPyk+ExHVSv7DpquqItOG3ffI3/1l+kHUBzCR6hAIQAdPUe2tO1lW/7OF5bUeWrEmjeDomiLa0W8XHFX1oPMxVzjaMtiNckgywGJLx8D/JtVcsIHBf0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754652514; c=relaxed/simple;
-	bh=7bjZzLfO9fl1ghbHcTqWmndQHxP4RCvD8GzQZJjMcHE=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=Uqev8xKZCWQLjq3kRfd/Gm0pAWrPRQAGrljY0j5JYKoDXc/4UqMxvdENFHz8cFO7VlS8JoDsGngLRQZo/p1R2zs/yLGp5r2DfT6l1EuiznQvR4MHPuZZPlT3aczZePN3I2t/VfdTpyXKJ4dLeYMkS3uWAv8DiGtFwr5ErYZ83Qg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EM9N/akd; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1754674450; c=relaxed/simple;
+	bh=8XF8Ga2PDNSnYb/eoI/7Oc7qMvpQES/wciKSY+UdJcQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hQSMk+8h+DEFD9su4RVPatl5270SvTj6YB4Y4goQ8diIOYxVfxobpJ4v85R3zVZ8Hxi5Z08VYFEDva3uHi5+xDa12enTC0uMggnoa+hPu5069UGHuZnhiKgzQuaPvmxoBtt9WHJQdYBnq3Nunl8EBYoOrE85TFNhZwpK6qeLi40=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BLsCNMju; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EM9N/akd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44D52C4CEED;
-	Fri,  8 Aug 2025 11:28:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BLsCNMju"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84C1FC4CEED;
+	Fri,  8 Aug 2025 17:34:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1754652514;
-	bh=7bjZzLfO9fl1ghbHcTqWmndQHxP4RCvD8GzQZJjMcHE=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=EM9N/akdd5EknCUIRfNSycnmf+GuuLwx9r1iowOgI1VM/jPQJJWuTe2M0lx0BCn62
-	 7ZJZSQ8QPw4PqxA3E7U0+yIrHQZQeATd5AYlunMxnVVvZWTDPCfTicAT0WobVXjfdP
-	 qAaqRL8W/f20T5FDrzmj4TI/NVMtel/Vur+PgekEOSgDoqkTqBWpz3mfJiTtWKT3kK
-	 pRUnPPM6tBDkZBCEfnDCMrAeK5NqhPOWuxZQ+FkxBCvlkPB5K7ZFj5NdL//rfUHp3r
-	 JQSeLsGt2mezuOoIzXIH5b/tSYvkvtRRvvukOVKBp96rhpHiU+4ZKlUa79r0A3m4lW
-	 p+zYV/qcchcFQ==
-From: Pratyush Yadav <pratyush@kernel.org>
+	s=k20201202; t=1754674450;
+	bh=8XF8Ga2PDNSnYb/eoI/7Oc7qMvpQES/wciKSY+UdJcQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=BLsCNMjuwhAo0FuIoJXhVZM4/ixLBmxsADPA1eRcphryEZr3E0JBXhMlxanCOCGR/
+	 COeId181qU2J0gGdJFKxNEkxX18N8khJLaF1AtTCbqDF16unfQovUbC/FOZsdX9ZhW
+	 QB3s/pIPP5dkTEN239l08Lu/6ipXbbVZKjGB3IspRP+VcX4xEZFuoMNR0vbbKIfNuj
+	 0Q2TyxV6qimkgmulrRHqkmr97n9MDu9duOn7ZoAo5/PUIjSGMJgf2Pv7DbK87/gYVx
+	 Fl/hF+cHzbu95+oIqCltppCve1htXfUcLXTp5hHXziwUnLVBYSyxO4WSi9tsCbYYGg
+	 wqQAs+8ud5Ymg==
+Date: Fri, 8 Aug 2025 19:34:06 +0200
+From: Frederic Weisbecker <frederic@kernel.org>
 To: kernel test robot <oliver.sang@intel.com>
-Cc: Mike Rapoport <rppt@kernel.org>,  <oe-lkp@lists.linux.dev>,
-  <lkp@intel.com>,  <linux-kernel@vger.kernel.org>,  Andrew Morton
- <akpm@linux-foundation.org>,  Alexander Graf <graf@amazon.com>,  Changyuan
- Lyu <changyuanl@google.com>,  Pasha Tatashin <pasha.tatashin@soleen.com>,
-  Pratyush Yadav <pratyush@kernel.org>,  Shuah Khan <shuah@kernel.org>,
-  <kexec@lists.infradead.org>,  <linux-mm@kvack.org>
-Subject: Re: [linus:master] [kho]  b753522bed:
- INFO:trying_to_register_non-static_key
-In-Reply-To: <202508081032.1450e413-lkp@intel.com>
-References: <202508081032.1450e413-lkp@intel.com>
-Date: Fri, 08 Aug 2025 13:28:31 +0200
-Message-ID: <mafs0sei2aw80.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13)
+Cc: Joel Fernandes <joelagnelf@nvidia.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-kernel@vger.kernel.org,
+	Neeraj Upadhyay <neeraj.upadhyay@kernel.org>,
+	Xiongfeng Wang <wangxiongfeng2@huawei.com>,
+	Qi Xi <xiqi2@huawei.com>, "Paul E. McKenney" <paulmck@kernel.org>,
+	Linux Kernel Functional Testing <lkft@linaro.org>,
+	rcu@vger.kernel.org
+Subject: Re: [linus:master] [rcu]  b41642c877: BUG:kernel_hang_in_boot_stage
+Message-ID: <aJY1DsIUQxzq1U1Q@localhost.localdomain>
+References: <202508071303.c1134cce-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <202508071303.c1134cce-lkp@intel.com>
 
-On Fri, Aug 08 2025, kernel test robot wrote:
-
+Le Thu, Aug 07, 2025 at 01:39:32PM +0800, kernel test robot a écrit :
+> 
+> 
 > Hello,
->
-[...]
->
->
-> [   59.011407][    T1] INFO: trying to register non-static key.
-> [   59.011783][    T1] The code is fine but needs lockdep annotation, or maybe
-> [   59.011783][    T1] you didn't initialize this object before use?
-> [   59.011783][    T1] turning off the locking correctness validator.
-> [   59.011783][    T1] CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Tainted: G                T   6.16.0-rc5-00079-gb753522bed0b #1 PREEMPT(voluntary)
-> [   59.011783][    T1] Tainted: [T]=RANDSTRUCT
-> [   59.011783][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> [   59.011783][    T1] Call Trace:
+> 
+> kernel test robot noticed "BUG:kernel_hang_in_boot_stage" on:
+> 
+> commit: b41642c87716bbd09797b1e4ea7d904f06c39b7b ("rcu: Fix rcu_read_unlock() deadloop due to IRQ work")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> 
+> [test failed on linus/master      7e161a991ea71e6ec526abc8f40c6852ebe3d946]
+> [test failed on linux-next/master 5c5a10f0be967a8950a2309ea965bae54251b50e]
+> 
+> in testcase: boot
+> 
+> config: i386-randconfig-2006-20250804
+> compiler: clang-20
+> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+> 
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+> 
+> 
+> +-------------------------------+------------+------------+
+> |                               | d827673d8a | b41642c877 |
+> +-------------------------------+------------+------------+
+> | boot_successes                | 15         | 0          |
+> | boot_failures                 | 0          | 15         |
+> | BUG:kernel_hang_in_boot_stage | 0          | 15         |
+> +-------------------------------+------------+------------+
+> 
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202508071303.c1134cce-lkp@intel.com
 
-Pasha, I think your patch [0] fixes this. Perhaps it is a good idea for
-it to land independent of the LUO patches, since those are likely to
-take some more time?
+#syz test
 
-[0] https://lore.kernel.org/lkml/20250807014442.3829950-2-pasha.tatashin@soleen.com/
+From a3cc7624264743996d2ad1295741933103a8d63b Mon Sep 17 00:00:00 2001
+From: Frederic Weisbecker <frederic@kernel.org>
+Date: Fri, 8 Aug 2025 19:03:22 +0200
+Subject: [PATCH] rcu: Fix racy re-initialization of irq_work causing hangs
 
-> [   59.011783][    T1]  <TASK>
-> [ 59.011783][ T1] dump_stack_lvl (lib/dump_stack.c:123) 
-> [ 59.011783][ T1] assign_lock_key (kernel/locking/lockdep.c:988) 
-> [ 59.011783][ T1] register_lock_class (kernel/locking/lockdep.c:?) 
-> [ 59.011783][ T1] __lock_acquire (kernel/locking/lockdep.c:?) 
-> [ 59.011783][ T1] lock_acquire (kernel/locking/lockdep.c:5871) 
-> [ 59.011783][ T1] ? xa_load_or_alloc (include/linux/xarray.h:699 kernel/kexec_handover.c:106) 
-> [ 59.011783][ T1] ? tracer_preempt_off (kernel/trace/trace_irqsoff.c:412) 
-> [ 59.011783][ T1] _raw_spin_lock (include/linux/spinlock_api_smp.h:133 kernel/locking/spinlock.c:154) 
-> [ 59.011783][ T1] ? xa_load_or_alloc (include/linux/xarray.h:699 kernel/kexec_handover.c:106) 
-> [ 59.011783][ T1] xa_load_or_alloc (include/linux/xarray.h:699 kernel/kexec_handover.c:106) 
-> [ 59.011783][ T1] __kho_preserve_order (kernel/kexec_handover.c:156) 
-> [ 59.011783][ T1] kho_test_init (lib/test_kho.c:84) 
-> [ 59.011783][ T1] ? __cfi_kho_test_init (lib/test_kho.c:271) 
-> [ 59.011783][ T1] do_one_initcall (init/main.c:1274) 
-> [ 59.011783][ T1] ? __cfi_kho_test_init (lib/test_kho.c:271) 
-> [ 59.011783][ T1] ? kasan_save_track (arch/x86/include/asm/current.h:25 mm/kasan/common.c:60 mm/kasan/common.c:69) 
-> [ 59.011783][ T1] ? kasan_save_track (mm/kasan/common.c:48 mm/kasan/common.c:68) 
-> [ 59.011783][ T1] ? __kasan_kmalloc (mm/kasan/common.c:398) 
-> [ 59.011783][ T1] ? tracer_hardirqs_off (kernel/trace/trace_irqsoff.c:412) 
-> [ 59.011783][ T1] ? do_initcalls (include/linux/slab.h:909 include/linux/slab.h:1039 init/main.c:1345) 
-> [ 59.011783][ T1] ? kernel_init_freeable (init/main.c:1588) 
-> [ 59.011783][ T1] ? tracer_hardirqs_on (kernel/trace/trace_irqsoff.c:452) 
-> [ 59.011783][ T1] ? tracer_hardirqs_off (kernel/trace/trace_irqsoff.c:412) 
-> [ 59.011783][ T1] ? tracer_hardirqs_on (kernel/trace/trace_irqsoff.c:452) 
-> [ 59.011783][ T1] ? irqentry_exit (kernel/entry/common.c:311) 
-> [ 59.011783][ T1] ? next_arg (lib/cmdline.c:273) 
-> [ 59.011783][ T1] ? parameq (kernel/params.c:91) 
-> [ 59.011783][ T1] ? parse_args (kernel/params.c:?) 
-> [ 59.011783][ T1] do_initcall_level (init/main.c:1335) 
-> [ 59.011783][ T1] do_initcalls (init/main.c:1349) 
-> [ 59.011783][ T1] kernel_init_freeable (init/main.c:1588) 
-> [ 59.011783][ T1] ? __cfi_kernel_init (init/main.c:1466) 
-> [ 59.011783][ T1] kernel_init (init/main.c:1476) 
-> [ 59.011783][ T1] ? __cfi_kernel_init (init/main.c:1466) 
-> [ 59.011783][ T1] ret_from_fork (arch/x86/kernel/process.c:154) 
-> [ 59.011783][ T1] ? __cfi_kernel_init (init/main.c:1466) 
-> [ 59.011783][ T1] ret_from_fork_asm (arch/x86/entry/entry_64.S:255) 
-> [   59.011783][    T1]  </TASK>
+RCU re-initializes the deferred QS irq work everytime before attempting
+to queue it. However there are situations where the irq work is
+attempted to be queued even though it is already queued. In that case
+re-initializing messes-up with the irq work queue that is about to be
+handled.
+
+The chances for that to happen are higher when the architecture doesn't
+support self-IPIs and irq work are then all lazy, such as with the
+following sequence:
+
+1) rcu_read_unlock() is called when IRQs are disabled and there is a
+   grace period involving blocked tasks on the node. The irq work
+   is then initialized and queued.
+
+2) The related tasks are unblocked and the CPU quiescent state
+   is reported. rdp->defer_qs_iw_pending is reset to DEFER_QS_IDLE,
+   allowing the irq work to be requeued in the future (note the previous
+   one hasn't fired yet).
+
+3) A new grace period starts and the node has blocked tasks.
+
+4) rcu_read_unlock() is called when IRQs are disabled again. The irq work
+   is re-initialized (but it's queued! and its node is cleared) and
+   requeued. Which means it's requeued to itself.
+
+5) The irq work finally fires with the tick. But since it was requeued
+   to itself, it loops and hangs.
+
+Fix this with initializing the irq work only once before the CPU boots.
+
+Fixes: b41642c87716 ("rcu: Fix rcu_read_unlock() deadloop due to IRQ work")
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Closes: https://lore.kernel.org/oe-lkp/202508071303.c1134cce-lkp@intel.com
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+---
+ kernel/rcu/tree.c        | 2 ++
+ kernel/rcu/tree.h        | 1 +
+ kernel/rcu/tree_plugin.h | 8 ++++++--
+ 3 files changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+index 8c22db759978..3a17466ae84a 100644
+--- a/kernel/rcu/tree.c
++++ b/kernel/rcu/tree.c
+@@ -4242,6 +4242,8 @@ int rcutree_prepare_cpu(unsigned int cpu)
+ 	rdp->rcu_iw_gp_seq = rdp->gp_seq - 1;
+ 	trace_rcu_grace_period(rcu_state.name, rdp->gp_seq, TPS("cpuonl"));
+ 	raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
++
++	rcu_preempt_deferred_qs_init(rdp);
+ 	rcu_spawn_rnp_kthreads(rnp);
+ 	rcu_spawn_cpu_nocb_kthread(cpu);
+ 	ASSERT_EXCLUSIVE_WRITER(rcu_state.n_online_cpus);
+diff --git a/kernel/rcu/tree.h b/kernel/rcu/tree.h
+index de6ca13a7b5f..b8bbe7960cda 100644
+--- a/kernel/rcu/tree.h
++++ b/kernel/rcu/tree.h
+@@ -488,6 +488,7 @@ static int rcu_print_task_exp_stall(struct rcu_node *rnp);
+ static void rcu_preempt_check_blocked_tasks(struct rcu_node *rnp);
+ static void rcu_flavor_sched_clock_irq(int user);
+ static void dump_blkd_tasks(struct rcu_node *rnp, int ncheck);
++static void rcu_preempt_deferred_qs_init(struct rcu_data *rdp);
+ static void rcu_initiate_boost(struct rcu_node *rnp, unsigned long flags);
+ static void rcu_preempt_boost_start_gp(struct rcu_node *rnp);
+ static bool rcu_is_callbacks_kthread(struct rcu_data *rdp);
+diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
+index b6f44871f774..c99701dfffa9 100644
+--- a/kernel/rcu/tree_plugin.h
++++ b/kernel/rcu/tree_plugin.h
+@@ -699,8 +699,6 @@ static void rcu_read_unlock_special(struct task_struct *t)
+ 			    cpu_online(rdp->cpu)) {
+ 				// Get scheduler to re-evaluate and call hooks.
+ 				// If !IRQ_WORK, FQS scan will eventually IPI.
+-				rdp->defer_qs_iw =
+-					IRQ_WORK_INIT_HARD(rcu_preempt_deferred_qs_handler);
+ 				rdp->defer_qs_iw_pending = DEFER_QS_PENDING;
+ 				irq_work_queue_on(&rdp->defer_qs_iw, rdp->cpu);
+ 			}
+@@ -840,6 +838,10 @@ dump_blkd_tasks(struct rcu_node *rnp, int ncheck)
+ 	}
+ }
+ 
++static void rcu_preempt_deferred_qs_init(struct rcu_data *rdp)
++{
++	rdp->defer_qs_iw = IRQ_WORK_INIT_HARD(rcu_preempt_deferred_qs_handler);
++}
+ #else /* #ifdef CONFIG_PREEMPT_RCU */
+ 
+ /*
+@@ -1039,6 +1041,8 @@ dump_blkd_tasks(struct rcu_node *rnp, int ncheck)
+ 	WARN_ON_ONCE(!list_empty(&rnp->blkd_tasks));
+ }
+ 
++static void rcu_preempt_deferred_qs_init(struct rcu_data *rdp) { }
++
+ #endif /* #else #ifdef CONFIG_PREEMPT_RCU */
+ 
+ /*
+-- 
+2.50.1
+
+
+
 
 -- 
-Regards,
-Pratyush Yadav
+Frederic Weisbecker
+SUSE Labs
