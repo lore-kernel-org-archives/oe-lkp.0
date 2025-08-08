@@ -1,108 +1,107 @@
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B35DB1CBA18
-	for <oe-lkp@lists.linux.dev>; Thu,  7 Aug 2025 19:53:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.165.32
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FB75220F52
+	for <oe-lkp@lists.linux.dev>; Fri,  8 Aug 2025 06:11:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.16
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754596406; cv=fail; b=ieBoJA/oBVnPaEQf72UgcUYeSUqXZqSWOfNusxKum30PBSNheQvDdi9Iibc95XI3lk20B7//txg0utYQEPxIaVo6DyVQaW61KigRBWs7aZFJ46BN4FAlAmJ5i91crpBQ0uDp0RxHZwkMEE+WDss+RTqnZ3tf6AVFgfaOOayh/MI=
+	t=1754633497; cv=fail; b=robCHA06oLEkwXVAip42aN8NCdLPVFOKmX0oEOzSzaPrF3/a9S2J2/m8mQYDwCqX52rOo4T/+KLwpd4YWdFLt2ObVbLhvOngT1awOLhax8enWAZYnsjYOUK7cFY7IGqHiF6LkSkK5Dm0bsrPXUEPIC1jm5s/Ksgy+5oN0rnVLHw=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754596406; c=relaxed/simple;
-	bh=vO25llXA01q/5ZHkq8ethfEfAA5xanBkicH16GSB65s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=nrU8hnT2mH6Eos9yoZgpOaZrqtAb+lGme9EJ1n1BQY+eKIzLmd00cDY+zB6m6aSvAQzjcv5w3vsXK7hH1Kqb8FClRRqGlnVEczKYcA9TREi+2AyaCANcX5wXqOjlLgt7uCyP6de1txI8TeE2tN9DS7pYyZLgPAUdETbYb/KmC4s=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=Nf9Z4Y3X; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=Ojic37Gh; arc=fail smtp.client-ip=205.220.165.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	s=arc-20240116; t=1754633497; c=relaxed/simple;
+	bh=B+rqFpe77O7Z7B2Cy/1UMbzFvlJx4zgRSRqQMFCufk4=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=l8EL1E5bt/9zBxYnX3omB/3u/YnOMfJpD0YmXPaOBBgN8TNo559EhBIim/zuBE+bJDMCvZ6xKvPpjgE8EKEQyWpvIABAywX9OS+KnsKRi33rmMUgSnUOBW/r20duZHKkCp/ErX8LY8/LUHL4bnWMiYirOYIs4f+f6Ve6mLF3xjk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Hu6h+Ix9; arc=fail smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="Nf9Z4Y3X";
-	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="Ojic37Gh"
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 577Jfwd3025413;
-	Thu, 7 Aug 2025 19:52:54 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=
-	corp-2025-04-25; bh=vO25llXA01q/5ZHkq8ethfEfAA5xanBkicH16GSB65s=; b=
-	Nf9Z4Y3XdMnJcqzawQgbL/58UByE2BIkTp21siLXgzHO2hNvfp9bRbDd3L1Moi0U
-	0XuMv8e3wdBCTDVdzIV7rnOk+bS1KJfR5CoGfXfAtbsHjR29xMHhPL2d88zG/1mO
-	5exPjFyE746fmpgpqhUxrj/92hfVR11qF9/BOHju77+tRe5p9zcXJZTQOXGOMC0y
-	nUGNnoFu8jkp7mplgAk7cx9BUqeztrwgOc8aVanI/xREr9WocW0yrYlITV1NC99/
-	uU3SlDyJun0vWZRkb4L+B6gdkrY22WG0C6rmOB9IhHcrY/TOZo4TivjyFYb9yBGR
-	XrePuNsdjskqm7JMVAc4DA==
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 48bpvg4xth-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 07 Aug 2025 19:52:54 +0000 (GMT)
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 577JjhcX032127;
-	Thu, 7 Aug 2025 19:52:52 GMT
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10on2048.outbound.protection.outlook.com [40.107.92.48])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 48bpwsdqgc-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 07 Aug 2025 19:52:52 +0000
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Hu6h+Ix9"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1754633495; x=1786169495;
+  h=date:from:to:cc:subject:message-id:
+   content-transfer-encoding:in-reply-to:mime-version;
+  bh=B+rqFpe77O7Z7B2Cy/1UMbzFvlJx4zgRSRqQMFCufk4=;
+  b=Hu6h+Ix9lFjrVEVjYpVja8BOqBXWu1o/DyS4Uy20cwJeMN2PzBfcEI1i
+   bhRbUcPGl3YTqtoGxpiWF67tgYRJBL6qHx+uUf5DpCOBj9hGTZ1BaML/F
+   rzqudcpUMj2xfnQu/8MV1D87WAfPc4WYzvg5kwcXNM2mv1VeYS4jnI/ua
+   sHemMLaahFtulCXuPcwKvLxfNRtlWBdNvCl92jVJ2enuh1T5Mdjjpemid
+   LbnX4ah9t4C+4Rhs8OS3j+naJt4PhmqrDDItdbpO/1Js0ubhM46vVIlqS
+   n7WRIEWo3mv7tYzpGhHWkoP6NJJ/xgL0u8pOGFTov0t6s30DKX57rBweP
+   A==;
+X-CSE-ConnectionGUID: 1oXXRUKDTtmChPdfUvOkEA==
+X-CSE-MsgGUID: solN4jbdQueib9PaJblPdA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11514"; a="57118446"
+X-IronPort-AV: E=Sophos;i="6.17,274,1747724400"; 
+   d="scan'208";a="57118446"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2025 23:11:35 -0700
+X-CSE-ConnectionGUID: hIVq6rMVR+aoPNWJnOY8+A==
+X-CSE-MsgGUID: vOxyOhAvSmmar5fd13w1Qw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.17,274,1747724400"; 
+   d="scan'208";a="202420724"
+Received: from fmsmsx903.amr.corp.intel.com ([10.18.126.92])
+  by orviesa001.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2025 23:11:34 -0700
+Received: from FMSMSX902.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.26; Thu, 7 Aug 2025 23:11:33 -0700
+Received: from fmsedg903.ED.cps.intel.com (10.1.192.145) by
+ FMSMSX902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.26 via Frontend Transport; Thu, 7 Aug 2025 23:11:33 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (40.107.223.58)
+ by edgegateway.intel.com (192.55.55.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.26; Thu, 7 Aug 2025 23:11:33 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=UwDcvha6r5JvyyS7Wea883H6uG9CY3Pm8g4DAuiILS3qPhb+l8IqRd9yYl2OXRnL+CGl0vwqMYyqBC8PAa1VarUbuaNKAhQ8eBoaww+dcHsI5a/oApkR5kiftlFxSkUzIdvBR4lcd5jgxVOE2b19cgbyDh9ybUG56le/JC1mArWpMHjzgJBWIf905YiM+QniY93fXvFLq11xsVjvqxhrUvTaTQVFkpaXd2FJi2qITJJcU8WCpxTPiHX3sNMxzMnVntu1WJiCth6qrc8NwzmSrkQvRS5Vaq0UqdRsGvpVhCMsRUEeAsEPgKrfgbrQBIpDXHVcocIAAZyiPGoXRCEgMQ==
+ b=yG3RIrlJp+hgvmMgclbehZhzMtfMZsGQXF8I0yA+jhhlQ7ziPccaWWpYPB07HhtXoQPCiMAhfmkl63n0f18bTuL9YAaMyNVARZ75ix9XnEC+hlI0zFyeKdwAZ/YcL4k8+xkVHU0VoRzp/KGYqC3mMX5fNc/QNZnGF5gynXNX9d8JQRCjc7Vq4YeU1iUKmTrRCri1CcDcM7JfQ3l2btFpo8FfLrPKOm2H/yf7dpIZJpDIuVgq5J0EfHuzoH7LQdiQ4VwpaGPpVBKLPclQuLC+VHRGQVx4riQgKvIOPH4T5dmEs9yS7A4tjtt/NtsDiDx85IlVLzLvLJ7i3+Cfwo16zg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vO25llXA01q/5ZHkq8ethfEfAA5xanBkicH16GSB65s=;
- b=M5WSsnbrIY3xZrRRlXjHCueUm+iM0T7SM+gKI6NxEdh97dIoH15q49vFjnEScZPEWoPJS7ptxYx/WSKDNL47EpyBcg2xbc9o3RWfN7hhDrWrxBSUxas74X05LgK1Kk6633QpxJLivV5ky3+a1X6+NuxZwDbhr6Y5agMOfAFUWFm7gM+2g+mjdkseCT390dc1p/7nyx6dGXNPPaTnW1g0hRKV9sCTrlFo+3v8hEpImLqUhWUd+QuKIaduJoH/YWo1I4Hna6zaDHs3CFUIzUACcOmzHHwUhpX1sUpOcbxStkMX5WjXukea3d7lXgbUYNEJsFxwRfpSmAe8IJhFuYbBkQ==
+ bh=D01V9RilzvSmB7lexaPB/p3swRGKQ845bmt6/QL0hlo=;
+ b=vpdaQxC/8GzeFoyHywrLmhxerB5PeZc9NrRT8YhQZtzfU87Z797LLMpqWYzp8BRQ2VT/AutQK1e74/6f0Cf3spD82l8/ZN6fnpZCLwxF9gO7BuVGcBDlnCQYKyCbzlob6ZySh6NUg4P3QbZ2A6WSDA5i5sQEiCsN41XWyF0pDVIVuCKTIypn8NL+mVQjXZRp/UVlaMjdtFrTS6QdzAbM2evAWSpAmSYJ2RMtilEhDmuDDZfd1hvYuW7rByYbrMmuEvQKl3zr32nXC/ZZ/PGLxKipMTQkbS7+2h8C+AVocaj66T35fkL2YgduoiuFoROInyoO76/ChqpSRi45PmRitw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vO25llXA01q/5ZHkq8ethfEfAA5xanBkicH16GSB65s=;
- b=Ojic37Gha7f5YdVYKqZiPvV/BJGWrD78ydiMBCcxExn6trHmkHSK2EZbYOSOxtZt5BqSYP2ZEfzJynYII+UMplAjSGgZ9uElXasMz4n3NkFJ3Rd2brhdNv5t/S02SXSiF3rGhnKuB/UNqECt4EyTC1sryQYLWcgsa5+kOEs4aYo=
-Received: from DM4PR10MB8218.namprd10.prod.outlook.com (2603:10b6:8:1cc::16)
- by PH0PR10MB5780.namprd10.prod.outlook.com (2603:10b6:510:149::5) with
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by SA0PR11MB7158.namprd11.prod.outlook.com (2603:10b6:806:24b::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9009.14; Thu, 7 Aug
- 2025 19:52:50 +0000
-Received: from DM4PR10MB8218.namprd10.prod.outlook.com
- ([fe80::2650:55cf:2816:5f2]) by DM4PR10MB8218.namprd10.prod.outlook.com
- ([fe80::2650:55cf:2816:5f2%5]) with mapi id 15.20.9009.013; Thu, 7 Aug 2025
- 19:52:49 +0000
-Date: Thu, 7 Aug 2025 20:52:45 +0100
-From: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
-To: David Hildenbrand <david@redhat.com>
-Cc: Jann Horn <jannh@google.com>, kernel test robot <oliver.sang@intel.com>,
-        Dev Jain <dev.jain@arm.com>, oe-lkp@lists.linux.dev, lkp@intel.com,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Barry Song <baohua@kernel.org>, Pedro Falcato <pfalcato@suse.de>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Bang Li <libang.li@antgroup.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        bibo mao <maobibo@loongson.cn>, Hugh Dickins <hughd@google.com>,
-        Ingo Molnar <mingo@kernel.org>, Lance Yang <ioworker0@gmail.com>,
-        Liam Howlett <liam.howlett@oracle.com>,
-        Matthew Wilcox <willy@infradead.org>, Peter Xu <peterx@redhat.com>,
-        Qi Zheng <zhengqi.arch@bytedance.com>,
-        Ryan Roberts <ryan.roberts@arm.com>, Vlastimil Babka <vbabka@suse.cz>,
-        Yang Shi <yang@os.amperecomputing.com>, Zi Yan <ziy@nvidia.com>,
-        linux-mm@kvack.org
-Subject: Re: [linus:master] [mm] f822a9a81a:
- stress-ng.bigheap.realloc_calls_per_sec 37.3% regression
-Message-ID: <c170282b-be66-4eb0-91bf-17614acf3321@lucifer.local>
-References: <202508071609.4e743d7c-lkp@intel.com>
- <9e3a59b2-11c0-43ca-aff3-414091f04aa4@lucifer.local>
- <CAG48ez3=8f3eShjAe9hrvivP+Dvyisw=X_Tr_phc-OX_4MzeDw@mail.gmail.com>
- <be074809-e1fd-43a2-9396-8f7264532c4d@lucifer.local>
- <CAG48ez3=kLL4wBxAVSa2Ugrws+-RFQMdNY9jx5FAdbhpNt8fGg@mail.gmail.com>
- <e4f5faea-ccec-4cc7-83de-1a3c7013b81b@lucifer.local>
- <cbc2e23d-69ab-4820-9942-c7abf2066ff7@redhat.com>
- <CAG48ez1vM35DZ=kTSd4+ndgR6y33AodLLC2KbfbhGrkDaqdnNQ@mail.gmail.com>
- <d8e0f3b3-6ea7-492b-bb94-4f5d1ab28ef2@redhat.com>
-Content-Type: text/plain; charset=utf-8
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9009.18; Fri, 8 Aug
+ 2025 06:11:31 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.9009.013; Fri, 8 Aug 2025
+ 06:11:31 +0000
+Date: Fri, 8 Aug 2025 14:11:16 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Yuzhuo Jing <yuzhuo@google.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	<xudong.hao@intel.com>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar
+	<mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim
+	<namhyung@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "Alexander
+ Shishkin" <alexander.shishkin@linux.intel.com>, Jiri Olsa <jolsa@kernel.org>,
+	Ian Rogers <irogers@google.com>, Adrian Hunter <adrian.hunter@intel.com>,
+	Liang Kan <kan.liang@linux.intel.com>, Yuzhuo Jing <yzj@umich.edu>, "Yuzhuo
+ Jing" <yuzhuo@google.com>, Andrea Parri <parri.andrea@gmail.com>, "Palmer
+ Dabbelt" <palmer@rivosinc.com>, Charlie Jenkins <charlie@rivosinc.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Kumar Kartikeya Dwivedi
+	<memxor@gmail.com>, Alexei Starovoitov <ast@kernel.org>, Barret Rhoden
+	<brho@google.com>, Alexandre Ghiti <alexghiti@rivosinc.com>, Guo Ren
+	<guoren@kernel.org>, <linux-perf-users@vger.kernel.org>,
+	<oliver.sang@intel.com>
+Subject: Re: [PATCH v1 1/7] tools: Import cmpxchg and xchg functions
+Message-ID: <202508080716.5744484-lkp@intel.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <d8e0f3b3-6ea7-492b-bb94-4f5d1ab28ef2@redhat.com>
-X-ClientProxiedBy: FR4P281CA0210.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:e5::11) To DM4PR10MB8218.namprd10.prod.outlook.com
- (2603:10b6:8:1cc::16)
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20250729022640.3134066-2-yuzhuo@google.com>
+X-ClientProxiedBy: SI2P153CA0015.APCP153.PROD.OUTLOOK.COM
+ (2603:1096:4:140::21) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -110,161 +109,355 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM4PR10MB8218:EE_|PH0PR10MB5780:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4f326be8-0fb9-4ceb-3643-08ddd5ebfca2
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SA0PR11MB7158:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3cfa7f09-fd2b-4237-629b-08ddd6426b4b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|1800799024|366016|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?SHFhYUNkcUtZOEpYZjZkelo3KzlGRkNqcytIRVBpa1FrL3FDKy9zR29rNzVD?=
- =?utf-8?B?RjdwK2RXdzJ6TG45bGg3alNTVlhSd3pDalY4QlZrTWJOWFV1eUVuUVdBdU9k?=
- =?utf-8?B?SW1ueFlMR05wTFZHbTBmZ0FYc0dvM2h0bzZ1eE83QlFWOUVqZ0M1dTl5WGg1?=
- =?utf-8?B?T2FmT2h3ZTRCZUtjYktoQVpSaVBMbmhQcjhjRVlzZXhnQzBKWStmdjFlaTcy?=
- =?utf-8?B?TWhFNk1UMUhkVGRFSkI4SDdmTjFvN1I3TDhyZGtSb2g4WnZGeXptNXl1NUsx?=
- =?utf-8?B?U2w4djJtK04vUHdweXFKa2s5RURoZThLaVlwR3JQTG8wOEFZNUN0SjdvT0N4?=
- =?utf-8?B?T1d5cmhsM1hBSE16ZG5OQzhsc0E0dFNNMVBvM0M2ek9pVFc0S0ZNQVJJVDZu?=
- =?utf-8?B?TkkwaytyM0JnUFA2Y1llWHlYOE1WZG9jVWRjc2U5WkNncmlrMUd5cUMyNmFG?=
- =?utf-8?B?Q1JZdkVzSzVUVUtlRUtQbHMwU0x5ZklYTWc1dGFHWmhud3JpUmtoVGhKdlNW?=
- =?utf-8?B?TGM0azV3VXdlZjhpSXpiWE5TcmR4VU55UzJ2WGplcEd4SXRwenVKR1loZkxS?=
- =?utf-8?B?WjhWZnFrS2RxSDM0QllEbTF0akt4QUZ2R29zanMrM0d6MUYxQ2tXVU9LK1pa?=
- =?utf-8?B?UU1YanlGclhYWVBHbTJFa2hna3EyeDdDdWc3VWRzdlFON3dXNGdmRDU4OGJi?=
- =?utf-8?B?Q1lKOTcvVXY4K3N5SDl3Y0FSZ1gveDFlOTJ6V3oweC80akxvTVhKRnhwVXFM?=
- =?utf-8?B?aGluaFF0azNlQk94bXdISHFrMjhNQzJ5OHFJWjV0ZENtcDlCZ2R4UklXSWJQ?=
- =?utf-8?B?WlFGTnRnQXNFTWxNSVIxRThzZ2IzbFRld1N6cTV0T2RVdldVMEVqK2FwTTZP?=
- =?utf-8?B?RVFEVVg3UmJ4a1dsQzEzaHRqL2tLSzNMT21oK1lIS01FcTVnRjkxcUZGQmFa?=
- =?utf-8?B?VnNHbGMvN0k5UzI5R1BxMEIvZWhudVZROTA4MmJkUFRlSWpyTDRram5rSDYw?=
- =?utf-8?B?OHRsRUUzZ3g0c2twb3ZOWmZsOEM1alZEaVRFRnppSnhvWkNpRVdYOGJkN215?=
- =?utf-8?B?QlRYQjkrMmJnWTNvRDF1TG5JWmxBM0J5NSt5aEFhOWRtcWVwMkhHUW54Uk1R?=
- =?utf-8?B?Rzg4cXhZaXNDempqTFFFTE1vYk9MazQ3RGdXM1lnazR5VXpHYnhmeDRyd2JE?=
- =?utf-8?B?U1dQWFBkU2FxcEVyeUd2WHdCWmhJT3VzUnRlRzh2MTZDYS82RDRJanpQdi9p?=
- =?utf-8?B?ODNDTTNZZDJPK01rTEdRVGJHSStyTmJsTUpGaFBmbXBpQkg2WTZveURkblAx?=
- =?utf-8?B?eVRuVC9SaVBucVNnbzlsR1JVc0Q3cGtLRmZXV3RDejF3amkwNkFTU2R4YWo3?=
- =?utf-8?B?WEYvc3ZIZjFoWkJRZG55TG5MV0xXUHV1VVduOXoveXM0WjM3UDRDV25ON3hX?=
- =?utf-8?B?WHNGZXlQNXd5WCtoVHFBQUFEYzMyYlJlbldTRTh0bmhrMk9xeWZsc0VqdC9Y?=
- =?utf-8?B?aDEvdUVPY2piWXNKS2pxaGowSGhFR24xMEF6TFdIM3Q4d21XV21mUUtHRnJV?=
- =?utf-8?B?WVZKcVl4dmpseEdtZmN0ZWZUaVVwZ05MNWl3TGhBYlg0YmdlWkZJYlMzM3B0?=
- =?utf-8?B?L1RvZWRrTEtZbjdnUmpMRTNaNWlzaVVhT0tJbVVHenN5ZXQyTW5xaHlrTXRF?=
- =?utf-8?B?OTNQSE1oeHZmTVJVVzBwcVN1ZEI1V1JsMDY3KzE3akQzU2NxY1RMVkI5QWdx?=
- =?utf-8?B?U1JaUzcxK3cvQ0xiemgvQW9teFBiOFRZVVRBY01XTlBtZ1JMSnp5NXJLWDZq?=
- =?utf-8?B?OVQ2dDUrbG1DK3F2WEdNREZybHFWd2lCYnJKYy8zRFdINGJNdWNjUTIvQUpP?=
- =?utf-8?B?QUt5TkZGWjhMa2h4NjZVekZCRzNldFJrcUlQbUhQL3JsS0E9PQ==?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR10MB8218.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(366016)(7053199007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|7416014|1800799024|7053199007;
+X-Microsoft-Antispam-Message-Info: =?utf-8?B?ZFp1Vjd5S2t3NnZLTW9VM0lKRHJOb0V4SEZLeWVEajlhS1o2dXhjSEtYZjFD?=
+ =?utf-8?B?a0NMQ01CZ3g5aWRNbkJXR1hRbExpZWx5MHRXK2c4UytwQVY1VzFrOVc3bVEy?=
+ =?utf-8?B?N0Z4MmZiYVNhNnZUNFRheHlDelRXRmZPOVltbEZXVS9HWVR1MkE4SGJUVlBs?=
+ =?utf-8?B?bytDQjM4WGZEWFRJZFJRcjV5d0hmWTRYU2lEOHV6NWM5T2Exd1lRdVpNa01m?=
+ =?utf-8?B?MmxBaEp2SGVyR3FDOWp1czI3TEo1SmlmbE1KdEFuWTMrNVd0eFZGcCtuWTJM?=
+ =?utf-8?B?RFRNeHdHRnpzZnVPZXo3bmZsVXVSV1RJeit2M1BuajI0Unc5d3FrdmhYbVEv?=
+ =?utf-8?B?Mk9icHRHMjg4dlFYaVJvUzhlZUhncWZzU29leXZ1UEhkMjdEMmdDZEVob0F6?=
+ =?utf-8?B?SFJOTXh4TjFOVWtUd01jWkYzV0FYRlI1UlRTb0wwbnZVRVJqQlAzaitzRDYy?=
+ =?utf-8?B?VDFLSXduTUZFN3laSE85Uk9PVVA0WG9HRVFybGhzWWRDVEhtK1lqS2IvYWF5?=
+ =?utf-8?B?T2xScjBIa0RIMzZuNElyNllwcGNuYm5QNGZsdUNIRGRkcGFLcHluZjBqRTMy?=
+ =?utf-8?B?SmYvQjdXZHRyOUJlZTY4TDd0bFNhd1lOSnZrcGZZZXhmQ0R4aC9HMWhjY2J0?=
+ =?utf-8?B?ak9WczQveFYvR0V2aVROdlhzVFM3VmxuazU0L2xJcWU4NTJUbUljWC8yVzls?=
+ =?utf-8?B?VWRoMHNOazFYdTdwNFR3dlBBSGdrVUNKZXFpTC82R3NxTXovaDU2Qzk4T0Fl?=
+ =?utf-8?B?MjZJQUQwdU1lanBtamU3SzRpc1lKbWlGZTNyWHFUMGJ4SnBMZWlvVEJYNkhk?=
+ =?utf-8?B?WUdDeWUvRFBWNFRvdXV2dHREVUVIN21sNGNBbE55aXZzdWtDLzVDOXdXV1gr?=
+ =?utf-8?B?c3ZaeEQ1NVo3b0xMTERCQytSanJaVjVzZWsvZnhUZ25NRjh1WDdrbFF5emE5?=
+ =?utf-8?B?bmZjWUtqbm45K01XejEvSVkveUlGSDJZQlYzNFBPTzMwb0hSUW5DSjk0aytU?=
+ =?utf-8?B?cjNLRVc5dWkrblhsMzBPMUpMSHlwR1VzTldXdnFiMkRrT1RjbjUxN1lCWG9i?=
+ =?utf-8?B?MnJLTWdzRUZjQytJenAzZ0oxNWdDVUErM2xVeFRZaUJmVU1RNVpMelpoOTlR?=
+ =?utf-8?B?VXZjcjllMnVGanlPb1cyOG1rZER0MUVrYjQ1ekNRVFdzeUdXT3pWRHN3QTg2?=
+ =?utf-8?B?bjJIc25zWjhFNXJjeHhmYVdHanVQajhnU204Q1cyNXNWRVA3SVJFTWlYZjJs?=
+ =?utf-8?B?eWxLanVDRk52OGJYSlZUYms4VnFVZVpDOUtMb09jaUlrWi9MalBza0ZHVGI2?=
+ =?utf-8?B?QVJBT0NxMU94MWhSNFpCMU9KeFBlQWlkMWRJQUVxUTkvdlpDQWpqOW1ObFRt?=
+ =?utf-8?B?UHE0QWwySlZVMVVmK2Nxa0RhaHBrMnRITG52VnJOODRvOU8waVlpOVpIUmlr?=
+ =?utf-8?B?c1Z6clU5endaQWlsVXVKN0dXSVFOcVYybFF2bHhGUFBIMk4yYm1kZFo5UjhD?=
+ =?utf-8?B?QmF6SURQRVJHSjFDQ2cyRXJ0a0dVSHNxQnVCLzJpMENZQmluWkpTaXFIcm9W?=
+ =?utf-8?B?S1h3Y1M3Nkp0SzdhcDV1RkFvMFM3cU1pZkRiekRxRmI2dkQwSHo3b2lsZmkr?=
+ =?utf-8?B?dTlJWk9DS3dSOTE5cnBzTGxuNXlJVWNQZHBSUDBJTkliVTBPNkRpc0ZmWWZM?=
+ =?utf-8?B?cE5tWHAxemdtWURlUmtoblErcElBb3NtbVFISVZBQVZ4a05wMXVncExlb1Fo?=
+ =?utf-8?B?VGVmMzR0Z3A2OThTZjZZUFFKc2pKK0ZTKzduY21XSXdYTDNCM0ZlMnBvMzJR?=
+ =?utf-8?B?ei94cTNsbzl6OEp3VnZmR0lHYkZmMng5OFl4QkV5bEQwRGYzcElSZTN5czZU?=
+ =?utf-8?Q?SltVgd/AITVEn?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024)(7053199007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?MWpHNE5PMkVlSXRWNVArSkZ5RjVtYWNkSXpCT29iMStSYk0yVGxoYzVMSXpO?=
- =?utf-8?B?MmRUNXFhRmhMUVArWFBCTlJzbWxSMHBoczVkM0VQSkR3SzJEeXZTYmZ6MTFw?=
- =?utf-8?B?TUZ2U3k1dWx5anlMUkEzdWVCbDVXUE9WK3pSdGYyb3EyZ3BoVFBsZVdiRU9w?=
- =?utf-8?B?WTh5RFpxMktWY2E0TlhxWGJ1L2EyK2c0ZmZSRGxYaVFVN096cEt6blRCZVY0?=
- =?utf-8?B?TkY3QlFoTTNncE9mR0h6VGpjMUluZXQrTmF1VmZiNkk1K01meTBKbFVZeDJQ?=
- =?utf-8?B?Q2hkdmhkdTZwK0NXb002dzFSZnVEVXMvSEFSUTZFbGNBVGhMTlhPY3EwRHNs?=
- =?utf-8?B?UFlOU3FCNUhRT0kwRURZdDVwd3FUVXBkYVA3Y3kvUEg2ZU1Mbkh0eXFwNUFU?=
- =?utf-8?B?QUNnVG5CamFsSmhNdFl1QmdDQ3l6dHpuZjUrbFZnOFJMOEpmS0x0TWpQMEJt?=
- =?utf-8?B?ajVqU0UvTE9BSXJmK3RsUUpLSWZtRmVlUWNNMlJVNGxteUR6YXlZVlV0YURY?=
- =?utf-8?B?V1FjemM3UjNhclRHbDAyU2x6TUFpcWdjZWs2T2YvZy9hWFAxaVpDbVZIeXhH?=
- =?utf-8?B?Q0RCeDFCVERXM2tUQW9lWDZOSTB1Z3Arb3VzQTNndWl2YWJxYWVDZmNHU0Rp?=
- =?utf-8?B?NFNIKzZNcFpKd1hNSG11UHUwakVoU3NoVVdGa241L3JwZ0RjenRRYng5L0ph?=
- =?utf-8?B?a3VTT0JqOXhhQ2ZRc1BSK2xlNXU0TkdLMG5qMkV0YndaVDdaUSszN3Z4Wktt?=
- =?utf-8?B?c1BJMXhRbGtHRk9kWW9pdjRWd1JCZGEvOUMwRXBVdnhPRzlnWWZTaDBPNXlq?=
- =?utf-8?B?S1l5WHRLUkV1VkRmZzZsaEZmZGZwOENiY1RwbVQyclZTeldidG1MN2FsaXNn?=
- =?utf-8?B?MDcvckR5ZUNOT0JrSUFUSEUwUGpEbGxFQ09IVTdnUXJjU3ozL1hKSmU2d2VH?=
- =?utf-8?B?QVg5a2J4N1Vnc2lMcUkwSWZpVGhmMFVpT3FUQ0xzNDJnai9vM0lXb1k3eENY?=
- =?utf-8?B?eEdCMFFpTXBUWVBlZUdIbWYzT2pvTGZZaldjcUxRTHZvWXNNME5zakc5S0Fk?=
- =?utf-8?B?WXRtQ2pLU3FCM0NTMGJhMWxOL3dRWGFpbjNkTitkUitFQWZuKzlvMWtBSzZa?=
- =?utf-8?B?bDJlM2pDeUNUYy8zM1BPVHNYaDhxQit0WmVOSnhFSDkzTlFHVUQ1Z2NEamFF?=
- =?utf-8?B?ZFhuY0dVb1MvT2c5MzJ6WVl0c291L0lSd1h4dTUrZWxWdkVLeHl1RnIrdlpY?=
- =?utf-8?B?UlFOUFhJZkQwVUN3VURQak80MmxSUll1VkxucVErdDhkRDVKdUljM3pzOVZ5?=
- =?utf-8?B?aEhDV2pRUWFnMzZFOWEveHk4S2g0VHA2aXBPUlgzdmsyKzRLU2FaQUEydmgy?=
- =?utf-8?B?NzhQeEJrR1JPZHF0WDRQSUxzM0cxSHNGOHM2Y0pBRFpuUVd0cXpXeTFZM0o4?=
- =?utf-8?B?YTV6clFYSkg4SUxRWVpRdC9jMEY5a2RqWkw3QWpJdzR2Z0trRTJybkZUVkxl?=
- =?utf-8?B?bE90MVFLZEN0bCtmdDd2SWlXc2ZTQWlhTXMwd1dibjNORWt6a1pSLzhZZk0v?=
- =?utf-8?B?Umpucnk0REtjbTNmazlJSkNSQ0xCY09oN1AvTzErY3BORmxHYXJVQXZBb2lX?=
- =?utf-8?B?RUtOTnE0eUFmQUtqa21KbEM3TmhLK0l2cnpwQkJRV0pXZXhUWlcvUE9tcU02?=
- =?utf-8?B?Rml4c2huR09TTnR2VnMzclFDT3dCSXY5cFRwb3RFRTlEcDkzM0hoNnR0VVBO?=
- =?utf-8?B?UXZrME95cEpNZit5ZkxacHVBY01ZRzBhblNFbXB1dThNbFpmSm5BUWkyUnRm?=
- =?utf-8?B?V1k3b2M5ODVPQ1B1bXBVVDlqTDBMTkY1Q2syc1F1SGowTEJ6RDdoVVZJeXg2?=
- =?utf-8?B?b21VUXBlM25yWXEybFZrTWNIT0RhVlhqamJ0Q2VDK3F6QjBwcldielJDRTND?=
- =?utf-8?B?dU9qWHkyVEpPSkxMTHkzVkNiNUtmYm80UFp3NGZqU3ZCQk9SUk5jU2dITERz?=
- =?utf-8?B?WWJiOEQvZ1daVERMcmNiNzd6a1VoT1pvTWFFazl0SFhLc2FEaUx5R1FZeFVU?=
- =?utf-8?B?VU16NXEyaU9vbzV4Nkl2U2VYZGhVNmo0Q0tsRi9lYTZQOHBpZG9mM005bEZL?=
- =?utf-8?B?dVFLRCtMOU9QWEVvY3RnR2NpTkxKVTBxVHY1cythNVFsc0lyclhtUXpZclF5?=
- =?utf-8?B?cEE9PQ==?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
-	wysJvEu6+ApReWn3XuGpsXoIGPUet/szA7PDENL7v2whlqk84GNz206u+z79RVmzWiLDwz3g/U8LPpYTCbRHKYQL5BXZNDV7KuEUhzxoNF88a1o5nZejWGqPHr5mlWTCmUqqjrfwF+e+sROAnNYIdZOyd+9VpVSJU+yEJzEyqzl72xm9hCaJThT2LLPqvheiX/ztGbZMfoVoR9ofpkKJv1WlZg+GLVsZNXQoXvCuVFuACxZep5jV7sZQQj88MsmMfOdrMcBaluaIbTcJ7kfX5mrU4rHvQ59Sj3M09NM34Xc4VSzuU6ijGHgBXD/2r4iYxp2rTEyPK+bj8uq2nYFWRIsWq6wzmaVFzpYWmZc/Rrj67R5p2sJ8rnPcfep43O8OGovHJYiNowVGcP/PCJrS1AOTTWCRMaPFFsQ9YIDo7G50xZ0xRE8YSNwatUhf7T0Vcnc3z4dV/pPJvfUK8wFiR8iRTDFaR8WTIBrf6Om5Z7w1m1249uR4AY4akt8zIGkZM/dz90gYp8LWSHqeCsKyGdycgR5en2s3DJAIE4zkpPOiE3h3H7cjedL61JqG6R0+XlOr9KN65XCjSQLdGNylBCIcRgE0tvW/IanQjj5FAGs=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4f326be8-0fb9-4ceb-3643-08ddd5ebfca2
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR10MB8218.namprd10.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bFh0RGlGYXM3WkI5S29rMzBVOWp3SDVyVHluRnVrc3lJcjc3SW1lRTJrZmhq?=
+ =?utf-8?B?cC9Ha2JCNTlkQVJtYS8xMENrY21pSTVyZDgrVVF3OHBhVEdDZlRRdVRFMHNX?=
+ =?utf-8?B?TTBBUnFTbWVRWTRFN2NQVzVFdkE3RmM1Z05LYVhQM2JQY0hRL2NOVVFXK1FJ?=
+ =?utf-8?B?b3lrV1Q3elBPY0pMbFdPb3VYdmZocGM1NFJJNzhseityV0JUaTBndDRWdlNl?=
+ =?utf-8?B?eWJTTHVqUmdGbUprVDRrVkE2ckhyZ1dVd1plNnU4NGdhK0lNdmhBc1N1YVgr?=
+ =?utf-8?B?MS9uU2E3MW8vZUh1dzJKUmRkcEVHQWtCRmVONktMV3YwejJFSG9ZbkNFcUhu?=
+ =?utf-8?B?eXQvRFMwWVI3eWxseHl1Z0g1cWd4bmdGRkUwRGpDVjl2SktQWkFhcWVsbitK?=
+ =?utf-8?B?R2xacWIrbWJweUR3Zk1zcWpTMjhMWFBxRjJXc2FYOEJ2eEdja3N1cWZCY0o5?=
+ =?utf-8?B?TUhZV1pqN2t0eENvWC9TL2hDb2tLdUxOV2QzUG5kb2s3ZUJTUGJsK0hoRWhp?=
+ =?utf-8?B?Y3RJZVBFaWZ5cldiQVZ6eEUyTit1SmVabXZ3YkhiVTlPMEErMHZEeUZVekF0?=
+ =?utf-8?B?NlZWNFZqSE1zWVNZMGVHc3NSM05ST0NYK0d5OGh2U0dWbmtOSEw4Z3o2VTdm?=
+ =?utf-8?B?YXlGSTRJa01EWXBFMjRJUHN6cHh4K2dZZ1kxdDZsTHZOV2t6OTF0TFJCVHo1?=
+ =?utf-8?B?cUVlWWt5YzN1SFV4TFlCWWV3OTN3TEZUOXI5NlFEcVlVMDF5OWNpQ1BNMHJ1?=
+ =?utf-8?B?RW5pSXRhRmd6aWg2SDh0Zmh5enBNaXdtL3dCbGdXMXFHWlpBdnhLZjQ0MVVR?=
+ =?utf-8?B?K0RSMjhTNzY3WkNvWXBhbTJ4c2QrdTJ6VnhTMGNEdnpSN2xoL2g4K3JDaXE2?=
+ =?utf-8?B?M1RaeERqSXNWNitkeTU0b2MzR2M2MUZERGtWVkU2ZTRUQkdLWnc5Y0s5TzJ2?=
+ =?utf-8?B?NUlsZVIrTVFjV1dVUElKcDg4eWswcDMyampwN0lhTk9Vd2tqTHBZWks3ZU5L?=
+ =?utf-8?B?WTMxb3N4Q2VFcld3SEJkSFd4RVkrVEdsbU9BbWVlRFgvY2JwRU9GZzBTdnh3?=
+ =?utf-8?B?TVU0UTRpTTVYVFE5K01IUkZkR1ZlN1ZTZ1E0ZUF3TUhOaWk5ZWpUaVR4V3l3?=
+ =?utf-8?B?eFh3RzVyY1h6SloweEh0dVQ5UG1kUWc2ZVBESmxORUxhc3F4cnB3SDh4Z0VV?=
+ =?utf-8?B?WFdSWUV1QlpDSEtseFhDSmFnMnEvRGtVeVZVamxFMmUzcklISUloTmZFYTV6?=
+ =?utf-8?B?VUhhKy95ZlU4OVhtK09YRTEwbjNndHdnZVV3NWdyQTRFSmlmM3FKbDJhejNX?=
+ =?utf-8?B?T0RvTFkyMU9sQXowZ1NkQm85ZmgyY0VrYTZKZHRXSTZONDl4dHl4eHJ6RlB4?=
+ =?utf-8?B?eE5EWnFiTWg1WFk1SjFDem9oaTN6cWJhYm5DbElpMXUrbGtVbjV4cm9pdUl1?=
+ =?utf-8?B?eDZtYXJxd0FuWlh0alljdDM1TGd5NVpVdis4UE44ZmsvSk9aV1RRbjZoakxz?=
+ =?utf-8?B?MWdrS1hqeTdEUFRJK2lwYkdtTXBlNnBvZThmRHJ0RWd2L3lFRDlVWDkwbFpa?=
+ =?utf-8?B?RWl6WDNTSTVlNy9HMEhCdXJ0azZWSE8zRVp0QktBTjZHR1JLaGdjVWROVUpY?=
+ =?utf-8?B?Y0ZORzBybDVUdjM4RVVYa3F4d29xSlgzT3lGUm9XVFBQTXdKVmxCVWFVVS9w?=
+ =?utf-8?B?KzVUT09TWHdzVlNWTElVbDlQeU1kalRKQTJMRVo4T2Urb0YrbVNwbzRLKzFV?=
+ =?utf-8?B?VkpKWjk4dm8vb3JGekZOd0hnc2tHSUJFY21mRmszWFlIR1FjRFZtbURqbkZh?=
+ =?utf-8?B?TXd3MGFZdTNmOVNYUk5OWElxTnVGNlRzOHRpdGMxVzFlV1dNd3FnWEgxS1Aw?=
+ =?utf-8?B?NDNsUVU1RzQ2d3NaMmVONmorN0NLMjgvU0hsalZ1Ry82ZmhrN0h6ZGpzRmI2?=
+ =?utf-8?B?M3VYRmcrVUZLRkU0S0E1YW9VRXVhNHRMcFJnZTkrKzhtTU1RUWg4LzFtUUZj?=
+ =?utf-8?B?WWZ1OXJDRG0zaWxaS01qYkdZVzJsdnVkWjh1eXM5a05NYVhZUnJnMjFpd3BR?=
+ =?utf-8?B?UFdlcUhFV0JFRXBrVEw2VDVZNUU1QzdvekZyTnQzc0RZRzM3NThJWnRMQTMx?=
+ =?utf-8?B?S2xhU2xSd3BCNWJ6TldwUDNIV1ZZMzZXdWFtaXBNU3R3ajI1MVJNM0xGMnFJ?=
+ =?utf-8?B?QWc9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3cfa7f09-fd2b-4237-629b-08ddd6426b4b
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Aug 2025 19:52:48.9716
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Aug 2025 06:11:31.4518
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XqeILEo3LPTZTahWVOAAVgSRMr3zbn6NrwPGBfSpPNYYfdUN9utNxrzYa7RBtT/bx4IZUY1gZJjLGT+HFRDepdds7dDuU2sbEsY67NGzcW8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR10MB5780
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-08-07_04,2025-08-06_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 suspectscore=0
- phishscore=0 mlxscore=0 malwarescore=0 bulkscore=0 mlxlogscore=771
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2507300000 definitions=main-2508070163
-X-Proofpoint-ORIG-GUID: zVIlWHBUDh7ntdT1-0jhpdtjJjZGO3cJ
-X-Proofpoint-GUID: zVIlWHBUDh7ntdT1-0jhpdtjJjZGO3cJ
-X-Authority-Analysis: v=2.4 cv=QORoRhLL c=1 sm=1 tr=0 ts=68950416 b=1 cx=c_pps
- a=e1sVV491RgrpLwSTMOnk8w==:117 a=e1sVV491RgrpLwSTMOnk8w==:17
- a=6eWqkTHjU83fiwn7nKZWdM+Sl24=:19 a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19
- a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19 a=wKuvFiaSGQ0qltdbU6+NXLB8nM8=:19
- a=Ol13hO9ccFRV9qXi2t6ftBPywas=:19 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
- a=2OwXVqhp2XgA:10 a=GoEa3M9JfhUA:10 a=20KFwNOVAAAA:8 a=OQPoB0lYbZr6UV-1G_4A:9
- a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 cc=ntf awl=host:13600
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwODA3MDE2MyBTYWx0ZWRfX6GKDwX3dTmhi
- gNt5ErbPgHDEmCE5M4zejJpYENCzuoXzXThSCoR+q7IAnb6lNueZxG1inuoExJcaWIbwwyvHDch
- hk0aLRgHkFgjomU81D2R4vGKI5TWJHBmZQ3NXMDTn5qXlkL4hgGyWIKgNNVlQr7fsw2KaMthTye
- OaxyMAW67+fNteCxJF5GS84iGgxYBaeQbxfczG3JaMiV2wxxymtXiaj4+SrCbytkQbWBx9vFb7E
- UqTUWMY7c0LHFLka6p6FErCjeVabzX+mM+VWvfXzTw9SeuEwny3PKWZlH83/M3QDrx6mQERkZrH
- 4zNrJggD0MCSPpXWcQjWLs3YziACZiB11+mQnn4RwsMwJ2XayzsL0mGOaSbt6wQgI3YrBUDb2dY
- AjQ+8y3fjrKmjL86gO3TwqiXLJjLc+2CkigNaflWuYHl2WfHF6H9lNAlNXpbgjMZorVMkZl9
+X-MS-Exchange-CrossTenant-UserPrincipalName: p51rJIlE3137GkWqG8y+xz4aXjF3ZuGlaypwnCv/Q6p+veP7eX3l9Iph05u/z1xAJOV8o8HTSrYIiVLa/sDCXg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB7158
+X-OriginatorOrg: intel.com
 
-On Thu, Aug 07, 2025 at 08:31:18PM +0200, David Hildenbrand wrote:
-> On 07.08.25 20:07, Jann Horn wrote:
-> > On Thu, Aug 7, 2025 at 8:02 PM David Hildenbrand <david@redhat.com> wrote:
-> > > Sure, we could use pte_batch_hint(), but I'm curious if x86 would also
-> > > benefit with larger folios (e.g., 64K, 128K) with this patch.
-> >
-> > Where would you expect such a benefit to come from? This function is
-> > more or less a memcpy(), except it has to read PTEs with xchg(), write
-> > them atomically, and set softdirty flags. For x86, what the associated
-> > folios look like and whether the PTEs are contiguous shouldn't matter.
-> >
->
-> Good point, I was assuming TLB flushing as well, but that doesn't really
-> apply here because we are already batching that.
 
-Ah good point, but indeed, while we force a TLB flush if we discover a
-present pte, we do so only _after_ we have finished processing entries in
-the PTE table, and we would only batch up to, at most, the end of the PTE
-table, so we have zero possible delta here on that.
 
- I did wonder if _somehow_ we'd get some benefit by grouping operations
-(yes, this was a handwavey thought).
+Hello,
 
-But Jann's point puts that to bed...
+kernel test robot noticed "kernel-selftests.kvm.make.fail" on:
 
-I really feel like this is a super arch-specfic feature that maybe we need
-to go around and make arm64-only or predicated on something like the
-contpte hint check to be effectively equivalent to.
+commit: 108c296547f3e749d89c270aa6319894f014f01c ("[PATCH v1 1/7] tools: Im=
+port cmpxchg and xchg functions")
+url: https://github.com/intel-lab-lkp/linux/commits/Yuzhuo-Jing/tools-Impor=
+t-cmpxchg-and-xchg-functions/20250729-102940
+base: https://git.kernel.org/cgit/linux/kernel/git/perf/perf-tools-next.git=
+ perf-tools-next
+patch link: https://lore.kernel.org/all/20250729022640.3134066-2-yuzhuo@goo=
+gle.com/
+patch subject: [PATCH v1 1/7] tools: Import cmpxchg and xchg functions
 
-Because my whole basis for accepting this on other arches is there'd be
-little to no impact and now we have seen a huge impact and it's worrying.
+in testcase: kernel-selftests
+version: kernel-selftests-x86_64-186f3edfdd41-1_20250803
+with following parameters:
 
->
-> --
-> Cheers,
->
-> David / dhildenb
->
+	group: kvm
 
-Cheers, Lorenzo
+
+
+config: x86_64-rhel-9.4-kselftests
+compiler: gcc-12
+test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480+ (Sapphi=
+re Rapids) with 256G memory
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new versio=
+n of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202508080716.5744484-lkp@intel.com
+
+KERNEL SELFTESTS: linux_headers_dir is /usr/src/linux-headers-x86_64-rhel-9=
+.4-kselftests-108c296547f3e749d89c270aa6319894f014f01c
+2025-08-05 10:05:53 sed -i s/default_timeout=3D45/default_timeout=3D300/ ks=
+elftest/runner.sh
+2025-08-05 10:05:53 make -j224 TARGETS=3Dkvm
+make[1]: Entering directory '/usr/src/perf_selftests-x86_64-rhel-9.4-kselft=
+ests-108c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/kvm'
+gcc -D_GNU_SOURCE=3D  -I/usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-=
+108c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/cgroup/lib=
+/include -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -Wno=
+-gnu-variable-sized-type-not-at-end -MD -MP -DCONFIG_64BIT -fno-builtin-mem=
+cmp -fno-builtin-memcpy -fno-builtin-memset -fno-builtin-strnlen -fno-stack=
+-protector -fno-PIE -fno-strict-aliasing -I/usr/src/perf_selftests-x86_64-r=
+hel-9.4-kselftests-108c296547f3e749d89c270aa6319894f014f01c/tools/testing/s=
+elftests/../../../tools/include -I/usr/src/perf_selftests-x86_64-rhel-9.4-k=
+selftests-108c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/=
+../../../tools/arch/x86/include -I/usr/src/perf_selftests-x86_64-rhel-9.4-k=
+selftests-108c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/=
+../../../usr/include/ -Iinclude -I. -Iinclude/x86 -I ../rseq -I..  -isystem=
+ /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-108c296547f3e749d89c270=
+aa6319894f014f01c/usr/include -march=3Dx86-64-v2   -c demand_paging_test.c =
+-o /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-108c296547f3e749d89c2=
+70aa6319894f014f01c/tools/testing/selftests/kvm/demand_paging_test.o
+
+...
+
+gcc -D_GNU_SOURCE=3D  -I/usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-=
+108c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/cgroup/lib=
+/include -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -Wno=
+-gnu-variable-sized-type-not-at-end -MD -MP -DCONFIG_64BIT -fno-builtin-mem=
+cmp -fno-builtin-memcpy -fno-builtin-memset -fno-builtin-strnlen -fno-stack=
+-protector -fno-PIE -fno-strict-aliasing -I/usr/src/perf_selftests-x86_64-r=
+hel-9.4-kselftests-108c296547f3e749d89c270aa6319894f014f01c/tools/testing/s=
+elftests/../../../tools/include -I/usr/src/perf_selftests-x86_64-rhel-9.4-k=
+selftests-108c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/=
+../../../tools/arch/x86/include -I/usr/src/perf_selftests-x86_64-rhel-9.4-k=
+selftests-108c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/=
+../../../usr/include/ -Iinclude -I. -Iinclude/x86 -I ../rseq -I..  -isystem=
+ /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-108c296547f3e749d89c270=
+aa6319894f014f01c/usr/include -march=3Dx86-64-v2   -c pre_fault_memory_test=
+.c -o /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-108c296547f3e749d8=
+9c270aa6319894f014f01c/tools/testing/selftests/kvm/pre_fault_memory_test.o
+gcc -D_GNU_SOURCE=3D  -I/usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-=
+108c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/cgroup/lib=
+/include -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -Wno=
+-gnu-variable-sized-type-not-at-end -MD -MP -DCONFIG_64BIT -fno-builtin-mem=
+cmp -fno-builtin-memcpy -fno-builtin-memset -fno-builtin-strnlen -fno-stack=
+-protector -fno-PIE -fno-strict-aliasing -I/usr/src/perf_selftests-x86_64-r=
+hel-9.4-kselftests-108c296547f3e749d89c270aa6319894f014f01c/tools/testing/s=
+elftests/../../../tools/include -I/usr/src/perf_selftests-x86_64-rhel-9.4-k=
+selftests-108c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/=
+../../../tools/arch/x86/include -I/usr/src/perf_selftests-x86_64-rhel-9.4-k=
+selftests-108c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/=
+../../../usr/include/ -Iinclude -Ix86 -Iinclude/x86 -I ../rseq -I..  -isyst=
+em /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-108c296547f3e749d89c2=
+70aa6319894f014f01c/usr/include -march=3Dx86-64-v2   -c x86/nx_huge_pages_t=
+est.c -o /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-108c296547f3e74=
+9d89c270aa6319894f014f01c/tools/testing/selftests/kvm/x86/nx_huge_pages_tes=
+t.o
+In file included from /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-10=
+8c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/../../../too=
+ls/include/linux/bits.h:34,
+                 from /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-10=
+8c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/../../../too=
+ls/arch/x86/include/asm/msr-index.h:5,
+                 from include/x86/processor.h:13,
+                 from include/x86/apic.h:11,
+                 from x86/fix_hypercall_test.c:13:
+/usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-108c296547f3e749d89c270a=
+a6319894f014f01c/tools/testing/selftests/../../../tools/include/linux/overf=
+low.h:31: warning: "is_signed_type" redefined
+   31 | #define is_signed_type(type)       (((type)(-1)) < (type)1)
+      |=20
+In file included from include/kvm_test_harness.h:11,
+                 from x86/fix_hypercall_test.c:12:
+../kselftest_harness.h:754: note: this is the location of the previous defi=
+nition
+  754 | #define is_signed_type(var)       (!!(((__typeof__(var))(-1)) < (__=
+typeof__(var))1))
+      |=20
+In file included from x86/svm_nested_soft_inject_test.c:11:
+/usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-108c296547f3e749d89c270a=
+a6319894f014f01c/tools/testing/selftests/../../../tools/include/asm/../../a=
+rch/x86/include/asm/atomic.h:79:28: error: expected declaration specifiers =
+or =E2=80=98...=E2=80=99 before =E2=80=98(=E2=80=99 token
+   79 | static __always_inline int atomic_fetch_or(int i, atomic_t *v)
+      |                            ^~~~~~~~~~~~~~~
+/usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-108c296547f3e749d89c270a=
+a6319894f014f01c/tools/testing/selftests/../../../tools/include/asm/../../a=
+rch/x86/include/asm/atomic.h:79:28: error: expected declaration specifiers =
+or =E2=80=98...=E2=80=99 before =E2=80=98(=E2=80=99 token
+   79 | static __always_inline int atomic_fetch_or(int i, atomic_t *v)
+      |                            ^~~~~~~~~~~~~~~
+/usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-108c296547f3e749d89c270a=
+a6319894f014f01c/tools/testing/selftests/../../../tools/include/asm/../../a=
+rch/x86/include/asm/atomic.h:79:28: error: expected declaration specifiers =
+or =E2=80=98...=E2=80=99 before numeric constant
+   79 | static __always_inline int atomic_fetch_or(int i, atomic_t *v)
+      |                            ^~~~~~~~~~~~~~~
+In file included from /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-10=
+8c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/../../../too=
+ls/include/linux/bits.h:34,
+                 from /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-10=
+8c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/../../../too=
+ls/include/linux/bitops.h:14,
+                 from /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-10=
+8c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/../../../too=
+ls/include/linux/hashtable.h:13,
+                 from include/kvm_util.h:11,
+                 from x86/userspace_msr_exit_test.c:11:
+/usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-108c296547f3e749d89c270a=
+a6319894f014f01c/tools/testing/selftests/../../../tools/include/linux/overf=
+low.h:31: warning: "is_signed_type" redefined
+   31 | #define is_signed_type(type)       (((type)(-1)) < (type)1)
+      |=20
+In file included from include/kvm_test_harness.h:11,
+                 from x86/userspace_msr_exit_test.c:9:
+../kselftest_harness.h:754: note: this is the location of the previous defi=
+nition
+  754 | #define is_signed_type(var)       (!!(((__typeof__(var))(-1)) < (__=
+typeof__(var))1))
+      |=20
+cc1: note: unrecognized command-line option =E2=80=98-Wno-gnu-variable-size=
+d-type-not-at-end=E2=80=99 may have been intended to silence earlier diagno=
+stics
+make[1]: *** [Makefile.kvm:299: /usr/src/perf_selftests-x86_64-rhel-9.4-kse=
+lftests-108c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/kv=
+m/x86/svm_nested_soft_inject_test.o] Error 1
+make[1]: *** Waiting for unfinished jobs....
+In file included from /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-10=
+8c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/../../../too=
+ls/include/linux/bits.h:34,
+                 from /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-10=
+8c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/../../../too=
+ls/include/linux/bitops.h:14,
+                 from /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-10=
+8c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/../../../too=
+ls/include/linux/hashtable.h:13,
+                 from include/kvm_util.h:11,
+                 from x86/sync_regs_test.c:20:
+/usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-108c296547f3e749d89c270a=
+a6319894f014f01c/tools/testing/selftests/../../../tools/include/linux/overf=
+low.h:31: warning: "is_signed_type" redefined
+   31 | #define is_signed_type(type)       (((type)(-1)) < (type)1)
+      |=20
+In file included from include/kvm_test_harness.h:11,
+                 from x86/sync_regs_test.c:18:
+../kselftest_harness.h:754: note: this is the location of the previous defi=
+nition
+  754 | #define is_signed_type(var)       (!!(((__typeof__(var))(-1)) < (__=
+typeof__(var))1))
+      |=20
+In file included from include/kvm_test_harness.h:11,
+                 from x86/vmx_pmu_caps_test.c:17:
+../kselftest_harness.h:754: warning: "is_signed_type" redefined
+  754 | #define is_signed_type(var)       (!!(((__typeof__(var))(-1)) < (__=
+typeof__(var))1))
+      |=20
+In file included from /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-10=
+8c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/../../../too=
+ls/include/linux/bits.h:34,
+                 from /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-10=
+8c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/../../../too=
+ls/include/linux/bitops.h:14,
+                 from /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-10=
+8c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/../../../too=
+ls/include/linux/bitmap.h:7,
+                 from x86/vmx_pmu_caps_test.c:15:
+/usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-108c296547f3e749d89c270a=
+a6319894f014f01c/tools/testing/selftests/../../../tools/include/linux/overf=
+low.h:31: note: this is the location of the previous definition
+   31 | #define is_signed_type(type)       (((type)(-1)) < (type)1)
+      |=20
+In file included from memslot_perf_test.c:12:
+/usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-108c296547f3e749d89c270a=
+a6319894f014f01c/tools/testing/selftests/../../../tools/include/asm/../../a=
+rch/x86/include/asm/atomic.h:79:28: error: expected declaration specifiers =
+or =E2=80=98...=E2=80=99 before =E2=80=98(=E2=80=99 token
+   79 | static __always_inline int atomic_fetch_or(int i, atomic_t *v)
+      |                            ^~~~~~~~~~~~~~~
+/usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-108c296547f3e749d89c270a=
+a6319894f014f01c/tools/testing/selftests/../../../tools/include/asm/../../a=
+rch/x86/include/asm/atomic.h:79:28: error: expected declaration specifiers =
+or =E2=80=98...=E2=80=99 before =E2=80=98(=E2=80=99 token
+   79 | static __always_inline int atomic_fetch_or(int i, atomic_t *v)
+      |                            ^~~~~~~~~~~~~~~
+/usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-108c296547f3e749d89c270a=
+a6319894f014f01c/tools/testing/selftests/../../../tools/include/asm/../../a=
+rch/x86/include/asm/atomic.h:79:28: error: expected declaration specifiers =
+or =E2=80=98...=E2=80=99 before numeric constant
+   79 | static __always_inline int atomic_fetch_or(int i, atomic_t *v)
+      |                            ^~~~~~~~~~~~~~~
+cc1: note: unrecognized command-line option =E2=80=98-Wno-gnu-variable-size=
+d-type-not-at-end=E2=80=99 may have been intended to silence earlier diagno=
+stics
+make[1]: *** [Makefile.kvm:299: /usr/src/perf_selftests-x86_64-rhel-9.4-kse=
+lftests-108c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/kv=
+m/memslot_perf_test.o] Error 1
+cc1: note: unrecognized command-line option =E2=80=98-Wno-gnu-variable-size=
+d-type-not-at-end=E2=80=99 may have been intended to silence earlier diagno=
+stics
+cc1: note: unrecognized command-line option =E2=80=98-Wno-gnu-variable-size=
+d-type-not-at-end=E2=80=99 may have been intended to silence earlier diagno=
+stics
+cc1: note: unrecognized command-line option =E2=80=98-Wno-gnu-variable-size=
+d-type-not-at-end=E2=80=99 may have been intended to silence earlier diagno=
+stics
+cc1: note: unrecognized command-line option =E2=80=98-Wno-gnu-variable-size=
+d-type-not-at-end=E2=80=99 may have been intended to silence earlier diagno=
+stics
+make[1]: Leaving directory '/usr/src/perf_selftests-x86_64-rhel-9.4-kselfte=
+sts-108c296547f3e749d89c270aa6319894f014f01c/tools/testing/selftests/kvm'
+make: *** [Makefile:207: all] Error 2
+
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20250808/202508080716.5744484-lkp@i=
+ntel.com
+
+
+
+--=20
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
