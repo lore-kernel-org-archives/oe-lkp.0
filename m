@@ -1,161 +1,222 @@
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E5AE2C21F8
-	for <oe-lkp@lists.linux.dev>; Mon, 11 Aug 2025 21:32:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754947940; cv=none; b=Of/8Ukl30wLXhBnnPHzyKwE4uPllpada+CW/aCOop4vSedOjhPo1/5zr12kbdAGE20Y4rE/0jdA7OODWJXbGv2T6mK7Jeac5xYv+kxyf4b7S5Lxsv38/6XkzWjfbcJuejBDikU6OqcrQtRVVbGjyCu3VTr6eNP7jm09QBDmfptg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754947940; c=relaxed/simple;
-	bh=Wp2SaX8CG7tM/UQZ7ITcbfAUzMlUdJy5a17ix7IDRPk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tB81lsOP+10SwohfkWw2wBy3RWWu22QlckT5PQHNu3FfSEaojFfdlZRwjnhQyUMUWX/vmUGYQ6AsiRKKoDxyaVS59dpPuZSdErmmwJRrVDnv98XXqj/apQLbqGBx+65/OA4P9snxPHaki2/608Y8HLmJzLhMcwm3iBtlkxmYXoo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=FMpYd7dO; arc=none smtp.client-ip=209.85.218.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38A9B1E98E6
+	for <oe-lkp@lists.linux.dev>; Tue, 12 Aug 2025 01:11:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.16
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1754961095; cv=fail; b=gwGrZj6iGu36qYo3PyUTU2H7jja0ZjKuZtDVaPV9wOqgYVF0TVxTvqUgL+6X6e2ZRHGoeBmk8o5FFzOTxSDfsdfnhrEareovA6x5jQ+J6dSNmgXQSWLCfP+IdD1yav9L5rlMj4T+zE2vmmV3H/m3JzCt+IOjVh/jzsOQrYZMIi0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1754961095; c=relaxed/simple;
+	bh=zA7+n2syXp7guQLLXhG+LgwZaSaQlPJ0JwOR8mhKc1Y=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:MIME-Version; b=t1xoKHr3jWQq8aTztrxD4cI7QWIylMcN6IE7gJndDc+oSHlmjNdPKhjO63ePBImhMclf/yGonX+5+m6/ciQcohHTCa6Fc54CcnlhcBJ2m1krO4WaNOZaBXG9Ts5G49SUeJtU82Q8HbJFGOkTzK90BS8Kl5ANNus+BXpIvX5StA4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Kfz340Sy; arc=fail smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="FMpYd7dO"
-Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-af949bdf36cso769332966b.0
-        for <oe-lkp@lists.linux.dev>; Mon, 11 Aug 2025 14:32:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1754947936; x=1755552736; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=nq/BuyAKv3pgMr4iqsCzwNSRSbvLzOuBXkj4nE74O0A=;
-        b=FMpYd7dO7gpZYExXWHgLBknlbTvzVNNk8rSJYqpE9sx6feiR5kcJpWMgf8cb/ScMvF
-         U7C9howCami5UgLbcgVI0cZdnRyXALaR9CFJtHadQMKj5dQGyQbaDqcEWWJwUrJmmHTO
-         hdqcBD71B0XHhQ4y6BqKkF06teuLZVkavcASzG089luicsLLZny4a56ZzgysjaDP4Kq3
-         2DwNYDJ4rP4Y+0wNF7WZehsRGQStQm1WI8hskKBHFobyJnTVg4ML3dSZkXdIZhfpvApu
-         xz0BuFa1Jn8cwwBtWLhfCZtrzZaRcE4Ne/wJSMcDEL/IjtV5PdTCSNwdTI+rDJyIHFgk
-         Q/EQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754947936; x=1755552736;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=nq/BuyAKv3pgMr4iqsCzwNSRSbvLzOuBXkj4nE74O0A=;
-        b=iHgzYEprCsPwWXT3oC/gR0Zzmu4Vx6C/FfzgwY6FP2deV4n75OMBtaVoK3QBY+RHCQ
-         Bjxw30/Lrh82EocUmwAOw4xLhWHxzvWQb88cvMZDXM3aqJ6JaS7jeSqhNg3IxlcE/eMv
-         2tkOJlLCOkd1NNj/MWYa5fkpCSonfI1iDvdOdWhwvqntfXq2txfEARFtcTSiByry/f7k
-         oZ2onvBdvnOqGnrbFX5IvBEYY5bKgdtWFUmcNY3/ryrCmlrvgN3inU2CXbIrtApXtIvX
-         QJAGEg9HsNK6qjvNKd0lE1LrSkvGnlR728yx0IikU2aLHKIK69NrFFQtrz7z2ZejSH/z
-         Q9lA==
-X-Forwarded-Encrypted: i=1; AJvYcCWUKWDPYoAcMaTVLNMQLQnl/iEanNP1GBpnBkP+InGFki7QPRUgrXegLOfTg6xKyA6EUjHrbUo=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx3NTDXibNq6eWWlIZEkKCbRCmXNmZXjkSWaWzNfM/X2GYyQPRI
-	NvkRh5Nt82cTN0wxjs3DcXq4AvJ79s4WdWm1WwlV+zSUj7raXrZgci7vQGsicE1miJA=
-X-Gm-Gg: ASbGncv87qKgryTyrOOQUSEJoQkn0/GNf1N82GyRaD2AsOaplTGbDwVam4EnNDQ/JXl
-	enAp4Djc3RhqP77gbKDnvzMxlXfCqMjKjx7UUg1SlGx1tf3y+xymnl41I4VEc33BqOqCRPmOpPZ
-	UXiyNwM0tfEJMzsMfYZKpxyYfMb9T3j3O4XRDKwwamscQQHFZQ/RavtK0djmiYW/lrxXvgiLRyH
-	QVmWgOKh0IAIHcr6nPQLa3rkBmxEjtHORYKORJE6NqE8YSEfjED8Z4qPLjJV12X7Cf2aFWIvq8I
-	pjsE1RAKtWJHDpSdI/Oon4vJ+QwJTB+acKe3QkJttji9oEz0F06w2xEqOXDEMlmLUQZhaHM4LQp
-	xcUCaTE2W7dG6
-X-Google-Smtp-Source: AGHT+IEpI2h9lIY/AO/fTtYcOoO4khM0ZEAiZvU2fi3EuMjQtsrWd8CdH2Opy3n0PnI33xPN+ZeMCQ==
-X-Received: by 2002:a17:907:7247:b0:af9:6813:892e with SMTP id a640c23a62f3a-af9c653ab3dmr1329549066b.51.1754947935930;
-        Mon, 11 Aug 2025 14:32:15 -0700 (PDT)
-Received: from blackbook2 ([84.19.86.74])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-af91a0a3981sm2069766266b.35.2025.08.11.14.32.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Aug 2025 14:32:15 -0700 (PDT)
-Date: Mon, 11 Aug 2025 23:32:13 +0200
-From: Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: Shashank Balaji <shashank.mahadasyam@sony.com>, oe-lkp@lists.linux.dev, 
-	lkp@intel.com, linux-kernel@vger.kernel.org, Tejun Heo <tj@kernel.org>, 
-	cgroups@vger.kernel.org
-Subject: Re: [linus:master] [selftests/cgroup]  954bacce36:
- kernel-selftests.cgroup.test_cpu.test_cpucg_max.fail
-Message-ID: <lsnebzejrxrpulxxmyvkfdrsplbi2ft2n5zuux3dl3ewt5ihrs@j3umrzndddsb>
-References: <202508070722.46239e7c-lkp@intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Kfz340Sy"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1754961094; x=1786497094;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=zA7+n2syXp7guQLLXhG+LgwZaSaQlPJ0JwOR8mhKc1Y=;
+  b=Kfz340SyPiZbGZGJ61olZFXz/sFzLp33hongat7BrWqZiUywYIKQu/dP
+   vvVvoJWCXVSbECz6e7yV9CbGfBoV20ococ3K6Fo+e+iWNu7oZvrmlfk6H
+   CS4a31w0ZRaFJgDGQwkIjfsm4H7R4xtB2J8wtYEw+UIzy/wWYMzL50CxC
+   vgsJxaNf7fV3PkSg9VeUMb2wrsR8DWWF6TKoIFRh3OS1Mj9S1mzkMOOZt
+   RATIciGMmPuql6NlewqytJ3W8pkAfrAbaX8m+6MFSudCz0ZNzNNUAvqSy
+   k2ngwZUZbYY37Vhyb9b29ixHfL+QK1+gJy3m1pYihxKUndfnrpF7exP3H
+   w==;
+X-CSE-ConnectionGUID: Pi4Ek3LmR1iVfMfLXupY6Q==
+X-CSE-MsgGUID: mbJQEpbdT3C6IOkPBg8Rig==
+X-IronPort-AV: E=McAfee;i="6800,10657,11518"; a="57371780"
+X-IronPort-AV: E=Sophos;i="6.17,284,1747724400"; 
+   d="scan'208";a="57371780"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2025 18:11:34 -0700
+X-CSE-ConnectionGUID: dj9ZuTG2T2WLVN5odmqCQw==
+X-CSE-MsgGUID: QG9KSn5DTPOzTOAS5cM1LA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.17,284,1747724400"; 
+   d="scan'208";a="166353383"
+Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
+  by orviesa008.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2025 18:11:34 -0700
+Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.26; Mon, 11 Aug 2025 18:11:33 -0700
+Received: from ORSEDG903.ED.cps.intel.com (10.7.248.13) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.26 via Frontend Transport; Mon, 11 Aug 2025 18:11:33 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (40.107.223.41)
+ by edgegateway.intel.com (134.134.137.113) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.26; Mon, 11 Aug 2025 18:11:33 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=LzjeVRIJmrGTudJhntwMfUFrq4wTPg7BSvvMdSVRVF3D7PMG8OfvzIoxn45Xad5+yqc4ohuyk90ltTN6ylp6XcMX9PxfTvQzprlGH8cZiNT8scDSgCr415fgT1kC5l3da1whIcWqYxkj62fmOK0vbwlejHvBw6CPFouKUXLSNzZ83k9wDxEu8byc34FTL/5jJ4lorwuySC2uglouJEEj8YGLlA2y/XrxZSAoLc2Mww2fptMGX31Zy4RIT5j7JB5DFYBJdVD9LNiZ3N1OnmGnIFxkRdj01qebPt8jMe4YYl9FzoztOx183a7pK8jctiVM6J55Pd2uqiC3+9KBulv5ew==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3aywufxwf5+XU+RqEB7soaIQ/io26k1+Zd4L2sWzTSc=;
+ b=Y1JP1xXVaWEk5m0ZnEXbZ4UThjPAEtyjgHubUV0Mf0bD0OU6vOcBR3b353P9h/i69XGiTthZHtKJfFLwB3zcYfx/8jW5Dgj17IwALL0+c1kMo0SP1808bvwZtOQc+s+j+vT0m4wB5JpZseDMfpGzWoyRXNNLxUUopXwR3KHrmq2Evh6ZUkLn7ehhDlQvalOal6wp7FJr2LOvgq/R85T+neKqbkeNzNNeSfwa3Gzep6vBfZy6OliU6GikEJLMXLsIuIFapXkku3vsoSQ6D77CusF4H6mVrL6tSaLo/cyvNYdB4FENJI0gQkYSLEZwVH7K7IrRQLdT9Si++8F+NJ1HtQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by DM4PR11MB7400.namprd11.prod.outlook.com (2603:10b6:8:100::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9009.21; Tue, 12 Aug
+ 2025 01:11:30 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.9009.018; Tue, 12 Aug 2025
+ 01:11:29 +0000
+Date: Tue, 12 Aug 2025 09:11:20 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Al Viro <viro@zeniv.linux.org.uk>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	Christian Brauner <brauner@kernel.org>, "Orlando, Noah"
+	<Noah.Orlando@deshaw.com>, <linux-fsdevel@vger.kernel.org>,
+	<oliver.sang@intel.com>
+Subject: [linus:master] [clone_private_mnt()]  c28f922c9d:
+ kernel-selftests.filesystems/overlayfs.set_layers_via_fds.set_layers_via_fds.set_override_creds_nomknod.fail
+Message-ID: <202508111025.70bc9757-lkp@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+X-ClientProxiedBy: SI2PR02CA0002.apcprd02.prod.outlook.com
+ (2603:1096:4:194::22) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="35rdoq4zxkxl7xa4"
-Content-Disposition: inline
-In-Reply-To: <202508070722.46239e7c-lkp@intel.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|DM4PR11MB7400:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1fc8492f-aad4-4c00-6cdd-08ddd93d2b3a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?UV4ydHKYKW+Ao9GKqDblNJnTJ+tA/YbfEDWtNWmlFi854ATHd7jPLNtZ/JQZ?=
+ =?us-ascii?Q?+thJNVJgXXjQdeYtlsnzAbmc6nVTYNYaPFBd1siWolIlU+sEcxppdyEqoVGW?=
+ =?us-ascii?Q?b/iFkzyqoQ0CFrSEfloS+j8w7PQbFJTMw8jIUcax6yYeYL4sgjCXjHM9FeTY?=
+ =?us-ascii?Q?F+ZssaNUGXpvq7QhRijv2y82rTxHlFhbaOyAOFi+FangA7l6Wms3erMJIXnz?=
+ =?us-ascii?Q?Xjvx+9SH+xhMqsF6M3SuU1Lf5EypHgOMm8M5tjWfHVxs1bV+eZEMIEt9KQbh?=
+ =?us-ascii?Q?wIqUmWbeijxSBAovtyVNXNAj7jM9XKXBd7ag3T5iAmpYLB0ZZ016JiemF79Y?=
+ =?us-ascii?Q?pqc8sU0rxoXuewu1TAudhGU4n3XHcJ+Esnf8ZIIwK4CSBn6D/Uyb9JmvIJvi?=
+ =?us-ascii?Q?CwtUsrfY4LryAYhRgGA52AMB76vm4tXYtu3/zbgTgmZ7KBaZ1UoTPgHOLBEF?=
+ =?us-ascii?Q?4brw7j1bBcGV4RhQm3DqwibaX70wU3JqpmCysfVjwfMcJFlNNoX3I/zKvfHg?=
+ =?us-ascii?Q?LF7N9ceajBkpfltwqETun4Rk35xuMOPh99lcLM33HP3dlQiXWLMwb3C0vPxq?=
+ =?us-ascii?Q?bJN9ql9ry2BUfbcS6wWBctyki8rUKKrwZFmiuNB37B9Um6GtUr1sj73hW1oH?=
+ =?us-ascii?Q?6C5DNP4RlcghacD6cM9Rj/K19SN6xnFqcfzH5hHe4u2qrvY6z4S9N3zoOZgJ?=
+ =?us-ascii?Q?KEkfB9HbkHMQ67N6bXvGbBdthtbjJGPI+nqTuh6SR8sYuLNuVaL7hKLIfQQj?=
+ =?us-ascii?Q?QzOfWY5IHXTzCV7Wakmx8AnG4Dzvit0ApcYKnrnrMr7Nocn8TTzf57Kr+McU?=
+ =?us-ascii?Q?C1qEhCW6We15YqSVtqzosbmsO6zEbOBgK/bC+mW/7vllPoFtbk7OtQKsbJrg?=
+ =?us-ascii?Q?gAHcZdpPyPIAcdsTwnuf9t6NidoGM8OmFlkhBTPUlUL1s3gECt9c/dWFBmZc?=
+ =?us-ascii?Q?5u5MCP5izbg3h4NYNcq+xSznvVDZO0yxTeGtQ4JEWb8tOGCl2k7EonnAvvuA?=
+ =?us-ascii?Q?pCvs7l+MtjLEhFNbH64kxLeo/BY1099TXnN+82SqfcQ5HDecMq4yh3EI7Fcm?=
+ =?us-ascii?Q?PVclmFrr56JGaKeJ80iRkDGNRNNG8qGqfJBriN87f+xncbclX7+/GZziMW3X?=
+ =?us-ascii?Q?rK8eSzW8HMODGT8V+3YA3FUDypra1SI87OoAsPmLD2eAAJi9CrQSTfQnRr3K?=
+ =?us-ascii?Q?CgE51MJQX93qU3luTJBLbwbF+AWq5/34xvc2bX1/U9lP9nZenEaOeiEASyHq?=
+ =?us-ascii?Q?wD2c5v5OCZ9YPIv7t+U1TYeSfwLF2QHTwEPQQIw77jJ0/nBeqel7Bj6muK7h?=
+ =?us-ascii?Q?5YDLh50jvarYM9JEV5LDNmd47mlq5CWFkKTxj9lGcgEQIMvva3XH89XBgNIo?=
+ =?us-ascii?Q?0YkM4d+YUoYfmHXmYKHHJA0seqfJ?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6CyQA7Zb7q5mkOF2tOE+qqheFkwvF3X/vL3LOLx0xlCiaCzw4ZovInOVg6ei?=
+ =?us-ascii?Q?wLkfBm+Hv4q89jeN/C87OVRQgGIa4uMhSVASS4kklKzVtDVJsWuw4lCnSWEM?=
+ =?us-ascii?Q?61O0iLRQYSPOG+OBa8UIuz76VhMKSI9IXO3JiO2dmh/sYTf6zd83A9lY+BPv?=
+ =?us-ascii?Q?33SCsFyIwQordXfugIY7TyMJa6HWrjfoD5yUQG+bjYLaENQorMWBMuTQmCkk?=
+ =?us-ascii?Q?DigGLiqdLo54Bao8yHyID1058SBQ/yZJhU2KkYDifIMmZkVRUjTAn/HJUImL?=
+ =?us-ascii?Q?Qwa1DV8UpeEpfMQ7e7XJuP1HgyY/PG/DyrVoFbF9TCSU98rgNh/Hx6MdVUTm?=
+ =?us-ascii?Q?RWOUYextnd0GESoN4JovhTFZ7pxki/Mk978ttaTnhI1wTabE6quaDH/5e4vu?=
+ =?us-ascii?Q?wqNA5dmu4yodwBljQ7DuYQ67h47926ChUBEnM7gc6V7m0lhFpzAxLh0vdift?=
+ =?us-ascii?Q?M8oyuDSJIr4QEZmEb3T7oTCyuNhVtV1IqSrKrGiI/TLmOW6tQoEiMxN2p5Y1?=
+ =?us-ascii?Q?vzEG1pJZNkhm7SJFJtXXTJiR3mZgqU8taYQdV+M8ofBTr1bthpc5dUyt0gd+?=
+ =?us-ascii?Q?aNMomUPMzKraNJqXJDHmdBH6M+9W6Z/h8jFjlIE956N2bgjK7KfHdLeEfQlY?=
+ =?us-ascii?Q?3LcyKiecDnDU7f6odFZT/Bt1zRQUgWL5d6SkTsdaIPBLR3i/Tykc57S6+cMA?=
+ =?us-ascii?Q?MWJbs9VApBL7gO0s97EzDZNDzTaC6ea7HcYR9ogkQ8kUiX3RyzI5aRjHt1w/?=
+ =?us-ascii?Q?gupdFCV9/4Iq/5SsiYI95xTQzmrcN6Hk+TzjUxyfeO9XRlDv4EvFKaQiopnd?=
+ =?us-ascii?Q?BskVMJvHfGH7DAcEFtroPpsVoawnwWM83La93ZZ87nYxfjGQ7a3o9tJg9ulT?=
+ =?us-ascii?Q?/ZS0ZPMmD7EtE8JPqzEDCekA0WKGwJXn1o4x/iBV+jhIgzOh+NhXEIQpzoCg?=
+ =?us-ascii?Q?/5CW9uAsbipvLpLDGQkMBtSGZbNIUhrHwqFd6Cse7zw2mFeQXNFC32nZpWYA?=
+ =?us-ascii?Q?fqQRVjM3JqiO4D4NH9X5YV/gyv4hP9LicLxp4raJOJjWNttvzGDge8ZcTaf/?=
+ =?us-ascii?Q?N1IMmVnvvYlyQeb2vpJi49X4xntVCofQI3QQyWgiaw8anyCd63Nzieusswqs?=
+ =?us-ascii?Q?Q0+HdTV04CL8GH22/2xd9yVmSk4Yqx6YM+rGXHSOImqCjf2ly/ywkg7cvQsX?=
+ =?us-ascii?Q?gO1o03Ii8qtzvizgaC34MsGmY0YG7A0oInjZb1he/VyxbAOz/f4HtjXdThYQ?=
+ =?us-ascii?Q?goygMV3rd2NksSFWYMuuzzcB4wTeEK1QMB1o2OyUweIVEovVmzzES1KYFmWe?=
+ =?us-ascii?Q?bnMvqkoYJW9+9nu/asHDfgrpRK7kZoiUN4WuPPkjAAqn3jPsnqe9UXzUsVy4?=
+ =?us-ascii?Q?KKtjIhlen6F4hBUf7VJfGScSWl6V/f8Axsd8/SuXoEIO41cY7kHoqPeMFON9?=
+ =?us-ascii?Q?oKh6XZHeuvZ61wUFeyuhw8qalcWSV/DVI2nZEyWPyaKTAoMHOnIFoqHR9fbF?=
+ =?us-ascii?Q?ZLjnNexCutEy+SF23LSKgchzodL73f1mc+XaAsdqULp6aVPBiQBZ7MSBPg5Z?=
+ =?us-ascii?Q?I1SJjpdhD3d7f+iG7Q4WWQyn9vuDwtp5IcjQkfn2u+LI2J2s4U3PBr/B2zeL?=
+ =?us-ascii?Q?og=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1fc8492f-aad4-4c00-6cdd-08ddd93d2b3a
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Aug 2025 01:11:29.9005
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gMGpwrKz+aN+/76f+GuOm10W8kG+lZznpfC1KVAMxAKPiCjIIKHHrUpJ7KOioaVPWHS9+xQ6Y/UILnGUpFPAVw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB7400
+X-OriginatorOrg: intel.com
 
 
---35rdoq4zxkxl7xa4
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [linus:master] [selftests/cgroup]  954bacce36:
- kernel-selftests.cgroup.test_cpu.test_cpucg_max.fail
-MIME-Version: 1.0
 
-Hello.
+Hello,
 
-On Thu, Aug 07, 2025 at 01:52:31PM +0800, kernel test robot <oliver.sang@in=
-tel.com> wrote:
-> dfe25fbaedfc2a07 954bacce36d976fe472090b5598
-> ---------------- ---------------------------
->        fail:runs  %reproduction    fail:runs
->            |             |             |
->            :6           100%          6:6     kernel-selftests.cgroup.tes=
-t_cpu.test_cpucg_max.fail
->            :6           100%          6:6     kernel-selftests.cgroup.tes=
-t_cpu.test_cpucg_max_nested.fail
->=20
->=20
-> not sure if there are any necessary env setting? thanks
+kernel test robot noticed "kernel-selftests.filesystems/overlayfs.set_layers_via_fds.set_layers_via_fds.set_override_creds_nomknod.fail" on:
 
-The selftest commit essentially changed the tolerance margin from
-ridiculously large to something that looked statistically appropriate
-[1].
-However, when I run the test (30x) on the 954bacce36 I get:
+commit: c28f922c9dcee0e4876a2c095939d77fe7e15116 ("clone_private_mnt(): make sure that caller has CAP_SYS_ADMIN in the right userns")
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-quantile([D1 D2 D8])  # 1 2 and 8 vCPUs respectively
-ans =3D
+[test failed on      linus/master 6e64f4580381e32c06ee146ca807c555b8f73e24]
+[test failed on linux-next/master 442d93313caebc8ccd6d53f4572c50732a95bc48]
 
-   1.3086e+04   1.1559e+04   1.1177e+04 # min
-   1.5109e+04   1.2936e+04   1.2989e+04
-   1.5791e+04   1.3938e+04   1.3788e+04 # median
-   1.6159e+04   1.5385e+04   1.4980e+04
-   1.8757e+04   1.8699e+04   1.9494e+04 # max
+in testcase: kernel-selftests
+version: kernel-selftests-x86_64-186f3edfdd41-1_20250803
+with following parameters:
 
-I obtain similar values also on v6.15 (the kernel + 954bacce36
-selftest). So it's not anything in throtlling implementation affecting
-this.
+	group: filesystems
 
-The tests above were with HZ=3D250, for HZ=3D1000, I get slightly smaller
-results with D2:
-   1.1753e+04 # min
-   1.2634e+04
-   1.3208e+04 # median
-   1.4010e+04
-   1.6937e+04 # max
 
-But still nowhere the 20% margin (i.e. values_close(...10%)), these
-values would demand up to 100% (values_close(..., 50%)). Or add a bias
-derived from sched_cfs_bandwidth_slice_us or increase the tested quota
-=66rom 1% to 5%, that'd be an improvement:
 
-   48882 # min
-   52450
-   52941 # median
-   54284 # 75th percentile
-   73186 # max (limit would be 60000)
+config: x86_64-rhel-9.4-kselftests
+compiler: gcc-12
+test machine: 36 threads 1 sockets Intel(R) Core(TM) i9-9980XE CPU @ 3.00GHz (Skylake) with 32G memory
 
-I'm not sure how big overrun we want to accept as a pass.
+(please refer to attached dmesg/kmsg for entire log/backtrace)
 
-Michal
 
-[1] lore.kernel.org/r/20250701-kselftest-cgroup-fix-cpu-max-v1-2-049507ad68=
-32@sony.com
 
---35rdoq4zxkxl7xa4
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202508111025.70bc9757-lkp@intel.com
 
-iHUEABYKAB0WIQRCE24Fn/AcRjnLivR+PQLnlNv4CAUCaJphRAAKCRB+PQLnlNv4
-CDorAP4j+gBfzJ9mjsTBBUy9uD3wIzoL2opwDNhFmTuGsKuCuQEA3ayfCV8VdA6/
-OKdE1A/l6w776aNK35BBRJ+Oz9FgxAE=
-=A67z
------END PGP SIGNATURE-----
 
---35rdoq4zxkxl7xa4--
+# #  RUN           set_layers_via_fds.set_override_creds_nomknod ...
+# # set_layers_via_fds.c:516:set_override_creds_nomknod:Expected sys_fsconfig(fd_context, FSCONFIG_CMD_CREATE, NULL, NULL, 0) (-1) == 0 (0)
+# # set_override_creds_nomknod: Test terminated by assertion
+# #          FAIL  set_layers_via_fds.set_override_creds_nomknod
+# not ok 5 set_layers_via_fds.set_override_creds_nomknod
+
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20250811/202508111025.70bc9757-lkp@intel.com
+
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
