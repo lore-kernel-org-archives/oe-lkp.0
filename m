@@ -1,255 +1,449 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9BF1278173
-	for <oe-lkp@lists.linux.dev>; Mon, 18 Aug 2025 06:55:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.15
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755500108; cv=fail; b=CRvd2RrudD8SXHpxuklt/ny1BZWpVOeHVCws1WcT/jCKs7Ic2UxnECEuqKKJPOmjKXOSSvKD7zNYwVrF+D5jXF5faW7NIbq12J1a0NmYiIvSTSEaXDsAvS2cNIUndbakYvM2uzxdgFOtTtnW2DBxYEBlrdjmJPk3qMNTD5fm62E=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755500108; c=relaxed/simple;
-	bh=D0QIrQXrDYqmzWGetTCT2anfMDPo8ROmXHet4bPo+b0=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=hZ2UBIuFx1hGUA0xQu9Hkd/TtqPdL9vd1YXq26SZqU5+Ex5UKZCuFBKbsAY9kPVMxTWsoEmi5iHan6FAeQHLu3/1LxTvBxa8DtTCBrr9ouzudAVw9ap1v532zCotncznWFYd4bmfqumu7W4i7Ie9MnlVOU4TTuQ/7vNdCA+9qI0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DdrbmQi4; arc=fail smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B40E226FD86
+	for <oe-lkp@lists.linux.dev>; Mon, 18 Aug 2025 08:40:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.176
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1755506407; cv=none; b=aw6xcNSyq8Q7DV8JN1C62qQQ+Z3i3MEkGKOk0RTOJoIiChoOYTG+tf7AxgJQV0ZzlUcl/vhKZMe1J0f6lmQ6ltkaclj3Y8ZubDgv2I5vnsYrMOEJLG2MkI+0smvpICLRILw47vrme28VwB5SSzcR2+RH//d6HsoCcd/aCLZUqv8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1755506407; c=relaxed/simple;
+	bh=Jpnq+RAlgTp0JPwfqiYljv4KQLkNKX7ALRnLGwK4lOo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=p/fybghgIuNVgL7d6xgHPcIeEpMr+352sVJNggsYHdf5HPw2+Ows8ZEQEOApcVVw8IPTFddaE/CSTuM6utGe7gxKdjQU4ccIQSAwdA5Q1gvmJHVnBbgnpyi0f/blVT65nJbIQEI9rY72nTG4umBdbgjhD7NftGW9ypsPE1LElFY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=FbyFxbgP; arc=none smtp.client-ip=209.85.160.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DdrbmQi4"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1755500107; x=1787036107;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   mime-version;
-  bh=D0QIrQXrDYqmzWGetTCT2anfMDPo8ROmXHet4bPo+b0=;
-  b=DdrbmQi4aEV3Y4XsJVlcLcihd4dNrnmqU6rK2UZjzgIpLvsmpqRM9nIn
-   tswif5orBYOVkSf7gV9nJv1txe3nkDNGNckhTdwGn16HANHzNfr3whkW2
-   y48Sie708maWVW9YjdxAJ8+SBWYZPc6p3Gs60GGBhyJF/20IU3I4oE31h
-   drL2NBhWHxoixZ/7FfofpfYBrk7wlcdi3R7WuyLODTkYzZ5CYbyZxuknF
-   v41N4cEB7tPrfxKvU+0/KkewLKa8VjZ8rkMDnPf6LnyZYphpivDmbMK4z
-   OVyujbcW3oBtJFzO/SqaWZhLY1TWTY8Y5yepPy6k1s/wp6oKJ+h1X1a/A
-   g==;
-X-CSE-ConnectionGUID: k1vQlPUZRwOQ+Djn0UWErg==
-X-CSE-MsgGUID: krrjjLnMSp2fdUUq6+K+SQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11524"; a="57823188"
-X-IronPort-AV: E=Sophos;i="6.17,293,1747724400"; 
-   d="scan'208";a="57823188"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2025 23:55:03 -0700
-X-CSE-ConnectionGUID: DVeWY21RT2OyYYY1jOZ2YQ==
-X-CSE-MsgGUID: asnUSgU6TAKh49bF493mKw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.17,293,1747724400"; 
-   d="scan'208";a="167474826"
-Received: from fmsmsx901.amr.corp.intel.com ([10.18.126.90])
-  by orviesa007.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2025 23:55:02 -0700
-Received: from FMSMSX903.amr.corp.intel.com (10.18.126.92) by
- fmsmsx901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.17; Sun, 17 Aug 2025 23:55:01 -0700
-Received: from fmsedg902.ED.cps.intel.com (10.1.192.144) by
- FMSMSX903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.17 via Frontend Transport; Sun, 17 Aug 2025 23:55:01 -0700
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (40.107.212.58)
- by edgegateway.intel.com (192.55.55.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.17; Sun, 17 Aug 2025 23:55:01 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=KtuLLjmFJYj1x1qhWOM/lUv3npvJPrzOCHxIR709SHZJvyAAewIxyFgvvHiZ2zxnjFljqKMch/uamvnfNcm1UUTDtLCOQrmmyiAWksOfdizWnPWPuvnxvTS3IbVzhTd6iYh1g+r3fDeC2EZz9EJt20Gm6ZpwEJ/24C9Y4gTWS6ffQ2SMIvfUE+hk7U7QnL6sQX9TX9O+oCps5VuYXIV06PK4M2EwELzKdcsDSJpbxxuh+CZ6EfKNr9WggZdLf17pw5jSpl6a49Tzl9zvFNLKizdPkYCqbkbQfwcEF1URTapkscEYxp6bY2OwYor2Orju5VxdauKCGqtfZC3jEN9wJw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tdhM0g26vDYe4SkxGo6DbmypJ/Zg/abx+BOBtkWX+o0=;
- b=FNIQ1LxYyfbTnFn75NfOsykHYHPQACDnclid2+l6lfPSAVUhASoRB3WoPaXYMl5BFynJ9mJ9rO2BNVdgFL1XLYQWrGZ6/YKubNHjMSMB/fC6vbYQKx7cFn5FqJEzLRlg9BgMGfcy/Pk+7b8YMvLHOo+0rrO8/TC2FDgZC7zCqlyvYxFH260qrZxZ+x39fPGtBEoIAbeAWKNDdqupaDDcssQRGvOyY+K7U0XlrO1a120QpPi6MIUCsifuxr6VASSi/NjIWsFcjk16EHHMFJPuvzkx59LsFI97nsX3BBoOl0vBNlVlWe94GSOXObZqWYSqltPJrVmWhlqp2JiwRwS3ew==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by MN0PR11MB6088.namprd11.prod.outlook.com (2603:10b6:208:3cc::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9031.15; Mon, 18 Aug
- 2025 06:54:58 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.9031.023; Mon, 18 Aug 2025
- 06:54:58 +0000
-Date: Mon, 18 Aug 2025 14:54:49 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Zihuan Zhang <zhangzihuan@kylinos.cn>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-pm@vger.kernel.org>,
-	"rafael J . wysocki" <rafael@kernel.org>, Viresh Kumar
-	<viresh.kumar@linaro.org>, zhenglifeng <zhenglifeng1@huawei.com>,
-	<linux-kernel@vger.kernel.org>, Zihuan Zhang <zhangzihuan@kylinos.cn>,
-	<oliver.sang@intel.com>
-Subject: Re: [PATCH v1] cpufreq: Return current frequency when frequency
- table is unavailable
-Message-ID: <202508180834.3b8fe9d6-lkp@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20250814085216.358207-1-zhangzihuan@kylinos.cn>
-X-ClientProxiedBy: SI2PR04CA0013.apcprd04.prod.outlook.com
- (2603:1096:4:197::6) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="FbyFxbgP"
+Received: by mail-qt1-f176.google.com with SMTP id d75a77b69052e-4b10957f506so51965471cf.0
+        for <oe-lkp@lists.linux.dev>; Mon, 18 Aug 2025 01:40:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1755506404; x=1756111204; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6/katb7MKl0v0fnDTBBvI17yE2EFcHam2yfIVTSM1Bw=;
+        b=FbyFxbgPvc1XeDD5OZgAQoPPocdfak7vf4g5d3ZkcY/p8+KbU/JI/G+4rTup7UxEs2
+         yPDhsIthga2OKlgc9C10BIM3VOXKEJ7iD1EXeD4FHmGppGUv1Cn99IPQZb6Ab4vLpcuE
+         sz+TgCE5EL5vy28lpkiOuV4ycV5jx+KGTF9k/B1QcxPYEOxrufWzScvjnLmjtUXHVS18
+         C7KWAAz07gHB24JOh1aRUuXsvjyMkLt/lRM1UrDGZhBLlhqfAHCDtZHPPDicdWt5t2U7
+         lVc1Bm14t3dvT4oSC9rGI3mZBvP0k2CC9QtOZN6ICb1ylJ6P4LPNv7K7U8mO/GnAvRVN
+         HnOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1755506404; x=1756111204;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=6/katb7MKl0v0fnDTBBvI17yE2EFcHam2yfIVTSM1Bw=;
+        b=hjP04JQ78nCtLDTKAChIYndVtI7pb2dbd0sq7s6cne1b3pabSSaWxUR/iKzr2Qejgo
+         Lby3AyyVlRubWn9JZG6iIMRVTW0EKbuUiEt9caRNABZRgxgOstnps1J8et/HukXz55Kh
+         7nyw7VyHwwEyr/is+JWPIIhHfHtEH0XtW+gVQg3aOaf8o7gFLM5Uorcr13Nx9APpW3A5
+         RwZrVjX3Gv4vOGZTMljgQQ3YfVqr4egG+O2WHW3v2xZUeWVSHzsKuJrVdHimMJtG651p
+         oqvQ6mDcNtTyuvEs4RHJFrhrN/24B/oPfBpwvSkAOiufxouCmYHAMiLxatTlCGbb6L1O
+         YNsg==
+X-Gm-Message-State: AOJu0Yz2ThpYRVY2u12AGMH3gRTkL5ri9IL9KuLcOKxC2aC2K+9aLZkN
+	W1nJ57fW/L8dEFvJzdswRjI1QWzCaH1a1hOQpguxFVsMT5Ihn2uqW1TT1wyFKwUY72FlRSjwhzw
+	xUU3bBL2fZwa0HVSZJ7sTZcBYfIRTLOxPgLFzFnEM
+X-Gm-Gg: ASbGncvNYVDMXJkGaU8/K7K5SUNf1ifsXlmFT4GFzCV2jJe4DJx69m3H6BQoRBURINf
+	tzR3HkUXAwf+3NdiPQcQj1ihwqYoghZC/tZsy/bij9F1rirH67jQjXT2mzjd0s2s/WRdwjcA3RC
+	rh7/6yol6pLZB8932a0EbsxxZZhl44jPVqcR2vWuHsTiNQ0141cQSKfGkK4fD5uij5xZ2MKflH/
+	sDOiO5PiptMcHQ=
+X-Google-Smtp-Source: AGHT+IGQfXC5NiM1KI7ga4bf5OnxuNQ/0wCHe4fBWtF4GJedz4sEm5vsmqJnxL4v15XS1p/AUGf8TbVrBPqqxCrO3js=
+X-Received: by 2002:a05:622a:5e12:b0:4b0:769e:42e8 with SMTP id
+ d75a77b69052e-4b11d36844dmr155959001cf.29.1755506403190; Mon, 18 Aug 2025
+ 01:40:03 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|MN0PR11MB6088:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5138903b-ec77-4216-5963-08ddde242542
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024|7053199007;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?GEUvuC30LIKpK0Dju0t+zGqPRY0L3J2K5y/aFTXNUTTsmefCvS04NSHFrN7u?=
- =?us-ascii?Q?1xn6J9UPdiEaWKwFBUTwNGIXZRpzqiw0K4yjOROPbj8TMiCRiaw0aAdfHD1O?=
- =?us-ascii?Q?JU2fAa/0J0047ggdBANKRTR2TGXz6eHvvEvz2rIxq4xhscKysFSIDCNikJ3M?=
- =?us-ascii?Q?BQI4QjM1h28QA7xl9zctkLE1aoBqvx3qmATHCTN4un8TCyOywfT/m25QLO9B?=
- =?us-ascii?Q?dLR4AB2a4YN81a0L0193WMfibDFnaFM5TtNMiRpf59x7uwFgGdjjg+0vbtIq?=
- =?us-ascii?Q?n36tmEq/TXfIfWUjQYMKWZmdF9DoI2J5NUibsX4QufAtZYxiqySSdernFfO0?=
- =?us-ascii?Q?AveId0SVWbsWdORB6sZdQxu47YoCvFk8PBsDFQhxyBBq5WRb9nPs7LBbR11v?=
- =?us-ascii?Q?AwQa0kRgNSagnfutr4Z3SE77rbqc3WsZNJthtQVUYc1YCosBpYYNtzsb6JCo?=
- =?us-ascii?Q?iERsABC4vFn8SzVV5ym2+K7APHRL3+k/ucGOyyBfDBFOpn9K1nCUJ63+cwOm?=
- =?us-ascii?Q?U99/aWLhJ7YxI2u5Afl38Kl4Gv785bxLVgMWQFGimsGkFehyp4X2tjQdHw1z?=
- =?us-ascii?Q?HcMUtZQHxr+732KsFsHyWWe+SpY+GgWn0wCndTkP/hkayNs85CM8eYebbQa+?=
- =?us-ascii?Q?iFMd+//Qi20FJ3D74WxhUpX1Urv+C6Mv+8o6XSCL1I78iTcCC1QnnF+7hyvM?=
- =?us-ascii?Q?DktLtv9RX/S5+xyWiOucGmfGno1YadofeNg6cW8N0nKRNhC90eP5AsZbhTC4?=
- =?us-ascii?Q?Sc4h9SwFNock9r8uZlm1JKM1E/muviCWjrIqvGsKH5cJQ63XUMFcXmyWGYxY?=
- =?us-ascii?Q?G95cLkGqTwPjLvx4HI5yTQGjaP0q+Io9J8G8ggglZ3fs69z40XaEdRJS+5+4?=
- =?us-ascii?Q?cxJ+a4l8QYmRNJKHFyPRpvXhnWjCO2cBkTDIo9crA4icqacB4FeheH4YknAI?=
- =?us-ascii?Q?kE4Y2R7mxxNgLoO/ZZYyRJZ9omwuXaBj4+xSjcjucagbm0ETb5rp0TYTiq49?=
- =?us-ascii?Q?lOtjnMKEgYEOzRzLowl62pQn/dD2w1TtIokBZRJDYlyS2CQkeql+GS97xFMv?=
- =?us-ascii?Q?w1pm9IPS7k3rOID6+qR2iK8k4FonyttV2QeFdxH5RM/My0v1SCb4XbeEVgbF?=
- =?us-ascii?Q?tVr3jLJ6dbFcv2u0ZfxLcOsC3i2YAx5kpS2n3790zDWRqixQihcUtZaWbtHm?=
- =?us-ascii?Q?NIBTLCDwSUiMdTdt+QD2l24Sxc/Bi/ISiGhPGaTzHpidR9v6unef7khgmAVs?=
- =?us-ascii?Q?YVNJuztBEaUS0psipJwO1Wxicitxvke9J8UR8VJWAJY8Zk7rjEijtWWBRZvC?=
- =?us-ascii?Q?vx8/rTbc7V8QLuWhPDIKlQY/3B9YyijnaHDiRgZi7ZsQZpIqdvdfoCGB40ON?=
- =?us-ascii?Q?OQF1C4PtYsdW6h3rJVUrUV+gADc8?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?zzKls/EzTXFKFH3bVJiitB3mvvVOflxe9agoBvjA1p7/ISLemtHIEf0xyIft?=
- =?us-ascii?Q?VbaRjUgTphkAHC5jqA+JdeXrobbkeNalbv9B/uyKAu8FENus5Ve5ANbyijJ+?=
- =?us-ascii?Q?9bNYvo+F8OnUmkglSTCHBMn4gfumQiWeByKDV35wB3w2Y2BZASAOsjy8Q5ps?=
- =?us-ascii?Q?lKQrsNMbSnJzMD0sXrzwPSIan3sYb5W82pZqyJ/9I5xxE3pO83NaWEJWcgpO?=
- =?us-ascii?Q?p9cNGEEveRHJxwQwUoYHL01j1oLpLYJUZcQMbF4hPUaKjUvQ0B5vJLVHX9Zp?=
- =?us-ascii?Q?xJX7C/tSRjEzPHMxfgfAeAP6e6TWJjvW+7YrSshqooxLFl1NcMJrXxzLjLvu?=
- =?us-ascii?Q?i79FOX0KBAAfV3fxEs4lgqLLWyNsjADjjUlqQBWlyQZcs1GFKOCIoeV5RQQ+?=
- =?us-ascii?Q?6Ic1jLCa6/2ka+TD8nQX0qQHgNMPRF0gmnGZZBtzDlVo4MfyHZtOpGGClfiC?=
- =?us-ascii?Q?cSrunK818MGvVIH3zZYheXv6kvlEcX1oUeBsYum2LVUV4owM/1gFPeaeLzO2?=
- =?us-ascii?Q?MEc5E5eYK5PDOzKljvgaZrhN8Q8fS6w+d6QfQyUnSa62rVsoeIb847jOdNHz?=
- =?us-ascii?Q?Z5Tgzt2AYu0m+hAYKZL7VaF3yoyDkVENgPC7yQ+59Qpp0Bk8dnfhSet2rQYr?=
- =?us-ascii?Q?YBJEuzaZXtISE06u7Fy0tthkejJ9ylztG1skJ3lf+fGcWidC5oI1B0rZE4KT?=
- =?us-ascii?Q?wqY3Px1dN3E+WMPpVvPA1OM+dIONv9wE0Fe+1mrvEGrB+GAXkkw6CY45hm4w?=
- =?us-ascii?Q?56+rYXSn6i49zd2UCosniohHmeXgB/nVVKYo/KqJBu52E3Fg32wIAvz164TZ?=
- =?us-ascii?Q?T7m050L3p0TxCVbiN7yFxwRWVZi2ewOpd9wl7s5y8RPtjXUE1i6WNssYDAf0?=
- =?us-ascii?Q?oTzP4c5wnzIYo3hNYed/EQpkl1RBGJDi/DYDYc0VsIacAREATNxQloj+HO6v?=
- =?us-ascii?Q?b67+nxRFDrLHgfbIXc3pbQxi2LbPm/pgXqMcCSCNpRVqhfDPnPosC9/KlZE1?=
- =?us-ascii?Q?WH8rgMMtAtSgRRgD/JCjyWTG1TVn1v5ymkkdcfDnkgYhD3QSqImHluQsnO3t?=
- =?us-ascii?Q?qKXQ10DjCExey1FsURUYB08rcaImpGdjViQgioiOYOnHwG+Ps5d2hWoLocfh?=
- =?us-ascii?Q?6tTZBI2FGoi58HZkiMOfEIwl4N+6gIMy4e2lZZyY5/lD26AtBoH0viowSlGp?=
- =?us-ascii?Q?jWdlQQombLT6DnTKjDzD4/ddLJMJaWrjtFXcNrVgsf2o1a9IWzyJqQtkdxbB?=
- =?us-ascii?Q?dth03VGUXU4seKCxfwX/8Rj0jWZGYjXqkn2Su2Re7n/mx1oXqkiPpdXgSwRR?=
- =?us-ascii?Q?/nXnYZ98T1/0735/sWxceSVTGlWGW9//fs66c0YDI+ZrCdvU1Awk5YWcviLl?=
- =?us-ascii?Q?m4w+tKtXJPVEKecf5KWJpbN7fBf2tSPrAy5ceFJEyNcm+IwiuIZKH6UYDg/7?=
- =?us-ascii?Q?LOBde6r2rsvDVRPcTNLAOO9+zKhoss8n9plJw5i+VHO/hmHAF13PdNxVgxpa?=
- =?us-ascii?Q?AAAMS92OZJTFEVcfWKOLnquKevq2Mi5APyJKIUSv93p9LCCLZfpWrqnJpv06?=
- =?us-ascii?Q?YjmsP5OghQr68daJI2yzJEKQq+3Ng/NmmJ5Sqqz0O0F5gjYWDhuB0lCYHcXr?=
- =?us-ascii?Q?Xw=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5138903b-ec77-4216-5963-08ddde242542
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2025 06:54:58.3204
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CSt5dJIzbMTaBRSN6iPxuA4DVT3Z4KXvn0lRXN354de8+lhLeMOgCdLoqNIFy/IbHZPDgJoAAQO8w527FSJugA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR11MB6088
-X-OriginatorOrg: intel.com
+References: <202508180406.dbf438fc-lkp@intel.com>
+In-Reply-To: <202508180406.dbf438fc-lkp@intel.com>
+From: Eric Dumazet <edumazet@google.com>
+Date: Mon, 18 Aug 2025 01:39:52 -0700
+X-Gm-Features: Ac12FXw3rrnKEVXgp_agvFqlK8t_12vQSKeweGOUOBwblNhV2qVMKNDV70oyT-c
+Message-ID: <CANn89iJYsx=AWW3XczDjJnhkT7mgRbTcKJkPH0evt9C11s4g_w@mail.gmail.com>
+Subject: Re: [linus:master] [tcp] 1d2fbaad7c: stress-ng.sigurg.ops_per_sec
+ 12.2% regression
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, 
+	Jakub Kicinski <kuba@kernel.org>, Kuniyuki Iwashima <kuniyu@google.com>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+On Sun, Aug 17, 2025 at 9:49=E2=80=AFPM kernel test robot <oliver.sang@inte=
+l.com> wrote:
+>
+>
+> Hello,
+>
+> kernel test robot noticed a 12.2% regression of stress-ng.sigurg.ops_per_=
+sec on:
+>
+>
+> commit: 1d2fbaad7cd8cc96899179f9898ad2787a15f0a0 ("tcp: stronger sk_rcvbu=
+f checks")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>
+> [still regression on      linus/master d7ee5bdce7892643409dea7266c34977e6=
+51b479]
+> [still regression on linux-next/master 1357b2649c026b51353c84ddd32bc963e8=
+999603]
+> [still regression on        fix commit 972ca7a3bc9a136b15ba698713b056a490=
+0e2634]
+>
+> testcase: stress-ng
+> config: x86_64-rhel-9.4
+> compiler: gcc-12
+> test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (S=
+apphire Rapids) with 256G memory
+> parameters:
+>
+>         nr_threads: 100%
+>         testtime: 60s
+>         test: sigurg
+>         cpufreq_governor: performance
+>
+>
+> If you fix the issue in a separate patch/commit (i.e. not just a new vers=
+ion of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202508180406.dbf438fc-lkp@intel.=
+com
+>
+>
+
+Yes, patch is about making sure we do not OOM in malicious cases.
+
+Not sure what SIGURG and TCP have in common, I do not plan making
+investigations.
 
 
-
-Hello,
-
-kernel test robot noticed "xfstests.xfs.177.fail" on:
-
-commit: 69f6747d99d0b1482fb38c36dfa26fe22654ff1f ("[PATCH v1] cpufreq: Return current frequency when frequency table is unavailable")
-url: https://github.com/intel-lab-lkp/linux/commits/Zihuan-Zhang/cpufreq-Return-current-frequency-when-frequency-table-is-unavailable/20250814-165519
-base: https://git.kernel.org/cgit/linux/kernel/git/rafael/linux-pm.git linux-next
-patch link: https://lore.kernel.org/all/20250814085216.358207-1-zhangzihuan@kylinos.cn/
-patch subject: [PATCH v1] cpufreq: Return current frequency when frequency table is unavailable
-
-in testcase: xfstests
-version: xfstests-x86_64-e1e4a0ea-1_20250714
-with following parameters:
-
-	disk: 4HDD
-	fs: xfs
-	test: xfs-177
-
-
-config: x86_64-rhel-9.4-func
-compiler: gcc-12
-test machine: 4 threads Intel(R) Xeon(R) CPU E3-1225 v5 @ 3.30GHz (Skylake) with 16G memory
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202508180834.3b8fe9d6-lkp@intel.com
-
-2025-08-16 15:56:36 export TEST_DIR=/fs/sda1
-2025-08-16 15:56:36 export TEST_DEV=/dev/sda1
-2025-08-16 15:56:36 export FSTYP=xfs
-2025-08-16 15:56:36 export SCRATCH_MNT=/fs/scratch
-2025-08-16 15:56:36 mkdir /fs/scratch -p
-2025-08-16 15:56:36 export SCRATCH_DEV=/dev/sda4
-2025-08-16 15:56:36 export SCRATCH_LOGDEV=/dev/sda2
-2025-08-16 15:56:36 export SCRATCH_XFS_LIST_METADATA_FIELDS=u3.sfdir3.hdr.parent.i4
-2025-08-16 15:56:36 export SCRATCH_XFS_LIST_FUZZ_VERBS=random
-2025-08-16 15:56:36 echo xfs/177
-2025-08-16 15:56:36 ./check xfs/177
-FSTYP         -- xfs (non-debug)
-PLATFORM      -- Linux/x86_64 lkp-skl-d06 6.17.0-rc1-00011-g69f6747d99d0 #1 SMP PREEMPT_DYNAMIC Sat Aug 16 23:40:03 CST 2025
-MKFS_OPTIONS  -- -f /dev/sda4
-MOUNT_OPTIONS -- /dev/sda4 /fs/scratch
-
-xfs/177       - output mismatch (see /lkp/benchmarks/xfstests/results//xfs/177.out.bad)
-    --- tests/xfs/177.out	2025-07-14 17:48:52.000000000 +0000
-    +++ /lkp/benchmarks/xfstests/results//xfs/177.out.bad	2025-08-16 15:57:27.495121515 +0000
-    @@ -2,11 +2,14 @@
-     new file count is in range
-     inodes after creating files is in range
-     Round 1
-    -inodes after bulkstat is in range
-    +inodes after bulkstat has value of 4
-    +inodes after bulkstat is NOT in range 1023 .. 1033
-     inodes after expire is in range
-    ...
-    (Run 'diff -u /lkp/benchmarks/xfstests/tests/xfs/177.out /lkp/benchmarks/xfstests/results//xfs/177.out.bad'  to see the entire diff)
-
-HINT: You _MAY_ be missing kernel fix:
-      f38a032b165d xfs: fix I_DONTCACHE
-
-Ran: xfs/177
-Failures: xfs/177
-Failed 1 of 1 tests
-
-
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20250818/202508180834.3b8fe9d6-lkp@intel.com
-
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+> Details are as below:
+> -------------------------------------------------------------------------=
+------------------------->
+>
+>
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20250818/202508180406.dbf438fc-lk=
+p@intel.com
+>
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testc=
+ase/testtime:
+>   gcc-12/performance/x86_64-rhel-9.4/100%/debian-12-x86_64-20240206.cgz/l=
+kp-spr-r02/sigurg/stress-ng/60s
+>
+> commit:
+>   75dff0584c ("tcp: add const to tcp_try_rmem_schedule() and sk_rmem_sche=
+dule() skb")
+>   1d2fbaad7c ("tcp: stronger sk_rcvbuf checks")
+>
+> 75dff0584cce7920 1d2fbaad7cd8cc96899179f9898
+> ---------------- ---------------------------
+>          %stddev     %change         %stddev
+>              \          |                \
+>      36434            +7.6%      39205        vmstat.system.cs
+>    5683321           -13.3%    4926200 =C2=B1  2%  vmstat.system.in
+>     530991 =C2=B1  2%      -9.3%     481619 =C2=B1  3%  meminfo.Mapped
+>    1132865           -13.5%     979753        meminfo.SUnreclaim
+>    1292406           -11.9%    1138096        meminfo.Slab
+>       0.62 =C2=B1  2%      +0.1        0.70        mpstat.cpu.all.irq%
+>      24.14            -8.3       15.83 =C2=B1  2%  mpstat.cpu.all.soft%
+>      10.95            +2.3       13.22        mpstat.cpu.all.usr%
+>     627541 =C2=B1  4%     -15.4%     530831 =C2=B1  5%  numa-meminfo.node=
+0.SUnreclaim
+>     721419 =C2=B1  3%     -14.0%     620592 =C2=B1  8%  numa-meminfo.node=
+0.Slab
+>     513808 =C2=B1  6%     -13.1%     446297 =C2=B1  4%  numa-meminfo.node=
+1.SUnreclaim
+>    6100681           -23.2%    4686698 =C2=B1  2%  numa-numastat.node0.lo=
+cal_node
+>    6205260           -22.6%    4802561 =C2=B1  2%  numa-numastat.node0.nu=
+ma_hit
+>    5548582           -18.0%    4547552        numa-numastat.node1.local_n=
+ode
+>    5676020           -17.8%    4663456        numa-numastat.node1.numa_hi=
+t
+>      22382 =C2=B1  2%     -37.0%      14107 =C2=B1  4%  perf-c2c.DRAM.loc=
+al
+>      28565 =C2=B1 14%     -28.5%      20433 =C2=B1 19%  perf-c2c.DRAM.rem=
+ote
+>      61612 =C2=B1  4%     -28.7%      43958 =C2=B1 10%  perf-c2c.HITM.loc=
+al
+>      18329 =C2=B1 14%     -27.0%      13378 =C2=B1 19%  perf-c2c.HITM.rem=
+ote
+>      79941           -28.3%      57336 =C2=B1  6%  perf-c2c.HITM.total
+>     155304 =C2=B1  4%     -14.4%     132870 =C2=B1  5%  numa-vmstat.node0=
+.nr_slab_unreclaimable
+>    6217921           -22.8%    4801413 =C2=B1  2%  numa-vmstat.node0.numa=
+_hit
+>    6113343           -23.4%    4685551 =C2=B1  2%  numa-vmstat.node0.numa=
+_local
+>     127106 =C2=B1  6%     -12.0%     111885 =C2=B1  4%  numa-vmstat.node1=
+.nr_slab_unreclaimable
+>    5686635           -18.0%    4662431        numa-vmstat.node1.numa_hit
+>    5559197           -18.2%    4546532        numa-vmstat.node1.numa_loca=
+l
+>   3.39e+08           -12.2%  2.977e+08        stress-ng.sigurg.ops
+>    5652273           -12.2%    4963242        stress-ng.sigurg.ops_per_se=
+c
+>    1885719           +11.0%    2092671        stress-ng.time.involuntary_=
+context_switches
+>      16523           +11.2%      18365        stress-ng.time.percent_of_c=
+pu_this_job_got
+>       8500            +9.2%       9278        stress-ng.time.system_time
+>       1438           +23.0%       1769        stress-ng.time.user_time
+>     195971            -6.0%     184305        stress-ng.time.voluntary_co=
+ntext_switches
+>     487113 =C2=B1  7%      -5.8%     459038        proc-vmstat.nr_active_=
+anon
+>     134039            -9.5%     121269 =C2=B1  4%  proc-vmstat.nr_mapped
+>     186858 =C2=B1 20%     -15.3%     158269 =C2=B1  2%  proc-vmstat.nr_sh=
+mem
+>     284955 =C2=B1  2%     -13.8%     245616        proc-vmstat.nr_slab_un=
+reclaimable
+>     487113 =C2=B1  7%      -5.8%     459038        proc-vmstat.nr_zone_ac=
+tive_anon
+>   11891822           -20.5%    9456122        proc-vmstat.numa_hit
+>   11659806           -20.9%    9224357        proc-vmstat.numa_local
+>   86214365           -22.0%   67254297        proc-vmstat.pgalloc_normal
+>   85564410           -21.8%   66883184        proc-vmstat.pgfree
+>    6156738           +13.9%    7012286        sched_debug.cfs_rq:/.avg_vr=
+untime.avg
+>    7693151           +10.1%    8468818        sched_debug.cfs_rq:/.avg_vr=
+untime.max
+>    4636464 =C2=B1  5%     +14.2%    5295369 =C2=B1  4%  sched_debug.cfs_r=
+q:/.avg_vruntime.min
+>     238.39 =C2=B1 92%    +228.2%     782.32 =C2=B1 46%  sched_debug.cfs_r=
+q:/.load_avg.avg
+>    6156739           +13.9%    7012287        sched_debug.cfs_rq:/.min_vr=
+untime.avg
+>    7693151           +10.1%    8468818        sched_debug.cfs_rq:/.min_vr=
+untime.max
+>    4636464 =C2=B1  5%     +14.2%    5295369 =C2=B1  4%  sched_debug.cfs_r=
+q:/.min_vruntime.min
+>       2580 =C2=B1  3%     -13.3%       2236 =C2=B1  8%  sched_debug.cfs_r=
+q:/.runnable_avg.max
+>     104496 =C2=B1 28%     -64.4%      37246 =C2=B1 38%  sched_debug.cpu.a=
+vg_idle.min
+>       1405 =C2=B1  3%     +12.7%       1583 =C2=B1  2%  sched_debug.cpu.n=
+r_switches.stddev
+>       0.68 =C2=B1  3%     -40.9%       0.40 =C2=B1  3%  perf-stat.i.MPKI
+>  9.475e+10           +26.6%  1.199e+11        perf-stat.i.branch-instruct=
+ions
+>       0.13 =C2=B1  5%      -0.0        0.09 =C2=B1  2%  perf-stat.i.branc=
+h-miss-rate%
+>  1.178e+08 =C2=B1  3%     -14.9%  1.003e+08        perf-stat.i.branch-mis=
+ses
+>      40.25            -3.2       37.02        perf-stat.i.cache-miss-rate=
+%
+>  3.325e+08 =C2=B1  2%     -25.9%  2.465e+08 =C2=B1  3%  perf-stat.i.cache=
+-misses
+>  8.258e+08           -19.2%  6.672e+08        perf-stat.i.cache-reference=
+s
+>      37598            +8.1%      40642        perf-stat.i.context-switche=
+s
+>       1.31           -21.4%       1.03        perf-stat.i.cpi
+>       2327           -15.3%       1970 =C2=B1  2%  perf-stat.i.cpu-migrat=
+ions
+>       1927 =C2=B1  2%     +33.7%       2577 =C2=B1  3%  perf-stat.i.cycle=
+s-between-cache-misses
+>  4.888e+11           +26.3%  6.174e+11        perf-stat.i.instructions
+>       0.77           +26.9%       0.98        perf-stat.i.ipc
+>       0.68 =C2=B1  3%     -41.3%       0.40 =C2=B1  3%  perf-stat.overall=
+.MPKI
+>       0.12 =C2=B1  4%      -0.0        0.08 =C2=B1  2%  perf-stat.overall=
+.branch-miss-rate%
+>      40.27            -3.3       36.95        perf-stat.overall.cache-mis=
+s-rate%
+>       1.31           -21.5%       1.03        perf-stat.overall.cpi
+>       1928 =C2=B1  2%     +33.8%       2581 =C2=B1  3%  perf-stat.overall=
+.cycles-between-cache-misses
+>       0.76           +27.4%       0.97        perf-stat.overall.ipc
+>  9.264e+10           +26.7%  1.173e+11        perf-stat.ps.branch-instruc=
+tions
+>  1.148e+08 =C2=B1  3%     -14.8%   97834009        perf-stat.ps.branch-mi=
+sses
+>  3.253e+08 =C2=B1  2%     -25.8%  2.413e+08 =C2=B1  3%  perf-stat.ps.cach=
+e-misses
+>  8.077e+08           -19.2%   6.53e+08        perf-stat.ps.cache-referenc=
+es
+>      36742            +8.2%      39741        perf-stat.ps.context-switch=
+es
+>       2273           -15.4%       1922 =C2=B1  2%  perf-stat.ps.cpu-migra=
+tions
+>  4.779e+11           +26.4%  6.041e+11        perf-stat.ps.instructions
+>  2.914e+13           +27.4%  3.711e+13        perf-stat.total.instruction=
+s
+>       4.41 =C2=B1  4%     -17.7%       3.63 =C2=B1  6%  perf-sched.sch_de=
+lay.avg.ms.__cond_resched.__release_sock.release_sock.tcp_recvmsg.inet_recv=
+msg
+>       6.74           -12.8%       5.87 =C2=B1  3%  perf-sched.sch_delay.a=
+vg.ms.__cond_resched.__release_sock.release_sock.tcp_sendmsg.__sys_sendto
+>       5.30           -19.6%       4.26 =C2=B1  4%  perf-sched.sch_delay.a=
+vg.ms.__cond_resched.kmem_cache_alloc_node_noprof.__alloc_skb.tcp_stream_al=
+loc_skb.tcp_sendmsg_locked
+>       5.22           -23.4%       4.00 =C2=B1  2%  perf-sched.sch_delay.a=
+vg.ms.__cond_resched.kmem_cache_alloc_node_noprof.kmalloc_reserve.__alloc_s=
+kb.tcp_stream_alloc_skb
+>       4.83 =C2=B1  4%     -15.7%       4.08 =C2=B1  2%  perf-sched.sch_de=
+lay.avg.ms.__cond_resched.lock_sock_nested.tcp_recvmsg.inet_recvmsg.sock_re=
+cvmsg
+>       5.20 =C2=B1  2%     -17.9%       4.27        perf-sched.sch_delay.a=
+vg.ms.__cond_resched.lock_sock_nested.tcp_sendmsg.__sys_sendto.__x64_sys_se=
+ndto
+>       4.92 =C2=B1  2%     -16.5%       4.11 =C2=B1  2%  perf-sched.sch_de=
+lay.avg.ms.exit_to_user_mode_loop.do_syscall_64.entry_SYSCALL_64_after_hwfr=
+ame.[unknown]
+>       5.75 =C2=B1 18%     -88.1%       0.69 =C2=B1115%  perf-sched.sch_de=
+lay.avg.ms.irqentry_exit_to_user_mode.asm_common_interrupt.[unknown]
+>       5.00 =C2=B1  3%     -16.2%       4.19 =C2=B1  2%  perf-sched.sch_de=
+lay.avg.ms.irqentry_exit_to_user_mode.asm_sysvec_apic_timer_interrupt.[unkn=
+own]
+>       0.35 =C2=B1 15%     -37.1%       0.22 =C2=B1 12%  perf-sched.sch_de=
+lay.avg.ms.schedule_timeout.__wait_for_common.wait_for_completion_state.ker=
+nel_clone
+>       3.47           -16.7%       2.89 =C2=B1  3%  perf-sched.sch_delay.a=
+vg.ms.schedule_timeout.wait_woken.sk_wait_data.tcp_recvmsg_locked
+>       0.13 =C2=B1  7%     -14.8%       0.11 =C2=B1  8%  perf-sched.sch_de=
+lay.avg.ms.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
+>      33.82 =C2=B1 55%     -45.0%      18.60 =C2=B1 16%  perf-sched.sch_de=
+lay.max.ms.__cond_resched.__release_sock.release_sock.tcp_recvmsg.inet_recv=
+msg
+>      36.83 =C2=B1 10%     -32.7%      24.80 =C2=B1 10%  perf-sched.sch_de=
+lay.max.ms.__cond_resched.kmem_cache_alloc_node_noprof.__alloc_skb.tcp_stre=
+am_alloc_skb.tcp_sendmsg_locked
+>      10.05 =C2=B1 49%     -58.0%       4.22 =C2=B1 33%  perf-sched.sch_de=
+lay.max.ms.do_nanosleep.hrtimer_nanosleep.common_nsleep.__x64_sys_clock_nan=
+osleep
+>      55.68 =C2=B1  9%     -16.5%      46.49 =C2=B1 17%  perf-sched.sch_de=
+lay.max.ms.exit_to_user_mode_loop.do_syscall_64.entry_SYSCALL_64_after_hwfr=
+ame.[unknown]
+>       6.12 =C2=B1 18%     -81.2%       1.15 =C2=B1116%  perf-sched.sch_de=
+lay.max.ms.irqentry_exit_to_user_mode.asm_common_interrupt.[unknown]
+>       7.91 =C2=B1 27%     -39.8%       4.77 =C2=B1 24%  perf-sched.sch_de=
+lay.max.ms.schedule_timeout.__wait_for_common.wait_for_completion_state.ker=
+nel_clone
+>       1.73 =C2=B1104%     -99.1%       0.02 =C2=B1 44%  perf-sched.sch_de=
+lay.max.ms.schedule_timeout.kcompactd.kthread.ret_from_fork
+>       4.56 =C2=B1  2%     -15.3%       3.86 =C2=B1  2%  perf-sched.total_=
+sch_delay.average.ms
+>      26.64 =C2=B1  2%      -9.6%      24.08        perf-sched.total_wait_=
+and_delay.average.ms
+>      22.08 =C2=B1  2%      -8.5%      20.21 =C2=B1  2%  perf-sched.total_=
+wait_time.average.ms
+>      13.50           -12.5%      11.82 =C2=B1  3%  perf-sched.wait_and_de=
+lay.avg.ms.__cond_resched.__release_sock.release_sock.tcp_sendmsg.__sys_sen=
+dto
+>      15.61          -100.0%       0.00        perf-sched.wait_and_delay.a=
+vg.ms.__cond_resched.kmem_cache_alloc_node_noprof.__alloc_skb.tcp_stream_al=
+loc_skb.tcp_sendmsg_locked
+>       9.72 =C2=B1  4%     -15.7%       8.20        perf-sched.wait_and_de=
+lay.avg.ms.__cond_resched.lock_sock_nested.tcp_recvmsg.inet_recvmsg.sock_re=
+cvmsg
+>      15.17 =C2=B1  6%     -21.9%      11.85 =C2=B1  3%  perf-sched.wait_a=
+nd_delay.avg.ms.__cond_resched.lock_sock_nested.tcp_sendmsg.__sys_sendto.__=
+x64_sys_sendto
+>      11.74 =C2=B1  2%     -12.5%      10.27 =C2=B1  2%  perf-sched.wait_a=
+nd_delay.avg.ms.exit_to_user_mode_loop.do_syscall_64.entry_SYSCALL_64_after=
+_hwframe.[unknown]
+>      10.39 =C2=B1  4%     -13.0%       9.04 =C2=B1  2%  perf-sched.wait_a=
+nd_delay.avg.ms.irqentry_exit_to_user_mode.asm_sysvec_apic_timer_interrupt.=
+[unknown]
+>       7.06           -15.7%       5.95 =C2=B1  3%  perf-sched.wait_and_de=
+lay.avg.ms.schedule_timeout.wait_woken.sk_wait_data.tcp_recvmsg_locked
+>       2317           -49.6%       1169 =C2=B1  9%  perf-sched.wait_and_de=
+lay.count.__cond_resched.__release_sock.release_sock.tcp_sendmsg.__sys_send=
+to
+>       1488 =C2=B1  5%    -100.0%       0.00        perf-sched.wait_and_de=
+lay.count.__cond_resched.kmem_cache_alloc_node_noprof.__alloc_skb.tcp_strea=
+m_alloc_skb.tcp_sendmsg_locked
+>       1953 =C2=B1  8%    +347.2%       8733 =C2=B1  4%  perf-sched.wait_a=
+nd_delay.count.__cond_resched.lock_sock_nested.tcp_recvmsg.inet_recvmsg.soc=
+k_recvmsg
+>       2360 =C2=B1  5%    +251.5%       8296 =C2=B1  6%  perf-sched.wait_a=
+nd_delay.count.__cond_resched.lock_sock_nested.tcp_sendmsg.__sys_sendto.__x=
+64_sys_sendto
+>      22781 =C2=B1  3%     +16.7%      26578 =C2=B1  3%  perf-sched.wait_a=
+nd_delay.count.irqentry_exit_to_user_mode.asm_sysvec_apic_timer_interrupt.[=
+unknown]
+>      13753 =C2=B1  4%     -14.8%      11717 =C2=B1  3%  perf-sched.wait_a=
+nd_delay.count.schedule_timeout.wait_woken.sk_stream_wait_memory.tcp_sendms=
+g_locked
+>       6038 =C2=B1  2%     -12.6%       5275 =C2=B1  7%  perf-sched.wait_a=
+nd_delay.count.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
+>      71.60 =C2=B1  8%    -100.0%       0.00        perf-sched.wait_and_de=
+lay.max.ms.__cond_resched.kmem_cache_alloc_node_noprof.__alloc_skb.tcp_stre=
+am_alloc_skb.tcp_sendmsg_locked
+>      53.03 =C2=B1  7%    +140.7%     127.64 =C2=B1 45%  perf-sched.wait_a=
+nd_delay.max.ms.__cond_resched.lock_sock_nested.tcp_recvmsg.inet_recvmsg.so=
+ck_recvmsg
+>     435.94 =C2=B1122%    +263.3%       1583 =C2=B1 27%  perf-sched.wait_a=
+nd_delay.max.ms.do_task_dead.do_exit.do_group_exit.__x64_sys_exit_group.x64=
+_sys_call
+>     987.24 =C2=B1 22%     +59.8%       1577 =C2=B1  6%  perf-sched.wait_a=
+nd_delay.max.ms.irqentry_exit_to_user_mode.asm_sysvec_apic_timer_interrupt.=
+[unknown]
+>       4.49 =C2=B1  4%     -16.2%       3.76 =C2=B1  6%  perf-sched.wait_t=
+ime.avg.ms.__cond_resched.__release_sock.release_sock.tcp_recvmsg.inet_recv=
+msg
+>       6.77           -12.1%       5.95 =C2=B1  4%  perf-sched.wait_time.a=
+vg.ms.__cond_resched.__release_sock.release_sock.tcp_sendmsg.__sys_sendto
+>       4.89 =C2=B1  4%     -15.7%       4.12        perf-sched.wait_time.a=
+vg.ms.__cond_resched.lock_sock_nested.tcp_recvmsg.inet_recvmsg.sock_recvmsg
+>       9.97 =C2=B1  9%     -24.0%       7.58 =C2=B1  5%  perf-sched.wait_t=
+ime.avg.ms.__cond_resched.lock_sock_nested.tcp_sendmsg.__sys_sendto.__x64_s=
+ys_sendto
+>       6.82 =C2=B1  2%      -9.6%       6.17        perf-sched.wait_time.a=
+vg.ms.exit_to_user_mode_loop.do_syscall_64.entry_SYSCALL_64_after_hwframe.[=
+unknown]
+>       5.75 =C2=B1 18%     -87.3%       0.73 =C2=B1113%  perf-sched.wait_t=
+ime.avg.ms.irqentry_exit_to_user_mode.asm_common_interrupt.[unknown]
+>       2.01 =C2=B1 14%     +38.1%       2.78 =C2=B1  7%  perf-sched.wait_t=
+ime.avg.ms.rcu_gp_kthread.kthread.ret_from_fork.ret_from_fork_asm
+>       2.38 =C2=B1  7%     -12.0%       2.09 =C2=B1  8%  perf-sched.wait_t=
+ime.avg.ms.schedule_timeout.__wait_for_common.wait_for_completion_state.ker=
+nel_clone
+>       5.50 =C2=B1  3%     +24.4%       6.84 =C2=B1  7%  perf-sched.wait_t=
+ime.avg.ms.schedule_timeout.rcu_gp_fqs_loop.rcu_gp_kthread.kthread
+>       3.59           -14.7%       3.06 =C2=B1  3%  perf-sched.wait_time.a=
+vg.ms.schedule_timeout.wait_woken.sk_wait_data.tcp_recvmsg_locked
+>      26.85 =C2=B1  6%    +311.9%     110.60 =C2=B1 63%  perf-sched.wait_t=
+ime.max.ms.__cond_resched.lock_sock_nested.tcp_recvmsg.inet_recvmsg.sock_re=
+cvmsg
+>       6.12 =C2=B1 18%     -81.2%       1.15 =C2=B1116%  perf-sched.wait_t=
+ime.max.ms.irqentry_exit_to_user_mode.asm_common_interrupt.[unknown]
+>     985.54 =C2=B1 22%     +59.9%       1576 =C2=B1  6%  perf-sched.wait_t=
+ime.max.ms.irqentry_exit_to_user_mode.asm_sysvec_apic_timer_interrupt.[unkn=
+own]
+>       2411 =C2=B1 57%     -74.1%     623.65 =C2=B1 38%  perf-sched.wait_t=
+ime.max.ms.schedule_hrtimeout_range_clock.ep_poll.do_epoll_wait.__x64_sys_e=
+poll_wait
+>      17.94 =C2=B1 19%     -38.0%      11.12 =C2=B1 19%  perf-sched.wait_t=
+ime.max.ms.schedule_timeout.__wait_for_common.wait_for_completion_state.ker=
+nel_clone
+>     249.22 =C2=B1 28%     +48.9%     371.19 =C2=B1 16%  perf-sched.wait_t=
+ime.max.ms.schedule_timeout.rcu_gp_fqs_loop.rcu_gp_kthread.kthread
+>
+>
+>
+>
+> Disclaimer:
+> Results have been estimated based on internal Intel analysis and are prov=
+ided
+> for informational purposes only. Any difference in system hardware or sof=
+tware
+> design or configuration may affect actual performance.
+>
+>
+> --
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+>
