@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B02332C300;
-	Wed, 20 Aug 2025 17:10:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8626427145F;
+	Wed, 20 Aug 2025 21:31:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755709839; cv=none; b=lqmf5ie0md2vShhQ0Czb+Gn8XBNEWO8oupMI0RNaC7iSNgZoEJA4MAS/g60t5lbQ2l8YCv+98WWtwgoHjIHWOczBI7IQOpQmnhJ5s9p8HQYPjGdnpj4+BJFgFgiBVWoj/TOaeXAMdUzDLBeEeOI/LgWsSkv9z7pXJB2L1CidfAg=
+	t=1755725514; cv=none; b=QD9wqdhJmirvnU5e7tuKprKsNucV4JeH1Y1C1BapI8GU0AV2z7z9b6G4xCwbJqoiZefXmfcZlh2ZACm1CjCZg8HMawQWitZfsJwM1hmniaIjrIoEIKylaQ+ufTYI/b/5RppGNg4jz5gFG9Y2jIBXaw5rw0luB2IHpNNeSeyehaU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755709839; c=relaxed/simple;
-	bh=8yBYVlTmuSfYyKpGmWLZFO2hyNANnEjDzENZL8tfRTo=;
+	s=arc-20240116; t=1755725514; c=relaxed/simple;
+	bh=zJUri91BEY/rz/OKXIaJA70xWSYlsm2TWcaN+ekl5no=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HKhTMofcM4pC6TXsb/R6nqtnL5U+bdf6dFJ05z1CRt2kwegLyfeclV41EjwlV8a9ZVvfPyN58gXk0vJ3Xs+0lXSgCWfVDDwNUTA8UIfe/SP77b0A7+AkLd0V95PwE1NaTaN4UJyekhq1lROCbTf6q3FyKEUBh/7ChcaUXoll/j4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SyeacAxq; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=fELVuqwS8TDWqc01+bCQhJ+DekEZ9z2ZzyDJugp/HdkDWvf8GKQeHdknVJRfUraTJWId9ynIjmDSm+LxnrzuvOxbpBVCkkB6ewnG4Dke0t0HpoiO62Xa7eNlJKHKtHRkbcTjafnLpWOU4gzZyQOSfb5OvCu8lkO57QsfRzFAtM0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=j3SMjdvp; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SyeacAxq"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9FBEC4CEE7;
-	Wed, 20 Aug 2025 17:10:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="j3SMjdvp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1082FC4CEE7;
+	Wed, 20 Aug 2025 21:31:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1755709836;
-	bh=8yBYVlTmuSfYyKpGmWLZFO2hyNANnEjDzENZL8tfRTo=;
+	s=k20201202; t=1755725514;
+	bh=zJUri91BEY/rz/OKXIaJA70xWSYlsm2TWcaN+ekl5no=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=SyeacAxqb/19ouF28LEr7auDF68bzFfdtqyhL+r1Bzmm+d5f3GoIOl5ete9PZ7CjC
-	 0Wu9aOwHTtAerDU0dkjO5Nb4/iZLv9qt2pOi0tV6QMwIZqFE4fMqkB6Ix3ogcj3kDP
-	 UujfUxWLrAHd2BkY/eM4tK0CULpY2Y0bSjBVl0NosHXwFW1SQhT9yYm37MiOqBC9/Y
-	 jE3dYpjFScLJPu6iJg8IP6efFpjMpAud2PkXRFY0dbJFm8s5OXLi/eOUbLQWBuplhd
-	 kNfi/dBaB3I7NyfgIax2kRWfOPXpPUDUSTYgP4K60KzmFxJqsSFPmIo2TK5DXe7Jg+
-	 mpKGefU62J/Ig==
-Date: Wed, 20 Aug 2025 16:10:30 -0100
+	b=j3SMjdvpoytEKqPLGfVHtuTQ2dTjNiVHWsV7EYbfOJv/JScycBNnTe0SPnxhvrr//
+	 oyLPLoulJLTS9RhjQgBfr9APvvosHCmWdIA3ewP7YatvZand/4uwmNP4WNK/yn194r
+	 2tdKTG1xkNvxzaGSE/bII1DcBiHx80LP0uSa3tAkRy6wxzku7YH3q6vUna/fJC17Kb
+	 K3dZK0OyP19BW/qYOOQLobDyO+OoOhOj2avIgd4q6LozYws68YHr0Tsx3SmoHbKk9c
+	 8/O2dJ5h5sqvmlhx1jm9Qr5S4t/y8ILb0hzBleaWLSyttxW4xVFNoUr+zJy1FA82EQ
+	 f4qZoAcZrt/Gg==
+Date: Wed, 20 Aug 2025 20:31:49 -0100
 From: Andi Shyti <andi.shyti@kernel.org>
 To: =?utf-8?B?6ZmI5rab5rab?= Taotao Chen <chentaotao@didiglobal.com>
 Cc: "jani.nikula@linux.intel.com" <jani.nikula@linux.intel.com>, 
@@ -36,67 +36,51 @@ Cc: "jani.nikula@linux.intel.com" <jani.nikula@linux.intel.com>,
 	"lkp@intel.com" <lkp@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
 	"intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>, "brauner@kernel.org" <brauner@kernel.org>, 
 	"oliver.sang@intel.com" <oliver.sang@intel.com>
-Subject: Re: [PATCH 2/2] drm/i915: Fix incorrect error handling in
- shmem_pwrite()
-Message-ID: <nd2sd2vdwif242wslgkaonuvskawho36bp6j6a4caghauzx6f5@dgkaow5idqxt>
+Subject: Re: [PATCH 1/2] drm/i915: set O_LARGEFILE in __create_shmem()
+Message-ID: <r5xlolrlcu76f7c2a2wu75rrdekgdmxgxv6dh7jydpvb3x7ili@bzjzdhokv5xq>
 References: <20250811093050.38930-1-chentaotao@didiglobal.com>
- <20250811093050.38930-2-chentaotao@didiglobal.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20250811093050.38930-2-chentaotao@didiglobal.com>
+In-Reply-To: <20250811093050.38930-1-chentaotao@didiglobal.com>
 
 Hi Taotao,
 
-On Mon, Aug 11, 2025 at 09:31:00AM +0000, 陈涛涛 Taotao Chen wrote:
-> From: Taotao Chen <chentaotao@didiglobal.com>
-> 
-> shmem_pwrite() currently checks for short writes before negative error
-> codes, which can overwrite real errors (e.g., -EFBIG) with -EIO.
-> Reorder the checks to return negative errors first, then handle short
-> writes.
-> 
-> Fixes: 048832a3f400 ("drm/i915: Refactor shmem_pwrite() to use kiocb and write_iter")
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> Closes: https://lore.kernel.org/oe-lkp/202508081029.343192ec-lkp@intel.com
 
-I don't think we need the Fixes: tag here, in any case we return
-an error and -EIO is somehow correct.
+...
 
-With the Fixes removed:
+> diff --git a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
+> index e3d188455f67..2b53aad915f5 100644
+> --- a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
+> +++ b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
+> @@ -514,6 +514,11 @@ static int __create_shmem(struct drm_i915_private *i915,
+>  	if (IS_ERR(filp))
+>  		return PTR_ERR(filp);
+>  
+> +	/*
+> +	 * Prevent -EFBIG by allowing large writes beyond MAX_NON_LFS on shmem
+> +	 * objects by setting O_LARGEFILE.
+> +	 */
+> +	filp->f_flags |= O_LARGEFILE;
 
-Reviewed-by: Andi Shyti <andi.shyti@linux.intel.com>
+I don't have anything against this, but is it really fixing the
+issue? I thought that O_LARGEFILE is ignored in 64 bit machines,
+while here the failure is happening in 64 bit machines.
+
+Besides, where do you see in the LKP logs the -EFBIG error
+message?
 
 Andi
 
-> Signed-off-by: Taotao Chen <chentaotao@didiglobal.com>
-> ---
->  drivers/gpu/drm/i915/gem/i915_gem_shmem.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-> index 2b53aad915f5..702532eef207 100644
-> --- a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-> +++ b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-> @@ -441,12 +441,12 @@ shmem_pwrite(struct drm_i915_gem_object *obj,
->  	written = file->f_op->write_iter(&kiocb, &iter);
->  	BUG_ON(written == -EIOCBQUEUED);
->  
-> -	if (written != size)
-> -		return -EIO;
-> -
->  	if (written < 0)
->  		return written;
->  
-> +	if (written != size)
-> +		return -EIO;
-> +
+>  	obj->filp = filp;
 >  	return 0;
 >  }
->  
 > -- 
 > 2.34.1
