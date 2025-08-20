@@ -1,136 +1,247 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 737631D6DB5;
-	Tue, 19 Aug 2025 17:49:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755625757; cv=none; b=TWHBLcq0Gx3x8clSJkLLPfNmgS5SG1v/cwwScY4/JJeAS5u9WreIdTfcAXkgKa5NuDubaY65bbq2f4zjD+IyfKLqLeQb2U2wnmfcwTYg8arXHQ4lAXfzFiIQQv1lws1ktlc0TaUHdHon1b94GVnm0R7KRDw3jvN5zavjoDPwFWc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755625757; c=relaxed/simple;
-	bh=yfhPbDJoc+6CdAo/HUDbAHjm5EOHsprDS0bgOVBPTUo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=u1ggeva+JSjhmo79XKXV92uGsDx2Tdb8tuc4mz+mpH+ImeqLDAPjyuBirabjGLv44dFqqLANceqyhF4DxjP72whhJ+U9T2aEbizeuZrAWMJAbT6xkzIpg4oyVAazkCowyJKO8xToNxIFDhibYKPFUXzL/oWUVdYGz1k3gngk5Lw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8E877152B;
-	Tue, 19 Aug 2025 10:49:06 -0700 (PDT)
-Received: from [10.1.196.50] (e121345-lin.cambridge.arm.com [10.1.196.50])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 475103F738;
-	Tue, 19 Aug 2025 10:49:10 -0700 (PDT)
-Message-ID: <cdb7b1e7-6e51-4c0e-bffb-b0d4b654a623@arm.com>
-Date: Tue, 19 Aug 2025 18:49:08 +0100
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B21521883E
+	for <oe-lkp@lists.linux.dev>; Wed, 20 Aug 2025 04:55:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.14
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1755665743; cv=fail; b=SlI+B0qGwkovYxveLGIJ5+bhMiwPnZYrOTcqLw67E39naj73QK92OpVjd9JLoJ3le865AeXiei9YZnCLwV5/RAMYH2KTJHJmZmbW8oAS9vTAa/bUcGk6IGarutN5UcrHtgRFNf2mlAyS4eK+vyXpsoFQ2uMww/tOhCzyOPyXFTU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1755665743; c=relaxed/simple;
+	bh=GFb6ZATjkcHIccNsvDiTX26Pt2V/079VtMGiuVsEiO8=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=N3z1iHBp7v4s9I2h6O7xzXY/xwN5qfiYMdDDuF0/gO4ZyU9aWnVvFVXmrm7V4NEHH7L39umhdoWnHR7umFf5wIy1qHs60X+7gHHwbYwMGHaYu4szZPB8XOmuxd7MVVjJAFKj7/p4Y6Ytko2g2DMPXyPP4pp4Yc8ndqM7VEHU10M=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RYCjACWX; arc=fail smtp.client-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RYCjACWX"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1755665740; x=1787201740;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   mime-version;
+  bh=GFb6ZATjkcHIccNsvDiTX26Pt2V/079VtMGiuVsEiO8=;
+  b=RYCjACWXnD2e7ozQporQiFTJPvwv9UoGlNtdUtaX5vzviwwacPgFHGUA
+   H6Y1qzcAv/nl1RRd2KJ5qe9JPMS5RERQpOMXsBgT4f9f6FZHBZKsxV27F
+   vKlGghmfBsmESuW+PjbjOpxI2/h9RXlZp89ibnu/3SKFMpB7I5om3ozrF
+   DTxHcmbRK1ilcH7DQyOCwrtycidmvIOvXiVMYuJIJ9zLlUePO/nXoIzXU
+   siNFlQfcR7TIRycjbB/ByY5mzaXLhcFdrZP0p5zY4DPams7PClpSlfz4H
+   uQFJj5O+85i9GfaMUCMhdkfOyI/zga7H+ryFhJ+oXkefwJuvl3ti8mfWG
+   A==;
+X-CSE-ConnectionGUID: 3WIMcW2PQGOnsrbn/zXF6A==
+X-CSE-MsgGUID: Z27RfokRS9+3VBlofdgB5g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11527"; a="57993487"
+X-IronPort-AV: E=Sophos;i="6.17,302,1747724400"; 
+   d="scan'208";a="57993487"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2025 21:55:40 -0700
+X-CSE-ConnectionGUID: oVzhvx46Q1uqSyJ7yHlc5A==
+X-CSE-MsgGUID: 4J2Er8kZRYuP9dZVgywwAA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.17,302,1747724400"; 
+   d="scan'208";a="172273082"
+Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
+  by fmviesa005.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2025 21:55:39 -0700
+Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.17; Tue, 19 Aug 2025 21:55:39 -0700
+Received: from ORSEDG902.ED.cps.intel.com (10.7.248.12) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.17 via Frontend Transport; Tue, 19 Aug 2025 21:55:39 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (40.107.237.72)
+ by edgegateway.intel.com (134.134.137.112) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.17; Tue, 19 Aug 2025 21:55:38 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=SPT/yZWPGYeO3H1G8w+mfksx3uaswfYadglLsjuFwT1ZoOs/ioXK74AwtCdLAuTuLT6IcTi5mrBdrThDWLShjM43ieMO/AtmLWFES8uTlQn5y+qzlHg3OCkvepUKfTP2CgJ2NhKq1VNjFbY8vw1idMy5vNfuwd4baMNynYbIoVM+gZRFnexj1sp4xClwsn1iE/6qSq2LRP/9RX9TZ9+pbMORAkEBIvyKm49roNnheZCPaLi4kTeoHrlnBzQa1q4FamkObm0FFcs+qVFCo5zaRTw8wnPFBbHwq4/3Iyx9+Hn37Fvdez74Jj2JBm4ETQbHYHqD99jM+hRuj8kqd75VrA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=vzwSXPyA0VeqUiy+1iL53DYOQ0HHxGDVpdRDS6tgFas=;
+ b=PhSywSxiI4ebEPs24+jZhPZT+FfcTfGaPHIHKV/dRLXkLC+Ymv3+9Cz627jsVCakj42URoJ+/NPpxHpxp5M4mp+h1kzFrdFchRttsJScoXXtvNPJc7ogySTLgSZTIVL9zPVJ1mhrLwZywebu7iCQPUWb9E7QHeIDwWyG2A9g5c8wDi7IWg3iIQ69FSy8Jp6/uKOhjtMhUiw1poROgjYmc1cYOGIwaU070dcjc8gtYcYZEGoHhUpIaVFU5hs/SosEwsnlbqTM9AcyfHT4+d9RsYfwd4MOgFJaGnojmJDXSSaBEvsjN0TEREq56REAVcwaMGf9m/k7UPDId9qnob4NDQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by DM4PR11MB6118.namprd11.prod.outlook.com (2603:10b6:8:b2::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9031.24; Wed, 20 Aug
+ 2025 04:55:31 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.9052.013; Wed, 20 Aug 2025
+ 04:55:31 +0000
+Date: Wed, 20 Aug 2025 12:55:22 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Rajeev Mishra <rajeevm@hpe.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-block@vger.kernel.org>,
+	<axboe@kernel.dk>, <yukuai1@huaweicloud.com>, <linux-kernel@vger.kernel.org>,
+	Rajeev Mishra <rajeevm@hpe.com>, <oliver.sang@intel.com>
+Subject: Re: [PATCH v4 2/2] loop: use vfs_getattr_nosec for accurate file size
+Message-ID: <202508200409.b2459c02-lkp@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20250814191004.60340-2-rajeevm@hpe.com>
+X-ClientProxiedBy: SG2PR03CA0103.apcprd03.prod.outlook.com
+ (2603:1096:4:7c::31) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 19/19] perf: Garbage-collect event_init checks
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
- linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
- linux-s390@vger.kernel.org, linux-perf-users@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
- dmaengine@vger.kernel.org, linux-fpga@vger.kernel.org,
- amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
- intel-xe@lists.freedesktop.org, coresight@lists.linaro.org,
- iommu@lists.linux.dev, linux-amlogic@lists.infradead.org,
- linux-cxl@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- linux-pm@vger.kernel.org, peterz@infradead.org, mingo@redhat.com,
- will@kernel.org, mark.rutland@arm.com, acme@kernel.org, namhyung@kernel.org,
- alexander.shishkin@linux.intel.com, jolsa@kernel.org, irogers@google.com,
- adrian.hunter@intel.com, kan.liang@linux.intel.com,
- linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org,
- imx@lists.linux.dev, linux-csky@vger.kernel.org, loongarch@lists.linux.dev,
- linux-mips@vger.kernel.org, linux-sh@vger.kernel.org,
- sparclinux@vger.kernel.org, dri-devel@lists.freedesktop.org,
- linux-riscv@lists.infradead.org
-References: <202508190403.33c83ece-lkp@intel.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <202508190403.33c83ece-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|DM4PR11MB6118:EE_
+X-MS-Office365-Filtering-Correlation-Id: 692c2017-45e7-4bd8-7196-08dddfa5ca26
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014|7053199007;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?R7FTkT0qZafxWFwvviAHM+Y0gT1rx8zlB8SB3JYpRzSiWqSWqDPOAnWpYtC3?=
+ =?us-ascii?Q?kiiXP+O752RLgEUOsW+H3ATBD1uewGD7UjxCEf4iB52F4rB5FmNA7C9RT0ox?=
+ =?us-ascii?Q?kk1pTntVgIjfL4E40Snlg6oplrZJ3evARKodlmQdLy/owRTxibXN1tJdeT8d?=
+ =?us-ascii?Q?/ZbmZMJIUAy3UYCvgVQ1QZ33tf7g1/nW/OB6aIEJKhOxCLOOMphcd8jM9ZOf?=
+ =?us-ascii?Q?l5D0JtD7cEEDWosKMg5uaA/xb4MVCJ1N4xOrhEuThzpeoAhT3i+5dOXdTRtA?=
+ =?us-ascii?Q?PWuShj6nQiKa9Ne5f/p+/OQVEmTm2k11MUb27MIgDpS29pQpihJTqXrjPOje?=
+ =?us-ascii?Q?uYzzm87vSLDTuFZY6AotQvybuD5/GMKcZlCB84QvJ+u6va09v/yMNetPv5LU?=
+ =?us-ascii?Q?8+ZX8xJylSZyuoYqdlSYxQ0Sw9hNwkQsNiTEph+BsnKzzeKTTqBmo8Hr8ve9?=
+ =?us-ascii?Q?1tBGrfNkNxaPdmMe2Z6b8WV2lA2nbPYfOjP8kyeT/sKL87baJ5FZtIgpwSjQ?=
+ =?us-ascii?Q?MzBu0ho3WmTgjtwcpxj5s79oiEapo4dvtzQzRQ8oBDwxm2+tTszb5paCnIY1?=
+ =?us-ascii?Q?kaf/1ZWb47YLAtk1RUNe3aafGrrpTRIdlg8HnlvmdAlG9r7rIarqEbr13cqV?=
+ =?us-ascii?Q?eAtcvaoLQH1YSzo27Ccb1Z89DFc7hsJyuf+yVYFEf/5nUF7WspfynljBiMSp?=
+ =?us-ascii?Q?5xyi3+rQ5EQKraUpcA7Tm+C5KeM7fG11MLAbOP3n9eWS5zFORtMZ5sUSoa+u?=
+ =?us-ascii?Q?vjzm5NQK3obrL6j4jTaTj7DUbgiYXAQskW/6be/x0RnhOQoVHgd0clIgNSYU?=
+ =?us-ascii?Q?Ihdh5Mg96iD0oNgwPX59l56JPfEzIrL2ftoSNDV6opewJI54MQK8Hi0Xm1hj?=
+ =?us-ascii?Q?nbs8FwCav6mtzDkMSnC2vSGZAkwfxus9j4GMzXavl9zKVNSeBxpuhmq1prZk?=
+ =?us-ascii?Q?2bmxRXFzNswlJc4RZv5XlLaXlQ+TFSIYVmbTexA3sTYWRnWiuYtEkLJ8b0nq?=
+ =?us-ascii?Q?9qfxiIut2qKg88/Ksy9T+qPfIT7U26DpRekMptvGZx0+KVYMzUJnchT94r3d?=
+ =?us-ascii?Q?/FrYvJzg96nQ0cvs2bHE3BJts2bm6PHvH4HImNt3XPi9YwDbePbNz/MSKj5p?=
+ =?us-ascii?Q?fssDl5YHmZoWQLRtA2A7huiZY82Jx8KCNa88fUmMz85od590vVK8+bLfOpat?=
+ =?us-ascii?Q?3UTaG1R1IuyUMWy3azArpBeKqWtsPe7HAGc1ayI236WJuOp2iP3RIEmoU1qv?=
+ =?us-ascii?Q?aSYwrAoRXIylre3x7ve8u1eOvi12UHkS5+QcbQqYnl2e0jzXE4UsP34Do4Md?=
+ =?us-ascii?Q?atE3BBeEJfVGLsrTB2tyb/TrB4BwjnriB27gwsmWX8oG6RvmBf/4CBKrqSxq?=
+ =?us-ascii?Q?hhDPhWbEu5KnF1NAdFMLTCWPgr+7?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7053199007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Q6Nhx7F7/aKwfBvQ/w19FZgrvbMGVaGKkYKs4yJLZjaN/jeY9YAvL50rPPaT?=
+ =?us-ascii?Q?gQwfh7ACg7/15CdL2jWEzeTEENoJyb20UKYWwHVJnLfFXOMFHz2svMAvxWku?=
+ =?us-ascii?Q?zvuVB4Ts6tMs3qxUEQtxJRvng7LpyRKfOp5Mz0rtBW0ei7BvWYB+FKbbWhsi?=
+ =?us-ascii?Q?EH0nVjI4z5m7TINJhWTWuY51Zrmrwt/CpEjrl117gbbZKJRXP2M2jNwiZIRU?=
+ =?us-ascii?Q?pUfoSFJIQA8/CbrEbBvGwbodH1QcrYvQxAOm8LrijrOjVHqK7uaClEoHEf1Z?=
+ =?us-ascii?Q?E3fQ5aM7bZ+m1QJpN35PYaWEyisP80ehVwyEixHIospARk+3Ds7yUBZVmie5?=
+ =?us-ascii?Q?6wde/l5mGQ6wimLTSNowh/HdT07HPHitYFf2oWzY5hI4SZDLwrW8JAs0Fl1G?=
+ =?us-ascii?Q?9layU/+LX6CJdbKEn3OZcI7TPucd5iVPUylsTBAdjLJPFY6m4U89A7rvpmY/?=
+ =?us-ascii?Q?L0+yQlCH6LwQe8+At9LP9qpcNa3MKpgkO8ofkQLZ2YHKbak1NUzdvloXiTwq?=
+ =?us-ascii?Q?fn9NtMzfLp4jU4WsI99mFttqsI7hYogol+4y/TjAFGuKX5C9LeBo3TUQPoSW?=
+ =?us-ascii?Q?Lyza9vvAFHAVb7wK1b/jHNNDoAzPVxMhln55J73FXc3YitACRPwOuBZSIYZp?=
+ =?us-ascii?Q?hn+5nIkkIshs6pxy6dRI4WrhZJnkxdCX1tyxBbrE3MfnuJ0BfVcvTEjadAhG?=
+ =?us-ascii?Q?+oerpxCKw1uJi1yBTUIa9vuMT+55fX3jFr1fTdwgNCtsmjDcubmJ3z+t25YY?=
+ =?us-ascii?Q?uqY4PnH1Cpnx6A7Rgu/nDuhnxOK2baknnJ7OjPaRhqzeVUMxIx405QocA14A?=
+ =?us-ascii?Q?3lHJK5AAOeu/k4ZcMVFBXCSwMS2WWt4a9PHaQqd+MAkLp71nBNOoq+XbjsI3?=
+ =?us-ascii?Q?S08YRjiElFicEwTVTk3krFySdAOBoqQMn4j1LVEXf0GOSregHMUb4T9jLZ8G?=
+ =?us-ascii?Q?VMJNaifREPstysK9lP90yFbu1tuYZlylXZNElYLNfmNCraL6SmGgvq1WE5N3?=
+ =?us-ascii?Q?GMNvSU7zAGmRRkZMcmZe+xiy8ZFxfO/LXX5Li42ewXUdV3gyurAqbkHZl886?=
+ =?us-ascii?Q?/9SjW6JSpYxHQcNDiBQYplQl9939EbIpmPXbQqQ9aOaWVXXCqcV3ruDhhrYf?=
+ =?us-ascii?Q?Z9vsSgQYjzJYFUhT+wgCgDD4OQFWPN2thsBqN+201XDzGxf8dJuAB2a9R6kD?=
+ =?us-ascii?Q?33o6nDiQTN4mnDbnnaOUcNQGtGHx8WhnzPH9SDOk25EKd/uGT+CKUcZTVN+z?=
+ =?us-ascii?Q?vkhwyiBDgPpCLzRk/o1eDXRUxgCxjdH3G+DHxDdCRtTSHuYxRvJCittky8RI?=
+ =?us-ascii?Q?Cor5gGLtQsD9DKkqcK3fTsziAQvtUX+bge3IUiDY7HqGdQ9/Cq6LBwV5DPEG?=
+ =?us-ascii?Q?Q+zTJ9PlNB3K3G0ssHMvoVV5QcWv7+6MAtSTJP5wP+9MKKi2YcLY9arLzGAS?=
+ =?us-ascii?Q?gqR5FOYSgqOGYEm/cvoF2xg0e9lnY0fkv35+Zb/sdJP5JxitQH2XB9j+22Nu?=
+ =?us-ascii?Q?Xe6OIjZiaQDjygOv2XssxWo0cGSbCx/QnUPQnJqj6QHCsczifpdtiOzW2CwJ?=
+ =?us-ascii?Q?hqBvRUT4IAIqFlWOlA9b+T1bF+AN7j/5+ToGEoabCc9K9FajCrCAPfCiUlxJ?=
+ =?us-ascii?Q?Lw=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 692c2017-45e7-4bd8-7196-08dddfa5ca26
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Aug 2025 04:55:31.2162
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uScq6Smq2n6KXPF2U3HsVZeaadh0vOMrSXLoVvRzeaUSnnbZ61T3JjYXzUoeME4xIN9fR4S6VffJEEpXSBn8FA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB6118
+X-OriginatorOrg: intel.com
 
-On 19/08/2025 3:44 am, kernel test robot wrote:
-> 
-> 
-> Hello,
-> 
-> kernel test robot noticed "BUG:unable_to_handle_page_fault_for_address" on:
-> 
-> commit: 1ba20479196e5af3ebbedf9321de6b26f2a0cdd3 ("[PATCH 19/19] perf: Garbage-collect event_init checks")
-> url: https://github.com/intel-lab-lkp/linux/commits/Robin-Murphy/perf-arm-cmn-Fix-event-validation/20250814-010626
-> base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git 91325f31afc1026de28665cf1a7b6e157fa4d39d
-> patch link: https://lore.kernel.org/all/ace3532a8a438a96338bf349a27636d8294c7111.1755096883.git.robin.murphy@arm.com/
-> patch subject: [PATCH 19/19] perf: Garbage-collect event_init checks
 
-OK, after looking a bit more deeply at x86 and PowerPC, I think it
-probably is nicest to solve this commonly too. Below is what I've cooked
-up for a v2 (I'll save reposting the whole series this soon...)
 
-Thanks,
-Robin.
+Hello,
 
------>8-----
-Subject: [PATCH 18.5/19] perf: Add common uncore-CPU check
+kernel test robot noticed "xfstests.generic.563.fail" on:
 
-Many uncore drivers depend on event->cpu being valid in order to look
-up various data in their event_init call. Since we've now factored out
-common PMU identification, we can factor out this check in the correct
-order too. While it might technically be possible to hoist the general
-task/cgroup check up here now, that would be horribly messy, so for
-clarity let's keep these as distinct (albeit related) concerns.
+commit: fb455b8a6ac932603a8c0dbb787f8330b0924834 ("[PATCH v4 2/2] loop: use vfs_getattr_nosec for accurate file size")
+url: https://github.com/intel-lab-lkp/linux/commits/Rajeev-Mishra/loop-use-vfs_getattr_nosec-for-accurate-file-size/20250815-031401
+base: https://git.kernel.org/cgit/linux/kernel/git/axboe/linux-block.git for-next
+patch link: https://lore.kernel.org/all/20250814191004.60340-2-rajeevm@hpe.com/
+patch subject: [PATCH v4 2/2] loop: use vfs_getattr_nosec for accurate file size
 
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Closes: https://lore.kernel.org/oe-lkp/202508190403.33c83ece-lkp@intel.com
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
-  kernel/events/core.c | 12 +++++++++++-
-  1 file changed, 11 insertions(+), 1 deletion(-)
+in testcase: xfstests
+version: xfstests-x86_64-e1e4a0ea-1_20250714
+with following parameters:
 
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 5f7eb526d87c..ddf045ad4d83 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -12562,6 +12562,11 @@ static bool is_raw_pmu(const struct pmu *pmu)
-  	       pmu->capabilities & PERF_PMU_CAP_RAW_EVENTS;
-  }
-  
-+static bool is_uncore_pmu(const struct pmu *pmu)
-+{
-+	return pmu->task_ctx_nr == perf_invalid_context;
-+}
-+
-  static int perf_try_init_event(struct pmu *pmu, struct perf_event *event)
-  {
-  	struct perf_event_context *ctx = NULL;
-@@ -12571,11 +12576,16 @@ static int perf_try_init_event(struct pmu *pmu, struct perf_event *event)
-  	 * Before touching anything, we can safely skip:
-  	 * - any event for a specific PMU which is not this one
-  	 * - any common event if this PMU doesn't support them
-+	 * - non-CPU-bound uncore events (so drivers can assume event->cpu is
-+	 *   valid; we'll check the actual task/cgroup attach state later)
-  	 */
-  	if (event->attr.type != pmu->type &&
-  	    (event->attr.type >= PERF_TYPE_MAX || !is_raw_pmu(pmu)))
-  		return -ENOENT;
-  
-+	if (is_uncore_pmu(pmu) && event->cpu < 0)
-+		return -EINVAL;
-+
-  	if (!try_module_get(pmu->module))
-  		return -ENODEV;
-  
-@@ -12990,7 +13000,7 @@ perf_event_alloc(struct perf_event_attr *attr, int cpu,
-  	 * events (they don't make sense as the cgroup will be different
-  	 * on other CPUs in the uncore mask).
-  	 */
--	if (pmu->task_ctx_nr == perf_invalid_context && (task || cgroup_fd != -1))
-+	if (is_uncore_pmu(pmu) && (task || cgroup_fd != -1))
-  		return ERR_PTR(-EINVAL);
-  
-  	if (event->attr.aux_output &&
+	disk: 4HDD
+	fs: ext4
+	test: generic-563
+
+
+
+config: x86_64-rhel-9.4-func
+compiler: gcc-12
+test machine: 4 threads Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz (Skylake) with 32G memory
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202508200409.b2459c02-lkp@intel.com
+
+2025-08-17 21:02:18 export TEST_DIR=/fs/sda1
+2025-08-17 21:02:18 export TEST_DEV=/dev/sda1
+2025-08-17 21:02:18 export FSTYP=ext4
+2025-08-17 21:02:18 export SCRATCH_MNT=/fs/scratch
+2025-08-17 21:02:18 mkdir /fs/scratch -p
+2025-08-17 21:02:18 export SCRATCH_DEV=/dev/sda4
+2025-08-17 21:02:18 echo generic/563
+2025-08-17 21:02:18 ./check -E tests/exclude/ext4 generic/563
+FSTYP         -- ext4
+PLATFORM      -- Linux/x86_64 lkp-skl-d03 6.17.0-rc1-00020-gfb455b8a6ac9 #1 SMP PREEMPT_DYNAMIC Mon Aug 18 03:05:49 CST 2025
+MKFS_OPTIONS  -- -F /dev/sda4
+MOUNT_OPTIONS -- -o acl,user_xattr /dev/sda4 /fs/scratch
+
+generic/563       [failed, exit status 1]- output mismatch (see /lkp/benchmarks/xfstests/results//generic/563.out.bad)
+    --- tests/generic/563.out	2025-07-14 17:48:52.000000000 +0000
+    +++ /lkp/benchmarks/xfstests/results//generic/563.out.bad	2025-08-17 21:02:31.367411171 +0000
+    @@ -1,14 +1 @@
+     QA output created by 563
+    -read/write
+    -read is in range
+    -write is in range
+    -write -> read/write
+    -read is in range
+    -write is in range
+    ...
+    (Run 'diff -u /lkp/benchmarks/xfstests/tests/generic/563.out /lkp/benchmarks/xfstests/results//generic/563.out.bad'  to see the entire diff)
+Ran: generic/563
+Failures: generic/563
+Failed 1 of 1 tests
+
+
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20250820/202508200409.b2459c02-lkp@intel.com
+
+
+
 -- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
