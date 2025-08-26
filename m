@@ -1,162 +1,308 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 875BA393DD0
-	for <oe-lkp@lists.linux.dev>; Mon, 25 Aug 2025 10:27:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756117634; cv=none; b=iYhUYnWAy5mFEvSnDoIk5D/ZgAhyEOYWEft7Tb2fs26gLklzYbe2+UwFZGFyMqNQxj5ueUPgTt2LOw7cDlWoQ/EDy35XHEZ6LLt3PX5Zy5egebyvnSLoEAbUmwWNKi7A06Z3yAt53cQxv+H49VwP0bPYKLOLEWEtkPEN6FiCiLs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756117634; c=relaxed/simple;
-	bh=7eXQe0ppR67crwIxzEGbI8HTL2j+eg2UeV1vOND7m8c=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XAm/rRFZ/pk6ztVyyTx2UjXEL+3hIxt5uIhmZLZWenRoMFTfVHNRslHMvEyfSTcMlxF+GTuW0a+tea+uOT9yp3/WaGHKFuLQWTOBvHIT84OkZbTh7SL9hauyr+O22QaSkUl1J1nD/wixDcVOP7ik95D4GnHoQQSjRgkWieOg+Qk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KbH6pmxm; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88F6D16CD33
+	for <oe-lkp@lists.linux.dev>; Tue, 26 Aug 2025 08:47:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.14
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1756198057; cv=fail; b=kpYHD4ieZGjyPCebhq8yEaeR+EgdzMmxylqQIVrQkCcjw3953wTbzbJrTdFz9YcQsYsiNMHKt++Ix5q6EyMG9ukPfHJdUcR9MYnedbHLpV0ZSe7e16Mu41rQwEBvDQSJknFUztMjB65ZyBKW4NNnE/UhMsAsT2bmVPuB4fhBL2w=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1756198057; c=relaxed/simple;
+	bh=qG0M3joC68GYPCWbCP2wueCKV+EDy8WPJSd0r6M8d6Y=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:MIME-Version; b=IYmYz4uuAsRsG0w9JwQtKd+LtqkVriaQuhnVj4wbYSR2CU/deeXbmL6gZWFku98faS83kBZhxB2Oghzw1ctT0/aa0wvtmgaAeVuomd5ooTlE7BcTS54XB1xOIM0izCH9uC2bNuSXPKb0vZ83UHG7EleRlqIP9uk7/hac/pVThZs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ga+H+JiW; arc=fail smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KbH6pmxm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27661C4CEED;
-	Mon, 25 Aug 2025 10:27:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1756117634;
-	bh=7eXQe0ppR67crwIxzEGbI8HTL2j+eg2UeV1vOND7m8c=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=KbH6pmxmwtV7AmRZ596tGKRt9t7M7lAxvdMbUw+oaoyUFMMA+EyQy05hGJ3g9WwsB
-	 Z1eMAAN0hLLeLUvb6KAzpYAn5REKd9ruZ9Tp7F7miFd9NnlMKIGXs/OUUbWERoUDQn
-	 aM7jJisqh7oNweuIFKK0Hpty4DmFY33T+XE2EIKeWWEBvYToPKgm2TpiWFGzodZPpc
-	 ks1MXF09AJ75Wy9QWZhT7FsaHaZiB2GuBTTwLlwykW8ZvOVYcxMceKfewYi5waVo5Y
-	 0cqenAwDmaLHn1YX3eGSdNdZn19a8DMMgJ68FVHFHIJDWIi4e0SmxzR+EZkFV5lmUG
-	 QfFpG5ucwxINw==
-Date: Mon, 25 Aug 2025 13:27:08 +0300
-From: Mike Rapoport <rppt@kernel.org>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
-	David Hildenbrand <david@redhat.com>,
-	Wei Yang <richard.weiyang@gmail.com>, linux-mm@kvack.org
-Subject: Re: [linux-next:master] [mm/mm_init]  8a523d9e6f:
- BUG:sleeping_function_called_from_invalid_context_at_mm/mm_init.c
-Message-ID: <aKw6fG9eryVNmeEc@kernel.org>
-References: <202508251443.f2d9f77f-lkp@intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ga+H+JiW"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1756198055; x=1787734055;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=qG0M3joC68GYPCWbCP2wueCKV+EDy8WPJSd0r6M8d6Y=;
+  b=ga+H+JiW2YpKW9Wg/yhP19/pWdvegS7MoxWZczsXIkheO+UhAXa7wntc
+   mbcQyuRx0rBcxJRLuz+/+Za7EigAK3OwtSd6Tt2IdW8TAzwo8qM47NEGP
+   xfJy3y+3F66gXrqCRh1sMYjJYcdERNR1c4Os+YB2QGx+lLOKAQwpttaWB
+   bJ0GNtt89/2LlaKzZv9vmyxQNinSaI+empYESjOj2yi0KoQCKpti6mp5v
+   A7YsOidMvv2Va1vNqmP7Pk20qOk1XzMjUCLSaCBvMo6ER0n4V8c44o0wK
+   00HIWto6jiZ5uKDlNOaGdEgzyKzbj/8iAJ/1TMQJRPrudKVuL0ytqagyY
+   Q==;
+X-CSE-ConnectionGUID: CvsMCArCQLirSzZlUly6fg==
+X-CSE-MsgGUID: h99qAIcbQ/uM8wXyvMMNEg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11531"; a="62255441"
+X-IronPort-AV: E=Sophos;i="6.17,312,1747724400"; 
+   d="scan'208";a="62255441"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2025 01:47:35 -0700
+X-CSE-ConnectionGUID: ovRpYbeFRfOpWi/89gkJDw==
+X-CSE-MsgGUID: kXi6kWo0TDeCes32rotAqw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.18,214,1751266800"; 
+   d="scan'208";a="174786251"
+Received: from fmsmsx902.amr.corp.intel.com ([10.18.126.91])
+  by fmviesa004.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2025 01:47:35 -0700
+Received: from FMSMSX903.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.17; Tue, 26 Aug 2025 01:47:34 -0700
+Received: from fmsedg901.ED.cps.intel.com (10.1.192.143) by
+ FMSMSX903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.17 via Frontend Transport; Tue, 26 Aug 2025 01:47:34 -0700
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (40.107.212.80)
+ by edgegateway.intel.com (192.55.55.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.17; Tue, 26 Aug 2025 01:47:34 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=IkbkSzdi7vADAErZIcB0oI17wK3HuF9OKjtFDpCMASNhQ87jIpoF1J9WX3iEJ27rcPlcfEugGuZlz/UllqX4qDUH1rJRyyp4QiD7mitr58ytapK/0vioCTnHg7y7gR1xhiUZlU7GWyDQSQbFE4ZhRQZzf3zUXy2X3X7vf+NFV3UDvIOeuGvP7WJG+g23eZot9gBbc85ZLrJxj5b7O9KrgvjuEM9nsWUxMEDe8ap9g5IWjVhm4msKHwNcxDmtxc4CMh1vxKEL6fgbyZXMGTc5BJkw1gHtuEPZkpbm65C0OlZd4cc5PltN/T57r7dKJpIHmX//awkQbts9Knw3YHyLSg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cgD8NyM6LolVOzrfsYAlcLnlJ2T67XQSD20zII/p9pQ=;
+ b=AvU9rkuBkc/M3RgVj47kAicf4kWu3n0dXq5FLk8Qmqanylvol1e5Mv1Hsi7U4LwmqZfam6P5WUr+Q/Qz+/Xpn1Sag/c6bLUgO3UlQ2BMr1dXaVnnPWVCI4ex6y+m8pD7DRrrgjOj8prisXL0tfGg5R+R0krTK/WpW5+du65eUCB6dJzLTuXLQlv46duyRv6N7y5T9tPqQuZzVIzfU8Xw+/Ok/xHlMjNosnK77IA52g868BweHvD78CzpBdo220NZAdIe4RXyafvs7g2VQ20/80HDjsJ+SH0SHZF9fTyg2+GXfqiuCUmmKREjQ4ZCdkSc5RXju1vRqk8zzC3xeJ29BQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by DM4PR11MB7758.namprd11.prod.outlook.com (2603:10b6:8:101::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9052.20; Tue, 26 Aug
+ 2025 08:47:32 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.9052.019; Tue, 26 Aug 2025
+ 08:47:32 +0000
+Date: Tue, 26 Aug 2025 16:47:22 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: "Paul E. McKenney" <paulmck@kernel.org>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Andrii Nakryiko
+	<andrii@kernel.org>, Alexei Starovoitov <ast@kernel.org>, Peter Zijlstra
+	<peterz@infradead.org>, <rcu@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <oliver.sang@intel.com>
+Subject: [paulmckrcu:dev.2025.08.21a] [rcu]  8bd9383727:
+ WARNING:possible_circular_locking_dependency_detected
+Message-ID: <202508261642.b15eefbb-lkp@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+X-ClientProxiedBy: SG2P153CA0040.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c6::9)
+ To LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202508251443.f2d9f77f-lkp@intel.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|DM4PR11MB7758:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2d831cb1-10c0-4496-ef44-08dde47d321d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?rtRJIF3/WZrkCpzuabBEPY56WLwxfHx2Dl69dXVrr0j9OSPJwD+/+e1gg3zM?=
+ =?us-ascii?Q?o+8Wkc0nLZufFq1cHc4vZEj9oI/DlZNzWAeal3QG3TOXtOT145PthxrnzbaA?=
+ =?us-ascii?Q?Bo6DL39KPcVcLmxKhhCFFBIu3pr3asCWwPFDXRPRdIlVYcIIM3p7axKxrTv7?=
+ =?us-ascii?Q?cB2rB1UWs2k+N9irBgJeBoM6lOJJPI3xU39lxhEm/Z3Y+4tDm/t1piTJf+4W?=
+ =?us-ascii?Q?4Nnlh1DU7dWljni8qU6R9ker9In2Oqzmd2rUOk01OE4nlncFalfDTXZATv9J?=
+ =?us-ascii?Q?sKyhYGd2hpFH2+9nphVAhdgH/fRHemPuqS7UpgJ/na/cH7CksHXTho84tgtH?=
+ =?us-ascii?Q?5VBENrfra65N6RNHkxxXDN1AlF5ijSknbfNEUpBRx6KtPFvPPv58qMHx/Tst?=
+ =?us-ascii?Q?t3Y1MAL4cSQXvk61NqwCbEv9L+jsgXuD73VoCOHTdo+F+GJ1BsB3C3usOQs7?=
+ =?us-ascii?Q?cAEn8Sl2QQivyL1wTf58bAwdlwcBBCV8Qd5kI6VEm0IvizCDXL1cGx3EHbjm?=
+ =?us-ascii?Q?ovmssK1bP1HLwb7JHLKrZAJ5FcFTPGL4smQWJQNZ7A2HaRf1+COfYemgQosj?=
+ =?us-ascii?Q?VRAUQ5oJ8n8g92cbzwk6E2uRh01AESGsuWpNXO2zKLYvrzVjLkcZ3oKHQ0pN?=
+ =?us-ascii?Q?PPzELd1Dk0o2cZYMbbY2gCRvoIL3ZDk04ju1Uc1Rp3omYJZHzR6YtEkgp+Su?=
+ =?us-ascii?Q?6QxLw9yPd9Qdvba2eOJNN7Uv9q3l6jbyrPKdHLa3fSOqecOSEj8MXy5NPHZa?=
+ =?us-ascii?Q?A4KylLVNaMySVwhscPbUSwIvJWkxF/aOx82EyHrPmbT8XMndy884jSmxKFjm?=
+ =?us-ascii?Q?vhPyJH2y0M175q2md5zSeWv20Api/+ypM2s0zbavY1z2j+h3ZW4dI6+kASvp?=
+ =?us-ascii?Q?TEzRUemGoI+AApFchYZ61Q4OKjzJ0aAQYbOCaJWRd5AXl2PwWmY4dtPAhcOW?=
+ =?us-ascii?Q?ETSwy+sXdUTiuAvM4MpjrDOsQEFM1CrhEVA0tPXMvAJ6Yzrw8uzbBGuSwEL/?=
+ =?us-ascii?Q?o2PLF/r47vu/b7IHHqltumKI/q1pTOTMfk3Pc1muwPmqXzYabknm4PtZJ4RS?=
+ =?us-ascii?Q?Qp7N7KUEcgVYAa8LupeautTSjomp6CpNzbKluo0YCKytWzy86VQ7roni8j1N?=
+ =?us-ascii?Q?LLuj7uxZaeTFy5Ok5bVap9555gbT1h1MzCEVY2LyEc3+7wk6el447/078hRz?=
+ =?us-ascii?Q?bk9z0L5h4TMCxAL6gp+wuxlo8dU4oLdRy64iWHKkF5+/5UPEUZWUpsasRSsK?=
+ =?us-ascii?Q?+J75HIfFhyQHWlmdoDm1UNl1EkX+KcH80hRpaJ+T0EhFnJGf+/0/yidca2G5?=
+ =?us-ascii?Q?Q5fIndjDSwV9rdEJGRCR4IjaUWJhY2TCNGCfrESnC2FcwK3nc4Y9lugJkAn9?=
+ =?us-ascii?Q?wRIjxm70JBZ8HfFSO1Mt51VJD0d4?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9kIcvjhR4yXK7JQOsIO2ocdfvjRXSh6w9K+bN3e50vFgpXbAS4PQoCzqfzuZ?=
+ =?us-ascii?Q?a6p+I54ahaJkhVF2r9B0NO8ecmev9C/iPZmaIMB5mC/lEDJhOrqUWh0bpld8?=
+ =?us-ascii?Q?zCypsebGr/wFsacGkHNC2Y4ct1z62+oFA24t1j9JorNF2Fxopv0EcAsk7Y0q?=
+ =?us-ascii?Q?9KiQYdwVMZzkft2Bb4C8q59de7AUK+vSShcr82NNHzyDHEUZomSxFqaruKhB?=
+ =?us-ascii?Q?ilI0ABC8dDkADbg7FI5q8JCdvsOe5V6RvH3usOUP3S7ohsiMurqlHFS3tf3i?=
+ =?us-ascii?Q?x323n2JKAPTsElQneoOKEoekc2pUTouqeuVWVEWeFkC2ZK5L5He2/s04eqOf?=
+ =?us-ascii?Q?Nm2lmKfPy7h4q3Qg23BK4UUF0o5wRaD5HprbVYN/f/Z7qJC1+fMrQocUm8EY?=
+ =?us-ascii?Q?uT1+CHMjY1UaTXs/bv4hWaciJyLELBNRXy629MS5z3a+o27VjQjiJX7BJaDI?=
+ =?us-ascii?Q?qyRc2E5DLArBvcxbLvk6eh9QXrxQP0nJ4+I8xki1rHZBJimsQ+J0DddRc8W7?=
+ =?us-ascii?Q?xSLHRVmSmqd+xVrRjMOp0X+EnKc77fP3UXOw7appPoJackKXWXK498/gy3qZ?=
+ =?us-ascii?Q?VXszRm6/xTRiA+78gjdjH2W884lGNcPWwKsGNn60BKRkJ9QayaCAnstacqgL?=
+ =?us-ascii?Q?qucIEhQ1UM/hVhZ2otnLv2q6IAW8ptjPiYiCUUHuUlgS/Nf4oYuvXwsGZWcR?=
+ =?us-ascii?Q?kMtykils1wQjjA83seQPKJcpiu/7B1YKx+oaCKgc3uX6gIHoTHqTnGFnuAjL?=
+ =?us-ascii?Q?rfhRtmnQyxVhafWgUQ7IFeZJoNE2moZMw5RDi8B/RHOTiuBIjHs5qM0vV48/?=
+ =?us-ascii?Q?vyquYmmSxuZtI4wYbLIiYc8m9hWEKmlHMRolXOtM7f3F2gELqkHVQp5CyqHj?=
+ =?us-ascii?Q?I+/uVhnWOncShr0fAlAvoUDcK+1+c3D49k9C6oQ8nUJNZUkkWBa8xJ21NRJV?=
+ =?us-ascii?Q?bp15Hc3HjW4BAtqFZXARcg2iIqLF9fDi1VWGbV/s/NTTydbw4NvpAUM+hWxB?=
+ =?us-ascii?Q?DU8yU0H2MWnCKCszFVYIcQsdl/xZfDkTKds+xTf5X/c3cNSqlg/4+zDrEJXP?=
+ =?us-ascii?Q?r5USh052Jo8JNlk/PwOYP/so8HowcVFzR9zJPKJ+TQ3kAuXIF+bLm7BQMb/G?=
+ =?us-ascii?Q?3BfzXmoUQhuA8WcIcNYkiZa1TZzrLUyOCTPjDl8kquZxINYH4Y+O8m71Bjl+?=
+ =?us-ascii?Q?bk2YEDzpo2vlu8dkqzMhr91CkE9tSzSlvM5PQ9QLrzoD/qs9j+cxShBpikpG?=
+ =?us-ascii?Q?0R50OK5B8LLiDfjPrDisLejRhgfb+1TJt6niiMjmdqMPPec7u/wwl18xpWS1?=
+ =?us-ascii?Q?NvnsDwatJJXcoOC/dLFzURK3eRIxova606ijqmAaYP+QIxh4KvLnqTKFJe2X?=
+ =?us-ascii?Q?rBFXxSGdIIkdBr1IAQwwIoNDkMX2zzuyUExym9pPZph42F/rKoBitddmgEu9?=
+ =?us-ascii?Q?BHK/bNYd+e9hL72y5a1wnlLTFZ1NVxP0oZDwPZBm4sh5Xx3fVCALYzVltcn8?=
+ =?us-ascii?Q?PkDrUJ+9KqC0w9udTaBIIBCT7TvZqB85lyiKZsoyClMVTi1oW5wvYZZ/JAtE?=
+ =?us-ascii?Q?jQ416wzqqumKgitefA46hIf1GsQoj8pSXwgu74mQ9mI6fOCvxXRh0QFt5iPZ?=
+ =?us-ascii?Q?uQ=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2d831cb1-10c0-4496-ef44-08dde47d321d
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Aug 2025 08:47:32.0363
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Eyf4vNJYj630boyqc8pOzwzg6it5T2nbOgMcJuCujkhPxvbnUnFa1VbQrMcl1SL4xlb5MYhPmerX1BYD79kgJw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB7758
+X-OriginatorOrg: intel.com
 
-Hi,
 
-On Mon, Aug 25, 2025 at 03:01:12PM +0800, kernel test robot wrote:
-> 
-> Hello,
-> 
-> kernel test robot noticed "BUG:sleeping_function_called_from_invalid_context_at_mm/mm_init.c" on:
-> 
-> commit: 8a523d9e6f30349ad2f8c34d850483db905e976b ("mm/mm_init: use deferred_init_memmap_chunk() in deferred_grow_zone()")
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> 
-> [test failed on linux-next/master 0f4c93f7eb861acab537dbe94441817a270537bf]
-> 
-> in testcase: blktests
-> version: blktests-x86_64-34a7fc4-1_20250824
-> with following parameters:
-> 
-> 	disk: 1SSD
-> 	test: nvme-group-00
-> 
-> config: x86_64-rhel-9.4-func
-> compiler: gcc-12
-> test machine: 192 threads 2 sockets Intel(R) Xeon(R) 6740E  CPU @ 2.4GHz (Sierra Forest) with 256G memory
+hi, Paul,
 
-This patch should fix it:
+the similar issue still exists on this dev.2025.08.21a branch.
+again, if the issue is already fixed on later branches, please just ignore.
+thanks
 
 
-diff --git a/mm/mm_init.c b/mm/mm_init.c
-index f907dc17387d..c26f33fdd32b 100644
---- a/mm/mm_init.c
-+++ b/mm/mm_init.c
-@@ -2085,7 +2085,10 @@ deferred_init_memmap_chunk(unsigned long start_pfn, unsigned long end_pfn,
- 			deferred_free_pages(spfn, chunk_end - spfn);
- 
- 			spfn = chunk_end;
--			cond_resched();
-+			if (irqs_disabled())
-+				touch_nmi_watchdog();
-+			else
-+				cond_resched();
- 		}
- 	}
- 
- 
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
-> 
-> 
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202508251443.f2d9f77f-lkp@intel.com
-> 
-> 
-> kern  :err   : [    9.708923] BUG: sleeping function called from invalid context at mm/mm_init.c:2153
-> kern  :err   : [    9.709485] in_atomic(): 1, irqs_disabled(): 1, non_block: 0, pid: 1, name: swapper/0
-> kern  :err   : [    9.709485] preempt_count: 1, expected: 0
-> kern  :err   : [    9.709485] RCU nest depth: 0, expected: 0
-> kern  :warn  : [    9.709485] CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.17.0-rc1-00003-g8a523d9e6f30 #1 PREEMPT(voluntary)
-> kern  :warn  : [    9.709485] Hardware name: IEIT SYSTEMS NF5180-M8-A0-R0-00/NF5180-M8-A0-R0-00, BIOS 00.14.04 09/23/2024
-> kern  :warn  : [    9.709485] Call Trace:
-> kern  :warn  : [    9.709485]  <TASK>
-> kern :warn : [    9.709485] dump_stack_lvl (lib/dump_stack.c:123 (discriminator 1)) 
-> kern :warn : [    9.709485] __might_resched (kernel/sched/core.c:8958) 
-> kern :warn : [    9.709485] deferred_init_memmap_chunk (include/linux/sched.h:2070 mm/mm_init.c:2153) 
-> kern :warn : [    9.709485] ? __pfx_deferred_init_memmap_chunk (mm/mm_init.c:2140) 
-> kern :warn : [    9.709485] ? __pfx_try_to_claim_block (mm/page_alloc.c:2291) 
-> kern :warn : [    9.709485] ? __pfx__raw_spin_lock_irqsave (kernel/locking/spinlock.c:161) 
-> kern :warn : [    9.709485] ? _raw_spin_lock_irqsave (arch/x86/include/asm/atomic.h:107 include/linux/atomic/atomic-arch-fallback.h:2170 include/linux/atomic/atomic-instrumented.h:1302 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 include/linux/spinlock_api_smp.h:111 kernel/locking/spinlock.c:162) 
-> kern :warn : [    9.709485] ? __pfx__raw_spin_lock_irqsave (kernel/locking/spinlock.c:161) 
-> kern :warn : [    9.709485] ? rmqueue+0x8f7/0x29d0 
-> kern :warn : [    9.709485] deferred_grow_zone (mm/mm_init.c:2286) 
-> kern :warn : [    9.709485] get_page_from_freelist (mm/page_alloc.c:3824) 
-> kern :warn : [    9.709485] __alloc_frozen_pages_noprof (mm/page_alloc.c:5148) 
-> kern :warn : [    9.709485] ? __pfx___alloc_frozen_pages_noprof (mm/page_alloc.c:5114) 
-> kern :warn : [    9.709485] ? __pfx_smp_call_function_many_cond (kernel/smp.c:784) 
-> kern :warn : [    9.709485] __alloc_pages_noprof (mm/page_alloc.c:5182) 
-> kern :warn : [    9.709485] dsalloc_pages (arch/x86/events/intel/ds.c:611) 
-> kern :warn : [    9.709485] ? __asan_memset (mm/kasan/shadow.c:84) 
-> kern :warn : [    9.709485] reserve_ds_buffers (arch/x86/events/intel/ds.c:631 arch/x86/events/intel/ds.c:789) 
-> kern :warn : [    9.709485] x86_reserve_hardware (arch/x86/events/core.c:420 arch/x86/events/core.c:409) 
-> kern :warn : [    9.709485] x86_pmu_event_init (arch/x86/events/core.c:673 arch/x86/events/core.c:2475) 
-> kern :warn : [    9.709485] ? kmem_cache_alloc_node_noprof (arch/x86/include/asm/jump_label.h:46 include/linux/memcontrol.h:1714 mm/slub.c:2210 mm/slub.c:4190 mm/slub.c:4229 mm/slub.c:4281) 
-> kern :warn : [    9.709485] perf_try_init_event (kernel/events/core.c:12581) 
-> kern :warn : [    9.709485] perf_event_alloc (kernel/events/core.c:12680 kernel/events/core.c:12954) 
-> kern :warn : [    9.709485] ? __pfx_watchdog_overflow_callback (kernel/watchdog_perf.c:107) 
-> kern :warn : [    9.709485] perf_event_create_kernel_counter (kernel/events/core.c:13779 (discriminator 1)) 
-> kern :warn : [    9.709485] hardlockup_detector_event_create (kernel/watchdog_perf.c:133 (discriminator 3)) 
-> kern :warn : [    9.709485] watchdog_hardlockup_probe (kernel/watchdog_perf.c:267) 
-> kern :warn : [    9.709485] lockup_detector_init (kernel/watchdog.c:1312) 
-> kern :warn : [    9.709485] kernel_init_freeable (init/main.c:1571) 
-> kern :warn : [    9.709485] ? __pfx_kernel_init (init/main.c:1461) 
-> kern :warn : [    9.709485] kernel_init (init/main.c:1471) 
-> kern :warn : [    9.709485] ? calculate_sigpending (kernel/signal.c:194) 
-> kern :warn : [    9.709485] ? __pfx_kernel_init (init/main.c:1461) 
-> kern :warn : [    9.709485] ret_from_fork (arch/x86/kernel/process.c:148) 
-> kern :warn : [    9.709485] ? __pfx_kernel_init (init/main.c:1461) 
-> kern :warn : [    9.709485] ret_from_fork_asm (arch/x86/entry/entry_64.S:258) 
-> kern  :warn  : [    9.709485]  </TASK>
-> 
-> 
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20250825/202508251443.f2d9f77f-lkp@intel.com
-> 
-> 
-> 
-> -- 
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
-> 
+Hello,
+
+kernel test robot noticed "WARNING:possible_circular_locking_dependency_detected" on:
+
+commit: 8bd9383727068a5a18acfecefbdfa44a7d6bd838 ("rcu: Re-implement RCU Tasks Trace in terms of SRCU-fast")
+https://github.com/paulmckrcu/linux dev.2025.08.21a
+
+in testcase: rcutorture
+version: 
+with following parameters:
+
+	runtime: 300s
+	test: default
+	torture_type: tasks-tracing
+
+
+
+config: x86_64-randconfig-003-20250824
+compiler: clang-20
+test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202508261642.b15eefbb-lkp@intel.com
+
+
+[   42.365933][  T393] WARNING: possible circular locking dependency detected
+[   42.366428][  T393] 6.17.0-rc1-00035-g8bd938372706 #1 Tainted: G                T
+[   42.366985][  T393] ------------------------------------------------------
+[   42.367490][  T393] rcu_torture_rea/393 is trying to acquire lock:
+[ 42.367952][ T393] ffffffffad41dc88 (rcu_tasks_trace_srcu_struct.srcu_wq.lock){....}-{2:2}, at: swake_up_one (kernel/sched/swait.c:52 (discriminator 1)) 
+[   42.368775][  T393]
+[   42.368775][  T393] but task is already holding lock:
+[ 42.369278][ T393] ffff88813d1ff2e8 (&p->pi_lock){-.-.}-{2:2}, at: rcutorture_one_extend (kernel/rcu/rcutorture.c:?) rcutorture 
+[   42.370043][  T393]
+[   42.370043][  T393] which lock already depends on the new lock.
+[   42.370043][  T393]
+[   42.370755][  T393]
+[   42.370755][  T393] the existing dependency chain (in reverse order) is:
+[   42.371388][  T393]
+[   42.371388][  T393] -> #1 (&p->pi_lock){-.-.}-{2:2}:
+[ 42.371903][ T393] _raw_spin_lock_irqsave (include/linux/spinlock_api_smp.h:110 kernel/locking/spinlock.c:162) 
+[ 42.372309][ T393] try_to_wake_up (include/linux/spinlock.h:557 (discriminator 1) kernel/sched/core.c:4216 (discriminator 1)) 
+[ 42.372669][ T393] swake_up_locked (include/linux/list.h:111) 
+[ 42.373029][ T393] swake_up_one (kernel/sched/swait.c:54 (discriminator 1)) 
+[ 42.373380][ T393] tasks_tracing_torture_read_unlock (include/linux/srcu.h:408 (discriminator 1) include/linux/rcupdate_trace.h:81 (discriminator 1) kernel/rcu/rcutorture.c:1112 (discriminator 1)) rcutorture 
+[ 42.373952][ T393] rcutorture_one_extend (kernel/rcu/rcutorture.c:2141) rcutorture 
+[ 42.374452][ T393] rcu_torture_one_read_end (kernel/rcu/rcutorture.c:2357) rcutorture 
+[ 42.374976][ T393] rcu_torture_one_read (kernel/rcu/rcutorture.c:?) rcutorture 
+[ 42.375460][ T393] rcu_torture_reader (kernel/rcu/rcutorture.c:2443) rcutorture 
+[ 42.375920][ T393] kthread (kernel/kthread.c:465) 
+[ 42.376241][ T393] ret_from_fork (arch/x86/kernel/process.c:154) 
+[ 42.376603][ T393] ret_from_fork_asm (arch/x86/entry/entry_64.S:255) 
+[   42.376973][  T393]
+[   42.376973][  T393] -> #0 (rcu_tasks_trace_srcu_struct.srcu_wq.lock){....}-{2:2}:
+[ 42.377657][ T393] __lock_acquire (kernel/locking/lockdep.c:3166) 
+[ 42.378031][ T393] lock_acquire (kernel/locking/lockdep.c:5868) 
+[ 42.378378][ T393] _raw_spin_lock_irqsave (include/linux/spinlock_api_smp.h:110 kernel/locking/spinlock.c:162) 
+[ 42.378794][ T393] swake_up_one (kernel/sched/swait.c:52 (discriminator 1)) 
+[ 42.379152][ T393] tasks_tracing_torture_read_unlock (include/linux/srcu.h:408 (discriminator 1) include/linux/rcupdate_trace.h:81 (discriminator 1) kernel/rcu/rcutorture.c:1112 (discriminator 1)) rcutorture 
+[ 42.379714][ T393] rcutorture_one_extend (kernel/rcu/rcutorture.c:2141) rcutorture 
+[ 42.380217][ T393] rcu_torture_one_read_end (kernel/rcu/rcutorture.c:2357) rcutorture 
+[ 42.380731][ T393] rcu_torture_one_read (kernel/rcu/rcutorture.c:?) rcutorture 
+[ 42.381220][ T393] rcu_torture_reader (kernel/rcu/rcutorture.c:2443) rcutorture 
+[ 42.381714][ T393] kthread (kernel/kthread.c:465) 
+[ 42.382060][ T393] ret_from_fork (arch/x86/kernel/process.c:154) 
+[ 42.382420][ T393] ret_from_fork_asm (arch/x86/entry/entry_64.S:255) 
+[   42.382796][  T393]
+[   42.382796][  T393] other info that might help us debug this:
+[   42.382796][  T393]
+[   42.383515][  T393]  Possible unsafe locking scenario:
+[   42.383515][  T393]
+[   42.384052][  T393]        CPU0                    CPU1
+[   42.384428][  T393]        ----                    ----
+[   42.384799][  T393]   lock(&p->pi_lock);
+[   42.385083][  T393]                                lock(rcu_tasks_trace_srcu_struct.srcu_wq.lock);
+[   42.385707][  T393]                                lock(&p->pi_lock);
+[   42.386180][  T393]   lock(rcu_tasks_trace_srcu_struct.srcu_wq.lock);
+[   42.386663][  T393]
+[   42.386663][  T393]  *** DEADLOCK ***
+[   42.386663][  T393]
+[   42.387236][  T393] 1 lock held by rcu_torture_rea/393:
+[ 42.387626][ T393] #0: ffff88813d1ff2e8 (&p->pi_lock){-.-.}-{2:2}, at: rcutorture_one_extend (kernel/rcu/rcutorture.c:?) rcutorture 
+[   42.388419][  T393]
+[   42.388419][  T393] stack backtrace:
+[   42.388852][  T393] CPU: 0 UID: 0 PID: 393 Comm: rcu_torture_rea Tainted: G                T   6.17.0-rc1-00035-g8bd938372706 #1 PREEMPT(full)
+[   42.389758][  T393] Tainted: [T]=RANDSTRUCT
+[   42.390057][  T393] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+[   42.390786][  T393] Call Trace:
+[   42.391020][  T393]  <TASK>
+[ 42.391225][ T393] dump_stack_lvl (lib/dump_stack.c:123 (discriminator 2)) 
+[ 42.391544][ T393] print_circular_bug (kernel/locking/lockdep.c:2045) 
+[ 42.391898][ T393] check_noncircular (kernel/locking/lockdep.c:?) 
+[ 42.392242][ T393] __lock_acquire (kernel/locking/lockdep.c:3166) 
+[ 42.392594][ T393] ? __schedule (kernel/sched/sched.h:1531 (discriminator 1) kernel/sched/core.c:6969 (discriminator 1)) 
+[ 42.392930][ T393] ? lock_release (kernel/locking/lockdep.c:470 (discriminator 3)) 
+[ 42.393272][ T393] ? swake_up_one (kernel/sched/swait.c:52 (discriminator 1)) 
+[ 42.393610][ T393] lock_acquire (kernel/locking/lockdep.c:5868) 
+[ 42.393930][ T393] ? swake_up_one (kernel/sched/swait.c:52 (discriminator 1)) 
+[ 42.394264][ T393] _raw_spin_lock_irqsave (include/linux/spinlock_api_smp.h:110 kernel/locking/spinlock.c:162) 
+[ 42.394640][ T393] ? swake_up_one (kernel/sched/swait.c:52 (discriminator 1)) 
+[ 42.394969][ T393] swake_up_one (kernel/sched/swait.c:52 (discriminator 1)) 
+[ 42.395281][ T393] tasks_tracing_torture_read_unlock (include/linux/srcu.h:408 (discriminator 1) include/linux/rcupdate_trace.h:81 (discriminator 1) kernel/rcu/rcutorture.c:1112 (discriminator 1)) rcutorture 
+[ 42.395814][ T393] rcutorture_one_extend (kernel/rcu/rcutorture.c:2141) rcutorture 
+[ 42.396276][ T393] rcu_torture_one_read_end (kernel/rcu/rcutorture.c:2357) rcutorture 
+[ 42.396756][ T393] rcu_torture_one_read (kernel/rcu/rcutorture.c:?) rcutorture 
+[ 42.397219][ T393] ? __cfi_rcu_torture_reader (kernel/rcu/rcutorture.c:2426) rcutorture 
+[ 42.397690][ T393] rcu_torture_reader (kernel/rcu/rcutorture.c:2443) rcutorture 
+[ 42.398126][ T393] ? __cfi_rcu_torture_timer (kernel/rcu/rcutorture.c:2405) rcutorture 
+[ 42.398565][ T393] kthread (kernel/kthread.c:465) 
+[ 42.398857][ T393] ? __cfi_kthread (kernel/kthread.c:412) 
+[ 42.399169][ T393] ret_from_fork (arch/x86/kernel/process.c:154) 
+[ 42.399491][ T393] ? __cfi_kthread (kernel/kthread.c:412) 
+[ 42.399815][ T393] ret_from_fork_asm (arch/x86/entry/entry_64.S:255) 
+[   42.400151][  T393]  </TASK>
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20250826/202508261642.b15eefbb-lkp@intel.com
+
+
 
 -- 
-Sincerely yours,
-Mike.
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
