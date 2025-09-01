@@ -1,355 +1,321 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B01D17D2;
-	Mon,  1 Sep 2025 01:06:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8066D30ACFA
+	for <oe-lkp@lists.linux.dev>; Mon,  1 Sep 2025 11:14:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756688764; cv=none; b=BsRjkseug2Kh1L85F+Wqp8aOKs8zR9e5VA2NYObRHo//LLuHL7/9Sit1ZZwgsoFwwoMJVcVwRfi6Ee8UHx2T0qfyCi2IY1jwOsGHzHUtlKwEpi6UE8SmbjQDYjtmPpSov8UzCZImDS5kZHTe/IR5ssNeM0WuP9/KzUbdtt2o9rc=
+	t=1756725262; cv=none; b=GtStKNOwx+iqFD88KQC6sE/tfoClqfQ3Q5Xm91xUCQIg2XMfUjysJ2yArvK6zHiUq9QcR36tQwp/bj3s+ltgs493ff3YB4qTzf1PC299H2or5wYUb60ySCQ38lQ6nMQKbGyjlp/eyhhqRDiDgBsqjjovWx664ZcY2seKmIsRNds=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756688764; c=relaxed/simple;
-	bh=tW5GP3nM0dmLFputh4mJZ3bANGoIWpg3vmUdui0IhwY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PCI7sHnuSz75tGOE8uaWbyDEysQm0q2hfVe3dkL9VmO01vEq4vOACzHBOYcUUst5Ke4DqVK1HIrTiXsaOCiSrHSMpq2YED7+kXWFre8RGxg8vIwxIYE0fUTgUf5RzDbyr8BUjRYz1RAe8yqclGJ/kmMq2uq3/niPwi45e650fpI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=O3kU+ei5; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1756725262; c=relaxed/simple;
+	bh=oYbjxAT48KmfbNdBRqygud6X+JUUIVRjQb1UCiFZi80=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Cxmu9fn14SgtMvjyAO5JJvTw+FHYhy7c4RZvG9V8rMIoX/w9DoAgdzF88j84VHulUHaCxs65nfMtq3cHdjp4fqefFEL4A1W+E9T8H6l9gtzD4v+/AsnCeNrlOVSaowLsHiJuCD6AMr7vViTfiaAE9jdXNo5+jSxjlbzWAYHbNdU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ursulin.net; spf=none smtp.mailfrom=ursulin.net; dkim=pass (2048-bit key) header.d=ursulin-net.20230601.gappssmtp.com header.i=@ursulin-net.20230601.gappssmtp.com header.b=I83OOioz; arc=none smtp.client-ip=209.85.128.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ursulin.net
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ursulin.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="O3kU+ei5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2A42C4CEED;
-	Mon,  1 Sep 2025 01:06:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1756688764;
-	bh=tW5GP3nM0dmLFputh4mJZ3bANGoIWpg3vmUdui0IhwY=;
-	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-	b=O3kU+ei5gqZXLPMJ/iZEktM/r/yPmEtvI/pDTiZoyBQntve5hZ+TXA4kVPIFG5wnB
-	 S6mzC1+M76dv+CfJ6rUrQtBt9KPFi80WP13Vzq3NizHfy0UxzE37hH8jO2dPMsn6a1
-	 PuQCTM0AUrhw9tE8EOsFv3UHwAFZDic22nibOT9bO+rZ9daEkyg7bCJpyphZ/vXU9w
-	 eQtctyrGMrScqJjUzyiLjirKR1MraMQgspwGYsUCiDnyrHOc/Rz4sOZ4zJMHyfgzq0
-	 g+klvHU7FsLWefAn6cuMnMKxlwp7g0gzP0XClA5swOpwNpKVgGgoKwtUdPr1GvFn4h
-	 jk15AUkT6LYew==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-	id 84BADCE0E95; Sun, 31 Aug 2025 18:06:03 -0700 (PDT)
-Date: Sun, 31 Aug 2025 18:06:03 -0700
-From: "Paul E. McKenney" <paulmck@kernel.org>
-To: Zqiang <qiang.zhang@linux.dev>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, Andrii Nakryiko <andrii@kernel.org>,
-	Alexei Starovoitov <ast@kernel.org>,
-	Peter Zijlstra <peterz@infradead.org>, rcu@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [paulmckrcu:dev.2025.08.21a] [rcu] 8bd9383727:
- WARNING:possible_circular_locking_dependency_detected
-Message-ID: <711fe3bf-0ac2-4ae9-9dda-97ba047eb64f@paulmck-laptop>
-Reply-To: paulmck@kernel.org
-References: <202508261642.b15eefbb-lkp@intel.com>
- <2853a174-76e4-440b-bfc1-71ea30694822@paulmck-laptop>
- <eb1e5ab00253fdae5ba5aa4c97d60a79d357dbfd@linux.dev>
- <f58f7c75-46be-4ddd-be70-ee4f6a3370a9@paulmck-laptop>
- <aefc893f1b7c17049c2e6eb2256a97739a5e328d@linux.dev>
- <8f43f958-e3e6-44d5-9600-9e096c3a06b7@paulmck-laptop>
- <547f1b1d1b8615a634b352a268928771bb50d0f9@linux.dev>
+	dkim=pass (2048-bit key) header.d=ursulin-net.20230601.gappssmtp.com header.i=@ursulin-net.20230601.gappssmtp.com header.b="I83OOioz"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-45b7ebe667cso25052305e9.3
+        for <oe-lkp@lists.linux.dev>; Mon, 01 Sep 2025 04:14:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ursulin-net.20230601.gappssmtp.com; s=20230601; t=1756725258; x=1757330058; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=xBkwqjsaZDNhTrLuqiVAJvU1qg51uqafesNIgxktokA=;
+        b=I83OOiozKoEc1dJ9ARGteyjgyR57Ya/QVtF2TJHLfQ+avLOPypI0BuHmVyCa6nWu3l
+         lHBIKrzHvZ+Y3EXSWL9dQujfT19SYrpUQvXlkxGENlqdOG3dAEe+1MOFx3XY/+0H7k2a
+         iUbgYAFwWab0gKgbE18i1S+EFlYbhifSJIwRVc3J5iZ628Fg2FVoB0BDprcXS74CLhOt
+         uj8Gto0/D05UAmT8BnbD0MJlJI0tBkQj+7AjP7h0f1lbj/+za+HgNm7jyje+XmzorkEI
+         xhed/MZSRFToj/DTPQSnbav7xe1/BsTuxacXh0xDIl5fCpPVTWyIZQStaa/sMnJOZpYb
+         kgBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1756725258; x=1757330058;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=xBkwqjsaZDNhTrLuqiVAJvU1qg51uqafesNIgxktokA=;
+        b=aRlHIlfZ01JIuUzA5jY9Bc1Nwj7kZ5rgVpKA047gRSJXc+jLdv2E09AcbZ1cJ6dwsW
+         fgpEvhA3KM12l4Lj8vS+UcsN4v/pWD6TafLzbA7VLQPXC++24hpzEM3Mc1Nfvd1eo+XH
+         Bj059vfBNF1LOdqZcDlRI9GHj8KHJk6T27Bt36RhibfX9mF+f8kPwzPwU0H2w634q+6x
+         HF0kyaGSFrkmPicrXdyBsPbwNTNYl91uYsFIKREJesnOk084eF2q9XBRHMj3XnVrZBbo
+         3s4QG2bnpuuQLJxzTuOxOKQnh7BYAa2QAB/56rT9QvOFiFlxBCc6HprIyU+NqbrYb7NG
+         rvIw==
+X-Gm-Message-State: AOJu0YwJCXZBl99PxRPE4tGYlzutWyIoqBsQi3UKRHlJLjMK2atNpPIC
+	urO2eNN8M8eEeRT3VK3CRNaL92uje1X1D4Rybd4FNw0nAAW96aSY7U3xzOPVKn+HlDW0X9DEKma
+	VZTHb
+X-Gm-Gg: ASbGncvrFgfiQANFO48XhnanEwfqE0rBJdhVkfnun0KY9Y34aT+8uyCMYFitbtK2zw0
+	Bl+k84TGkfQTt2seiGG3CzVDU6YLYtSOK/vQrB4FvOO5+LNiKpH5hJ7nAeYffihTXSaUF6AT1T0
+	AQcGK1vkCKI+W/taHCrtYXP73+c7oRMGl0N7yVg5SSQjPo51zUyriFdcFlGkjMxD8HSR/QaSl56
+	sDMeyid+8ferue4wjTTnPXZkT8iIn5FxxTz83QSos/ip0tQ9cR83IKs7XXwd9RiRHWRy6zbZwTB
+	qpK+G6cfZQeWNrhoqFEwryQNFjeCrP+Frkc46NeIWsRxshGGtu7TCBVG7zPDDFR/bhQc4MpSA26
+	G9W44G4FQ/S54zEW/hQ4ab91AcTne8gZ491w=
+X-Google-Smtp-Source: AGHT+IEAILM6Jf6ZqkuW3x0Apw3b+DywTCqewxFbm6qZWu0XmBBDdNmEf2BLvNJg+lqzsUsPfcbz4w==
+X-Received: by 2002:a05:600c:4588:b0:45b:86ee:4181 with SMTP id 5b1f17b1804b1-45b86ee4497mr59846715e9.22.1756725257287;
+        Mon, 01 Sep 2025 04:14:17 -0700 (PDT)
+Received: from [192.168.0.101] ([84.66.36.92])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-45b7c461edasm96341605e9.9.2025.09.01.04.14.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 01 Sep 2025 04:14:16 -0700 (PDT)
+Message-ID: <7e828c84-6dbb-4a0c-9733-4fa0d2b2d07f@ursulin.net>
+Date: Mon, 1 Sep 2025 12:14:14 +0100
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <547f1b1d1b8615a634b352a268928771bb50d0f9@linux.dev>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] dma-buf: add warning when dma_fence is signaled from
+ IOCTL
+To: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ simona.vetter@ffwll.ch
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-media@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+ ltp@lists.linux.it, tvrtko.ursulin@igalia.com, phasta@mailbox.org,
+ airlied@gmail.com, dakr@kernel.org, sumit.semwal@linaro.org
+References: <202508200843.8b006132-lkp@intel.com>
+ <7a193321-f9fa-43db-a495-594b1c586735@amd.com>
+Content-Language: en-GB
+From: Tvrtko Ursulin <tursulin@ursulin.net>
+In-Reply-To: <7a193321-f9fa-43db-a495-594b1c586735@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Sun, Aug 31, 2025 at 11:52:40PM +0000, Zqiang wrote:
-> > 
-> > On Sun, Aug 31, 2025 at 02:22:56AM +0000, Zqiang wrote:
-> > 
-> > > 
-> > > On Sat, Aug 30, 2025 at 02:38:35AM +0000, Zqiang wrote:
-> > >  
-> > >  > 
-> > >  > On Tue, Aug 26, 2025 at 04:47:22PM +0800, kernel test robot wrote:
-> > >  > 
-> > >  > > 
-> > >  > > hi, Paul,
-> > >  > > 
-> > >  > > the similar issue still exists on this dev.2025.08.21a branch.
-> > >  > > again, if the issue is already fixed on later branches, please just ignore.
-> > >  > > thanks
-> > >  > > 
-> > >  > > 
-> > >  > > Hello,
-> > >  > > 
-> > >  > > kernel test robot noticed "WARNING:possible_circular_locking_dependency_detected" on:
-> > >  > > 
-> > >  > > commit: 8bd9383727068a5a18acfecefbdfa44a7d6bd838 ("rcu: Re-implement RCU Tasks Trace in terms of SRCU-fast")
-> > >  > > https://github.com/paulmckrcu/linux dev.2025.08.21a
-> > >  > > 
-> > >  > > in testcase: rcutorture
-> > >  > > version: 
-> > >  > > with following parameters:
-> > >  > > 
-> > >  > > runtime: 300s
-> > >  > > test: default
-> > >  > > torture_type: tasks-tracing
-> > >  > > 
-> > >  > > 
-> > >  > > 
-> > >  > > config: x86_64-randconfig-003-20250824
-> > >  > > compiler: clang-20
-> > >  > > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> > >  > > 
-> > >  > > (please refer to attached dmesg/kmsg for entire log/backtrace)
-> > >  > > 
-> > >  > Again, apologies for being slow, and thank you for your testing efforts.
-> > >  > 
-> > >  > Idiot here forgot about Tiny SRCU, so please see the end of this email
-> > >  > for an alleged fix. Does it do the trick for you?
-> > >  > 
-> > >  > Thanx, Paul
-> > >  > 
-> > >  > > 
-> > >  > > If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> > >  > > the same patch/commit), kindly add following tags
-> > >  > > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> > >  > > | Closes: https://lore.kernel.org/oe-lkp/202508261642.b15eefbb-lkp@intel.com
-> > >  > > 
-> > >  > > 
-> > >  > > [ 42.365933][ T393] WARNING: possible circular locking dependency detected
-> > >  > > [ 42.366428][ T393] 6.17.0-rc1-00035-g8bd938372706 #1 Tainted: G T
-> > >  > > [ 42.366985][ T393] ------------------------------------------------------
-> > >  > > [ 42.367490][ T393] rcu_torture_rea/393 is trying to acquire lock:
-> > >  > > [ 42.367952][ T393] ffffffffad41dc88 (rcu_tasks_trace_srcu_struct.srcu_wq.lock){....}-{2:2}, at: swake_up_one (kernel/sched/swait.c:52 (discriminator 1)) 
-> > >  > > [ 42.368775][ T393]
-> > >  > > [ 42.368775][ T393] but task is already holding lock:
-> > >  > > [ 42.369278][ T393] ffff88813d1ff2e8 (&p->pi_lock){-.-.}-{2:2}, at: rcutorture_one_extend (kernel/rcu/rcutorture.c:?) rcutorture 
-> > >  > > [ 42.370043][ T393]
-> > >  > > [ 42.370043][ T393] which lock already depends on the new lock.
-> > >  > > [ 42.370043][ T393]
-> > >  > > [ 42.370755][ T393]
-> > >  > > [ 42.370755][ T393] the existing dependency chain (in reverse order) is:
-> > >  > > [ 42.371388][ T393]
-> > >  > > [ 42.371388][ T393] -> #1 (&p->pi_lock){-.-.}-{2:2}:
-> > >  > > [ 42.371903][ T393] _raw_spin_lock_irqsave (include/linux/spinlock_api_smp.h:110 kernel/locking/spinlock.c:162) 
-> > >  > > [ 42.372309][ T393] try_to_wake_up (include/linux/spinlock.h:557 (discriminator 1) kernel/sched/core.c:4216 (discriminator 1)) 
-> > >  > > [ 42.372669][ T393] swake_up_locked (include/linux/list.h:111) 
-> > >  > > [ 42.373029][ T393] swake_up_one (kernel/sched/swait.c:54 (discriminator 1)) 
-> > >  > > [ 42.373380][ T393] tasks_tracing_torture_read_unlock (include/linux/srcu.h:408 (discriminator 1) include/linux/rcupdate_trace.h:81 (discriminator 1) kernel/rcu/rcutorture.c:1112 (discriminator 1)) rcutorture 
-> > >  > > [ 42.373952][ T393] rcutorture_one_extend (kernel/rcu/rcutorture.c:2141) rcutorture 
-> > >  > > [ 42.374452][ T393] rcu_torture_one_read_end (kernel/rcu/rcutorture.c:2357) rcutorture 
-> > >  > > [ 42.374976][ T393] rcu_torture_one_read (kernel/rcu/rcutorture.c:?) rcutorture 
-> > >  > > [ 42.375460][ T393] rcu_torture_reader (kernel/rcu/rcutorture.c:2443) rcutorture 
-> > >  > > [ 42.375920][ T393] kthread (kernel/kthread.c:465) 
-> > >  > > [ 42.376241][ T393] ret_from_fork (arch/x86/kernel/process.c:154) 
-> > >  > > [ 42.376603][ T393] ret_from_fork_asm (arch/x86/entry/entry_64.S:255) 
-> > >  > > [ 42.376973][ T393]
-> > >  > > [ 42.376973][ T393] -> #0 (rcu_tasks_trace_srcu_struct.srcu_wq.lock){....}-{2:2}:
-> > >  > > [ 42.377657][ T393] __lock_acquire (kernel/locking/lockdep.c:3166) 
-> > >  > > [ 42.378031][ T393] lock_acquire (kernel/locking/lockdep.c:5868) 
-> > >  > > [ 42.378378][ T393] _raw_spin_lock_irqsave (include/linux/spinlock_api_smp.h:110 kernel/locking/spinlock.c:162) 
-> > >  > > [ 42.378794][ T393] swake_up_one (kernel/sched/swait.c:52 (discriminator 1)) 
-> > >  > > [ 42.379152][ T393] tasks_tracing_torture_read_unlock (include/linux/srcu.h:408 (discriminator 1) include/linux/rcupdate_trace.h:81 (discriminator 1) kernel/rcu/rcutorture.c:1112 (discriminator 1)) rcutorture 
-> > >  > > [ 42.379714][ T393] rcutorture_one_extend (kernel/rcu/rcutorture.c:2141) rcutorture 
-> > >  > > [ 42.380217][ T393] rcu_torture_one_read_end (kernel/rcu/rcutorture.c:2357) rcutorture 
-> > >  > > [ 42.380731][ T393] rcu_torture_one_read (kernel/rcu/rcutorture.c:?) rcutorture 
-> > >  > > [ 42.381220][ T393] rcu_torture_reader (kernel/rcu/rcutorture.c:2443) rcutorture 
-> > >  > > [ 42.381714][ T393] kthread (kernel/kthread.c:465) 
-> > >  > > [ 42.382060][ T393] ret_from_fork (arch/x86/kernel/process.c:154) 
-> > >  > > [ 42.382420][ T393] ret_from_fork_asm (arch/x86/entry/entry_64.S:255) 
-> > >  > > [ 42.382796][ T393]
-> > >  > > [ 42.382796][ T393] other info that might help us debug this:
-> > >  > > [ 42.382796][ T393]
-> > >  > > [ 42.383515][ T393] Possible unsafe locking scenario:
-> > >  > > [ 42.383515][ T393]
-> > >  > > [ 42.384052][ T393] CPU0 CPU1
-> > >  > > [ 42.384428][ T393] ---- ----
-> > >  > > [ 42.384799][ T393] lock(&p->pi_lock);
-> > >  > > [ 42.385083][ T393] lock(rcu_tasks_trace_srcu_struct.srcu_wq.lock);
-> > >  > > [ 42.385707][ T393] lock(&p->pi_lock);
-> > >  > > [ 42.386180][ T393] lock(rcu_tasks_trace_srcu_struct.srcu_wq.lock);
-> > >  > > [ 42.386663][ T393]
-> > >  > > [ 42.386663][ T393] *** DEADLOCK ***
-> > >  > > [ 42.386663][ T393]
-> > >  > > [ 42.387236][ T393] 1 lock held by rcu_torture_rea/393:
-> > >  > > [ 42.387626][ T393] #0: ffff88813d1ff2e8 (&p->pi_lock){-.-.}-{2:2}, at: rcutorture_one_extend (kernel/rcu/rcutorture.c:?) rcutorture 
-> > >  > > [ 42.388419][ T393]
-> > >  > > [ 42.388419][ T393] stack backtrace:
-> > >  > > [ 42.388852][ T393] CPU: 0 UID: 0 PID: 393 Comm: rcu_torture_rea Tainted: G T 6.17.0-rc1-00035-g8bd938372706 #1 PREEMPT(full)
-> > >  > > [ 42.389758][ T393] Tainted: [T]=RANDSTRUCT
-> > >  > > [ 42.390057][ T393] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> > >  > > [ 42.390786][ T393] Call Trace:
-> > >  > > [ 42.391020][ T393] <TASK>
-> > >  > > [ 42.391225][ T393] dump_stack_lvl (lib/dump_stack.c:123 (discriminator 2)) 
-> > >  > > [ 42.391544][ T393] print_circular_bug (kernel/locking/lockdep.c:2045) 
-> > >  > > [ 42.391898][ T393] check_noncircular (kernel/locking/lockdep.c:?) 
-> > >  > > [ 42.392242][ T393] __lock_acquire (kernel/locking/lockdep.c:3166) 
-> > >  > > [ 42.392594][ T393] ? __schedule (kernel/sched/sched.h:1531 (discriminator 1) kernel/sched/core.c:6969 (discriminator 1)) 
-> > >  > > [ 42.392930][ T393] ? lock_release (kernel/locking/lockdep.c:470 (discriminator 3)) 
-> > >  > > [ 42.393272][ T393] ? swake_up_one (kernel/sched/swait.c:52 (discriminator 1)) 
-> > >  > > [ 42.393610][ T393] lock_acquire (kernel/locking/lockdep.c:5868) 
-> > >  > > [ 42.393930][ T393] ? swake_up_one (kernel/sched/swait.c:52 (discriminator 1)) 
-> > >  > > [ 42.394264][ T393] _raw_spin_lock_irqsave (include/linux/spinlock_api_smp.h:110 kernel/locking/spinlock.c:162) 
-> > >  > > [ 42.394640][ T393] ? swake_up_one (kernel/sched/swait.c:52 (discriminator 1)) 
-> > >  > > [ 42.394969][ T393] swake_up_one (kernel/sched/swait.c:52 (discriminator 1)) 
-> > >  > > [ 42.395281][ T393] tasks_tracing_torture_read_unlock (include/linux/srcu.h:408 (discriminator 1) include/linux/rcupdate_trace.h:81 (discriminator 1) kernel/rcu/rcutorture.c:1112 (discriminator 1)) rcutorture 
-> > >  > > [ 42.395814][ T393] rcutorture_one_extend (kernel/rcu/rcutorture.c:2141) rcutorture 
-> > >  > > [ 42.396276][ T393] rcu_torture_one_read_end (kernel/rcu/rcutorture.c:2357) rcutorture 
-> > >  > > [ 42.396756][ T393] rcu_torture_one_read (kernel/rcu/rcutorture.c:?) rcutorture 
-> > >  > > [ 42.397219][ T393] ? __cfi_rcu_torture_reader (kernel/rcu/rcutorture.c:2426) rcutorture 
-> > >  > > [ 42.397690][ T393] rcu_torture_reader (kernel/rcu/rcutorture.c:2443) rcutorture 
-> > >  > > [ 42.398126][ T393] ? __cfi_rcu_torture_timer (kernel/rcu/rcutorture.c:2405) rcutorture 
-> > >  > > [ 42.398565][ T393] kthread (kernel/kthread.c:465) 
-> > >  > > [ 42.398857][ T393] ? __cfi_kthread (kernel/kthread.c:412) 
-> > >  > > [ 42.399169][ T393] ret_from_fork (arch/x86/kernel/process.c:154) 
-> > >  > > [ 42.399491][ T393] ? __cfi_kthread (kernel/kthread.c:412) 
-> > >  > > [ 42.399815][ T393] ret_from_fork_asm (arch/x86/entry/entry_64.S:255) 
-> > >  > > [ 42.400151][ T393] </TASK>
-> > >  > > 
-> > >  > > 
-> > >  > > The kernel config and materials to reproduce are available at:
-> > >  > > https://download.01.org/0day-ci/archive/20250826/202508261642.b15eefbb-lkp@intel.com
-> > >  > > 
-> > >  > > 
-> > >  > > 
-> > >  > > -- 
-> > >  > > 0-DAY CI Kernel Test Service
-> > >  > > https://github.com/intel/lkp-tests/wiki
-> > >  > > 
-> > >  > ------------------------------------------------------------------------
-> > >  > 
-> > >  > diff --git a/kernel/rcu/srcutiny.c b/kernel/rcu/srcutiny.c
-> > >  > index 6e9fe2ce1075d5..db63378f062051 100644
-> > >  > --- a/kernel/rcu/srcutiny.c
-> > >  > +++ b/kernel/rcu/srcutiny.c
-> > >  > @@ -106,7 +106,7 @@ void __srcu_read_unlock(struct srcu_struct *ssp, int idx)
-> > >  > newval = READ_ONCE(ssp->srcu_lock_nesting[idx]) - 1;
-> > >  > WRITE_ONCE(ssp->srcu_lock_nesting[idx], newval);
-> > >  > preempt_enable();
-> > >  > - if (!newval && READ_ONCE(ssp->srcu_gp_waiting) && in_task())
-> > >  > + if (!newval && READ_ONCE(ssp->srcu_gp_waiting) && in_task() && !irqs_disabled())
-> > >  > 
-> > >  > 
-> > >  > The fllowing case may exist:
-> > >  > 
-> > >  > 
-> > >  > CPU0
-> > >  > 
-> > >  > task1:
-> > >  > __srcu_read_lock()
-> > >  > 
-> > >  For mainline kernels, here we must have blocked, correct?
-> > >  
-> > >  In -rcu, there is of course:
-> > >  
-> > >  740cda2fe1a9 ("EXP srcu: Enable Tiny SRCU On all CONFIG_SMP=n kernels")
-> > >  
-> > >  And this means that in -rcu kernels built with CONFIG_PREEMPT_NONE=y,
-> > >  we could be preempted.
-> > >  
-> > >  And maybe this is a reason to drop this commit. Or...
-> > >  
-> > >  
-> > >  For tiny srcu, even if the preempt schedule not happend in
-> > >  srcu read ctrical section, we can still do voluntary
-> > >  scheduling in srcu_read ctrical section, this case is
-> > >  also still happend.
-> > >  
-> > >  > 
-> > >  > ....
-> > >  > 
-> > >  > 
-> > >  > task2 preempt run:
-> > >  > 
-> > >  > srcu_drive_gp()
-> > >  > ->swait_event_exclusive()
-> > >  > 
-> > >  > 
-> > >  > ....
-> > >  > task1 continue run:
-> > >  > ....
-> > >  > raw_spin_lock_irqsave
-> > >  > __srcu_read_unlock()
-> > >  > ->find all previours condition are met
-> > >  > but the irqs_disable() return true,
-> > >  > not invoke swake_up_one().
-> > >  > 
-> > >  > task2 maybe always hung.
-> > >  > 
-> > >  The bug that kernel test robot reported existed for a long time.
-> > >  The offending commit simply introduced the use case that exercised
-> > >  this bug. So we do need a fix.
-> > >  
-> > >  One approach would be to impose a rule like we used to have for RCU,
-> > >  namely that if interrupts were disabled across srcu_read_unlock(),
-> > >  then they must have been disabled since the matching srcu_read_lock().
-> > >  Another would be to make the current swait_event_exclusive() in
-> > >  srcu_drive_gp() instead be a loop around wait_event_timeout_exclusive()
-> > >  that checks ssp->srcu_lock_nesting[].
-> > >  
-> > >  But is there a better way?
-> > >  
-> > >  I think the second approach is enough :)
-> > > 
-> > Hmmm... OK, how about the incremental patch below?
-> > 
-> >  Thanx, Paul
-> > 
-> > ------------------------------------------------------------------------
-> > 
-> > commit a543d73eeaa491021040a02bdf0e8a9148b5c186
-> > Author: Paul E. McKenney <paulmck@kernel.org>
-> > Date: Sun Aug 31 09:38:44 2025 -0700
-> > 
-> >  squash! rcu: Re-implement RCU Tasks Trace in terms of SRCU-fast
-> >  
-> >  [ paulmck: Apply Zqiang feedback. ]
-> >  
-> >  Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+
+On 21/08/2025 14:00, Christian König wrote:
+> Hi Sima,
 > 
-> Should the previous fix that added irqs_disabled() also be
-> added to this patch? or can we use preemptible() instead of
-> in_tasks() && irqs_disabled()?
-
-Yes, both this fix and the addition of the !irqw_disabled() check
-are to be squashed into the original commit:
-
-f56bf5dd7ffc ("rcu: Re-implement RCU Tasks Trace in terms of SRCU-fast")
-
-But I do not immediately see how checking preemptible() would help,
-especially in (say) CONFIG_PREEMPT_NONE=y kernels in which this function
-always returns zero.  What am I missing here?
-
-							Thanx, Paul
-
-> Thanks
-> Zqiang
+> I need your opinion on this here. Adding the warning to not signal a fence from IOCTL context yielded it's first victim.
 > 
+> Skimming through the code what i915 does here is to signal a dma_fence from an error handling path. E.g. the dma_fence was allocated, initialized, the vma code finds that something is wrong and signals the fence and frees it's reference.
 > 
-> > 
-> > diff --git a/kernel/rcu/srcutiny.c b/kernel/rcu/srcutiny.c
-> > index db63378f062051..b52ec45698e85b 100644
-> > --- a/kernel/rcu/srcutiny.c
-> > +++ b/kernel/rcu/srcutiny.c
-> > @@ -113,8 +113,8 @@ EXPORT_SYMBOL_GPL(__srcu_read_unlock);
-> >  
-> >  /*
-> >  * Workqueue handler to drive one grace period and invoke any callbacks
-> > - * that become ready as a result. Single-CPU and !PREEMPTION operation
-> > - * means that we get away with murder on synchronization. ;-)
-> > + * that become ready as a result. Single-CPU operation and preemption
-> > + * disabling mean that we get away with murder on synchronization. ;-)
-> >  */
-> >  void srcu_drive_gp(struct work_struct *wp)
-> >  {
-> > @@ -141,7 +141,12 @@ void srcu_drive_gp(struct work_struct *wp)
-> >  WRITE_ONCE(ssp->srcu_idx, ssp->srcu_idx + 1);
-> >  WRITE_ONCE(ssp->srcu_gp_waiting, true); /* srcu_read_unlock() wakes! */
-> >  preempt_enable();
-> > - swait_event_exclusive(ssp->srcu_wq, !READ_ONCE(ssp->srcu_lock_nesting[idx]));
-> > + do {
-> > + // Deadlock issues prevent __srcu_read_unlock() from
-> > + // doing an unconditional wakeup, so polling is required.
-> > + swait_event_timeout_exclusive(ssp->srcu_wq,
-> > + !READ_ONCE(ssp->srcu_lock_nesting[idx]), HZ / 10);
-> > + } while (READ_ONCE(ssp->srcu_lock_nesting[idx]));
-> >  preempt_disable(); // Needed for PREEMPT_LAZY
-> >  WRITE_ONCE(ssp->srcu_gp_waiting, false); /* srcu_read_unlock() cheap. */
-> >  WRITE_ONCE(ssp->srcu_idx, ssp->srcu_idx + 1);
-> >
+> The function which does that has the following comment:
+> 
+> /**
+>   * dma_fence_work_commit_imm: Commit the fence, and if possible execute locally.
+>   * @f: the fenced worker
+>   *
+>   * Instead of always scheduling a worker to execute the callback (see
+>   * dma_fence_work_commit()), we try to execute the callback immediately in
+>   * the local context. It is required that the fence be committed before it
+>   * is published, and that no other threads try to tamper with the number
+>   * of asynchronous waits on the fence (or else the callback will be
+>   * executed in the wrong context, i.e. not the callers).
+>   */
+> 
+> This works technically, but I would say that this is absolutely not the best practice.
+> 
+> We have some oportunity to unify dma_fence_work logic between i915 and amdgpu here, but I'm pretty sure I don't want to allow such stuff in amdgpu even if it saves a few of CPU cycles in an error cleanup path.
+
+Jumping in a bit. I had a quick look to remind myself of this area. 
+Unfortunately it is not an error cleanup path but the goto labels are a 
+bit misleadingly named. The immediate path triggers quite a lot in 
+practice so to remove this would need some testing to ensure no regressions.
+
+Regards,
+
+Tvrtko
+
+> 
+> What's your opinion on that?
+> 
+> Thanks,
+> Christian.
+> 
+> On 20.08.25 09:27, kernel test robot wrote:
+>>
+>>
+>> Hello,
+>>
+>> kernel test robot noticed "WARNING:at_drivers/dma-buf/dma-fence.c:#dma_fence_signal" on:
+>>
+>> commit: 409db68e04bdf052bc03f620e70339764b598ade ("[PATCH 2/2] dma-buf: add warning when dma_fence is signaled from IOCTL")
+>> url: https://github.com/intel-lab-lkp/linux/commits/Christian-K-nig/dma-buf-add-warning-when-dma_fence-is-signaled-from-IOCTL/20250812-223543
+>> base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git 53e760d8949895390e256e723e7ee46618310361
+>> patch link: https://lore.kernel.org/all/20250812143402.8619-2-christian.koenig@amd.com/
+>> patch subject: [PATCH 2/2] dma-buf: add warning when dma_fence is signaled from IOCTL
+>>
+>> in testcase: ltp
+>> version: ltp-x86_64-9f512c1d8-1_20250809
+>> with following parameters:
+>>
+>> 	test: syscalls-ipc-msgstress
+>>
+>>
+>>
+>> config: x86_64-rhel-9.4-ltp
+>> compiler: gcc-12
+>> test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (Haswell) with 16G memory
+>>
+>> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>>
+>>
+>> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+>> the same patch/commit), kindly add following tags
+>> | Reported-by: kernel test robot <oliver.sang@intel.com>
+>> | Closes: https://lore.kernel.org/oe-lkp/202508200843.8b006132-lkp@intel.com
+>>
+>>
+>> [   51.636268][  T218] ------------[ cut here ]------------
+>> [ 51.636273][ T218] WARNING: CPU: 3 PID: 218 at drivers/dma-buf/dma-fence.c:420 dma_fence_signal (drivers/dma-buf/dma-fence.c:420 drivers/dma-buf/dma-fence.c:502)
+>> [   51.636292][  T218] Modules linked in: coretemp sd_mod snd_hda_codec_realtek_lib snd_hda_codec_generic sg ipmi_devintf kvm_intel snd_hda_intel ipmi_msghandler platform_profile i915(+) kvm snd_hda_codec intel_gtt dell_wmi snd_hda_core drm_buddy binfmt_misc dell_smbios snd_intel_dspcfg ttm dell_wmi_descriptor snd_intel_sdw_acpi snd_hwdep mei_wdt sparse_keymap irqbypass drm_display_helper ahci ghash_clmulni_intel snd_pcm libahci rfkill cec mei_me rapl intel_cstate dcdbas snd_timer drm_client_lib libata intel_uncore mei snd drm_kms_helper i2c_i801 i2c_smbus pcspkr lpc_ich soundcore video wmi fuse drm loop dm_mod
+>> [   51.636385][  T218] CPU: 3 UID: 0 PID: 218 Comm: (udev-worker) Not tainted 6.17.0-rc1-00006-g409db68e04bd #1 PREEMPT(voluntary)
+>> [   51.636395][  T218] Hardware name: Dell Inc. OptiPlex 9020/0DNKMN, BIOS A05 12/05/2013
+>> [ 51.636399][ T218] RIP: 0010:dma_fence_signal (drivers/dma-buf/dma-fence.c:420 drivers/dma-buf/dma-fence.c:502)
+>> [ 51.636415][ T218] Code: 00 fc ff df 80 3c 02 00 75 36 48 8b 3b 4c 89 e6 e8 10 33 27 01 89 e8 5b 5d 41 5c c3 cc cc cc cc e8 b0 2e 77 fe 48 85 c0 75 bc <0f> 0b eb b8 0f 0b bd ea ff ff ff 5b 89 e8 5d 41 5c c3 cc cc cc cc
+>> All code
+>> ========
+>>     0:	00 fc                	add    %bh,%ah
+>>     2:	ff                   	(bad)
+>>     3:	df 80 3c 02 00 75    	filds  0x7500023c(%rax)
+>>     9:	36 48 8b 3b          	ss mov (%rbx),%rdi
+>>     d:	4c 89 e6             	mov    %r12,%rsi
+>>    10:	e8 10 33 27 01       	call   0x1273325
+>>    15:	89 e8                	mov    %ebp,%eax
+>>    17:	5b                   	pop    %rbx
+>>    18:	5d                   	pop    %rbp
+>>    19:	41 5c                	pop    %r12
+>>    1b:	c3                   	ret
+>>    1c:	cc                   	int3
+>>    1d:	cc                   	int3
+>>    1e:	cc                   	int3
+>>    1f:	cc                   	int3
+>>    20:	e8 b0 2e 77 fe       	call   0xfffffffffe772ed5
+>>    25:	48 85 c0             	test   %rax,%rax
+>>    28:	75 bc                	jne    0xffffffffffffffe6
+>>    2a:*	0f 0b                	ud2		<-- trapping instruction
+>>    2c:	eb b8                	jmp    0xffffffffffffffe6
+>>    2e:	0f 0b                	ud2
+>>    30:	bd ea ff ff ff       	mov    $0xffffffea,%ebp
+>>    35:	5b                   	pop    %rbx
+>>    36:	89 e8                	mov    %ebp,%eax
+>>    38:	5d                   	pop    %rbp
+>>    39:	41 5c                	pop    %r12
+>>    3b:	c3                   	ret
+>>    3c:	cc                   	int3
+>>    3d:	cc                   	int3
+>>    3e:	cc                   	int3
+>>    3f:	cc                   	int3
+>>
+>> Code starting with the faulting instruction
+>> ===========================================
+>>     0:	0f 0b                	ud2
+>>     2:	eb b8                	jmp    0xffffffffffffffbc
+>>     4:	0f 0b                	ud2
+>>     6:	bd ea ff ff ff       	mov    $0xffffffea,%ebp
+>>     b:	5b                   	pop    %rbx
+>>     c:	89 e8                	mov    %ebp,%eax
+>>     e:	5d                   	pop    %rbp
+>>     f:	41 5c                	pop    %r12
+>>    11:	c3                   	ret
+>>    12:	cc                   	int3
+>>    13:	cc                   	int3
+>>    14:	cc                   	int3
+>>    15:	cc                   	int3
+>> [   51.636420][  T218] RSP: 0018:ffffc90000a9ed30 EFLAGS: 00010046
+>> [   51.636428][  T218] RAX: 0000000000000000 RBX: ffff88811750fc00 RCX: 0000000000000018
+>> [   51.636437][  T218] RDX: 0000000000000000 RSI: 0000000000000004 RDI: ffff88810691512c
+>> [   51.636440][  T218] RBP: 0000000be56b1408 R08: 0000000000000001 R09: fffff52000153d9a
+>> [   51.636445][  T218] R10: 0000000000000003 R11: ffff888108145000 R12: 0000000000000246
+>> [   51.636452][  T218] R13: ffffffffc1c9b060 R14: ffff88810406ba0c R15: 1ffff92000153dc2
+>> [   51.636455][  T218] FS:  00007efd90c038c0(0000) GS:ffff8883e4077000(0000) knlGS:0000000000000000
+>> [   51.636459][  T218] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>> [   51.636462][  T218] CR2: 00007f5bd8238c20 CR3: 000000040ed8a005 CR4: 00000000001726f0
+>> [   51.636466][  T218] Call Trace:
+>> [   51.636469][  T218]  <TASK>
+>> [ 51.636477][ T218] fence_work (include/linux/dma-fence.h:272 drivers/gpu/drm/i915/i915_sw_fence_work.c:23) i915
+>> [ 51.637304][ T218] fence_notify (drivers/gpu/drm/i915/i915_sw_fence_work.c:39) i915
+>> [ 51.637827][ T218] __i915_sw_fence_complete (drivers/gpu/drm/i915/i915_sw_fence.c:201) i915
+>> [ 51.638300][ T218] i915_vma_pin_ww (drivers/gpu/drm/i915/i915_vma.c:1601) i915
+>> [ 51.638763][ T218] ? __pfx_i915_vma_pin_ww (drivers/gpu/drm/i915/i915_vma.c:1434) i915
+>> [ 51.639218][ T218] ? i915_gem_object_make_unshrinkable (include/linux/list.h:215 include/linux/list.h:287 drivers/gpu/drm/i915/gem/i915_gem_shrinker.c:500) i915
+>> [ 51.639648][ T218] ? i915_vma_make_unshrinkable (drivers/gpu/drm/i915/i915_vma.c:2292) i915
+>> [ 51.640091][ T218] ? intel_ring_pin (drivers/gpu/drm/i915/gt/intel_ring.c:73) i915
+>> [ 51.640505][ T218] intel_ring_submission_setup (drivers/gpu/drm/i915/gt/intel_ring_submission.c:1290 drivers/gpu/drm/i915/gt/intel_ring_submission.c:1421) i915
+>> [ 51.640918][ T218] ? __pfx_intel_ring_submission_setup (drivers/gpu/drm/i915/gt/intel_ring_submission.c:1349) i915
+>> [   51.641232][   T65] sd 0:0:0:0: [sda] Mode Sense: 00 3a 00 00
+>> [ 51.641321][ T218] ? intel_engine_init_whitelist (drivers/gpu/drm/i915/gt/intel_workarounds.c:2104) i915
+>> [ 51.641735][ T218] ? __intel_wakeref_init (arch/x86/include/asm/atomic.h:28 include/linux/atomic/atomic-arch-fallback.h:503 include/linux/atomic/atomic-instrumented.h:68 drivers/gpu/drm/i915/intel_wakeref.c:109) i915
+>> [ 51.642126][ T218] intel_engines_init (drivers/gpu/drm/i915/gt/intel_engine_cs.c:1514) i915
+>> [ 51.642521][ T218] ? i915_gem_object_make_unshrinkable (arch/x86/include/asm/atomic.h:93 include/linux/atomic/atomic-arch-fallback.h:667 include/linux/atomic/atomic-arch-fallback.h:1119 include/linux/atomic/atomic-instrumented.h:524 drivers/gpu/drm/i915/gem/i915_gem_shrinker.c:498) i915
+>> [ 51.642929][ T218] ? __pfx_intel_ring_submission_setup (drivers/gpu/drm/i915/gt/intel_ring_submission.c:1349) i915
+>> [ 51.643331][ T218] intel_gt_init (drivers/gpu/drm/i915/gt/intel_gt.c:719) i915
+>> [ 51.643728][ T218] i915_gem_init (drivers/gpu/drm/i915/i915_gem.c:1191) i915
+>> [ 51.644140][ T218] i915_driver_probe (drivers/gpu/drm/i915/i915_driver.c:831) i915
+>> [ 51.644524][ T218] ? __pfx_i915_driver_probe (drivers/gpu/drm/i915/i915_driver.c:780) i915
+>> [ 51.644903][ T218] ? drm_privacy_screen_get (drivers/gpu/drm/drm_privacy_screen.c:169) drm
+>> [ 51.645047][ T218] ? intel_display_driver_probe_defer (drivers/gpu/drm/i915/display/intel_display_driver.c:84) i915
+>> [ 51.645483][ T218] ? i915_pci_probe (drivers/gpu/drm/i915/i915_pci.c:995) i915
+>> [ 51.645876][ T218] ? __pfx_i915_pci_probe (drivers/gpu/drm/i915/i915_pci.c:956) i915
+>> [ 51.646267][ T218] local_pci_probe (drivers/pci/pci-driver.c:324)
+>> [ 51.646283][ T218] pci_call_probe (drivers/pci/pci-driver.c:392)
+>> [ 51.646295][ T218] ? _raw_spin_lock (arch/x86/include/asm/atomic.h:107 include/linux/atomic/atomic-arch-fallback.h:2170 include/linux/atomic/atomic-instrumented.h:1302 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 include/linux/spinlock_api_smp.h:134 kernel/locking/spinlock.c:154)
+>> [ 51.646308][ T218] ? __pfx_pci_call_probe (drivers/pci/pci-driver.c:352)
+>> [ 51.646321][ T218] ? kernfs_add_one (fs/kernfs/dir.c:834)
+>> [ 51.646337][ T218] ? pci_assign_irq (drivers/pci/irq.c:149)
+>> [ 51.646350][ T218] ? pci_match_device (drivers/pci/pci-driver.c:159 (discriminator 1))
+>> [ 51.646362][ T218] ? kernfs_put (arch/x86/include/asm/atomic.h:67 (discriminator 1) include/linux/atomic/atomic-arch-fallback.h:2278 (discriminator 1) include/linux/atomic/atomic-instrumented.h:1384 (discriminator 1) fs/kernfs/dir.c:569 (discriminator 1))
+>> [ 51.646368][ T218] pci_device_probe (drivers/pci/pci-driver.c:452)
+>> [ 51.646377][ T218] really_probe (drivers/base/dd.c:581 drivers/base/dd.c:659)
+>> [ 51.646391][ T218] __driver_probe_device (drivers/base/dd.c:801)
+>> [ 51.646404][ T218] driver_probe_device (drivers/base/dd.c:831)
+>> [ 51.646416][ T218] __driver_attach (drivers/base/dd.c:1218)
+>> [ 51.646424][ T218] ? __pfx___driver_attach (drivers/base/dd.c:1158)
+>> [ 51.646428][ T218] bus_for_each_dev (drivers/base/bus.c:369)
+>> [ 51.646441][ T218] ? __pfx_bus_for_each_dev (drivers/base/bus.c:358)
+>> [ 51.646444][ T218] ? __kmalloc_cache_noprof (arch/x86/include/asm/jump_label.h:46 include/linux/memcontrol.h:1714 mm/slub.c:2210 mm/slub.c:4190 mm/slub.c:4229 mm/slub.c:4391)
+>> [ 51.646456][ T218] ? klist_add_tail (include/linux/list.h:150 include/linux/list.h:183 lib/klist.c:104 lib/klist.c:137)
+>> [ 51.646468][ T218] bus_add_driver (drivers/base/bus.c:678)
+>> [ 51.646482][ T218] driver_register (drivers/base/driver.c:249)
+>> [ 51.646490][ T218] i915_init (drivers/gpu/drm/i915/i915_driver.c:1428) i915
+>> [ 51.646891][ T218] ? __pfx_i915_init (drivers/gpu/drm/i915/i915_config.c:13) i915
+>> [   51.647101][   T67] sd 2:0:0:0: [sdb] Write cache: enabled, read cache: enabled, doesn't support DPO or FUA
+>> [ 51.647277][ T218] do_one_initcall (init/main.c:1269)
+>> [ 51.647292][ T218] ? kfree (mm/slub.c:4680 mm/slub.c:4879)
+>> [ 51.647304][ T218] ? __pfx_do_one_initcall (init/main.c:1260)
+>> [ 51.647315][ T218] ? kasan_unpoison (mm/kasan/shadow.c:156 mm/kasan/shadow.c:182)
+>> [ 51.647327][ T218] ? __kasan_slab_alloc (mm/kasan/common.c:329 mm/kasan/common.c:356)
+>> [ 51.647340][ T218] ? __kmalloc_cache_noprof (mm/slub.c:4180 mm/slub.c:4229 mm/slub.c:4391)
+>> [ 51.647352][ T218] ? kasan_save_track (arch/x86/include/asm/current.h:25 mm/kasan/common.c:60 mm/kasan/common.c:69)
+>> [ 51.647365][ T218] ? kasan_unpoison (mm/kasan/shadow.c:156 mm/kasan/shadow.c:182)
+>> [ 51.647377][ T218] do_init_module (kernel/module/main.c:3039)
+>> [ 51.647388][ T218] ? __pfx_do_init_module (kernel/module/main.c:3011)
+>> [ 51.647402][ T218] ? kfree (mm/slub.c:4680 mm/slub.c:4879)
+>> [ 51.647414][ T218] ? klp_module_coming (kernel/livepatch/core.c:1317)
+>> [ 51.647426][ T218] ? load_module (kernel/module/main.c:2468 kernel/module/main.c:2463 kernel/module/main.c:3504)
+>> [ 51.647441][ T218] load_module (kernel/module/main.c:3509)
+>> [ 51.647449][ T218] ? ima_post_read_file (security/integrity/ima/ima_main.c:896 security/integrity/ima/ima_main.c:878)
+>> [ 51.647466][ T218] ? __pfx_load_module (kernel/module/main.c:3353)
+>> [ 51.647478][ T218] ? __pfx_kernel_read_file (fs/kernel_read_file.c:38)
+>> [ 51.647489][ T218] ? init_module_from_file (kernel/module/main.c:3701)
+>> [ 51.647499][ T218] init_module_from_file (kernel/module/main.c:3701)
+>> [ 51.647514][ T218] ? __pfx_init_module_from_file (kernel/module/main.c:3677)
+>> [ 51.647525][ T218] ? mm_get_unmapped_area (arch/x86/include/asm/bitops.h:206 arch/x86/include/asm/bitops.h:238 include/asm-generic/bitops/instrumented-non-atomic.h:142 mm/mmap.c:805 mm/mmap.c:871)
+>> [ 51.647540][ T218] ? _raw_spin_lock (arch/x86/include/asm/atomic.h:107 include/linux/atomic/atomic-arch-fallback.h:2170 include/linux/atomic/atomic-instrumented.h:1302 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 include/linux/spinlock_api_smp.h:134 kernel/locking/spinlock.c:154)
+>> [ 51.647547][ T218] ? __pfx__raw_spin_lock (kernel/locking/spinlock.c:153)
+>> [ 51.647560][ T218] idempotent_init_module (kernel/module/main.c:3713)
+>> [ 51.647573][ T218] ? __pfx_idempotent_init_module (kernel/module/main.c:3705)
+>> [ 51.647582][ T218] ? __pfx___seccomp_filter (kernel/seccomp.c:1244)
+>> [ 51.647590][ T218] ? fdget (include/linux/atomic/atomic-arch-fallback.h:479 include/linux/atomic/atomic-instrumented.h:50 fs/file.c:1167 fs/file.c:1181)
+>> [ 51.647607][ T218] ? security_capable (security/security.c:1142)
+>> [ 51.647615][ T218] __x64_sys_finit_module (include/linux/file.h:62 include/linux/file.h:83 kernel/module/main.c:3736 kernel/module/main.c:3723 kernel/module/main.c:3723)
+>> [ 51.647627][ T218] ? syscall_trace_enter (kernel/entry/syscall-common.c:44)
+>> [ 51.647640][ T218] do_syscall_64 (arch/x86/entry/syscall_64.c:63 arch/x86/entry/syscall_64.c:94)
+>> [ 51.647657][ T218] ? fput (arch/x86/include/asm/atomic64_64.h:79 include/linux/atomic/atomic-arch-fallback.h:2913 include/linux/atomic/atomic-arch-fallback.h:3364 include/linux/atomic/atomic-long.h:698 include/linux/atomic/atomic-instrumented.h:3767 include/linux/file_ref.h:157 fs/file_table.c:544)
+>> [ 51.647668][ T218] ? ksys_mmap_pgoff (mm/mmap.c:609)
+>> [ 51.647682][ T218] ? do_syscall_64 (arch/x86/entry/syscall_64.c:63 arch/x86/entry/syscall_64.c:94)
+>> [ 51.647694][ T218] ? from_kgid_munged (kernel/user_namespace.c:535)
+>> [ 51.647708][ T218] ? _copy_to_user (arch/x86/include/asm/uaccess_64.h:126 arch/x86/include/asm/uaccess_64.h:147 include/linux/uaccess.h:197 lib/usercopy.c:26)
+>> [ 51.647722][ T218] ? cp_new_stat (fs/stat.c:471)
+>> [ 51.647732][ T218] ? __pfx_cp_new_stat (fs/stat.c:471)
+>>
+>>
+>> The kernel config and materials to reproduce are available at:
+>> https://download.01.org/0day-ci/archive/20250820/202508200843.8b006132-lkp@intel.com
+>>
+>>
+>>
+> 
+
