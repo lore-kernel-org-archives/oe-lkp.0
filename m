@@ -1,48 +1,41 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 208B02F28F4;
-	Wed,  3 Sep 2025 10:42:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB30E2FB63C
+	for <oe-lkp@lists.linux.dev>; Wed,  3 Sep 2025 11:43:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756896134; cv=none; b=WyAqjytXNN3QjyKGcF0TzGqQjYCUjCiP5tNr3g5JCFZ807subvlomo5A7wGZ25h/tWCll8cztBRJCZmwA1gD3zZf56oqWnALgfEkNQHY1vS1UCY/PGQXsZ/zepmVBVO4O2er8hKLqjFdTsJgLjpfi3Ly5GH1wGLnp3rbWEJsj7g=
+	t=1756899835; cv=none; b=LWQNhr4g4O//cf3GRcax9OM6RzZ1wYhKPbjtStxrkz+jOV5zV4Wovpmvz1g4t/ExrQj8ExDESBk2ujva4zwxJdsC4gB7tBfax3Lkffn8PDZae5EW2HbvvLCpaIgpteZ9XSfnMB5Mhk0r+vYouoE63NwD8uFcmchjl22iovRiXeg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756896134; c=relaxed/simple;
-	bh=YT7cjM3Zoi3YEp1FKG1M5J+ZgWc50WMxZbYZGpIszeg=;
+	s=arc-20240116; t=1756899835; c=relaxed/simple;
+	bh=IPkAog2oWJvWzeG9LukZlFOVnIZGe+W96DFAglKXOjE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oai5DuhWFPiprq9QZZlaYPhNd9aikNNCZdUWqh6syrGpP8L8p/yoURLZ7pKutNLsy8BTGxZnL8bPMi4CCXojzhqy5uGa9kUd95iNDE9YdmoFuPDyWLojJVrNtC5C7jo/vZ3dU5TUAQdytpXQXasuMEjSHeTLJtlz/69kW6yMJk0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=r70ix0ck; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=fcA+F3MRLVi29ycMBH6HEsPoaT56Il7uuG8BChNWhHoSgV9BRG4aeSCoA/mveKNP+LIXRALE7mIxLlArVLJZlNI9/Um/Oqnah40oK0/oenebadntGnTFJwCL+5Ij84JJJcrXVzJZQFJ3zUiPO6EFPkhEN5WFQFKvCC4326EyEsY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=mkAG3P8w; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="r70ix0ck"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F2B7C4CEF0;
-	Wed,  3 Sep 2025 10:42:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1756896133;
-	bh=YT7cjM3Zoi3YEp1FKG1M5J+ZgWc50WMxZbYZGpIszeg=;
-	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-	b=r70ix0ckTBJtmOV/g9se9Gpbzj73RFY2NNzx77KO6MG8Nxat8YalLyvV6wi8eEkYO
-	 SPS+yJtc7RM7VCBhvEOHlenTkzxiMqtsrGHL2FcOW0XHxzAdjbf4eIpxSpwxF0so0w
-	 TNfsJzScgSzrKg2Kr9NTZKp8wOrTE5RQ+tVNphZO9ZdU612+sHr+ZujEvSAHsMD0pQ
-	 d38Mr7sHKo89tk+338oKVc7yCmlyAcCsZWkfNXHmvjqztsGeJgIJ1IkmWiFavPoV+N
-	 nn88eHGOI3KbHTKWefES+VL4DxEHz4kOy14qISfaHCWiCKlcXFHx640u+m9gIfaWGu
-	 YOXT+ioeb0BzQ==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-	id 2093CCE0FFB; Wed,  3 Sep 2025 03:42:13 -0700 (PDT)
-Date: Wed, 3 Sep 2025 03:42:13 -0700
-From: "Paul E. McKenney" <paulmck@kernel.org>
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
-	Andrii Nakryiko <andrii@kernel.org>,
-	Alexei Starovoitov <ast@kernel.org>,
-	Peter Zijlstra <peterz@infradead.org>, rcu@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [paulmckrcu:dev.2025.08.21a] [rcu]  8bd9383727:
- WARNING:possible_circular_locking_dependency_detected
-Message-ID: <76ea5b26-92fb-470b-a3dc-3424944a50be@paulmck-laptop>
-Reply-To: paulmck@kernel.org
-References: <202508261642.b15eefbb-lkp@intel.com>
- <2853a174-76e4-440b-bfc1-71ea30694822@paulmck-laptop>
- <aLeiBGeUj5nHBlK1@xsang-OptiPlex-9020>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="mkAG3P8w"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=rsjKaX4Li+Xn3oQpN6KfZawl3+5dIlBMryTZxgIt2s0=; b=mkAG3P8wZILOqMJ2EHQxN7j0ew
+	5XRNv9lkG4jgt3CHjoL/VNE/BgpG6PFU9FUHBJUQaRb4Q7c2B2VRd2459gtE5YhCTqyHWMLlVqySl
+	NJgHV1dqvCibAVVxMbYmoeYHyjX+BPqjP7DOCvBoA6z9QM8JNHxV1+XT+nA3rHRL+ePZMhov/+K6C
+	6lIDWzEcTq9BEOyUiLZjVut1IcHbR/vkss6nfWWWfCNsX6LMyHuE/BtQJAe8x4HV+QcqirJOYKTjJ
+	5ePyWG6++9E7v3fC275L3nkVyOHpc7/rEsTMrh9z0aYFpLylQWJ/+P3ZT6Sz8X5sxK9uCzC8Bqd2S
+	h4KfA3AQ==;
+Received: from willy by casper.infradead.org with local (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1utlu1-000000028lz-3hho;
+	Wed, 03 Sep 2025 11:43:50 +0000
+Date: Wed, 3 Sep 2025 12:43:49 +0100
+From: Matthew Wilcox <willy@infradead.org>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com
+Subject: Re: [willy-pagecache:slab-future] [slab]  d7a6fafee0: RIP:__ksize
+Message-ID: <aLgp9QKJ8EMbBR3T@casper.infradead.org>
+References: <202509022248.dbe9cc08-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -51,76 +44,37 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aLeiBGeUj5nHBlK1@xsang-OptiPlex-9020>
+In-Reply-To: <202509022248.dbe9cc08-lkp@intel.com>
 
-On Wed, Sep 03, 2025 at 10:03:48AM +0800, Oliver Sang wrote:
-> hi, Paul,
-> On Fri, Aug 29, 2025 at 10:23:17AM -0700, Paul E. McKenney wrote:
+On Tue, Sep 02, 2025 at 10:35:26PM +0800, kernel test robot wrote:
+> Hello,
 > 
-> [...]
+> kernel test robot noticed "RIP:__ksize" on:
 > 
-> > Again, apologies for being slow, and thank you for your testing efforts.
-> > 
-> > Idiot here forgot about Tiny SRCU, so please see the end of this email
-> > for an alleged fix.  Does it do the trick for you?
+> commit: d7a6fafee020f8dbe5863d2b6c2e8af5560df707 ("slab: Remove folio references from __ksize()")
+> git://git.infradead.org/users/willy/pagecache slab-future
 > 
-> besides the patch [1] as in the end part of mail, we noticed you also have a
-> patch in [2]. I don't have enough knowledge to follow the dicussion between
-> you and Zqiang well. it just seems to me both patches are fixes which should
-> be squashed into original patch?
+> in testcase: boot
 > 
-> I made below applyment:
+> config: x86_64-rhel-9.4-rust
+> compiler: clang-20
+> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 > 
-> * e5ab29c09c470e squash! rcu: Re-implement RCU Tasks Trace in terms of SRCU-fast   <--- patch in [2]
-> * f717bca99dfb15 1st fix patch for 8bd9383727 from Paul   <--- patch in [1]
-> * 8bd9383727068a rcu: Re-implement RCU Tasks Trace in terms of SRCU-fast
-> 
-> by testing, the issue "WARNING:possible_circular_locking_dependency_detected"
-> cannot be reproduced on both f717bca99dfb15 and e5ab29c09c470e
-> 
-> sorry if I miss or misunderstood something, otherwise,
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
 
-You got it exactly!  The updated commit is this one:
+Hi.  Do you have a log for this configuration without this patchset?
+I believe it should hit this warning:
 
-a9e63382cbfa ("rcu: Re-implement RCU Tasks Trace in terms of SRCU-fast")
+static void free_large_kmalloc(struct folio *folio, void *object)
+{
+        unsigned int order = folio_order(folio);
 
-> Tested-by: kernel test robot <oliver.sang@intel.com>
+        if (WARN_ON_ONCE(!folio_test_large_kmalloc(folio))) {
+                dump_page(&folio->page, "Not a kmalloc allocation");
+                return;
+        }
 
-I will apply on my next rebase, and thank you for your testing efforts!
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20250902/202509022248.dbe9cc08-lkp@intel.com
 
-							Thanx, Paul
-
-> > > If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> > > the same patch/commit), kindly add following tags
-> > > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> > > | Closes: https://lore.kernel.org/oe-lkp/202508261642.b15eefbb-lkp@intel.com
-> 
-> [...]
-> 
-> > > The kernel config and materials to reproduce are available at:
-> > > https://download.01.org/0day-ci/archive/20250826/202508261642.b15eefbb-lkp@intel.com
-> > > -- 
-> > > 0-DAY CI Kernel Test Service
-> > > https://github.com/intel/lkp-tests/wiki
-> > 
-> 
-> [1]
-> 
-> > ------------------------------------------------------------------------
-> > 
-> > diff --git a/kernel/rcu/srcutiny.c b/kernel/rcu/srcutiny.c
-> > index 6e9fe2ce1075d5..db63378f062051 100644
-> > --- a/kernel/rcu/srcutiny.c
-> > +++ b/kernel/rcu/srcutiny.c
-> > @@ -106,7 +106,7 @@ void __srcu_read_unlock(struct srcu_struct *ssp, int idx)
-> >  	newval = READ_ONCE(ssp->srcu_lock_nesting[idx]) - 1;
-> >  	WRITE_ONCE(ssp->srcu_lock_nesting[idx], newval);
-> >  	preempt_enable();
-> > -	if (!newval && READ_ONCE(ssp->srcu_gp_waiting) && in_task())
-> > +	if (!newval && READ_ONCE(ssp->srcu_gp_waiting) && in_task() && !irqs_disabled())
-> >  		swake_up_one(&ssp->srcu_wq);
-> >  }
-> >  EXPORT_SYMBOL_GPL(__srcu_read_unlock);
-> > 
-> 
-> [2] https://lore.kernel.org/all/8f43f958-e3e6-44d5-9600-9e096c3a06b7@paulmck-laptop/
+I'll give this a try.
