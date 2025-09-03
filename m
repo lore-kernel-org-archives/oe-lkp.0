@@ -1,48 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3C86279DA3;
-	Wed,  3 Sep 2025 10:31:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 208B02F28F4;
+	Wed,  3 Sep 2025 10:42:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756895493; cv=none; b=Q0mnxpY57zTxdTuQ235DMcU5hP6FmU/xUBztK0pN6awHctPpUzu0AjQe5r6gq9mb9/oMlLatgxXPsd5oseG8JgoF6PN8qT4N9vl9iitt2TF5A6bkgkqAHwzf+bHhX/heW/tbIyYki1YsOaQy86y8ZG8kW6B0t9CLWKbe/iJLrkw=
+	t=1756896134; cv=none; b=WyAqjytXNN3QjyKGcF0TzGqQjYCUjCiP5tNr3g5JCFZ807subvlomo5A7wGZ25h/tWCll8cztBRJCZmwA1gD3zZf56oqWnALgfEkNQHY1vS1UCY/PGQXsZ/zepmVBVO4O2er8hKLqjFdTsJgLjpfi3Ly5GH1wGLnp3rbWEJsj7g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756895493; c=relaxed/simple;
-	bh=0B3nLZs7Ua+KW7LjOWjwB9lGSpTmwpy/EG15w0U8e3k=;
+	s=arc-20240116; t=1756896134; c=relaxed/simple;
+	bh=YT7cjM3Zoi3YEp1FKG1M5J+ZgWc50WMxZbYZGpIszeg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UxZANJ3/LuEAxj+PYidWTJSz2iHAVp1HmZLbWHeaiMFq5C85zXH1saD8QkzntbeTVtabc5tyOnKuQeNSAZ6auGG4RsGOaICpNghgqXM/2cv8UNlva7GU25OOlI2gdkgcDYrM1w0OSPmkeuejKKVn41toGEcpep9yGDneece6Afg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tth4tRFf; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=oai5DuhWFPiprq9QZZlaYPhNd9aikNNCZdUWqh6syrGpP8L8p/yoURLZ7pKutNLsy8BTGxZnL8bPMi4CCXojzhqy5uGa9kUd95iNDE9YdmoFuPDyWLojJVrNtC5C7jo/vZ3dU5TUAQdytpXQXasuMEjSHeTLJtlz/69kW6yMJk0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=r70ix0ck; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tth4tRFf"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42D1FC4CEF0;
-	Wed,  3 Sep 2025 10:31:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="r70ix0ck"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F2B7C4CEF0;
+	Wed,  3 Sep 2025 10:42:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1756895492;
-	bh=0B3nLZs7Ua+KW7LjOWjwB9lGSpTmwpy/EG15w0U8e3k=;
+	s=k20201202; t=1756896133;
+	bh=YT7cjM3Zoi3YEp1FKG1M5J+ZgWc50WMxZbYZGpIszeg=;
 	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-	b=tth4tRFfCHGy1dEHvnj7kXw9/jgOF5MohFf9B/2S2wtsL04C9HC718pXarghT+Biq
-	 kkb+H8NBzX/qFdL13wvDJNMBrTnhCVz5EWxNya5ZfjEw5Afu9GJmbs1L7IeN9zcfW1
-	 /QbguRnl7W406SHwohDd36HLhPULUixtapOWVhQJBo765HlKVCXOJrcHCFxojVnJlk
-	 SKgqTTbortv8ZB6Z3v3H0rW24cdQkLr82dguvemFUtrdj5CfpB6JoOLPgF6ISM/R0G
-	 G4w6cnckYytQ8bHMpB0EdXM0RLGA+mbiJSTBECybJLaCJrTm/qJa5mTT2QfzaXY1B7
-	 Avq7nT/yC8m9Q==
+	b=r70ix0ckTBJtmOV/g9se9Gpbzj73RFY2NNzx77KO6MG8Nxat8YalLyvV6wi8eEkYO
+	 SPS+yJtc7RM7VCBhvEOHlenTkzxiMqtsrGHL2FcOW0XHxzAdjbf4eIpxSpwxF0so0w
+	 TNfsJzScgSzrKg2Kr9NTZKp8wOrTE5RQ+tVNphZO9ZdU612+sHr+ZujEvSAHsMD0pQ
+	 d38Mr7sHKo89tk+338oKVc7yCmlyAcCsZWkfNXHmvjqztsGeJgIJ1IkmWiFavPoV+N
+	 nn88eHGOI3KbHTKWefES+VL4DxEHz4kOy14qISfaHCWiCKlcXFHx640u+m9gIfaWGu
+	 YOXT+ioeb0BzQ==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-	id D85D4CE0FFB; Wed,  3 Sep 2025 03:31:31 -0700 (PDT)
-Date: Wed, 3 Sep 2025 03:31:31 -0700
+	id 2093CCE0FFB; Wed,  3 Sep 2025 03:42:13 -0700 (PDT)
+Date: Wed, 3 Sep 2025 03:42:13 -0700
 From: "Paul E. McKenney" <paulmck@kernel.org>
 To: Oliver Sang <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	linux-trace-kernel@vger.kernel.org
-Subject: Re: [paulmck-rcu:dev.2025.08.13a] [tracing]  364ac25d46:
- WARNING:at_arch/x86/mm/fault.c:#do_user_addr_fault
-Message-ID: <d1ee722b-eb90-4b7e-9c2f-2db7d3b33ce9@paulmck-laptop>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
+	Andrii Nakryiko <andrii@kernel.org>,
+	Alexei Starovoitov <ast@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>, rcu@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [paulmckrcu:dev.2025.08.21a] [rcu]  8bd9383727:
+ WARNING:possible_circular_locking_dependency_detected
+Message-ID: <76ea5b26-92fb-470b-a3dc-3424944a50be@paulmck-laptop>
 Reply-To: paulmck@kernel.org
-References: <202508211038.c93e8603-lkp@intel.com>
- <68044ea3-32c1-4d72-9bd3-fe2031669d79@paulmck-laptop>
- <aLebLoM2OQD+KPxQ@xsang-OptiPlex-9020>
+References: <202508261642.b15eefbb-lkp@intel.com>
+ <2853a174-76e4-440b-bfc1-71ea30694822@paulmck-laptop>
+ <aLeiBGeUj5nHBlK1@xsang-OptiPlex-9020>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -51,98 +51,76 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aLebLoM2OQD+KPxQ@xsang-OptiPlex-9020>
+In-Reply-To: <aLeiBGeUj5nHBlK1@xsang-OptiPlex-9020>
 
-On Wed, Sep 03, 2025 at 09:34:38AM +0800, Oliver Sang wrote:
+On Wed, Sep 03, 2025 at 10:03:48AM +0800, Oliver Sang wrote:
 > hi, Paul,
+> On Fri, Aug 29, 2025 at 10:23:17AM -0700, Paul E. McKenney wrote:
 > 
-> On Fri, Aug 29, 2025 at 08:07:41AM -0700, Paul E. McKenney wrote:
-> > On Thu, Aug 21, 2025 at 01:26:45PM +0800, kernel test robot wrote:
-> > > 
-> > > hi, Paul,
-> > > 
-> > > we also noticed there is similar commit in newer branch
-> > >   dev.2025.08.14a
-> > >   dev.2025.08.19a
-> > > but we didn't finish any bisect for them so far.
-> > > 
-> > > if the issue is already known and fixed in newer version, please just ignore
-> > > this report. sorry if any inconvenience.
-> > > 
-> > > below full report FYI.
-> > > 
-> > > 
-> > > Hello,
-> > > 
-> > > kernel test robot noticed "WARNING:at_arch/x86/mm/fault.c:#do_user_addr_fault" on:
-> > > 
-> > > commit: 364ac25d46eea504eb90229d2a1f92e18c1a1eae ("tracing: Guard __DECLARE_TRACE() use of __DO_TRACE_CALL() with SRCU-fast")
-> > > https://git.kernel.org/cgit/linux/kernel/git/paulmck/linux-rcu.git dev.2025.08.13a
-> > > 
-> > > in testcase: boot
-> > > 
-> > > config: i386-randconfig-004-20250819
-> > > compiler: clang-20
-> > > test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m 4G
-> > > 
-> > > (please refer to attached dmesg/kmsg for entire log/backtrace)
-> > 
-> > Thank you for your testing efforts, and apologies for being slow!
-> > 
-> > Could you please try the diagnostic patch at the end of this email?
-> > 
-> > 							Thanx, Paul
+> [...]
 > 
-> by applying the patch, the issue gone. but since you said this is a 'diagnostic
-> patch', not sure if it's a real fix. anyway:
+> > Again, apologies for being slow, and thank you for your testing efforts.
+> > 
+> > Idiot here forgot about Tiny SRCU, so please see the end of this email
+> > for an alleged fix.  Does it do the trick for you?
 > 
+> besides the patch [1] as in the end part of mail, we noticed you also have a
+> patch in [2]. I don't have enough knowledge to follow the dicussion between
+> you and Zqiang well. it just seems to me both patches are fixes which should
+> be squashed into original patch?
+> 
+> I made below applyment:
+> 
+> * e5ab29c09c470e squash! rcu: Re-implement RCU Tasks Trace in terms of SRCU-fast   <--- patch in [2]
+> * f717bca99dfb15 1st fix patch for 8bd9383727 from Paul   <--- patch in [1]
+> * 8bd9383727068a rcu: Re-implement RCU Tasks Trace in terms of SRCU-fast
+> 
+> by testing, the issue "WARNING:possible_circular_locking_dependency_detected"
+> cannot be reproduced on both f717bca99dfb15 and e5ab29c09c470e
+> 
+> sorry if I miss or misunderstood something, otherwise,
+
+You got it exactly!  The updated commit is this one:
+
+a9e63382cbfa ("rcu: Re-implement RCU Tasks Trace in terms of SRCU-fast")
+
 > Tested-by: kernel test robot <oliver.sang@intel.com>
 
-Thank you very much!  This tells me that something on the code path from
-the tracepoint to the BPF program needs to have preemption disabled.
-I will leave the diagnostic patch in my tree, and will be looking into
-what the real fix should be.
+I will apply on my next rebase, and thank you for your testing efforts!
 
 							Thanx, Paul
 
-> [...]
-> 
 > > > If you fix the issue in a separate patch/commit (i.e. not just a new version of
 > > > the same patch/commit), kindly add following tags
 > > > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> > > | Closes: https://lore.kernel.org/oe-lkp/202508211038.c93e8603-lkp@intel.com
+> > > | Closes: https://lore.kernel.org/oe-lkp/202508261642.b15eefbb-lkp@intel.com
 > 
 > [...]
 > 
 > > > The kernel config and materials to reproduce are available at:
-> > > https://download.01.org/0day-ci/archive/20250821/202508211038.c93e8603-lkp@intel.com
+> > > https://download.01.org/0day-ci/archive/20250826/202508261642.b15eefbb-lkp@intel.com
 > > > -- 
 > > > 0-DAY CI Kernel Test Service
 > > > https://github.com/intel/lkp-tests/wiki
 > > 
+> 
+> [1]
+> 
+> > ------------------------------------------------------------------------
 > > 
-> > commit 2d6142ce44dca77fb173bb96850634b169277214
-> > Author: Paul E. McKenney <paulmck@kernel.org>
-> > Date:   Thu Aug 28 12:56:42 2025 -0700
+> > diff --git a/kernel/rcu/srcutiny.c b/kernel/rcu/srcutiny.c
+> > index 6e9fe2ce1075d5..db63378f062051 100644
+> > --- a/kernel/rcu/srcutiny.c
+> > +++ b/kernel/rcu/srcutiny.c
+> > @@ -106,7 +106,7 @@ void __srcu_read_unlock(struct srcu_struct *ssp, int idx)
+> >  	newval = READ_ONCE(ssp->srcu_lock_nesting[idx]) - 1;
+> >  	WRITE_ONCE(ssp->srcu_lock_nesting[idx], newval);
+> >  	preempt_enable();
+> > -	if (!newval && READ_ONCE(ssp->srcu_gp_waiting) && in_task())
+> > +	if (!newval && READ_ONCE(ssp->srcu_gp_waiting) && in_task() && !irqs_disabled())
+> >  		swake_up_one(&ssp->srcu_wq);
+> >  }
+> >  EXPORT_SYMBOL_GPL(__srcu_read_unlock);
 > > 
-> >     EXP tracing: Diagnostic for __DECLARE_TRACE() use of SRCU-fast
-> >     
-> >     This patch is intended to test the theory that preemption needs to be
-> >     disabled in some portion of the tracing infrastructure extending from
-> >     the __DECLARE_TRACE() macro to the target BPF program.
-> >     
-> >     Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-> > 
-> > diff --git a/include/linux/tracepoint.h b/include/linux/tracepoint.h
-> > index a22c1ab88560b8..c422e4c5ed51ed 100644
-> > --- a/include/linux/tracepoint.h
-> > +++ b/include/linux/tracepoint.h
-> > @@ -273,7 +273,7 @@ static inline struct tracepoint *tracepoint_ptr_deref(tracepoint_ptr_t *p)
-> >  	static inline void __do_trace_##name(proto)			\
-> >  	{								\
-> >  		if (cond) {						\
-> > -			guard(srcu_fast_notrace)(&tracepoint_srcu);	\
-> > +			guard(preempt_notrace)();			\
-> >  			__DO_TRACE_CALL(name, TP_ARGS(args));		\
-> >  		}							\
-> >  	}								\
+> 
+> [2] https://lore.kernel.org/all/8f43f958-e3e6-44d5-9600-9e096c3a06b7@paulmck-laptop/
