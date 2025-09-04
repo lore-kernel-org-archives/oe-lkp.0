@@ -1,363 +1,239 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E9297DA6D
-	for <oe-lkp@lists.linux.dev>; Thu,  4 Sep 2025 05:20:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.12
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756963247; cv=fail; b=UVop//ggIP5Ex9KiSErvwHueQvtCgV8gSBWZbWCO0G/eBIp2Piy7JjXw5kalmshJ2XQxQfYWbx5km3tztuNZv6sHtZBdUKP/Tj7hRoj5qEnK7X6VsJGEcuOVgJGUOD7JUqEDVCFle05aCvuZkhNPuC+47t+G+GpAaHn0udnmDvY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756963247; c=relaxed/simple;
-	bh=RyFXP5NvuKX+wUNZHITKNL/pjGKuumCIz5jlsQ7RcU8=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=nrmH3Vuf47DnU/LNIKb4TnzNEypqfB2uc01GJv3juBEPWdV1VAypuEMP+vlEgwkPFDxNGWUJpUpIzi47oSCra6nHUPx5NudcFI21Li9Un2bCsz8c+JNWw2oIuJDWADp9uGZtm7omKJKlFW+1Myq+6KEwONfeV9dT7HIHJcyH0CE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AZigOvc7; arc=fail smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 354382C21C5
+	for <oe-lkp@lists.linux.dev>; Thu,  4 Sep 2025 11:38:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=65.109.113.108
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1756985899; cv=none; b=eNj+p7uA7pyOifykbBd3sm3xqUEMuyNf6FQ7THsorpn9EHqRicFN7KnRu7S06McmMlVThKSVKf7RIURRPxgXQZHVHxa/hY5URujRi7/IKTzar6apHg7D5Uo2PmWAOEsiR5+6ba6nlQBh3NFOpUCsbFiu4NM0MTBD/3f+6WEiu6U=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1756985899; c=relaxed/simple;
+	bh=+sdubL2sz//XgqJOH/O/8qj3o9anyK769FGMz522nfQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=fo+hUpMeX+DrnibsGeHThLZHxpDVoICgf3V3YU8x4wSid29nVqMG2m3sFJj6saGc4vaHQaihypweKl6yCv64gZoZVwAVv56wqh2wwTwlPUGKC8hoJO/7DUYPnO82QBdOjG+388/56G0X5TfWbW+edInbtkDvoA2zO9EbLshALag=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de; spf=pass smtp.mailfrom=alien8.de; dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b=adX/rMzW; arc=none smtp.client-ip=65.109.113.108
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AZigOvc7"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1756963245; x=1788499245;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=RyFXP5NvuKX+wUNZHITKNL/pjGKuumCIz5jlsQ7RcU8=;
-  b=AZigOvc7HlblpJnWGpHWGI+CbmSXraZkkiqf9Sv6gjstEpGGsykvaKKL
-   Tw3T5G8V3APgJpZh2kb/IVbMZS+1/kuCwwq//7IMfdSKecf7YvltmfB4J
-   iITdmH6StuTjk4lcs0dnSyXV5o/5Jup00NUm0AyoiUeIQ89jOIZqP6QM2
-   t5GMp98jpeGapyQMydUkHWrXfcWs35z/iZ17lqdhXdsKEq+5DoZZQ5wHs
-   bcX7kmaWpmifqdDUYRmPoMI0tVlkTYCWDbaMEgaGbvd5aSHtqrkBehmIX
-   Ovy0an2jswBue8ZV0UoMDj3/Uw64T8a00oaOYWmgc8KN+sj20V5qUZUQG
-   w==;
-X-CSE-ConnectionGUID: mpzTR+EVTuSh8aVfh/Q1oA==
-X-CSE-MsgGUID: 4zkd3fmaQr2dH6TzHD2T3g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11542"; a="63116059"
-X-IronPort-AV: E=Sophos;i="6.18,237,1751266800"; 
-   d="scan'208";a="63116059"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2025 22:20:44 -0700
-X-CSE-ConnectionGUID: 7F1lEJY/SZCrL1963bNwqg==
-X-CSE-MsgGUID: LF9Nz5eVSWCbWtdqH8K8eg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.18,237,1751266800"; 
-   d="scan'208";a="172240343"
-Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
-  by fmviesa009.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2025 22:20:44 -0700
-Received: from ORSMSX903.amr.corp.intel.com (10.22.229.25) by
- ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.17; Wed, 3 Sep 2025 22:20:43 -0700
-Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
- ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.17 via Frontend Transport; Wed, 3 Sep 2025 22:20:43 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (40.107.243.88)
- by edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.17; Wed, 3 Sep 2025 22:20:43 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=cs4UaCLsswbJod+hheGIsEEmNjId7qGFBItmuyA2m66J4oZi/yGcKKvgWXoUN0FOgVrgOSlzlBT/dzpBsPNwMfswXMpgZ+p9IJjNKgjJh7DNrUJqGSAaQarSbtBko1UCOqHxUJk45Z2P2uZO4mafXyKngYBs/+wWqqHmcdjpUzkXFZMisbKi73kXsx0/tbxzpH/QNYIsjO/5IGxT4+MrI5YdvWIhBQSFT5xC8aqoRQR5Jd6tVV9ZcL+lIpkJ6/pXQUCaTXBcUDBKGxxrMX9/8OEZmPR/gHwvhsJ7QOWfkwmygmw5WyRrb7O+ysk3bK/t2vNYmHkGVzj+u9W98j52ng==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Uf+17bEZHZMMnk6pBFwOxSU9FiHj/i3uqxxIu+deeOc=;
- b=MuSbQZPRTQVFVuEEb1/VqHi1lTBE55YyyIhKwuP5LP+X+SSDfKH1xd8+b3jamWwOsPWbbmNNoaxf/qipTHP8pTV/i8yHCT6boZ58kMuR873os2TME8kJvLad2nES4kuFeNTBQNSEHP+eX7gkregcrbj25j2TgC9M6A+Bw0x2sPG9eyEEDgSRnrX333MAWUCHuhqm4wO/16Ghxedyu0L5xuPCo97k4KX9XxhL0gKjZTgJzE43Pal/volKZyC1D5KMGfqn8dNT09BiqSOsH+BZcFthIhygn5vZnCOSgvn9LaeSdn16OejT/FGQGfQxv3nSlTUD+CG6najLWFOejZLs8w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by CO1PR11MB4818.namprd11.prod.outlook.com (2603:10b6:303:93::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9094.18; Thu, 4 Sep
- 2025 05:20:41 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.9094.016; Thu, 4 Sep 2025
- 05:20:39 +0000
-Date: Thu, 4 Sep 2025 13:20:30 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: "Liam R. Howlett" <Liam.Howlett@oracle.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Vlastimil Babka
-	<vbabka@suse.cz>, <maple-tree@lists.infradead.org>, <linux-mm@kvack.org>,
-	<linux-kernel@vger.kernel.org>, <oliver.sang@intel.com>
-Subject: [vbabka:slub-percpu-sheaves-v6r2] [maple_tree] 99848157f7:
- WARNING:possible_circular_locking_dependency_detected
-Message-ID: <202509041248.b7ece14a-lkp@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-X-ClientProxiedBy: SG2PR01CA0184.apcprd01.prod.exchangelabs.com
- (2603:1096:4:189::9) To SJ2PR11MB8587.namprd11.prod.outlook.com
- (2603:10b6:a03:568::21)
+	dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b="adX/rMzW"
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id 9683640E0174;
+	Thu,  4 Sep 2025 11:38:12 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
+Authentication-Results: mail.alien8.de (amavisd-new); dkim=pass (4096-bit key)
+	header.d=alien8.de
+Received: from mail.alien8.de ([127.0.0.1])
+	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id KtBzlzr1wuqK; Thu,  4 Sep 2025 11:38:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
+	t=1756985887; bh=UtpuqoAguIqDPPidQVQjlxR00s+Lz+8UM0zle/F2qg4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=adX/rMzW/gHPhbmQsVUhGi1o0WUDx7cZEQ8m+ZlW6PKrlIiLpGqOACTUv2gRaW3Zy
+	 XgTubeJJEIR5NxoqNlOoLRvHYgaDusYyKQN9k2G/XhDGCzjYLVpeLPHClZEs2Ck4vy
+	 DZ5e0yxF34o+tEXUXDY/6z1JWGw7iOySld9B9KIaPkAjk2aX4rXg4sPk1xG/py1ILT
+	 2FbDyjNIJUesWLfsXxl3qJxL1qvfCE13CDw3/KEY5UyByMO1Cnu+ww8+81JKlUMuwS
+	 86sUVQnrBtjuhb5W9GtreJosE+HyF3m6a0g9nrXqDVBo14XcMG1fZFE+QIf1yVNegd
+	 61r0svuJV1mycV/zIAd6v/9IwrZjbzrsrQRyJr5eawEGo48+vi33jngyL2if3LlEmq
+	 c0qC+WkuQOM9IZk3YbIdNz5w6x7Bjo9/evBr3HzWsVU1ji811UKJMUZz5xnONuAHj1
+	 k5jFokL+W5tP5oENX9dmYIL3ncrjej5MBTPzjt+Z9jA17/eDE8tpaehZBnqc6Lxjsh
+	 1469eQSw9yOUcs3lZzYndRcSyXSdBOQ/hSzNvRLxHCn5dswPwPGJ8WmDq91v2c1YK6
+	 Tb40UWITvYsdKoQ61z9NP/jb1BMp/XfJCilKFXauYPT+7y3825ICyg6Ff1nj9WQ+3f
+	 vouM+00HJ8AXAIQzvPDiU9Xc=
+Received: from zn.tnic (p5de8ed27.dip0.t-ipconnect.de [93.232.237.39])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with UTF8SMTPSA id 8C8A740E019E;
+	Thu,  4 Sep 2025 11:37:57 +0000 (UTC)
+Date: Thu, 4 Sep 2025 13:37:52 +0200
+From: Borislav Petkov <bp@alien8.de>
+To: kernel test robot <oliver.sang@intel.com>,
+	Nathan Chancellor <nathan@kernel.org>
+Cc: Borislav Petkov <bp@kernel.org>, oe-lkp@lists.linux.dev, lkp@intel.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	X86 ML <x86@kernel.org>, "Chang S. Bae" <chang.seok.bae@intel.com>,
+	Sohil Mehta <sohil.mehta@intel.com>
+Subject: Re: [PATCH -v1 1/2] x86/microcode: Add microcode= cmdline parsing
+Message-ID: <20250904113752.GDaLl6ELJRd3LZYBQl@fat_crate.local>
+References: <20250820135043.19048-2-bp@kernel.org>
+ <202509021646.bc78d9ef-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|CO1PR11MB4818:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0a71a18e-987b-4a39-dda6-08ddeb72c8c2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?g64Spw7hwo+GSOCK/eCho8z/F8BGg8Ax2HobBmIltDiqyzcS6briCqF+TM0Y?=
- =?us-ascii?Q?k1gSOEe/azUk+Z+O0BPnlQRWd83FjAZMro1V9KvLVFOLr5qOoETrx4oWuAai?=
- =?us-ascii?Q?ZP/przUv/sudl3Z8GJBPwud0i/ryt0/jfDYfGJcFMDFfoLIg1eIJ+v9olRfo?=
- =?us-ascii?Q?mOvKmlX/hs14cSZwDDvQ6+B6S3lthS8SFJXNHMtYAgemxaGHbSKtgjWSUZTp?=
- =?us-ascii?Q?GeCV3fYiEYc0HK9FR8wxoTRV50F0Dsd7B8vXE0P5IyoVv7+0PfkZbLvH9+E3?=
- =?us-ascii?Q?+3j/zMv4kZ3oLIwB7Tlr8dEUbYaJGgmfo9WKlVnZ421NntnKN+A9SbQt5bz8?=
- =?us-ascii?Q?cD7FM3+T0oaS62UuQggKOu+ChPeV2TIdmeF8xGVnnYfgzyXn5pH1UHfCR500?=
- =?us-ascii?Q?TSy8P1epdaUzm7zIdEcYKB5Wvnjs+ZMETaNjuNWk1uNiCBmtzNYoev6Cx5i1?=
- =?us-ascii?Q?qrx/9q1VxJGJT1jYeiuyffJu7qWXjVUGbzYT4VkfT920iWlJw+IBcJNxi5SQ?=
- =?us-ascii?Q?+roYKwHR+qKoKXa75FbkpEup4mW2W++Ka2HJbYM6/LP9KOHJqRZ8w2I4SbG7?=
- =?us-ascii?Q?QW+BjjSMG0Sx6B0bnblMi2x0m2egZ0rYzaq9J1SGoUpfhGQRW5/0E7MJ7y0n?=
- =?us-ascii?Q?eVGpHZVHOTf+MhSdUOmZ9olE6JUaJNCLtvPhiknOR/zgh8CyJ6oaxGp6Cvz5?=
- =?us-ascii?Q?UXS8s1Tt/T7RL8a2SO5wGsokL3zx/T+0RxbUbbSCyxWQq7NmEbBWeDA2ShqK?=
- =?us-ascii?Q?qVLrvDO5xRNxvBdRLgW42QiajiMYArxxcMuHUBd8SN+iDqTxg7cA8h5NzIGo?=
- =?us-ascii?Q?S6gdxvTlxXeAEGuiQUNcp6NFW4UowIT9gjJAM6yAb74KdPUt9m6d2gY4kmNo?=
- =?us-ascii?Q?4m04wB1ruvqoaL5VQ8F9fmCoPGo3I5UTSZDvszSyWm70gBDzd90LT8bvsFLH?=
- =?us-ascii?Q?O5fb33NJsblm8U/AuLaR09ytXeAr1jcRCv0liEd/ISFDshva9PF/mBu8rOkZ?=
- =?us-ascii?Q?fb+4mkH6L7UufBU2EfUmHp2cGKKo/pBTz9MnKnY2y1oVBWIG17S2xzXTTMNF?=
- =?us-ascii?Q?Rpu1K5dh6JX21FmgEgRHVcCc42WCPrgXCZfyXt5CIfPipmMB4eXuEyJXNhxF?=
- =?us-ascii?Q?Fgoo0XDCtN7S5MQLMEQe+nUZdl7+Bkyr1qd/frNlDS5nFOqnfBlMq1xf4kiW?=
- =?us-ascii?Q?I1qmF5TaLqJ1q4PlYQR1YZl7tcYrzcqX8r+DT0HjyLj83b3aD2F7K4yVW1Ys?=
- =?us-ascii?Q?6ff3ziNsPguSNRKZOqNQh89TZpPVuZEWMr7dLHYvt88Gh6V/A8RNCXfNRwSf?=
- =?us-ascii?Q?VADhGt345Mlqj5CVHDmn8LEgwqxlN7nzFcbB4YF7/VXmW2VhBT71FXo+OjpH?=
- =?us-ascii?Q?IFzW+0zwUL16d51cHRikxs6RUMiC?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ELx411ZdiSB9Zb30xusdmp/pX6ZO82Z6np6glFU/FJE+4E8i6zopokkztIXA?=
- =?us-ascii?Q?By5jOoNYMjfDzfHiPM2fpo/Ddo9Ev+U7t8p38j6djsizYM6Bb1IMX/KxNZeh?=
- =?us-ascii?Q?lXV6Io2cFm9Xvs0od3FCW0hQUxA7UjQ8ABD8RSqzn+cRqs4FCXAMdnQz3Rvz?=
- =?us-ascii?Q?n9XzVRs78ldmZdfcyl+0mISfas24vXMEO99bvx0iI+nXufjoQSf3tmwJIOtx?=
- =?us-ascii?Q?SHXFTIut260kyov06WrbgYckYA3Evd1eVPqpYQ56PQcahjMR8oERi2XdnjTl?=
- =?us-ascii?Q?OmYDa2SOGHTKMrieQJc73JhORBhkRBJ0r/0kjSxJyiMCY7InvHUJYGtnegL/?=
- =?us-ascii?Q?2jEPmYKebfcpqTDD5LCJt5vnCC93LovS4VQ9Sp2a+QFHafuKZMDGMeAonfjw?=
- =?us-ascii?Q?cV4Ac2u7bsQ0swx9gzSFjGQJPgScPWZbH7FmKgNwjLT6iAIgCpflp7CWjlA0?=
- =?us-ascii?Q?WiP9gC/qSKLLd9gN2F+DisrNWAzI0K249+tyEWjEFNX0dwu9VgfJH4QzrZMH?=
- =?us-ascii?Q?L0IeBH4MkfvMb5R6Fv9qBPxvKE3Q1V8eyYyJwIeNbmdFPPaAQCk80IRkx82V?=
- =?us-ascii?Q?UobjeRC+WXCBfu1H51x0R0R9CetI0xjoF+o/IPaFbGTnzk7xvRvF6BUNIEsc?=
- =?us-ascii?Q?BCtmDnpF6Z1hMb3OXM7qC6hIMKJxzokaQ9pTnQL1RSeFwjqKdePv4As89QVL?=
- =?us-ascii?Q?x15ST/zKZ0Xby7/i29Xnj1uP2cxvqEFVZXQdDczwGQB3NEOaeCq2xdZjw2iD?=
- =?us-ascii?Q?0MMhxCN9UrlgAvYDamuDZVTnyqK7yM5Y/kFd5BfU++Oqb0aiFFJRYDwr1CXG?=
- =?us-ascii?Q?3awLzhVjO/wNARAH46W58vVsn4iNNthfZO8w2IVpb3KOfcxZMfsAOxPdmQl6?=
- =?us-ascii?Q?HG2Tw6UEv9jMF2ogZ4zj9XqfuldS+hk2FR3hKCA99W/WTtndbgQy0BZ0sF28?=
- =?us-ascii?Q?QbugCS/dfO0XtrmCmfX+PxnUJIA5gvqwdMHWgZ4+7uVU23pt0UNC3cvPzRMH?=
- =?us-ascii?Q?Lk01KeieHuvNWtMiH+GnurD/qu64iQf0e/SGkNTfPZMqoXSCl2AsdV+RZLGz?=
- =?us-ascii?Q?McX527oYV2PM+3OgztWo6drf9a2afyeFM2Ne9HQABzfqXMLEPLHL7z1XIjWH?=
- =?us-ascii?Q?HXbvbJT/+cjMvCMdRFvbVlp/XLgKYV+rbyAxyunwrKEcNL/kBIjUQw9ZH7Nt?=
- =?us-ascii?Q?7y+KCx1rjmIjMQLW4pwku3GQb7TNQNLV6Og5rSpTAx5MiVQPGNzeikSTSxBT?=
- =?us-ascii?Q?oF+VLxkPa9iSTcYNjCgbHiSU80R9U3aGr62yY5H9TI8ee6XOUMC+ZeHzp4Vm?=
- =?us-ascii?Q?0PDaAaQqIgA8nTQInNxBz2uF+NbvHeSr1UfbHgZTn7gg1Zpoa1xYQ87vGciN?=
- =?us-ascii?Q?xd/ZeqEtyjGoIa4emGzxcfFalM5zKzuI41ZQlLukipKzUvbwl9C4CWpRKOPn?=
- =?us-ascii?Q?1fWSGxWfjVN/vml8VxibNI+lIJTQebPMAz4dlNXGEZQY5bLxMxBMSlY1S7os?=
- =?us-ascii?Q?zpgqC2IYCjO/Idl549kaDVqm+fGHxfLMH6ItP5hsnCV2ya+a+hVPOKi/Fv5n?=
- =?us-ascii?Q?J5hb8nUQlkPPvAMvNlVb4Eal/8VnrivWNly0WYrAwS+l66//oFgRkslO0EYq?=
- =?us-ascii?Q?vA=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0a71a18e-987b-4a39-dda6-08ddeb72c8c2
-X-MS-Exchange-CrossTenant-AuthSource: SJ2PR11MB8587.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Sep 2025 05:20:39.7112
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: RKD69uvrkm+bhsPw+Dad7tfi4RSC7ugVr6x7u2IV2q8Sp/5p9kWA+gInQ4PCorVx/yYrwglc8lMuPrEe8cWjPA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB4818
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <202509021646.bc78d9ef-lkp@intel.com>
 
++ Nathan for the clang weirdness below...
 
+On Tue, Sep 02, 2025 at 04:45:12PM +0800, kernel test robot wrote:
+> 
+> 
+> Hello,
+> 
+> 
+> this could be a noise, we didn't see the relation between the patch with the
+> issue we observed. however, we rebuild the kernels for both this commit and
+> parent 3 times.
+> (
+> our bot chose 894af4a1cde61c as the parent as below
+> * 19f370d45aceea x86/microcode: Add microcode= cmdline parsing
+> * 894af4a1cde61c (tip/x86/core, peterz-queue/x86/core) objtool: Validate kCFI calls
+> )
+> 
+> and for each rerun of both this commit and parent, we run more times, but the
+> issue is still quite persistent while parent keeps clean:
+> 
+> =========================================================================================
+> tbox_group/testcase/rootfs/kconfig/compiler/runtime/group/nr_groups:
+>   vm-snb/trinity/debian-11.1-i386-20220923.cgz/x86_64-randconfig-006-20250826/clang-20/300s/group-01/5
+> 
+> 894af4a1cde61c34 19f370d45aceea5ab4c52e3afa0
+> ---------------- ---------------------------
+>        fail:runs  %reproduction    fail:runs
+>            |             |             |
+>            :200         74%         149:200   last_state.is_incomplete_run
+>            :200         74%         147:200   last_state.running
+>            :200         75%         150:200   dmesg.CFI_failure_at_kobj_attr_show
+>            :200         75%         150:200   dmesg.Kernel_panic-not_syncing:Fatal_exception
+>            :200         75%         150:200   dmesg.Oops:invalid_opcode:#[##]KASAN
+>            :200         75%         150:200   dmesg.RIP:kobj_attr_show
+>            :200         75%         150:200   dmesg.boot_failures
+> 
+> so we just follow our report rule to still report this results FYI.
+> 
+> if it's really irrelevant, sorry maybe our env issues (though we still cannot
+> figure out for now). and if you can help us to figure out the potential problem
+> from our dmesg in below link, it will be very apprecidated!
 
-Hello,
+Yeah, I don't know what you did here but building with that .config, I can't
+even boot that kernel in a VM because doing:
 
-kernel test robot noticed "WARNING:possible_circular_locking_dependency_detected" on:
+qemu-... -kernel bzImage ...
 
-commit: 99848157f71c03ca5e975b0e686def1d66e8b19f ("maple_tree: Sheaf conversion")
-https://git.kernel.org/cgit/linux/kernel/git/vbabka/linux.git slub-percpu-sheaves-v6r2
+sends me into grub and asks me to select the default kernel.
 
-in testcase: rcuscale
-version: 
-with following parameters:
+And my qemu script boots arbitrary kernels just fine.
 
-	runtime: 300s
-	scale_type: rcu
+Also, I used clang-20 from here:
 
+https://mirrors.edge.kernel.org/pub/tools/llvm/
 
+and version 20.1.8 took something like ~10(!) minutes to link vmlinux with
+that config. Just FYI for Nathan, maybe something's weird there.
 
-config: x86_64-randconfig-075-20250831
-compiler: gcc-12
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+> below is full report.
 
-(please refer to attached dmesg/kmsg for entire log/backtrace)
+Leaving it in.
 
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202509041248.b7ece14a-lkp@intel.com
-
-
-[   17.413963][   T74] WARNING: possible circular locking dependency detected
-[   17.414491][   T74] 6.17.0-rc3-00017-g99848157f71c #1 Not tainted
-[   17.414936][   T74] ------------------------------------------------------
-[   17.415483][   T74] systemd-cryptse/74 is trying to acquire lock:
-[ 17.415965][ T74] ffffffffb02789c0 (fs_reclaim){+.+.}-{0:0}, at: prepare_alloc_pages+0xd5/0x23d 
-[   17.416782][   T74]
-[   17.416782][   T74] but task is already holding lock:
-[ 17.417298][ T74] ffff88812925dbf8 (&mapping->i_mmap_rwsem){++++}-{4:4}, at: vma_prepare (mm/vma.c:296) 
-[   17.418021][   T74]
-[   17.418021][   T74] which lock already depends on the new lock.
-[   17.418021][   T74]
-[   17.418779][   T74]
-[   17.418779][   T74] the existing dependency chain (in reverse order) is:
-[   17.419530][   T74]
-[   17.419530][   T74] -> #1 (&mapping->i_mmap_rwsem){++++}-{4:4}:
-[ 17.420152][ T74] validate_chain (kernel/locking/lockdep.c:3285 kernel/locking/lockdep.c:3908) 
-[ 17.420562][ T74] __lock_acquire (kernel/locking/lockdep.c:5237) 
-[ 17.420968][ T74] lock_acquire (kernel/locking/lockdep.c:470 kernel/locking/lockdep.c:5870) 
-[ 17.421364][ T74] down_write (kernel/locking/rwsem.c:1315 kernel/locking/rwsem.c:1326 kernel/locking/rwsem.c:1591) 
-[ 17.421735][ T74] dma_resv_lockdep (include/linux/fs.h:557 drivers/dma-buf/dma-resv.c:798) 
-[ 17.422159][ T74] do_one_initcall (init/main.c:1269) 
-[ 17.422573][ T74] do_initcalls (init/main.c:1330 init/main.c:1347) 
-[ 17.423031][ T74] kernel_init_freeable (init/main.c:1583) 
-[ 17.423481][ T74] kernel_init (init/main.c:1471) 
-[ 17.423840][ T74] ret_from_fork (arch/x86/kernel/process.c:154) 
-[ 17.424211][ T74] ret_from_fork_asm (arch/x86/entry/entry_64.S:258) 
-[   17.424612][   T74]
-[   17.424612][   T74] -> #0 (fs_reclaim){+.+.}-{0:0}:
-[ 17.425162][ T74] check_noncircular (kernel/locking/lockdep.c:2179) 
-[ 17.425561][ T74] check_prev_add (kernel/locking/lockdep.c:3166) 
-[ 17.425954][ T74] validate_chain (kernel/locking/lockdep.c:3285 kernel/locking/lockdep.c:3908) 
-[ 17.426681][ T74] __lock_acquire (kernel/locking/lockdep.c:5237) 
-[ 17.427085][ T74] lock_acquire (kernel/locking/lockdep.c:470 kernel/locking/lockdep.c:5870) 
-[ 17.427458][ T74] __fs_reclaim_acquire (mm/page_alloc.c:4235) 
-[ 17.427840][ T74] prepare_alloc_pages+0xd5/0x23d 
-[ 17.428255][ T74] __alloc_frozen_pages_noprof (mm/page_alloc.c:5137) 
-[ 17.428658][ T74] alloc_slab_page (mm/slub.c:2990) 
-[ 17.428987][ T74] allocate_slab (mm/slub.c:3155) 
-[ 17.429316][ T74] ___slab_alloc (mm/slub.c:4406 (discriminator 3)) 
-[ 17.429757][ T74] __kmem_cache_alloc_bulk (mm/slub.c:6757) 
-[ 17.430188][ T74] refill_sheaf (mm/slub.c:2571) 
-[ 17.430554][ T74] kmem_cache_return_sheaf (mm/slub.c:5174 (discriminator 1)) 
-[ 17.430998][ T74] mas_destroy (lib/maple_tree.c:5384) 
-[ 17.431366][ T74] mas_store_prealloc (lib/maple_tree.c:5292 (discriminator 4)) 
-[ 17.431789][ T74] commit_merge (mm/vma.c:767) 
-[ 17.432172][ T74] vma_expand (mm/vma.c:1158) 
-[ 17.432530][ T74] vma_merge_new_range (mm/vma.c:1095 (discriminator 1)) 
-[ 17.433237][ T74] __mmap_region (mm/vma.c:2664) 
-[ 17.433621][ T74] mmap_region (mm/vma.c:2739) 
-[ 17.433987][ T74] do_mmap (mm/mmap.c:559) 
-[ 17.434342][ T74] vm_mmap_pgoff (mm/util.c:582) 
-[ 17.434736][ T74] ksys_mmap_pgoff (mm/mmap.c:606) 
-[ 17.435128][ T74] do_int80_emulation (arch/x86/entry/syscall_32.c:83 arch/x86/entry/syscall_32.c:172) 
-[ 17.435557][ T74] asm_int80_emulation (arch/x86/include/asm/idtentry.h:626) 
-[   17.436031][   T74]
-[   17.436031][   T74] other info that might help us debug this:
-[   17.436031][   T74]
-[   17.436803][   T74]  Possible unsafe locking scenario:
-[   17.436803][   T74]
-[   17.437381][   T74]        CPU0                    CPU1
-[   17.437800][   T74]        ----                    ----
-[   17.438213][   T74]   lock(&mapping->i_mmap_rwsem);
-[   17.438614][   T74]                                lock(fs_reclaim);
-[   17.439118][   T74]                                lock(&mapping->i_mmap_rwsem);
-[   17.439737][   T74]   lock(fs_reclaim);
-[   17.440045][   T74]
-[   17.440045][   T74]  *** DEADLOCK ***
-[   17.440045][   T74]
-[   17.440668][   T74] 2 locks held by systemd-cryptse/74:
-[ 17.441085][ T74] #0: ffff88813b6a9d48 (&mm->mmap_lock){++++}-{4:4}, at: vm_mmap_pgoff (include/linux/mmap_lock.h:415 mm/util.c:578) 
-[ 17.441777][ T74] #1: ffff88812925dbf8 (&mapping->i_mmap_rwsem){++++}-{4:4}, at: vma_prepare (mm/vma.c:296) 
-[   17.442517][   T74]
-[   17.442517][   T74] stack backtrace:
-[   17.443019][   T74] CPU: 0 UID: 0 PID: 74 Comm: systemd-cryptse Not tainted 6.17.0-rc3-00017-g99848157f71c #1 PREEMPT(full)
-[   17.443875][   T74] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[   17.444619][   T74] Call Trace:
-[   17.444877][   T74]  <TASK>
-[ 17.445101][ T74] print_circular_bug (kernel/locking/lockdep.c:2046) 
-[ 17.445469][ T74] check_noncircular (kernel/locking/lockdep.c:2179) 
-[ 17.445823][ T74] ? add_chain_block (kernel/locking/lockdep.c:3442) 
-[ 17.446245][ T74] check_prev_add (kernel/locking/lockdep.c:3166) 
-[ 17.446608][ T74] validate_chain (kernel/locking/lockdep.c:3285 kernel/locking/lockdep.c:3908) 
-[ 17.446960][ T74] __lock_acquire (kernel/locking/lockdep.c:5237) 
-[ 17.447332][ T74] ? prepare_alloc_pages+0xd5/0x23d 
-[ 17.447831][ T74] lock_acquire (kernel/locking/lockdep.c:470 kernel/locking/lockdep.c:5870) 
-[ 17.448188][ T74] ? prepare_alloc_pages+0xd5/0x23d 
-[ 17.448649][ T74] ? lookup_chain_cache (kernel/locking/lockdep.c:3801 (discriminator 1)) 
-[ 17.449018][ T74] __fs_reclaim_acquire (mm/page_alloc.c:4235) 
-[ 17.449456][ T74] ? prepare_alloc_pages+0xd5/0x23d 
-[ 17.449923][ T74] prepare_alloc_pages+0xd5/0x23d 
-[ 17.450400][ T74] __alloc_frozen_pages_noprof (mm/page_alloc.c:5137) 
-[ 17.450855][ T74] ? __alloc_pages_slowpath+0xa4d/0xa4d 
-[ 17.451376][ T74] ? lock_is_held_type (kernel/locking/lockdep.c:5601 kernel/locking/lockdep.c:5940) 
-[ 17.451778][ T74] ? find_held_lock (kernel/locking/lockdep.c:5350) 
-[ 17.452142][ T74] ? mark_lock (kernel/locking/lockdep.c:4731 (discriminator 3)) 
-[ 17.452492][ T74] alloc_slab_page (mm/slub.c:2990) 
-[ 17.452912][ T74] allocate_slab (mm/slub.c:3155) 
-[ 17.453271][ T74] ___slab_alloc (mm/slub.c:4406 (discriminator 3)) 
-[ 17.453601][ T74] ? lock_acquire (kernel/locking/lockdep.c:470 kernel/locking/lockdep.c:5870) 
-[ 17.453949][ T74] ? refill_sheaf (mm/slub.c:2571) 
-[ 17.454278][ T74] ? mark_lock (kernel/locking/lockdep.c:4731 (discriminator 3)) 
-[ 17.454611][ T74] ? mark_held_locks (kernel/locking/lockdep.c:4325) 
-[ 17.454987][ T74] __kmem_cache_alloc_bulk (mm/slub.c:6757) 
-[ 17.455387][ T74] refill_sheaf (mm/slub.c:2571) 
-[ 17.455731][ T74] kmem_cache_return_sheaf (mm/slub.c:5174 (discriminator 1)) 
-[ 17.456221][ T74] mas_destroy (lib/maple_tree.c:5384) 
-[ 17.456575][ T74] mas_store_prealloc (lib/maple_tree.c:5292 (discriminator 4)) 
-[ 17.456968][ T74] ? mas_store (lib/maple_tree.c:5292) 
-[ 17.457303][ T74] ? __mas_set_range (include/linux/maple_tree.h:755 (discriminator 20)) 
-[ 17.457685][ T74] commit_merge (mm/vma.c:767) 
-[ 17.458038][ T74] ? vma_complete (mm/vma.c:731) 
-[ 17.458384][ T74] ? lock_is_held_type (kernel/locking/lockdep.c:5601 kernel/locking/lockdep.c:5940) 
-[ 17.458757][ T74] vma_expand (mm/vma.c:1158) 
-[ 17.459090][ T74] ? unmap_region (mm/vma.c:1121) 
-[ 17.459519][ T74] ? can_vma_merge_right (mm/vma.c:197 mm/vma.c:440) 
-[ 17.459890][ T74] vma_merge_new_range (mm/vma.c:1095 (discriminator 1)) 
-[ 17.460253][ T74] __mmap_region (mm/vma.c:2664) 
-[ 17.460604][ T74] ? __mmap_new_vma (mm/vma.c:2641) 
-[ 17.460977][ T74] ? inc_stack_record_count (include/linux/refcount.h:290 include/linux/refcount.h:312 mm/page_owner.c:216) 
-[ 17.461414][ T74] ? lock_is_held_type (kernel/locking/lockdep.c:5601 kernel/locking/lockdep.c:5940) 
-[ 17.461808][ T74] ? mas_prev_slot (lib/maple_tree.c:4369) 
-[ 17.462190][ T74] ? mas_prev_slot (lib/maple_tree.c:5664) 
-[ 17.462586][ T74] ? lock_is_held_type (kernel/locking/lockdep.c:5601 kernel/locking/lockdep.c:5940) 
-[ 17.463001][ T74] mmap_region (mm/vma.c:2739) 
-[ 17.463353][ T74] ? generic_file_readonly_mmap (mm/filemap.c:3852) 
-[ 17.463779][ T74] do_mmap (mm/mmap.c:559) 
-[ 17.464082][ T74] ? __get_unmapped_area (mm/mmap.c:339) 
-[ 17.464468][ T74] ? tracer_preempt_on (kernel/trace/trace_irqsoff.c:689) 
-[ 17.464878][ T74] vm_mmap_pgoff (mm/util.c:582) 
-[ 17.465244][ T74] ? randomize_page (mm/util.c:568) 
-[ 17.465615][ T74] ksys_mmap_pgoff (mm/mmap.c:606) 
-[ 17.466035][ T74] do_int80_emulation (arch/x86/entry/syscall_32.c:83 arch/x86/entry/syscall_32.c:172) 
-[ 17.466429][ T74] asm_int80_emulation (arch/x86/include/asm/idtentry.h:626) 
-[   17.466827][   T74] RIP: 0023:0xf7f95cb0
-[ 17.467133][ T74] Code: 4c 24 34 89 44 24 0c 8b 44 24 44 8b 54 24 38 8b 74 24 3c 8b 7c 24 40 a9 ff 0f 00 00 75 1c c1 e8 0c 89 c5 b8 c0 00 00 00 cd 80 <3d> 00 f0 ff ff 77 21 83 c4 1c 5b 5e 5f 5d c3 90 83 c4 1c b8 ea ff
-All code
-========
-   0:	4c 24 34             	rex.WR and $0x34,%al
-   3:	89 44 24 0c          	mov    %eax,0xc(%rsp)
-   7:	8b 44 24 44          	mov    0x44(%rsp),%eax
-   b:	8b 54 24 38          	mov    0x38(%rsp),%edx
-   f:	8b 74 24 3c          	mov    0x3c(%rsp),%esi
-  13:	8b 7c 24 40          	mov    0x40(%rsp),%edi
-  17:	a9 ff 0f 00 00       	test   $0xfff,%eax
-  1c:	75 1c                	jne    0x3a
-  1e:	c1 e8 0c             	shr    $0xc,%eax
-  21:	89 c5                	mov    %eax,%ebp
-  23:	b8 c0 00 00 00       	mov    $0xc0,%eax
-  28:	cd 80                	int    $0x80
-  2a:*	3d 00 f0 ff ff       	cmp    $0xfffff000,%eax		<-- trapping instruction
-  2f:	77 21                	ja     0x52
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20250904/202509041248.b7ece14a-lkp@intel.com
-
-
+> 
+> 
+> kernel test robot noticed "CFI_failure_at_kobj_attr_show" on:
+> 
+> commit: 19f370d45aceea5ab4c52e3afa00226fb99c3fc8 ("[PATCH -v1 1/2] x86/microcode: Add microcode= cmdline parsing")
+> url: https://github.com/intel-lab-lkp/linux/commits/Borislav-Petkov/x86-microcode-Add-microcode-cmdline-parsing/20250820-215624
+> base: https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git 894af4a1cde61c3401f237184fb770f72ff12df8
+> patch link: https://lore.kernel.org/all/20250820135043.19048-2-bp@kernel.org/
+> patch subject: [PATCH -v1 1/2] x86/microcode: Add microcode= cmdline parsing
+> 
+> in testcase: trinity
+> version: trinity-i386-abe9de86-1_20230429
+> with following parameters:
+> 
+> 	runtime: 300s
+> 	group: group-01
+> 	nr_groups: 5
+> 
+> 
+> 
+> config: x86_64-randconfig-006-20250826
+> compiler: clang-20
+> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+> 
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+> 
+> 
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202509021646.bc78d9ef-lkp@intel.com
+> 
+> 
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20250902/202509021646.bc78d9ef-lkp@intel.com
+> 
+> 
+> [  453.382281][ T7761] CFI failure at kobj_attr_show+0x59/0x80 (target: nilfs_feature_revision_show+0x0/0x30; expected type: 0x1b8aae92)
+> [  453.386793][ T7761] Oops: invalid opcode: 0000 [#1] KASAN
+> [  453.388638][ T7761] CPU: 0 UID: 65534 PID: 7761 Comm: trinity-c2 Not tainted 6.17.0-rc2-00017-g19f370d45ace #1 NONE 
+> [  453.391831][ T7761] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> [  453.395231][ T7761] RIP: 0010:kobj_attr_show+0x59/0x80
+> [  453.397175][ T7761] Code: 08 00 74 08 4c 89 e7 e8 75 90 d2 fb 4d 8b 1c 24 4d 85 db 74 1f 4c 89 ff 4c 89 f6 48 89 da 41 ba 6e 51 75 e4 45 03 53 f1 74 02 <0f> 0b 2e e8 ef d7 08 00 eb 07 48 c7 c0 fb ff ff ff 5b 41 5c 41 5e
+> [  453.403170][ T7761] RSP: 0018:ffffc90002b57a48 EFLAGS: 00010287
+> [  453.405399][ T7761] RAX: 1ffffffff11d2fe9 RBX: ffff8881255ce000 RCX: dffffc0000000000
+> [  453.408012][ T7761] RDX: ffff8881255ce000 RSI: ffffffff88e97f20 RDI: ffff888106a5e250
+> [  453.410593][ T7761] RBP: ffffc90002b57a68 R08: ffff8881255cefff R09: 0000000000000000
+> [  453.413717][ T7761] R10: 0000000082bfb03f R11: ffffffff82621360 R12: ffffffff88e97f48
+> [  453.416820][ T7761] R13: 1ffff110295a3e80 R14: ffffffff88e97f20 R15: ffff888106a5e250
+> [  453.419944][ T7761] FS:  0000000000000000(0000) GS:0000000000000000(0063) knlGS:00000000f7ed7280
+> [  453.422938][ T7761] CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
+> [  453.425060][ T7761] CR2: 00000000f7795414 CR3: 000000015b1cc000 CR4: 00000000000406b0
+> [  453.427781][ T7761] Call Trace:
+> [  453.429070][ T7761]  <TASK>
+> [  453.430222][ T7761]  sysfs_kf_seq_show+0x2a9/0x390
+> [  453.431885][ T7761]  ? __cfi_kobj_attr_show+0x10/0x10
+> [  453.433693][ T7761]  kernfs_seq_show+0x107/0x15b
+> [  453.435360][ T7761]  seq_read_iter+0x55d/0xdeb
+> [  453.436971][ T7761]  ? kernfs_fop_read_iter+0x14c/0x4a0
+> [  453.438770][ T7761]  kernfs_fop_read_iter+0x14c/0x4a0
+> [  453.440385][ T7761]  ? __import_iovec+0x31b/0x3db
+> [  453.441900][ T7761]  do_iter_readv_writev+0x3de/0x590
+> [  453.443609][ T7761]  vfs_readv+0x15d/0x3f5
+> [  453.445305][ T7761]  ? trace_sys_enter+0x54/0xe5
+> [  453.447044][ T7761]  do_readv+0xde/0x190
+> [  453.448551][ T7761]  __ia32_sys_readv+0x80/0x90
+> [  453.450192][ T7761]  ia32_sys_call+0x2dbd/0x2efb
+> [  453.451877][ T7761]  __do_fast_syscall_32+0xaa/0x2a5
+> [  453.453640][ T7761]  do_fast_syscall_32+0x36/0x8b
+> [  453.455342][ T7761]  do_SYSENTER_32+0x1f/0x3b
+> [  453.456962][ T7761]  entry_SYSENTER_compat_after_hwframe+0x78/0x82
+> [  453.459058][ T7761] RIP: 0023:0xf7ede539
+> [  453.460559][ T7761] Code: 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 cc 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90
+> [  453.466394][ T7761] RSP: 002b:00000000ffa4237c EFLAGS: 00000292 ORIG_RAX: 0000000000000091
+> [  453.469176][ T7761] RAX: ffffffffffffffda RBX: 00000000000000f5 RCX: 00000000571a6370
+> [  453.471897][ T7761] RDX: 00000000000000af RSI: 0000000000000013 RDI: 0000000000000002
+> [  453.474598][ T7761] RBP: 00000000201a2903 R08: 0000000000000000 R09: 0000000000000000
+> [  453.477296][ T7761] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> [  453.479969][ T7761] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+> [  453.482612][ T7761]  </TASK>
+> [  453.483846][ T7761] Modules linked in:
+> [  453.485501][ T7761] ---[ end trace 0000000000000000 ]---
+> [  453.487396][ T7761] RIP: 0010:kobj_attr_show+0x59/0x80
+> [  453.489298][ T7761] Code: 08 00 74 08 4c 89 e7 e8 75 90 d2 fb 4d 8b 1c 24 4d 85 db 74 1f 4c 89 ff 4c 89 f6 48 89 da 41 ba 6e 51 75 e4 45 03 53 f1 74 02 <0f> 0b 2e e8 ef d7 08 00 eb 07 48 c7 c0 fb ff ff ff 5b 41 5c 41 5e
+> [  453.495522][ T7761] RSP: 0018:ffffc90002b57a48 EFLAGS: 00010287
+> [  453.497663][ T7761] RAX: 1ffffffff11d2fe9 RBX: ffff8881255ce000 RCX: dffffc0000000000
+> [  453.500363][ T7761] RDX: ffff8881255ce000 RSI: ffffffff88e97f20 RDI: ffff888106a5e250
+> [  453.503133][ T7761] RBP: ffffc90002b57a68 R08: ffff8881255cefff R09: 0000000000000000
+> [  453.505897][ T7761] R10: 0000000082bfb03f R11: ffffffff82621360 R12: ffffffff88e97f48
+> [  453.508738][ T7761] R13: 1ffff110295a3e80 R14: ffffffff88e97f20 R15: ffff888106a5e250
+> [  453.511482][ T7761] FS:  0000000000000000(0000) GS:0000000000000000(0063) knlGS:00000000f7ed7280
+> [  453.514551][ T7761] CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
+> [  453.516790][ T7761] CR2: 00000000f7795414 CR3: 000000015b1cc000 CR4: 00000000000406b0
+> [  453.519505][ T7761] Kernel panic - not syncing: Fatal exception
+> [  453.521564][ T7761] Kernel Offset: disabled
+> 
+> 
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+> 
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
