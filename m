@@ -1,88 +1,83 @@
-Received: from relay.hostedemail.com (smtprelay0013.hostedemail.com [216.40.44.13])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4145315D2E
-	for <oe-lkp@lists.linux.dev>; Fri,  5 Sep 2025 19:02:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=216.40.44.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE75E1FF1AD;
+	Fri,  5 Sep 2025 19:27:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757098964; cv=none; b=JcoESwXwR/ip+/IIqDqgEsLT/BQqNV3mnjmQ+xfHqaWkyFxfrkTiI0KZYMs6xGoNivMGNnghvZBu/lPR6O+gZgfnCjVh+pZeIt+uIVz2xyuluPKMJjvwLNCXJzRnRX5rzzJDSo8Fkftz23r5n9lresVZCVUEJQMxtJ9L2Jrbx3U=
+	t=1757100448; cv=none; b=hQbllRvGCbmqDFIT9YSIuDLcFaUGeOFO7lRIPGgcPlFh/lDTyf149CWOukBUSZI+StNVuDPnCj81xLoy94pcfWw4GxOKhkdQ//IQ1kho7Mc9Twx1Y/6hnijy5/TVeYQhxe/trArSed2h/jJZiy7ajq/rt2dXPBTQxI9pqPhaQdQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757098964; c=relaxed/simple;
-	bh=inn+LM1euTlBUCjjKcekCXu5MqBHIYo0AF8nd+FvxYo=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=JQEzgeokZkqkA7oTFQSr7mKgxjeB/0G7KkuGKGQ5R63F2lh1uxM4Z+XadWQLnXu0MbZPuLTrKoMcw8O2ZmYjyMWTY2s7W4FEajglW1/tKLs3oLjYIIUiJc+U7ml34FE6cj8fAWXJW2MfF5DGrrN9pl5jOsXu3HqLysYF3GO+8eY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=goodmis.org; spf=pass smtp.mailfrom=goodmis.org; arc=none smtp.client-ip=216.40.44.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=goodmis.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goodmis.org
-Received: from omf14.hostedemail.com (a10.router.float.18 [10.200.18.1])
-	by unirelay09.hostedemail.com (Postfix) with ESMTP id A030F8553A;
-	Fri,  5 Sep 2025 19:02:35 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: rostedt@goodmis.org) by omf14.hostedemail.com (Postfix) with ESMTPA id 690EC2F;
-	Fri,  5 Sep 2025 19:02:33 +0000 (UTC)
-Date: Fri, 5 Sep 2025 15:03:12 -0400
-From: Steven Rostedt <rostedt@goodmis.org>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: Pu Lehui <pulehui@huaweicloud.com>, <oe-lkp@lists.linux.dev>,
- <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
- <linux-trace-kernel@vger.kernel.org>, <mhiramat@kernel.org>,
- <mathieu.desnoyers@efficios.com>, <pulehui@huawei.com>
-Subject: Re: [PATCH] tracing: Fix missing errno when zero parser->idx in
- trace_pid_write
-Message-ID: <20250905150312.02bef848@gandalf.local.home>
-In-Reply-To: <202509022339.ae20a8bb-lkp@intel.com>
-References: <20250821071721.3609109-1-pulehui@huaweicloud.com>
-	<202509022339.ae20a8bb-lkp@intel.com>
-X-Mailer: Claws Mail 3.20.0git84 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	s=arc-20240116; t=1757100448; c=relaxed/simple;
+	bh=Vtr83F2L6kKubPifGwcdN/hY3XxdzmzMzf8d1wZU58o=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KLhPzPaQFazmYsPNgEh6OC+rr8yog4iVhBSfRSR09jstYCDrpfI/aVgb1uCWEZZ6BdUhYyCucufHRURfZ9JxgE5ycL9HJixSeqCZU2WUnaKly81TnaL08cfbHppfEGHCyh0VhPW+t3qmh8qcgc+P5qzIktonstbqaJE+q2KLqx8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZwWHb8IJ; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZwWHb8IJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C21B2C4CEF1;
+	Fri,  5 Sep 2025 19:27:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1757100447;
+	bh=Vtr83F2L6kKubPifGwcdN/hY3XxdzmzMzf8d1wZU58o=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=ZwWHb8IJZJsXVV3zatK6netRu0wiIctVFVsH8k4ObZq2VtuCsIt7nhW45lpCzXNee
+	 LPEx+VnosYbgUsaG3r2NMErJVcitSZP/ao1WJ1Fa0SfRLcbzIfeX9a2aKFlaxH+RFD
+	 WCgCLoJuXoiJrcgthgOTVoFqe3jIg9Rqyrhe+DC2uJOMkxZr90BOUD9CWnvto39uDU
+	 6g1iW9y7RgzWjptEASkzcdxrmsMRgBo1Zc5P3rwCKd8AJaA7Y/fJS+xoqOdgjYxrjC
+	 wPtzuBhLRvQCXAtORPkArOUjtWnepb+M6VdcvXEYMAaV10/wqm/0/6cpb/S0vl/NPp
+	 KClUeCDRJNmqA==
+Date: Fri, 5 Sep 2025 12:27:22 -0700
+From: Nathan Chancellor <nathan@kernel.org>
+To: Ryusuke Konishi <konishi.ryusuke@gmail.com>
+Cc: Borislav Petkov <bp@alien8.de>,
+	kernel test robot <oliver.sang@intel.com>,
+	Borislav Petkov <bp@kernel.org>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, X86 ML <x86@kernel.org>,
+	"Chang S. Bae" <chang.seok.bae@intel.com>,
+	Sohil Mehta <sohil.mehta@intel.com>, linux-nilfs@vger.kernel.org
+Subject: Re: [PATCH -v1 1/2] x86/microcode: Add microcode= cmdline parsing
+Message-ID: <20250905192722.GA1274334@ax162>
+References: <20250820135043.19048-2-bp@kernel.org>
+ <202509021646.bc78d9ef-lkp@intel.com>
+ <20250904113752.GDaLl6ELJRd3LZYBQl@fat_crate.local>
+ <20250904232952.GA875818@ax162>
+ <CAKFNMo=QxweJwTxf-ubYfmBVYBpNEennGLFLRxqhB+evre7zhw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Stat-Signature: fp7b85k5qcpq4anpcjpxr8my7o551qc7
-X-Rspamd-Server: rspamout08
-X-Rspamd-Queue-Id: 690EC2F
-X-Session-Marker: 726F737465647440676F6F646D69732E6F7267
-X-Session-ID: U2FsdGVkX1+O28D3CNqDpVKcdSNR8RFv6cBn/u7Rbjk=
-X-HE-Tag: 1757098953-92415
-X-HE-Meta: U2FsdGVkX183QeJHiEM8HOrVIQzGnHSyEwnApWpx4UiXzv9MFLN1geT7TGmmCv8TWDJozbM4I60QTGANccZW7Iky4w/Ek4+sVjC/w0bS35eNKaK17IXCQGmdSg3HeGaiuf3IWfGl8uM3Ki4J8QmLCArFJFDekIpmFSJDxb1+o938xrIhKKF8L+yWyRORyz+GJaBo63TrH3qYU7INRjkDcJLGZhbTmm/k0LAmQKAl10QP+6Fip5yaT6dykyg41wiscKZG56WbqQYeVgKMYmUT8DMATENWe16FUo/rdOmukj5lOUm8TCR7+PU2PNIRpbk8Kd5Bju8l5PWKqvYF5JqK3iNHpRT8AC9StybsWln+ZC5e7gUCkAYIwlk1kab0ioprZ9lSIWuWJ/kiBbXBheXFnByG3Xff94B0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKFNMo=QxweJwTxf-ubYfmBVYBpNEennGLFLRxqhB+evre7zhw@mail.gmail.com>
 
-On Tue, 2 Sep 2025 23:09:53 +0800
-kernel test robot <oliver.sang@intel.com> wrote:
-
-> commit: cebdd2c9a622becc41349f32ace1795d750beda8 ("[PATCH] tracing: Fix missing errno when zero parser->idx in trace_pid_write")
-> url: https://github.com/intel-lab-lkp/linux/commits/Pu-Lehui/tracing-Fix-missing-errno-when-zero-parser-idx-in-trace_pid_write/20250821-151736
-> base: https://git.kernel.org/cgit/linux/kernel/git/trace/linux-trace for-next
-> patch link: https://lore.kernel.org/all/20250821071721.3609109-1-pulehui@huaweicloud.com/
-> patch subject: [PATCH] tracing: Fix missing errno when zero parser->idx in trace_pid_write
+On Fri, Sep 05, 2025 at 10:17:26PM +0900, Ryusuke Konishi wrote:
+> Thank you very much, Nathan, for sharing your detailed report and
+> proposing a fix.
 > 
-> in testcase: perf-sanity-tests
-> version: 
-> with following parameters:
+> I actually performed a reproduction test in an environment with
+> CONFIG_LTO_CLANG_THIN=y and confirmed that the CFI panic reoccurs, and
+> that your patch fixes it.
 > 
-> 	perf_compiler: gcc
-> 	group: group-01
+> I also followed your analysis of sysfs and concluded that it is
+> correct and that your changes to the two
+> nilfs_feature_{revision,README}_show() functions are necessary. I'll
+> check whether these were necessary from the beginning or whether they
+> became necessary later.
+> 
+> I'd like to send your proposed fixes upstream, but could you please
+> send it to me and linux-nilfs in the form of a proper patch? (I'll
+> need at least your SoB line).
 
-This is why I hate LKP. It's huge, complex, and I never can get it working.
+Thanks for taking a look and confirming :) I have sent a patch with a
+proper changelog along for you to take a look at.
 
-I did the following:
+https://lore.kernel.org/20250905-nilfs2-fix-features-cfi-violation-v1-1-b5d35136d813@kernel.org/
 
- # lkp split-job jobs/perf-sanity-tests.yaml
- # lkp install -f ./perf-sanity-tests-defaults.yaml
+From what I can tell, this has always been wrong, hence that Fixes tag
+but if you disagree, feel free to update it!
 
-[ had to fix python up a little because it wanted python3.9 where I had 3.13 ]
-
- # lkp run ./perf-sanity-tests-defaults.yaml
-/work/git/lkp-tests.git/programs/perf-sanity-tests/run: 7: .: cannot open /work/git/lkp-tests.git/lib/tests/perf_test.sh: No such file
-kill 37975 vmstat --timestamp -n 10 
-kill 37973 dmesg --follow --decode 
-wait for background processes: 37978 meminfo
-
-
-I have no idea where this "perf_test.sh" is supposed to come from, and why
-it doesn't exist :-p
-
-
--- Steve
+Cheers,
+Nathan
