@@ -1,366 +1,288 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F7932F6572;
-	Thu,  4 Sep 2025 23:29:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757028598; cv=none; b=gxmUCnKb9xnESPJHtqL3Fxupe2vHkrHlCwwEBLth4+VrSA03hUBrC/SeMx7tBzXie8MmwexgMFpiJbZglx27OsDds/HXhcefGvooi7ziRii/49ocnEfl4Eg/G78NDxkRVYgAeVo037l5k6fDYxwyajbduRqI45DWVFYF4SooF/4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757028598; c=relaxed/simple;
-	bh=ndLknwe5xfqy6CNX1AX+c1fpxu8gTtl1MGnMPCXlSJQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UpkIFhMbwc9caSjTq3oKsxSrUbJG0sd2qypljnq63iB/uZVFIeD78+frraMmyzD+bg2eCtwOktZ6r0A1tCYlfjE1AzZMbyuBz8Na8doZl5OzwSsDmCDszwyV9qLk1kRlAWn/Z9MNxvKZo+fKk6ZlPPDQh3ZL9IiGScfIi0EVE7M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MyPB7c2g; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA2EA1F5842
+	for <oe-lkp@lists.linux.dev>; Fri,  5 Sep 2025 02:49:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.20
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1757040595; cv=fail; b=d9+ZCKaYtNwkTIFPcIITfxCn3KHYmhsHd2DxkvfiohZ5Revp6qH7oTrhH9Jdw08DuLAITOHYw5L5oS94qexfeg/ZTyjzWOOgij5UZEUWIRO+FWyPiQ3cZcIVEqUJLndEDBeq+6ZqYQSGHTZxXeM6oG4L1dYV+umli6Gf+q6XTn4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1757040595; c=relaxed/simple;
+	bh=xBaGUKf+Ifee9B8jc0/ROKy9XJJWpyxTJ31RjBomjGQ=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:MIME-Version; b=OVKu+qoQQwf04utbS2zZeqj9drmEm36AwCDluzTHA7r/2BJD8bGXW1PzkUIp7xdrQB2GVH/JutdC5g+j+gGGPPt41EGURhiFw2jKobmrLjNPDLmytDgN/1MZyueVro1+NduhCFdH2DL+f0nIdVOJppGD8kxjCoJYiudsWPOZbdI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eyfXy2y1; arc=fail smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MyPB7c2g"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58A40C4CEF0;
-	Thu,  4 Sep 2025 23:29:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1757028598;
-	bh=ndLknwe5xfqy6CNX1AX+c1fpxu8gTtl1MGnMPCXlSJQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=MyPB7c2gxpp7+LIyEAU++uoWfgf4M+akKI5eL7opmyOX+CRcXPDLkyIYxd897Wn7h
-	 klQzf+nQ27zjURskordTIIlCvt3KxXLby9lQ5RkwSNVK25n7L7AWeMzP75N7Fm3slU
-	 W+t9FXkn/ATB73slc4lPVNjXydJ0ATULMk0SifkmtkSN9HP8ZLr6bqGKWV/sMgK8ly
-	 CIV6POA5V/VK6VOa1seTqZHpNkBy/GAN10RyCCEMxa0rNnYdOnfH3BDGxvZpLy5oe8
-	 RDlDYVM0s3wgMxeCR2NHTSkvlFUCrDbUC1n+G17xc7VNzeMg+Q75xn1N49lMiOn2kY
-	 PnaL4+1faOy4g==
-Date: Thu, 4 Sep 2025 16:29:52 -0700
-From: Nathan Chancellor <nathan@kernel.org>
-To: Borislav Petkov <bp@alien8.de>
-Cc: kernel test robot <oliver.sang@intel.com>,
-	Borislav Petkov <bp@kernel.org>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, X86 ML <x86@kernel.org>,
-	"Chang S. Bae" <chang.seok.bae@intel.com>,
-	Sohil Mehta <sohil.mehta@intel.com>,
-	Ryusuke Konishi <konishi.ryusuke@gmail.com>,
-	linux-nilfs@vger.kernel.org
-Subject: Re: [PATCH -v1 1/2] x86/microcode: Add microcode= cmdline parsing
-Message-ID: <20250904232952.GA875818@ax162>
-References: <20250820135043.19048-2-bp@kernel.org>
- <202509021646.bc78d9ef-lkp@intel.com>
- <20250904113752.GDaLl6ELJRd3LZYBQl@fat_crate.local>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eyfXy2y1"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1757040592; x=1788576592;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=xBaGUKf+Ifee9B8jc0/ROKy9XJJWpyxTJ31RjBomjGQ=;
+  b=eyfXy2y14KfuTskDuqU3O2iqOb19hYT74IqGj09MBLY776IaWiUVaGYv
+   jrET8L9ERGpX5eaEuxO4zFmDMwpN6NlgHEkeDrtUtZbVeX5SLnxcvln2X
+   KUK4pHiLIhPiJ9M4lfX7KmTf+Th3Uhvu5E+a56PASH9CarTHgvgrZ1zsZ
+   mX7ycIijmbezZjv045G0Pp2sjp+3JUl7wTyFMhFYPZUZ1OiK+iYQO/t6k
+   +WK18dqEM/oMfljUmjT3vP61z0l+4QJtDY+KDhDmNwU52QZBNLVpSWp3P
+   nD+eoMuPReoCxWz66SNwEsAkcajasZGk83x/3jqTUmTNuh27WkNt7PUx4
+   w==;
+X-CSE-ConnectionGUID: 4Jf5rxiMS9ePwnaDvSBviQ==
+X-CSE-MsgGUID: 6w3Y5a8rT+C1x5Vu7vjnJA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11543"; a="59090708"
+X-IronPort-AV: E=Sophos;i="6.18,240,1751266800"; 
+   d="scan'208";a="59090708"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2025 19:49:51 -0700
+X-CSE-ConnectionGUID: 8fjS45tOR5KGBPaJgVm2wg==
+X-CSE-MsgGUID: 1AtWNo+ETJGLQRMLEOpgsg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.18,240,1751266800"; 
+   d="scan'208";a="171629303"
+Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
+  by fmviesa007.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2025 19:49:49 -0700
+Received: from ORSMSX903.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.17; Thu, 4 Sep 2025 19:49:48 -0700
+Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.17 via Frontend Transport; Thu, 4 Sep 2025 19:49:48 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (40.107.92.47) by
+ edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.17; Thu, 4 Sep 2025 19:49:47 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=qN5seRgRakWtIuX/6/0oVzgXBRMvdeaVCtiSuAOXR0ojI6PsBeULQNFQeXa3pcOT/qvx/mqjADCJzX/cVrj8lS2DEzR3dOqiSS66VR/L0E3ZUvvO65GQoklGQX9SpvwFckSWbQq4YmlOMwfbhtyJH9kZFL3/axg92swU3QUrs7ZcoM9crZsniDdMm2vNEPxO0YbnF3RPp6Jen5YyVaVXY5G3NRlr3ylPFS6nqZRctt84DTHEDoX89Hx1QdtzOqysozimFWIbds6dCE+shHV4lzOViU2wv+nWTIQ+mSdTPpkAOaSCrMPhMCId9pEBcYr9kV2wx3l7nGsGhVdlM9jT+Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CqM0Txc6BipwPNAD7WOvrOtj7v9rubxHtqJqa9plSnI=;
+ b=P3UXfJbdjx83y3pDCaTKf1VpaQa9ukz9cou0E7YLhjJbOOvR+mXVJR8xetXv1oeDdWZ4DRqPf+toRuRipd/4D64BJ3wreBueycilkBYe6Q5SHn6VJSPGh7NOgcoypsEiZ6MbVfBLxjxf14lR7WQvL1B2R8CGo/xFZ9mLIBD9Zx7npoStI62GQhpkxWAcCp4zkgl0ATa2GDno2m6o+Ia/EKi6y0GBqmLSJ5zjCTQzh3PL9h7T7nx7Zb5+hpTk4zGYyFmeEr0Oyj7kXp+JLJBQAm1w7N/OUXglZj6guYiojSnpOvFMzjUw6MIp24CEJdXmMDU0LMrj3u4dqEuqqBhYHw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by MW3PR11MB4699.namprd11.prod.outlook.com (2603:10b6:303:54::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9094.19; Fri, 5 Sep
+ 2025 02:49:45 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.9094.016; Fri, 5 Sep 2025
+ 02:49:45 +0000
+Date: Fri, 5 Sep 2025 10:49:35 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>, Crystal Wood <crwood@redhat.com>,
+	Wander Lairson Costa <wander@redhat.com>, Valentin Schneider
+	<vschneid@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	<aubrey.li@linux.intel.com>, <yu.c.chen@intel.com>, <oliver.sang@intel.com>
+Subject: [linus:master] [sched]  8671bad873:
+ INFO:task_blocked_for_more_than#seconds
+Message-ID: <202509051010.e06823ab-lkp@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+X-ClientProxiedBy: SI2PR04CA0006.apcprd04.prod.outlook.com
+ (2603:1096:4:197::13) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250904113752.GDaLl6ELJRd3LZYBQl@fat_crate.local>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|MW3PR11MB4699:EE_
+X-MS-Office365-Filtering-Correlation-Id: cc1bb589-362b-4a67-1aeb-08ddec26df19
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?HurEiJjSwagZrH893Pll9QWsxsBCdj2VpBabSm/xzl5ll2cvCYHsrVPhdHA9?=
+ =?us-ascii?Q?7fkuhLmOSmlWBEWRhrN2ebVnga97Ah75OMAc9Om9rGS46cEUrPUZHWm9gkBw?=
+ =?us-ascii?Q?RasfClOtA/rEa6e/1btfA9IOHqTLWPrNe7hwYXfHcyIkPLFf9eXN9OJ3Ij4b?=
+ =?us-ascii?Q?usUKpodvO1tXhgkJAWiOM171M5u1aIP9j5mL7356JdLjL7+D3Uqa/HB2ugv+?=
+ =?us-ascii?Q?3z3w3Pyio9cciSGLuzqi/DWBjEO08ehiWdFWHsBqjvqzolB22IfffiDCmLhZ?=
+ =?us-ascii?Q?x88XBcPEmu0vQEcQ9QZz+4El4qwpk7tB5K41sUIYn5AptaMnibBKdV+cdR8Y?=
+ =?us-ascii?Q?S6yIenfgbzHG+372g5nq7MX/k7fjP2KPg/qB5e+L8zyT3SzSdnu8wedM+/lh?=
+ =?us-ascii?Q?DdlWGnXtDdj4GJTb3LIDlRATT1phD+MLYbhnmB8V8YT2Iofxjg2IzryKw7ZL?=
+ =?us-ascii?Q?rQe8EPwjV5sz5WPQW2U+7al+1ku2lalxMe1gI1RSweoL+us27U/skVKCXerh?=
+ =?us-ascii?Q?uaOAzl6DOTC1EE5J7M22NxlvDKrevdDAFKsRnHnkOTxoiwkWXXj5Bfyv83bD?=
+ =?us-ascii?Q?n+Cy5H+xF125BkDOfo4WGyOIatUZ0z7a/9d2j6N/n+c1TY/6gWuc6r1NSulO?=
+ =?us-ascii?Q?6MePIDqEmhCzTMkl/GzoyimEDAiCBdwjpVUTKKBZ8VzwGTSENSHlRnq+D60o?=
+ =?us-ascii?Q?gFhPv/w4F9XBmX8hTn7FvRDnxfYgeaKUAUyNdgeb709AtFY06LPPLDNsAN2t?=
+ =?us-ascii?Q?lIvLW9cLrASbJgb6GCdWeLfYCHskFZZw6ghARDs8JPqKG0E79E9wS52l0BMa?=
+ =?us-ascii?Q?85vOngITTzhAs5tzmrv1VSCE5oYvZaWcvdWrZdIEqlahke4HPeg25oeUzweJ?=
+ =?us-ascii?Q?JzDDoBj7P8SQiMfse+9anLHjTzIhfttUTkny73Zf6+/ScglaDbslhBmLr/3B?=
+ =?us-ascii?Q?fI3HSy5myfDLEw0UVQ1/LF5Z6TGUdlVLk7gCFmSS6wD7yrAl2t9Y8uAAduy1?=
+ =?us-ascii?Q?c8jN0s+vXpM2v8M1lKvLEe8tDTxRyUbOAY6sV/IbS5/5JBCja6vJfjU7pDkA?=
+ =?us-ascii?Q?Z5uQnGNzVMFJ5SBbckGPvfGoI1SJyRk2TXUPiyHOfobKJhOVMTxUVfyr8WfD?=
+ =?us-ascii?Q?vUT+PeoRQNbrfhOFnAuwzXAq3F8kVhARbF7e8GKkwZDnXu6049Nfc6ZDR9hZ?=
+ =?us-ascii?Q?SjsdRfwlsVH4UnYkWUAvjX+jCQhcKD6/c6Sb9TOHinokMrukb5pZJovXczii?=
+ =?us-ascii?Q?0Y9oNo/okJXfIdk5tnEtTQH799ZphoIBrJ8baYs3b13+wBpL3jDya7D6Ivlq?=
+ =?us-ascii?Q?MhU/N/z5DoTaIG25V1cUhNZC3DwKqH2dmt54uoeKv+v8Ax6Cc7vVblUzT1+Z?=
+ =?us-ascii?Q?jzyTtqMCFQFG9rAMIElKtjg4achA?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hVMzHMev2F+3Fk5yoQjbm1vf0lihODAgVaSIh65MYsGkfbmvEuEzlcsZAMS9?=
+ =?us-ascii?Q?ECxZrL4rdM2gWexsNW675/E8ctCD+ZeeOGA45g7PauusmkJ9JXOIZVhvVcuY?=
+ =?us-ascii?Q?Mr3NM1bb/anpLtOoD1/Fy/enBRbf+gBVjXIXfMswNQguGYKjf3R8+49bVvPT?=
+ =?us-ascii?Q?FsG0NEl8Q6WmRuX3KRoBxVl44FaC1T/mPRRhgujyv9DHxDzoHuSkJ3thcH3Y?=
+ =?us-ascii?Q?DQU5NnKl+Hf6AD0kA45nTSwRv9WqGzR1pFOdjcBhPYLrcvSbCtaScQs/Tu7o?=
+ =?us-ascii?Q?/0xjRn8j/gnRtRro9RZJ/vLtBaYIc+LPDfcyNklAxoin7vE8RUd4G6ZjWVXR?=
+ =?us-ascii?Q?jeu5Qj2W6BCH2E/5Si8lJbPMVoMbKKUMlhCPgHT0o7odx0UxzDxMlogGlspR?=
+ =?us-ascii?Q?nZdNQyWrnwYXDHnprdi4yrQRIk5dmizFvxCe2BZYgnd8x7TLDm1iKyY34ECk?=
+ =?us-ascii?Q?Azcr8/jEKr2x/HVwPnLOpwXS/ZhQE7FIBVaCAF7zNFDQq3pxsTnJ8umLEugF?=
+ =?us-ascii?Q?9L6vUzQbM7ZgizIQwVTXHQfrhZ5gpV0iFKFJDQ916IvLfqkfwGG6zzSRef48?=
+ =?us-ascii?Q?nWojMqyWOm+n8lOo1s6LlluTTHr+aZphzORB6snVfyqQV5KeXJIyaD+gkzHU?=
+ =?us-ascii?Q?4GUFjTRCevc8eCGsgBiuK2n2iGN3L+67mKkRx0nczXM1V1qETFDinMJgz9qE?=
+ =?us-ascii?Q?nLHnUmbA4xoK/lrXFp1WX+McJVJKmWC2z3wEyu++/7/tn49Ih66K5k3+MjbN?=
+ =?us-ascii?Q?BUzweUjQzmdTMKTU/g2lLNNeTXX7khD3k5UhXZRkgOQ1/OBajWyrNHRmhhlJ?=
+ =?us-ascii?Q?mCM+eGFrmHMATqUvTCPXJcMo3OjzRMm6by+v1yTCf9qSttieYwPyoDkpDZU4?=
+ =?us-ascii?Q?Up71i0IMQIZG1rpYfJOATUpsYJxvhmbvQV6jhpt8ZlfqnAOPMi84uDRijPFN?=
+ =?us-ascii?Q?IQN9g1pzXPMmqQ9dzIb0pRI5kZJcC3ZBTGPF40IS2qLqyjIlJjgyJ67Sy5rl?=
+ =?us-ascii?Q?i9zaLx9etOWOUMZkEzwkjKfrTbaCEczYQK6d7P3dCaHrhlFMwOFNaAUVI41v?=
+ =?us-ascii?Q?xgo9bdIQ4OU5z84S7Ky0Scr1qGAUxyuq9YlbtdiE4EDKZXLzBuWg2Zf23/oh?=
+ =?us-ascii?Q?fsXvSLcWxCYsy0faoTRtu2CERs9w16NeWgEqGm9iFmBos1/zlLD3Hc8uDvb+?=
+ =?us-ascii?Q?e9U8mntqTsXHjgefmrrD+EHcBGPoEub3fgO5LsvsxshHw4ImNoIyxYxqdc6e?=
+ =?us-ascii?Q?246fCLNxDLTzgMG5h4er237Re4Esm1gVhzhxMU8899Q+eEvVc7VpI7bSL+cI?=
+ =?us-ascii?Q?DrRTKNgDWR1Q25VWAH/GYeEyhCUsvuvd4naTnLP5fz4eeHjcBX71JNT4gDWu?=
+ =?us-ascii?Q?kMwc90q3yKuliKfzwEcX0KEc213VcJA34NWJraosCH7VrnxSnXm2lCi+CcTf?=
+ =?us-ascii?Q?69nDWwrW8uiJtJR0MR80trSJwmMfVAseLyI7uZgOLd85ugUhOqBk9QnYkpbh?=
+ =?us-ascii?Q?u1GSbXhvgtT9vy9ZQa5o4qdP6aCREt0s8XvZ8n5PX57tEc7ERLElX1nl+Pmd?=
+ =?us-ascii?Q?qIdnx6N84Bpjmi3C6afLmuhq0/53idZrJ1lMR67JzJ6LNPaSZoiI2y6k8+Jc?=
+ =?us-ascii?Q?lQ=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: cc1bb589-362b-4a67-1aeb-08ddec26df19
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Sep 2025 02:49:45.4204
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +B42p4/YMf8I2MA02vpEUSy9dbg8VFhH9JKq7/EshmNVOWYKEc1pXhn2tV+j1AtZG0GRsg4IiV1uixKhd/zYFw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4699
+X-OriginatorOrg: intel.com
 
-Hi Boris and the Intel folks,
 
-+ Ryusuke and linux-nilfs
 
-On Thu, Sep 04, 2025 at 01:37:52PM +0200, Borislav Petkov wrote:
-> On Tue, Sep 02, 2025 at 04:45:12PM +0800, kernel test robot wrote:
-> > 
-> > 
-> > Hello,
-> > 
-> > 
-> > this could be a noise, we didn't see the relation between the patch with the
-> > issue we observed. however, we rebuild the kernels for both this commit and
-> > parent 3 times.
-> > (
-> > our bot chose 894af4a1cde61c as the parent as below
-> > * 19f370d45aceea x86/microcode: Add microcode= cmdline parsing
-> > * 894af4a1cde61c (tip/x86/core, peterz-queue/x86/core) objtool: Validate kCFI calls
-> > )
-> > 
-> > and for each rerun of both this commit and parent, we run more times, but the
-> > issue is still quite persistent while parent keeps clean:
-> > 
-> > =========================================================================================
-> > tbox_group/testcase/rootfs/kconfig/compiler/runtime/group/nr_groups:
-> >   vm-snb/trinity/debian-11.1-i386-20220923.cgz/x86_64-randconfig-006-20250826/clang-20/300s/group-01/5
-> > 
-> > 894af4a1cde61c34 19f370d45aceea5ab4c52e3afa0
-> > ---------------- ---------------------------
-> >        fail:runs  %reproduction    fail:runs
-> >            |             |             |
-> >            :200         74%         149:200   last_state.is_incomplete_run
-> >            :200         74%         147:200   last_state.running
-> >            :200         75%         150:200   dmesg.CFI_failure_at_kobj_attr_show
-> >            :200         75%         150:200   dmesg.Kernel_panic-not_syncing:Fatal_exception
-> >            :200         75%         150:200   dmesg.Oops:invalid_opcode:#[##]KASAN
-> >            :200         75%         150:200   dmesg.RIP:kobj_attr_show
-> >            :200         75%         150:200   dmesg.boot_failures
-> > 
-> > so we just follow our report rule to still report this results FYI.
-> > 
-> > if it's really irrelevant, sorry maybe our env issues (though we still cannot
-> > figure out for now). and if you can help us to figure out the potential problem
-> > from our dmesg in below link, it will be very apprecidated!
-> 
-> Yeah, I don't know what you did here but building with that .config, I can't
-> even boot that kernel in a VM because doing:
-> 
-> qemu-... -kernel bzImage ...
-> 
-> sends me into grub and asks me to select the default kernel.
-> 
-> And my qemu script boots arbitrary kernels just fine.
+Hello,
 
-Does your QEMU boot via UEFI? This configuration has
+kernel test robot noticed "INFO:task_blocked_for_more_than#seconds" on:
 
-  # CONFIG_EFI is not set
+commit: 8671bad873ebeb082afcf7b4501395c374da6023 ("sched: Do not call __put_task_struct() on rt if pi_blocked_on is set")
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-so if I try to boot QEMU via OVMF, I get:
+[test failed on      linus/master 08b06c30a44555a8b1d14950e4462a52bfa0758b]
+[test failed on linux-next/master 5d50cf9f7cf20a17ac469c20a2e07c29c1f6aab7]
 
-  BdsDxe: failed to load Boot0002 "UEFI Non-Block Boot Device" from VenMedia(1428F772-B64A-441E-B8C3-9EBDD7F893C7): Not Found
-  BdsDxe: No bootable option or device was found.
-  BdsDxe: Press any key to enter the Boot Manager Menu.
+in testcase: rcutorture
+version: 
+with following parameters:
 
-Turning on CONFIG_EFI and CONFIG_EFI_STUB is enough for me to boot this
-configuration.
+	runtime: 300s
+	test: cpuhotplug
+	torture_type: tasks-rude
 
-> Also, I used clang-20 from here:
-> 
-> https://mirrors.edge.kernel.org/pub/tools/llvm/
-> 
-> and version 20.1.8 took something like ~10(!) minutes to link vmlinux with
-> that config. Just FYI for Nathan, maybe something's weird there.
 
-Looks like this configuration has
 
-  CONFIG_LTO_CLANG_FULL=y
+config: i386-randconfig-017-20250830
+compiler: gcc-12
+test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 
-so that's not too surprising :) turning that off or making it
+(please refer to attached dmesg/kmsg for entire log/backtrace)
 
-  CONFIG_LTO_CLANG_THIN=y
 
-should be much quicker.
+the issue happens randomly and we observed various issues in tests by this
+commit, while parent keeps clean.
 
-> > below is full report.
-> 
-> Leaving it in.
+=========================================================================================
+tbox_group/testcase/rootfs/kconfig/compiler/runtime/test/torture_type:
+  vm-snb/rcutorture/debian-11.1-i386-20220923.cgz/i386-randconfig-017-20250830/gcc-12/300s/cpuhotplug/tasks-rude
 
-As for the actual report...
+7de9d4f946383f48 8671bad873ebeb082afcf7b4501
+---------------- ---------------------------
+       fail:runs  %reproduction    fail:runs
+           |             |             |
+           :200         16%          32:200   dmesg.BUG:kernel_hang_in_boot_stage
+           :200          0%           1:200   dmesg.BUG:soft_lockup-CPU##stuck_for#s![swapper:#]
+           :200          1%           2:200   dmesg.BUG:workqueue_lockup-pool
+           :200          0%           1:200   dmesg.EIP:kthread_affine_preferred
+           :200          0%           1:200   dmesg.EIP:lock_release
+           :200          0%           1:200   dmesg.EIP:tick_clock_notify
+           :200         12%          23:200   dmesg.INFO:task_blocked_for_more_than#seconds
+           :200         12%          23:200   dmesg.Kernel_panic-not_syncing:hung_task:blocked_tasks
+           :200          0%           1:200   dmesg.Kernel_panic-not_syncing:softlockup:hung_tasks
+           :200          0%           1:200   dmesg.WARNING:at_kernel/kthread.c:#kthread_affine_preferred
 
-I ran 200 boots using our simple Buildroot initrd and QEMU wrapper
-script [1] and saw no issues, however...
 
-[1]: https://github.com/ClangBuiltLinux/boot-utils
 
-> > kernel test robot noticed "CFI_failure_at_kobj_attr_show" on:
-> > 
-> > commit: 19f370d45aceea5ab4c52e3afa00226fb99c3fc8 ("[PATCH -v1 1/2] x86/microcode: Add microcode= cmdline parsing")
-> > url: https://github.com/intel-lab-lkp/linux/commits/Borislav-Petkov/x86-microcode-Add-microcode-cmdline-parsing/20250820-215624
-> > base: https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git 894af4a1cde61c3401f237184fb770f72ff12df8
-> > patch link: https://lore.kernel.org/all/20250820135043.19048-2-bp@kernel.org/
-> > patch subject: [PATCH -v1 1/2] x86/microcode: Add microcode= cmdline parsing
-> > 
-> > in testcase: trinity
-> > version: trinity-i386-abe9de86-1_20230429
-> > with following parameters:
-> > 
-> > 	runtime: 300s
-> > 	group: group-01
-> > 	nr_groups: 5
-> > 
-> > 
-> > 
-> > config: x86_64-randconfig-006-20250826
-> > compiler: clang-20
-> > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> > 
-> > (please refer to attached dmesg/kmsg for entire log/backtrace)
-> > 
-> > 
-> > 
-> > If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> > the same patch/commit), kindly add following tags
-> > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> > | Closes: https://lore.kernel.org/oe-lkp/202509021646.bc78d9ef-lkp@intel.com
-> > 
-> > 
-> > The kernel config and materials to reproduce are available at:
-> > https://download.01.org/0day-ci/archive/20250902/202509021646.bc78d9ef-lkp@intel.com
-> > 
-> > 
-> > [  453.382281][ T7761] CFI failure at kobj_attr_show+0x59/0x80 (target: nilfs_feature_revision_show+0x0/0x30; expected type: 0x1b8aae92)
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202509051010.e06823ab-lkp@intel.com
 
-I am surprised that this was not reproducible at 894af4a1cde61c34 for
-the Intel folks because it does for me assuming I actually try to read
-that file (maybe trinity was not hitting it on the older revision?):
 
-  $ cat /sys/fs/nilfs2/features/revision
-  [    6.975426][  T150] CFI failure at kobj_attr_show+0x59/0x80 (target: nilfs_feature_revision_show+0x0/0x30; expected type: 0xed60cafc)
-  [    6.976822][  T150] Oops: invalid opcode: 0000 [#1] KASAN
-  [    6.977407][  T150] CPU: 0 UID: 0 PID: 150 Comm: cat Not tainted 6.17.0-rc2-00016-g894af4a1cde6 #1 NONE
-  [    6.978432][  T150] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.17.0-0-gb52ca86e094d-prebuilt.qemu.org 04/01/2014
-  [    6.979752][  T150] RIP: 0010:kobj_attr_show+0x59/0x80
-  [    6.980321][  T150] Code: 08 00 74 08 4c 89 e7 e8 05 6b d6 fb 4d 8b 1c 24 4d 85 db 74 1f 4c 89 ff 4c 89 f6 48 89 da 41 ba 04 35 9f 12 45 03 53 f1 74 02 <0f> 0b 41 ff d3 0f 1f 00 eb 07 48 c7 c0 fb ff ff ff 5b 41 5c 41 5e
-  [    6.982456][  T150] RSP: 0018:ffa0000000e17b28 EFLAGS: 00010216
-  [    6.983163][  T150] RAX: 1ffffffff3753765 RBX: ff11000109eca000 RCX: dffffc0000000000
-  [    6.984012][  T150] RDX: ff11000109eca000 RSI: ffffffff9ba9bb00 RDI: ff11000100b4f250
-  [    6.984900][  T150] RBP: ffa0000000e17b48 R08: ff11000109ecafff R09: ff11000109eca000
-  [    6.985830][  T150] R10: 000000007b3f6fc3 R11: ffffffff9541ea80 R12: ffffffff9ba9bb28
-  [    6.986658][  T150] R13: 1fe2200020fdfe80 R14: ffffffff9ba9bb00 R15: ff11000100b4f250
-  [    6.987542][  T150] FS:  00007f4818d2b740(0000) GS:0000000000000000(0000) knlGS:0000000000000000
-  [    6.988508][  T150] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  [    6.989241][  T150] CR2: 00007f481899a000 CR3: 0000000109f3b002 CR4: 0000000000371eb0
-  [    6.990120][  T150] Call Trace:
-  [    6.990498][  T150]  <TASK>
-  [    6.990867][  T150]  sysfs_kf_seq_show+0x2a6/0x390
-  [    6.991410][  T150]  ? __cfi_kobj_attr_show+0x10/0x10
-  [    6.992015][  T150]  kernfs_seq_show+0x104/0x15b
-  [    6.992542][  T150]  seq_read_iter+0x580/0xe2b
-  [    6.993076][  T150]  kernfs_fop_read_iter+0x137/0x470
-  [    6.993650][  T150]  new_sync_read+0x27e/0x365
-  [    6.994185][  T150]  vfs_read+0x1e8/0x46b
-  [    6.994650][  T150]  ksys_read+0xc2/0x170
-  [    6.995129][  T150]  __x64_sys_read+0x7f/0x90
-  [    6.995631][  T150]  ? entry_SYSCALL_64_after_hwframe+0x6b/0x73
-  [    6.996299][  T150]  x64_sys_call+0x2589/0x2cdb
-  [    6.996843][  T150]  do_syscall_64+0x89/0xfa0
-  [    6.997343][  T150]  ? irqentry_exit+0x33/0x70
-  [    6.997882][  T150]  ? exc_page_fault+0x96/0xe0
-  [    6.998400][  T150]  entry_SYSCALL_64_after_hwframe+0x6b/0x73
-  [    6.999068][  T150] RIP: 0033:0x7f4818dc11ce
-  [    6.999564][  T150] Code: 4d 89 d8 e8 64 be 00 00 4c 8b 5d f8 41 8b 93 08 03 00 00 59 5e 48 83 f8 fc 74 11 c9 c3 0f 1f 80 00 00 00 00 48 8b 45 10 0f 05 <c9> c3 83 e2 39 83 fa 08 75 e7 e8 13 ff ff ff 0f 1f 00 f3 0f 1e fa
-  [    7.001627][  T150] RSP: 002b:00007ffc2d325600 EFLAGS: 00000202 ORIG_RAX: 0000000000000000
-  [    7.002558][  T150] RAX: ffffffffffffffda RBX: 0000000000040000 RCX: 00007f4818dc11ce
-  [    7.003443][  T150] RDX: 0000000000040000 RSI: 00007f481899b000 RDI: 0000000000000003
-  [    7.004363][  T150] RBP: 00007ffc2d325610 R08: 0000000000000000 R09: 0000000000000000
-  [    7.005260][  T150] R10: 0000000000000000 R11: 0000000000000202 R12: 0000000000040000
-  [    7.006143][  T150] R13: 00007f481899b000 R14: 0000000000000003 R15: 0000000000000000
-  [    7.007027][  T150]  </TASK>
-  [    7.007411][  T150] Modules linked in:
-  [    7.007994][  T150] ---[ end trace 0000000000000000 ]---
-  [    7.008711][  T150] RIP: 0010:kobj_attr_show+0x59/0x80
-  [    7.009430][  T150] Code: 08 00 74 08 4c 89 e7 e8 05 6b d6 fb 4d 8b 1c 24 4d 85 db 74 1f 4c 89 ff 4c 89 f6 48 89 da 41 ba 04 35 9f 12 45 03 53 f1 74 02 <0f> 0b 41 ff d3 0f 1f 00 eb 07 48 c7 c0 fb ff ff ff 5b 41 5c 41 5e
-  [    7.011712][  T150] RSP: 0018:ffa0000000e17b28 EFLAGS: 00010216
-  [    7.012369][  T150] RAX: 1ffffffff3753765 RBX: ff11000109eca000 RCX: dffffc0000000000
-  [    7.013214][  T150] RDX: ff11000109eca000 RSI: ffffffff9ba9bb00 RDI: ff11000100b4f250
-  [    7.014202][  T150] RBP: ffa0000000e17b48 R08: ff11000109ecafff R09: ff11000109eca000
-  [    7.015201][  T150] R10: 000000007b3f6fc3 R11: ffffffff9541ea80 R12: ffffffff9ba9bb28
-  [    7.016202][  T150] R13: 1fe2200020fdfe80 R14: ffffffff9ba9bb00 R15: ff11000100b4f250
-  [    7.017212][  T150] FS:  00007f4818d2b740(0000) GS:0000000000000000(0000) knlGS:0000000000000000
-  [    7.018332][  T150] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  [    7.019154][  T150] CR2: 00007f481899a000 CR3: 0000000109f3b002 CR4: 0000000000371eb0
-  [    7.020147][  T150] Kernel panic - not syncing: Fatal exception
-  [    7.020837][  T150] Kernel Offset: 0x12e00000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+[  994.935251][   T26] INFO: task swapper/0:1 blocked for more than 491 seconds.
+[  994.947414][   T26]       Not tainted 6.16.0-rc6-00086-g8671bad873eb #1
+[  994.951523][   T26] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+[  994.960576][   T26] task:swapper/0       state:D stack:5016  pid:1     tgid:1     ppid:0      task_flags:0x0140 flags:0x00004000
+[  994.972581][   T26] Call Trace:
+[ 994.998429][ T26] __schedule (kernel/sched/core.c:5354 kernel/sched/core.c:6954) 
+[ 995.035758][ T26] schedule (kernel/sched/core.c:7037 kernel/sched/core.c:7051) 
+[ 995.044863][ T26] async_synchronize_cookie_domain (kernel/async.c:317 kernel/async.c:310) 
+[ 995.050698][ T26] ? do_wait_intr (kernel/sched/wait.c:384) 
+[ 995.059798][ T26] wait_for_initramfs (init/initramfs.c:778) 
+[ 995.067798][ T26] populate_rootfs (init/initramfs.c:789) 
+[ 995.070767][ T26] do_one_initcall (init/main.c:1274) 
+[ 995.074441][ T26] ? initramfs_async_setup (init/initramfs.c:782) 
+[ 995.098384][ T26] do_initcalls (init/main.c:1335 init/main.c:1352) 
+[ 995.136744][ T26] kernel_init_freeable (init/main.c:1588) 
+[ 995.136744][ T26] ? rest_init (init/main.c:1466) 
+[ 995.158663][ T26] kernel_init (init/main.c:1476) 
+[ 995.177750][ T26] ret_from_fork (arch/x86/kernel/process.c:154) 
+[ 995.178146][ T26] ? rest_init (init/main.c:1466) 
+[ 995.230129][ T26] ret_from_fork_asm (arch/x86/entry/entry_32.S:737) 
+[ 995.230129][ T26] entry_INT80_32 (arch/x86/entry/entry_32.S:945) 
+[  995.268743][   T26]
+[  995.268743][   T26] Showing all locks held in the system:
+[  995.336987][   T26] 1 lock held by khungtaskd/26:
+[ 995.446697][ T26] #0: 830cce10 (rcu_read_lock){....}-{1:3}, at: debug_show_all_locks (kernel/locking/lockdep.c:6768 (discriminator 1)) 
+[  995.464546][   T26] 4 locks held by kworker/u4:2/29:
+[  995.470758][   T26] 2 locks held by kworker/0:3/38:
+[  995.498593][   T26]
+[  995.599251][   T26] =============================================
+[  995.599251][   T26]
+[  995.729940][   T26] Kernel panic - not syncing: hung_task: blocked tasks
+[  995.729940][   T26] CPU: 0 UID: 0 PID: 26 Comm: khungtaskd Not tainted 6.16.0-rc6-00086-g8671bad873eb #1 PREEMPT(full)
+[  995.729940][   T26] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+[  995.729940][   T26] Call Trace:
+[ 995.729940][ T26] dump_stack_lvl (lib/dump_stack.c:124) 
+[ 995.729940][ T26] dump_stack (lib/dump_stack.c:130) 
+[ 995.729940][ T26] panic (kernel/panic.c:382) 
+[ 995.729940][ T26] check_hung_uninterruptible_tasks (kernel/hung_task.c:311) 
+[ 995.729940][ T26] watchdog (kernel/hung_task.c:470) 
+[ 995.729940][ T26] kthread (kernel/kthread.c:464) 
+[ 995.729940][ T26] ? check_hung_uninterruptible_tasks (kernel/hung_task.c:453) 
+[ 995.729940][ T26] ? kthread_complete_and_exit (kernel/kthread.c:413) 
+[ 995.729940][ T26] ret_from_fork (arch/x86/kernel/process.c:154) 
+[ 995.729940][ T26] ? kthread_complete_and_exit (kernel/kthread.c:413) 
+[ 995.729940][ T26] ret_from_fork_asm (arch/x86/entry/entry_32.S:737) 
+[ 995.729940][ T26] entry_INT80_32 (arch/x86/entry/entry_32.S:945) 
 
-The fix should be something like the following, which resolves the issue
-for me.
 
-  nilfs_sysfs_init() ->
-    kset_create_and_add() ->
-      kset_create()
 
-has
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20250905/202509051010.e06823ab-lkp@intel.com
 
-  kset->kobj.ktype = &kset_ktype
 
-which is
 
-  static const struct kobj_type kset_ktype = {
-    .sysfs_ops      = &kobj_sysfs_ops,
-    .release        = kset_release,
-    .get_ownership  = kset_get_ownership,
-  };
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
 
-Note the kobj_sysfs_ops.
-
-  const struct sysfs_ops kobj_sysfs_ops = {
-    .show   = kobj_attr_show,
-    .store  = kobj_attr_store,
-  };
-
-nilfs_feature_attr_group is added to the nilfs_kset->kobj via
-sysfs_create_group(), where the kernfs_ops for each file in
-nilfs_feature_attr_group becomes
-
-  sysfs_create_group() ->
-    internal_create_group() ->
-      create_files() ->
-        sysfs_add_file_mode_ns() ->
-          ops = &sysfs_file_kfops_rw;
-          __kernfs_create_file() ->
-            kn->attr.ops = ops;
-
-  static const struct kernfs_ops sysfs_file_kfops_rw = {
-    .seq_show = sysfs_kf_seq_show,
-    .write    = sysfs_kf_write,
-  };
-
-sysfs_kf_seq_show() calls kobj_attr_show() via
-
-  const struct sysfs_ops *ops = sysfs_file_ops(of->kn);
-  ...
-  count = ops->show(kobj, of->kn->priv, buf);
-
-kobj_attr_show() calls one of the nilfs_feature_*_show() functions via
-after casting to 'struct kobj_attribute':
-
-  kattr = container_of(attr, struct kobj_attribute, attr);
-  if (kattr->show)
-    ret = kattr->show(kobj, kattr, buf);
-
-  struct kobj_attribute {
-    struct attribute attr;
-    ssize_t (*show)(struct kobject *kobj, struct kobj_attribute *attr,
-            char *buf);
-    ssize_t (*store)(struct kobject *kobj, struct kobj_attribute *attr,
-            const char *buf, size_t count);
-  };
-
-So the types of nilfs_feature_*_show() need to match
-kobj_attribute->show() to avoid triggering CFI here.
-
-Cheers,
-Nathan
-
-diff --git a/fs/nilfs2/sysfs.c b/fs/nilfs2/sysfs.c
-index 14868a3dd592..bc52afbfc5c7 100644
---- a/fs/nilfs2/sysfs.c
-+++ b/fs/nilfs2/sysfs.c
-@@ -1075,7 +1075,7 @@ void nilfs_sysfs_delete_device_group(struct the_nilfs *nilfs)
-  ************************************************************************/
- 
- static ssize_t nilfs_feature_revision_show(struct kobject *kobj,
--					    struct attribute *attr, char *buf)
-+					    struct kobj_attribute *attr, char *buf)
- {
- 	return sysfs_emit(buf, "%d.%d\n",
- 			NILFS_CURRENT_REV, NILFS_MINOR_REV);
-@@ -1087,7 +1087,7 @@ static const char features_readme_str[] =
- 	"(1) revision\n\tshow current revision of NILFS file system driver.\n";
- 
- static ssize_t nilfs_feature_README_show(struct kobject *kobj,
--					 struct attribute *attr,
-+					 struct kobj_attribute *attr,
- 					 char *buf)
- {
- 	return sysfs_emit(buf, features_readme_str);
-diff --git a/fs/nilfs2/sysfs.h b/fs/nilfs2/sysfs.h
-index 78a87a016928..d370cd5cce3f 100644
---- a/fs/nilfs2/sysfs.h
-+++ b/fs/nilfs2/sysfs.h
-@@ -50,16 +50,16 @@ struct nilfs_sysfs_dev_subgroups {
- 	struct completion sg_segments_kobj_unregister;
- };
- 
--#define NILFS_COMMON_ATTR_STRUCT(name) \
-+#define NILFS_KOBJ_ATTR_STRUCT(name) \
- struct nilfs_##name##_attr { \
- 	struct attribute attr; \
--	ssize_t (*show)(struct kobject *, struct attribute *, \
-+	ssize_t (*show)(struct kobject *, struct kobj_attribute *, \
- 			char *); \
--	ssize_t (*store)(struct kobject *, struct attribute *, \
-+	ssize_t (*store)(struct kobject *, struct kobj_attribute *, \
- 			 const char *, size_t); \
- }
- 
--NILFS_COMMON_ATTR_STRUCT(feature);
-+NILFS_KOBJ_ATTR_STRUCT(feature);
- 
- #define NILFS_DEV_ATTR_STRUCT(name) \
- struct nilfs_##name##_attr { \
