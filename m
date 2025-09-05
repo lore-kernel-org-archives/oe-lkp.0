@@ -1,78 +1,88 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from relay.hostedemail.com (smtprelay0013.hostedemail.com [216.40.44.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7075E2750F0;
-	Fri,  5 Sep 2025 13:43:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4145315D2E
+	for <oe-lkp@lists.linux.dev>; Fri,  5 Sep 2025 19:02:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=216.40.44.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757079815; cv=none; b=F2FdWXnG3GW2KSTiA6DuZ/KRMomhPwzsTbU3I1JWyELVkO8HKhejkechQZZvzR0MX2DLeCT+vvR7k6ffO2ZCahcesX0qHwBfRpinZ/bWuoR0RcI1Ph+1t+o6lhNu+gXD1v3iKD02iKZl8USVmsINZotjG866pNjIV8/QETdewuc=
+	t=1757098964; cv=none; b=JcoESwXwR/ip+/IIqDqgEsLT/BQqNV3mnjmQ+xfHqaWkyFxfrkTiI0KZYMs6xGoNivMGNnghvZBu/lPR6O+gZgfnCjVh+pZeIt+uIVz2xyuluPKMJjvwLNCXJzRnRX5rzzJDSo8Fkftz23r5n9lresVZCVUEJQMxtJ9L2Jrbx3U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757079815; c=relaxed/simple;
-	bh=tCUjMHHCl/gwyX6Je7S4esPQkPk1Jl5ydpTIk1TU3L0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=O6QQb/qVBChO6olOXwrYqZ9uj/5CM/EF0lLqzUqUPbmjUsMao7ym4lkm/oqeAGHk4nLykVS1zXxfrexsrH9dWtNYW7+7YeTL+DUfUdZ1NW5P0eeEEZ8y/pkF+ScAsvNds6KtAQmkSMRrVrNV1FIu1FywL2jqOMTqU2aunHTgTSc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=A0wqGjCP; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="A0wqGjCP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0508CC4CEF1;
-	Fri,  5 Sep 2025 13:43:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1757079815;
-	bh=tCUjMHHCl/gwyX6Je7S4esPQkPk1Jl5ydpTIk1TU3L0=;
-	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-	b=A0wqGjCPeCJXRBA5Ba/Ux6U/SNko2XK4EI+DRA4rkXa0Z5O3CW5RD2RvMtNd5vjO7
-	 ZV23+IP4kSpkF6fIuCNskr41/+jQmMF+ygS2JW6EIX5sitqMMy58Eauda/y7aMfmIv
-	 mJ3rt5+JI/CrSPpuOYhu2BUKd+LChElafZ5uQH68vVq+kA8CRZrvo+r88cwkGlWq+0
-	 cZE0RgWzibGQopQDAEBVn5mr1Wc8V37eZbdVETQlquTJPCkfoXtim0YJU/dUqt7YBu
-	 HX/QhBt7e193/wdrPUs0sCIoNnJtjdyDOjYI8uKsj3CnTsAr7RTncGnND62jx7+CEr
-	 SuVnbuZrmZZ3A==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-	id A196FCE0E09; Fri,  5 Sep 2025 06:43:34 -0700 (PDT)
-Date: Fri, 5 Sep 2025 06:43:34 -0700
-From: "Paul E. McKenney" <paulmck@kernel.org>
-To: Steven Rostedt <rostedt@goodmis.org>
-Cc: Oliver Sang <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-kernel@vger.kernel.org,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	linux-trace-kernel@vger.kernel.org
-Subject: Re: [paulmck-rcu:dev.2025.08.13a] [tracing]  364ac25d46:
- WARNING:at_arch/x86/mm/fault.c:#do_user_addr_fault
-Message-ID: <ea678a68-6a32-42d7-a9c7-f80261d02093@paulmck-laptop>
-Reply-To: paulmck@kernel.org
-References: <202508211038.c93e8603-lkp@intel.com>
- <68044ea3-32c1-4d72-9bd3-fe2031669d79@paulmck-laptop>
- <aLebLoM2OQD+KPxQ@xsang-OptiPlex-9020>
- <d1ee722b-eb90-4b7e-9c2f-2db7d3b33ce9@paulmck-laptop>
- <20250903113112.247eb552@batman.local.home>
+	s=arc-20240116; t=1757098964; c=relaxed/simple;
+	bh=inn+LM1euTlBUCjjKcekCXu5MqBHIYo0AF8nd+FvxYo=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=JQEzgeokZkqkA7oTFQSr7mKgxjeB/0G7KkuGKGQ5R63F2lh1uxM4Z+XadWQLnXu0MbZPuLTrKoMcw8O2ZmYjyMWTY2s7W4FEajglW1/tKLs3oLjYIIUiJc+U7ml34FE6cj8fAWXJW2MfF5DGrrN9pl5jOsXu3HqLysYF3GO+8eY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=goodmis.org; spf=pass smtp.mailfrom=goodmis.org; arc=none smtp.client-ip=216.40.44.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=goodmis.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goodmis.org
+Received: from omf14.hostedemail.com (a10.router.float.18 [10.200.18.1])
+	by unirelay09.hostedemail.com (Postfix) with ESMTP id A030F8553A;
+	Fri,  5 Sep 2025 19:02:35 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: rostedt@goodmis.org) by omf14.hostedemail.com (Postfix) with ESMTPA id 690EC2F;
+	Fri,  5 Sep 2025 19:02:33 +0000 (UTC)
+Date: Fri, 5 Sep 2025 15:03:12 -0400
+From: Steven Rostedt <rostedt@goodmis.org>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: Pu Lehui <pulehui@huaweicloud.com>, <oe-lkp@lists.linux.dev>,
+ <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+ <linux-trace-kernel@vger.kernel.org>, <mhiramat@kernel.org>,
+ <mathieu.desnoyers@efficios.com>, <pulehui@huawei.com>
+Subject: Re: [PATCH] tracing: Fix missing errno when zero parser->idx in
+ trace_pid_write
+Message-ID: <20250905150312.02bef848@gandalf.local.home>
+In-Reply-To: <202509022339.ae20a8bb-lkp@intel.com>
+References: <20250821071721.3609109-1-pulehui@huaweicloud.com>
+	<202509022339.ae20a8bb-lkp@intel.com>
+X-Mailer: Claws Mail 3.20.0git84 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250903113112.247eb552@batman.local.home>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Stat-Signature: fp7b85k5qcpq4anpcjpxr8my7o551qc7
+X-Rspamd-Server: rspamout08
+X-Rspamd-Queue-Id: 690EC2F
+X-Session-Marker: 726F737465647440676F6F646D69732E6F7267
+X-Session-ID: U2FsdGVkX1+O28D3CNqDpVKcdSNR8RFv6cBn/u7Rbjk=
+X-HE-Tag: 1757098953-92415
+X-HE-Meta: U2FsdGVkX183QeJHiEM8HOrVIQzGnHSyEwnApWpx4UiXzv9MFLN1geT7TGmmCv8TWDJozbM4I60QTGANccZW7Iky4w/Ek4+sVjC/w0bS35eNKaK17IXCQGmdSg3HeGaiuf3IWfGl8uM3Ki4J8QmLCArFJFDekIpmFSJDxb1+o938xrIhKKF8L+yWyRORyz+GJaBo63TrH3qYU7INRjkDcJLGZhbTmm/k0LAmQKAl10QP+6Fip5yaT6dykyg41wiscKZG56WbqQYeVgKMYmUT8DMATENWe16FUo/rdOmukj5lOUm8TCR7+PU2PNIRpbk8Kd5Bju8l5PWKqvYF5JqK3iNHpRT8AC9StybsWln+ZC5e7gUCkAYIwlk1kab0ioprZ9lSIWuWJ/kiBbXBheXFnByG3Xff94B0
 
-On Wed, Sep 03, 2025 at 11:31:12AM -0400, Steven Rostedt wrote:
-> On Wed, 3 Sep 2025 03:31:31 -0700
-> "Paul E. McKenney" <paulmck@kernel.org> wrote:
+On Tue, 2 Sep 2025 23:09:53 +0800
+kernel test robot <oliver.sang@intel.com> wrote:
+
+> commit: cebdd2c9a622becc41349f32ace1795d750beda8 ("[PATCH] tracing: Fix missing errno when zero parser->idx in trace_pid_write")
+> url: https://github.com/intel-lab-lkp/linux/commits/Pu-Lehui/tracing-Fix-missing-errno-when-zero-parser-idx-in-trace_pid_write/20250821-151736
+> base: https://git.kernel.org/cgit/linux/kernel/git/trace/linux-trace for-next
+> patch link: https://lore.kernel.org/all/20250821071721.3609109-1-pulehui@huaweicloud.com/
+> patch subject: [PATCH] tracing: Fix missing errno when zero parser->idx in trace_pid_write
 > 
-> > > by applying the patch, the issue gone. but since you said this is a 'diagnostic
-> > > patch', not sure if it's a real fix. anyway:
-> > > 
-> > > Tested-by: kernel test robot <oliver.sang@intel.com>  
-> > 
-> > Thank you very much!  This tells me that something on the code path from
-> > the tracepoint to the BPF program needs to have preemption disabled.
-> > I will leave the diagnostic patch in my tree, and will be looking into
-> > what the real fix should be.
+> in testcase: perf-sanity-tests
+> version: 
+> with following parameters:
 > 
-> Was it a BPF program that triggered this? I couldn't get that from the
-> backtrace. Also, is this only a x86 32bit issue?
+> 	perf_compiler: gcc
+> 	group: group-01
 
-Excellent question, now that you mention it!  Your thought is that
-one of the other preemption-disablings might need to be moved?
+This is why I hate LKP. It's huge, complex, and I never can get it working.
 
-						Thanx, Paul
+I did the following:
+
+ # lkp split-job jobs/perf-sanity-tests.yaml
+ # lkp install -f ./perf-sanity-tests-defaults.yaml
+
+[ had to fix python up a little because it wanted python3.9 where I had 3.13 ]
+
+ # lkp run ./perf-sanity-tests-defaults.yaml
+/work/git/lkp-tests.git/programs/perf-sanity-tests/run: 7: .: cannot open /work/git/lkp-tests.git/lib/tests/perf_test.sh: No such file
+kill 37975 vmstat --timestamp -n 10 
+kill 37973 dmesg --follow --decode 
+wait for background processes: 37978 meminfo
+
+
+I have no idea where this "perf_test.sh" is supposed to come from, and why
+it doesn't exist :-p
+
+
+-- Steve
