@@ -1,203 +1,204 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90BEC27AC5C
-	for <oe-lkp@lists.linux.dev>; Mon,  8 Sep 2025 09:05:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41AFD30FF30
+	for <oe-lkp@lists.linux.dev>; Mon,  8 Sep 2025 17:06:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757322333; cv=none; b=j9IOCIGdM4PS5x7GKr/pWzDI0lAuI25FeFZJxIwzCEXinHWEk+dr3CkG85lENbDHqD0b2I62RMrw+XeSGnt28AsXfyHSG4tFGUmhNQsYcxeijAvptWSYSgzlS3hRm0bGxuuy63WFnUAYNgUE2lYVc3WIGKexD7Nus+2d8FVwNIg=
+	t=1757351204; cv=none; b=JS50hdpe65cvo1kf5pN/HJ5gzv4zZ+NYCfdBo84f5Fc6/RRRHZ1fOFQpX/ZT7HRiqQ6f/AzxBf1ixpz3SD8G+HLeXMM0YADcDIC/jntumSGywopZhpnzwxqrETaiy4NPmvfqpogzIYY6cHpg8w/EFmBaiLVWj9/xXAg/IvfGwW0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757322333; c=relaxed/simple;
-	bh=Sx44ypwiM/8mDLkLgip917e2o+WQJW8qcF3YZ4mm6TE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jkw/UFDMohWaga9NKV0+UtjrQYHJDg1Lwh3uygrqOcj0GM3ikRtSMU3FHqTxuy/Id/z1YE9kZ/ERk3Zq6fHDwnx7bJanBJnUs7SX3+6pa6dOBuGbnxnBP0aTYUBBcXG2aa3ilLKkFpy8TgB+cWn4juqkzycPE6n+nEKlc2nGOsI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZwZGVfZy; arc=none smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1757351204; c=relaxed/simple;
+	bh=JJg2F4dKkZ474YGYf/6mVgGNeAM7bxblYqH00xRjThI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=C+Ivn+ZfnyivxonUbFyupyCQgKcsGsfSH+H21jvjpX8ujb9A11nO/rV0BSJxPL0YqeSX+OBNZHmNPeAlPK91ky90gN1PAaROvRwZ25V/vTs7sfAw1oGOvqajAPebcb4dBoXVlSSrTpnah6CMZeeaEFndFnvt3TyJNxpXrPnrw0M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=ZxhN43+1; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZwZGVfZy"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1757322332; x=1788858332;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Sx44ypwiM/8mDLkLgip917e2o+WQJW8qcF3YZ4mm6TE=;
-  b=ZwZGVfZyWLQYzz/M+Z6V4TU9pkTSbQTsHbI5mZvJA4Fdqo2THC5ikiG4
-   ukSEP7dTRYDUOdgACelxn1RemC7vtCn4Mq6xf/Snq3UapZf1RTcLaXIhz
-   tBLa9PyTAxCscMPipiROaIY8PwewU2nS15HZzjwzPIvKeB1d5DXXCC0Oz
-   ylcTnG24LVd92+PlMINGvvxZ6FV/kvzzoIIaoUbnb5jbw0Zgye2xqGUVY
-   YaI92qISx/FeWbYBdCybYaqHfqDsOArNLvXF45HxFSbmDP3VwYi9Wr8fU
-   c6It3ZyalIROCprRVPZ/G5+qFdYTxeXji50iYEqvlPxwVbK2B5ukjG/oN
-   g==;
-X-CSE-ConnectionGUID: CxZDVkCkQX2L8ECKbijtbQ==
-X-CSE-MsgGUID: pPAqIC+dT9eT/MKFzAdxxA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11546"; a="70672407"
-X-IronPort-AV: E=Sophos;i="6.18,248,1751266800"; 
-   d="scan'208";a="70672407"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2025 02:05:31 -0700
-X-CSE-ConnectionGUID: WWJ3CZlkQeOsXDhTw5LW6w==
-X-CSE-MsgGUID: fSuedluoR/CPjUaECagfzA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.18,248,1751266800"; 
-   d="scan'208";a="177058106"
-Received: from unknown (HELO [10.238.3.254]) ([10.238.3.254])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2025 02:05:26 -0700
-Message-ID: <e92a703d-6a92-474c-acba-b15176b97548@linux.intel.com>
-Date: Mon, 8 Sep 2025 17:05:24 +0800
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ZxhN43+1"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1757351201;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=uO4dtOB+K9su3ctwDU/FfSPhq7glTMVzAzGp80NdDh4=;
+	b=ZxhN43+18JgRG3EViOWqdZ4bPC95oGM9UZuY32cBn6Q2R5ZT/MBN88lLQVX/pexyx3/AbB
+	G3EiEzgf4F1Saz9LEWJaRXRKW87cKnFS9Eevv3WFASCB1VKlTvcqvfTFox7yIfsMeWszVk
+	6s/MFBeyUkXQxk0/RAI63lwDETORoPI=
+Received: from mx-prod-mc-02.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-567-4YJmdseDMfujEAgV4gAtjw-1; Mon,
+ 08 Sep 2025 13:06:39 -0400
+X-MC-Unique: 4YJmdseDMfujEAgV4gAtjw-1
+X-Mimecast-MFC-AGG-ID: 4YJmdseDMfujEAgV4gAtjw_1757351197
+Received: from mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.4])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-02.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id E8E6F19560B0;
+	Mon,  8 Sep 2025 17:06:36 +0000 (UTC)
+Received: from localhost (unknown [10.22.64.69])
+	by mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id 794A0300018D;
+	Mon,  8 Sep 2025 17:06:35 +0000 (UTC)
+Date: Mon, 8 Sep 2025 14:06:33 -0300
+From: "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	Peter Zijlstra <peterz@infradead.org>,
+	Crystal Wood <crwood@redhat.com>,
+	Wander Lairson Costa <wander@redhat.com>,
+	Valentin Schneider <vschneid@redhat.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	aubrey.li@linux.intel.com, yu.c.chen@intel.com
+Subject: Re: [linus:master] [sched]  8671bad873:
+ INFO:task_blocked_for_more_than#seconds
+Message-ID: <aL8NGXiYUAukMCGY@uudg.org>
+References: <202509051010.e06823ab-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [Patch v7 02/12] perf/x86/intel: Fix NULL event access and
- potential PEBS record loss
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
- Kan Liang <kan.liang@linux.intel.com>, linux-perf-users@vger.kernel.org,
- linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
- Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>,
- Namhyung Kim <namhyung@kernel.org>, Ian Rogers <irogers@google.com>,
- Adrian Hunter <adrian.hunter@intel.com>,
- Alexander Shishkin <alexander.shishkin@linux.intel.com>,
- Andi Kleen <ak@linux.intel.com>, Eranian Stephane <eranian@google.com>,
- Dapeng Mi <dapeng1.mi@intel.com>
-References: <202509081646.d101cfb7-lkp@intel.com>
-Content-Language: en-US
-From: "Mi, Dapeng" <dapeng1.mi@linux.intel.com>
-In-Reply-To: <202509081646.d101cfb7-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202509051010.e06823ab-lkp@intel.com>
+X-Scanned-By: MIMEDefang 3.4.1 on 10.30.177.4
 
-
-On 9/8/2025 4:43 PM, kernel test robot wrote:
+On Fri, Sep 05, 2025 at 10:49:35AM +0800, kernel test robot wrote:
+> 
+> 
 > Hello,
->
-> kernel test robot noticed "WARNING:at_arch/x86/events/intel/ds.c:#intel_pmu_drain_pebs_nhm" on:
->
-> commit: a7138973beb1d124386472663cf50a571a2059ce ("[Patch v7 02/12] perf/x86/intel: Fix NULL event access and potential PEBS record loss")
-> url: https://github.com/intel-lab-lkp/linux/commits/Dapeng-Mi/perf-x86-Remove-redundant-is_x86_event-prototype/20250828-094117
-> patch link: https://lore.kernel.org/all/20250828013435.1528459-3-dapeng1.mi@linux.intel.com/
-> patch subject: [Patch v7 02/12] perf/x86/intel: Fix NULL event access and potential PEBS record loss
->
-> in testcase: phoronix-test-suite
+> 
+> kernel test robot noticed "INFO:task_blocked_for_more_than#seconds" on:
+> 
+> commit: 8671bad873ebeb082afcf7b4501395c374da6023 ("sched: Do not call __put_task_struct() on rt if pi_blocked_on is set")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> 
+> [test failed on      linus/master 08b06c30a44555a8b1d14950e4462a52bfa0758b]
+> [test failed on linux-next/master 5d50cf9f7cf20a17ac469c20a2e07c29c1f6aab7]
+> 
+> in testcase: rcutorture
 > version: 
 > with following parameters:
->
-> 	test: stress-ng-1.11.0
-> 	option_a: Socket Activity
-> 	cpufreq_governor: performance
->
->
->
-> config: x86_64-rhel-9.4
+> 
+> 	runtime: 300s
+> 	test: cpuhotplug
+> 	torture_type: tasks-rude
+
+I ran tests with the boxes I had at hand, x86_64 and arm64, and was unable
+to reproduce the problem. Tomorrow, when I am back from a holiday,, I will
+try to reproduce the problem with x86 (32 bits) VMs and x86 baremetal as it
+seems to be the case on the report.
+
+In any case, I sent a follow-up patch that isolated those changes to
+kernels with PREEMPT_RT enabled, as initially intended. That should solve
+this case (if really caused by the commit in question). The patch I
+mentioned is:
+
+    [RESEND PATCH] sched: restore the behavior of put_task_struct() for non-rt
+    https://lore.kernel.org/all/aKxqGLNOp2sWJwnZ@uudg.org/
+
+Best regards,
+Luis
+ 
+> 
+> 
+> config: i386-randconfig-017-20250830
 > compiler: gcc-12
-> test machine: 96 threads 2 sockets Intel(R) Xeon(R) Gold 6252 CPU @ 2.10GHz (Cascade Lake) with 512G memory
->
+> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+> 
 > (please refer to attached dmesg/kmsg for entire log/backtrace)
->
->
->
+> 
+> 
+> the issue happens randomly and we observed various issues in tests by this
+> commit, while parent keeps clean.
+> 
+> =========================================================================================
+> tbox_group/testcase/rootfs/kconfig/compiler/runtime/test/torture_type:
+>   vm-snb/rcutorture/debian-11.1-i386-20220923.cgz/i386-randconfig-017-20250830/gcc-12/300s/cpuhotplug/tasks-rude
+> 
+> 7de9d4f946383f48 8671bad873ebeb082afcf7b4501
+> ---------------- ---------------------------
+>        fail:runs  %reproduction    fail:runs
+>            |             |             |
+>            :200         16%          32:200   dmesg.BUG:kernel_hang_in_boot_stage
+>            :200          0%           1:200   dmesg.BUG:soft_lockup-CPU##stuck_for#s![swapper:#]
+>            :200          1%           2:200   dmesg.BUG:workqueue_lockup-pool
+>            :200          0%           1:200   dmesg.EIP:kthread_affine_preferred
+>            :200          0%           1:200   dmesg.EIP:lock_release
+>            :200          0%           1:200   dmesg.EIP:tick_clock_notify
+>            :200         12%          23:200   dmesg.INFO:task_blocked_for_more_than#seconds
+>            :200         12%          23:200   dmesg.Kernel_panic-not_syncing:hung_task:blocked_tasks
+>            :200          0%           1:200   dmesg.Kernel_panic-not_syncing:softlockup:hung_tasks
+>            :200          0%           1:200   dmesg.WARNING:at_kernel/kthread.c:#kthread_affine_preferred
+> 
+> 
+> 
 > If you fix the issue in a separate patch/commit (i.e. not just a new version of
 > the same patch/commit), kindly add following tags
 > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202509081646.d101cfb7-lkp@intel.com
->
->
->
+> | Closes: https://lore.kernel.org/oe-lkp/202509051010.e06823ab-lkp@intel.com
+> 
+> 
+> [  994.935251][   T26] INFO: task swapper/0:1 blocked for more than 491 seconds.
+> [  994.947414][   T26]       Not tainted 6.16.0-rc6-00086-g8671bad873eb #1
+> [  994.951523][   T26] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+> [  994.960576][   T26] task:swapper/0       state:D stack:5016  pid:1     tgid:1     ppid:0      task_flags:0x0140 flags:0x00004000
+> [  994.972581][   T26] Call Trace:
+> [ 994.998429][ T26] __schedule (kernel/sched/core.c:5354 kernel/sched/core.c:6954) 
+> [ 995.035758][ T26] schedule (kernel/sched/core.c:7037 kernel/sched/core.c:7051) 
+> [ 995.044863][ T26] async_synchronize_cookie_domain (kernel/async.c:317 kernel/async.c:310) 
+> [ 995.050698][ T26] ? do_wait_intr (kernel/sched/wait.c:384) 
+> [ 995.059798][ T26] wait_for_initramfs (init/initramfs.c:778) 
+> [ 995.067798][ T26] populate_rootfs (init/initramfs.c:789) 
+> [ 995.070767][ T26] do_one_initcall (init/main.c:1274) 
+> [ 995.074441][ T26] ? initramfs_async_setup (init/initramfs.c:782) 
+> [ 995.098384][ T26] do_initcalls (init/main.c:1335 init/main.c:1352) 
+> [ 995.136744][ T26] kernel_init_freeable (init/main.c:1588) 
+> [ 995.136744][ T26] ? rest_init (init/main.c:1466) 
+> [ 995.158663][ T26] kernel_init (init/main.c:1476) 
+> [ 995.177750][ T26] ret_from_fork (arch/x86/kernel/process.c:154) 
+> [ 995.178146][ T26] ? rest_init (init/main.c:1466) 
+> [ 995.230129][ T26] ret_from_fork_asm (arch/x86/entry/entry_32.S:737) 
+> [ 995.230129][ T26] entry_INT80_32 (arch/x86/entry/entry_32.S:945) 
+> [  995.268743][   T26]
+> [  995.268743][   T26] Showing all locks held in the system:
+> [  995.336987][   T26] 1 lock held by khungtaskd/26:
+> [ 995.446697][ T26] #0: 830cce10 (rcu_read_lock){....}-{1:3}, at: debug_show_all_locks (kernel/locking/lockdep.c:6768 (discriminator 1)) 
+> [  995.464546][   T26] 4 locks held by kworker/u4:2/29:
+> [  995.470758][   T26] 2 locks held by kworker/0:3/38:
+> [  995.498593][   T26]
+> [  995.599251][   T26] =============================================
+> [  995.599251][   T26]
+> [  995.729940][   T26] Kernel panic - not syncing: hung_task: blocked tasks
+> [  995.729940][   T26] CPU: 0 UID: 0 PID: 26 Comm: khungtaskd Not tainted 6.16.0-rc6-00086-g8671bad873eb #1 PREEMPT(full)
+> [  995.729940][   T26] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+> [  995.729940][   T26] Call Trace:
+> [ 995.729940][ T26] dump_stack_lvl (lib/dump_stack.c:124) 
+> [ 995.729940][ T26] dump_stack (lib/dump_stack.c:130) 
+> [ 995.729940][ T26] panic (kernel/panic.c:382) 
+> [ 995.729940][ T26] check_hung_uninterruptible_tasks (kernel/hung_task.c:311) 
+> [ 995.729940][ T26] watchdog (kernel/hung_task.c:470) 
+> [ 995.729940][ T26] kthread (kernel/kthread.c:464) 
+> [ 995.729940][ T26] ? check_hung_uninterruptible_tasks (kernel/hung_task.c:453) 
+> [ 995.729940][ T26] ? kthread_complete_and_exit (kernel/kthread.c:413) 
+> [ 995.729940][ T26] ret_from_fork (arch/x86/kernel/process.c:154) 
+> [ 995.729940][ T26] ? kthread_complete_and_exit (kernel/kthread.c:413) 
+> [ 995.729940][ T26] ret_from_fork_asm (arch/x86/entry/entry_32.S:737) 
+> [ 995.729940][ T26] entry_INT80_32 (arch/x86/entry/entry_32.S:945) 
+> 
+> 
+> 
 > The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20250908/202509081646.d101cfb7-lkp@intel.com
->
->
-> the dmesg in above link is not very clear, so we also attached one dmesg FYI,
-> from which:
->
-> [   41.225784][   C82] ------------[ cut here ]------------
-> [   41.225786][   C82] WARNING: CPU: 82 PID: 3704 at arch/x86/events/intel/ds.c:2592 intel_pmu_drain_pebs_nhm+0x56b/0x630
-> [   41.225791][   C82] Modules linked in: xt_conntrack nft_chain_nat xt_MASQUERADE nf_nat nf_conntrack_netlink nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4
-> xt_addrtype nft_compat nf_tables nfnetlink br_netfilter bridge stp llc dm_thin_pool dm_persistent_data dm_bio_prison dm_bufio qrtr sg binfmt_misc loop fus
-> e dm_mod overlay btrfs blake2b_generic xor raid6_pq intel_rapl_msr intel_rapl_common intel_uncore_frequency intel_uncore_frequency_common skx_edac skx_eda
-> c_common nfit libnvdimm x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel kvm irdma sd_mod ast irqbypass ice ipmi_ssif drm_client_lib snd_pcm ghash
-> _clmulni_intel drm_shmem_helper snd_timer gnss rapl drm_kms_helper intel_cstate snd ahci ib_uverbs libahci mei_me soundcore acpi_power_meter i2c_i801 ioat
-> dma drm ib_core pcspkr intel_uncore ipmi_si acpi_ipmi libata mei joydev i2c_smbus intel_pch_thermal lpc_ich dca wmi ipmi_devintf ipmi_msghandler acpi_pad
-> [   41.225831][   C82] CPU: 82 UID: 0 PID: 3704 Comm: sleep Tainted: G S                  6.17.0-rc1-00052-ga7138973beb1 #1 VOLUNTARY
-> [   41.225834][   C82] Tainted: [S]=CPU_OUT_OF_SPEC
-> [   41.225835][   C82] Hardware name: Intel Corporation S2600WFT/S2600WFT, BIOS SE5C620.86B.02.01.0008.031920191559 03/19/2019
-> [   41.225836][   C82] RIP: 0010:intel_pmu_drain_pebs_nhm+0x56b/0x630
-> [   41.225839][   C82] Code: 48 e8 b9 cd fe ff 85 c0 0f 84 a9 00 00 00 41 f6 84 24 a4 01 00 00 80 0f 84 9a 00 00 00 4c 89 ef e8 1a 2a 34 00 e9 c7 fc ff ff
->  <0f> 0b e9 c0 fc ff ff 0f 0b e9 b9 fc ff ff 48 8b 04 cb 48 89 84 cc
-> [   41.225841][   C82] RSP: 0018:fffffe00012f38c0 EFLAGS: 00010046
-> [   41.225843][   C82] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-> [   41.225844][   C82] RDX: 0000000000000001 RSI: 0000000000000004 RDI: fffffe00012f3900
-> [   41.225845][   C82] RBP: fffffe00013120c8 R08: 0000000000000000 R09: 0000000000000000
-> [   20.931889][ T1340] Error: Driver 'pcspkr' is already registered, aborting...
-> [   41.225846][   C82] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-> [   41.225847][   C82] R13: 0000000000000000 R14: fffffe00012f3c80 R15: 0000000000000000
-> [   41.225848][   C82] FS:  0000000000000000(0000) GS:ffff88f027c62000(0000) knlGS:0000000000000000
-> [   21.006859][ T1512] sd 6:0:0:0: Attached scsi generic sg0 type 0
-> [   21.013583][ T1512] sd 7:0:0:0: Attached scsi generic sg1 type 0
-> [   41.225849][   C82] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   41.225851][   C82] CR2: 00007ffe5571fe7c CR3: 00000040c5ae1003 CR4: 00000000007726f0
-> [   41.225852][   C82] PKRU: 55555554
-> [   41.225853][   C82] Call Trace:
-> [   41.225855][   C82]  <NMI>
-> [   41.225861][   C82]  handle_pmi_common+0x29b/0x430
-> [   41.225865][   C82]  intel_pmu_handle_irq+0x109/0x2b0
-> [   41.225867][   C82]  perf_event_nmi_handler+0x2a/0x70
-> [   41.225870][   C82]  nmi_handle+0x53/0x130
-> [   41.225873][   C82]  default_do_nmi+0x11d/0x170
-> [   41.225876][   C82]  exc_nmi+0x106/0x1b0
-> [   41.225878][   C82]  end_repeat_nmi+0xf/0x53
-> [   41.225880][   C82] RIP: 0010:find_next_fd+0x2a/0xb0
-> [   41.225883][   C82] Code: 0f 1f 44 00 00 41 54 89 f2 48 c7 c0 ff ff ff ff 49 89 fc 55 c1 ea 06 53 89 f3 48 8b 77 18 89 d9 48 d3 e0 48 f7 d0 48 0b 04 d6
->  <48> 83 f8 ff 74 0d 48 f7 d0 f3 48 0f bc c0 83 f8 3f 76 3a 41 8b 2c
-> [   41.225885][   C82] RSP: 0018:ffffc90025283b90 EFLAGS: 00000206
-> [   41.225886][   C82] RAX: 0000000000000017 RBX: 0000000000000003 RCX: 0000000000000003
-> [   41.225887][   C82] RDX: 0000000000000000 RSI: ffff88f06d277150 RDI: ffff88f06d2770e8
-> [   41.225888][   C82] RBP: 0000000000000400 R08: 8080808080808080 R09: 979c8d9e9a8cdfff
-> [   41.225889][   C82] R10: fefefefefefefeff R11: 0000000000000000 R12: ffff88f06d2770e8
-> [   41.225890][   C82] R13: 0000000000088000 R14: ffff88f06d2770c0 R15: ffff88f06d2770e8
-> [   41.225893][   C82]  ? find_next_fd+0x2a/0xb0
-> [   41.225896][   C82]  ? find_next_fd+0x2a/0xb0
-> [   41.225899][   C82]  </NMI>
-> [   41.225899][   C82]  <TASK>
-> [   41.225900][   C82]  alloc_fd+0x55/0x130
-> [   41.225902][   C82]  do_sys_openat2+0x5a/0xf0
-> [   41.225905][   C82]  __x64_sys_openat+0x6d/0xb0
-> [   41.225907][   C82]  do_syscall_64+0x7f/0x2b0
-> [   41.225909][   C82]  ? vfs_statx+0x68/0x170
-> [   41.225911][   C82]  ? strncpy_from_user+0x26/0xf0
-> [   41.225914][   C82]  ? vfs_fstatat+0x75/0xb0
-> [   41.225917][   C82]  ? __do_sys_newfstatat+0x25/0x70
-> [   41.225919][   C82]  ? path_openat+0xb6/0x2b0
-> [   41.225921][   C82]  ? do_syscall_64+0x7f/0x2b0
-> [   41.225922][   C82]  ? do_filp_open+0xc3/0x170
-> [   41.225924][   C82]  ? do_syscall_64+0x7f/0x2b0
-> [   41.225925][   C82]  ? __cond_resched+0x1e/0x70
-> [   41.225928][   C82]  ? check_heap_object+0x34/0x1b0
-> [   41.225931][   C82]  ? __check_object_size+0x5c/0x130
-> [   41.225933][   C82]  ? do_sys_openat2+0x8a/0xf0
-> [   41.225936][   C82]  ? __x64_sys_openat+0x6d/0xb0
-> [   41.225938][   C82]  ? clear_bhb_loop+0x30/0x80
-> [   41.225940][   C82]  ? clear_bhb_loop+0x30/0x80
-> [   41.225942][   C82]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
-> [   41.225944][   C82] RIP: 0033:0x7eff04bb9a2d
-> [   41.225946][   C82] Code: 48 89 54 24 e0 41 83 e2 40 75 32 89 f0 25 00 00 41 00 3d 00 00 41 00 74 24 89 f2 b8 01 01 00 00 48 89 fe bf 9c ff ff ff 0f 05
->  <48> 3d 00 f0 ff ff 77 33 c3 66 2e 0f 1f 84 00 00 00 00 00 48 8d 44
-> [   41.225947][   C82] RSP: 002b:00007ffe5571f7e8 EFLAGS: 00000287 ORIG_RAX: 0000000000000101
-> [   41.225949][   C82] RAX: ffffffffffffffda RBX: 0000558b3236dbe6 RCX: 00007eff04bb9a2d
-> [   41.225950][   C82] RDX: 0000000000080000 RSI: 00007eff04bc20b1 RDI: 00000000ffffff9c
-> [   41.225951][   C82] RBP: 00007eff04bcd1f8 R08: 0000000000000000 R09: 0000558b3236dbe6
-> [   41.225952][   C82] R10: 0000000000000000 R11: 0000000000000287 R12: ffffffffffffffff
-> [   41.225953][   C82] R13: 0000000000000001 R14: 00007eff04bcc020 R15: 00007eff04bcd6b8
-> [   41.225954][   C82]  </TASK>
-> [   41.225955][   C82] ---[ end trace 0000000000000000 ]---
->
->
-It looks the warning is triggered in the  "error[i] != 0" case and lead to
-the local events[] array is not initialized. Would fix it in next version.
-
-
+> https://download.01.org/0day-ci/archive/20250905/202509051010.e06823ab-lkp@intel.com
+> 
+> 
+> 
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+> 
+---end quoted text---
 
