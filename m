@@ -1,60 +1,43 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41AFD30FF30
-	for <oe-lkp@lists.linux.dev>; Mon,  8 Sep 2025 17:06:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C14E340D9D
+	for <oe-lkp@lists.linux.dev>; Tue,  9 Sep 2025 18:25:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757351204; cv=none; b=JS50hdpe65cvo1kf5pN/HJ5gzv4zZ+NYCfdBo84f5Fc6/RRRHZ1fOFQpX/ZT7HRiqQ6f/AzxBf1ixpz3SD8G+HLeXMM0YADcDIC/jntumSGywopZhpnzwxqrETaiy4NPmvfqpogzIYY6cHpg8w/EFmBaiLVWj9/xXAg/IvfGwW0=
+	t=1757442345; cv=none; b=m5ZpvhXaQLOCJmfRMnnRrDvsIsrvF7P0v6pXSSaSMbydocdTe8UjVT0Q1y69OULCdRWdGnCjUEMISDGnWKkABwO4HZitAZLHAxfVjEc5Nsdo/6Hkhp+7p2l+tTFowkLhvngO7HOlmi/z3a0yRa9bHIofJTZZ5Z7saPBXt7iw2pM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757351204; c=relaxed/simple;
-	bh=JJg2F4dKkZ474YGYf/6mVgGNeAM7bxblYqH00xRjThI=;
+	s=arc-20240116; t=1757442345; c=relaxed/simple;
+	bh=eIKNDNgLFIalF+4+PviUC9PxDiakQCAY4E+2iTrbCMc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=C+Ivn+ZfnyivxonUbFyupyCQgKcsGsfSH+H21jvjpX8ujb9A11nO/rV0BSJxPL0YqeSX+OBNZHmNPeAlPK91ky90gN1PAaROvRwZ25V/vTs7sfAw1oGOvqajAPebcb4dBoXVlSSrTpnah6CMZeeaEFndFnvt3TyJNxpXrPnrw0M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=ZxhN43+1; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=cnoNGtYHx1pUwh7NWAuMiffxoqi/Y8cZNNndV9MIvKv4684bM35iqW1Yw8WGdG29sHmopcQ2ppnZf5n/bSD0vSWaqD/6jkij+F7pHhbE5IwZxreBXnhISS/3aJx/5ZdukF9qDw77E0bzM7srrHgTNy5dKX2h4P2LK5SwlhQYBAM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=u+zMQtbw; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ZxhN43+1"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1757351201;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=uO4dtOB+K9su3ctwDU/FfSPhq7glTMVzAzGp80NdDh4=;
-	b=ZxhN43+18JgRG3EViOWqdZ4bPC95oGM9UZuY32cBn6Q2R5ZT/MBN88lLQVX/pexyx3/AbB
-	G3EiEzgf4F1Saz9LEWJaRXRKW87cKnFS9Eevv3WFASCB1VKlTvcqvfTFox7yIfsMeWszVk
-	6s/MFBeyUkXQxk0/RAI63lwDETORoPI=
-Received: from mx-prod-mc-02.mail-002.prod.us-west-2.aws.redhat.com
- (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-567-4YJmdseDMfujEAgV4gAtjw-1; Mon,
- 08 Sep 2025 13:06:39 -0400
-X-MC-Unique: 4YJmdseDMfujEAgV4gAtjw-1
-X-Mimecast-MFC-AGG-ID: 4YJmdseDMfujEAgV4gAtjw_1757351197
-Received: from mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.4])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx-prod-mc-02.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id E8E6F19560B0;
-	Mon,  8 Sep 2025 17:06:36 +0000 (UTC)
-Received: from localhost (unknown [10.22.64.69])
-	by mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id 794A0300018D;
-	Mon,  8 Sep 2025 17:06:35 +0000 (UTC)
-Date: Mon, 8 Sep 2025 14:06:33 -0300
-From: "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	Peter Zijlstra <peterz@infradead.org>,
-	Crystal Wood <crwood@redhat.com>,
-	Wander Lairson Costa <wander@redhat.com>,
-	Valentin Schneider <vschneid@redhat.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	aubrey.li@linux.intel.com, yu.c.chen@intel.com
-Subject: Re: [linus:master] [sched]  8671bad873:
- INFO:task_blocked_for_more_than#seconds
-Message-ID: <aL8NGXiYUAukMCGY@uudg.org>
-References: <202509051010.e06823ab-lkp@intel.com>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="u+zMQtbw"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=iTP+sQ/v8yOX9RD5/7FdnosJ/QlZJStJ/0fY9+7nICU=; b=u+zMQtbwe0gVNxDjV/04MycN3T
+	OaZU+37vDdSWvllRylXLQ9f9EKgymHjaDq9x1RVqQloTesY95uYG63LW0m8nUj//S8r+9RqLerhc6
+	YuGCfyQrWRflCYRkiH/uvZYPW9Zg8QKjn/glUJuD0Xo8vl4wMzFcXOtFAgJf8WkIy46bJyJC4VRyf
+	ay7tyWLaQdEdzv5ZNlV/dzx/vJwyhaxXsCGW12lpaInXMBf99D5XjKYXeeFWHNzKh0Hs8+/yA/gjh
+	XHSjB936bZdD+AfTXEwzle9/D4ZIRFwIpzIZezWNeTISTkLqd431Yy2cse/3aXiUd2m1GanNbp7h7
+	AvgyKGdg==;
+Received: from willy by casper.infradead.org with local (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1uw32C-0000000CMVI-3QRW;
+	Tue, 09 Sep 2025 18:25:40 +0000
+Date: Tue, 9 Sep 2025 19:25:40 +0100
+From: Matthew Wilcox <willy@infradead.org>
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com
+Subject: Re: [willy-pagecache:slab-future] [slab]  d7a6fafee0: RIP:__ksize
+Message-ID: <aMBxJL8hCfeKvyPS@casper.infradead.org>
+References: <202509022248.dbe9cc08-lkp@intel.com>
+ <aLgp9QKJ8EMbBR3T@casper.infradead.org>
+ <aLhFYcQtJYSWzxKw@xsang-OptiPlex-9020>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -63,142 +46,30 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202509051010.e06823ab-lkp@intel.com>
-X-Scanned-By: MIMEDefang 3.4.1 on 10.30.177.4
+In-Reply-To: <aLhFYcQtJYSWzxKw@xsang-OptiPlex-9020>
 
-On Fri, Sep 05, 2025 at 10:49:35AM +0800, kernel test robot wrote:
+On Wed, Sep 03, 2025 at 09:40:49PM +0800, Oliver Sang wrote:
+> > Hi.  Do you have a log for this configuration without this patchset?
+> > I believe it should hit this warning:
+> 
+> do you mean the dmesg from parent commit?
+> (attach one as dmesg-c5bbf49e67ff44.xz which seems quite clean)
+> 
+> or a dmesg from below commit
+> 
+> 3cace99d63192a (tag: next-20250829,
+> 
+> which seems the base of this branch?
+> 
+> 6259b37f692a4f (willy-pagecache/slab-future) mm: Remove redundant test in validate_page_before_insert()
+> 20f8e938ae667d slab: Remove references to folios from virt_to_slab()
+> ...
+> ab89f51ec71be2 slab: Remove unnecessary test from alloc_debug_processing()
+> 3cace99d63192a (tag: next-20250829,
 > 
 > 
-> Hello,
-> 
-> kernel test robot noticed "INFO:task_blocked_for_more_than#seconds" on:
-> 
-> commit: 8671bad873ebeb082afcf7b4501395c374da6023 ("sched: Do not call __put_task_struct() on rt if pi_blocked_on is set")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> 
-> [test failed on      linus/master 08b06c30a44555a8b1d14950e4462a52bfa0758b]
-> [test failed on linux-next/master 5d50cf9f7cf20a17ac469c20a2e07c29c1f6aab7]
-> 
-> in testcase: rcutorture
-> version: 
-> with following parameters:
-> 
-> 	runtime: 300s
-> 	test: cpuhotplug
-> 	torture_type: tasks-rude
+> but we didn't capure WARNING from 3cace99d63192a, but a random issue as below
+> (dmesg is attached as dmesg-3cace99d63192a.xz)
 
-I ran tests with the boxes I had at hand, x86_64 and arm64, and was unable
-to reproduce the problem. Tomorrow, when I am back from a holiday,, I will
-try to reproduce the problem with x86 (32 bits) VMs and x86 baremetal as it
-seems to be the case on the report.
-
-In any case, I sent a follow-up patch that isolated those changes to
-kernels with PREEMPT_RT enabled, as initially intended. That should solve
-this case (if really caused by the commit in question). The patch I
-mentioned is:
-
-    [RESEND PATCH] sched: restore the behavior of put_task_struct() for non-rt
-    https://lore.kernel.org/all/aKxqGLNOp2sWJwnZ@uudg.org/
-
-Best regards,
-Luis
- 
-> 
-> 
-> config: i386-randconfig-017-20250830
-> compiler: gcc-12
-> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> 
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
-> 
-> 
-> the issue happens randomly and we observed various issues in tests by this
-> commit, while parent keeps clean.
-> 
-> =========================================================================================
-> tbox_group/testcase/rootfs/kconfig/compiler/runtime/test/torture_type:
->   vm-snb/rcutorture/debian-11.1-i386-20220923.cgz/i386-randconfig-017-20250830/gcc-12/300s/cpuhotplug/tasks-rude
-> 
-> 7de9d4f946383f48 8671bad873ebeb082afcf7b4501
-> ---------------- ---------------------------
->        fail:runs  %reproduction    fail:runs
->            |             |             |
->            :200         16%          32:200   dmesg.BUG:kernel_hang_in_boot_stage
->            :200          0%           1:200   dmesg.BUG:soft_lockup-CPU##stuck_for#s![swapper:#]
->            :200          1%           2:200   dmesg.BUG:workqueue_lockup-pool
->            :200          0%           1:200   dmesg.EIP:kthread_affine_preferred
->            :200          0%           1:200   dmesg.EIP:lock_release
->            :200          0%           1:200   dmesg.EIP:tick_clock_notify
->            :200         12%          23:200   dmesg.INFO:task_blocked_for_more_than#seconds
->            :200         12%          23:200   dmesg.Kernel_panic-not_syncing:hung_task:blocked_tasks
->            :200          0%           1:200   dmesg.Kernel_panic-not_syncing:softlockup:hung_tasks
->            :200          0%           1:200   dmesg.WARNING:at_kernel/kthread.c:#kthread_affine_preferred
-> 
-> 
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202509051010.e06823ab-lkp@intel.com
-> 
-> 
-> [  994.935251][   T26] INFO: task swapper/0:1 blocked for more than 491 seconds.
-> [  994.947414][   T26]       Not tainted 6.16.0-rc6-00086-g8671bad873eb #1
-> [  994.951523][   T26] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-> [  994.960576][   T26] task:swapper/0       state:D stack:5016  pid:1     tgid:1     ppid:0      task_flags:0x0140 flags:0x00004000
-> [  994.972581][   T26] Call Trace:
-> [ 994.998429][ T26] __schedule (kernel/sched/core.c:5354 kernel/sched/core.c:6954) 
-> [ 995.035758][ T26] schedule (kernel/sched/core.c:7037 kernel/sched/core.c:7051) 
-> [ 995.044863][ T26] async_synchronize_cookie_domain (kernel/async.c:317 kernel/async.c:310) 
-> [ 995.050698][ T26] ? do_wait_intr (kernel/sched/wait.c:384) 
-> [ 995.059798][ T26] wait_for_initramfs (init/initramfs.c:778) 
-> [ 995.067798][ T26] populate_rootfs (init/initramfs.c:789) 
-> [ 995.070767][ T26] do_one_initcall (init/main.c:1274) 
-> [ 995.074441][ T26] ? initramfs_async_setup (init/initramfs.c:782) 
-> [ 995.098384][ T26] do_initcalls (init/main.c:1335 init/main.c:1352) 
-> [ 995.136744][ T26] kernel_init_freeable (init/main.c:1588) 
-> [ 995.136744][ T26] ? rest_init (init/main.c:1466) 
-> [ 995.158663][ T26] kernel_init (init/main.c:1476) 
-> [ 995.177750][ T26] ret_from_fork (arch/x86/kernel/process.c:154) 
-> [ 995.178146][ T26] ? rest_init (init/main.c:1466) 
-> [ 995.230129][ T26] ret_from_fork_asm (arch/x86/entry/entry_32.S:737) 
-> [ 995.230129][ T26] entry_INT80_32 (arch/x86/entry/entry_32.S:945) 
-> [  995.268743][   T26]
-> [  995.268743][   T26] Showing all locks held in the system:
-> [  995.336987][   T26] 1 lock held by khungtaskd/26:
-> [ 995.446697][ T26] #0: 830cce10 (rcu_read_lock){....}-{1:3}, at: debug_show_all_locks (kernel/locking/lockdep.c:6768 (discriminator 1)) 
-> [  995.464546][   T26] 4 locks held by kworker/u4:2/29:
-> [  995.470758][   T26] 2 locks held by kworker/0:3/38:
-> [  995.498593][   T26]
-> [  995.599251][   T26] =============================================
-> [  995.599251][   T26]
-> [  995.729940][   T26] Kernel panic - not syncing: hung_task: blocked tasks
-> [  995.729940][   T26] CPU: 0 UID: 0 PID: 26 Comm: khungtaskd Not tainted 6.16.0-rc6-00086-g8671bad873eb #1 PREEMPT(full)
-> [  995.729940][   T26] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-> [  995.729940][   T26] Call Trace:
-> [ 995.729940][ T26] dump_stack_lvl (lib/dump_stack.c:124) 
-> [ 995.729940][ T26] dump_stack (lib/dump_stack.c:130) 
-> [ 995.729940][ T26] panic (kernel/panic.c:382) 
-> [ 995.729940][ T26] check_hung_uninterruptible_tasks (kernel/hung_task.c:311) 
-> [ 995.729940][ T26] watchdog (kernel/hung_task.c:470) 
-> [ 995.729940][ T26] kthread (kernel/kthread.c:464) 
-> [ 995.729940][ T26] ? check_hung_uninterruptible_tasks (kernel/hung_task.c:453) 
-> [ 995.729940][ T26] ? kthread_complete_and_exit (kernel/kthread.c:413) 
-> [ 995.729940][ T26] ret_from_fork (arch/x86/kernel/process.c:154) 
-> [ 995.729940][ T26] ? kthread_complete_and_exit (kernel/kthread.c:413) 
-> [ 995.729940][ T26] ret_from_fork_asm (arch/x86/entry/entry_32.S:737) 
-> [ 995.729940][ T26] entry_INT80_32 (arch/x86/entry/entry_32.S:945) 
-> 
-> 
-> 
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20250905/202509051010.e06823ab-lkp@intel.com
-> 
-> 
-> 
-> -- 
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
-> 
----end quoted text---
-
+Ah, the bug was not what I thought it was.  Thank you for providing the
+reproducer; it was very useful.
