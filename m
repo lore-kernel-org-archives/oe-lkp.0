@@ -1,255 +1,116 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 154C52DA753
-	for <oe-lkp@lists.linux.dev>; Thu, 18 Sep 2025 07:06:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BA682ED167;
+	Thu, 18 Sep 2025 07:45:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758179204; cv=none; b=Ci17rnWoEAQmpqKpP0KxRB7ZKeADRulTHn9Lh/AISh5Jm7uBw4B2hLUGZvVo6IrMrY5WQbt64fQ1NrymaIMbjI1Bhn0saPBsDESZg7TQAR8htspqVbKHVFZxQHBafoRbzEcLerAf0BlSvYb1RUtbhm6aXYsTUQhgr8LrPgv1DbI=
+	t=1758181544; cv=none; b=T2iRdlZ63B4a9piRmeuW/BOj1bMSCjso9P6fgZUbhvj3fVKag2sU9O0wY5+OtXuJpyuNylKuUeP3sMen2coQMxzICRiY8mQojMh0Rl0OsPzXkbVKBBTj4xd+8bzGVx+ukrLRYzWfrVbg9XxZal4ETY4ApmSmnA/OCuHwtfjnWSs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758179204; c=relaxed/simple;
-	bh=tJyr5GBWeoRxX27Klu1mhGd9F/nLEtQoul9PlNMwj0Q=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=mBSKr+JsZrHN6HdS4xPrx7BIPhmiYcXJT9u1zVB0bxcTfR5/pWGHjwSguvw5eomwZP1RwdszL4YsRCJfrK8Uez656Pkf05wQhg3yPLCv1bUu5us+9a4UMhl0IBqA8cnU4Gniq7wdKfR40OhKXW3FvXVeapBKbj/sVWKaGwJZ9Tg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=kA27hBwA; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=kB62A6wq; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=kA27hBwA; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=kB62A6wq; arc=none smtp.client-ip=195.135.223.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+	s=arc-20240116; t=1758181544; c=relaxed/simple;
+	bh=s+WC4uTzB6N8Mo2Odh9TmAHpFcEEJQ9zdbOEZ9eh4iw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jiRSy9xqrq+XqIA0iFv8HVNYsZZZ9Dw38vv8a3xS+Vo/ZhT1WaeUdD3puPpifXxwafHG20L/jwBtrFJeSgroh2ACyCyUHXYqYTpWHa35t297yv05lBCwbBqrBNMBSJWPZnPFTNJKLfMj1e1OyhIu5uM1yOyir7LaQewtZqvXlWA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=ljdupphk; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="kA27hBwA";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="kB62A6wq";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="kA27hBwA";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="kB62A6wq"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id 2482D1F793;
-	Thu, 18 Sep 2025 07:06:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1758179200; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=JZoEadOth9tqAYHaBTKYwWwdApoK/1xkW2bLM7y3+n4=;
-	b=kA27hBwAKxwQojcfSbGlNTkTEId/3dxcw/HgkuiwYyAYF3N7fmly7nkyIQEkIgzjrw14uK
-	RwO7Lvz/6VYrxJdPve3NHek/LqeFLTHGn7hNaVs9duFmUkS1x7jioSQsrxVUl5uy/v0mgA
-	OiPJjb7jx9j1h1CrissOfNfUB1+wZzc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1758179200;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=JZoEadOth9tqAYHaBTKYwWwdApoK/1xkW2bLM7y3+n4=;
-	b=kB62A6wqAZn9HfImRxiW+yTaAnmqG5VXYyCaNcKO6xjJkyR96rvkf2yS9MwAhXpTVgc24Z
-	3No5t8kyTjdWCUBw==
-Authentication-Results: smtp-out2.suse.de;
-	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=kA27hBwA;
-	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b=kB62A6wq
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1758179200; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=JZoEadOth9tqAYHaBTKYwWwdApoK/1xkW2bLM7y3+n4=;
-	b=kA27hBwAKxwQojcfSbGlNTkTEId/3dxcw/HgkuiwYyAYF3N7fmly7nkyIQEkIgzjrw14uK
-	RwO7Lvz/6VYrxJdPve3NHek/LqeFLTHGn7hNaVs9duFmUkS1x7jioSQsrxVUl5uy/v0mgA
-	OiPJjb7jx9j1h1CrissOfNfUB1+wZzc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1758179200;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=JZoEadOth9tqAYHaBTKYwWwdApoK/1xkW2bLM7y3+n4=;
-	b=kB62A6wqAZn9HfImRxiW+yTaAnmqG5VXYyCaNcKO6xjJkyR96rvkf2yS9MwAhXpTVgc24Z
-	3No5t8kyTjdWCUBw==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 0743413A39;
-	Thu, 18 Sep 2025 07:06:40 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id NWI5AICvy2hLKAAAD6G6ig
-	(envelope-from <vbabka@suse.cz>); Thu, 18 Sep 2025 07:06:40 +0000
-Message-ID: <ce3be467-4ff3-4165-a024-d6a3ed33ad0e@suse.cz>
-Date: Thu, 18 Sep 2025 09:06:39 +0200
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="ljdupphk"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=o3niHjvUHc9LZUPhWlwJW8Oz1fReIPGyHTzQXs+P65c=; b=ljdupphkO1Pa1doVZvpZgTQ66C
+	F0FsFK5B/5T0itrgU8K7UI5taynItBKImLv1FFPbkVG00W6rn5y/oFHJZD/rGKHhttfwifsi+o6LH
+	7Bc2IwB04e4LAKHo1wiPqPgh80t38cgLzJ9n9nw7W4LY4Twq4Uu/xB8Lc0DF4YDGmgL2ux95Y+gx9
+	zE5LxabErWvBoavwITAOI3B8EVMAbcoPOVaNvU9toULmyonR2CBMcWI37ALZFT3ByPGMyFlizMqia
+	DJMvxo4yvPkr88wAHtFv75e625DCG/auETR7J5X/RfN5OyiB1BjvEXgymFc9SYaoV5QXGemkBHtNj
+	fqNi+GuA==;
+Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
+	by casper.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1uz9Kj-0000000FCgs-3vXT;
+	Thu, 18 Sep 2025 07:45:38 +0000
+Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
+	id AC335300328; Thu, 18 Sep 2025 09:45:36 +0200 (CEST)
+Date: Thu, 18 Sep 2025 09:45:36 +0200
+From: Peter Zijlstra <peterz@infradead.org>
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org
+Subject: Re: [peterz-queue:sched/hrtick] [entry,hrtimer,x86] ebf33ab570:
+ BUG:soft_lockup-CPU##stuck_for#s![pthread_mutex1_:#]
+Message-ID: <20250918074536.GE3289052@noisy.programming.kicks-ass.net>
+References: <202509081329.81f1ed82-lkp@intel.com>
+ <20250911073304.GN4067720@noisy.programming.kicks-ass.net>
+ <aMN/e2MHdJaaGT6z@xsang-OptiPlex-9020>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [linux-next:master] [slab] db93cdd664:
- BUG:kernel_NULL_pointer_dereference,address
-To: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc: kernel test robot <oliver.sang@intel.com>,
- Alexei Starovoitov <ast@kernel.org>, Harry Yoo <harry.yoo@oracle.com>,
- Suren Baghdasaryan <surenb@google.com>, oe-lkp@lists.linux.dev,
- kbuild test robot <lkp@intel.com>, kasan-dev <kasan-dev@googlegroups.com>,
- "open list:CONTROL GROUP (CGROUP)" <cgroups@vger.kernel.org>,
- linux-mm <linux-mm@kvack.org>
-References: <202509171214.912d5ac-lkp@intel.com>
- <b7d4cf85-5c81-41e0-9b22-baa9a7e5a0c4@suse.cz>
- <ead41e07-c476-4769-aeb6-5a9950737b98@suse.cz>
- <CAADnVQJYn9=GBZifobKzME-bJgrvbn=OtQJLbU+9xoyO69L8OA@mail.gmail.com>
-Content-Language: en-US
-From: Vlastimil Babka <vbabka@suse.cz>
-Autocrypt: addr=vbabka@suse.cz; keydata=
- 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
- m6M14QORSWTLRg==
-In-Reply-To: <CAADnVQJYn9=GBZifobKzME-bJgrvbn=OtQJLbU+9xoyO69L8OA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Level: 
-X-Spam-Flag: NO
-X-Rspamd-Queue-Id: 2482D1F793
-X-Rspamd-Action: no action
-X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
-X-Spamd-Result: default: False [-3.01 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	SUSPICIOUS_RECIPS(1.50)[];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	FUZZY_RATELIMITED(0.00)[rspamd.com];
-	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	TO_DN_SOME(0.00)[];
-	FREEMAIL_TO(0.00)[gmail.com];
-	MIME_TRACE(0.00)[0:+];
-	ARC_NA(0.00)[];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com];
-	RCVD_TLS_ALL(0.00)[];
-	DKIM_TRACE(0.00)[suse.cz:+];
-	RCVD_COUNT_TWO(0.00)[2];
-	MID_RHS_MATCH_FROM(0.00)[];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	RCPT_COUNT_SEVEN(0.00)[10];
-	DWL_DNSWL_BLOCKED(0.00)[suse.cz:dkim];
-	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	TAGGED_RCPT(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:rdns,imap1.dmz-prg2.suse.org:helo,suse.cz:dkim,suse.cz:mid,suse.cz:email]
-X-Spam-Score: -3.01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aMN/e2MHdJaaGT6z@xsang-OptiPlex-9020>
 
-On 9/17/25 20:38, Alexei Starovoitov wrote:
-> On Wed, Sep 17, 2025 at 2:18 AM Vlastimil Babka <vbabka@suse.cz> wrote:
->>
->> Also I was curious to find out which path is triggered so I've put a
->> dump_stack() before the kmalloc_nolock call:
->>
->> [    0.731812][    T0] Call Trace:
->> [    0.732406][    T0]  __dump_stack+0x18/0x30
->> [    0.733200][    T0]  dump_stack_lvl+0x32/0x90
->> [    0.734037][    T0]  dump_stack+0xd/0x20
->> [    0.734780][    T0]  alloc_slab_obj_exts+0x181/0x1f0
->> [    0.735862][    T0]  __alloc_tagging_slab_alloc_hook+0xd1/0x330
->> [    0.736988][    T0]  ? __slab_alloc+0x4e/0x70
->> [    0.737858][    T0]  ? __set_page_owner+0x167/0x280
->> [    0.738774][    T0]  __kmalloc_cache_noprof+0x379/0x460
->> [    0.739756][    T0]  ? depot_fetch_stack+0x164/0x180
->> [    0.740687][    T0]  ? __set_page_owner+0x167/0x280
->> [    0.741604][    T0]  __set_page_owner+0x167/0x280
->> [    0.742503][    T0]  post_alloc_hook+0x17a/0x200
->> [    0.743404][    T0]  get_page_from_freelist+0x13b3/0x16b0
->> [    0.744427][    T0]  ? kvm_sched_clock_read+0xd/0x20
->> [    0.745358][    T0]  ? kvm_sched_clock_read+0xd/0x20
->> [    0.746290][    T0]  ? __next_zones_zonelist+0x26/0x60
->> [    0.747265][    T0]  __alloc_frozen_pages_noprof+0x143/0x1080
->> [    0.748358][    T0]  ? lock_acquire+0x8b/0x180
->> [    0.749209][    T0]  ? pcpu_alloc_noprof+0x181/0x800
->> [    0.750198][    T0]  ? sched_clock_noinstr+0x8/0x10
->> [    0.751119][    T0]  ? local_clock_noinstr+0x137/0x140
->> [    0.752089][    T0]  ? kvm_sched_clock_read+0xd/0x20
->> [    0.753023][    T0]  alloc_slab_page+0xda/0x150
->> [    0.753879][    T0]  new_slab+0xe1/0x500
->> [    0.754615][    T0]  ? kvm_sched_clock_read+0xd/0x20
->> [    0.755577][    T0]  ___slab_alloc+0xd79/0x1680
->> [    0.756469][    T0]  ? pcpu_alloc_noprof+0x538/0x800
->> [    0.757408][    T0]  ? __mutex_unlock_slowpath+0x195/0x3e0
->> [    0.758446][    T0]  __slab_alloc+0x4e/0x70
->> [    0.759237][    T0]  ? mm_alloc+0x38/0x80
->> [    0.759993][    T0]  kmem_cache_alloc_noprof+0x1db/0x470
->> [    0.760993][    T0]  ? mm_alloc+0x38/0x80
->> [    0.761745][    T0]  ? mm_alloc+0x38/0x80
->> [    0.762506][    T0]  mm_alloc+0x38/0x80
->> [    0.763260][    T0]  poking_init+0xe/0x80
->> [    0.764032][    T0]  start_kernel+0x16b/0x470
->> [    0.764858][    T0]  i386_start_kernel+0xce/0xf0
->> [    0.765723][    T0]  startup_32_smp+0x151/0x160
->>
->> And the reason is we still have restricted gfp_allowed_mask at this point:
->> /* The GFP flags allowed during early boot */
->> #define GFP_BOOT_MASK (__GFP_BITS_MASK & ~(__GFP_RECLAIM|__GFP_IO|__GFP_FS))
->>
->> It's only lifted to a full allowed mask later in the boot.
+On Fri, Sep 12, 2025 at 10:03:39AM +0800, Oliver Sang wrote:
+> hi, Peter Zijlstra,
 > 
-> Ohh. That's interesting.
+> On Thu, Sep 11, 2025 at 09:33:04AM +0200, Peter Zijlstra wrote:
+> > On Mon, Sep 08, 2025 at 01:24:54PM +0800, kernel test robot wrote:
+> > > 
+> > > 
+> > > Hello,
+> > > 
+> > > kernel test robot noticed "BUG:soft_lockup-CPU##stuck_for#s![pthread_mutex1_:#]" on:
+> > > 
+> > > commit: ebf33ab5707c7c9ea25e3c03540b1329ad9aff1d ("entry,hrtimer,x86: Push reprogramming timers into the interrupt return path")
+> > > https://git.kernel.org/cgit/linux/kernel/git/peterz/queue.git sched/hrtick
+> > > 
+> > > in testcase: will-it-scale
+> > > version: will-it-scale-x86_64-75f66e4-1_20250906
+> > > with following parameters:
+> > > 
+> > > 	nr_task: 100%
+> > > 	mode: thread
+> > > 	test: pthread_mutex1
+> > > 	cpufreq_governor: performance
+> > > 
+> > > 
+> > > 
+> > > config: x86_64-rhel-9.4
+> > > compiler: gcc-13
+> > > test machine: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory
+> > > 
+> > > (please refer to attached dmesg/kmsg for entire log/backtrace)
+> > > 
+> > 
+> > Is this the same issue again as last time? Eg. disabling all the perf
+> > monitors makes it go?
 > 
->> That means due to "kmalloc_nolock() is not supported on architectures that
->> don't implement cmpxchg16b" such architectures will no longer get objexts
->> allocated in early boot. I guess that's not a big deal.
->>
->> Also any later allocation having its flags screwed for some reason to not
->> have __GFP_RECLAIM will also lose its objexts. Hope that's also acceptable.
->> I don't know if we can distinguish a real kmalloc_nolock() scope in
->> alloc_slab_obj_exts() without inventing new gfp flags or passing an extra
->> argument through several layers of functions.
-> 
-> I think it's ok-ish.
-> Can we add a check to alloc_slab_obj_exts() that sets allow_spin=true
-> if we're in the boot phase? Like:
-> if (gfp_allowed_mask != __GFP_BITS_MASK)
->    allow_spin = true;
-> or some cleaner way to detect boot time by checking slab_state ?
-> bpf is not active during the boot and nothing should be
-> calling kmalloc_nolock.
+> yes, if disabling all monitors, the issue disappeared.
 
-Checking the gfp_allowed_mask should work. Slab state is already UP so won't
-help, and this is not really about slab state anyway.
-But whether worth it... Suren what do you think?
+Could you try the below? I can't convince myself it can make a
+difference, but while rebasing the patches I noted that we set the TIF
+flag while holding cpu_base->lock, and clear after dropping it.
+
+Still, its all on the local CPU with IRQs disabled, so it should not
+matter.
+
+--- a/kernel/time/hrtimer.c
++++ b/kernel/time/hrtimer.c
+@@ -1989,8 +1989,8 @@ void _hrtimer_rearm(void)
+ 		now = hrtimer_update_base(cpu_base);
+ 		expires_next = hrtimer_update_next_event(cpu_base);
+ 		__hrtimer_rearm(cpu_base, now, expires_next);
++		clear_thread_flag(TIF_HRTIMER_REARM);
+ 	}
+-	clear_thread_flag(TIF_HRTIMER_REARM);
+ }
+ #endif /* TIF_HRTIMER_REARM */
+ #endif /* !CONFIG_HIGH_RES_TIMERS */
+
+
+Anyway, I'll go post these patches, maybe someone else spots the fail.
+I'll be sure to make a note this patch has issues.
+
+Thanks!
