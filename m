@@ -1,92 +1,97 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48B38C8CE
-	for <oe-lkp@lists.linux.dev>; Thu, 25 Sep 2025 05:47:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FF9E2E172E
+	for <oe-lkp@lists.linux.dev>; Thu, 25 Sep 2025 06:51:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.19
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758779227; cv=fail; b=GSVVXKI19V5+zlkoq6/Gmj0yTp6yqryGOD87PIDxgqGgt0I3lIagyTa9i1GTKVCo0dl//SHMsWO1s6Cqd2zg/l26lyQCuGsoM8WW4vMcUsnlvufgyteyOrzEXP20mQqSW3woZO4dnHPggTbQC6WjWayUOgTvcwvo1Ymq2vwo48c=
+	t=1758783122; cv=fail; b=EUeS1UxhsDSTuGBsv+IpOUsEzqdUJORsoqCjUm0NShYCJzA7nF5GhuDZ+B4LJl02QiAJDfwcwjC3Ht0+xsne0fC54ECJoBo8hZHZvXS65lkZZZ8afUH0K3rPeWhrS0y/QitLRfhbPb2a1kxu1CeFGkpovi+HERRG9Wka3fR70Bk=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758779227; c=relaxed/simple;
-	bh=rGpg4IvpDxqFz/yGRgFW2B8cosStANerzqOpb6NqBFw=;
+	s=arc-20240116; t=1758783122; c=relaxed/simple;
+	bh=hVVPKxe09/o485DeSiltvBqo7HL0ajmbaqs6FqMiPOU=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=RjhnuPVWWAk89OdYBOWeeJB5hUw1KF1q+tm0wUEE+wJUxcx3CSWz93WMuZKC6MMufa8SvLYAa1l9bQpFxFv7UT+CDEZsIczhh+HswYV2ow5ChLS7VIjHL05KXtRIRbXRKmvLfqpWiUIzuBvdfUB6jYioGcXtwFRpzoM3XfeMg3o=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Do/ciT71; arc=fail smtp.client-ip=192.198.163.18
+	 Content-Disposition:In-Reply-To:MIME-Version; b=fEbqZ2PfX6cC8G4RMDtxNMxaQvmAjyBU+yi1K46JxWZdV67uIAtVPuZDgUq2QWm+GXi28iM09fdsK+OLiBYdRvkmc5PnJj9gkgRm3YRSnQUlUlRrhnPXlJnoiPlWOVNf3elZnxCXEzyMRNFIw9svopM7qMniWgtuCt/L1Xax0t8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Os6M4XdF; arc=fail smtp.client-ip=198.175.65.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Do/ciT71"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Os6M4XdF"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1758779224; x=1790315224;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=rGpg4IvpDxqFz/yGRgFW2B8cosStANerzqOpb6NqBFw=;
-  b=Do/ciT71kGx4gc/Dim7kr+vgZ6rwjyR4yyrQeCcGZch4hlh+2s0AevjJ
-   kSwZLyYB0gNzw3pm4SrYaRcsW0heZ54L/QroLqyCUQ1xirvNrcwkekC5E
-   ftzyKdlFxR7Ac6tyMtwvsZHOVEWaEZnivApzSUbwmPQMhIlP5PwTrJUv9
-   Sgnm2CqWgQn86g9+RdV5odsH8idyGKH5cpvs+hCfSWITNjynCS9T/qdbl
-   PAGBCUz4MCqOv9+F3ZEGo/7nWEhtBvmr4iqFq3XiCwvztt1TUm8JXmctl
-   VRJdEcKqrYa9jlRWJQZ3Siv+CFJUf4jwVlEIEjs/dCrqTNf8LuKzJfD9k
+  t=1758783121; x=1790319121;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   mime-version;
+  bh=hVVPKxe09/o485DeSiltvBqo7HL0ajmbaqs6FqMiPOU=;
+  b=Os6M4XdFiOlXWhM65KhvagcpRKHXEQlYG5z38pofC9lnY/BPMVulg9bU
+   FSmgbtsw0cp3mw1cs0gG1ptYC9RsDL4Jwmn9WekwXl7a+9o0jbUmsYCN9
+   Clj3c7MZtacI6UzcsvXJlhXmwekKEPg92LUS2z59m9Q0HhvLbQKmS6xK3
+   g8Ct0si2jrV1UlHV6rGMo6/aqGzairRMHA51vBihB4j0D5Ux+dwzoVuMt
+   tKf5YYmOcUWfONZB/gmgIB9ep/M7jyooDF9zZB+BW3X8bLxcqgmpFyKjG
+   8CC4pXbdqiWPi3xNEEgy/dKvqUpxMuLgoCYcH2qwmEbg4iAkIlaQOkFhO
    w==;
-X-CSE-ConnectionGUID: pudmV5CJQPW5ggte/z3x1Q==
-X-CSE-MsgGUID: mmPpc8ojSMWuqgBDUDCSOg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11563"; a="60302080"
-X-IronPort-AV: E=Sophos;i="6.18,291,1751266800"; 
-   d="scan'208";a="60302080"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2025 22:47:04 -0700
-X-CSE-ConnectionGUID: wAUkDeFTQqCvL+txhnx+gw==
-X-CSE-MsgGUID: XxH0/Ik5SReEcJfw1/unRA==
+X-CSE-ConnectionGUID: 2iVmNRobQIOqDMmbMTVA5Q==
+X-CSE-MsgGUID: v42BHh9pT1CM3Ejxkmsv8g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11563"; a="60983426"
+X-IronPort-AV: E=Sophos;i="6.18,292,1751266800"; 
+   d="scan'208";a="60983426"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2025 23:52:00 -0700
+X-CSE-ConnectionGUID: uO95aMJOQRmWGsLK0iVqrw==
+X-CSE-MsgGUID: XT5+xSEVR52z1SflOce4Cg==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.18,291,1751266800"; 
-   d="scan'208";a="177634296"
-Received: from fmsmsx902.amr.corp.intel.com ([10.18.126.91])
-  by fmviesa008.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2025 22:47:03 -0700
-Received: from FMSMSX903.amr.corp.intel.com (10.18.126.92) by
- fmsmsx902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+X-IronPort-AV: E=Sophos;i="6.18,292,1751266800"; 
+   d="scan'208";a="182408083"
+Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
+  by orviesa005.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2025 23:51:59 -0700
+Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27; Wed, 24 Sep 2025 22:47:03 -0700
-Received: from fmsedg903.ED.cps.intel.com (10.1.192.145) by
- FMSMSX903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ 15.2.2562.27; Wed, 24 Sep 2025 23:51:58 -0700
+Received: from ORSEDG902.ED.cps.intel.com (10.7.248.12) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27 via Frontend Transport; Wed, 24 Sep 2025 22:47:03 -0700
-Received: from SJ2PR03CU001.outbound.protection.outlook.com (52.101.43.9) by
- edgegateway.intel.com (192.55.55.83) with Microsoft SMTP Server
+ 15.2.2562.27 via Frontend Transport; Wed, 24 Sep 2025 23:51:58 -0700
+Received: from CH5PR02CU005.outbound.protection.outlook.com (40.107.200.35) by
+ edgegateway.intel.com (134.134.137.112) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27; Wed, 24 Sep 2025 22:47:02 -0700
+ 15.2.2562.27; Wed, 24 Sep 2025 23:51:58 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Pxr4XSZcTeEyd5Jag5hKY7QCVWRMZVrAwyH40M+6hNM9qwIMB34oCw3C7ioEhw/0iKh+Zh2XwLUku9rOx7y5/ETtXV8pBQnCy17THayAw04nYMuGsKmo0tylYEn/7Xw+P5Ijb0ZCEiTbnHtJ4SxqzhrxcEWgtf9TlexF5uElHQGYwNmWU0++kYg9j4UGVZalgMsaYon9ir99yOPqAnzM2dG6np0MlJJ8aD3wSq6Y3EMXa6zo9UUqbeafRAyyoFoqR0hZZlbolDoTW2jEqMYI5V+qSKIFOjjCMI93F19svtaBiiHm4ktSuHS26Fh/Sk4C9pq5ckVVP/SEZZLtjfJedw==
+ b=rx2f5SbKTyuid9oLjimcZXg+//Hy1JWbu/T5NTDsE6mog9Krva4IkGxgCZH02vFKecp15b8ttno+uVV2I3caocJcw99F9Zw3r16dNa5UyaOlA5aKRDdYe7jXLWJ/zIbW+CECcbHrb7YZH+ZaRA2xUl2mYoDrwyQMUXBq6Qw3bjegQmGDPVDTOQ/dTQ+HW7twz9jEqcxUOf0hqX/WrhpLbLSpjT5l2h9WYlPY18POmzTrrg7jIV6kZD1zPKPR8ZO3ZUvinFds2V1kZscX6DTVzNSJU8517khXQM+c5+ywehTh2yiAfrLtt1c9sZM0+H3He4hlR8gjN8G+5JNR/yqLFg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=o0g+9HigZKRb4ooMqPr2X1+zYAaSFdge7KwGRuKWddw=;
- b=PiW9zWT5COGtMfB7cBghFijY9Q+dyAEmHtbZF7jwQKIv8VFAlCoIYfZarjXlEzxzlok+WqTn62ch38eWGb9SdtlzSOrrd3KcN82jPe4bmZwKzNQvC2AJw+qgy3FNyDrnYVNhqXKqvVD9LNtXiiFZ6mkDthRRgWha506R+g/v0tFze4tW+fZGad1RY3GXjm2rWZC5wo0Zn/pEkebHTtCo877xIWMVtBb7NS+kcZK5lAF9gjJjHljvyjqnT5koPwMHMTlDdkzQOdEyu8kl8oARca3IvoS0Ao7Cq7R+AbxSkOLxWuzsmDmbFqMQQUHrjtXFVjPRFDgdUNmWOqRzcJUrnw==
+ bh=vIUdq50qGVtnSUCuBs057FdBH0NkDcehhaUyTc3DS/E=;
+ b=nS7TFWv8eJyvNSBvRF9+dGKVHrERgAMLczqPY+kEtGO0VUo51e9KoaJ3mj0vc+ZJQTfnGOi2rX4upMJrJNzgEYmLNB5lrTCf/0dyH4xHM4+0Gg3t9hjBaCuPo9brcjDftdQt787lYOlQ/nC7/3d3H0uZUlrpaj0JKHqM5NXYmOiaXImh7/no8M6GaBugvnWYHlVnc/RQ0j6h6OSlrpjhBVO0Nqm0UwW6l+oGYa0r0tyJs11G0bFH/7X03lo6MMzQ8/bR5BENkE5+3W839Zr22sUwkaF3Algzv5FlUJnfOFTwdi81FVL9DHUEK+Kc2595mmrmmgc++VmDsK6j+1fbRQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by IA1PR11MB6217.namprd11.prod.outlook.com (2603:10b6:208:3eb::16) with
+ by MW4PR11MB5870.namprd11.prod.outlook.com (2603:10b6:303:187::5) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9160.10; Thu, 25 Sep
- 2025 05:46:54 +0000
+ 2025 06:51:56 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.9137.018; Thu, 25 Sep 2025
- 05:46:54 +0000
-Date: Thu, 25 Sep 2025 13:46:46 +0800
+ 06:51:56 +0000
+Date: Thu, 25 Sep 2025 14:51:46 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Christian Brauner <brauner@kernel.org>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	<oliver.sang@intel.com>
-Subject: [linux-next:master] [ipc]  74b24a582e:
- Oops:general_protection_fault,probably_for_non-canonical_address#:#[##]SMP_KASAN
-Message-ID: <202509241632.3a1187a5-lkp@intel.com>
+To: Marius Vlad <marius.vlad@collabora.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>,
+	<dri-devel@lists.freedesktop.org>, <daniel.stone@collabora.com>,
+	<dmitry.baryshkov@oss.qualcomm.com>, <jani.nikula@linux.intel.com>,
+	<tzimmermann@suse.de>, <simona.vetter@ffwll.ch>,
+	<derek.foreman@collabora.com>, <oliver.sang@intel.com>
+Subject: Re: [PATCH 1/2] drm: Introduce a new connector status
+Message-ID: <202509251410.fdfbcac3-lkp@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-X-ClientProxiedBy: TP0P295CA0029.TWNP295.PROD.OUTLOOK.COM (2603:1096:910:5::9)
- To LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+In-Reply-To: <20250923083636.4749-2-marius.vlad@collabora.com>
+X-ClientProxiedBy: SI1PR02CA0026.apcprd02.prod.outlook.com
+ (2603:1096:4:1f4::11) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -94,181 +99,281 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|IA1PR11MB6217:EE_
-X-MS-Office365-Filtering-Correlation-Id: 249241e0-cfc4-4022-d7f2-08ddfbf6eea1
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|MW4PR11MB5870:EE_
+X-MS-Office365-Filtering-Correlation-Id: fce6fe19-ccf8-409c-4afa-08ddfc000470
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?tHgmhxgG5J/hRDDlZ5lTizfBnRnXWWV1DRbb4ZWRzqsb0yg6r8DitUNi6aVw?=
- =?us-ascii?Q?QoDvWO2M+CZ4lJcS+DA1SxE3i6tuiu+im+pYMBuCscfAhQnB6Pp1faC1RY+7?=
- =?us-ascii?Q?es/J3ZOpq7Xe5srH8cedkKFysdSwV15jV0NMH9Icr8MveU6T/ZX4+9CjvEpN?=
- =?us-ascii?Q?9wjEVqhqdnZKn4U7C81T9KbvLlJkQxYpEel1PHzSAUBI2c+zhbCjErxsS49Y?=
- =?us-ascii?Q?YmPr8I7E6WARmdbpj4pqH126lyt9P8pVZ19f0mYp00FIwJkcGL8hWptfrSi9?=
- =?us-ascii?Q?2qsmW+VlHHhalSUg5zGtEmP7HRKfs3666jONFftz20hThSd2xbZ5DNNhbbzk?=
- =?us-ascii?Q?3YsJS21Hv2EOufDaRPwqrtQd4j3uIL2Z1Kfi8EbJWOzGEMxmG5PJ6pUfteZ1?=
- =?us-ascii?Q?1swWOv4CHwdAK8P4rVD0xU/r5xhc92LYcUcKkdtugho1y5Vm7qQKoHku1a+o?=
- =?us-ascii?Q?Hwp67wvZ/XO16yWaAShEM83NQfegUb9uSf6EghX+jVtGXiIE1HgbLojk2Yzd?=
- =?us-ascii?Q?C7IFZuujtYRWmOJJyepqm+QdA+rUH0cHySb/18DihBpksmG5X/fZ/tjp/qLf?=
- =?us-ascii?Q?kuDn2m2kSwAEUyND1UMMRtLukvDUamLJxe06APprBdZ4wpPgkBkr95so8xAu?=
- =?us-ascii?Q?2QAwBfuMtDcN4hjd6b9opLXwHvNJwZuBe4RRx9r4dUo5EmjuH7e1Q4F+KHKg?=
- =?us-ascii?Q?Xm42VWGEzlgUUXPbDAjBW+qcpgdbF/37w+d3oRDFgFz57qjMIMPFhs0JVABA?=
- =?us-ascii?Q?l4H02reyDI7XpNtUdznN2OYkiHBfRjbtqSwScAKV1pUn59xTQc2r8nVHcS3C?=
- =?us-ascii?Q?hOrQlocSK0zww/Tckqq61jTv+s6hDBmc/ouyFUHOSlastTPJdFzRgWUv+LXJ?=
- =?us-ascii?Q?sPG4t5yaUs0U511lPbTB/WYejdyoN57sfCTWGSdjjqh7fy0qquiSYvAQzrCo?=
- =?us-ascii?Q?Hi5E4bixZ8lgKiXZwSbW6Uy3VxbeIfObSvtYIL2B+jsRtn9KBSjKSRJS7GIM?=
- =?us-ascii?Q?x70ruXmNAyfTbvXJmhLC49+Kgq6YoMWzygxbgPapfzlbpbUtpTeNUUuz4POT?=
- =?us-ascii?Q?NdoAokfgH57t16T31Gt8ZA3Pt+r48n8RF44Fe7B1HBywDl3lWUBH6cjqKEo2?=
- =?us-ascii?Q?jIjvcBxHnAK2B5PCcdRkgfjHrZLzIZdR0qYH+a7OB7eZyiLvJ7IL8XVJAgjg?=
- =?us-ascii?Q?jr6Rs0sD2dWkJlflJ2lFLtDVnef4a0sHl0b4WmkhFs6Qz5WnkQLmqoOt59Yo?=
- =?us-ascii?Q?276Ojh7qS3SLtsPCuA4JpvMu4DBz8XcwkXN0eIKnERUXGQdtyiNZsqac17zh?=
- =?us-ascii?Q?FA8qFJvdSvN8dh4MlJUHJD8rYPDfb0OOvoYLP2K06GLkWwCWDyVdmjvqYYDV?=
- =?us-ascii?Q?/ymvfanIiffXYVr6GFklncZjbLDI?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7053199007;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?909kOPp8PGQAUVtOkR6HZKiGRBAaF6XitOF31CKi7vWLwnfJOIcTY8P3SN+Q?=
+ =?us-ascii?Q?ZpZmlVu21ESRYuglUI+0wYggk/CNI5MEmvtPMw9wQK7zy0NWNiVLOhm/YSA5?=
+ =?us-ascii?Q?3o2sJaoKJXVnKFc4Azs9KKR8y0VyU8qHf6vHO4o6m0lIKg4qdWAm/Zt3l+KJ?=
+ =?us-ascii?Q?IrqUtDJZtlyZHulk01EPGoGiqnPk0g5vn2mYzvNyRcRCY5Iuoptpbt8OSfuz?=
+ =?us-ascii?Q?/0jmI+mu/MqSsyfNEnlJh6WD4/fQqg/dkvNE0bjHAWnpfN8I7rtBepML6k+x?=
+ =?us-ascii?Q?8WBdA9nvwsXMfDctSqhprNEoY1lH/NP6nkQDx50DI4Dmjtn+sfxsnIgU6iTs?=
+ =?us-ascii?Q?HgGfSe0F1jF5u8DcEukmg7SGzFQk6B5bVW7/bR7o49M5xTz2pDm9IR4RkDv+?=
+ =?us-ascii?Q?iYI3YrCUYgMw0/W0oDoqzVMBtHcEf9LnU45KVfaiWSpOGzRoNlDh1bYXNk5x?=
+ =?us-ascii?Q?tsBBxKL56SJR5Z0KSxhilIcPWV6r5dhglJgW8ZlhZm6irMW1ZreCuEbZhCES?=
+ =?us-ascii?Q?YrM8GYXcNdNvit0xjJeWeIjnb45u9QG+6tvnJbfjhIww1QkRLW7Yko21b03A?=
+ =?us-ascii?Q?0IEeeNcrvWoXTUAXqPxYpNLXlBqqCjF4iYKpljaJW1Zy6TNWT8aUxKBBULrH?=
+ =?us-ascii?Q?41xkcjNr+7otwDD3RCqbd3Q85gKeEWGiPAlZrdda4t0+HroU2b69RpTUntHI?=
+ =?us-ascii?Q?FLmRoEoRcxUfHAAAtLjnbUVWjRxP6e2ECB3zGKfoMksGZ92R0Q/R+uSALz6X?=
+ =?us-ascii?Q?Yjfg93G6RVB+MdsiZPZK8tFcK8ikPZaowTCvrQuKnzrBAvcSmI/Q20uhoA1m?=
+ =?us-ascii?Q?clza+GDd8WnTelpp1oXoL/E71L/IEoPJaoiQzbO5W9ewhLsXD18nW7r4GJb3?=
+ =?us-ascii?Q?phivsqYhe+eXkA/maTA4LMJLHHE102Y0ZmCXISHSi6xzB1eIzOMHVhIn597s?=
+ =?us-ascii?Q?yvumVpAjEqwPtYf0RSzUqhZ2I1eg6S9+KFzk5LVIWrswxc1uMq4RK7ceceEn?=
+ =?us-ascii?Q?5KykW/ANv148hE+uI3O9U+WAyUJhUAymuLhONCQCYOsABCgxHuVFM9l9pPkj?=
+ =?us-ascii?Q?gBdxjyuKvhzjTEzvAGH0rV96rjRoVbAsVI8vEsYJAPRgu1EebiEdFAu1jrhc?=
+ =?us-ascii?Q?lVNwKl9UFE/Q3Ucu5lmEOsStzqfXxTgb0/0pS2LadbwEqLya3xKwvGQ5tR+q?=
+ =?us-ascii?Q?T/7vWd3EVsTF5YhnQ5nqfg0KUvvm09i1oOv+NlXNsYQx9jwJlJqTZLONTxty?=
+ =?us-ascii?Q?e4sOosrkkXm8fUvQtHKzW+WCWJGR3EB9xivMFfU34hCCt//DfILNhi0LFHVv?=
+ =?us-ascii?Q?hq7Zz7UgWbFqoRamXJGb8ufJB13lT8A//5QbFMkkVicXChG22xMD5bA0sFeb?=
+ =?us-ascii?Q?IAP5tXszMQZRd99rC6JJqbaaTs7cl1qXoE4q9Zwcq6Ila4y/bQyuMSwht3RT?=
+ =?us-ascii?Q?7h+lSz3EPk4=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7053199007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fLE2fNZBLvE5l5daxlDTcYUHTLnaKlZ7oc/FUVgppD2ywhmrL48DH7ZRXoTk?=
- =?us-ascii?Q?NP9ioETl00BqsBeAmramn3wXBeEI3xrJhk867b0ARGhtlStgy2xcQcHJhJXM?=
- =?us-ascii?Q?uv9SilUSBbIzAnCyVGo5dVOBAb7TNHWkSAGs2z4rdAph3V+YNdc5KCjB0Tua?=
- =?us-ascii?Q?83+VqYwBb+v7KaduyENLQ49zVgBfKSt965NBNO6x3YuKULaQHdCYsGB1Q1S7?=
- =?us-ascii?Q?ABHkxFmbfpOoXzQgE9rnuYEUc58pQHmEX7+SkGWc+6i8N+2907QvGVYv8x+m?=
- =?us-ascii?Q?1uwnvwEGdo+4ifd0CIrtr8jG6sGEBja6SHyRZgVKV/VHe3Ay2W9gQuYAiPzU?=
- =?us-ascii?Q?0JB6gYUM0x76EUbeaKiLSKvefEQ4xT/r0OH1z1pwQySi6DwAr1PygzWxyJSg?=
- =?us-ascii?Q?g6cHDbSWlY5ce+dCUVgiKhUsT+l736WpnBcrtHwPRDw4NGjKI+1YWEB+0Nlc?=
- =?us-ascii?Q?o6wimhi3DV6qaZKdfdWpR97yNNRmoJVeVm4XOUp6qJsZNZ6oIZmBl0j7PwTm?=
- =?us-ascii?Q?SgYN1JvQ/vJQ37C/WP3a4majyN3sRRN35y8Sid89C0MZox4Hba+qXkVTjHyx?=
- =?us-ascii?Q?4kxMHLjy3OtsutWoTI4uxJYGWJFNbAs/7y1VCtIRVjbisu1PLseNpFgXsb3X?=
- =?us-ascii?Q?2jFuo3AHBmIIzl+1mG7J/+A6Iai98JD/k/6hO9QWNKeMgwp12JJn6gachLft?=
- =?us-ascii?Q?9gugHwus+FR0FRkHyEUKP+XTZ3ZuOyuNtqB0wA6E3yPmjpwx6dMs8dBgnOfe?=
- =?us-ascii?Q?vsbNuaRnfCnvsEx8YxkTt1HBR0AJ4lcFwQghXPtMHZ1WEmcu811slPE57gu4?=
- =?us-ascii?Q?qc3ZpODMS2dIdUYuVV3S5YVwgJzyK6WU9uZrbfZJK+iTsGp2UHLzKmONyOoQ?=
- =?us-ascii?Q?I6tlP96oxcb8t7C2lv7AkB6CkeqXMJwplhdqxs5WvWA6D7A8DdRUKpACEmRI?=
- =?us-ascii?Q?oYC3nmoOIIytfFGuq3o3DAt6EGN75s5OGzR7r54lYWlx7TOoNQR16nted9sa?=
- =?us-ascii?Q?iAjZIZ7KsqaF76eHODUZENhvkn7n1u/pGZjewZJ9e03KQnVWhxcDCoDx0lRK?=
- =?us-ascii?Q?Z3iBKK+RyExabjtddgHqlL/DOV+Epm9ct+mNuAJmhb3mjaZ1R9OjMJA7FlhN?=
- =?us-ascii?Q?L/7rYac5H4g/cXtkNum0o/A0BmpZGzvPiS6VSU7+oBSv9N2gO7ec948Cyig/?=
- =?us-ascii?Q?KpST3WHXo4iPlh0mRBs5Feejlrxo8DP848dPyB36Lbz+7g8iNjgBBpAfKiIU?=
- =?us-ascii?Q?SYuyDVJ8qvfI08B6CE+ZBuYqPP4npbDY+hGX1xYUbFRtzVIw+BYa+3j/gKDj?=
- =?us-ascii?Q?2tk0+uQrDDlzxWe+wI23QgeUqDHP61I05LVnY6JzqrfDxIdj95aYdymJXE73?=
- =?us-ascii?Q?N1YNZVypA52rs847lY8mO8wJegbB3AOsAOxPvBZT2ew/NTWAJnZzmCTIivII?=
- =?us-ascii?Q?Xzfv4SHBl/Rl2jaldl6ey7Wk7AgQwxxBaFkl7Sjws4On4SGoMCIFto54PmS8?=
- =?us-ascii?Q?F3lnmiIRRjh7rpuP4j6fREQFOXkAIXYqaaU49ZifCCv9OC4j8HOH9pyexNfj?=
- =?us-ascii?Q?LlRaHMxeYebW0uDerza1PanqX040rEcE5RecRcJ+9S6alGLiiAObCmdBDpv8?=
- =?us-ascii?Q?Ew=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 249241e0-cfc4-4022-d7f2-08ddfbf6eea1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NhMhnCWDWAN0/0vcaF+APdiW3hV8RTLMX5x3fSPyiWKWVlkSSNZjppmKK9Ba?=
+ =?us-ascii?Q?GHnE6FpfyXi9WFkn1rI75JqTa43cwjU8dukBte3qP+P/saxpUS4KzPv9KxU4?=
+ =?us-ascii?Q?qhdESR+NENrZSPzDw/KighAwwVeOseAxvQOnUv7c2HzCyZ3sMQA6W6LPAibU?=
+ =?us-ascii?Q?LbMBFmLMctwxOhuhVuBfZEVLpdifLGlULHnAqMeeLB8+mMw2D3j314gm59oL?=
+ =?us-ascii?Q?+JiuQXDDHqWc15JJeJIoh9WSTT0PrkYl+W8IiA4564ntGwN3m5Gb1tAeAQ3R?=
+ =?us-ascii?Q?Vv2dhZJwIwt/sYbtD8I2ncDaTfN0Lx355XgROIFViV2oGTVPWmfz+qMK5gUi?=
+ =?us-ascii?Q?4RxTHhjFExDyKjuEfx4DFzPj9GGgQHPk7tujg7Jrhs+EpVWSPmTpTfZ5yXSz?=
+ =?us-ascii?Q?3rCg0izOF91Xh432CrNuhJu6HMXTuAWlaBX3xCZWkJp3I7AW4S0abCHtqi+j?=
+ =?us-ascii?Q?4lmNp3DPxdA5W+ulbm7Q5tzCnm2mS/FdsiUmU1aQvfe7YMolmFsoGrfFvnlI?=
+ =?us-ascii?Q?OXDvjqUq92bHF/UwU3wIvpnTIjuNcqAXamsiNjMrNvfbvcx/wNQWzK/ab7tl?=
+ =?us-ascii?Q?4+rV9cx1gx5ouBBkYpC6Pc5MoLVTRfiig0SDYu0l3m2bSEC9x3VMLsm0Oqiy?=
+ =?us-ascii?Q?GXkz28tYkRin+tWzJaf9+Ca5NrnmrnxWaEXrfU9SW37nFNHmdDoqfapqzrgu?=
+ =?us-ascii?Q?Zg6TuOWx7hQnMd4UYk6MSY+6XNoNPbSZDyeb3avMKEha9M3McM+WFGTCnlT4?=
+ =?us-ascii?Q?tBYBZFJNPE6S/9Xw05/O4thlzCGYA62NdeU/DGD/aDyRtODRTZ9gjFTGnALO?=
+ =?us-ascii?Q?yx6uPAO2j75jkpwmj+Ds9m8VqpG/g4o+mRfiObM9+YM43G96QM+69+lll840?=
+ =?us-ascii?Q?0/vnOtJq+mw68kEHYu9KHo5WgxAVu4vrPMXRSvPNZtV5d+XBWyO82ukjwbWg?=
+ =?us-ascii?Q?i+zEwk3ZKth2PIuOShtlv7R42xCVsP8VkcUPzmHVa5yYgPH7/Drnrq/HhVGL?=
+ =?us-ascii?Q?XUbWmaizJDwTuAxsaI2ugPhODbPPXtEdv1CoQOrvXUxAlNY0esHjH4OX0LP9?=
+ =?us-ascii?Q?Lynec3v0W2K89i6EVBQ2rZ37+2/C2FXsNhRLnWDK/AdnHAEo8xoTefgksHHp?=
+ =?us-ascii?Q?J0hX9SWuO5FOixNg2y4AAd5yB1O/Kcd9AmFc8mf9qs/uRDc2uuO3du8Vlkq8?=
+ =?us-ascii?Q?ugJFd9fYkuwS6LvXqdeFSoHgjzkwiLmww0k41VoFNVcRdTWj4/IRsKLAbcoW?=
+ =?us-ascii?Q?TDN1uSQIl9TMxefvcaVG6xj9UdCDpw0+b8ej3U+A7aWOpGW5hvQ64poXvKJn?=
+ =?us-ascii?Q?5nbJ+YMhnCV1/012MwS3ro8nmPXoxhnBXlgZ/g2dduHyOeRIRaIlbwoR/Nvg?=
+ =?us-ascii?Q?ihzaZRCduRL5WNB2Wla9t18ct0vcAaGgStvr/TeqvN8HUdIgdI0qOBADPnZQ?=
+ =?us-ascii?Q?7cD9gulr5I706jBj7FdELL5Po1GVjCkcQr24K8SjbFFZrf8zlrGOBJFnf4Q2?=
+ =?us-ascii?Q?lT2EIYNUPZYuHLwego0aafCnDNvrv6FxwvflFaDgzDX4+GP6Ck213KFCOaNc?=
+ =?us-ascii?Q?0lryLnixOYZAAKMAo8h7IPmhL4CU4CvgYM1wwV6oUfLEusDj56xQd4ghUzw4?=
+ =?us-ascii?Q?GQ=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: fce6fe19-ccf8-409c-4afa-08ddfc000470
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Sep 2025 05:46:54.1655
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Sep 2025 06:51:56.2745
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3CI5mB6KxuT0gpfHnORh1KjVd7+qjkD/CV/XaxEnZjUtCMi5uW/YaBx0mgSewH72+lt312+DqMhhm7Cmw9S1YQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB6217
+X-MS-Exchange-CrossTenant-UserPrincipalName: oGj134dc1sdnpT9S/P66tbioy8OBMMZbVpilyxqDSX4X9z8iFRP2ude6nB9GxRweQbT8cJHuzf4l3lwsQbjC6g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB5870
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
+kernel test robot noticed "WARNING:possible_recursive_locking_detected" on:
 
-we reported
-"[brauner-github:namespace-6.18.file_handles] [ipc]  c8e087bf68: BUG:kernel_NULL_pointer_dereference,address"
-in
-https://lore.kernel.org/all/202509231700.dff6cd4d-lkp@intel.com/
-
-now we noticed this commit is in linux-next/master and found similar issues
-in our tests. so report again FYI.
-
-
-kernel test robot noticed "Oops:general_protection_fault,probably_for_non-canonical_address#:#[##]SMP_KASAN" on:
-
-commit: 74b24a582e1ff3960f0454f57afc2bcdbc52562e ("ipc: support ns lookup")
-https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+commit: 432c7653afa4afe08e59d608db7cbbc321c52149 ("[PATCH 1/2] drm: Introduce a new connector status")
+url: https://github.com/intel-lab-lkp/linux/commits/Marius-Vlad/drm-Introduce-a-new-connector-status/20250923-163922
+base: git://anongit.freedesktop.org/drm/drm-misc drm-misc-next
+patch link: https://lore.kernel.org/all/20250923083636.4749-2-marius.vlad@collabora.com/
+patch subject: [PATCH 1/2] drm: Introduce a new connector status
 
 in testcase: boot
 
-config: x86_64-randconfig-007-20250922
-compiler: clang-20
+config: x86_64-randconfig-074-20250924
+compiler: gcc-14
 test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
 
 
-+----------------------------------------------------------------------------------+------------+------------+
-|                                                                                  | 7c60593985 | 74b24a582e |
-+----------------------------------------------------------------------------------+------------+------------+
-| boot_successes                                                                   | 12         | 0          |
-| boot_failures                                                                    | 0          | 12         |
-| Oops:general_protection_fault,probably_for_non-canonical_address#:#[##]SMP_KASAN | 0          | 12         |
-| KASAN:null-ptr-deref_in_range[#-#]                                               | 0          | 12         |
-| RIP:__ns_tree_add_raw                                                            | 0          | 12         |
-| Kernel_panic-not_syncing:Fatal_exception                                         | 0          | 12         |
-+----------------------------------------------------------------------------------+------------+------------+
-
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202509241632.3a1187a5-lkp@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202509251410.fdfbcac3-lkp@intel.com
 
 
-[    2.135918][    T1] Oops: general protection fault, probably for non-canonical address 0xdffffc0000000002: 0000 [#1] SMP KASAN
-[    2.137777][    T1] KASAN: null-ptr-deref in range [0x0000000000000010-0x0000000000000017]
-[    2.137777][    T1] CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.17.0-rc4-00022-g74b24a582e1f #1 PREEMPT  38d15ed75bef35c8d0bf70c9ae8ec80a13adc51c
-[ 2.137777][ T1] RIP: 0010:__ns_tree_add_raw (kbuild/src/consumer/kernel/nstree.c:95) 
-[ 2.137777][ T1] Code: 45 d0 4c 8d 70 08 4c 89 f0 48 c1 e8 03 42 80 3c 28 00 74 08 4c 89 f7 e8 ec 09 5e 00 4d 8b 36 49 83 c6 10 4c 89 f0 48 c1 e8 03 <42> 0f b6 04 28 84 c0 0f 85 1c 04 00 00 41 8b 1e 4d 8d b4 24 90 00
-All code
-========
-   0:	45 d0 4c 8d 70       	rex.RB rorb $1,0x70(%r13,%rcx,4)
-   5:	08 4c 89 f0          	or     %cl,-0x10(%rcx,%rcx,4)
-   9:	48 c1 e8 03          	shr    $0x3,%rax
-   d:	42 80 3c 28 00       	cmpb   $0x0,(%rax,%r13,1)
-  12:	74 08                	je     0x1c
-  14:	4c 89 f7             	mov    %r14,%rdi
-  17:	e8 ec 09 5e 00       	call   0x5e0a08
-  1c:	4d 8b 36             	mov    (%r14),%r14
-  1f:	49 83 c6 10          	add    $0x10,%r14
-  23:	4c 89 f0             	mov    %r14,%rax
-  26:	48 c1 e8 03          	shr    $0x3,%rax
-  2a:*	42 0f b6 04 28       	movzbl (%rax,%r13,1),%eax		<-- trapping instruction
-  2f:	84 c0                	test   %al,%al
-  31:	0f 85 1c 04 00 00    	jne    0x453
-  37:	41 8b 1e             	mov    (%r14),%ebx
-  3a:	4d                   	rex.WRB
-  3b:	8d                   	.byte 0x8d
-  3c:	b4 24                	mov    $0x24,%ah
-  3e:	90                   	nop
-	...
+[   19.416092][    T1] WARNING: possible recursive locking detected
+[   19.416406][    T1] 6.17.0-rc2-00290-g432c7653afa4 #1 Not tainted
+[   19.416406][    T1] --------------------------------------------
+[   19.416406][    T1] swapper/0/1 is trying to acquire lock:
+[ 19.416406][ T1] ffff88813b9c84d0 (&dev->mode_config.mutex){+.+.}-{4:4}, at: drm_helper_probe_single_connector_modes (drivers/gpu/drm/drm_probe_helper.c:633) 
+[   19.416406][    T1]
+[   19.416406][    T1] but task is already holding lock:
+[ 19.416406][ T1] ffff88813b9c84d0 (&dev->mode_config.mutex){+.+.}-{4:4}, at: drm_client_modeset_probe (drivers/gpu/drm/drm_client_modeset.c:869) 
+[   19.416406][    T1]
+[   19.416406][    T1] other info that might help us debug this:
+[   19.416406][    T1]  Possible unsafe locking scenario:
+[   19.416406][    T1]
+[   19.416406][    T1]        CPU0
+[   19.416406][    T1]        ----
+[   19.416406][    T1]   lock(&dev->mode_config.mutex);
+[   19.416406][    T1]
+[   19.416406][    T1]  *** DEADLOCK ***
+[   19.416406][    T1]
+[   19.416406][    T1]  May be due to missing lock nesting notation
+[   19.416406][    T1]
+[   19.416406][    T1] 6 locks held by swapper/0/1:
+[ 19.416406][ T1] #0: ffff88813b9c8320 (&dev->clientlist_mutex){+.+.}-{4:4}, at: drm_client_register (include/linux/list.h:169 drivers/gpu/drm/drm_client.c:128) 
+[ 19.416406][ T1] #1: ffff888108a882a0 (&helper->lock){+.+.}-{4:4}, at: drm_fb_helper_initial_config (drivers/gpu/drm/drm_fb_helper.c:1917) 
+[ 19.416406][ T1] #2: ffff888108a88098 (&client->modeset_mutex){+.+.}-{4:4}, at: drm_client_modeset_probe (drivers/gpu/drm/drm_client_modeset.c:867) 
+[ 19.416406][ T1] #3: ffff88813b9c84d0 (&dev->mode_config.mutex){+.+.}-{4:4}, at: drm_client_modeset_probe (drivers/gpu/drm/drm_client_modeset.c:869) 
+[ 19.416406][ T1] #4: ffffc9000001fa78 (crtc_ww_class_acquire){+.+.}-{0:0}, at: drm_helper_probe_single_connector_modes (drivers/gpu/drm/drm_probe_helper.c:572) 
+[ 19.416406][ T1] #5: ffffc9000001faa8 (crtc_ww_class_mutex){+.+.}-{4:4}, at: drm_helper_probe_single_connector_modes (drivers/gpu/drm/drm_probe_helper.c:572) 
+[   19.416406][    T1]
+[   19.416406][    T1] stack backtrace:
+[   19.416406][    T1] CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.17.0-rc2-00290-g432c7653afa4 #1 PREEMPT(none)
+[   19.416406][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+[   19.416406][    T1] Call Trace:
+[   19.416406][    T1]  <TASK>
+[ 19.416406][ T1] dump_stack_lvl (lib/dump_stack.c:122) 
+[ 19.416406][ T1] print_deadlock_bug.cold (kernel/locking/lockdep.c:3044) 
+[ 19.416406][ T1] validate_chain (kernel/locking/lockdep.c:3898) 
+[ 19.416406][ T1] __lock_acquire (kernel/locking/lockdep.c:5237 (discriminator 1)) 
+[ 19.416406][ T1] lock_acquire (kernel/locking/lockdep.c:470 kernel/locking/lockdep.c:5870) 
+[ 19.416406][ T1] ? drm_helper_probe_single_connector_modes (drivers/gpu/drm/drm_probe_helper.c:633) 
+[ 19.416406][ T1] ? sched_show_task (kernel/sched/core.c:8912) 
+[ 19.416406][ T1] ? look_up_lock_class (kernel/locking/lockdep.c:933 (discriminator 28)) 
+[ 19.416406][ T1] __mutex_lock (arch/x86/include/asm/atomic.h:23 include/linux/atomic/atomic-arch-fallback.h:457 include/linux/jump_label.h:262 include/trace/events/lock.h:95 kernel/locking/mutex.c:600 kernel/locking/mutex.c:760) 
+[ 19.416406][ T1] ? drm_helper_probe_single_connector_modes (drivers/gpu/drm/drm_probe_helper.c:633) 
+[ 19.416406][ T1] ? look_up_lock_class (kernel/locking/lockdep.c:933 (discriminator 28)) 
+[ 19.416406][ T1] ? mutex_lock_io_nested (kernel/locking/mutex.c:759) 
+[ 19.416406][ T1] ? drm_print_bits (drivers/gpu/drm/drm_print.c:334) 
+[ 19.416406][ T1] ? ww_mutex_lock (kernel/locking/mutex.c:887) 
+[ 19.416406][ T1] ? drm_helper_probe_single_connector_modes (drivers/gpu/drm/drm_probe_helper.c:633) 
+[ 19.416406][ T1] drm_helper_probe_single_connector_modes (drivers/gpu/drm/drm_probe_helper.c:633) 
+[ 19.416406][ T1] ? __drm_helper_update_and_validate (drivers/gpu/drm/drm_probe_helper.c:561) 
+[ 19.416406][ T1] ? __kmalloc_noprof (include/trace/events/kmem.h:54 (discriminator 2) mm/slub.c:4366 (discriminator 2) mm/slub.c:4377 (discriminator 2)) 
+[ 19.416406][ T1] drm_client_modeset_probe (drivers/gpu/drm/drm_client_modeset.c:869 (discriminator 1)) 
+[ 19.416406][ T1] ? drm_client_firmware_config (drivers/gpu/drm/drm_client_modeset.c:818) 
+[ 19.416406][ T1] __drm_fb_helper_initial_config_and_unlock (drivers/gpu/drm/drm_fb_helper.c:1830) 
+[ 19.416406][ T1] drm_fbdev_client_hotplug (drivers/gpu/drm/clients/drm_fbdev_client.c:53) 
+[ 19.416406][ T1] drm_client_register (drivers/gpu/drm/drm_client.c:141) 
+[ 19.416406][ T1] drm_fbdev_client_setup (drivers/gpu/drm/clients/drm_fbdev_client.c:167) 
+[ 19.416406][ T1] drm_client_setup (drivers/gpu/drm/clients/drm_client_setup.c:47) 
+[ 19.416406][ T1] vkms_create (drivers/gpu/drm/vkms/vkms_drv.c:203) 
+[ 19.416406][ T1] ? drm_display_helper_module_init (drivers/gpu/drm/vkms/vkms_drv.c:213) 
+[ 19.416406][ T1] vkms_init (drivers/gpu/drm/vkms/vkms_drv.c:221) 
+[ 19.416406][ T1] do_one_initcall (init/main.c:1269) 
+[ 19.416406][ T1] ? trace_event_raw_event_initcall_level (init/main.c:1260) 
+[ 19.416406][ T1] do_initcalls (init/main.c:1330 (discriminator 3) init/main.c:1347 (discriminator 3)) 
+[ 19.416406][ T1] kernel_init_freeable (init/main.c:1583) 
+[ 19.416406][ T1] ? rest_init (init/main.c:1461) 
+[ 19.416406][ T1] kernel_init (init/main.c:1471) 
+[ 19.416406][ T1] ? rest_init (init/main.c:1461) 
+[ 19.416406][ T1] ret_from_fork (arch/x86/kernel/process.c:154) 
+[ 19.416406][ T1] ? rest_init (init/main.c:1461) 
+[ 19.416406][ T1] ret_from_fork_asm (arch/x86/entry/entry_64.S:255) 
+[   19.416406][    T1]  </TASK>
+[  984.236393][   T23] INFO: task swapper/0:1 blocked for more than 491 seconds.
+[  984.237354][   T23]       Not tainted 6.17.0-rc2-00290-g432c7653afa4 #1
+[  984.238322][   T23] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+[  984.239375][   T23] task:swapper/0       state:D stack:0     pid:1     tgid:1     ppid:0      task_flags:0x0140 flags:0x00004000
+[  984.240834][   T23] Call Trace:
+[  984.241228][   T23]  <TASK>
+[ 984.241634][ T23] __schedule (kernel/sched/core.c:5357 kernel/sched/core.c:6961) 
+[ 984.242202][ T23] ? io_schedule_timeout (kernel/sched/core.c:6817) 
+[ 984.242846][ T23] ? lock_acquire (include/trace/events/lock.h:24 (discriminator 2) kernel/locking/lockdep.c:5831 (discriminator 2)) 
+[ 984.243441][ T23] schedule (kernel/sched/core.c:7044 kernel/sched/core.c:7058) 
+[ 984.243975][ T23] schedule_preempt_disabled (kernel/sched/core.c:7116) 
+[ 984.244639][ T23] __mutex_lock (kernel/locking/mutex.c:183 kernel/locking/mutex.c:678 kernel/locking/mutex.c:760) 
+[ 984.245258][ T23] ? drm_helper_probe_single_connector_modes (drivers/gpu/drm/drm_probe_helper.c:633) 
+[ 984.246160][ T23] ? mutex_lock_io_nested (kernel/locking/mutex.c:759) 
+[ 984.246876][ T23] ? drm_print_bits (drivers/gpu/drm/drm_print.c:334) 
+[ 984.247486][ T23] ? ww_mutex_lock (kernel/locking/mutex.c:887) 
+[ 984.248132][ T23] ? ww_mutex_lock (kernel/locking/mutex.c:887) 
+[ 984.248681][ T23] ? drm_helper_probe_single_connector_modes (drivers/gpu/drm/drm_probe_helper.c:633) 
+[ 984.249557][ T23] drm_helper_probe_single_connector_modes (drivers/gpu/drm/drm_probe_helper.c:633) 
+[ 984.250457][ T23] ? __drm_helper_update_and_validate (drivers/gpu/drm/drm_probe_helper.c:561) 
+[ 984.251275][ T23] ? __kmalloc_noprof (include/trace/events/kmem.h:54 (discriminator 2) mm/slub.c:4366 (discriminator 2) mm/slub.c:4377 (discriminator 2)) 
+[ 984.251990][ T23] drm_client_modeset_probe (drivers/gpu/drm/drm_client_modeset.c:869 (discriminator 1)) 
+[ 984.252659][ T23] ? drm_client_firmware_config (drivers/gpu/drm/drm_client_modeset.c:818) 
+[ 984.253433][ T23] __drm_fb_helper_initial_config_and_unlock (drivers/gpu/drm/drm_fb_helper.c:1830) 
+[ 984.254309][ T23] drm_fbdev_client_hotplug (drivers/gpu/drm/clients/drm_fbdev_client.c:53) 
+[ 984.255079][ T23] drm_client_register (drivers/gpu/drm/drm_client.c:141) 
+[ 984.255737][ T23] drm_fbdev_client_setup (drivers/gpu/drm/clients/drm_fbdev_client.c:167) 
+[ 984.256474][ T23] drm_client_setup (drivers/gpu/drm/clients/drm_client_setup.c:47) 
+[ 984.257080][ T23] vkms_create (drivers/gpu/drm/vkms/vkms_drv.c:203) 
+[ 984.257646][ T23] ? drm_display_helper_module_init (drivers/gpu/drm/vkms/vkms_drv.c:213) 
+[ 984.258477][ T23] vkms_init (drivers/gpu/drm/vkms/vkms_drv.c:221) 
+[ 984.258979][ T23] do_one_initcall (init/main.c:1269) 
+[ 984.259580][ T23] ? trace_event_raw_event_initcall_level (init/main.c:1260) 
+[ 984.260457][ T23] do_initcalls (init/main.c:1330 (discriminator 3) init/main.c:1347 (discriminator 3)) 
+[ 984.261031][ T23] kernel_init_freeable (init/main.c:1583) 
+[ 984.261730][ T23] ? rest_init (init/main.c:1461) 
+[ 984.262250][ T23] kernel_init (init/main.c:1471) 
+[ 984.262775][ T23] ? rest_init (init/main.c:1461) 
+[ 984.263366][ T23] ret_from_fork (arch/x86/kernel/process.c:154) 
+[ 984.263966][ T23] ? rest_init (init/main.c:1461) 
+[ 984.264445][ T23] ret_from_fork_asm (arch/x86/entry/entry_64.S:255) 
+[  984.265087][   T23]  </TASK>
+[  984.265460][   T23] INFO: task swapper/0:1 is blocked on a mutex likely owned by task swapper/0:1.
+[  984.266569][   T23] task:swapper/0       state:D stack:0     pid:1     tgid:1     ppid:0      task_flags:0x0140 flags:0x00004000
+[  984.267995][   T23] Call Trace:
+[  984.268440][   T23]  <TASK>
+[ 984.268818][ T23] __schedule (kernel/sched/core.c:5357 kernel/sched/core.c:6961) 
+[ 984.269392][ T23] ? io_schedule_timeout (kernel/sched/core.c:6817) 
+[ 984.270076][ T23] ? lock_acquire (include/trace/events/lock.h:24 (discriminator 2) kernel/locking/lockdep.c:5831 (discriminator 2)) 
+[ 984.270650][ T23] schedule (kernel/sched/core.c:7044 kernel/sched/core.c:7058) 
+[ 984.271187][ T23] schedule_preempt_disabled (kernel/sched/core.c:7116) 
+[ 984.271938][ T23] __mutex_lock (kernel/locking/mutex.c:183 kernel/locking/mutex.c:678 kernel/locking/mutex.c:760) 
+[ 984.272512][ T23] ? drm_helper_probe_single_connector_modes (drivers/gpu/drm/drm_probe_helper.c:633) 
+[ 984.273417][ T23] ? mutex_lock_io_nested (kernel/locking/mutex.c:759) 
+[ 984.274100][ T23] ? drm_print_bits (drivers/gpu/drm/drm_print.c:334) 
+[ 984.274700][ T23] ? ww_mutex_lock (kernel/locking/mutex.c:887) 
+[ 984.275321][ T23] ? ww_mutex_lock (kernel/locking/mutex.c:887) 
+[ 984.275900][ T23] ? drm_helper_probe_single_connector_modes (drivers/gpu/drm/drm_probe_helper.c:633) 
+[ 984.276788][ T23] drm_helper_probe_single_connector_modes (drivers/gpu/drm/drm_probe_helper.c:633) 
+[ 984.277636][ T23] ? __drm_helper_update_and_validate (drivers/gpu/drm/drm_probe_helper.c:561) 
+[ 984.278471][ T23] ? __kmalloc_noprof (include/trace/events/kmem.h:54 (discriminator 2) mm/slub.c:4366 (discriminator 2) mm/slub.c:4377 (discriminator 2)) 
+[ 984.279094][ T23] drm_client_modeset_probe (drivers/gpu/drm/drm_client_modeset.c:869 (discriminator 1)) 
+[ 984.279852][ T23] ? drm_client_firmware_config (drivers/gpu/drm/drm_client_modeset.c:818) 
+[ 984.280602][ T23] __drm_fb_helper_initial_config_and_unlock (drivers/gpu/drm/drm_fb_helper.c:1830) 
+[ 984.281537][ T23] drm_fbdev_client_hotplug (drivers/gpu/drm/clients/drm_fbdev_client.c:53) 
+[ 984.282238][ T23] drm_client_register (drivers/gpu/drm/drm_client.c:141) 
+[ 984.282887][ T23] drm_fbdev_client_setup (drivers/gpu/drm/clients/drm_fbdev_client.c:167) 
+[ 984.283611][ T23] drm_client_setup (drivers/gpu/drm/clients/drm_client_setup.c:47) 
+[ 984.284232][ T23] vkms_create (drivers/gpu/drm/vkms/vkms_drv.c:203) 
+[ 984.284846][ T23] ? drm_display_helper_module_init (drivers/gpu/drm/vkms/vkms_drv.c:213) 
+[ 984.285609][ T23] vkms_init (drivers/gpu/drm/vkms/vkms_drv.c:221) 
+[ 984.286136][ T23] do_one_initcall (init/main.c:1269) 
+[ 984.286773][ T23] ? trace_event_raw_event_initcall_level (init/main.c:1260) 
+[ 984.287581][ T23] do_initcalls (init/main.c:1330 (discriminator 3) init/main.c:1347 (discriminator 3)) 
+[ 984.288212][ T23] kernel_init_freeable (init/main.c:1583) 
+[ 984.288856][ T23] ? rest_init (init/main.c:1461) 
+[ 984.289412][ T23] kernel_init (init/main.c:1471) 
+[ 984.289983][ T23] ? rest_init (init/main.c:1461) 
+[ 984.290537][ T23] ret_from_fork (arch/x86/kernel/process.c:154) 
+[ 984.291124][ T23] ? rest_init (init/main.c:1461) 
+[ 984.291735][ T23] ret_from_fork_asm (arch/x86/entry/entry_64.S:255) 
+[  984.292371][   T23]  </TASK>
+[  984.292826][   T23] INFO: lockdep is turned off.
+[ 1045.677903][    C0] BUG: workqueue lockup - pool cpus=0 node=0 flags=0x0 nice=0 stuck for 59s!
+[ 1045.680667][    C0] Showing busy workqueues and worker pools:
+[ 1045.684192][    C0] workqueue events_power_efficient: flags=0x80
+[ 1045.684971][    C0]   pwq 2: cpus=0 node=0 flags=0x0 nice=0 active=3 refcnt=4
+[ 1045.684987][    C0]     pending: neigh_managed_work, neigh_periodic_work, do_cache_clean
+[ 1045.685083][    C0] Showing backtraces of running workers in stalled CPU-bound worker pools:
+[ 1076.396346][    C0] BUG: workqueue lockup - pool cpus=0 node=0 flags=0x0 nice=0 stuck for 89s!
+[ 1076.400410][    C0] Showing busy workqueues and worker pools:
+[ 1076.401145][    C0] workqueue events: flags=0x0
+[ 1076.401765][    C0]   pwq 2: cpus=0 node=0 flags=0x0 nice=0 active=1 refcnt=2
+[ 1076.401781][    C0]     pending: stop_one_cpu_nowait_workfn
+[ 1076.401795][    C0] workqueue events_power_efficient: flags=0x80
+[ 1076.404125][    C0]   pwq 2: cpus=0 node=0 flags=0x0 nice=0 active=3 refcnt=4
+[ 1076.404141][    C0]     pending: neigh_managed_work, neigh_periodic_work, do_cache_clean
+[ 1076.411517][    C0] Showing backtraces of running workers in stalled CPU-bound worker pools:
 
-Code starting with the faulting instruction
-===========================================
-   0:	42 0f b6 04 28       	movzbl (%rax,%r13,1),%eax
-   5:	84 c0                	test   %al,%al
-   7:	0f 85 1c 04 00 00    	jne    0x429
-   d:	41 8b 1e             	mov    (%r14),%ebx
-  10:	4d                   	rex.WRB
-  11:	8d                   	.byte 0x8d
-  12:	b4 24                	mov    $0x24,%ah
-  14:	90                   	nop
-	...
-[    2.137777][    T1] RSP: 0000:ffffc9000001f9f8 EFLAGS: 00010202
-[    2.137777][    T1] RAX: 0000000000000002 RBX: ffffffff85927a58 RCX: 0000000000000000
-[    2.137777][    T1] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-[    2.137777][    T1] RBP: ffffc9000001fa78 R08: 0000000000000000 R09: 0000000000000000
-[    2.137777][    T1] R10: 0000000000000000 R11: 0000000000000000 R12: ffffffff85927a40
-[    2.137777][    T1] R13: dffffc0000000000 R14: 0000000000000010 R15: 1ffffffff0bf3eac
-[    2.137777][    T1] FS:  0000000000000000(0000) GS:ffff888428598000(0000) knlGS:0000000000000000
-[    2.137777][    T1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    2.137777][    T1] CR2: ffff88843ffff000 CR3: 00000000058b7000 CR4: 00000000000406b0
-[    2.137777][    T1] Call Trace:
-[    2.137777][    T1]  <TASK>
-[ 2.137777][ T1] ? ipc_ns_init (kbuild/src/consumer/ipc/shm.c:153) 
-[ 2.137777][ T1] ? __cfi_ipc_ns_init (kbuild/src/consumer/ipc/shm.c:150) 
-[ 2.137777][ T1] ipc_ns_init (kbuild/src/consumer/ipc/shm.c:153) 
-[ 2.137777][ T1] do_one_initcall (kbuild/src/consumer/init/main.c:1269) 
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20250924/202509241632.3a1187a5-lkp@intel.com
+https://download.01.org/0day-ci/archive/20250925/202509251410.fdfbcac3-lkp@intel.com
 
 
 
