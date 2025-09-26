@@ -1,59 +1,59 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1FA22D05D
-	for <oe-lkp@lists.linux.dev>; Fri, 26 Sep 2025 15:30:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD20919FA93
+	for <oe-lkp@lists.linux.dev>; Fri, 26 Sep 2025 15:38:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758900643; cv=none; b=P7ouE9gQiEsk7ZNTZAsUqN4/d9f301DitBFLmDlxM/gjNCmG4wvujnzScn8Rbgh/0tk7pEhQ+3j+E0dYb2XAu/d/4wRQv6OMuwhy5MPyXTCvcffWyWD9bQUnOUjERn2tW1WOmn1YLeM1LJywlcFsd3xsqM4quh6BDM56cDmlQaw=
+	t=1758901134; cv=none; b=KNTlxGVdydnjnK4dWDli+KTAs9LfBdxxaRDl7AZVnk2EId18HGe/5P873ScEMkWVosBMQDMMEFvCXYIWiX35jejBteBZ2XJfA3y8NWLzPq6U7qSyhJTQlOAuwwQc9Gp5TW8p5wwYwZEqisQRcQZk4dxjRvsotcCB+m8/ZVLHS6A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758900643; c=relaxed/simple;
-	bh=AS45b9EbyToJk2Diz4z80PWCjaqcT0Ws7VVscCNXRkw=;
+	s=arc-20240116; t=1758901134; c=relaxed/simple;
+	bh=BTM94BFpp9aT5IBTYgdibKSNLxc/Kf3Lda1oqYpQooU=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Zg2K4p7rWQ/chuX3iVOpkfUbk+9+6C7TZAS7yarmgCKMQNZKMWegc0p9g0HwOlsrULv4oTFIINPkBoFfA5shGCxDRLcehIAiHwTbrPFu0AbnqiZTyJe8xFmyhV6IQytLB2MDTl6ZYrQaxdES9ayR/gX5z++BFG0NOxYmcyJ6UOs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gDoYQ1Bt; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 To:Cc:Content-Type; b=oytSSY438xhA+umjafkrWbGOFS8kFcvSULtyz/xnojPPnv2JNhaVxlYx9oWdY2wx+OMQZx+FsOFYNKT0WywuiZ5bIuim6Zku2LilQoCWQs643/DLkCCiTh1bOPD4D1vsR5dzOiLJScT/5Rg4hFwCL7sLvGyhEKnigZUdg83GGrI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=p24U1iaw; arc=none smtp.client-ip=209.85.160.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gDoYQ1Bt"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-45b4d89217aso14560005e9.2
-        for <oe-lkp@lists.linux.dev>; Fri, 26 Sep 2025 08:30:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="p24U1iaw"
+Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-4de60f19a57so255051cf.0
+        for <oe-lkp@lists.linux.dev>; Fri, 26 Sep 2025 08:38:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1758900640; x=1759505440; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1758901132; x=1759505932; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Hw0PkEDAgZJmZX4JQxCB6B2llrhkqMZatxLmc7xYfO8=;
-        b=gDoYQ1BttXtP+9CYrmnxCIhWsiEGK0q0OW8XAwCX5T0YwU9ztRD41ooWVkVLTDxlVX
-         /8a5nCB0THrcKwE1+MVvbBYwjNqkXp3K51/BPxA8W2voafSgHTj5QkZvkpeL8nEXNbgI
-         SkuPSf4cI8pK0Q9BPMfW9Kg0vZzzfMc2cXApJZaokN+pDo0S2Wy/CglHPbBw1EQzvuMs
-         nAJZZkBOGQFtKS+Dw9jru0pu74UmKfz1HyzffjECFt20t7hnOivqdR7Fjuk56rYioQzc
-         CHyrJYcKJfOC/A3kTM8PHGcyYYDIlVj9SsHZ0tL5aFFnC10c9C5BdTAiSs9cOB60+3T7
-         CDLQ==
+        bh=lXzocX6ZDXcHxojnIagSNZA3qKAOhB8e13p864rbCw0=;
+        b=p24U1iaw5x6wQ3pbo+yCblB1o51Nxfjnuc08MGgsMwRa3925rv/TXyy1I+0q8F8KHm
+         Oa9Y1bKX0b3qdYUUucJyc+2DZOXJmFyeTGMxY/XSn8WCNormUHjhSwpL9zNc9YBA7Idq
+         iIFhwfJsA9ChHxsOb4wmv9BBMuakpmK8LU/3j8GL+5tVsI97oKzEL4OC3JoCupvGJCnJ
+         HBvekZZqcEuPhPnz4+UwjCHdm2+EkoE5wdXUO0kdFn5kOV8YlA9/VDO4CSTHGiQqwqe1
+         5YdcD/CktH5gUkKXS3I4jBZitPome72n390fUTbjOpGoAQ61qDDf34oIQ0WH8N0eEdER
+         db4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758900640; x=1759505440;
+        d=1e100.net; s=20230601; t=1758901132; x=1759505932;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Hw0PkEDAgZJmZX4JQxCB6B2llrhkqMZatxLmc7xYfO8=;
-        b=X7k2n6kZehbxzYSMVqj9olVDhFlwg42nuBtaFsqpQVLeAS/arDtGTJOqJ+R/fF0n7W
-         rQfhrdW6ybNQGZR4igoZgB+VUQXI9w5LPsbeVHMHaWDAQRlCALpdvOgOnxsxjIzzBcih
-         50sEImVlh992XMEgUyoQiNBdJW9ZRubrnGbZhB/I2ivxnl7QS2ahFFUBFIGMlitqRHpa
-         xQLho4aeF4u4yyQqoSN6vqaArGo/STmZRQsieeUPyn3YEs/6jSEfFi+i6ue+BulfWsrN
-         QdHYgt590brbbFkTTGC7PwbXJrrlN6DBP4l4P/R2yGn/2TqWBFCrmwHahdU0Qwzplq1y
-         dlrg==
-X-Forwarded-Encrypted: i=1; AJvYcCX02M+bFJiPW9CP0NgdTJCPuMSdFQ7j3aq1cFAjt/KAWkiMBcN01euVobBwCljdlkZ5JDb1SCk=@lists.linux.dev
-X-Gm-Message-State: AOJu0YznYplz2ie1dfVk4Q88Ld+8C0LHJ6k9ldq/+P0okG+YDlkbYIGa
-	lOk/GeMlNiev5eekp3tz5PnGQbt49pL8ZNxPeUFyD0bqa5dhp5O9y4eQoBATU/gXjTCJztALndg
-	q2DtZW61jVuuA/9OxH2zWQaNhLBpOQ74=
-X-Gm-Gg: ASbGncuL0hsIIRDcoRH0QOmRcuxW1mbS1I5VGXtwuG8gW6YGim0sF0guofv+8Ov2n5A
-	G1kK3Nb0czmfwdhmrzVPJcm0wLguToFSiEM+On7wc8IRzavr3GnVt5QCVeR2vMJtzzJF8h1COlf
-	6df/LmCawC3awFKBda6tnZT/HDP6aT++w3BgMeadt4s6eezBKBcQKOYVZXfamve4BAVrIBOxfWl
-	I0F14wVf6fhNl1dudvO
-X-Google-Smtp-Source: AGHT+IHPcobe0pabmtv3LTAUxvYUa9I/tUExRRvv4KQMIFR1FB2bTWAabu9dOrWdANVnlud2d72ux6aywV+LbMiMy+I=
-X-Received: by 2002:a05:600c:1553:b0:46e:39e4:1721 with SMTP id
- 5b1f17b1804b1-46e39e41ae1mr38372785e9.12.1758900639846; Fri, 26 Sep 2025
- 08:30:39 -0700 (PDT)
+        bh=lXzocX6ZDXcHxojnIagSNZA3qKAOhB8e13p864rbCw0=;
+        b=hp/rNSccZpI7fh6jznLMkbf6jkMA2z000tgTedyIgQjIT/Y2clEIxMPVxTwyRAuO7d
+         D8xx0WDlxl6KE+/G573oVdCn8tA7NBhx5B5M/rs+ezsMveW4tz5sK6+i0fcWx0deva82
+         gzDV+lXm0Z58JF+KAcbgugIPnXVy5c6TMPcB27Dxul9cLgG9KN9kyxejDrUiklEFuCnD
+         9PEd7UwBMAKYBWm0eBOQlmlBVvUuRwTKwjc5l0oybV/5UaNfZj5e8hhm86WuIfL8UYp9
+         UbfjYwCQCMDMymX1Q0Ry4WQXwRfg9d7vQnfzExzEUXoHLHm7i6AL705Rppv167gYgRoy
+         87UQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXvvzfCpbGp/EHNWsMI26nOD++qL6EJyJftNlVtFCWZvgW69rf0HCGici3czDXUjAi/E3PZpZ8=@lists.linux.dev
+X-Gm-Message-State: AOJu0YyHJ8/vYP1mFzRl8qJXGxzcj/+HV59Av42i94YkSXBwzxDpI5ts
+	kNQWZRqncD0no6E6xgfjBcvGOdmG4IZT9f5+FCnNH15kRz1tqnNWax7FxvD7k2nOt0yyuQrO4O+
+	8d7vQcx5QapekQtUx77wbRqTm1JbS/Ck8pedq1erk
+X-Gm-Gg: ASbGnct9EMykPlrEQ1LvTiRrsyuBRQfz34fr5k3r2IoS/HP7HTA13gi12fxmsgqRpUf
+	UfqvQPSQDDQyTpsaugN7Gk5VHqhE1MPJ/d67T5voh2aK3Y1SO9B1aXqCEGGPcBWqiVttC/JHJK9
+	jWzhKSk4AuouUBisrWKkEYjkq3dpOhrCMIWwUnYuk+wR0KLIvzobXdY6AvkEwsFVGR2v0JSBYmI
+	Va+uw00zokE
+X-Google-Smtp-Source: AGHT+IGUxL+Ts8nZMxqg7rMa5w9X1kAO9wkdvMmX92FoJO/bv4bqeUj1oEI2kGl0p735VGIj1Vtf4Ntxfyo6WGTFanA=
+X-Received: by 2002:a05:622a:14c:b0:4b7:9b06:ca9f with SMTP id
+ d75a77b69052e-4dd1675a20amr6251731cf.2.1758901130945; Fri, 26 Sep 2025
+ 08:38:50 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -65,65 +65,74 @@ References: <202509171214.912d5ac-lkp@intel.com> <b7d4cf85-5c81-41e0-9b22-baa9a7
  <ce3be467-4ff3-4165-a024-d6a3ed33ad0e@suse.cz> <CAJuCfpGLhJtO02V-Y+qmvzOqO2tH5+u7EzrCOA1K-57vPXhb+g@mail.gmail.com>
  <CAADnVQLPq=puz04wNCnUeSUeF2s1SwTUoQvzMWsHCVhjFcyBeg@mail.gmail.com>
  <CAJuCfpGA_YKuzHu0TM718LFHr92PyyKdD27yJVbtvfF=ZzNOfQ@mail.gmail.com>
- <CAADnVQKt5YVKiVHmoB7fZsuMuD=1+bMYvCNcO0+P3+5rq9JXVw@mail.gmail.com> <7a3406c6-93da-42ee-a215-96ac0213fd4a@suse.cz>
-In-Reply-To: <7a3406c6-93da-42ee-a215-96ac0213fd4a@suse.cz>
-From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date: Fri, 26 Sep 2025 16:30:28 +0100
-X-Gm-Features: AS18NWDPulJjeGNZJBavOvdAFs79dpLiwntGES88AId5C9cShcZs5_ox3eb1K2Y
-Message-ID: <CAADnVQKrLbOxav0+H5LsESa_d_c8yBGfPdRDJzkz6yjeQf9WdA@mail.gmail.com>
+ <CAADnVQKt5YVKiVHmoB7fZsuMuD=1+bMYvCNcO0+P3+5rq9JXVw@mail.gmail.com>
+ <7a3406c6-93da-42ee-a215-96ac0213fd4a@suse.cz> <CAADnVQKrLbOxav0+H5LsESa_d_c8yBGfPdRDJzkz6yjeQf9WdA@mail.gmail.com>
+In-Reply-To: <CAADnVQKrLbOxav0+H5LsESa_d_c8yBGfPdRDJzkz6yjeQf9WdA@mail.gmail.com>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Fri, 26 Sep 2025 08:38:39 -0700
+X-Gm-Features: AS18NWDgSteTnQAeHe58pnPN5CXO_C6LUnKFpTmB_8Hvkh2DQsaUFE0c0GhVrg0
+Message-ID: <CAJuCfpG7Gf3_P6gKrUa+3iNZgq7SNd7nZa7Uq1P+v3FVHnL4QA@mail.gmail.com>
 Subject: Re: [linux-next:master] [slab] db93cdd664: BUG:kernel_NULL_pointer_dereference,address
-To: Vlastimil Babka <vbabka@suse.cz>
-Cc: Suren Baghdasaryan <surenb@google.com>, kernel test robot <oliver.sang@intel.com>, 
+To: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>, kernel test robot <oliver.sang@intel.com>, 
 	Alexei Starovoitov <ast@kernel.org>, Harry Yoo <harry.yoo@oracle.com>, oe-lkp@lists.linux.dev, 
 	kbuild test robot <lkp@intel.com>, kasan-dev <kasan-dev@googlegroups.com>, 
 	"open list:CONTROL GROUP (CGROUP)" <cgroups@vger.kernel.org>, linux-mm <linux-mm@kvack.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Sep 26, 2025 at 1:25=E2=80=AFPM Vlastimil Babka <vbabka@suse.cz> wr=
-ote:
+On Fri, Sep 26, 2025 at 8:30=E2=80=AFAM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> On 9/19/25 20:31, Alexei Starovoitov wrote:
-> > On Fri, Sep 19, 2025 at 8:01=E2=80=AFAM Suren Baghdasaryan <surenb@goog=
-le.com> wrote:
-> >>
-> >> >
-> >> > I would not. I think adding 'boot or not' logic to these two
-> >> > will muddy the waters and will make the whole slab/page_alloc/memcg
-> >> > logic and dependencies between them much harder to follow.
-> >> > I'd either add a comment to alloc_slab_obj_exts() explaining
-> >> > what may happen or add 'boot or not' check only there.
-> >> > imo this is a niche, rare and special.
-> >>
-> >> Ok, comment it is then.
-> >> Will you be sending a new version or Vlastimil will be including that
-> >> in his fixup?
+> On Fri, Sep 26, 2025 at 1:25=E2=80=AFPM Vlastimil Babka <vbabka@suse.cz> =
+wrote:
 > >
-> > Whichever way. I can, but so far Vlastimil phrasing of comments
-> > were much better than mine :) So I think he can fold what he prefers.
+> > On 9/19/25 20:31, Alexei Starovoitov wrote:
+> > > On Fri, Sep 19, 2025 at 8:01=E2=80=AFAM Suren Baghdasaryan <surenb@go=
+ogle.com> wrote:
+> > >>
+> > >> >
+> > >> > I would not. I think adding 'boot or not' logic to these two
+> > >> > will muddy the waters and will make the whole slab/page_alloc/memc=
+g
+> > >> > logic and dependencies between them much harder to follow.
+> > >> > I'd either add a comment to alloc_slab_obj_exts() explaining
+> > >> > what may happen or add 'boot or not' check only there.
+> > >> > imo this is a niche, rare and special.
+> > >>
+> > >> Ok, comment it is then.
+> > >> Will you be sending a new version or Vlastimil will be including tha=
+t
+> > >> in his fixup?
+> > >
+> > > Whichever way. I can, but so far Vlastimil phrasing of comments
+> > > were much better than mine :) So I think he can fold what he prefers.
+> >
+> > I'm adding this. Hopefully we'll be able to make sheaves the only percp=
+u
+> > caching layer in SLUB in the (near) future, and then requirement for
+> > cmpxchg16b for allocations will be gone.
+> >
+> > diff --git a/mm/slub.c b/mm/slub.c
+> > index 9f1054f0b9ca..f9f7f3942074 100644
+> > --- a/mm/slub.c
+> > +++ b/mm/slub.c
+> > @@ -2089,6 +2089,13 @@ int alloc_slab_obj_exts(struct slab *slab, struc=
+t kmem_cache *s,
+> >         gfp &=3D ~OBJCGS_CLEAR_MASK;
+> >         /* Prevent recursive extension vector allocation */
+> >         gfp |=3D __GFP_NO_OBJ_EXT;
+> > +
+> > +       /*
+> > +        * Note that allow_spin may be false during early boot and its
+> > +        * restricted GFP_BOOT_MASK. Due to kmalloc_nolock() only suppo=
+rting
+> > +        * architectures with cmpxchg16b, early obj_exts will be missin=
+g for
+> > +        * very early allocations on those.
+> > +        */
 >
-> I'm adding this. Hopefully we'll be able to make sheaves the only percpu
-> caching layer in SLUB in the (near) future, and then requirement for
-> cmpxchg16b for allocations will be gone.
->
-> diff --git a/mm/slub.c b/mm/slub.c
-> index 9f1054f0b9ca..f9f7f3942074 100644
-> --- a/mm/slub.c
-> +++ b/mm/slub.c
-> @@ -2089,6 +2089,13 @@ int alloc_slab_obj_exts(struct slab *slab, struct =
-kmem_cache *s,
->         gfp &=3D ~OBJCGS_CLEAR_MASK;
->         /* Prevent recursive extension vector allocation */
->         gfp |=3D __GFP_NO_OBJ_EXT;
-> +
-> +       /*
-> +        * Note that allow_spin may be false during early boot and its
-> +        * restricted GFP_BOOT_MASK. Due to kmalloc_nolock() only support=
-ing
-> +        * architectures with cmpxchg16b, early obj_exts will be missing =
-for
-> +        * very early allocations on those.
-> +        */
+> lgtm. Maybe add a sentence about future sheaves plan, so it's clear
+> that there is a path forward and above won't stay forever.
 
-lgtm. Maybe add a sentence about future sheaves plan, so it's clear
-that there is a path forward and above won't stay forever.
+LGTM as well. Thanks!
