@@ -1,214 +1,129 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FDA52EB85A
-	for <oe-lkp@lists.linux.dev>; Fri, 26 Sep 2025 12:25:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1FA22D05D
+	for <oe-lkp@lists.linux.dev>; Fri, 26 Sep 2025 15:30:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758889557; cv=none; b=T8UkcP16p2zFWyLdIKzBogsy+i6GjfcJofRS5kfS9cURmgzGGYEZqJvJo54/zAbVIiVcG13nEhS2Q4aem4+WydDVFbiksw8ORJQ4lne0VgWpSdHiNZFtHJF06dEgiQHzMRy3LH6cC6iJ5Q6QO08dIlvDVq7E1yY7JHHqX7N+tFo=
+	t=1758900643; cv=none; b=P7ouE9gQiEsk7ZNTZAsUqN4/d9f301DitBFLmDlxM/gjNCmG4wvujnzScn8Rbgh/0tk7pEhQ+3j+E0dYb2XAu/d/4wRQv6OMuwhy5MPyXTCvcffWyWD9bQUnOUjERn2tW1WOmn1YLeM1LJywlcFsd3xsqM4quh6BDM56cDmlQaw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758889557; c=relaxed/simple;
-	bh=dO5twRAmSxR8UoLD3U8/vPGLJGEhxQz46DYuu1Lhb9c=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=MRKPLjbUMbJtGsVQJ5bdw/Pgj0ylCiX1cJ9El1rpBi63nRBiNHrPNEPKMIBv181wXuRd9oCaFLP8aE+Gc7Fbcilrst+HzR9Ct73jvmj9RdXTzVGbBE1YUjrATQzHt/mrAxBVs+zBiPYq7g48yUIJus1mhhXbqPOmRxPw83tAdlc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=qBPVxGlH; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=M+TQxEVW; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=qBPVxGlH; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=M+TQxEVW; arc=none smtp.client-ip=195.135.223.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+	s=arc-20240116; t=1758900643; c=relaxed/simple;
+	bh=AS45b9EbyToJk2Diz4z80PWCjaqcT0Ws7VVscCNXRkw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Zg2K4p7rWQ/chuX3iVOpkfUbk+9+6C7TZAS7yarmgCKMQNZKMWegc0p9g0HwOlsrULv4oTFIINPkBoFfA5shGCxDRLcehIAiHwTbrPFu0AbnqiZTyJe8xFmyhV6IQytLB2MDTl6ZYrQaxdES9ayR/gX5z++BFG0NOxYmcyJ6UOs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gDoYQ1Bt; arc=none smtp.client-ip=209.85.128.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="qBPVxGlH";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="M+TQxEVW";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="qBPVxGlH";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="M+TQxEVW"
-Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id 82D0624197;
-	Fri, 26 Sep 2025 12:25:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1758889554; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=UnaqUPfT6F2SYdrHgWkuz0x4Dq1KFNAs2dZR1oVzZDE=;
-	b=qBPVxGlHPo8TCCGuGdrWuLLwmoqNQq3LlAN9FjX387Kk600HWYsfFl2D8SiOSUxx7wVsI+
-	FHc3/+pckjUe6qj0drOyJB09t8SgIy/8USeVYWt1GBk1NjLi/EXFQH4zssKKL0R4swEKl0
-	3VtcQVx4ELMoST81T9Yd0hB43t/PHEM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1758889554;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=UnaqUPfT6F2SYdrHgWkuz0x4Dq1KFNAs2dZR1oVzZDE=;
-	b=M+TQxEVWWLqSUelATLRh91o5KTQ54vgMUVEYO59QnNPCMh04Yam0iEQTVPI/zTR9T7CZW9
-	lwl5GWPUNnufyKCg==
-Authentication-Results: smtp-out2.suse.de;
-	none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1758889554; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=UnaqUPfT6F2SYdrHgWkuz0x4Dq1KFNAs2dZR1oVzZDE=;
-	b=qBPVxGlHPo8TCCGuGdrWuLLwmoqNQq3LlAN9FjX387Kk600HWYsfFl2D8SiOSUxx7wVsI+
-	FHc3/+pckjUe6qj0drOyJB09t8SgIy/8USeVYWt1GBk1NjLi/EXFQH4zssKKL0R4swEKl0
-	3VtcQVx4ELMoST81T9Yd0hB43t/PHEM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1758889554;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=UnaqUPfT6F2SYdrHgWkuz0x4Dq1KFNAs2dZR1oVzZDE=;
-	b=M+TQxEVWWLqSUelATLRh91o5KTQ54vgMUVEYO59QnNPCMh04Yam0iEQTVPI/zTR9T7CZW9
-	lwl5GWPUNnufyKCg==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 6D4081373E;
-	Fri, 26 Sep 2025 12:25:54 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id 35hXGlKG1mgnRAAAD6G6ig
-	(envelope-from <vbabka@suse.cz>); Fri, 26 Sep 2025 12:25:54 +0000
-Message-ID: <7a3406c6-93da-42ee-a215-96ac0213fd4a@suse.cz>
-Date: Fri, 26 Sep 2025 14:25:54 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gDoYQ1Bt"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-45b4d89217aso14560005e9.2
+        for <oe-lkp@lists.linux.dev>; Fri, 26 Sep 2025 08:30:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1758900640; x=1759505440; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Hw0PkEDAgZJmZX4JQxCB6B2llrhkqMZatxLmc7xYfO8=;
+        b=gDoYQ1BttXtP+9CYrmnxCIhWsiEGK0q0OW8XAwCX5T0YwU9ztRD41ooWVkVLTDxlVX
+         /8a5nCB0THrcKwE1+MVvbBYwjNqkXp3K51/BPxA8W2voafSgHTj5QkZvkpeL8nEXNbgI
+         SkuPSf4cI8pK0Q9BPMfW9Kg0vZzzfMc2cXApJZaokN+pDo0S2Wy/CglHPbBw1EQzvuMs
+         nAJZZkBOGQFtKS+Dw9jru0pu74UmKfz1HyzffjECFt20t7hnOivqdR7Fjuk56rYioQzc
+         CHyrJYcKJfOC/A3kTM8PHGcyYYDIlVj9SsHZ0tL5aFFnC10c9C5BdTAiSs9cOB60+3T7
+         CDLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1758900640; x=1759505440;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Hw0PkEDAgZJmZX4JQxCB6B2llrhkqMZatxLmc7xYfO8=;
+        b=X7k2n6kZehbxzYSMVqj9olVDhFlwg42nuBtaFsqpQVLeAS/arDtGTJOqJ+R/fF0n7W
+         rQfhrdW6ybNQGZR4igoZgB+VUQXI9w5LPsbeVHMHaWDAQRlCALpdvOgOnxsxjIzzBcih
+         50sEImVlh992XMEgUyoQiNBdJW9ZRubrnGbZhB/I2ivxnl7QS2ahFFUBFIGMlitqRHpa
+         xQLho4aeF4u4yyQqoSN6vqaArGo/STmZRQsieeUPyn3YEs/6jSEfFi+i6ue+BulfWsrN
+         QdHYgt590brbbFkTTGC7PwbXJrrlN6DBP4l4P/R2yGn/2TqWBFCrmwHahdU0Qwzplq1y
+         dlrg==
+X-Forwarded-Encrypted: i=1; AJvYcCX02M+bFJiPW9CP0NgdTJCPuMSdFQ7j3aq1cFAjt/KAWkiMBcN01euVobBwCljdlkZ5JDb1SCk=@lists.linux.dev
+X-Gm-Message-State: AOJu0YznYplz2ie1dfVk4Q88Ld+8C0LHJ6k9ldq/+P0okG+YDlkbYIGa
+	lOk/GeMlNiev5eekp3tz5PnGQbt49pL8ZNxPeUFyD0bqa5dhp5O9y4eQoBATU/gXjTCJztALndg
+	q2DtZW61jVuuA/9OxH2zWQaNhLBpOQ74=
+X-Gm-Gg: ASbGncuL0hsIIRDcoRH0QOmRcuxW1mbS1I5VGXtwuG8gW6YGim0sF0guofv+8Ov2n5A
+	G1kK3Nb0czmfwdhmrzVPJcm0wLguToFSiEM+On7wc8IRzavr3GnVt5QCVeR2vMJtzzJF8h1COlf
+	6df/LmCawC3awFKBda6tnZT/HDP6aT++w3BgMeadt4s6eezBKBcQKOYVZXfamve4BAVrIBOxfWl
+	I0F14wVf6fhNl1dudvO
+X-Google-Smtp-Source: AGHT+IHPcobe0pabmtv3LTAUxvYUa9I/tUExRRvv4KQMIFR1FB2bTWAabu9dOrWdANVnlud2d72ux6aywV+LbMiMy+I=
+X-Received: by 2002:a05:600c:1553:b0:46e:39e4:1721 with SMTP id
+ 5b1f17b1804b1-46e39e41ae1mr38372785e9.12.1758900639846; Fri, 26 Sep 2025
+ 08:30:39 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [linux-next:master] [slab] db93cdd664:
- BUG:kernel_NULL_pointer_dereference,address
-To: Alexei Starovoitov <alexei.starovoitov@gmail.com>,
- Suren Baghdasaryan <surenb@google.com>
-Cc: kernel test robot <oliver.sang@intel.com>,
- Alexei Starovoitov <ast@kernel.org>, Harry Yoo <harry.yoo@oracle.com>,
- oe-lkp@lists.linux.dev, kbuild test robot <lkp@intel.com>,
- kasan-dev <kasan-dev@googlegroups.com>,
- "open list:CONTROL GROUP (CGROUP)" <cgroups@vger.kernel.org>,
- linux-mm <linux-mm@kvack.org>
-References: <202509171214.912d5ac-lkp@intel.com>
- <b7d4cf85-5c81-41e0-9b22-baa9a7e5a0c4@suse.cz>
- <ead41e07-c476-4769-aeb6-5a9950737b98@suse.cz>
- <CAADnVQJYn9=GBZifobKzME-bJgrvbn=OtQJLbU+9xoyO69L8OA@mail.gmail.com>
- <ce3be467-4ff3-4165-a024-d6a3ed33ad0e@suse.cz>
- <CAJuCfpGLhJtO02V-Y+qmvzOqO2tH5+u7EzrCOA1K-57vPXhb+g@mail.gmail.com>
+References: <202509171214.912d5ac-lkp@intel.com> <b7d4cf85-5c81-41e0-9b22-baa9a7e5a0c4@suse.cz>
+ <ead41e07-c476-4769-aeb6-5a9950737b98@suse.cz> <CAADnVQJYn9=GBZifobKzME-bJgrvbn=OtQJLbU+9xoyO69L8OA@mail.gmail.com>
+ <ce3be467-4ff3-4165-a024-d6a3ed33ad0e@suse.cz> <CAJuCfpGLhJtO02V-Y+qmvzOqO2tH5+u7EzrCOA1K-57vPXhb+g@mail.gmail.com>
  <CAADnVQLPq=puz04wNCnUeSUeF2s1SwTUoQvzMWsHCVhjFcyBeg@mail.gmail.com>
  <CAJuCfpGA_YKuzHu0TM718LFHr92PyyKdD27yJVbtvfF=ZzNOfQ@mail.gmail.com>
- <CAADnVQKt5YVKiVHmoB7fZsuMuD=1+bMYvCNcO0+P3+5rq9JXVw@mail.gmail.com>
-Content-Language: en-US
-From: Vlastimil Babka <vbabka@suse.cz>
-Autocrypt: addr=vbabka@suse.cz; keydata=
- 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
- m6M14QORSWTLRg==
-In-Reply-To: <CAADnVQKt5YVKiVHmoB7fZsuMuD=1+bMYvCNcO0+P3+5rq9JXVw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Level: 
-X-Spamd-Result: default: False [-2.80 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	SUSPICIOUS_RECIPS(1.50)[];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	FREEMAIL_TO(0.00)[gmail.com,google.com];
-	TAGGED_RCPT(0.00)[];
-	ARC_NA(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	FUZZY_RATELIMITED(0.00)[rspamd.com];
-	RCPT_COUNT_SEVEN(0.00)[10];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com];
-	TO_DN_SOME(0.00)[];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	MID_RHS_MATCH_FROM(0.00)[];
-	RCVD_TLS_ALL(0.00)[];
-	RCVD_COUNT_TWO(0.00)[2];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:mid,imap1.dmz-prg2.suse.org:helo]
-X-Spam-Flag: NO
-X-Spam-Score: -2.80
+ <CAADnVQKt5YVKiVHmoB7fZsuMuD=1+bMYvCNcO0+P3+5rq9JXVw@mail.gmail.com> <7a3406c6-93da-42ee-a215-96ac0213fd4a@suse.cz>
+In-Reply-To: <7a3406c6-93da-42ee-a215-96ac0213fd4a@suse.cz>
+From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date: Fri, 26 Sep 2025 16:30:28 +0100
+X-Gm-Features: AS18NWDPulJjeGNZJBavOvdAFs79dpLiwntGES88AId5C9cShcZs5_ox3eb1K2Y
+Message-ID: <CAADnVQKrLbOxav0+H5LsESa_d_c8yBGfPdRDJzkz6yjeQf9WdA@mail.gmail.com>
+Subject: Re: [linux-next:master] [slab] db93cdd664: BUG:kernel_NULL_pointer_dereference,address
+To: Vlastimil Babka <vbabka@suse.cz>
+Cc: Suren Baghdasaryan <surenb@google.com>, kernel test robot <oliver.sang@intel.com>, 
+	Alexei Starovoitov <ast@kernel.org>, Harry Yoo <harry.yoo@oracle.com>, oe-lkp@lists.linux.dev, 
+	kbuild test robot <lkp@intel.com>, kasan-dev <kasan-dev@googlegroups.com>, 
+	"open list:CONTROL GROUP (CGROUP)" <cgroups@vger.kernel.org>, linux-mm <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 9/19/25 20:31, Alexei Starovoitov wrote:
-> On Fri, Sep 19, 2025 at 8:01 AM Suren Baghdasaryan <surenb@google.com> wrote:
->>
->> >
->> > I would not. I think adding 'boot or not' logic to these two
->> > will muddy the waters and will make the whole slab/page_alloc/memcg
->> > logic and dependencies between them much harder to follow.
->> > I'd either add a comment to alloc_slab_obj_exts() explaining
->> > what may happen or add 'boot or not' check only there.
->> > imo this is a niche, rare and special.
->>
->> Ok, comment it is then.
->> Will you be sending a new version or Vlastimil will be including that
->> in his fixup?
-> 
-> Whichever way. I can, but so far Vlastimil phrasing of comments
-> were much better than mine :) So I think he can fold what he prefers.
+On Fri, Sep 26, 2025 at 1:25=E2=80=AFPM Vlastimil Babka <vbabka@suse.cz> wr=
+ote:
+>
+> On 9/19/25 20:31, Alexei Starovoitov wrote:
+> > On Fri, Sep 19, 2025 at 8:01=E2=80=AFAM Suren Baghdasaryan <surenb@goog=
+le.com> wrote:
+> >>
+> >> >
+> >> > I would not. I think adding 'boot or not' logic to these two
+> >> > will muddy the waters and will make the whole slab/page_alloc/memcg
+> >> > logic and dependencies between them much harder to follow.
+> >> > I'd either add a comment to alloc_slab_obj_exts() explaining
+> >> > what may happen or add 'boot or not' check only there.
+> >> > imo this is a niche, rare and special.
+> >>
+> >> Ok, comment it is then.
+> >> Will you be sending a new version or Vlastimil will be including that
+> >> in his fixup?
+> >
+> > Whichever way. I can, but so far Vlastimil phrasing of comments
+> > were much better than mine :) So I think he can fold what he prefers.
+>
+> I'm adding this. Hopefully we'll be able to make sheaves the only percpu
+> caching layer in SLUB in the (near) future, and then requirement for
+> cmpxchg16b for allocations will be gone.
+>
+> diff --git a/mm/slub.c b/mm/slub.c
+> index 9f1054f0b9ca..f9f7f3942074 100644
+> --- a/mm/slub.c
+> +++ b/mm/slub.c
+> @@ -2089,6 +2089,13 @@ int alloc_slab_obj_exts(struct slab *slab, struct =
+kmem_cache *s,
+>         gfp &=3D ~OBJCGS_CLEAR_MASK;
+>         /* Prevent recursive extension vector allocation */
+>         gfp |=3D __GFP_NO_OBJ_EXT;
+> +
+> +       /*
+> +        * Note that allow_spin may be false during early boot and its
+> +        * restricted GFP_BOOT_MASK. Due to kmalloc_nolock() only support=
+ing
+> +        * architectures with cmpxchg16b, early obj_exts will be missing =
+for
+> +        * very early allocations on those.
+> +        */
 
-I'm adding this. Hopefully we'll be able to make sheaves the only percpu
-caching layer in SLUB in the (near) future, and then requirement for
-cmpxchg16b for allocations will be gone.
-
-diff --git a/mm/slub.c b/mm/slub.c
-index 9f1054f0b9ca..f9f7f3942074 100644
---- a/mm/slub.c
-+++ b/mm/slub.c
-@@ -2089,6 +2089,13 @@ int alloc_slab_obj_exts(struct slab *slab, struct kmem_cache *s,
-        gfp &= ~OBJCGS_CLEAR_MASK;
-        /* Prevent recursive extension vector allocation */
-        gfp |= __GFP_NO_OBJ_EXT;
-+
-+       /*
-+        * Note that allow_spin may be false during early boot and its
-+        * restricted GFP_BOOT_MASK. Due to kmalloc_nolock() only supporting
-+        * architectures with cmpxchg16b, early obj_exts will be missing for
-+        * very early allocations on those.
-+        */
-        if (unlikely(!allow_spin)) {
-                size_t sz = objects * sizeof(struct slabobj_ext);
- 
+lgtm. Maybe add a sentence about future sheaves plan, so it's clear
+that there is a path forward and above won't stay forever.
