@@ -1,66 +1,66 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E736D29BDBF;
-	Tue, 30 Sep 2025 06:41:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E4EC2BD5BF
+	for <oe-lkp@lists.linux.dev>; Tue, 30 Sep 2025 06:46:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.13
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759214505; cv=fail; b=N0n0MhyXgpoHWSzY609Tnxy/WI93HyYs9MoBggiPT5evd6cAnP7ALS9S62CY/zW+qEyFSdGHpWTRvSGnZ+9/BXnrIPMM1xFl2RIw8euekeGQB2Lx93fEzBtmoU285JdbMNKSO37ut9yEW52LhmTARzNZgtDOnxpmiWaojkVhp+s=
+	t=1759214765; cv=fail; b=ma9Sf6ImeQOGroIMKPESbf5BLnie1JrFglxwNpc92DreazsU46Rq5+uX4lXFgUD8Q1oOMIVSWYojvmO+zFK8qU1g0UzDbQP8P1SvOwxhEoM9qpizLqOl8Zk8O3XJPTOG2zdA2G1gOOcdgQoFgaloKr/507sxT16zub2GECv/rEg=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759214505; c=relaxed/simple;
-	bh=y6bhctlEHXIJ1E2mysLlWBSOL2Hj3Mhq8KcQHVVuWFY=;
+	s=arc-20240116; t=1759214765; c=relaxed/simple;
+	bh=Y8V5XHKtogp3y7l8v1oQ/pAJNjlNjTcWB9z56pMVwNc=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=hRU8yCmsmnEZK5TgWNaOq07k9en6A601TodkP10TU7RUVnZUaKPMDDB41EVB0/qz4YZIeS+x7BQbHSCUYCNH7g8vwefn1tkXCTesCUD3VNfnjQ1DbTc1GOp4kmm9WOej1FjpgpooNFBS3H2mF5RGMUOYrSeHCmSIn7tIfjKRhOg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FRI+RSsm; arc=fail smtp.client-ip=198.175.65.16
+	 Content-Disposition:MIME-Version; b=oFnP3oQ3GapqEzgFX+GGe+mfFDEHf8T0qk2RdCBxwj3107osP+pFtcajGXISbDNJx3IAcYxxxdErrz508psQ35O4FP3pdTRnbqyxvUKG3CUPKvxwbcA+lcKzEMKjQ870cXS8E3BRex7SKrOa74Lv/cgejQd6+j3bSAF7oH/dH7Q=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UOQAaZS/; arc=fail smtp.client-ip=192.198.163.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FRI+RSsm"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UOQAaZS/"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1759214504; x=1790750504;
+  t=1759214763; x=1790750763;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=y6bhctlEHXIJ1E2mysLlWBSOL2Hj3Mhq8KcQHVVuWFY=;
-  b=FRI+RSsmDb5mae/rtxrTJ5odY0XjlkyWvXHXAD2W5ybdIHZTqcaddAeS
-   bPUuL/y2KPaRNoK+yYJXM/GPL8ASY8seJ6KCbB1vNKXn3IK6WFVZhfJFU
-   Vr4KyI5Ubvb4hVZ69aTFIBxWmkuf4v5rZDsmLMAcJOUvmjlyoe9uonNWL
-   2WMkQtA4WRUqyyI7r52jJcJ59ylLYmMYPvj2bcyU3wLfu0gETXaZfjz2u
-   j//r6c3qmUE6Uu/wl39Cxd81dVyaXqdMDJf2oK9GOrhpBc7oj9i9gKlkz
-   lnajHYQADp/n6X5hPuRtvWVQJc0+Scx3TKUYXbYaASww49x7MVV0oPqKg
-   g==;
-X-CSE-ConnectionGUID: U74MwmPJSpGQBQnsE83mOw==
-X-CSE-MsgGUID: eA7qbb5wSPWQPekO1Wgjxw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11568"; a="61627501"
+  bh=Y8V5XHKtogp3y7l8v1oQ/pAJNjlNjTcWB9z56pMVwNc=;
+  b=UOQAaZS/yE4gz0/Ugsho7kf7/qClq7CF9RukNrL1QJdSiQuNd6JPbOgm
+   K1aP4F+O+nN4mNQtlkQUe/6nCXY6B1s0i33Tzai0jCuO8ElEMrJV+7YFu
+   oCTMOZj7mdfnklDSh4syOSh12eF38URKqQ4Z9CEBVeqvqiBLCglb+5Odu
+   4/1aBrzKhKZjNQrl1UZZgVzPTEv2GXS5vsI81QUZjUnIBQ7mGBbyaCo5e
+   2mACns7DclsgR1gpaYwYoC9yFjxREBoarP6sIqiDXmUHfNICc4spG2gux
+   A5x/vAhIzmNedYyXr7XAQ6rroj/5wV9eS1BsFlFSJ+tEakj5K+P19FupT
+   A==;
+X-CSE-ConnectionGUID: 7Fvz9tuiQsuxn/dBTd5B8g==
+X-CSE-MsgGUID: 1jabgwc6QEyLseXaNl9XUg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11568"; a="64084958"
 X-IronPort-AV: E=Sophos;i="6.18,303,1751266800"; 
-   d="scan'208";a="61627501"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2025 23:41:44 -0700
-X-CSE-ConnectionGUID: rsXerilWTg23gpbTUuGsiw==
-X-CSE-MsgGUID: dgBj32ViSfi24GtlDIHmag==
+   d="scan'208";a="64084958"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2025 23:46:02 -0700
+X-CSE-ConnectionGUID: If8cPRWGTN+Q9PP4eqjbNQ==
+X-CSE-MsgGUID: QNunVuJyTU23YyF34SRMiQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.18,303,1751266800"; 
-   d="scan'208";a="179211371"
-Received: from fmsmsx901.amr.corp.intel.com ([10.18.126.90])
-  by fmviesa010.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2025 23:41:43 -0700
-Received: from FMSMSX901.amr.corp.intel.com (10.18.126.90) by
- fmsmsx901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+   d="scan'208";a="215590447"
+Received: from fmsmsx902.amr.corp.intel.com ([10.18.126.91])
+  by orviesa001.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2025 23:46:01 -0700
+Received: from FMSMSX903.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27; Mon, 29 Sep 2025 23:41:42 -0700
-Received: from fmsedg902.ED.cps.intel.com (10.1.192.144) by
- FMSMSX901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ 15.2.2562.27; Mon, 29 Sep 2025 23:46:00 -0700
+Received: from fmsedg901.ED.cps.intel.com (10.1.192.143) by
+ FMSMSX903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27 via Frontend Transport; Mon, 29 Sep 2025 23:41:42 -0700
-Received: from CH5PR02CU005.outbound.protection.outlook.com (40.107.200.30) by
- edgegateway.intel.com (192.55.55.82) with Microsoft SMTP Server
+ 15.2.2562.27 via Frontend Transport; Mon, 29 Sep 2025 23:46:00 -0700
+Received: from CY7PR03CU001.outbound.protection.outlook.com (40.93.198.29) by
+ edgegateway.intel.com (192.55.55.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27; Mon, 29 Sep 2025 23:41:41 -0700
+ 15.2.2562.27; Mon, 29 Sep 2025 23:45:58 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=vtMaNJn+Qgqa7yNrOvtWmoRVWovpusw2EKk2ntes2PIpD2jdzTfuhv09NiSK0PJWCkZJGdv6WuznASJ7yY3IAVjfrsz2pT9ml7VQd6RcCGuPJ9CtdRgt8gKriVbhHyOI6c/vwBnwVv5ShrSxp4a4Lrz6dxUEdpr1RmeVlFLqx2UQQocLGt1cHpEEKAS/I1Rfct7DxQI8wl9Iuf9A+8+wt9EZF9LuD5GBISkBVzO/TKv7EfKbtVFgbLvT8RLlldCt/doMugCMDXdC6gWfIgLlS0IPqLWEQSbV78Bexz8kRNyiMrMCW2i5hn3h70YNj7Xs1Xv0ivbBtYKp0//6LuJLiQ==
+ b=MesMpl7wexWv2YsoBGn1zE1iY4x+PeH1xKZNRyXkQ0UT0SZAjrGy1Tul18GtIQJRqNo9hX3GdoAfoSu9Rk2W4akjA0lueXbJzPKKx1R0TlKFtrbGWrXPs+J4DJPgsLZW07zbvKKvWFw8HUMX1BUBnWfpWXvUwAyjy+cmkMcWMlfC+DCPJ71l0DyclU6z5681GAcFvhEbbegazIsCiWIbp8VBpH9eM8UXMHyFjtz+y9wYnm5h7LvnFHQog6Mjcch82RBddz2A+ngMS8K0SL+kCMivFjYsZqrLWgi9JPGvTxqXKnD2baikNbKPCZn7aU3lmF7eh6RbNb95wJgpMh0iKw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Mcuhu/rZlIkBVrb2aVM3jqeBHVrUqTF3LM8puwkLqwk=;
- b=jU6DDcqXBP0Gj1ao5ss4stLcylHDbvuFOPiSYdsEyWhohHKll6MrzGw43RjEOafc6ClLrlEB3oHg6uFxU5zM6tIk0QbK+GG/STQln96p7mwf/B9UvPfZ9GT5htSdUAuNHbhmqIVCOWxXTjbcIc53/R5EcmiNPpgRv/WxPHT+aKR9f37W7ih+IzU3KUtZniQEGEFYtJnld1+a9Aq31rnJApPERUllIqrmRngR3fO9t6UktqHe1napmIJvcpKAvuSOwFJpJDJ30rcVeP2J7WTooOo81HutAAOrJk/JYjKMMMEF5iM1tJD338zHLumZklU9CrmvzhVnt/pkGIklktcDcw==
+ bh=xV+iEjInXAUG+vPC8bqPK843jYlaDFAkVKxtqAyyExo=;
+ b=Z2V9qWemuy2eIwb/TVPCkk7iSt5JAQchykaz3EY+ssPShbZ56LlfwPTXNJNj2ym5QnFh4NUq7F/Vi1x18AYkQObqZzIfn6JJeuzEJ24oi+S0LbdJuszn/TFurUvE0g0+EzqlTVH13de+geJI3c4ALqpIvsmrj69Elr+9uU2RwL1YhpEj52/2HrJ52LvnNkqhRg7Y6JmRa7votM7mpkyaTTv4s5fWEiq2yJsf599txcmTXmtp2C6/NQi2ntMQyG/tipVW7Xlfq1StS7D9vORxWWK40yiXhU6yMa2YGJo+9N1VFzio5yWBBRjbb7ANUA6/yo7D6lhZNP6D0uqjWlqTrQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
@@ -70,25 +70,24 @@ Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
  by IA1PR11MB6220.namprd11.prod.outlook.com (2603:10b6:208:3e8::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9160.17; Tue, 30 Sep
- 2025 06:41:30 +0000
+ 2025 06:45:56 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.9160.014; Tue, 30 Sep 2025
- 06:41:30 +0000
-Date: Tue, 30 Sep 2025 14:41:20 +0800
+ 06:45:56 +0000
+Date: Tue, 30 Sep 2025 14:45:46 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Josef Bacik <josef@toxicpanda.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	Christian Brauner <brauner@kernel.org>,
-	<linux-f2fs-devel@lists.sourceforge.net>, <gfs2@lists.linux.dev>,
-	<ltp@lists.linux.it>, <oliver.sang@intel.com>
-Subject: [linus:master] [fs]  bc986b1d75:
- Kernel_panic-not_syncing:softlockup:hung_tasks
-Message-ID: <202509301450.138b448f-lkp@intel.com>
+To: Mark Brown <broonie@kernel.org>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Shuah Khan
+	<skhan@linuxfoundation.org>, Rick Edgecombe <rick.p.edgecombe@intel.com>,
+	<linux-kernel@vger.kernel.org>, <oliver.sang@intel.com>
+Subject: [broonie-misc:arm64-gcs-exit-token] [selftests/clone3]  0b67d4b724:
+ kernel-selftests.clone3.clone3.fail
+Message-ID: <202509301454.adc93851-lkp@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-X-ClientProxiedBy: KL1PR01CA0078.apcprd01.prod.exchangelabs.com
- (2603:1096:820:2::18) To LV3PR11MB8603.namprd11.prod.outlook.com
+X-ClientProxiedBy: KL1P15301CA0059.APCP153.PROD.OUTLOOK.COM
+ (2603:1096:820:3d::20) To LV3PR11MB8603.namprd11.prod.outlook.com
  (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -98,73 +97,74 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|IA1PR11MB6220:EE_
-X-MS-Office365-Filtering-Correlation-Id: 31cd1306-02e9-4700-8dda-08ddffec635a
+X-MS-Office365-Filtering-Correlation-Id: bb5fe487-52f6-49d0-ef85-08ddffed01eb
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?vkhdDQsR4+fc7NuHjDSi8vv/lTed723PUKVNzO2NiJ+aeERo6sV9SJHusFhU?=
- =?us-ascii?Q?97os7w3j5fhTuXCMfrNa1eoex2o1iUs9YxhdeEXbT7aZV4PaEDCW7QhdeRLe?=
- =?us-ascii?Q?czkmrdFhm8z0bUfpNpG6z7lhG69WCsqBBQOHzmn5aAJFtUpYzxhSQE3qimy3?=
- =?us-ascii?Q?VWV3MOCgyg7eA8i0DNKy9I8bgPZBFe4vrOjgpwO9Tjq3YUwoH2EKZ46L+Nv2?=
- =?us-ascii?Q?c6NLfkuqbja+fc53EdY8TceRHVyhKoLR+8deUKAlHzDA1Kh2o0IdJmDOxzcN?=
- =?us-ascii?Q?WworyKx+p/VxOPmcflVrC1M473T1OjCCtHmbCgqLllNgU06R4OYsFR5PAMwF?=
- =?us-ascii?Q?o7LamZKJVzlrv9ohqGCVTZl4LnZd6xX6uBGUTk241PqoYS2+I6Szc1yNSdBF?=
- =?us-ascii?Q?MuNJKLTBz+mgpVa1bK67Z0QxIg7Nx3ByuO62gHeGTEk4azVMd0O02oqdhdIY?=
- =?us-ascii?Q?6dP02m29lxFpNNYRclNMuDuD4RrHo9J1BvWNLnd1ZTBTnqoqq9lYjZn/CwGP?=
- =?us-ascii?Q?a4TOIfnjJ7J1OXm6EOuoWGSXJYAVVVCzmtu/UPrF92P2WvET9mcIdN2F9tYL?=
- =?us-ascii?Q?ArKI3b9NAoiq3A07zAtWtTlh2oDutIwUe64NoV/t2zKYbjUGuQF73oxjGEoZ?=
- =?us-ascii?Q?RytpO/E8SBLgfbovCiUteD5QV9eUDkrRRo6sXvvPY4PmbjbHcwAWrNweMx9l?=
- =?us-ascii?Q?TeRE81Yw9eeA5BgCO6taxNjZv6uQu1SroYMwd0LsShvWSkNZcxlBAV65Z281?=
- =?us-ascii?Q?2m+4hms1X5lPekx25aNnjbqxEVLdD9XrWNxLuegoY3Od+JGX+mhDyDOhKq/6?=
- =?us-ascii?Q?XRUELYkDiZ+ThzkB1sBvzQwWhDs/MJ3cO+p9EBuV5wWmQTBCzoQopU1oWjGJ?=
- =?us-ascii?Q?FQHs4Xpl6cFQYfJCDBazJpMKWsMs9hL8ZnPZhPe/gf69+7dK33GRRA02jkeI?=
- =?us-ascii?Q?hrcLe7eh87a0CNlb+7B/8K5SREcaWUsMiXXM9oyAgpibAhh5aTgsp9pgkzEB?=
- =?us-ascii?Q?Yawasnhdh3gH2ajGZBR+wEU0WYy1xPnEgkTkHCU1NsCru9gHa597UrZWcWdY?=
- =?us-ascii?Q?xEJfnBBWiniyfiVo19qTFOWp17TCvBTyP7W7daENFLnbjooiQJKj9FrwX45+?=
- =?us-ascii?Q?bpyUhbKRX+jdMHcS6HlJTKTTO+aOpg9gfn20SDq+HaDqGEmBP1Px1H2y1ujE?=
- =?us-ascii?Q?ns3QlMZ6TAKnGaswYEZvVd5gNFbomGfGZiVYVMyp7HaeauWQbXR1pLJAAdcQ?=
- =?us-ascii?Q?U+SwUdwT0RR++8/ir7oPYDXmHR+iGFmXLE1vwLMbQm8UMDlFHWhA6nHibI8R?=
- =?us-ascii?Q?RDpldoy/Pfv0bQm9FLU8fuzKzqb+attxwkF0fi6IZ8J9jGteLcqPqgzDhL/X?=
- =?us-ascii?Q?8flq7FmL7HJPA/6SPkjE8UZ5/0eBMdy16PEAnjcc8/Cn0gZyvg=3D=3D?=
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?jOqbrhfv8d8s+uzPISqQbau8FgEwJeAO1O8RPZ98T2BP6fonXhwprbj0ITXG?=
+ =?us-ascii?Q?YF1WJbX2Jpp5hQV+cf3xXpo0HbUgeItc5oK4kaEgz1iYHmlnuLjj/ZxrJG7s?=
+ =?us-ascii?Q?qW6lCWUfyFLMZ14xuEoOtG2VTnLfhiyYTK9bbmp5w4K5sTWQpiY+l/xefJb5?=
+ =?us-ascii?Q?YTDYO18SPt02Nos40nPlooxvvs4fhrdZIyoWny1j6MoSSi1783YhYYa3LUhQ?=
+ =?us-ascii?Q?wLYRFn7xMZxgJR+pEBXMxUXAFfwCmCuRikYPkb6IwwPP36FA9PTHk3XjSdeW?=
+ =?us-ascii?Q?9gYDjwmErmpiBxlhcGIRgQG5iNXzIw7TBeXYuUCXXOfnRyQffUTQzTVQVTf5?=
+ =?us-ascii?Q?FhRLvrlPG1OLG4tJ2JHI/xxPhtbJB6y2lK4CupQV4oGtnKeMHVodm3oJgiBH?=
+ =?us-ascii?Q?OZuL8TuNhBN5dvbgKSKBrP0c8k5GcKC5W1gYULHEFSexo+Tp/buCg7AmHLAh?=
+ =?us-ascii?Q?xuxzdiDgRP+FsuWFoNnKIgEz5JLC2DxdG+WqkDHwS4HCP/T/axaXk/I2YgRS?=
+ =?us-ascii?Q?6X+hDCjYChcXlK0o4pLsmaNrF4FxKlsT+OI4w918EOqcTMg5zv7ZRg41kptm?=
+ =?us-ascii?Q?jbjgfYVGLdJ0Pr0E0a1Xfq+5GVNz1pBoQn/xVW2+4HKyx2DFcpQvzsd3O1rM?=
+ =?us-ascii?Q?5OOPLWRY7aOHLgLXreatHbvN9cofcAvf6iW7nUhDWnyeHoMZe766pn7ranl3?=
+ =?us-ascii?Q?KByqBOLqlVND9+d+XzqAItXYPJETvLE7BNoDFHSh0ryWZvUQq/ao9m0Dceoo?=
+ =?us-ascii?Q?MAj7VYUNod0PShU3hRJcGE17SnbhpcBZT4XXv1qBvkrAjasB4i/CNacDd8Kl?=
+ =?us-ascii?Q?puSq8VeUozit/aonjzfm1ZEnl3N7/CiJCzxlP1QlfU1ZwFxBYWPgZMufhU5B?=
+ =?us-ascii?Q?k46nl+xK5cuSXewEdUnCGyEQR9AuA3uSg3fpKmlGFUMb3O9mhmIIuXSvgJaA?=
+ =?us-ascii?Q?QpPt/57r7AYCMYhSBqEsKqMhlb+BMbqBDAaxDa7LHNXP63UDA/oECVfqso/X?=
+ =?us-ascii?Q?HeMMGYtRi2T85S8HPD+//Dewu2ooufPLwYC0BpMo702+WiOiudtwcZfm5cql?=
+ =?us-ascii?Q?HlrnzPKUYOu9iCeb51pESaxCMBtycRqg/5qvToD1jrEJYduIeV7N+WxS+rX7?=
+ =?us-ascii?Q?05PrrZr1Bn6MvWNldnS0AdG7yWVXRPkKBtyJzPwMeUFn5VeB4lD7ArDAH5Gb?=
+ =?us-ascii?Q?e5qiVIv9aeRVqq1n7ld8Il4BBeFihppJ8QoYJ8S9UxA3I+iQPdxnN1YMhWef?=
+ =?us-ascii?Q?gDK83QfiDqsS/g2oRZJoLifqiQSFyyXcQjesONLhF+t/SqwoWfYPjEFiENbM?=
+ =?us-ascii?Q?QoEeh5gMmcOqUkofwCen9chqB9R5Rv3RdCFa1s/vFoCX64moCuALO/KnM4j6?=
+ =?us-ascii?Q?QREumLwbryI7oqRCKD+vhIBuG7E3ZTS1s/ZrDEWnSGm3IweJ859Vj0Zdt2TR?=
+ =?us-ascii?Q?8VOHVUbKtRI=3D?=
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KiWqLzjEsHuH51WNhQmjHYXH4u6dIjVtRxN9CjWC+c2lxOyIeK1z7l3XgHR7?=
- =?us-ascii?Q?O3iqSLH0jVufjlWfU7RYT2eOyQiBNyCiavfo8I7BYmNtKFcGuLu3jUzvF1am?=
- =?us-ascii?Q?Q5XNXmgkOGJ1nJkKHUPSLmWmJ5cYoAbQ/UCSw+1FlAIErYGsB/+4irEk+fUE?=
- =?us-ascii?Q?4WufBB2/E6D+8KvdNaGQ9KB0V6z+AKNl5BIlJQyYl9bqPz/1NCwZlh0eISyW?=
- =?us-ascii?Q?EBeRFz1LJo38+BnDRad2TDfyVEHqeE2ixOr7thWH1hMD1Y5V2H9zsdxyXJlU?=
- =?us-ascii?Q?gRcPkZmr9odGmxxq9Vx1nEIa3xA9T2Ggm4mivZ/A5OKuz94TMEy7GvvAhrwR?=
- =?us-ascii?Q?/UL0u52aM6MKdUmY9ox+DVrUHgdpfVJH8HPG5BuVmM0Wag1/xo7OhXGLHNBp?=
- =?us-ascii?Q?utOsCF8+LIyGTlHYqRciKgE5ZzEI6+83Rd/ey9aMA+mRB6oxCkJX9zYxyUo2?=
- =?us-ascii?Q?Hdn8I41tjJvHQuEfmAS+QR1Jkl6WTID+1k2wHExDIw3qMwLf4SVuF/CKm4sr?=
- =?us-ascii?Q?gPlFCiXLhKIloI+rgu9iRP/vnKfeTd7h39FYjjzR7y3de7VfgrucB+iOFtfe?=
- =?us-ascii?Q?H4MDhhXVP8X1SfZDXfLlUEGGqpMnMrqhR7uq4QWY/JPVZ2rMj7+qJE1MLTFr?=
- =?us-ascii?Q?UbEh0kISqJPppAtWWu81jrpKrOkjdgT6iuRlqUbVXVV7i7rALt4fml9xu0Mo?=
- =?us-ascii?Q?1V0bAaSGXVzMfcGJkEicY8iaVGWP5pUeB3r7lQ4w30y54Ya+oxTWHnoH9tEt?=
- =?us-ascii?Q?jsnLmx5MPi3DOGTWKPDVrjd8bHjJjHtxoq0jkzA8X7uONGyu1FCfMBPBG+uz?=
- =?us-ascii?Q?HTg3I+DYekiElgbk3fhHLfFnUJBA1SyFMWpTl3UnjuKENKTHymb2Salrp1AV?=
- =?us-ascii?Q?khwzftQyjZcZ1bN1L0g1jM/tqNOP9ocKkTKlkaexoVaKbk+/pgWv88aLEQcy?=
- =?us-ascii?Q?CqN89AbicVJLknt4JAgPudBtNV47uHBHLm/d9asfKRHe7w/Ws7oAePGILz39?=
- =?us-ascii?Q?nquBHg+GeZm9gFi5Y1JU70fwN5iqGlzfT+Dd4NiOMA/OkBLBanxxoj2DETTa?=
- =?us-ascii?Q?W2ELGgw/IHWHGdkrRFGpTD605j8VcFuQ0TWecI2RSSWqIM5HQyk8y6/+4IUj?=
- =?us-ascii?Q?xO32hsMSOCelGXb+oY1I/lp/aF2AzjjggSgOLldtxnlG5PN0PgA932XZm3kt?=
- =?us-ascii?Q?M4yjhlwuhSaLQNqrKjscBe3YXy+n5Taof4qh5bS6yrM8IeYIGXWPdWmIt3qp?=
- =?us-ascii?Q?9s5Yw5oHrb9zm+33IY7gVsZJgXUaXIgyRHBO15IvHCmJSdVWJ/+vpNeOQwvd?=
- =?us-ascii?Q?VtdM5x4/HJJic9dunywmz75BeLOlsS5jt9adzx2b5XBqTGL1fj91tyPFxrpp?=
- =?us-ascii?Q?fTgvO6kDdZXZTF4+vKmyh244EcEIqPFMXDYYZWCX9t/6QWorB0zTFQxKOfcm?=
- =?us-ascii?Q?WNIAPnaNrvLQB4XOUW5YUtdA0Z6SfXglH8euKuhf+XP7LIBGiaF1Wzhtzz9z?=
- =?us-ascii?Q?AMhLZR/wWTamJOtOySSNNBDhTQmty1uyWOoz33YXlA+Kadc3ziacjxnkMHV2?=
- =?us-ascii?Q?A0YsKtTggxs027+FQ06aF4MmsZM2P1p+DEQsPpyaTGjR5DXUcPqKMIW1Lynp?=
- =?us-ascii?Q?lA=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 31cd1306-02e9-4700-8dda-08ddffec635a
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PytIYf4oLR6IpUOQxwOWSPiDXX/KYWL5odEbv+9nE5EvGWfCi3tRyVPruJHY?=
+ =?us-ascii?Q?NemQwf/pH70sTibcUb3A96C+PA/x8vJ4xfXlz82n/xTY1n/XS+m41yFcVqZH?=
+ =?us-ascii?Q?gOw7Af16dqW2n0WlWYmGog7dGKmMHVx/H2kwFCf6DnsChAup3L3Jh8pfivnr?=
+ =?us-ascii?Q?fTKk6xbVFCDTeuiZYMkFpeMnnMALtNTFu10rSGvWCUiBmCIDu3Mmd8hs11C1?=
+ =?us-ascii?Q?DV5cZ1Kxl8g3tBWdncAdsXvBh9StC5uFgOtZUQjlqfdjZtmmzsEw7EmdjVzT?=
+ =?us-ascii?Q?bYaBHoVNBX3/OvXVYmVHyVZWMsrogtZwVZ5ExROqVCfn8P4Bh/5CKI6B5kx/?=
+ =?us-ascii?Q?HWBciXdI7kkV3sDbr7XpcVmMZ39YUhW1qgXCd8RXNR95qUwOlUZLkCjiKHJ9?=
+ =?us-ascii?Q?p/3RsUIfvIQgdu3OZS0t4NJcFRZ8eJeVHQ3VFRX+oOdm+kb1OSYZu7b4j0Gb?=
+ =?us-ascii?Q?ZuLQN4jS/tUc+vx5/91K94VXf1PJSdSTsSGt5HE8Y8OCiyx4zJLdeCCnODm2?=
+ =?us-ascii?Q?AI8+HpaYh+NhCGol3zv5w8rLtfsQ5uqI4eoUQrcuEnHot2iV7mfbPxeG5lDp?=
+ =?us-ascii?Q?Vtas0H0/JS2BUUzRCs6QaTYUdURo/RkE6kLgwKles5/uHaaGkFtwXXUUm5D+?=
+ =?us-ascii?Q?8FBGBB9fb3FwSkb2Ck3wfINikgVJeXeaa6VRRgR+rRWoJQu6fZus4r+wMwj2?=
+ =?us-ascii?Q?IVSDiXTKXkdUwzdAvAMzIdzI8tkuVV2ZcIRtQ6GirPU0QQfH+i7OFDXyKbua?=
+ =?us-ascii?Q?60zR6IooKaLUic2LLugP4Tv748Z3uYqIipKONMxVm3zpIc7OLazhVz0HSH3S?=
+ =?us-ascii?Q?hMe+DAE39A10QT2isfEgsFyxO/phzWuBnps/RXnPtuKvkPMkyqQ63HYthPH4?=
+ =?us-ascii?Q?NiS+QoQvz50wPLXXsE8xZ14uWwqjSNNjAFXTlgGoXrzfz97KCmSvLr8no2Tr?=
+ =?us-ascii?Q?PZl8nxU2Yu3STavDlWUzctSFhjMCxFJ5nyU1YJZlOuP0YMRB1RwgEf4Df5D4?=
+ =?us-ascii?Q?JNNd4cw/dCxihVrzPNkpgFfn6FCsZCmZej+pN73TMulIA0p68f+qnjcJdymu?=
+ =?us-ascii?Q?VRwkfHLWLG91Ji61j6SZglLPRIjReUqtsOX3M7IdSutvngd+a9GOG2tOQwIc?=
+ =?us-ascii?Q?jFSeOFfclduVW9b233inGQsmiq8DzmklF4d7q/kF5F5Il2OUDVP0krFK+EWh?=
+ =?us-ascii?Q?0jZlbVrgpx/59EkwTtvKccg6w76R3RiWiiIEYmRmtWzd8s6o01hEZ4APNeaT?=
+ =?us-ascii?Q?mHYzon/CYLFlGq9CrBqPHDp4rcfIzepPX23Do2t60l+xlB1+kNXlyAHNZNEO?=
+ =?us-ascii?Q?+osjt8CeE4Vtbu5WJWTHmHeJm9lmsD7c4elIVyEQ8N4V7PpeGXRWYQO03ilC?=
+ =?us-ascii?Q?fiBT2aL60XPjU7MJOfIJoAIotxH2mWfQLds2e+0xM6tJyoLgC9jcwAY3c84q?=
+ =?us-ascii?Q?ic1rNxZ/ACpYbMTPBMiEr4I1RXMPQw0InDpHLnDX7J5VU84FAaNdRp/g/lgV?=
+ =?us-ascii?Q?jqsKSR8PQ73C/dyRma0rwETibMcgmmhrgJex4jOeBBDB5Ru6jbKPhsgyiuvh?=
+ =?us-ascii?Q?huSm9JhW9wM+8dsK8IbVJqkErmOl+7eLoONO3tPA2eisyBeoMjjpG3iZToTW?=
+ =?us-ascii?Q?sw=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: bb5fe487-52f6-49d0-ef85-08ddffed01eb
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Sep 2025 06:41:30.1810
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Sep 2025 06:45:56.2232
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zRfF0OCOdUClXBhZ+WXkeOzSP2GcRsP5n/8PI5J4UD90OuYeuCZ1HkdpitHLFvZQP7IjyI6WM2Oyu+jhNAZvVg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: q1GkOL9BtcDR14jeYhz7rYXcVKYOmycbx2Kz70SKs+fi193B7WspH+ZJbrvyW9PYE6c//RmyX1bUmAZZqBMvog==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB6220
 X-OriginatorOrg: intel.com
 
@@ -172,160 +172,164 @@ X-OriginatorOrg: intel.com
 
 Hello,
 
-kernel test robot noticed "Kernel_panic-not_syncing:softlockup:hung_tasks" on:
+kernel test robot noticed "kernel-selftests.clone3.clone3.fail" on:
 
-commit: bc986b1d756482a5ec2d7d9625229d9b9df95ae1 ("fs: stop accessing ->i_count directly in f2fs and gfs2")
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+commit: 0b67d4b724b4afed2690c21bef418b8a803c5be2 ("selftests/clone3: Test shadow stack support")
+https://git.kernel.org/cgit/linux/kernel/git/broonie/misc.git arm64-gcs-exit-token
 
-
-in testcase: ltp
-version: ltp-x86_64-220f579cd-1_20250920
+in testcase: kernel-selftests
+version: kernel-selftests-x86_64-592a93fea16b-1_20250918
 with following parameters:
 
-	disk: 1HDD
-	fs: f2fs
-	test: fs_readonly-03
+	group: clone3
 
 
 
-config: x86_64-rhel-9.4-ltp
+config: x86_64-rhel-9.4-kselftests
 compiler: gcc-14
-test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (Haswell) with 16G memory
+test machine: 36 threads 1 sockets Intel(R) Core(TM) i9-9980XE CPU @ 3.00GHz (Skylake) with 32G memory
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
-
 
 
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202509301450.138b448f-lkp@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202509301454.adc93851-lkp@intel.com
 
 
-
-watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [f2fs_ckpt-8:17:5378]
-Modules linked in: dm_mod f2fs binfmt_misc snd_hda_codec_intelhdmi snd_hda_codec_hdmi btrfs blake2b_generic intel_rapl_msr xor intel_rapl_common zstd_compress x86_pkg_temp_thermal intel_powerclamp raid6_pq coretemp platform_profile i915 sd_mod sg kvm_intel snd_hda_codec_alc269 snd_hda_scodec_component snd_hda_codec_realtek_lib dell_wmi snd_hda_codec_generic intel_gtt dell_smbios snd_hda_intel kvm drm_buddy dell_wmi_descriptor snd_hda_codec sparse_keymap snd_hda_core irqbypass ahci rfkill ghash_clmulni_intel ttm snd_intel_dspcfg drm_display_helper rapl snd_intel_sdw_acpi libahci snd_hwdep i2c_i801 dcdbas mei_wdt intel_cstate cec lpc_ich snd_pcm i2c_smbus libata drm_client_lib intel_uncore mei_me snd_timer pcspkr drm_kms_helper snd mei soundcore video wmi drm fuse nfnetlink
-CPU: 0 UID: 0 PID: 5378 Comm: f2fs_ckpt-8:17 Tainted: G S                  6.17.0-rc1-00015-gbc986b1d7564 #1 PREEMPT(voluntary) 
-Tainted: [S]=CPU_OUT_OF_SPEC
-Hardware name: Dell Inc. OptiPlex 9020/0DNKMN, BIOS A05 12/05/2013
-RIP: 0010:native_queued_spin_lock_slowpath+0x704/0xad0
-Code: 66 85 c0 74 39 48 b8 00 00 00 00 00 fc ff df 49 89 df 49 89 de 49 c1 ef 03 41 83 e6 07 49 01 c7 41 83 c6 03 f3 90 41 0f b6 07 <41> 38 c6 7c 08 84 c0 0f 85 5d 02 00 00 8b 03 66 85 c0 75 e6 89 44
-RSP: 0018:ffffc90001a4f890 EFLAGS: 00000202
-RAX: 0000000000000000 RBX: ffff88810d440080 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: 0000000000000002 RDI: ffff88810d440082
-RBP: ffff88836da42200 R08: 0000000000000001 R09: ffffed1021a88010
-R10: ffff88810d440083 R11: 0000000000000000 R12: 1ffff92000349f14
-R13: 0000000000040000 R14: 0000000000000003 R15: ffffed1021a88010
-FS:  0000000000000000(0000) GS:ffff8883e693e000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f99f429e0f0 CR3: 000000041b872002 CR4: 00000000001726f0
-Call Trace:
-<TASK>
-? __pfx_native_queued_spin_lock_slowpath+0x10/0x10
-? __pfx__raw_spin_lock+0x10/0x10
-_raw_spin_lock+0xca/0xe0
-? __pfx__raw_spin_lock+0x10/0x10
-? __pfx__raw_spin_lock+0x10/0x10
-igrab+0x19/0x90
-block_operations+0x4b5/0xdb0 [f2fs]
-? __pfx_block_operations+0x10/0x10 [f2fs]
-? update_curr+0x3fe/0x550
-? down_write+0xc0/0x140
-? __pfx_down_write+0x10/0x10
-f2fs_write_checkpoint+0x1fe/0xf00 [f2fs]
-? complete+0xb9/0x200
-__checkpoint_and_complete_reqs+0xe1/0x310 [f2fs]
-? __pfx__raw_spin_lock_irqsave+0x10/0x10
-? __pfx___checkpoint_and_complete_reqs+0x10/0x10 [f2fs]
-? prepare_to_wait_event+0x8e/0x720
-issue_checkpoint_thread+0xc1/0x230 [f2fs]
-? __pfx_issue_checkpoint_thread+0x10/0x10 [f2fs]
-? __pfx_autoremove_wake_function+0x10/0x10
-? __kthread_parkme+0xb1/0x1f0
-? __pfx_issue_checkpoint_thread+0x10/0x10 [f2fs]
-? __pfx_issue_checkpoint_thread+0x10/0x10 [f2fs]
-kthread+0x39b/0x750
-? __pfx_kthread+0x10/0x10
-? __pfx__raw_spin_lock_irq+0x10/0x10
-? __pfx_kthread+0x10/0x10
-? __pfx_kthread+0x10/0x10
-ret_from_fork+0x24c/0x310
-? __pfx_kthread+0x10/0x10
-ret_from_fork_asm+0x1a/0x30
-</TASK>
-Kernel panic - not syncing: softlockup: hung tasks
-CPU: 0 UID: 0 PID: 5378 Comm: f2fs_ckpt-8:17 Tainted: G S           L      6.17.0-rc1-00015-gbc986b1d7564 #1 PREEMPT(voluntary) 
-Tainted: [S]=CPU_OUT_OF_SPEC, [L]=SOFTLOCKUP
-Hardware name: Dell Inc. OptiPlex 9020/0DNKMN, BIOS A05 12/05/2013
-Call Trace:
-<IRQ>
-dump_stack_lvl+0x47/0x70
-vpanic+0x1e4/0x480
-? __pfx_vpanic+0x10/0x10
-? show_trace_log_lvl+0x2a4/0x2e0
-panic+0xbc/0xbc
-? __pfx_panic+0x10/0x10
-? ret_from_fork_asm+0x1a/0x30
-? add_taint+0x26/0x70
-watchdog_timer_fn.cold+0xd0/0xe4
-? __pfx_watchdog_timer_fn+0x10/0x10
-__hrtimer_run_queues+0x2c4/0x660
-? sched_clock_cpu+0x68/0x520
-? __pfx___hrtimer_run_queues+0x10/0x10
-? ktime_get_update_offsets_now+0x82/0x320
-? sched_clock+0xc/0x30
-hrtimer_interrupt+0x2ce/0x7c0
-__sysvec_apic_timer_interrupt+0x89/0x230
-sysvec_apic_timer_interrupt+0x68/0x90
-</IRQ>
-<TASK>
-asm_sysvec_apic_timer_interrupt+0x16/0x20
-RIP: 0010:native_queued_spin_lock_slowpath+0x704/0xad0
-Code: 66 85 c0 74 39 48 b8 00 00 00 00 00 fc ff df 49 89 df 49 89 de 49 c1 ef 03 41 83 e6 07 49 01 c7 41 83 c6 03 f3 90 41 0f b6 07 <41> 38 c6 7c 08 84 c0 0f 85 5d 02 00 00 8b 03 66 85 c0 75 e6 89 44
-RSP: 0018:ffffc90001a4f890 EFLAGS: 00000202
-RAX: 0000000000000000 RBX: ffff88810d440080 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: 0000000000000002 RDI: ffff88810d440082
-RBP: ffff88836da42200 R08: 0000000000000001 R09: ffffed1021a88010
-R10: ffff88810d440083 R11: 0000000000000000 R12: 1ffff92000349f14
-R13: 0000000000040000 R14: 0000000000000003 R15: ffffed1021a88010
-? __pfx_native_queued_spin_lock_slowpath+0x10/0x10
-? __pfx__raw_spin_lock+0x10/0x10
-_raw_spin_lock+0xca/0xe0
-? __pfx__raw_spin_lock+0x10/0x10
-? __pfx__raw_spin_lock+0x10/0x10
-igrab+0x19/0x90
-block_operations+0x4b5/0xdb0 [f2fs]
-? __pfx_block_operations+0x10/0x10 [f2fs]
-? update_curr+0x3fe/0x550
-? down_write+0xc0/0x140
-? __pfx_down_write+0x10/0x10
-f2fs_write_checkpoint+0x1fe/0xf00 [f2fs]
-? complete+0xb9/0x200
-__checkpoint_and_complete_reqs+0xe1/0x310 [f2fs]
-? __pfx__raw_spin_lock_irqsave+0x10/0x10
-? __pfx___checkpoint_and_complete_reqs+0x10/0x10 [f2fs]
-? prepare_to_wait_event+0x8e/0x720
-issue_checkpoint_thread+0xc1/0x230 [f2fs]
-? __pfx_issue_checkpoint_thread+0x10/0x10 [f2fs]
-? __pfx_autoremove_wake_function+0x10/0x10
-? __kthread_parkme+0xb1/0x1f0
-? __pfx_issue_checkpoint_thread+0x10/0x10 [f2fs]
-? __pfx_issue_checkpoint_thread+0x10/0x10 [f2fs]
-kthread+0x39b/0x750
-? __pfx_kthread+0x10/0x10
-? __pfx__raw_spin_lock_irq+0x10/0x10
-? __pfx_kthread+0x10/0x10
-? __pfx_kthread+0x10/0x10
-ret_from_fork+0x24c/0x310
-? __pfx_kthread+0x10/0x10
-ret_from_fork_asm+0x1a/0x30
-</TASK>
+# timeout set to 300
+# selftests: clone3: clone3
+# TAP version 13
+# 1..24
+# # clone3() syscall supported
+# # map_shadow_stack() not supported
+# # Running test 'simple clone3()'
+# # [2448] Trying clone3() with flags 0 (size 0)
+# # I am the parent (2448). My child's pid is 2449
+# # I am the child, my PID is 2449
+# # [2448] clone3() with flags says: 0 expected 0
+# ok 1 simple clone3()
+# # Running test 'clone3() in a new PID_NS'
+# # [2448] Trying clone3() with flags 0x20000000 (size 0)
+# # I am the parent (2448). My child's pid is 2450
+# # I am the child, my PID is 1
+# # [2448] clone3() with flags says: 0 expected 0
+# ok 2 clone3() in a new PID_NS
+# # Running test 'CLONE_ARGS_SIZE_VER0'
+# # [2448] Trying clone3() with flags 0 (size 64)
+# # I am the parent (2448). My child's pid is 2451
+# # I am the child, my PID is 2451
+# # [2448] clone3() with flags says: 0 expected 0
+# ok 3 CLONE_ARGS_SIZE_VER0
+# # Running test 'CLONE_ARGS_SIZE_VER0 - 8'
+# # [2448] Trying clone3() with flags 0 (size 56)
+# # Invalid argument - Failed to create new process
+# # [2448] clone3() with flags says: -22 expected -22
+# ok 4 CLONE_ARGS_SIZE_VER0 - 8
+# # Running test 'sizeof(struct clone_args) + 8'
+# # [2448] Trying clone3() with flags 0 (size 104)
+# # I am the parent (2448). My child's pid is 2452
+# # I am the child, my PID is 2452
+# # [2448] clone3() with flags says: 0 expected 0
+# ok 5 sizeof(struct clone_args) + 8
+# # Running test 'exit_signal with highest 32 bits non-zero'
+# # [2448] Trying clone3() with flags 0 (size 0)
+# # Invalid argument - Failed to create new process
+# # [2448] clone3() with flags says: -22 expected -22
+# ok 6 exit_signal with highest 32 bits non-zero
+# # Running test 'negative 32-bit exit_signal'
+# # [2448] Trying clone3() with flags 0 (size 0)
+# # Invalid argument - Failed to create new process
+# # [2448] clone3() with flags says: -22 expected -22
+# ok 7 negative 32-bit exit_signal
+# # Running test 'exit_signal not fitting into CSIGNAL mask'
+# # [2448] Trying clone3() with flags 0 (size 0)
+# # Invalid argument - Failed to create new process
+# # [2448] clone3() with flags says: -22 expected -22
+# ok 8 exit_signal not fitting into CSIGNAL mask
+# # Running test 'NSIG < exit_signal < CSIG'
+# # [2448] Trying clone3() with flags 0 (size 0)
+# # Invalid argument - Failed to create new process
+# # [2448] clone3() with flags says: -22 expected -22
+# ok 9 NSIG < exit_signal < CSIG
+# # Running test 'Arguments sizeof(struct clone_args) + 8'
+# # [2448] Trying clone3() with flags 0 (size 104)
+# # I am the parent (2448). My child's pid is 2453
+# # I am the child, my PID is 2453
+# # [2448] clone3() with flags says: 0 expected 0
+# ok 10 Arguments sizeof(struct clone_args) + 8
+# # Running test 'Arguments sizeof(struct clone_args) + 16'
+# # [2448] Trying clone3() with flags 0 (size 112)
+# # Argument list too long - Failed to create new process
+# # [2448] clone3() with flags says: -7 expected -7
+# ok 11 Arguments sizeof(struct clone_args) + 16
+# # Running test 'Arguments sizeof(struct clone_arg) * 2'
+# # [2448] Trying clone3() with flags 0 (size 112)
+# # Argument list too long - Failed to create new process
+# # [2448] clone3() with flags says: -7 expected -7
+# ok 12 Arguments sizeof(struct clone_arg) * 2
+# # Running test 'Arguments > page size'
+# # [2448] Trying clone3() with flags 0 (size 4104)
+# # Argument list too long - Failed to create new process
+# # [2448] clone3() with flags says: -7 expected -7
+# ok 13 Arguments > page size
+# # Running test 'CLONE_ARGS_SIZE_VER0 in a new PID NS'
+# # [2448] Trying clone3() with flags 0x20000000 (size 64)
+# # I am the parent (2448). My child's pid is 2454
+# # I am the child, my PID is 1
+# # [2448] clone3() with flags says: 0 expected 0
+# ok 14 CLONE_ARGS_SIZE_VER0 in a new PID NS
+# # Running test 'CLONE_ARGS_SIZE_VER0 - 8 in a new PID NS'
+# # [2448] Trying clone3() with flags 0x20000000 (size 56)
+# # Invalid argument - Failed to create new process
+# # [2448] clone3() with flags says: -22 expected -22
+# ok 15 CLONE_ARGS_SIZE_VER0 - 8 in a new PID NS
+# # Running test 'sizeof(struct clone_args) + 8 in a new PID NS'
+# # [2448] Trying clone3() with flags 0x20000000 (size 104)
+# # I am the parent (2448). My child's pid is 2455
+# # I am the child, my PID is 1
+# # [2448] clone3() with flags says: 0 expected 0
+# ok 16 sizeof(struct clone_args) + 8 in a new PID NS
+# # Running test 'Arguments > page size in a new PID NS'
+# # [2448] Trying clone3() with flags 0x20000000 (size 4104)
+# # Argument list too long - Failed to create new process
+# # [2448] clone3() with flags says: -7 expected -7
+# ok 17 Arguments > page size in a new PID NS
+# # Running test 'New time NS'
+# # [2448] Trying clone3() with flags 0x80 (size 0)
+# # I am the parent (2448). My child's pid is 2456
+# # I am the child, my PID is 2456
+# # [2448] clone3() with flags says: 0 expected 0
+# ok 18 New time NS
+# # Running test 'exit signal (SIGCHLD) in flags'
+# # [2448] Trying clone3() with flags 0x11 (size 0)
+# # Invalid argument - Failed to create new process
+# # [2448] clone3() with flags says: -22 expected -22
+# ok 19 exit signal (SIGCHLD) in flags
+# # Shadow stack not supported
+# ok 20 # SKIP Shadow stack on system with shadow stack
+# # Shadow stack not supported
+# ok 21 # SKIP Shadow stack with misaligned address
+# # Shadow stack not supported
+# ok 22 # SKIP Shadow stack with normal memory
+# # Shadow stack not supported
+# ok 23 # SKIP Shadow stack with no token
+# # Running test 'Shadow stack on system without shadow stack'
+# # [2448] Trying clone3() with flags 0x100 (size 0)
+# # Invalid argument - Failed to create new process
+# # [2448] clone3() with flags says: -22 expected -14
+# # [2448] Result (-22) is different than expected (-14)
+# not ok 24 Shadow stack on system without shadow stack
+# # 4 skipped test(s) detected. Consider enabling relevant config options to improve coverage.
+# # Totals: pass:19 fail:1 xfail:0 xpass:0 skip:4 error:0
+not ok 1 selftests: clone3: clone3 # exit=1
 
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20250930/202509301450.138b448f-lkp@intel.com
+https://download.01.org/0day-ci/archive/20250930/202509301454.adc93851-lkp@intel.com
 
 
 
