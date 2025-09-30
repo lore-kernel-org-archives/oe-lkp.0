@@ -1,462 +1,305 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A087219A8D
-	for <oe-lkp@lists.linux.dev>; Tue, 30 Sep 2025 06:19:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759213175; cv=none; b=PaDRw3DZ2VYynVonLhvekDvovlMSmqfOC7ooXkJo6sdMU343bu6W7j8ZsF/vxhDa7glWAhlkoQSyi6f5AKcrI/8DiVRL7sSQNg5dDhKVmWYHRnUJbxkOissj5INTuMIlPSFTPlaV1sNSh+LmCmDy9Nrffg/qJfL0kE/+kc/q9wc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759213175; c=relaxed/simple;
-	bh=PPkxk9Ep+4bcuEH85FQbkyA99ebVVgKHjiMmQ6tF2QI=;
-	h=Content-Type:Message-ID:Date:MIME-Version:Subject:To:Cc:
-	 References:From:In-Reply-To; b=FFkK5YY4YcPbjk03LbrElvR3ORodjQCzGvzgSxEz3wZaXBAa9Q+55TyBADiHy1p6Fy4p8XlzmWRVA85O+R8d2jKIc7esvra+FeBZhGH9EQ8uFJmJaGhtmumqXH0BZMXmuw8vxBzj0pFywRSLuil2DADjvyxwl2OOaiDy3TRGXHE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Y+JqQ7kg; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63DC2128395
+	for <oe-lkp@lists.linux.dev>; Tue, 30 Sep 2025 06:31:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.9
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1759213895; cv=fail; b=JxbGKf7DbHxbWR8I6Z+m/qOjzSsnQ6dvhU857QN02eRBsWbTDdXn5ZucJRIPNtbpnqLOIgXV5g5CcH2SIhnJbSUHf15VOeznMP4Q5eFe+YGAfsKqwY5EIcdEsOFED/qTLkXF8yqQYDQhqBcWRMvrmMvkejm1sDF3j35JOAX5kU4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1759213895; c=relaxed/simple;
+	bh=SqTbUgH9Ji13Bjkk1RwEpFMsI7ttVI04AdElSXjpyQ4=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=WfI3AnHlYuRRap7KS12TpmNWAtsNnJXobTyMT0efo0Ttdfl5qm+dlCz1hnetLJuGgjntc+Ogm59DA1pJBgkxe5hAi8RfV2H0GN8LD8MOXjppW7rSebFYN89WlMIHYoNtloDSiSMrnGpkKIfh3ySiWitfL/245qqUfHdWRIDqI9I=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=anIjt2zL; arc=fail smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Y+JqQ7kg"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="anIjt2zL"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1759213173; x=1790749173;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to;
-  bh=PPkxk9Ep+4bcuEH85FQbkyA99ebVVgKHjiMmQ6tF2QI=;
-  b=Y+JqQ7kgvJI50OH1gNDyek9QgN1OkTploEfIXmJyTw9rGBPiOgU6mJjV
-   VjpUkyQZhS/bEkMq0YQ24HJU1NES0iiJuuV2nUCmwLh1pTlpiVlBwz6Eq
-   E1k5W+VFEWVLcBzHuYmMGdv8STcogyIFsH7MDh+x5gSLGnpCRM8aY5pdr
-   /cvAelzd2vE+NdMolWEdqcNBA3eVoUnt+beQ14lZG3y+HFq4uV4Hz8z+/
-   I7guneyu6IyH9j93MmecAnUkVWil4tzIIiotVOfuajsw+9pbdtobBMno7
-   8SF9P7ash3MW+c4dNo6PHlbULDONBnnBSFyYmXnSh8P111A8DLklTtSda
-   w==;
-X-CSE-ConnectionGUID: 5vKduYmFSqePx4sU91qw+A==
-X-CSE-MsgGUID: 3xn4qirCRXuxBYIfWmoMBg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11568"; a="65318460"
+  t=1759213894; x=1790749894;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   mime-version;
+  bh=SqTbUgH9Ji13Bjkk1RwEpFMsI7ttVI04AdElSXjpyQ4=;
+  b=anIjt2zLEKLegpbfCdI4vYk/gOSLMm1IvUfHHb2v8hhXENCtmnC0hv35
+   OaG9U1+l8Z/Y8QzMA7Xz6fkfk7/htFQUiTl/z5dyGKkRXyYbSU0w20c8y
+   cRa/2Iv+M40UdWwlfQRDgajKZlrROYhV74Mm9RDoZES4IotPu0C22jhjR
+   2pzpzYvflgXJtpldwmXaI3fwu9uRsJJsbWAQrEKTuSRn4TwiZ2AJ9oCkO
+   jbFh5GQu80yw5IfVS0ruONXhXxwOwL3mNrgmJS2kfQA1p3Uev4OftNazU
+   N5BxnA8A5PnDEzT7IP53+lR6luIuT4h4c/+NPTI0EzeDN0a39JFVa7M+4
+   g==;
+X-CSE-ConnectionGUID: TDet8wGnShiHrZst5rWOnA==
+X-CSE-MsgGUID: Qh+7Jv8QTUq7bolwyv0A1Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11568"; a="84078093"
 X-IronPort-AV: E=Sophos;i="6.18,303,1751266800"; 
-   d="scan'208,223";a="65318460"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2025 23:19:32 -0700
-X-CSE-ConnectionGUID: eVkiAFdAR9SIbzTPTiUZJQ==
-X-CSE-MsgGUID: 8q3deDqDTqGKaRWQYAqsSw==
+   d="scan'208";a="84078093"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2025 23:31:33 -0700
+X-CSE-ConnectionGUID: J4Zw0ocIQ86eGAMtBUszbg==
+X-CSE-MsgGUID: 2xwNIPAAQhCoqW7pegGyKA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.18,303,1751266800"; 
-   d="scan'208,223";a="178821060"
-Received: from dapengmi-mobl1.ccr.corp.intel.com (HELO [10.124.232.209]) ([10.124.232.209])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2025 23:19:28 -0700
-Content-Type: multipart/mixed; boundary="------------noBps4QEKNLJXvRP2Vz7n39u"
-Message-ID: <6c4a3b2b-d207-466e-bd58-05566f36e1a4@linux.intel.com>
-Date: Tue, 30 Sep 2025 14:19:25 +0800
+   d="scan'208";a="178234787"
+Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
+  by orviesa007.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2025 23:31:32 -0700
+Received: from ORSMSX903.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.27; Mon, 29 Sep 2025 23:31:32 -0700
+Received: from ORSEDG902.ED.cps.intel.com (10.7.248.12) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.27 via Frontend Transport; Mon, 29 Sep 2025 23:31:32 -0700
+Received: from MW6PR02CU001.outbound.protection.outlook.com (52.101.48.41) by
+ edgegateway.intel.com (134.134.137.112) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.27; Mon, 29 Sep 2025 23:31:32 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=iIzfExBuGE3CrbTxvbIxf9ZmK7CGRMiSAsS/VXpbITbDyhBnuV9QhLAPlhpmeW1U7Pbse7QkwfqickZuIrKv/XYHAAa2UeQbO1Hb+vzz99H1M6aAXIn2aU9A/Gr1OPrBo5n+7Y6hAWaT7yLl4buhSgyj4jjqRCovMmOA3zOmmQOamRRCQS9/QVEjjO5yXU0qpdRNzTNMrMbw1xXv+KGlCUnKxB8O6DVFglWC6p8HzWVDz8Fxlb6R6HF5itKhkeMAbxPkZiuoc4Mqbu7Pfxwskw4IIKfyZJnNUq18l8pnhY9HrpjXIjLGwB8p8VCMdg4NX4X7W9NmYWr01sUItRZGLw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=vOm1Cc3UOpJ3MWlwcwvYacCRt213IGmxphyf6EH7nAY=;
+ b=AQhFUQDM5TsjD1BS+AfbqbBPppQvWIu1uMwNCKkfgk4ORWDPlkVHiP6acM0bxBvdrzkMoWQJDg7426COiEeeZTwmHLjcIE+J0R/vd7A7BOeprc6nGvOS30LONCiIUMwG64FrfvoxacAYuhiGP5T6U67ZTnxklj0+Pu+KjhUXB0JSqKQsY8GSlf0ntCnc/+/SLJY9oSvOccKeFVScUakNyUzo4/Xdkujf5kTS20jMUCfrO3ZMlqslNWSSZvZlmdOy5ljW5IyCRezL2hbmDHWKdPtfVvlUHp0zMjGTXPR2rhIK5ry2c7DlwSJQS1SA/0JW+N3qND5xVaKSpw82N6mZnA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by PH0PR11MB5127.namprd11.prod.outlook.com (2603:10b6:510:3c::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9160.18; Tue, 30 Sep
+ 2025 06:31:30 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.9160.014; Tue, 30 Sep 2025
+ 06:31:30 +0000
+Date: Tue, 30 Sep 2025 14:31:18 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: pengyu <pengyu@kylinos.cn>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	<linux-serial@vger.kernel.org>, <gregkh@linuxfoundation.org>,
+	<jirislaby@kernel.org>, <legion@kernel.org>, <mingo@kernel.org>,
+	<myrrhperiwinkle@qtmlabs.xyz>, <tglx@linutronix.de>,
+	<dmitry.torokhov@gmail.com>, <changlianzhi@uniontech.com>, pengyu
+	<pengyu@kylinos.cn>, <syzbot+79c403850e6816dc39cf@syzkaller.appspotmail.com>,
+	<oliver.sang@intel.com>
+Subject: Re: [PATCH] tty/vt: Fix possible deadlock in input_inject_event
+Message-ID: <202509301323.34d956e1-lkp@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20250928130819.383808-1-pengyu@kylinos.cn>
+X-ClientProxiedBy: TP0P295CA0039.TWNP295.PROD.OUTLOOK.COM (2603:1096:910:4::8)
+ To LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [Patch v7 02/12] perf/x86/intel: Fix NULL event access and
- potential PEBS record loss
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
- Kan Liang <kan.liang@linux.intel.com>, linux-perf-users@vger.kernel.org,
- linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
- Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>,
- Namhyung Kim <namhyung@kernel.org>, Ian Rogers <irogers@google.com>,
- Adrian Hunter <adrian.hunter@intel.com>,
- Alexander Shishkin <alexander.shishkin@linux.intel.com>,
- Andi Kleen <ak@linux.intel.com>, Eranian Stephane <eranian@google.com>,
- Dapeng Mi <dapeng1.mi@intel.com>
-References: <202509081646.d101cfb7-lkp@intel.com>
- <e92a703d-6a92-474c-acba-b15176b97548@linux.intel.com>
- <bd48852d-e5d3-4d58-9d71-891a4e31dd5b@linux.intel.com>
- <aNtoZ3bJ5OmGAMT0@xsang-OptiPlex-9020>
-Content-Language: en-US
-From: "Mi, Dapeng" <dapeng1.mi@linux.intel.com>
-In-Reply-To: <aNtoZ3bJ5OmGAMT0@xsang-OptiPlex-9020>
-
-This is a multi-part message in MIME format.
---------------noBps4QEKNLJXvRP2Vz7n39u
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-
-
-On 9/30/2025 1:19 PM, Oliver Sang wrote:
-> hi, Dapeng,
->
-> On Sun, Sep 28, 2025 at 02:00:28PM +0800, Mi, Dapeng wrote:
->> Hi Oliver,
->>
->> Could you please help to validate the attached patch? The patch should fix
->> this warning. (Please apply this patch on top of the whole patch series).
->> Thanks.
-> the patch doesn't fix the warning [1]. one dmesg is attached FYI.
->
-> BTW, I applied this patch on top of the patch set, and the patch set itself
-> is applied upon f49e1be1954248. as below.
-> if any problem, please let us know. thanks
->
-> * f7171f90cc3a45 perf/x86/intel: Fix NULL event access waring from test robot
-> * 81248d31dd384c perf/x86/intel: Add counter group support for arch-PEBS
-> * c4dd1608098ec0 perf/x86/intel: Setup PEBS data configuration and enable legacy groups
-> * de78881cd5ac79 perf/x86/intel: Update dyn_constranit base on PEBS event precise level
-> * f560ef321b0632 perf/x86/intel: Allocate arch-PEBS buffer and initialize PEBS_BASE MSR
-> * 5411e99084e21d perf/x86/intel: Process arch-PEBS records or record fragments
-> * d721d0d90c7b30 perf/x86/intel/ds: Factor out PEBS group processing code to functions
-> * 0cd78a2875e1ab perf/x86/intel/ds: Factor out PEBS record processing code to functions
-> * cc5755ee9b8bb2 perf/x86/intel: Initialize architectural PEBS
-> * 995af2a15982ff perf/x86/intel: Correct large PEBS flag check
-> * fa9540afb72301 perf/x86/intel: Replace x86_pmu.drain_pebs calling with static call
-> * a7138973beb1d1 perf/x86/intel: Fix NULL event access and potential PEBS record loss
-> * 0c9567b36ae6f8 perf/x86: Remove redundant is_x86_event() prototype
-> * f49e1be1954248 perf/x86: Print PMU counters bitmap in x86_pmu_show_pmu_cap()
->
-> commit f7171f90cc3a45627643d4eadd204e2b8f45e540
-> Author: Dapeng Mi <dapeng1.mi@linux.intel.com>
-> Date:   Sun Sep 28 13:50:47 2025 +0800
->
->     perf/x86/intel: Fix NULL event access waring from test robot
->
->     This patch fixes the warning about
->     https://lore.kernel.org/all/202509081646.d101cfb7-lkp@intel.com/.
->
->     Signed-off-by: Dapeng Mi <dapeng1.mi@linux.intel.com>
->
-> diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
-> index 65908880f4244..ef32714cb1822 100644
-> --- a/arch/x86/events/intel/ds.c
-> +++ b/arch/x86/events/intel/ds.c
-> @@ -2821,8 +2821,11 @@ static void intel_pmu_drain_pebs_nhm(struct pt_regs *iregs, struct perf_sample_d
->                  * If collision happened, the record will be dropped.
->                  */
->                 if (pebs_status != (1ULL << bit)) {
-> -                       for_each_set_bit(i, (unsigned long *)&pebs_status, size)
-> +                       for_each_set_bit(i, (unsigned long *)&pebs_status, size) {
->                                 error[i]++;
-> +                               if (error[i] && !events[i])
-> +                                       events[i] = cpuc->events[i];
-> +                       }
->                         continue;
->                 }
-
-Oops, it looks previous fix was incomplete. :(
-
-Oliver, could you please verify the new attached patch (Please apply this
-patch on top of the whole patch series)? Thanks a lot for your effort. 
-
-diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
-index 65908880f424..3dedf7a0acf6 100644
---- a/arch/x86/events/intel/ds.c
-+++ b/arch/x86/events/intel/ds.c
-@@ -2781,9 +2781,11 @@ static void intel_pmu_drain_pebs_nhm(struct pt_regs
-*iregs, struct perf_sample_d
- 
-         /* PEBS v3 has more accurate status bits */
-         if (x86_pmu.intel_cap.pebs_format >= 3) {
--            for_each_set_bit(bit, (unsigned long *)&pebs_status, size)
-+            for_each_set_bit(bit, (unsigned long *)&pebs_status, size) {
-                 counts[bit]++;
--
-+                if (counts[bit] && !events[bit])
-+                    events[bit] = cpuc->events[bit];
-+            }
-             continue;
-         }
- 
-@@ -2821,8 +2823,11 @@ static void intel_pmu_drain_pebs_nhm(struct pt_regs
-*iregs, struct perf_sample_d
-          * If collision happened, the record will be dropped.
-          */
-         if (pebs_status != (1ULL << bit)) {
--            for_each_set_bit(i, (unsigned long *)&pebs_status, size)
-+            for_each_set_bit(i, (unsigned long *)&pebs_status, size) {
-                 error[i]++;
-+                if (error[i] && !events[i])
-+                    events[i] = cpuc->events[i];
-+            }
-             continue;
-         }
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|PH0PR11MB5127:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4f21c211-81f3-4fc5-9630-08ddffeafd8e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|7416014|376014|7053199007;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?67i8eXGStKBauysEbkSkSsJhIa/mofZOH9ckwR7O0gZm1SnpIIN4i+rNXCym?=
+ =?us-ascii?Q?vdfldZA+64fWQRjt/0HAJQuTL4rDdK5hXzeWLDHgEVaOGgsaJw/2sOIT91OD?=
+ =?us-ascii?Q?EnblecihXsEXsXDbivi1I7d9aJ6KM8Cr4Dc2F2q9qWoy+rwFRg8glp+JKkIL?=
+ =?us-ascii?Q?0SE3wFm5JDgj7GfJoJiwTFtI3rGi0upF2slZ9NtmtagKknN0cdQr+nKDvk58?=
+ =?us-ascii?Q?q1WRq9mZ+VlJdaXS6NaBC1LYUE0hvWZqkyNl9eAX5FY7p2bqqkfvm9H5VzZk?=
+ =?us-ascii?Q?urzdzTm2IyM0n9UV5iKj2+eQe5eGqQZJVr7Sjyf71ix+KJ12Omc7NjEF78y6?=
+ =?us-ascii?Q?Ce8xN7WleNQXOxE1pOJvfMhrvJB0L77vrQ5g9ky52UHO2APSm9xBB2QhtK/o?=
+ =?us-ascii?Q?cTNYYGg0UvIY8vGSb9tvDKimzlvhaJkgZtRyJkoC1Tkt0D9p6h9+//ya3ab9?=
+ =?us-ascii?Q?0xvqCdYKTo62UfQgJ1LOvS8knT5moN/8KOe43F2HwO0FwvUdLW3u0AsB+nPO?=
+ =?us-ascii?Q?/nv/vJ+4mFxQ9NQvt4XoihkW+3Y3rny/KCV/6sITuIHC03mHmvQMugp8alV3?=
+ =?us-ascii?Q?DRZ+gd2IqWQt4uzn5we7QpcTSOHNTZw+Rhz8it2JPOY94K+pEy2YcfcH13GX?=
+ =?us-ascii?Q?BWz40x1+cXK9MSppSrLdJTHnT6rJ50mZupChYyj7QUrY6gmzYsHtcmYr1ms2?=
+ =?us-ascii?Q?WmiLqSlqiVCNzArHSkLQ5qs0qpLqIziiu6NhAGF3kSQyj5ktKiUNYG9y2AAT?=
+ =?us-ascii?Q?yKvZHFiGDaMSZ5n8H4F6TEGacyG1+4epH4HONPKPfeE/L8KO9ZU1kh4TETy1?=
+ =?us-ascii?Q?VV+t4vS9MIZ+MO1AOWBPNSEg2QpmXkiN5eXpMAacdSYPcAuDIJXwRYiS0LaV?=
+ =?us-ascii?Q?N0eArHNjlp8vr7KPvluOogiMViWrOlIHpPwOo0VBR/4KMo2VhpTjdZ5MqtRq?=
+ =?us-ascii?Q?5XBHMKbP18w1RctPPuyRCbaRie4i0kS9aQpcla+vgMsX7AY6VilnluSMxBzg?=
+ =?us-ascii?Q?QKb92nPSmqfiSVu9uuuTdLk/DBc5bkKye0Y7ZIySTKrzvCSt98hazephj2vL?=
+ =?us-ascii?Q?CeSvEKO++h9fi9+oB++DlJEe4DkA/qZ+RSO0Ow7lygKyjQy/5ZKSzawwKGXo?=
+ =?us-ascii?Q?y6h2Upsb88maoWwHZv/7iZ4xJGnoK9CaZEURi5AieBJBkkM5FCPxcMMLkmYh?=
+ =?us-ascii?Q?6S0oqiJA2C1kv9se7efwJRwG8h1dVAvIu6+TCk58IcR1L38qY/HaWN3NnSKf?=
+ =?us-ascii?Q?8BlegdIG3gz7Mv/ekgaXH59QNIP/Rh2XTmUdbI6iE052zcDEYGW1Ydargv15?=
+ =?us-ascii?Q?psxvo5nJljzV/KhDu21ukUYsZPO7IFYqdtljyUAsJwakt2Shxvk1QbZeL4Yc?=
+ =?us-ascii?Q?mlvPDamgRZ9LYEcCOeqnhOiba7MAhDQLG2hFGkIx5rpDFnncSYVsv9I88qbj?=
+ =?us-ascii?Q?s5rAS4bqDHM=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014)(7053199007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7vxeZJUf/m6ls0itVjtvhlyhLDAEVAFcC3lWBGnQny7cZlAFl0iXq7/KELYS?=
+ =?us-ascii?Q?Gkkfhah5wkQJ47m/L9Rd6CjyiT8Qp9Ue7Ely/Ng0VAuZNxrscaVwX6T816G1?=
+ =?us-ascii?Q?9Kbm1UiSQ2x7LEGk8VirvldNb3OzCuWDr3phiFKJMxF1A6cxhrvCqfLIT/ZO?=
+ =?us-ascii?Q?gHpJ/9mKWLYla6uQmsAyXNJnZ0l3B+/91YYhP+Kdq3+xsDVjlnejIPXs07Yz?=
+ =?us-ascii?Q?qZNkUl/2NQydYRFi7GB1PicOvwdGqnbxvxg99A1zgMDY193gwC3a7XrNKnk2?=
+ =?us-ascii?Q?Xq+Jrm1nzNy74C7gL3HxyDT6LhTZBOEqmS7OtQ4C9UXqtKbsdkKQ1KszcYAy?=
+ =?us-ascii?Q?D3p5wy+HQyN5PKeLI2tdMXBXariHBPDEuut0t9hi1oA0vqsWfrbj/20auqM2?=
+ =?us-ascii?Q?acbkKq8Ta7xrVllUYEiXeyF0i/BcIrLdybiAaCYNiZu5hoy9REiYJ7uJxWnx?=
+ =?us-ascii?Q?g50CQTEs+V5NGJkCPtbxVsLdk5/S672pdX8nass6lJvqhV8YWgZIc5wppzlK?=
+ =?us-ascii?Q?kOQVBzxdV+r2JhLWfNYPGtqlsjnfVi0EPmHsYFS8v8cvmjlyQU1BW7rQUMUd?=
+ =?us-ascii?Q?n7TT+uDGe1AeoD+IidHnD20YWq20tOE9eAMMRzfx9PZ06NHPxTH+h5qSlXCS?=
+ =?us-ascii?Q?lAzD2sZVgj14+/76hC2SiaJxHQazsd4XHkDyuqHS/r0rAXlK7AGHkGmnFe48?=
+ =?us-ascii?Q?X6lOpe9KvXRTsQW/SLHqoSbzAVDDq9clRrIT9+aMW52XVdk4UKK/aTE49wdO?=
+ =?us-ascii?Q?VVvt5C7Q5M6UXUtVuJvIPeHBsW9EjRmqrZnudX5cACjxOAyfNiva3RIJNJc5?=
+ =?us-ascii?Q?qyze01YoU6BSdU1OEGwXkruZwIGsWHwLyDEv60hieaLadh1QAt6H/CzgKh20?=
+ =?us-ascii?Q?h0KahnhPFdSwIPfx93iYYKmVSbgTE7Ci/hOC06hBHPNNM7aRPRaXD15DC/xD?=
+ =?us-ascii?Q?AAKdNJ6yPzzNZUeCRvr0gGu2jwvuT97lUaeTvbfTccqEJVOROW1xPDDmcqUN?=
+ =?us-ascii?Q?Tphvv8eGi8CdZEoylwmuqFDlXyn2D0uEy873aT4zCrdibKQbO4Radd8JfB6k?=
+ =?us-ascii?Q?ZZUXlhrdnVbZUgY48rsYymwfgu8e3je63bE0mOtKlXoFPpWeimdUvpFyJ34u?=
+ =?us-ascii?Q?Df64L4op09Xxp9cIf7oH7bznUd2mi4FagprULL+oN34hhFCXHDn3XoqpYRNz?=
+ =?us-ascii?Q?N9hV+Wsw3IwsEyonqdhstkMjWo4e9tT3CPGAPdudBGfd2yczEpSKhiFoJPt3?=
+ =?us-ascii?Q?Q3+fI+5B28UoP0eIfTNBoAnYXhEEDSyRDaPU4iPxLhIAZj5ZusB079nJGuB7?=
+ =?us-ascii?Q?Sz7mpa3RVOp21pcfDy7k1jDP1jHcbEDHH62R0AplGXbUwHhrJoZueBdaFDgJ?=
+ =?us-ascii?Q?BzRtT4xPpGoNJhr7o/C8rfBmOOf9UTdNNGaJ8TMWgd3hcjHuKy2PCRPGsBVm?=
+ =?us-ascii?Q?+y4S9fVsfv8iAOOjw8okVQj57U2zolKYVQWPm4aYTy9EmpygqKlUHQVzajI0?=
+ =?us-ascii?Q?VY57/E71AbN16mfBk6VkgyKldQQ1VnDGn7AadDMsG/u0EXdYM2ibYUNrSSiR?=
+ =?us-ascii?Q?5kdCA2ssS8UrKwfhkwPIoCwISyneZXQJ+PRUH7fLD7obDiQscZ8qwoamEOL5?=
+ =?us-ascii?Q?uA=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4f21c211-81f3-4fc5-9630-08ddffeafd8e
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Sep 2025 06:31:30.1913
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9hSLlXx25pnz4FdRmSChdoNkG8QIYzvgKxU3rgoI8x6oltE+ecRKld46o1FKp3Lk1kDv5tvNsSPyrN9iw7MQZA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5127
+X-OriginatorOrg: intel.com
 
 
->
->
->
->
-> [1]
-> [  101.198733][    C0] ------------[ cut here ]------------
-> [  101.198737][    C0] WARNING: CPU: 0 PID: 2770 at arch/x86/events/intel/ds.c:2849 intel_pmu_drain_pebs_nhm+0x589/0x630
-> [  101.198758][    C0] Modules linked in: xt_conntrack nft_chain_nat xt_MASQUERADE nf_nat nf_conntrack_netlink nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4
-> xt_addrtype nft_compat nf_tables nfnetlink br_netfilter bridge stp llc dm_thin_pool dm_persistent_data dm_bio_prison dm_bufio qrtr sg binfmt_misc loop fus
-> e dm_mod overlay btrfs blake2b_generic xor raid6_pq intel_rapl_msr intel_rapl_common intel_uncore_frequency intel_uncore_frequency_common skx_edac skx_eda
-> c_common nfit libnvdimm x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel irdma ice kvm sd_mod ast irqbypass snd_pcm gnss ghash_clmulni_intel drm_c
-> lient_lib snd_timer drm_shmem_helper rapl ib_uverbs snd ipmi_ssif ahci drm_kms_helper intel_cstate soundcore libahci mei_me acpi_power_meter i2c_i801 ioat
-> dma intel_uncore drm ib_core pcspkr libata ipmi_si acpi_ipmi mei joydev i2c_smbus intel_pch_thermal lpc_ich dca wmi ipmi_devintf ipmi_msghandler acpi_pad
-> [  101.198862][    C0] CPU: 0 UID: 0 PID: 2770 Comm: perf Tainted: G S                  6.17.0-rc1-00063-gf7171f90cc3a #1 VOLUNTARY
-> [  101.198871][    C0] Tainted: [S]=CPU_OUT_OF_SPEC
-> [  101.198873][    C0] Hardware name: Intel Corporation S2600WFT/S2600WFT, BIOS SE5C620.86B.02.01.0008.031920191559 03/19/2019
-> [  101.198877][    C0] RIP: 0010:intel_pmu_drain_pebs_nhm+0x589/0x630
-> [  101.198885][    C0] Code: 48 e8 1b bd fe ff 85 c0 0f 84 a9 00 00 00 41 f6 84 24 a4 01 00 00 80 0f 84 9a 00 00 00 4c 89 ef e8 bc 29 34 00 e9 a9 fc ff ff
->  <0f> 0b e9 a2 fc ff ff 0f 0b e9 9b fc ff ff 48 8b 04 cb 48 89 84 cc
-> [  101.198890][    C0] RSP: 0018:fffffe000000d8c0 EFLAGS: 00010046
-> [  101.198895][    C0] RAX: 0000000000000001 RBX: 0000000000000001 RCX: 0000000000000001
-> [  101.198898][    C0] RDX: 0000000000000001 RSI: 0000000000000004 RDI: fffffe000000d900
-> [  101.198901][    C0] RBP: fffffe000002c0c8 R08: 0000000000000001 R09: 0000000000000000
-> [  101.198904][    C0] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000001
-> [  101.198905][    C0] R13: 0000000000000000 R14: fffffe000000dc80 R15: 0000000000000001
-> [  101.198908][    C0] FS:  00007f96c7747840(0000) GS:ffff88bffb7e0000(0000) knlGS:0000000000000000
-> [  101.198913][    C0] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  101.198916][    C0] CR2: 00000000004ac270 CR3: 000000021df93005 CR4: 00000000007727f0
-> [  101.198920][    C0] PKRU: 55555554
-> [  101.198922][    C0] Call Trace:
-> [  101.198927][    C0]  <NMI>
-> [  101.198942][    C0]  handle_pmi_common+0x2e1/0x4b0
-> [  101.198965][    C0]  intel_pmu_handle_irq+0x109/0x2b0
-> [  101.198967][    C0]  perf_event_nmi_handler+0x2a/0x70
-> [  101.198974][    C0]  nmi_handle+0x53/0x130
-> [  101.198979][    C0]  default_do_nmi+0x11d/0x170
-> [  101.198988][    C0]  exc_nmi+0x106/0x1b0
-> [  101.198990][    C0]  end_repeat_nmi+0xf/0x53
-> [  101.198995][    C0] RIP: 0010:clear_bhb_loop+0x5e/0x80
-> [  101.198997][    C0] Code: cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc
->  <b8> 05 00 00 00 eb 01 90 83 e8 01 75 f8 83 e9 01 75 bb c3 cc cc cc
-> [  101.198998][    C0] RSP: 0018:ffffc90025163f30 EFLAGS: 00000002
-> [  101.199000][    C0] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000004
-> [  101.199001][    C0] RDX: 0000000000000000 RSI: 0000000000000010 RDI: ffffc90025163f58
-> [  101.199002][    C0] RBP: ffffc90025163f48 R08: 0000000000000000 R09: 0000000000000000
-> [  101.199004][    C0] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-> [  101.199004][    C0] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-> [  101.199007][    C0]  ? clear_bhb_loop+0x5e/0x80
-> [  101.199010][    C0]  ? clear_bhb_loop+0x5e/0x80
-> [  101.199011][    C0]  </NMI>
-> [  101.199012][    C0]  <TASK>
-> [  101.199012][    C0]  ? clear_bhb_loop+0x30/0x80
-> [  101.199014][    C0]  ? clear_bhb_loop+0x30/0x80
-> [  101.199016][    C0]  ? clear_bhb_loop+0xe/0x80
-> [  101.199017][    C0]  ? entry_SYSCALL_64_after_hwframe+0x71/0x7e
-> [  101.199020][    C0]  </TASK>
-> [  101.199020][    C0] ---[ end trace 0000000000000000 ]---
->
->
->> diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
->> index 65908880f424..ef32714cb182 100644
->> --- a/arch/x86/events/intel/ds.c
->> +++ b/arch/x86/events/intel/ds.c
->> @@ -2821,8 +2821,11 @@ static void intel_pmu_drain_pebs_nhm(struct pt_regs
->> *iregs, struct perf_sample_d
->>                  * If collision happened, the record will be dropped.
->>                  */
->>                 if (pebs_status != (1ULL << bit)) {
->> -                       for_each_set_bit(i, (unsigned long *)&pebs_status,
->> size)
->> +                       for_each_set_bit(i, (unsigned long *)&pebs_status,
->> size) {
->>                                 error[i]++;
->> +                               if (error[i] && !events[i])
->> +                                       events[i] = cpuc->events[i];
->> +                       }
->>                         continue;
->>                 }
->>
->>
->> On 9/8/2025 5:05 PM, Mi, Dapeng wrote:
->>> On 9/8/2025 4:43 PM, kernel test robot wrote:
->>>> Hello,
->>>>
->>>> kernel test robot noticed "WARNING:at_arch/x86/events/intel/ds.c:#intel_pmu_drain_pebs_nhm" on:
->>>>
->>>> commit: a7138973beb1d124386472663cf50a571a2059ce ("[Patch v7 02/12] perf/x86/intel: Fix NULL event access and potential PEBS record loss")
->>>> url: https://github.com/intel-lab-lkp/linux/commits/Dapeng-Mi/perf-x86-Remove-redundant-is_x86_event-prototype/20250828-094117
->>>> patch link: https://lore.kernel.org/all/20250828013435.1528459-3-dapeng1.mi@linux.intel.com/
->>>> patch subject: [Patch v7 02/12] perf/x86/intel: Fix NULL event access and potential PEBS record loss
->>>>
->>>> in testcase: phoronix-test-suite
->>>> version: 
->>>> with following parameters:
->>>>
->>>> 	test: stress-ng-1.11.0
->>>> 	option_a: Socket Activity
->>>> 	cpufreq_governor: performance
->>>>
->>>>
->>>>
->>>> config: x86_64-rhel-9.4
->>>> compiler: gcc-12
->>>> test machine: 96 threads 2 sockets Intel(R) Xeon(R) Gold 6252 CPU @ 2.10GHz (Cascade Lake) with 512G memory
->>>>
->>>> (please refer to attached dmesg/kmsg for entire log/backtrace)
->>>>
->>>>
->>>>
->>>> If you fix the issue in a separate patch/commit (i.e. not just a new version of
->>>> the same patch/commit), kindly add following tags
->>>> | Reported-by: kernel test robot <oliver.sang@intel.com>
->>>> | Closes: https://lore.kernel.org/oe-lkp/202509081646.d101cfb7-lkp@intel.com
->>>>
->>>>
->>>>
->>>> The kernel config and materials to reproduce are available at:
->>>> https://download.01.org/0day-ci/archive/20250908/202509081646.d101cfb7-lkp@intel.com
->>>>
->>>>
->>>> the dmesg in above link is not very clear, so we also attached one dmesg FYI,
->>>> from which:
->>>>
->>>> [   41.225784][   C82] ------------[ cut here ]------------
->>>> [   41.225786][   C82] WARNING: CPU: 82 PID: 3704 at arch/x86/events/intel/ds.c:2592 intel_pmu_drain_pebs_nhm+0x56b/0x630
->>>> [   41.225791][   C82] Modules linked in: xt_conntrack nft_chain_nat xt_MASQUERADE nf_nat nf_conntrack_netlink nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4
->>>> xt_addrtype nft_compat nf_tables nfnetlink br_netfilter bridge stp llc dm_thin_pool dm_persistent_data dm_bio_prison dm_bufio qrtr sg binfmt_misc loop fus
->>>> e dm_mod overlay btrfs blake2b_generic xor raid6_pq intel_rapl_msr intel_rapl_common intel_uncore_frequency intel_uncore_frequency_common skx_edac skx_eda
->>>> c_common nfit libnvdimm x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel kvm irdma sd_mod ast irqbypass ice ipmi_ssif drm_client_lib snd_pcm ghash
->>>> _clmulni_intel drm_shmem_helper snd_timer gnss rapl drm_kms_helper intel_cstate snd ahci ib_uverbs libahci mei_me soundcore acpi_power_meter i2c_i801 ioat
->>>> dma drm ib_core pcspkr intel_uncore ipmi_si acpi_ipmi libata mei joydev i2c_smbus intel_pch_thermal lpc_ich dca wmi ipmi_devintf ipmi_msghandler acpi_pad
->>>> [   41.225831][   C82] CPU: 82 UID: 0 PID: 3704 Comm: sleep Tainted: G S                  6.17.0-rc1-00052-ga7138973beb1 #1 VOLUNTARY
->>>> [   41.225834][   C82] Tainted: [S]=CPU_OUT_OF_SPEC
->>>> [   41.225835][   C82] Hardware name: Intel Corporation S2600WFT/S2600WFT, BIOS SE5C620.86B.02.01.0008.031920191559 03/19/2019
->>>> [   41.225836][   C82] RIP: 0010:intel_pmu_drain_pebs_nhm+0x56b/0x630
->>>> [   41.225839][   C82] Code: 48 e8 b9 cd fe ff 85 c0 0f 84 a9 00 00 00 41 f6 84 24 a4 01 00 00 80 0f 84 9a 00 00 00 4c 89 ef e8 1a 2a 34 00 e9 c7 fc ff ff
->>>>  <0f> 0b e9 c0 fc ff ff 0f 0b e9 b9 fc ff ff 48 8b 04 cb 48 89 84 cc
->>>> [   41.225841][   C82] RSP: 0018:fffffe00012f38c0 EFLAGS: 00010046
->>>> [   41.225843][   C82] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
->>>> [   41.225844][   C82] RDX: 0000000000000001 RSI: 0000000000000004 RDI: fffffe00012f3900
->>>> [   41.225845][   C82] RBP: fffffe00013120c8 R08: 0000000000000000 R09: 0000000000000000
->>>> [   20.931889][ T1340] Error: Driver 'pcspkr' is already registered, aborting...
->>>> [   41.225846][   C82] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
->>>> [   41.225847][   C82] R13: 0000000000000000 R14: fffffe00012f3c80 R15: 0000000000000000
->>>> [   41.225848][   C82] FS:  0000000000000000(0000) GS:ffff88f027c62000(0000) knlGS:0000000000000000
->>>> [   21.006859][ T1512] sd 6:0:0:0: Attached scsi generic sg0 type 0
->>>> [   21.013583][ T1512] sd 7:0:0:0: Attached scsi generic sg1 type 0
->>>> [   41.225849][   C82] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->>>> [   41.225851][   C82] CR2: 00007ffe5571fe7c CR3: 00000040c5ae1003 CR4: 00000000007726f0
->>>> [   41.225852][   C82] PKRU: 55555554
->>>> [   41.225853][   C82] Call Trace:
->>>> [   41.225855][   C82]  <NMI>
->>>> [   41.225861][   C82]  handle_pmi_common+0x29b/0x430
->>>> [   41.225865][   C82]  intel_pmu_handle_irq+0x109/0x2b0
->>>> [   41.225867][   C82]  perf_event_nmi_handler+0x2a/0x70
->>>> [   41.225870][   C82]  nmi_handle+0x53/0x130
->>>> [   41.225873][   C82]  default_do_nmi+0x11d/0x170
->>>> [   41.225876][   C82]  exc_nmi+0x106/0x1b0
->>>> [   41.225878][   C82]  end_repeat_nmi+0xf/0x53
->>>> [   41.225880][   C82] RIP: 0010:find_next_fd+0x2a/0xb0
->>>> [   41.225883][   C82] Code: 0f 1f 44 00 00 41 54 89 f2 48 c7 c0 ff ff ff ff 49 89 fc 55 c1 ea 06 53 89 f3 48 8b 77 18 89 d9 48 d3 e0 48 f7 d0 48 0b 04 d6
->>>>  <48> 83 f8 ff 74 0d 48 f7 d0 f3 48 0f bc c0 83 f8 3f 76 3a 41 8b 2c
->>>> [   41.225885][   C82] RSP: 0018:ffffc90025283b90 EFLAGS: 00000206
->>>> [   41.225886][   C82] RAX: 0000000000000017 RBX: 0000000000000003 RCX: 0000000000000003
->>>> [   41.225887][   C82] RDX: 0000000000000000 RSI: ffff88f06d277150 RDI: ffff88f06d2770e8
->>>> [   41.225888][   C82] RBP: 0000000000000400 R08: 8080808080808080 R09: 979c8d9e9a8cdfff
->>>> [   41.225889][   C82] R10: fefefefefefefeff R11: 0000000000000000 R12: ffff88f06d2770e8
->>>> [   41.225890][   C82] R13: 0000000000088000 R14: ffff88f06d2770c0 R15: ffff88f06d2770e8
->>>> [   41.225893][   C82]  ? find_next_fd+0x2a/0xb0
->>>> [   41.225896][   C82]  ? find_next_fd+0x2a/0xb0
->>>> [   41.225899][   C82]  </NMI>
->>>> [   41.225899][   C82]  <TASK>
->>>> [   41.225900][   C82]  alloc_fd+0x55/0x130
->>>> [   41.225902][   C82]  do_sys_openat2+0x5a/0xf0
->>>> [   41.225905][   C82]  __x64_sys_openat+0x6d/0xb0
->>>> [   41.225907][   C82]  do_syscall_64+0x7f/0x2b0
->>>> [   41.225909][   C82]  ? vfs_statx+0x68/0x170
->>>> [   41.225911][   C82]  ? strncpy_from_user+0x26/0xf0
->>>> [   41.225914][   C82]  ? vfs_fstatat+0x75/0xb0
->>>> [   41.225917][   C82]  ? __do_sys_newfstatat+0x25/0x70
->>>> [   41.225919][   C82]  ? path_openat+0xb6/0x2b0
->>>> [   41.225921][   C82]  ? do_syscall_64+0x7f/0x2b0
->>>> [   41.225922][   C82]  ? do_filp_open+0xc3/0x170
->>>> [   41.225924][   C82]  ? do_syscall_64+0x7f/0x2b0
->>>> [   41.225925][   C82]  ? __cond_resched+0x1e/0x70
->>>> [   41.225928][   C82]  ? check_heap_object+0x34/0x1b0
->>>> [   41.225931][   C82]  ? __check_object_size+0x5c/0x130
->>>> [   41.225933][   C82]  ? do_sys_openat2+0x8a/0xf0
->>>> [   41.225936][   C82]  ? __x64_sys_openat+0x6d/0xb0
->>>> [   41.225938][   C82]  ? clear_bhb_loop+0x30/0x80
->>>> [   41.225940][   C82]  ? clear_bhb_loop+0x30/0x80
->>>> [   41.225942][   C82]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
->>>> [   41.225944][   C82] RIP: 0033:0x7eff04bb9a2d
->>>> [   41.225946][   C82] Code: 48 89 54 24 e0 41 83 e2 40 75 32 89 f0 25 00 00 41 00 3d 00 00 41 00 74 24 89 f2 b8 01 01 00 00 48 89 fe bf 9c ff ff ff 0f 05
->>>>  <48> 3d 00 f0 ff ff 77 33 c3 66 2e 0f 1f 84 00 00 00 00 00 48 8d 44
->>>> [   41.225947][   C82] RSP: 002b:00007ffe5571f7e8 EFLAGS: 00000287 ORIG_RAX: 0000000000000101
->>>> [   41.225949][   C82] RAX: ffffffffffffffda RBX: 0000558b3236dbe6 RCX: 00007eff04bb9a2d
->>>> [   41.225950][   C82] RDX: 0000000000080000 RSI: 00007eff04bc20b1 RDI: 00000000ffffff9c
->>>> [   41.225951][   C82] RBP: 00007eff04bcd1f8 R08: 0000000000000000 R09: 0000558b3236dbe6
->>>> [   41.225952][   C82] R10: 0000000000000000 R11: 0000000000000287 R12: ffffffffffffffff
->>>> [   41.225953][   C82] R13: 0000000000000001 R14: 00007eff04bcc020 R15: 00007eff04bcd6b8
->>>> [   41.225954][   C82]  </TASK>
->>>> [   41.225955][   C82] ---[ end trace 0000000000000000 ]---
->>>>
->>>>
->>> It looks the warning is triggered in the  "error[i] != 0" case and lead to
->>> the local events[] array is not initialized. Would fix it in next version.
->>>
->>>
->>>
->>>
->> From 0afc076a7836433b455c8aff15d4a3ad9631ebc2 Mon Sep 17 00:00:00 2001
->> From: Dapeng Mi <dapeng1.mi@linux.intel.com>
->> Date: Sun, 28 Sep 2025 13:50:47 +0800
->> Subject: [PATCH] perf/x86/intel: Fix NULL event access waring from test robot
->>
->> This patch fixes the warning about
->> https://lore.kernel.org/all/202509081646.d101cfb7-lkp@intel.com/.
->>
->> Signed-off-by: Dapeng Mi <dapeng1.mi@linux.intel.com>
->> ---
->>  arch/x86/events/intel/ds.c | 5 ++++-
->>  1 file changed, 4 insertions(+), 1 deletion(-)
->>
->> diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
->> index 65908880f424..ef32714cb182 100644
->> --- a/arch/x86/events/intel/ds.c
->> +++ b/arch/x86/events/intel/ds.c
->> @@ -2821,8 +2821,11 @@ static void intel_pmu_drain_pebs_nhm(struct pt_regs *iregs, struct perf_sample_d
->>  		 * If collision happened, the record will be dropped.
->>  		 */
->>  		if (pebs_status != (1ULL << bit)) {
->> -			for_each_set_bit(i, (unsigned long *)&pebs_status, size)
->> +			for_each_set_bit(i, (unsigned long *)&pebs_status, size) {
->>  				error[i]++;
->> +				if (error[i] && !events[i])
->> +					events[i] = cpuc->events[i];
->> +			}
->>  			continue;
->>  		}
->>  
->> -- 
->> 2.34.1
->>
---------------noBps4QEKNLJXvRP2Vz7n39u
-Content-Type: text/plain; charset=UTF-8;
- name="0001-Fixup-perf-x86-intel-Fix-NULL-event-access-waring-fr.patch"
-Content-Disposition: attachment;
- filename*0="0001-Fixup-perf-x86-intel-Fix-NULL-event-access-waring-fr.pa";
- filename*1="tch"
-Content-Transfer-Encoding: base64
 
-RnJvbSBiMzZhNjMzNzVmOWVhNWY4NmE4ZGMzOTJhMTUzY2MyMDIwZTczNTUxIE1vbiBTZXAg
-MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBEYXBlbmcgTWkgPGRhcGVuZzEubWlAbGludXguaW50
-ZWwuY29tPgpEYXRlOiBTdW4sIDI4IFNlcCAyMDI1IDEzOjUwOjQ3ICswODAwClN1YmplY3Q6
-IFtQQVRDSF0gRml4dXA6IHBlcmYveDg2L2ludGVsOiBGaXggTlVMTCBldmVudCBhY2Nlc3Mg
-d2FyaW5nIGZyb20gdGVzdAogcm9ib3QKClRoaXMgcGF0Y2ggZml4ZXMgdGhlIHdhcm5pbmcg
-YWJvdXQKaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvYWxsLzIwMjUwOTA4MTY0Ni5kMTAxY2Zi
-Ny1sa3BAaW50ZWwuY29tLy4KClNpZ25lZC1vZmYtYnk6IERhcGVuZyBNaSA8ZGFwZW5nMS5t
-aUBsaW51eC5pbnRlbC5jb20+Ci0tLQogYXJjaC94ODYvZXZlbnRzL2ludGVsL2RzLmMgfCAx
-MSArKysrKysrKy0tLQogMSBmaWxlIGNoYW5nZWQsIDggaW5zZXJ0aW9ucygrKSwgMyBkZWxl
-dGlvbnMoLSkKCmRpZmYgLS1naXQgYS9hcmNoL3g4Ni9ldmVudHMvaW50ZWwvZHMuYyBiL2Fy
-Y2gveDg2L2V2ZW50cy9pbnRlbC9kcy5jCmluZGV4IDY1OTA4ODgwZjQyNC4uM2RlZGY3YTBh
-Y2Y2IDEwMDY0NAotLS0gYS9hcmNoL3g4Ni9ldmVudHMvaW50ZWwvZHMuYworKysgYi9hcmNo
-L3g4Ni9ldmVudHMvaW50ZWwvZHMuYwpAQCAtMjc4MSw5ICsyNzgxLDExIEBAIHN0YXRpYyB2
-b2lkIGludGVsX3BtdV9kcmFpbl9wZWJzX25obShzdHJ1Y3QgcHRfcmVncyAqaXJlZ3MsIHN0
-cnVjdCBwZXJmX3NhbXBsZV9kCiAKIAkJLyogUEVCUyB2MyBoYXMgbW9yZSBhY2N1cmF0ZSBz
-dGF0dXMgYml0cyAqLwogCQlpZiAoeDg2X3BtdS5pbnRlbF9jYXAucGVic19mb3JtYXQgPj0g
-MykgewotCQkJZm9yX2VhY2hfc2V0X2JpdChiaXQsICh1bnNpZ25lZCBsb25nICopJnBlYnNf
-c3RhdHVzLCBzaXplKQorCQkJZm9yX2VhY2hfc2V0X2JpdChiaXQsICh1bnNpZ25lZCBsb25n
-ICopJnBlYnNfc3RhdHVzLCBzaXplKSB7CiAJCQkJY291bnRzW2JpdF0rKzsKLQorCQkJCWlm
-IChjb3VudHNbYml0XSAmJiAhZXZlbnRzW2JpdF0pCisJCQkJCWV2ZW50c1tiaXRdID0gY3B1
-Yy0+ZXZlbnRzW2JpdF07CisJCQl9CiAJCQljb250aW51ZTsKIAkJfQogCkBAIC0yODIxLDgg
-KzI4MjMsMTEgQEAgc3RhdGljIHZvaWQgaW50ZWxfcG11X2RyYWluX3BlYnNfbmhtKHN0cnVj
-dCBwdF9yZWdzICppcmVncywgc3RydWN0IHBlcmZfc2FtcGxlX2QKIAkJICogSWYgY29sbGlz
-aW9uIGhhcHBlbmVkLCB0aGUgcmVjb3JkIHdpbGwgYmUgZHJvcHBlZC4KIAkJICovCiAJCWlm
-IChwZWJzX3N0YXR1cyAhPSAoMVVMTCA8PCBiaXQpKSB7Ci0JCQlmb3JfZWFjaF9zZXRfYml0
-KGksICh1bnNpZ25lZCBsb25nICopJnBlYnNfc3RhdHVzLCBzaXplKQorCQkJZm9yX2VhY2hf
-c2V0X2JpdChpLCAodW5zaWduZWQgbG9uZyAqKSZwZWJzX3N0YXR1cywgc2l6ZSkgewogCQkJ
-CWVycm9yW2ldKys7CisJCQkJaWYgKGVycm9yW2ldICYmICFldmVudHNbaV0pCisJCQkJCWV2
-ZW50c1tpXSA9IGNwdWMtPmV2ZW50c1tpXTsKKwkJCX0KIAkJCWNvbnRpbnVlOwogCQl9CiAK
-LS0gCjIuMzQuMQoK
+Hello,
 
---------------noBps4QEKNLJXvRP2Vz7n39u--
+kernel test robot noticed "WARNING:at_kernel/workqueue.c:#enable_work" on:
+
+commit: 81d246ffd402b46338d8a3e0cd23f474195dd236 ("[PATCH] tty/vt: Fix possible deadlock in input_inject_event")
+url: https://github.com/intel-lab-lkp/linux/commits/pengyu/tty-vt-Fix-possible-deadlock-in-input_inject_event/20250928-211353
+base: https://git.kernel.org/cgit/linux/kernel/git/gregkh/tty.git tty-testing
+patch link: https://lore.kernel.org/all/20250928130819.383808-1-pengyu@kylinos.cn/
+patch subject: [PATCH] tty/vt: Fix possible deadlock in input_inject_event
+
+in testcase: boot
+
+config: x86_64-kexec
+compiler: clang-20
+test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
++--------------------------------------------+------------+------------+
+|                                            | f4abab3508 | 81d246ffd4 |
++--------------------------------------------+------------+------------+
+| WARNING:at_kernel/workqueue.c:#enable_work | 0          | 12         |
+| RIP:enable_work                            | 0          | 12         |
++--------------------------------------------+------------+------------+
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202509301323.34d956e1-lkp@intel.com
+
+
+[    0.877354][    T1] ------------[ cut here ]------------
+[    0.878411][    T1] workqueue: work disable count underflowed
+[ 0.879704][ T1] WARNING: CPU: 0 PID: 1 at kernel/workqueue.c:4326 enable_work (kernel/workqueue.c:4326) 
+[    0.881213][    T1] Modules linked in:
+[    0.881232][    T1] CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.17.0-rc6-00045-g81d246ffd402 #1 PREEMPT(voluntary)
+[    0.881232][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+[ 0.881232][ T1] RIP: 0010:enable_work (kernel/workqueue.c:4326) 
+[ 0.881232][ T1] Code: 5e 5d e9 0c c1 ec 00 cc 0f 0b eb 9b 31 ed 80 3d 1e e8 c6 01 00 75 a0 c6 05 15 e8 c6 01 01 48 c7 c7 cd bf 6d 82 e8 89 26 f3 ff <0f> 0b eb 89 0f 0b eb 93 e8 cc c7 eb 00 66 66 66 2e 0f 1f 84 00 00
+All code
+========
+   0:	5e                   	pop    %rsi
+   1:	5d                   	pop    %rbp
+   2:	e9 0c c1 ec 00       	jmp    0xecc113
+   7:	cc                   	int3
+   8:	0f 0b                	ud2
+   a:	eb 9b                	jmp    0xffffffffffffffa7
+   c:	31 ed                	xor    %ebp,%ebp
+   e:	80 3d 1e e8 c6 01 00 	cmpb   $0x0,0x1c6e81e(%rip)        # 0x1c6e833
+  15:	75 a0                	jne    0xffffffffffffffb7
+  17:	c6 05 15 e8 c6 01 01 	movb   $0x1,0x1c6e815(%rip)        # 0x1c6e833
+  1e:	48 c7 c7 cd bf 6d 82 	mov    $0xffffffff826dbfcd,%rdi
+  25:	e8 89 26 f3 ff       	call   0xfffffffffff326b3
+  2a:*	0f 0b                	ud2		<-- trapping instruction
+  2c:	eb 89                	jmp    0xffffffffffffffb7
+  2e:	0f 0b                	ud2
+  30:	eb 93                	jmp    0xffffffffffffffc5
+  32:	e8 cc c7 eb 00       	call   0xebc803
+  37:	66                   	data16
+  38:	66                   	data16
+  39:	66                   	data16
+  3a:	2e                   	cs
+  3b:	0f                   	.byte 0xf
+  3c:	1f                   	(bad)
+  3d:	84 00                	test   %al,(%rax)
+	...
+
+Code starting with the faulting instruction
+===========================================
+   0:	0f 0b                	ud2
+   2:	eb 89                	jmp    0xffffffffffffff8d
+   4:	0f 0b                	ud2
+   6:	eb 93                	jmp    0xffffffffffffff9b
+   8:	e8 cc c7 eb 00       	call   0xebc7d9
+   d:	66                   	data16
+   e:	66                   	data16
+   f:	66                   	data16
+  10:	2e                   	cs
+  11:	0f                   	.byte 0xf
+  12:	1f                   	(bad)
+  13:	84 00                	test   %al,(%rax)
+	...
+[    0.881232][    T1] RSP: 0000:ffffc90000013b28 EFLAGS: 00010046
+[    0.881232][    T1] RAX: 63593ad70bfd2600 RBX: ffffffff82ead988 RCX: 63593ad70bfd2601
+[    0.881232][    T1] RDX: ffffc90000013918 RSI: 00000000ffff7fff RDI: 0000000000000001
+[    0.881232][    T1] RBP: 0000000000000000 R08: 0000000000000000 R09: ffffc90000013910
+[    0.881232][    T1] R10: 00000000ffff7fff R11: 0000000000000001 R12: 0000000000000000
+[    0.881232][    T1] R13: 0000000000000000 R14: 000fffffffe00001 R15: 0000000000000000
+[    0.881232][    T1] FS:  0000000000000000(0000) GS:ffff8884ac411000(0000) knlGS:0000000000000000
+[    0.881232][    T1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    0.881232][    T1] CR2: ffff88843ffff000 CR3: 0000000002a30000 CR4: 00000000000406f0
+[    0.881232][    T1] Call Trace:
+[    0.881232][    T1]  <TASK>
+[ 0.881232][ T1] kbd_init (include/linux/workqueue.h:730 drivers/tty/vt/keyboard.c:1666) 
+[ 0.881232][ T1] vty_init (drivers/tty/vt/vt.c:3884) 
+[ 0.881232][ T1] tty_init (drivers/tty/tty_io.c:3651) 
+[ 0.881232][ T1] ? __pfx_chr_dev_init (drivers/char/mem.c:734) 
+[ 0.881232][ T1] do_one_initcall (init/main.c:1269) 
+[ 0.881232][ T1] ? __alloc_frozen_pages_noprof (mm/page_alloc.c:5148) 
+[ 0.881232][ T1] ? alloc_pages_mpol (mm/mempolicy.c:2416) 
+[ 0.881232][ T1] ? new_slab (mm/slub.c:560 mm/slub.c:2698 mm/slub.c:2714) 
+[ 0.881232][ T1] ? __proc_create (fs/proc/generic.c:453) 
+[ 0.881232][ T1] ? ida_alloc_range (include/linux/xarray.h:1437 lib/idr.c:461) 
+[ 0.881232][ T1] ? parameq (kernel/params.c:90 kernel/params.c:99) 
+[ 0.881232][ T1] ? __pfx_ignore_unknown_bootoption (init/main.c:1315) 
+[ 0.881232][ T1] ? parse_args (kernel/params.c:153 kernel/params.c:186) 
+[ 0.881232][ T1] do_initcall_level (init/main.c:1330) 
+[ 0.881232][ T1] do_initcalls (init/main.c:1344) 
+[ 0.881232][ T1] kernel_init_freeable (init/main.c:1583) 
+[ 0.881232][ T1] ? __pfx_kernel_init (init/main.c:1461) 
+[ 0.881232][ T1] kernel_init (init/main.c:1471) 
+[ 0.881232][ T1] ret_from_fork (arch/x86/kernel/process.c:154) 
+[ 0.881232][ T1] ? __pfx_kernel_init (init/main.c:1461) 
+[ 0.881232][ T1] ret_from_fork_asm (arch/x86/entry/entry_64.S:258) 
+[    0.881232][    T1]  </TASK>
+[    0.881232][    T1] ---[ end trace 0000000000000000 ]---
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20250930/202509301323.34d956e1-lkp@intel.com
+
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
