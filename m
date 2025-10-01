@@ -1,116 +1,201 @@
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7EFB2D2381
-	for <oe-lkp@lists.linux.dev>; Tue, 30 Sep 2025 23:30:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB39E46B5
+	for <oe-lkp@lists.linux.dev>; Wed,  1 Oct 2025 10:02:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759275007; cv=none; b=bCsOxl3zB6LktyCotO0WdMg8CNXJqTX94zk1E5ZRET91pQhlCLXmSYuDqJeSyY9g3k9OczzNrewBOKm9tuaAzUy4tCkGVKmgtgH2vYwUkGGgQunJ+9ECcUeA4EGUEE+Rfqkm7YwgII7zNQOlfYwtd7a3p90q2cbjU90VBTakzE8=
+	t=1759312937; cv=none; b=nGTvPo2swfhp7TtsQYKma0xqjnButxxjC1nGtQvempsQFSfvuGFKN/hkS7mPFKPW4UYvVuC6eCt1P3uy4R4iJd84IKzJNWew0UYssmXaazstZF1oXVUs4FdMpHT5JWaYtrLl5YM+D40xKcg+1xu9JzfHClIEsumqNEQaUHk779Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759275007; c=relaxed/simple;
-	bh=gWZTJSIIbrP380uCP//L36Rf0RBfgxrLDVwOgWvpHuM=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ox+FDR2m3jQc5Gd6DNBnFl9fvS/mlx7/y0rXuBkAfUsf0UvdBWqyWI77wycstaJ2bP7G/Vj5sXHpHibcVAeAImhYxljdhnwVAxfDxQJ6FyWqomYgIhSEHlKBVTj1Oc7SlBQmzQE3l0jZWGI+OdiW3i/kyHrncDUuAiiYc3XIhcU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YEXBvlMo; arc=none smtp.client-ip=209.85.221.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1759312937; c=relaxed/simple;
+	bh=N2u3ve/1Lf+ttycZJO2sIPHhofQDe7Vrp8ijoawtE7Q=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=fEuPewoz0ixctON6AF5DFeLCqxXQAfk4hQGt1tzkQf1BpyjLZpi8zu6lgx3bU/ssf2FRLKMdlJDzj99vF8N3y81TIT6ep+hWVr70YjAsNampSxyNgc9IrA18Nr8nkgBxiWOh6OOfZVyDmzUvQ+0b9oB5tE2HaEkgYYujsylAZD8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=B9FzD2Cm; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=rE7Fvyhn; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=1Q34JIqo; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=MoEEEght; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YEXBvlMo"
-Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-3f0134ccc0cso4432287f8f.1
-        for <oe-lkp@lists.linux.dev>; Tue, 30 Sep 2025 16:30:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1759275004; x=1759879804; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WKocoFyhYs5voJ1j0rINOqN8fPDxe4oLJZbuE7DLMzA=;
-        b=YEXBvlMoFhM/w4tKzergMztzT6L3i8p3Y90u7AKWZRyPTNRe1IajE/nZjxQpPYW93q
-         Ct5Xzjn730SwC2dUUH1Bll++UJoFMFGAUhGX/c4CwVY98Ij1URQ/zQqDTB6wnFqcqko4
-         StAkwkO0Y52yAxL4q/l6qyrXgvN52qRgI7WRea2IJTZrMlSIeWXzxTVEfkGh63lVKxNg
-         JzmZoCuD/pKhA6kNwjllhiMLSlaHoNirVYBT1qzOl7OPc8QBjmqxNFz34qwAXbSfUp87
-         IWnHNhLCYuimiE8ny6E+a6LnKjhcnl2OjDXXpGyf8V/25I4BEcouqlLDqXaZ5zDEyBsF
-         0/OQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759275004; x=1759879804;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=WKocoFyhYs5voJ1j0rINOqN8fPDxe4oLJZbuE7DLMzA=;
-        b=RIVMpAHZ3tbq/+M5pZHhXZ/dVldgNxTJxlb2TbuATYUCCP/su+BRZkWiEDxXU8JBxS
-         M4yUyKciEbg8kp5ND6qbTYkgiopOAAyFDkyjjS15NnfAhY0Rh6tmT171wSp4Z1SC8JVc
-         MbUTYoKohMMGm7YwlrLJ/14YV0ucNOlxWrhdYeL6LM6RrpOYFu8UFHbzlhvpQPyW0yZW
-         0l+l635EsEMAICuE4HFdeelKZCZZs+AwOkUcawKGiE4u7ECl/+xaMHCccn9DXVmUbKuY
-         W/L37xPdEtCAgrAsacsp/BvED4Fx0Q8Pj4o+ygSdj5VWyCZECuVfsor/sV4F9IblzxRd
-         6Cww==
-X-Forwarded-Encrypted: i=1; AJvYcCXOiNo7QT66fgNae7tBfS0z1uOsmHysiOjuygZOSWtDUJI13EDdVw4IgMLF9ZVqONwXdIcu88A=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxx7uLFhj8ykj8gVwPmFE/8x0rACT58UqbW990YuTZOo7boIa3z
-	02XLCnKE75A5ztgPJQHy7b1jesnwMV2s+49srbpzBCw+RGl3EF3m7jXI
-X-Gm-Gg: ASbGncu4sM93nmEpbbFzWerMqMfQUl+ZCFW2QBvY12zA9gD6bT/nyjL6OnoUwJZyib0
-	/pIqgJOwlTJ1NgYCzRWSA8krNMA2AS1xz1mXxbULVibJwmdSLQSzIBX7ZDFM2L4V/PZkNNrNwaB
-	i3Vs3Wg+Dl+IfHCDSWGfAwy0+Xzo54lLQ3ZoP8LrlO+fKCIyWhuMulHNdUKeLlWyeTO1XF0Ypzt
-	gHstUJuNNCkGoBL5Bv9mC3R+1pSr4l9R84StIGKdFYNzMURRsqACcDkdbCYX2vvdIafcBFHnhkS
-	clfTIWDjZ5ahopsqZ/RBtJnVYiCWBuVfd3y7FcMFDcn7LAcQhpf060cASewcziLtRG05AHFAmut
-	a09EiQyROjRrDoxXaInXKsUXSXlGncsVU1ixujtGSESZGSaNW0yMfMp9EzhiP7FAdia+oE4pTBE
-	tRa3y9NkYvYVge3SXnC8hJFQ==
-X-Google-Smtp-Source: AGHT+IGrlrBcqkdbjFn8gHHNIH9V5H/OJUSkp8w+fjG+KJIkz3Qh/I+P4TAxPxRIKI9Oo1ZDCt+OuA==
-X-Received: by 2002:a05:6000:2381:b0:3ec:e0d0:60e5 with SMTP id ffacd0b85a97d-425577f0a74mr1070502f8f.15.1759275003933;
-        Tue, 30 Sep 2025 16:30:03 -0700 (PDT)
-Received: from f.. (cst-prg-21-74.cust.vodafone.cz. [46.135.21.74])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-40fb72fb2eesm25156984f8f.12.2025.09.30.16.30.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Sep 2025 16:30:03 -0700 (PDT)
-From: Mateusz Guzik <mjguzik@gmail.com>
-To: brauner@kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org,
-	josef@toxicpanda.com,
-	oe-lkp@lists.linux.dev,
-	linux-f2fs-devel@lists.sourceforge.net,
-	ltp@lists.linux.it,
-	oliver.sang@intel.com,
-	Mateusz Guzik <mjguzik@gmail.com>
-Subject: [PATCH] f2fs: don't call iput() from f2fs_drop_inode()
-Date: Wed,  1 Oct 2025 01:29:57 +0200
-Message-ID: <20250930232957.14361-1-mjguzik@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <202509301450.138b448f-lkp@intel.com>
-References: <202509301450.138b448f-lkp@intel.com>
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="B9FzD2Cm";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="rE7Fvyhn";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="1Q34JIqo";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="MoEEEght"
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 73D05337A4;
+	Wed,  1 Oct 2025 10:02:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1759312927; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=TeD8soTHHIxNG6f1XpozFfG0T75bKxyP4oAiQvd6izY=;
+	b=B9FzD2CmxCKFVebzqdQFEmlFPt22S5EjbPIZsp5yuBxLvpL2KhgiMsO3t/8Vmqt6K1UNZT
+	49/iHf+B2diTqIB7UsT74yjk/ZCBv0ScegguvGT/1yls0y5ZoCs6zYctvXUbmNXskGi5JR
+	xBdFGx79WsPyL+7Y5KjxhnTJ059SYdk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1759312927;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=TeD8soTHHIxNG6f1XpozFfG0T75bKxyP4oAiQvd6izY=;
+	b=rE7Fvyhn6OtfaFyfpp7h8JxLtJ8put0GTFpJcbtzTgPtwUTzJoOAEruZQ4AJ2JHU610MGn
+	yryK6oe4i9gtjyCQ==
+Authentication-Results: smtp-out1.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1759312922; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=TeD8soTHHIxNG6f1XpozFfG0T75bKxyP4oAiQvd6izY=;
+	b=1Q34JIqoIlXithAOEHLzWztElhn0iwwC96rDV8SdaTwxGABhyDCYq0uAV83MN0P8ZucKDs
+	l/iVkqQEMJkjsTKhEn+KKP/Pw5mo0K+R4l05nHz6X8/O++069/pdI8niE5plSB2kocUShZ
+	GdbvO75HMwJgqdVLP4CP3/pIzRDVdNM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1759312922;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=TeD8soTHHIxNG6f1XpozFfG0T75bKxyP4oAiQvd6izY=;
+	b=MoEEEght4a9SSGw6MaP8wY4NdyUJBcKUM41d2/gKPD11aN9SydwUf+/RU3WfNcMLBOzQVQ
+	AyqDU9CCA+2KtXAg==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 6185313A42;
+	Wed,  1 Oct 2025 10:02:02 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id eeKCFxr83GhJTwAAD6G6ig
+	(envelope-from <vbabka@suse.cz>); Wed, 01 Oct 2025 10:02:02 +0000
+Message-ID: <689e36d4-d828-42c5-9e57-ba663adc9ea9@suse.cz>
+Date: Wed, 1 Oct 2025 12:04:50 +0200
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 4/4] mm/page_alloc: Batch page freeing in
+ free_frozen_page_commit
+To: Joshua Hahn <joshua.hahnjy@gmail.com>,
+ kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, Chris Mason <clm@fb.com>,
+ Johannes Weiner <hannes@cmpxchg.org>, linux-mm@kvack.org,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Kiryl Shutsemau <kirill@shutemov.name>, Brendan Jackman
+ <jackmanb@google.com>, Michal Hocko <mhocko@suse.com>,
+ Suren Baghdasaryan <surenb@google.com>, Zi Yan <ziy@nvidia.com>,
+ linux-kernel@vger.kernel.org, kernel-team@meta.com
+References: <20250929151744.2922386-1-joshua.hahnjy@gmail.com>
+From: Vlastimil Babka <vbabka@suse.cz>
+Content-Language: en-US
+In-Reply-To: <20250929151744.2922386-1-joshua.hahnjy@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Level: 
+X-Spamd-Result: default: False [-2.80 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	SUSPICIOUS_RECIPS(1.50)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	ARC_NA(0.00)[];
+	SEM_URIBL_UNKNOWN_FAIL(0.00)[intel.com:query timed out];
+	MIME_TRACE(0.00)[0:+];
+	FUZZY_RATELIMITED(0.00)[rspamd.com];
+	RCPT_COUNT_TWELVE(0.00)[15];
+	TAGGED_RCPT(0.00)[];
+	MID_RHS_MATCH_FROM(0.00)[];
+	TO_DN_SOME(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	FREEMAIL_TO(0.00)[gmail.com,intel.com];
+	RCVD_TLS_ALL(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,suse.cz:mid]
+X-Spam-Flag: NO
+X-Spam-Score: -2.80
 
-iput() calls the problematic routine, which does a ->i_count inc/dec
-cycle. Undoing it with iput() recurses into the problem.
+On 9/29/25 5:17 PM, Joshua Hahn wrote:
+> On Sun, 28 Sep 2025 13:17:37 +0800 kernel test robot <oliver.sang@intel.com> wrote:
+> 
+> Hello Kernel Test Robot,
+> 
+>> Hello,
+>>
+>> kernel test robot noticed "WARNING:bad_unlock_balance_detected" on:
+>>
+>> commit: 7e86100bfb0d65a17f3228a9af4c2a49ac38f057 ("[PATCH v2 4/4] mm/page_alloc: Batch page freeing in free_frozen_page_commit")
+>> url: https://github.com/intel-lab-lkp/linux/commits/Joshua-Hahn/mm-page_alloc-vmstat-Simplify-refresh_cpu_vm_stats-change-detection/20250925-044532
+>> patch link: https://lore.kernel.org/all/20250924204409.1706524-5-joshua.hahnjy@gmail.com/
+>> patch subject: [PATCH v2 4/4] mm/page_alloc: Batch page freeing in free_frozen_page_commit
+>>
+>> in testcase: trinity
+>> version: 
+>> with following parameters:
+>>
+>> 	runtime: 300s
+>> 	group: group-03
+>> 	nr_groups: 5
+>>
+>> config: x86_64-randconfig-161-20250927
+>> compiler: gcc-14
+>> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+>>
+>> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>>
+>> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+>> the same patch/commit), kindly add following tags
+>> | Reported-by: kernel test robot <oliver.sang@intel.com>
+>> | Closes: https://lore.kernel.org/oe-lkp/202509281204.3086f707-lkp@intel.com
+>>
+>>
+>> [  414.880298][ T7549] WARNING: bad unlock balance detected!
+>> [  414.881071][ T7549] 6.17.0-rc6-00147-g7e86100bfb0d #1 Not tainted
+>> [  414.881924][ T7549] -------------------------------------
+>> [  414.882695][ T7549] date/7549 is trying to release lock (&pcp->lock) at:
+>> [ 414.883649][ T7549] free_frozen_page_commit+0x425/0x9d0 
+>> [  414.884764][ T7549] but there are no more locks to release!
+>> [  414.885539][ T7549]
+>> [  414.885539][ T7549] other info that might help us debug this:
+>> [  414.886704][ T7549] 2 locks held by date/7549:
+>> [ 414.887353][ T7549] #0: ffff888104f29940 (&mm->mmap_lock){++++}-{4:4}, at: exit_mmap (include/linux/seqlock.h:431 include/linux/mmap_lock.h:88 include/linux/mmap_lock.h:398 mm/mmap.c:1288) 
+>> [ 414.888591][ T7549] #1: ffff8883ae40e858 (&pcp->lock){+.+.}-{3:3}, at: free_frozen_page_commit+0x46a/0x9d0 
+> 
+> So based on this, it seems like I must have overlooked a pretty important
+> consideration here. When I unlock the pcp, it allows both the zone and pcp
+> lock to be picked up by another task (pcp lock less likely), but it also
+> means that this process can be migrated to a different CPU, where it will
+> be trying to unlock & acquire a completely different pcp.
 
-Note f2fs should not be playing games with the refcount to begin with,
-but that will be handled later. Right now solve the immediate
-regression.
+Yes.
 
-Fixes: bc986b1d756482a ("fs: stop accessing ->i_count directly in f2fs and gfs2")
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Closes: https://lore.kernel.org/oe-lkp/202509301450.138b448f-lkp@intel.com
-Signed-off-by: Mateusz Guzik <mjguzik@gmail.com>
----
- fs/f2fs/super.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> For me the most simple solution looks to be migrate_disable() and
+> migrate_enable() in the function to ensure that this task is bound to the
+> CPU it originally started runing on.
+> 
+> I'm not sure how this will affect performance, but I think in terms of
 
-diff --git a/fs/f2fs/super.c b/fs/f2fs/super.c
-index 2619cbbd7d2d..26ec31eb8c80 100644
---- a/fs/f2fs/super.c
-+++ b/fs/f2fs/super.c
-@@ -1769,7 +1769,7 @@ static int f2fs_drop_inode(struct inode *inode)
- 			sb_end_intwrite(inode->i_sb);
- 
- 			spin_lock(&inode->i_lock);
--			iput(inode);
-+			atomic_dec(&inode->i_count);
- 		}
- 		trace_f2fs_drop_inode(inode, 0);
- 		return 0;
--- 
-2.43.0
+It is somewhat expensive, I'd rather avoid if possible.
+
+> desired behavior it does seem like this is the correct way to do it.
+
+I'd rather detect this happened (new pcp doesn't match old pcp after a
+relock) and either give up (should be rare enough hopefully so won't
+cause much imbalance) or recalculate how much to free on the other cpu
+and continue there (probably subtract how much we already did so we
+don't end up unlucky flushing all kinds of cpus "forever").
+
+> Joshua
 
