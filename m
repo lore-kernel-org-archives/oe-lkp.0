@@ -1,149 +1,148 @@
-Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3E90280CC8
-	for <oe-lkp@lists.linux.dev>; Sun,  5 Oct 2025 11:55:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6131DF9D6
+	for <oe-lkp@lists.linux.dev>; Mon,  6 Oct 2025 08:03:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759665304; cv=none; b=ccO7KHRSoCkzFED2K06dPfv2JKycTFaQ11RJ+jMzGUETlpiqZ0swN4NsE9wyKk22FpvG3HsJK0z2+Z2DPQyNATpqF/bbIbEP9InXGhYU/UELYRUSH3lsOfdol2FuREF/2rtqD25h+p6EQWwEnY0eRwfd2OfmfEhKq19Jbikoibo=
+	t=1759737840; cv=none; b=HvKqxHlSh78pyRWVbo9xbfGGaPdeBdOIyQtclWE1plaT/iNcxA6T2INExXiKSc955IJtoem3Gx04CMRh1mKSMGolK4m2Wr07ZBHFcyPTmq46WhjWRMF812xcl6nY8l6TuMt4Cwumtdwz5UbGNoh2bV+4J+Koku6y8SLR7lgSJlQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759665304; c=relaxed/simple;
-	bh=Wtyt1KzFariMlIeI+zEEMW0g/K5OklBCf8gbMrkr97g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TJJhx87aah+1xZ1b1E9E0gpkXz/qHfnF08eGBIC4JC8S0o+tqGOp48xvEZjcwbooHr2Tr8kfyC5raoqO3a5cijq6GgcAz6KaiE6r/F0jMGB3N0njpeOEFdsWBXc73fYCCuZYzeuuX3fy4QVbnRoGrAPgr/9bjyYpw7G7uk5h3JA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fromorbit.com; spf=pass smtp.mailfrom=fromorbit.com; dkim=pass (2048-bit key) header.d=fromorbit-com.20230601.gappssmtp.com header.i=@fromorbit-com.20230601.gappssmtp.com header.b=wK1oq6ch; arc=none smtp.client-ip=209.85.210.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fromorbit.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fromorbit.com
+	s=arc-20240116; t=1759737840; c=relaxed/simple;
+	bh=80jH30xUMQtCp7lqP5MtMRwN/G0fpsGgBjF1aC2HzvQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=qgIfYYJ47iwJ6D9t6KuZ/wRFrVchxiguUFAp4RmDbeL6LixUzBJGqZWpow8gjYvRG3dvMJJoGQZcYg00fMBzF/uOD4+7NtGKaltgcuwD5QcsYcgQK6ptxe5iX8Yxg+K66efy6I2t+CMM/yGoIlDd7sVZHp/5ttVHYrn0VxuB73E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dn9cYzK8; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fromorbit-com.20230601.gappssmtp.com header.i=@fromorbit-com.20230601.gappssmtp.com header.b="wK1oq6ch"
-Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-782bfd0a977so3392914b3a.3
-        for <oe-lkp@lists.linux.dev>; Sun, 05 Oct 2025 04:55:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fromorbit-com.20230601.gappssmtp.com; s=20230601; t=1759665302; x=1760270102; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=er8GqX660tZxnm8yI7a7bHZtQ/sKKbb/5edfsYblxJI=;
-        b=wK1oq6chaQheIGdWE9gO+pEdC4ZcvNaaFrs1IJBVas8LP+UIJNaqhnk/RHqLYSDExV
-         k85nG/Issdag0upCIDN27Lfw2suuhpk0HZH404QPDL72JXIN8bAG9fUun+08GH5UCadd
-         e3aGzn7bUd2YdyvbLNxHhw7qSvyPchn8D/+hTn5+14xW4mp6P0+gMc7fC8dDkUExA9N/
-         d7LoOr1g0P9/AUal2u4DxSYkszwnzFuSTdgE6+/uUx89XEzGv2nUs5kXcH60VI/3PDXz
-         rjDPdK1KCDMCmpGm7rEdE6moOoG4XkCBZcHN9Mn3ueb8ed+0FSwU1VxMdj7C7/oUw/Uh
-         jR6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759665302; x=1760270102;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=er8GqX660tZxnm8yI7a7bHZtQ/sKKbb/5edfsYblxJI=;
-        b=q6X+Q9/pMVCiM5OTj0Cde/gi+VjKVSaycaNneX0ryuhbwkhHyVD9iP+/mWi1ELcaAb
-         RXh9tOD6LbEP1W2F1IkqIDn3Tc4lnb86MAJnka2HRYlo0eZk/z5x2DuNcNguEiawga0U
-         Vm6bquwWuhYLxDk4Ma5l8XCGHne2F+HVSaqvikfm4KQ51CfurleHfQn7HIbsvApSGHLW
-         rp3urQBF76RXJvYfrIB20kh9xL0OOih/iItqnhgldNcWpzeP/tIzjFMXrD/RBvDxtrzr
-         gBoTr5hD+FeO3WP8TIYoPV8DMgFKO7lI38h7xzfxCt1UMxOLCkxXUQPkzKruT0tGxRep
-         VBNQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXn6pTayW9z/XhUvwBjHkR5u11n77ZQ1Ug08xDSK7wa23ISSA89MjYrNWDC7916M3lsd9gSyQQ=@lists.linux.dev
-X-Gm-Message-State: AOJu0YwBzqYRXdYeIinGcCN7RQR9lPIxHnA7hUd3AjdplAmTQMOeEheu
-	yyAM0mXxbl+YVg5SLJvJL+T9GI4gJnSWjBveW5HqYriQqymiTaAegjt6wLUhyC5uYCA=
-X-Gm-Gg: ASbGnctzsuh+pB/RuqoSHunonYNzf1leXe9vca2lGWLyQrEokBWJ52MwNWZ+mwZGo3G
-	3+a0NsSJEzp/lyFBzPkccKWCcxflhErrLf3WPYOzNEJJbDEDO0F+jN7279aKZLCcDPIxnL4MJJE
-	+3mfPx6doU9yo/dyn8VUz6fZXq2nWfUzhOGWrSIF0gkv9cJElAWsawic9eIOnJLIBBVpUgGXbAX
-	Nc4zOFoiIx0CtKb8+tlzT/Q7JjCmWd34X9+IhTcVdJsWdELzyaEH9KOX0YOD6B6xjCu7p7AK8TO
-	AafSQ/NrgJr4UIiNTbplsYzGSP9URLIyCx/RPttXZyaSqbGjkwgfUcv9Oh1PQJhMcAsWOlB2v5P
-	GPoZIDzUEqbkd6aDvLdaPl7nxarF0iuDvIwq2zNmgPGbSlISjM44h7+gT2ZFAlEBu6Jq9V8YRH5
-	4VIynXRWkHbp9qO4ExWMuznw==
-X-Google-Smtp-Source: AGHT+IFJenQ6xCL2kkGn0U9jKhBNcjWIfEAKLRN1RcMC27u89D+ljxfEAw22GmeKD+TuSCTAFauMxA==
-X-Received: by 2002:a05:6a00:2e04:b0:77f:1ef8:8acb with SMTP id d2e1a72fcca58-78c98d45544mr11521737b3a.13.1759665301391;
-        Sun, 05 Oct 2025 04:55:01 -0700 (PDT)
-Received: from dread.disaster.area (pa49-180-91-142.pa.nsw.optusnet.com.au. [49.180.91.142])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-78b02053a3asm9874688b3a.48.2025.10.05.04.55.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Oct 2025 04:55:00 -0700 (PDT)
-Received: from dave by dread.disaster.area with local (Exim 4.98.2)
-	(envelope-from <david@fromorbit.com>)
-	id 1v5NKL-0000000Aote-3xSr;
-	Sun, 05 Oct 2025 22:54:57 +1100
-Date: Sun, 5 Oct 2025 22:54:57 +1100
-From: Dave Chinner <david@fromorbit.com>
-To: Christoph Hellwig <hch@lst.de>
-Cc: kernel test robot <oliver.sang@intel.com>,
-	Dave Chinner <dchinner@redhat.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-kernel@vger.kernel.org,
-	Carlos Maiolino <cem@kernel.org>, Jan Kara <jack@suse.cz>,
-	linux-xfs@vger.kernel.org
-Subject: Re: [linus:master] [xfs]  c91d38b57f:  stress-ng.chown.ops_per_sec
- 70.2% improvement
-Message-ID: <aOJckY5NnB2MaOqj@dread.disaster.area>
-References: <202510020917.2ead7cfe-lkp@intel.com>
- <20251003075615.GA13238@lst.de>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dn9cYzK8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1759737839; x=1791273839;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=80jH30xUMQtCp7lqP5MtMRwN/G0fpsGgBjF1aC2HzvQ=;
+  b=dn9cYzK8maK4GGDgjVYGPySBsoQRJQGqanAP3CWdm79rTjMLGFv1ix/T
+   MZwq5g0KJQKBkA8vGay+h3cBJzN/rvhDHtO+JfzDtoo+V/HvgwAQFfEyq
+   OpUoanakDNdkhs+Nv/qm9SIN67ihulcJnGge6J326nUOPoi+LIzhbTAiF
+   bVGUpQRQq2MK8W7IWs739whvHUAz/mUlozOENwPjGkee53CeVhIJGgsVc
+   gBvrS7uJflFo+oPtsFqDtjeBHnsfZ6Plyh1nOXGh7iUCsHbrX4Tb0IeJ1
+   9UcKXCUwoL1R1tyuBmvhdqgeAA1WemrnVawE6nB/fTnoBVrrrV+1WAyeZ
+   Q==;
+X-CSE-ConnectionGUID: WCE5o2dyTLGKm78oFM1PCg==
+X-CSE-MsgGUID: 0qXGim8LRXWMD0wjw2BHVA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11573"; a="64526752"
+X-IronPort-AV: E=Sophos;i="6.18,319,1751266800"; 
+   d="scan'208";a="64526752"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Oct 2025 01:03:56 -0700
+X-CSE-ConnectionGUID: qE8Qkae9SWKxNyZ2Glm3fg==
+X-CSE-MsgGUID: qAHMFRpCSF6IAw2WKjLkBA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.18,319,1751266800"; 
+   d="scan'208";a="184106174"
+Received: from dapengmi-mobl1.ccr.corp.intel.com (HELO [10.124.232.209]) ([10.124.232.209])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Oct 2025 01:03:51 -0700
+Message-ID: <4bb0537b-8b8e-48fd-b777-0787b23a3b41@linux.intel.com>
+Date: Mon, 6 Oct 2025 16:03:48 +0800
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251003075615.GA13238@lst.de>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [Patch v7 02/12] perf/x86/intel: Fix NULL event access and
+ potential PEBS record loss
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
+ Kan Liang <kan.liang@linux.intel.com>, linux-perf-users@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+ Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>,
+ Namhyung Kim <namhyung@kernel.org>, Ian Rogers <irogers@google.com>,
+ Adrian Hunter <adrian.hunter@intel.com>,
+ Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+ Andi Kleen <ak@linux.intel.com>, Eranian Stephane <eranian@google.com>,
+ Dapeng Mi <dapeng1.mi@intel.com>
+References: <202509081646.d101cfb7-lkp@intel.com>
+ <e92a703d-6a92-474c-acba-b15176b97548@linux.intel.com>
+ <bd48852d-e5d3-4d58-9d71-891a4e31dd5b@linux.intel.com>
+ <aNtoZ3bJ5OmGAMT0@xsang-OptiPlex-9020>
+ <6c4a3b2b-d207-466e-bd58-05566f36e1a4@linux.intel.com>
+ <aN4lR1TG8Mdz5XoU@xsang-OptiPlex-9020>
+Content-Language: en-US
+From: "Mi, Dapeng" <dapeng1.mi@linux.intel.com>
+In-Reply-To: <aN4lR1TG8Mdz5XoU@xsang-OptiPlex-9020>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Fri, Oct 03, 2025 at 09:56:15AM +0200, Christoph Hellwig wrote:
-> On Thu, Oct 02, 2025 at 04:11:29PM +0800, kernel test robot wrote:
-> > 
-> > 
-> > Hello,
-> > 
-> > kernel test robot noticed a 70.2% improvement of stress-ng.chown.ops_per_sec on:
-> 
-> I wonder what stress-ng shown is doing, because unless it is mixing fsync
-> and ilock-heavy operations on the same node this would be highly
-> unexpected.
 
-stress-ng puts a fsync() at the end of every ops loop:
+On 10/2/2025 3:09 PM, Oliver Sang wrote:
+> hi, Dapeng,
+>
+> On Tue, Sep 30, 2025 at 02:19:25PM +0800, Mi, Dapeng wrote:
+> [...]
+>
+>> Oops, it looks previous fix was incomplete. :(
+>>
+>> Oliver, could you please verify the new attached patch (Please apply this
+>> patch on top of the whole patch series)? Thanks a lot for your effort. 
+> we confirmed the patch fixed the warning we reported.
+>
+> Tested-by: kernel test robot <oliver.sang@intel.com>
+>
+> =========================================================================================
+> compiler/cpufreq_governor/kconfig/option_a/rootfs/tbox_group/test/testcase:
+>   gcc-12/performance/x86_64-rhel-9.4/Socket Activity/debian-12-x86_64-phoronix/lkp-csl-2sp7/stress-ng-1.11.0/phoronix-test-suite
+>
+> commit:
+>   0c9567b36ae6f8 ("perf/x86: Remove redundant is_x86_event() prototype")
+>   a7138973beb1d1 ("perf/x86/intel: Fix NULL event access and potential PEBS record loss")
+>   81248d31dd384c ("perf/x86/intel: Add counter group support for arch-PEBS")
+>   54701e916f6782 ("Fixup: perf/x86/intel: Fix NULL event access waring from test robot")
+>
+> 0c9567b36ae6f83c a7138973beb1d124386472663cf 81248d31dd384c71c3b6a6af25a 54701e916f6782039c2ea8adb4b
+> ---------------- --------------------------- --------------------------- ---------------------------
+>        fail:runs  %reproduction    fail:runs  %reproduction    fail:runs  %reproduction    fail:runs
+>            |             |             |             |             |             |             |
+>            :6          100%           6:6          100%           6:6            0%            :20    dmesg.WARNING:at_arch/x86/events/intel/ds.c:#intel_pmu_drain_pebs_nhm
 
-	do {
-		int ret;
+Oliver, thanks a lot for confirm this. :)
 
-		ret = do_fchown(fd, bad_fd, cap_chown, uid, gid);
-		if ((ret < 0) && (ret != -EPERM)) {
-			pr_fail("%s: fchown failed, errno=%d (%s)%s\n",
-				args->name, errno, strerror(errno),
-				stress_get_fs_type(filename));
-			rc = EXIT_FAILURE;
-			break;
-		}
 
-		ret = do_chown(chown, filename, cap_chown, uid, gid);
-		if ((ret < 0) && (ret != -EPERM)) {
-			pr_fail("%s: chown %s failed, errno=%d (%s)%s\n",
-				args->name, filename, errno, strerror(errno),
-				stress_get_fs_type(filename));
-			rc = EXIT_FAILURE;
-			break;
-		}
-		ret = do_chown(lchown, filename, cap_chown, uid, gid);
-		if ((ret < 0) && (ret != -EPERM)) {
-			pr_fail("%s: lchown %s failed, errno=%d (%s)%s\n",
-				args->name, filename, errno, strerror(errno),
-				stress_get_fs_type(filename));
-			rc = EXIT_FAILURE;
-			break;
-		}
->>>>>>>>	(void)shim_fsync(fd);
-		stress_bogo_inc(args);
-	} while (stress_continue(args));
 
-It's also triggering a change in rwsem contention behaviour on the
-inode->i_rwsem in chown_common(), from sleeping to spinning, because
-fsync() no longer causes ILOCK_EXCL lock contention and causes the
-task currently doing a chown operation to wait on the ILOCK_EXCL
-whilst holding the inode->i_rwsem.
-
-Hence all the chown() operations now trigger the spin-on-waiter
-heuristic on the inode->i_rwsem as the lock holder never releases
-the CPU during the modification. That explains why the CPU usage
-increase (from ~2 CPUs to ~50 CPUs) is way out of proportion with
-the actual increase in performance.
-
--Dave.
--- 
-Dave Chinner
-david@fromorbit.com
+>
+>
+>> diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
+>> index 65908880f424..3dedf7a0acf6 100644
+>> --- a/arch/x86/events/intel/ds.c
+>> +++ b/arch/x86/events/intel/ds.c
+>> @@ -2781,9 +2781,11 @@ static void intel_pmu_drain_pebs_nhm(struct pt_regs
+>> *iregs, struct perf_sample_d
+>>  
+>>          /* PEBS v3 has more accurate status bits */
+>>          if (x86_pmu.intel_cap.pebs_format >= 3) {
+>> -            for_each_set_bit(bit, (unsigned long *)&pebs_status, size)
+>> +            for_each_set_bit(bit, (unsigned long *)&pebs_status, size) {
+>>                  counts[bit]++;
+>> -
+>> +                if (counts[bit] && !events[bit])
+>> +                    events[bit] = cpuc->events[bit];
+>> +            }
+>>              continue;
+>>          }
+>>  
+>> @@ -2821,8 +2823,11 @@ static void intel_pmu_drain_pebs_nhm(struct pt_regs
+>> *iregs, struct perf_sample_d
+>>           * If collision happened, the record will be dropped.
+>>           */
+>>          if (pebs_status != (1ULL << bit)) {
+>> -            for_each_set_bit(i, (unsigned long *)&pebs_status, size)
+>> +            for_each_set_bit(i, (unsigned long *)&pebs_status, size) {
+>>                  error[i]++;
+>> +                if (error[i] && !events[i])
+>> +                    events[i] = cpuc->events[i];
+>> +            }
+>>              continue;
+>>          }
+>>
