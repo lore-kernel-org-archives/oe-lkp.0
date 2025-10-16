@@ -1,480 +1,210 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96D71258CED
-	for <oe-lkp@lists.linux.dev>; Thu, 16 Oct 2025 06:08:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.7
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760594919; cv=fail; b=qjPL5JGfVK9H+ukdCp53TC1F2nB8rPHWCJrR6/vzXOMm05xRCWSZ2azHorZtad8aJ2XErCXzyL+b3dsDxrk0Cf+IKDd45XCbXcedMDYFKKeRHE5YwkaUAKJbCaTjn1OmgqRt1kLDz1jp7RWrVNZJO014lseeBgzMGPFo5ktjiGY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760594919; c=relaxed/simple;
-	bh=typuW+jatCU7qa1MvIxqSS4eyWpeyIZp6PViSGk2XlQ=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=nf8ft5PDwdexqTNYq9IIlNqhhRo7/+vymTdaMRXl2NcF1T60umGfG2ox1A7jCOJJkJREkaQG+au2Z8OmE/FLpuTs0qbv4RTZf8eIZi0AYg/wRphGvOKSvbfZn8EXel/4it/eq3Y6GQmMNq6nglN+bGJoAsBCKBTBLHvxpy7JQqg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nkiX9KHm; arc=fail smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 286F5334688
+	for <oe-lkp@lists.linux.dev>; Thu, 16 Oct 2025 17:06:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1760634396; cv=none; b=oMIqCADaagsjvOfN9XcYb1SYfm2EfRVb8W7/qxJuWMxLRW71chFkyp+IwPNDw7NLMFZdhL1GrfCBxRRS1JLxsBsaydk0Kh1LKnVFjNmfpGYPqKhw7Vn0duUSlMu9b10J/8voLaEPM8lZGVz9eUuArHVt0nXVe6CKw8FPWNQPiKE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1760634396; c=relaxed/simple;
+	bh=oHyeJMJkUa7IzskF7eUsRJrMFrGHjAtFfB8UOZ8ouUU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ptfVg23DPnwmcNlfDj6+lPN5Rl1paIoGcX4CXVNGXY+s6U+5juh+NP6Spt2+ZhnAzQC1KBJaqZJ8Z4Sjcmh0NL2lIJRxZdSP5AT31q0GWvm1f+O2W1pDJ4OrEGbj/stKwDeG1IgWN/iR7wWTE2yRa9BA6yitznAo2SxVhd5GGxw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=FXpcm/xg; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=yHAAefFe; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=FXpcm/xg; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=yHAAefFe; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nkiX9KHm"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1760594918; x=1792130918;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=typuW+jatCU7qa1MvIxqSS4eyWpeyIZp6PViSGk2XlQ=;
-  b=nkiX9KHmxgO0ztwqdOk3+lInIti8l2TpSVFGriMR/ZATUR3BM+mL/ITV
-   KtasjMdKMvIWIoa5eV99xMTdakrIgTOlQo6xZUqLpBopwBDPl8o7/2mtg
-   iCc+aM+JCjBOWfhGcRHLstwu++8aACkb6iLwRfHAbWxkrVogWo1jvGqwk
-   m92KWvX29V2cJlfmbQMixm9QD6opKtsSMykeuZFKxvLWBAddN2O6aywgl
-   zxRti5wmhu0Jprscy3JXalTkX/A+qDTxflb0+C9NArnhAmz8sDdEpmpbT
-   2dMnJrfSbs2Svl9zROaSEVhGTLB6F2sloo4q4tkym3lCKjbEge7R+S1gz
-   g==;
-X-CSE-ConnectionGUID: gfWJoZbKTQiuEUyFc6fGqg==
-X-CSE-MsgGUID: f+JM7jHLRQu9ekPNhyGU+A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11583"; a="88246920"
-X-IronPort-AV: E=Sophos;i="6.19,233,1754982000"; 
-   d="scan'208";a="88246920"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2025 23:08:37 -0700
-X-CSE-ConnectionGUID: RE1vJfeeTz6qixDElANhMg==
-X-CSE-MsgGUID: W2fhUM29TRm0mQev9Z9glg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.19,233,1754982000"; 
-   d="scan'208";a="182769941"
-Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
-  by fmviesa008.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2025 23:08:37 -0700
-Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
- ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27; Wed, 15 Oct 2025 23:08:36 -0700
-Received: from ORSEDG902.ED.cps.intel.com (10.7.248.12) by
- ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27 via Frontend Transport; Wed, 15 Oct 2025 23:08:36 -0700
-Received: from CY7PR03CU001.outbound.protection.outlook.com (40.93.198.23) by
- edgegateway.intel.com (134.134.137.112) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27; Wed, 15 Oct 2025 23:08:35 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=cAFA5YGpUbD9/fhqVeqRGQqj9CphLeL30nc63ug+bmNGkIiRHcFgvVhKOl2tvncfJVqWeKThqVBu9rRy/xEpctDububuJJBJ6q9RI/aRhXiljQGAKVhlipOV2Q8kk+n6BlfL13YO4zuIXT16X5vp783DVOIjyWdVEUcBbXNKTqRixm390sU+vS5rdzh5MEYyTb50ZqhZCVvs8qTsnnds28arQqxZCA0mGJERuZeNq3JEF5SJfzmRUi1gwQWsPDEkQVB/VvnjOLSj/vRVDq26LZsxhw3R9IhQkkyY+1shmkuJl2k0k5CO6Ck1AoBsGGU8w8HtdnX5kshr0LjIKjeL6Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hmuhObJfZ20RvmA6d/Zx1zXkX0JQPmmurlLqeKlG9rc=;
- b=I5FQ8+SKCY0S3J1vRbW3Tdi6Ojv8c98D/1eoSu/wDtmzhv5ml/UdEYvCUwXLwCb6/1h3/YiT+aNhIquvGQf8UIUfPPl4NAD/FCtAPIo45fgNvGqsqIY6kqmx+71u2AHOJlirb63F0ZtDICye3iXp6t6WGI/kUlbH+QnyRkLhzgK4qp1pU/pX66mgER0QUuoqOwWFl8OqUgMtxMbkF8fM9cOduQ4Ur2pgoCe3HhYwqCrMV4Go/M2X0EgeAFOtoST7/EICLaJ7zb/zp5/IFzvKASrLekBHrKXbuL+r0kdwOiFpLcNefijugeAkQ5vgU79pZiiquXUqnjz7QEbwMN+2xw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by MW4PR11MB6785.namprd11.prod.outlook.com (2603:10b6:303:20c::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9228.10; Thu, 16 Oct
- 2025 06:08:33 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.9228.010; Thu, 16 Oct 2025
- 06:08:33 +0000
-Date: Thu, 16 Oct 2025 14:08:26 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Vlastimil Babka <vbabka@suse.cz>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-mm@kvack.org>,
-	<oliver.sang@intel.com>
-Subject: [vbabka:b4/sheaves-for-all] [slab]  de840681a1:
- BUG:using_smp_processor_id()in_preemptible
-Message-ID: <202510161416.b7adda58-lkp@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-X-ClientProxiedBy: PS2PR01CA0017.apcprd01.prod.exchangelabs.com
- (2603:1096:300:2d::29) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="FXpcm/xg";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="yHAAefFe";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="FXpcm/xg";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="yHAAefFe"
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 1B9741FBA7;
+	Thu, 16 Oct 2025 17:06:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1760634393; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=tl311XYVAOn09pFWSpinVxhawpIQPj2GkLdiW8nSnMs=;
+	b=FXpcm/xgGAymhCCPnMjdpSRkxQ/SrihP+XQ1vEQMudgIlG0HbT8gkCxAL5G0VJsdPzHNN/
+	Jf4+aRwWfj1Ac8Vr3HTNxQqGhww69r+6Ul1ZiqlWiqnrNhDy3sK4JPxJXrneKgJyM+vDaH
+	vVe/KkAmZB1e9oMin73OCM2HRHi7W14=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1760634393;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=tl311XYVAOn09pFWSpinVxhawpIQPj2GkLdiW8nSnMs=;
+	b=yHAAefFe/ReESZIvFbe/XHnmc3A2Fnug7abPcONYqdqjgNgbnmenOOtUmYxTF6wR7cAnRi
+	LzH4T+2B8cjjbOBA==
+Authentication-Results: smtp-out2.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1760634393; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=tl311XYVAOn09pFWSpinVxhawpIQPj2GkLdiW8nSnMs=;
+	b=FXpcm/xgGAymhCCPnMjdpSRkxQ/SrihP+XQ1vEQMudgIlG0HbT8gkCxAL5G0VJsdPzHNN/
+	Jf4+aRwWfj1Ac8Vr3HTNxQqGhww69r+6Ul1ZiqlWiqnrNhDy3sK4JPxJXrneKgJyM+vDaH
+	vVe/KkAmZB1e9oMin73OCM2HRHi7W14=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1760634393;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=tl311XYVAOn09pFWSpinVxhawpIQPj2GkLdiW8nSnMs=;
+	b=yHAAefFe/ReESZIvFbe/XHnmc3A2Fnug7abPcONYqdqjgNgbnmenOOtUmYxTF6wR7cAnRi
+	LzH4T+2B8cjjbOBA==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id EE8B01376E;
+	Thu, 16 Oct 2025 17:06:32 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id Qp7oORgm8WhdHAAAD6G6ig
+	(envelope-from <vbabka@suse.cz>); Thu, 16 Oct 2025 17:06:32 +0000
+Message-ID: <80241934-7d4b-4196-80b5-713aa740edaa@suse.cz>
+Date: Thu, 16 Oct 2025 19:06:32 +0200
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|MW4PR11MB6785:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1f30fb37-ec41-44c4-bb7e-08de0c7a6fa5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?WKP+vDmASKCBV9z9bt6bsbjXbD7Ks4YBVQKl2HfAR3ep6XztfaIGI2Eq+Wt4?=
- =?us-ascii?Q?IU0gHtGY+CKq/tAdFQHRD/ZNbt4i/sZKOKwfk39DihU/TYMDagpFuyAmh3l2?=
- =?us-ascii?Q?qW0A+zhpV+p+718ijIB761xvepUEjZYnnX0j+x3JPuTdRk/mUvCb1sV6Jqj/?=
- =?us-ascii?Q?bFrwp3vlYw4LSqc8aYP6XOtjj96pRANeNElet0CBHV5QEZ37wZTXPSv3RjNs?=
- =?us-ascii?Q?sMq9AmD3SR0p+2N2kUNe/FGY9BIegHuF3ttYgsmnwHZI/DOR7DhezTuiWZyN?=
- =?us-ascii?Q?vMSOIUJSEvJQG+C6/Vm+YixTBH7Xh5VCXvaVHpCZ4lHUs8E6lj2hCjzlmx8w?=
- =?us-ascii?Q?XMa9vkzJ57SrmR/6Qbx+QmMjTNcT+IQkqtnmuSOhm+rhWJKaxD9tJAbdGgWf?=
- =?us-ascii?Q?ti+IKtcLVovw5pyP26TglzoBMrqiRd97RRpQmS12CbcTEVsNxv/ZambPo4K5?=
- =?us-ascii?Q?JlAN6+LcnwEVmgEyGl8cviA/fjAn1RDM7u6mWa37ILtoTbMHRRNiiHV04err?=
- =?us-ascii?Q?Pi/GYI+hmIYnXtTDDCkxpAXWtYrCVhqP93noJGup8mx/Z4+DhnevuRVbnpJl?=
- =?us-ascii?Q?TcEii9ELqgMaZevDcGa285zHPVku3RrCA489F2mq+BwmevjCI0ItA9sepi0b?=
- =?us-ascii?Q?atWspwJqzPAJgIVQmvTUIppC4fIA+d6m0NBxUNP0jeBHnHr9nPBzfhJBrJvu?=
- =?us-ascii?Q?g5ETRYpiN4qYaMrOdW8xZa3CbGf/FBHEIq0YDhlz/DZj744vEVcQyptlMSXc?=
- =?us-ascii?Q?BABfnhw9m5oYuyR9bU3PuOGdQVXQr52kHWibgs06Y9PAU3k2DD34jmq8EMwu?=
- =?us-ascii?Q?vSBHdlwGgoI997QnpwS+Qs/Ppmb+0dmInx+WZihSePRr2uAlUTVwMqEPsW5E?=
- =?us-ascii?Q?TN3Lwna34dMJ0dJGq+L4URZUFvzM1CnpqSTKTx9F0OYzLCIHn5cqvjtnvT9u?=
- =?us-ascii?Q?NQ2DSHrXjewuYgKeUDL0nzJhbS7twhc4gkcXpL66Hlt4fT2/mjXqs/IzGJcF?=
- =?us-ascii?Q?SO71RzZg8Z36EAaF8MoaKXbiKWdpQ7lp9tEwkQCklqqrOIIxCBU1X778Gz2g?=
- =?us-ascii?Q?Jw42PWFWBqeCk6eHF8e26/gz3mSUc+2jtjW+Me+fbdSuOkv27ndtKKy1kVsY?=
- =?us-ascii?Q?oWWd9OIDXmbjKTAdKsLmceqZ+pK1H2MwQLDOwGeP83yVzmL0KyDxUb/jNrSP?=
- =?us-ascii?Q?5eWrQaAAxBjS/mtfpw7uNnvfw9a6n7UOWC6Zr91+fPGgYKLo1GmcFgNyYIjz?=
- =?us-ascii?Q?SFacl6l5o+zxG4COgOnvhGT4lY1Lffm26eyvOVJ23X0lgYLDjL2Rqdu9v2Ck?=
- =?us-ascii?Q?wJ47pkKQ/+kCshWMTHLrTSAvTRJhNayiRaONupg1RmmY01Zg9ZfPeVeH3W+H?=
- =?us-ascii?Q?XhI/G9GWW4cruG1ELy0Ll7VYvWnXhKhoiywNE6G+XkUR2MwTR1+bQTeblPSs?=
- =?us-ascii?Q?W3LMlIpOsCI=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ARmbg7asCj9wd9CTzHwqhyzrzwMVgYFQ1ET9HRllIkDctkfmOH9mxDnAKs2I?=
- =?us-ascii?Q?eCjKrj3MQU8DHECaH24HsO689pvXTOCfmkyVYZ79Zk6Zzcq9raxdS8SLjSmV?=
- =?us-ascii?Q?ypxx3X+Jt8+INya2AR15EJGNqlMoxWdechMvA0Y5EXFu1AK/JAlq80jYGzV4?=
- =?us-ascii?Q?eT+l969h+hQxJD8kR/0FJ9HwvxNfLQo32crrM2KjI8Gz1PCXH9TDdldfEKwr?=
- =?us-ascii?Q?y7ntmvfhJiyk9LQnZKw8T29ghgX+qX33uRwT0aangCQi3TdCfAqSiFB1n50Z?=
- =?us-ascii?Q?kjpvfWW4I3P3DuASfMi2cnIcfHO/cygYl8L1KhDhL+urrVx4erU37QhFs9ao?=
- =?us-ascii?Q?Y4pleEyh9h56+L2MmS9K6+wV57bfyMoRF6KRYDOyqp0JCyfxzR5r4B54yAQ7?=
- =?us-ascii?Q?dWI9RhcWYm6zoUq7bG20SoURWcOX8QB1f7n3U+xk8tx74vckqDP5ZGVqNnYr?=
- =?us-ascii?Q?rdhiLv9TdpU4iMaa02lE61Qb1/zJuQLrFyaKTvHMeJ9hTo83+2bwwaeDrWWd?=
- =?us-ascii?Q?3eI9nuf6tXnqj/Agq1EM+uF3uIJKkMOSfVaOpwm34HQygS5QKDUx4Z60pLI2?=
- =?us-ascii?Q?h6VgA/DWrpejmYJCMp7waAZ4SdBUm59JuPiRiEWTIj+oyBpyWLhPRGTaoENz?=
- =?us-ascii?Q?tLfxZR8cykhwtN5GC5OoJO8r3OBxp8r2lPnj4M/+hUUYYtZvMPKPU6nRiko+?=
- =?us-ascii?Q?xUqJTKjXqMMfax3+KW1dC/FL4FN0TSK8JT48ZsjCHBUJItq1xem0zjnte3tx?=
- =?us-ascii?Q?/sDBBXAAxOdnwfOikNha4nFwpFvpqwvV917sQ32b8zgi3B+EfcjSVCMffJ59?=
- =?us-ascii?Q?X8Kk4+XzSuSY+avte7rtpqIHMiO7uo79tMljjvPDlcsngvT0dD7JVDxVd7Uy?=
- =?us-ascii?Q?iQzHdFmABDucnhQQElznLToKQgP1H5E3EIo2WlGiVG3tLj16KC2T7sfXL2Bk?=
- =?us-ascii?Q?aETcXULT84ZpA7I2PSyhIySvwKborYkYZCihhOIz5ZAgHUa/gTDie00L4uNv?=
- =?us-ascii?Q?dL7zPTIpu0m88yLHzd8MAoPMfxdF6PM2yaUCIgu/ZbF1C1/t3oIUSdswNO+X?=
- =?us-ascii?Q?8FVGhJaKW7nAQKrNo7enIHYgP9w3hbvIU9TVp1OPX7gvy1Oelrr2gJrV8AxV?=
- =?us-ascii?Q?VS1KQ6cgJMHbHmykfssoXFm2+nVdAp4v0pP2bztJ/8SAZJZqpaaMIpjEcYx4?=
- =?us-ascii?Q?/uXhjt2xPKdOZXnlbJfKgasA+gKBkc0LJHky/J74jqCpvpZRvw6nACLHoeCL?=
- =?us-ascii?Q?7ojI2aTivjQ0ekUNswR2gvndmqgUh1lvFq2ragy8BLO+dU++nhnP4I5GVuQj?=
- =?us-ascii?Q?N4RsRObVDSwjG8/g/0J6fQeU9zpeIHQP4bbb3e8QRGkHPJ9TEWy2s0z9Qlr4?=
- =?us-ascii?Q?fDSPQxb6gQr1KK6mMZKoohVHa45MCTyaTHUciNqivyne+mmXgKEIMfb1N9fV?=
- =?us-ascii?Q?XQ/i/siR9b2Qs+34mCO1F/8u1WzuwjSBEtWDsXy6Dub8ct+9lQExfhCKdonW?=
- =?us-ascii?Q?m2qyCmVyXlLblli5+6XqalPsDQX68Lq0nAY/XldrX2P8IggXoRt7wbARoclK?=
- =?us-ascii?Q?L0mvGOF862GzPTxIulW1g95e0WeOitpx6b9f25i6mcxc4X6IjW4taxap+dlM?=
- =?us-ascii?Q?SQ=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1f30fb37-ec41-44c4-bb7e-08de0c7a6fa5
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Oct 2025 06:08:33.4988
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: IN3oKXq3a/wP0TIgECyL+1sPlBbbCx+unflbchGJUPjHy6TR9GZtov4uL4MeFTUj2vmpZuP7kTsvr+wTD7rzSw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB6785
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [vbabka:b4/sheaves-for-all] [slab] 16e7d1ea82:
+ BUG:kernel_NULL_pointer_dereference,address
+Content-Language: en-US
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-mm@kvack.org
+References: <202510161341.61ccb50f-lkp@intel.com>
+From: Vlastimil Babka <vbabka@suse.cz>
+Autocrypt: addr=vbabka@suse.cz; keydata=
+ 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
+ m6M14QORSWTLRg==
+In-Reply-To: <202510161341.61ccb50f-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spamd-Result: default: False [-4.30 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	FROM_HAS_DN(0.00)[];
+	ARC_NA(0.00)[];
+	FUZZY_RATELIMITED(0.00)[rspamd.com];
+	RCVD_TLS_ALL(0.00)[];
+	RCPT_COUNT_THREE(0.00)[4];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	RCVD_COUNT_TWO(0.00)[2];
+	MID_RHS_MATCH_FROM(0.00)[];
+	TO_DN_SOME(0.00)[]
+X-Spam-Flag: NO
+X-Spam-Score: -4.30
+X-Spam-Level: 
 
+On 10/16/25 08:02, kernel test robot wrote:
+> 
+> 
+> Hello,
+> 
+> kernel test robot noticed "BUG:kernel_NULL_pointer_dereference,address" on:
+> 
+> commit: 16e7d1ea820782b8335c2a52052e4a0d9ca0d4b0 ("slab: add sheaves to most caches")
+> https://git.kernel.org/cgit/linux/kernel/git/vbabka/linux.git b4/sheaves-for-all
+> 
+> in testcase: boot
+> 
+> config: x86_64-randconfig-004-20251015
+> compiler: clang-20
+> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+> 
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+> 
+> 
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202510161341.61ccb50f-lkp@intel.com
+> 
 
-
-Hello,
-
-kernel test robot noticed "BUG:using_smp_processor_id()in_preemptible" on:
-
-commit: de840681a162e0a5a0862e7a0b495fb34deab7ef ("slab: remove cpu (partial) slabs usage from allocation paths")
-https://git.kernel.org/cgit/linux/kernel/git/vbabka/linux.git b4/sheaves-for-all
-
-in testcase: boot
-
-config: i386-randconfig-002-20251015
-compiler: gcc-14
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202510161416.b7adda58-lkp@intel.com
-
-
-[    2.688724][    T2] BUG: using smp_processor_id() in preemptible [00000000] code: kthreadd/2
-[    2.690336][    T2] caller is debug_smp_processor_id (lib/smp_processor_id.c:59)
-[    2.692339][    T2] CPU: 0 UID: 0 PID: 2 Comm: kthreadd Tainted: G                T   6.18.0-rc1-00012-gde840681a162 #1 PREEMPT(full)
-[    2.693316][    T2] Tainted: [T]=RANDSTRUCT
-[    2.693316][    T2] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[    2.693316][    T2] Call Trace:
-[    2.693316][    T2]  dump_stack_lvl (lib/dump_stack.c:122)
-[    2.693316][    T2]  dump_stack (lib/dump_stack.c:130)
-[    2.693316][    T2]  check_preemption_disabled+0x98/0xa8
-[    2.693316][    T2]  debug_smp_processor_id (lib/smp_processor_id.c:59)
-[    2.693316][    T2]  set_track_update (mm/slub.c:1035 (discriminator 1))
-[    2.693316][    T2]  ___slab_alloc (mm/slub.c:1046 mm/slub.c:4511)
-[    2.693316][    T2]  ? copy_process (kernel/fork.c:184 (discriminator 2) kernel/fork.c:873 (discriminator 2) kernel/fork.c:2012 (discriminator 2))
-[    2.693316][    T2]  kmem_cache_alloc_node_noprof (mm/slub.c:4544 mm/slub.c:4929 mm/slub.c:4993)
-[    2.693316][    T2]  ? copy_process (kernel/fork.c:184 (discriminator 2) kernel/fork.c:873 (discriminator 2) kernel/fork.c:2012 (discriminator 2))
-[    2.693316][    T2]  copy_process (kernel/fork.c:184 (discriminator 2) kernel/fork.c:873 (discriminator 2) kernel/fork.c:2012 (discriminator 2))
-[    2.693316][    T2]  kernel_clone (include/linux/random.h:26 kernel/fork.c:2610)
-[    2.693316][    T2]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-[    2.693316][    T2]  kernel_thread (kernel/fork.c:2671)
-[    2.693316][    T2]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-[    2.693316][    T2]  kthreadd (kernel/kthread.c:486 kernel/kthread.c:846)
-[    2.693316][    T2]  ? kthreads_online_cpu (kernel/kthread.c:818)
-[    2.693316][    T2]  ret_from_fork (arch/x86/kernel/process.c:164)
-[    2.693316][    T2]  ? kthreads_online_cpu (kernel/kthread.c:818)
-[    2.693316][    T2]  ret_from_fork_asm (arch/x86/entry/entry_32.S:737)
-[    2.693316][    T2]  entry_INT80_32 (arch/x86/entry/entry_32.S:942)
-[    2.693386][    T2] BUG: using smp_processor_id() in preemptible [00000000] code: kthreadd/2
-[    2.695335][    T2] caller is debug_smp_processor_id (lib/smp_processor_id.c:59)
-[    2.697340][    T2] CPU: 0 UID: 0 PID: 2 Comm: kthreadd Tainted: G                T   6.18.0-rc1-00012-gde840681a162 #1 PREEMPT(full)
-[    2.698316][    T2] Tainted: [T]=RANDSTRUCT
-[    2.698316][    T2] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[    2.698316][    T2] Call Trace:
-[    2.698316][    T2]  dump_stack_lvl (lib/dump_stack.c:122)
-[    2.698316][    T2]  dump_stack (lib/dump_stack.c:130)
-[    2.698316][    T2]  check_preemption_disabled+0x98/0xa8
-[    2.698316][    T2]  debug_smp_processor_id (lib/smp_processor_id.c:59)
-[    2.698316][    T2]  set_track_update (mm/slub.c:1035 (discriminator 1))
-[    2.698316][    T2]  ___slab_alloc (mm/slub.c:1046 mm/slub.c:4511)
-[    2.698316][    T2]  ? __set_page_owner (mm/page_owner.c:173 mm/page_owner.c:214 mm/page_owner.c:333)
-[    2.698316][    T2]  __kmalloc_cache_noprof (mm/slub.c:4544 mm/slub.c:4929 mm/slub.c:5455)
-[    2.698316][    T2]  ? __set_page_owner (mm/page_owner.c:173 mm/page_owner.c:214 mm/page_owner.c:333)
-[    2.698316][    T2]  __set_page_owner (mm/page_owner.c:173 mm/page_owner.c:214 mm/page_owner.c:333)
-[    2.698316][    T2]  post_alloc_hook (mm/page_alloc.c:1852)
-[    2.698316][    T2]  prep_new_page (mm/page_alloc.c:1860)
-[    2.698316][    T2]  get_page_from_freelist (mm/page_alloc.c:3890 (discriminator 1))
-[    2.698316][    T2]  __alloc_frozen_pages_noprof (mm/page_alloc.c:5184 (discriminator 1))
-[    2.698316][    T2]  __alloc_pages_noprof (mm/page_alloc.c:5218)
-[    2.698316][    T2]  copy_process (kernel/fork.c:367 (discriminator 1) kernel/fork.c:881 (discriminator 1) kernel/fork.c:2012 (discriminator 1))
-[    2.698316][    T2]  kernel_clone (include/linux/random.h:26 kernel/fork.c:2610)
-[    2.698316][    T2]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-[    2.698316][    T2]  kernel_thread (kernel/fork.c:2671)
-[    2.698316][    T2]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-[    2.698316][    T2]  kthreadd (kernel/kthread.c:486 kernel/kthread.c:846)
-[    2.698316][    T2]  ? kthreads_online_cpu (kernel/kthread.c:818)
-[    2.698316][    T2]  ret_from_fork (arch/x86/kernel/process.c:164)
-[    2.698316][    T2]  ? kthreads_online_cpu (kernel/kthread.c:818)
-[    2.698316][    T2]  ret_from_fork_asm (arch/x86/entry/entry_32.S:737)
-[    2.698316][    T2]  entry_INT80_32 (arch/x86/entry/entry_32.S:942)
-[    2.698369][    T2] BUG: using smp_processor_id() in preemptible [00000000] code: kthreadd/2
-[    2.700334][    T2] caller is debug_smp_processor_id (lib/smp_processor_id.c:59)
-[    2.702016][    T2] CPU: 0 UID: 0 PID: 2 Comm: kthreadd Tainted: G                T   6.18.0-rc1-00012-gde840681a162 #1 PREEMPT(full)
-[    2.702316][    T2] Tainted: [T]=RANDSTRUCT
-[    2.702316][    T2] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[    2.702316][    T2] Call Trace:
-[    2.702316][    T2]  dump_stack_lvl (lib/dump_stack.c:122)
-[    2.702316][    T2]  dump_stack (lib/dump_stack.c:130)
-[    2.702316][    T2]  check_preemption_disabled+0x98/0xa8
-[    2.702316][    T2]  debug_smp_processor_id (lib/smp_processor_id.c:59)
-[    2.702316][    T2]  set_track_update (mm/slub.c:1035 (discriminator 1))
-[    2.702316][    T2]  ___slab_alloc (mm/slub.c:1046 mm/slub.c:4511)
-[    2.702316][    T2]  ? prepare_creds (kernel/cred.c:213)
-[    2.702316][    T2]  kmem_cache_alloc_noprof (mm/slub.c:4544 mm/slub.c:4929 mm/slub.c:4948)
-[    2.702316][    T2]  ? prepare_creds (kernel/cred.c:213)
-[    2.702316][    T2]  prepare_creds (kernel/cred.c:213)
-[    2.702316][    T2]  copy_creds (kernel/cred.c:314)
-[    2.702316][    T2]  copy_process (kernel/fork.c:2046)
-[    2.702316][    T2]  kernel_clone (include/linux/random.h:26 kernel/fork.c:2610)
-[    2.702316][    T2]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-[    2.702316][    T2]  kernel_thread (kernel/fork.c:2671)
-[    2.702316][    T2]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-[    2.702316][    T2]  kthreadd (kernel/kthread.c:486 kernel/kthread.c:846)
-[    2.702316][    T2]  ? kthreads_online_cpu (kernel/kthread.c:818)
-[    2.702316][    T2]  ret_from_fork (arch/x86/kernel/process.c:164)
-[    2.702316][    T2]  ? kthreads_online_cpu (kernel/kthread.c:818)
-[    2.702316][    T2]  ret_from_fork_asm (arch/x86/entry/entry_32.S:737)
-[    2.702316][    T2]  entry_INT80_32 (arch/x86/entry/entry_32.S:942)
-[    2.703358][    T2] BUG: using smp_processor_id() in preemptible [00000000] code: kthreadd/2
-[    2.705335][    T2] caller is debug_smp_processor_id (lib/smp_processor_id.c:59)
-[    2.707023][    T2] CPU: 0 UID: 0 PID: 2 Comm: kthreadd Tainted: G                T   6.18.0-rc1-00012-gde840681a162 #1 PREEMPT(full)
-[    2.707316][    T2] Tainted: [T]=RANDSTRUCT
-[    2.707316][    T2] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[    2.707316][    T2] Call Trace:
-[    2.707316][    T2]  dump_stack_lvl (lib/dump_stack.c:122)
-[    2.707316][    T2]  dump_stack (lib/dump_stack.c:130)
-[    2.707316][    T2]  check_preemption_disabled+0x98/0xa8
-[    2.707316][    T2]  debug_smp_processor_id (lib/smp_processor_id.c:59)
-[    2.707316][    T2]  set_track_update (mm/slub.c:1035 (discriminator 1))
-[    2.707316][    T2]  ___slab_alloc (mm/slub.c:1046 mm/slub.c:4511)
-[    2.707316][    T2]  ? set_kthread_struct (include/linux/slab.h:957 include/linux/slab.h:1094 kernel/kthread.c:125)
-[    2.707316][    T2]  __kmalloc_cache_noprof (mm/slub.c:4544 mm/slub.c:4929 mm/slub.c:5455)
-[    2.707316][    T2]  ? set_kthread_struct (include/linux/slab.h:957 include/linux/slab.h:1094 kernel/kthread.c:125)
-[    2.707316][    T2]  set_kthread_struct (include/linux/slab.h:957 include/linux/slab.h:1094 kernel/kthread.c:125)
-[    2.707316][    T2]  copy_process (kernel/fork.c:2110 (discriminator 1))
-[    2.707316][    T2]  kernel_clone (include/linux/random.h:26 kernel/fork.c:2610)
-[    2.707316][    T2]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-[    2.707316][    T2]  kernel_thread (kernel/fork.c:2671)
-[    2.707316][    T2]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-[    2.707316][    T2]  kthreadd (kernel/kthread.c:486 kernel/kthread.c:846)
-[    2.707316][    T2]  ? kthreads_online_cpu (kernel/kthread.c:818)
-[    2.707316][    T2]  ret_from_fork (arch/x86/kernel/process.c:164)
-[    2.707316][    T2]  ? kthreads_online_cpu (kernel/kthread.c:818)
-[    2.707316][    T2]  ret_from_fork_asm (arch/x86/entry/entry_32.S:737)
-[    2.707316][    T2]  entry_INT80_32 (arch/x86/entry/entry_32.S:942)
-[    2.707369][    T2] BUG: using smp_processor_id() in preemptible [00000000] code: kthreadd/2
-[    2.710331][    T2] caller is debug_smp_processor_id (lib/smp_processor_id.c:59)
-[    2.712340][    T2] CPU: 0 UID: 0 PID: 2 Comm: kthreadd Tainted: G                T   6.18.0-rc1-00012-gde840681a162 #1 PREEMPT(full)
-[    2.713316][    T2] Tainted: [T]=RANDSTRUCT
-[    2.713316][    T2] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[    2.713316][    T2] Call Trace:
-[    2.713316][    T2]  dump_stack_lvl (lib/dump_stack.c:122)
-[    2.713316][    T2]  dump_stack (lib/dump_stack.c:130)
-[    2.713316][    T2]  check_preemption_disabled+0x98/0xa8
-[    2.713316][    T2]  debug_smp_processor_id (lib/smp_processor_id.c:59)
-[    2.713316][    T2]  set_track_update (mm/slub.c:1035 (discriminator 1))
-[    2.713316][    T2]  ___slab_alloc (mm/slub.c:1046 mm/slub.c:4511)
-[    2.713316][    T2]  ? copy_sighand (kernel/fork.c:1611 (discriminator 2))
-[    2.713316][    T2]  kmem_cache_alloc_noprof (mm/slub.c:4544 mm/slub.c:4929 mm/slub.c:4948)
-[    2.713316][    T2]  ? copy_sighand (kernel/fork.c:1611 (discriminator 2))
-[    2.713316][    T2]  copy_sighand (kernel/fork.c:1611 (discriminator 2))
-[    2.713316][    T2]  copy_process (kernel/fork.c:2176)
-[    2.713316][    T2]  kernel_clone (include/linux/random.h:26 kernel/fork.c:2610)
-[    2.713316][    T2]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-[    2.713316][    T2]  kernel_thread (kernel/fork.c:2671)
-[    2.713316][    T2]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-[    2.713316][    T2]  kthreadd (kernel/kthread.c:486 kernel/kthread.c:846)
-[    2.713316][    T2]  ? kthreads_online_cpu (kernel/kthread.c:818)
-[    2.713316][    T2]  ret_from_fork (arch/x86/kernel/process.c:164)
-[    2.713316][    T2]  ? kthreads_online_cpu (kernel/kthread.c:818)
-[    2.713316][    T2]  ret_from_fork_asm (arch/x86/entry/entry_32.S:737)
-[    2.713316][    T2]  entry_INT80_32 (arch/x86/entry/entry_32.S:942)
-[    2.713362][    T2] BUG: using smp_processor_id() in preemptible [00000000] code: kthreadd/2
-[    2.715337][    T2] caller is debug_smp_processor_id (lib/smp_processor_id.c:59)
-[    2.717345][    T2] CPU: 0 UID: 0 PID: 2 Comm: kthreadd Tainted: G                T   6.18.0-rc1-00012-gde840681a162 #1 PREEMPT(full)
-[    2.718316][    T2] Tainted: [T]=RANDSTRUCT
-[    2.718316][    T2] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[    2.718316][    T2] Call Trace:
-[    2.718316][    T2]  dump_stack_lvl (lib/dump_stack.c:122)
-[    2.718316][    T2]  dump_stack (lib/dump_stack.c:130)
-[    2.718316][    T2]  check_preemption_disabled+0x98/0xa8
-[    2.718316][    T2]  debug_smp_processor_id (lib/smp_processor_id.c:59)
-[    2.718316][    T2]  set_track_update (mm/slub.c:1035 (discriminator 1))
-[    2.718316][    T2]  ___slab_alloc (mm/slub.c:1046 mm/slub.c:4511)
-[    2.718316][    T2]  ? copy_signal (kernel/fork.c:1659 (discriminator 2))
-[    2.718316][    T2]  kmem_cache_alloc_noprof (mm/slub.c:4544 mm/slub.c:4929 mm/slub.c:4948)
-[    2.718316][    T2]  ? copy_signal (kernel/fork.c:1659 (discriminator 2))
-[    2.718316][    T2]  copy_signal (kernel/fork.c:1659 (discriminator 2))
-[    2.718316][    T2]  copy_process (kernel/fork.c:2179)
-[    2.718316][    T2]  kernel_clone (include/linux/random.h:26 kernel/fork.c:2610)
-[    2.718316][    T2]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-[    2.718316][    T2]  kernel_thread (kernel/fork.c:2671)
-[    2.718316][    T2]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-[    2.718316][    T2]  kthreadd (kernel/kthread.c:486 kernel/kthread.c:846)
-[    2.718316][    T2]  ? kthreads_online_cpu (kernel/kthread.c:818)
-[    2.718316][    T2]  ret_from_fork (arch/x86/kernel/process.c:164)
-[    2.718316][    T2]  ? kthreads_online_cpu (kernel/kthread.c:818)
-[    2.718316][    T2]  ret_from_fork_asm (arch/x86/entry/entry_32.S:737)
-[    2.718316][    T2]  entry_INT80_32 (arch/x86/entry/entry_32.S:942)
-[    2.718387][    T2] BUG: using smp_processor_id() in preemptible [00000000] code: kthreadd/2
-[    2.720336][    T2] caller is debug_smp_processor_id (lib/smp_processor_id.c:59)
-[    2.722027][    T2] CPU: 0 UID: 0 PID: 2 Comm: kthreadd Tainted: G                T   6.18.0-rc1-00012-gde840681a162 #1 PREEMPT(full)
-[    2.722316][    T2] Tainted: [T]=RANDSTRUCT
-[    2.722316][    T2] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[    2.722316][    T2] Call Trace:
-[    2.722316][    T2]  dump_stack_lvl (lib/dump_stack.c:122)
-[    2.722316][    T2]  dump_stack (lib/dump_stack.c:130)
-[    2.722316][    T2]  check_preemption_disabled+0x98/0xa8
-[    2.722316][    T2]  debug_smp_processor_id (lib/smp_processor_id.c:59)
-[    2.722316][    T2]  set_track_update (mm/slub.c:1035 (discriminator 1))
-[    2.722316][    T2]  ___slab_alloc (mm/slub.c:1046 mm/slub.c:4511)
-[    2.722316][    T2]  ? alloc_pid (kernel/pid.c:184 (discriminator 2))
-[    2.722316][    T2]  kmem_cache_alloc_noprof (mm/slub.c:4544 mm/slub.c:4929 mm/slub.c:4948)
-[    2.722316][    T2]  ? alloc_pid (kernel/pid.c:184 (discriminator 2))
-[    2.722316][    T2]  alloc_pid (kernel/pid.c:184 (discriminator 2))
-[    2.722316][    T2]  copy_process (kernel/fork.c:2197)
-[    2.722316][    T2]  kernel_clone (include/linux/random.h:26 kernel/fork.c:2610)
-[    2.722316][    T2]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-[    2.722316][    T2]  kernel_thread (kernel/fork.c:2671)
-[    2.722316][    T2]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-[    2.722316][    T2]  kthreadd (kernel/kthread.c:486 kernel/kthread.c:846)
-[    2.722316][    T2]  ? kthreads_online_cpu (kernel/kthread.c:818)
-[    2.722316][    T2]  ret_from_fork (arch/x86/kernel/process.c:164)
-[    2.722316][    T2]  ? kthreads_online_cpu (kernel/kthread.c:818)
-[    2.722316][    T2]  ret_from_fork_asm (arch/x86/entry/entry_32.S:737)
-[    2.722316][    T2]  entry_INT80_32 (arch/x86/entry/entry_32.S:942)
-[    2.722693][    T2] BUG: using smp_processor_id() in preemptible [00000000] code: kthreadd/2
-[    2.724339][    T2] caller is debug_smp_processor_id (lib/smp_processor_id.c:59)
-[    2.726341][    T2] CPU: 0 UID: 0 PID: 2 Comm: kthreadd Tainted: G                T   6.18.0-rc1-00012-gde840681a162 #1 PREEMPT(full)
-[    2.727316][    T2] Tainted: [T]=RANDSTRUCT
-[    2.727316][    T2] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[    2.727316][    T2] Call Trace:
-[    2.727316][    T2]  dump_stack_lvl (lib/dump_stack.c:122)
-[    2.727316][    T2]  dump_stack (lib/dump_stack.c:130)
-[    2.727316][    T2]  check_preemption_disabled+0x98/0xa8
-[    2.727316][    T2]  debug_smp_processor_id (lib/smp_processor_id.c:59)
-[    2.727316][    T2]  set_track_update (mm/slub.c:1035 (discriminator 1))
-[    2.727316][    T2]  ___slab_alloc (mm/slub.c:1046 mm/slub.c:4511)
-[    2.727316][    T2]  ? copy_process (kernel/fork.c:184 (discriminator 2) kernel/fork.c:873 (discriminator 2) kernel/fork.c:2012 (discriminator 2))
-[    2.727316][    T2]  kmem_cache_alloc_node_noprof (mm/slub.c:4544 mm/slub.c:4929 mm/slub.c:4993)
-[    2.727316][    T2]  ? copy_process (kernel/fork.c:184 (discriminator 2) kernel/fork.c:873 (discriminator 2) kernel/fork.c:2012 (discriminator 2))
-[    2.727316][    T2]  copy_process (kernel/fork.c:184 (discriminator 2) kernel/fork.c:873 (discriminator 2) kernel/fork.c:2012 (discriminator 2))
-[    2.727316][    T2]  kernel_clone (include/linux/random.h:26 kernel/fork.c:2610)
-[    2.727316][    T2]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-[    2.727316][    T2]  kernel_thread (kernel/fork.c:2671)
-[    2.727316][    T2]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-[    2.727316][    T2]  kthreadd (kernel/kthread.c:486 kernel/kthread.c:846)
-[    2.727316][    T2]  ? kthreads_online_cpu (kernel/kthread.c:818)
-[    2.727316][    T2]  ret_from_fork (arch/x86/kernel/process.c:164)
-[    2.727316][    T2]  ? kthreads_online_cpu (kernel/kthread.c:818)
-[    2.727316][    T2]  ret_from_fork_asm (arch/x86/entry/entry_32.S:737)
-[    2.727316][    T2]  entry_INT80_32 (arch/x86/entry/entry_32.S:942)
-[    2.727388][    T2] BUG: using smp_processor_id() in preemptible [00000000] code: kthreadd/2
-[    2.729337][    T2] caller is debug_smp_processor_id (lib/smp_processor_id.c:59)
-[    2.731340][    T2] CPU: 0 UID: 0 PID: 2 Comm: kthreadd Tainted: G                T   6.18.0-rc1-00012-gde840681a162 #1 PREEMPT(full)
-[    2.732316][    T2] Tainted: [T]=RANDSTRUCT
-[    2.732316][    T2] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[    2.732316][    T2] Call Trace:
-[    2.732316][    T2]  dump_stack_lvl (lib/dump_stack.c:122)
-[    2.732316][    T2]  dump_stack (lib/dump_stack.c:130)
-[    2.732316][    T2]  check_preemption_disabled+0x98/0xa8
-[    2.732316][    T2]  debug_smp_processor_id (lib/smp_processor_id.c:59)
-[    2.732316][    T2]  set_track_update (mm/slub.c:1035 (discriminator 1))
-[    2.732316][    T2]  ___slab_alloc (mm/slub.c:1046 mm/slub.c:4511)
-[    2.732316][    T2]  ? prepare_creds (kernel/cred.c:213)
-[    2.732316][    T2]  kmem_cache_alloc_noprof (mm/slub.c:4544 mm/slub.c:4929 mm/slub.c:4948)
-[    2.732316][    T2]  ? prepare_creds (kernel/cred.c:213)
-[    2.732316][    T2]  prepare_creds (kernel/cred.c:213)
-[    2.732316][    T2]  copy_creds (kernel/cred.c:314)
-[    2.732316][    T2]  copy_process (kernel/fork.c:2046)
-[    2.732316][    T2]  kernel_clone (include/linux/random.h:26 kernel/fork.c:2610)
-[    2.732316][    T2]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-[    2.732316][    T2]  kernel_thread (kernel/fork.c:2671)
-[    2.732316][    T2]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-[    2.732316][    T2]  kthreadd (kernel/kthread.c:486 kernel/kthread.c:846)
-[    2.732316][    T2]  ? kthreads_online_cpu (kernel/kthread.c:818)
-[    2.732316][    T2]  ret_from_fork (arch/x86/kernel/process.c:164)
-[    2.732316][    T2]  ? kthreads_online_cpu (kernel/kthread.c:818)
-[    2.732316][    T2]  ret_from_fork_asm (arch/x86/entry/entry_32.S:737)
-[    2.732316][    T2]  entry_INT80_32 (arch/x86/entry/entry_32.S:942)
-[    2.732364][    T2] BUG: using smp_processor_id() in preemptible [00000000] code: kthreadd/2
-[    2.734337][    T2] caller is debug_smp_processor_id (lib/smp_processor_id.c:59)
-[    2.736018][    T2] CPU: 0 UID: 0 PID: 2 Comm: kthreadd Tainted: G                T   6.18.0-rc1-00012-gde840681a162 #1 PREEMPT(full)
-[    2.736316][    T2] Tainted: [T]=RANDSTRUCT
-[    2.736316][    T2] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[    2.736316][    T2] Call Trace:
-[    2.736316][    T2]  dump_stack_lvl (lib/dump_stack.c:122)
-[    2.736316][    T2]  dump_stack (lib/dump_stack.c:130)
-[    2.736316][    T2]  check_preemption_disabled+0x98/0xa8
-[    2.736316][    T2]  debug_smp_processor_id (lib/smp_processor_id.c:59)
-[    2.736316][    T2]  set_track_update (mm/slub.c:1035 (discriminator 1))
-[    2.736316][    T2]  ___slab_alloc (mm/slub.c:1046 mm/slub.c:4511)
-[    2.736316][    T2]  ? set_kthread_struct (include/linux/slab.h:957 include/linux/slab.h:1094 kernel/kthread.c:125)
-[    2.736316][    T2]  __kmalloc_cache_noprof (mm/slub.c:4544 mm/slub.c:4929 mm/slub.c:5455)
-[    2.736316][    T2]  ? set_kthread_struct (include/linux/slab.h:957 include/linux/slab.h:1094 kernel/kthread.c:125)
-[    2.736316][    T2]  set_kthread_struct (include/linux/slab.h:957 include/linux/slab.h:1094 kernel/kthread.c:125)
-[    2.736316][    T2]  copy_process (kernel/fork.c:2110 (discriminator 1))
-[    2.736316][    T2]  kernel_clone (include/linux/random.h:26 kernel/fork.c:2610)
-[    2.736316][    T2]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-[    2.736316][    T2]  kernel_thread (kernel/fork.c:2671)
-[    2.736316][    T2]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-[    2.736316][    T2]  kthreadd (kernel/kthread.c:486 kernel/kthread.c:846)
-[    2.736316][    T2]  ? kthreads_online_cpu (kernel/kthread.c:818)
-[    2.736316][    T2]  ret_from_fork (arch/x86/kernel/process.c:164)
-[    2.736316][    T2]  ? kthreads_online_cpu (kernel/kthread.c:818)
-[    2.736316][    T2]  ret_from_fork_asm (arch/x86/entry/entry_32.S:737)
-[    2.736316][    T2]  entry_INT80_32 (arch/x86/entry/entry_32.S:942)
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20251016/202510161416.b7adda58-lkp@intel.com
-
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Thanks, most likely this, will update the branch.
+----8<----
+diff --git a/include/linux/slab.h b/include/linux/slab.h
+index cf443f064a66..e42aa6a3d202 100644
+--- a/include/linux/slab.h
++++ b/include/linux/slab.h
+@@ -57,9 +57,7 @@ enum _slab_flag_bits {
+ #endif
+ 	_SLAB_OBJECT_POISON,
+ 	_SLAB_CMPXCHG_DOUBLE,
+-#ifdef CONFIG_SLAB_OBJ_EXT
+ 	_SLAB_NO_OBJ_EXT,
+-#endif
+ 	_SLAB_FLAGS_LAST_BIT
+ };
+ 
+@@ -238,11 +236,7 @@ enum _slab_flag_bits {
+ #define SLAB_TEMPORARY		SLAB_RECLAIM_ACCOUNT	/* Objects are short-lived */
+ 
+ /* Slab created using create_boot_cache */
+-#ifdef CONFIG_SLAB_OBJ_EXT
+ #define SLAB_NO_OBJ_EXT		__SLAB_FLAG_BIT(_SLAB_NO_OBJ_EXT)
+-#else
+-#define SLAB_NO_OBJ_EXT		__SLAB_FLAG_UNUSED
+-#endif
+ 
+ /*
+  * ZERO_SIZE_PTR will be returned for zero sized kmalloc requests.
 
