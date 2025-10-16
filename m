@@ -1,94 +1,111 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 295591A38F9
-	for <oe-lkp@lists.linux.dev>; Thu, 16 Oct 2025 02:14:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36A601D6187
+	for <oe-lkp@lists.linux.dev>; Thu, 16 Oct 2025 04:44:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.7
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760580845; cv=fail; b=u8QF5Ilr9W6pBRJcFZgQxU5nc7s7KGbQzHHssgmrqR6vLI0Kpv52dziO+oKm/RkYIow862v72bO9mQFQMvBfHVqzhmK7uWtuR50rMzy/K9ExCnDo3JLFFYvCXIimQRisDLtDKp3BKxOJ0/IuqFg+vEecb/VF1Z7uJZT+tNIPRrA=
+	t=1760589871; cv=fail; b=s+Co6VsgFCFlrlSRndN3aYNPWZeXbzv6vYZw8NOH+RQHceMK+jBvuf2+wFDguYkW24BHXkkK7AZs2ac1KvOuF8Ud6XMEmwXPn3ycTvj0AkthAuuf+R6aBetxK+cmYnEB4BjpbbAvBKfy5wf/LoUE0v1OGDsShGHK40+sQiNZEyA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760580845; c=relaxed/simple;
-	bh=jenqLqmePjgBYa/K8o4W9AyTPyD4hlPmnJWQXd+7zW8=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=jaVlcsQnhATarVQ45PWp75a+XfChCKL4XLYU9F5PwJNui/a4Z8xDRHG68dSbNTXi1ijr1JDOWPrjksKbA6Taqt816Fa5T1YRUK2XVbNvOLrqTlxYOvB5DCoEoCVY7+OdJLvedyNQp9XV5b/aqu3uhMCxkEHDz4l+z0dnk4Ebfn0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Xd353xxs; arc=fail smtp.client-ip=192.198.163.7
+	s=arc-20240116; t=1760589871; c=relaxed/simple;
+	bh=CNCbmP6GeWbyxFHhDl0k7+Q9lA6sLFLhIoGddUdXKcc=;
+	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=HSyQo68J0JHIvjmR6a7mcKu0oT3yepcFe0FfzMjwZvlZjrzJIhnlNc9HlN+f6/CentBvvLUr4A4cUgDYte/4DkLL2iR5sipWVO6iiomBsnpeVtaPhjt1jFBG9aVLMiOXjZeKnnmpb+z7TmaeP18IGv1InRf4teL6V0MRjpv0lmE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EPVfNYeB; arc=fail smtp.client-ip=192.198.163.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Xd353xxs"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EPVfNYeB"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1760580843; x=1792116843;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=jenqLqmePjgBYa/K8o4W9AyTPyD4hlPmnJWQXd+7zW8=;
-  b=Xd353xxs54MDBj7JywzxJJzITjLbqMaJ7ibf+bVVE3BxRk2kZvK7/vnS
-   JNg9dbs/3HRD/XsrbwAi7ncAw9cSqEyqRvvh8tMhCWY1k5PJRNgGou8Ca
-   9YDJViuboKJLkMMy2MCWhRgyZzoX/og+9aOIkfrIwAeFCSzU9vg6cXgBZ
-   8eiV+x2JKbNLOBzpFd7pAM20U2mCFD4XSudllVRWzJ6q5Iw7WRI9/TltJ
-   3Sw6wSsACD8+Q5j3deF98HpcZj+WsRiOFCITsn/yNu7Cmox+LlRPi7IbZ
-   cCHG3g13TA+kIfQuJH/flPMvIrWa5UqKxrKLzxx+cvflN1Ia9hf6xYg/p
+  t=1760589870; x=1792125870;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=CNCbmP6GeWbyxFHhDl0k7+Q9lA6sLFLhIoGddUdXKcc=;
+  b=EPVfNYeBgdWBSUAnJboMEzp7oTesx6uB4Qle3qPENiEZmpe7SwjTu9vm
+   03jF9iCLN7YDKWM+kGKggiT1paa3FzUK0pliyaYMUAuwfd7LSHMX2hY4y
+   EOsKf6P/plUxLrFZsrvSqNPhJZnZB5yOlv2tl3FoUV5oP/5UmVBZp/H2j
+   LOw+NTqmXkNRfqRL0iD49IeW7zjXbThVX35u0f0t76ocVKhXccAaTpYE2
+   LCHE+l9Pdp2akht80+WLVO/iNkY9KNoPRUPbnXFilyjxyHN/E1z7bItuV
+   9Jcl0PrRcYZseSYX4etS0LspmJa77EgnxOzXQgHdfChIT+s5/qP3PcfNz
    Q==;
-X-CSE-ConnectionGUID: fDY0YJxySYqNQO6lRbxQDQ==
-X-CSE-MsgGUID: pdWYqiRlQYCL80lwPDRvbg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11583"; a="88233826"
-X-IronPort-AV: E=Sophos;i="6.19,232,1754982000"; 
-   d="scan'208";a="88233826"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2025 19:14:03 -0700
-X-CSE-ConnectionGUID: GwEGwQWvSP6uH1d37g7a5g==
-X-CSE-MsgGUID: QNwVtMPMQIG8h2BnUHlrNg==
+X-CSE-ConnectionGUID: 6HqCyKd4SWSK7SmnkWkVhg==
+X-CSE-MsgGUID: 6dZmnhP5SKSveYsuj1TEiQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11583"; a="88241914"
+X-IronPort-AV: E=Sophos;i="6.19,233,1754982000"; 
+   d="scan'208";a="88241914"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2025 21:44:29 -0700
+X-CSE-ConnectionGUID: UBO+pxXDTu6Au4td90O8DA==
+X-CSE-MsgGUID: +dsvBT9zSyOZtixtO3001Q==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.19,232,1754982000"; 
-   d="scan'208";a="181539250"
+X-IronPort-AV: E=Sophos;i="6.19,233,1754982000"; 
+   d="scan'208";a="212947999"
 Received: from fmsmsx902.amr.corp.intel.com ([10.18.126.91])
-  by orviesa010.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2025 19:14:02 -0700
-Received: from FMSMSX903.amr.corp.intel.com (10.18.126.92) by
+  by orviesa002.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2025 21:44:28 -0700
+Received: from FMSMSX902.amr.corp.intel.com (10.18.126.91) by
  fmsmsx902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27; Wed, 15 Oct 2025 19:14:01 -0700
+ 15.2.2562.27; Wed, 15 Oct 2025 21:44:27 -0700
 Received: from fmsedg902.ED.cps.intel.com (10.1.192.144) by
- FMSMSX903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ FMSMSX902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27 via Frontend Transport; Wed, 15 Oct 2025 19:14:01 -0700
-Received: from BYAPR05CU005.outbound.protection.outlook.com (52.101.85.28) by
+ 15.2.2562.27 via Frontend Transport; Wed, 15 Oct 2025 21:44:27 -0700
+Received: from DM5PR21CU001.outbound.protection.outlook.com (52.101.62.22) by
  edgegateway.intel.com (192.55.55.82) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27; Wed, 15 Oct 2025 19:14:01 -0700
+ 15.2.2562.27; Wed, 15 Oct 2025 21:44:26 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=SlKID2NrRnqKZsggnBQWZFxrOMbQLrQWD4wnMXyJpWWAQbtDD81r18+fG0BujDbq6t/R2OpuMqkOU7k8fd7gc2bb8s31U8ljRM2WLHFX7AW612KQKqpT6PejyfW6Lzw+3V9n3JvYWHb90HwbmmF94nHORUS2bp4jw3wNDgjNufknEkkAkfWK/d7U8JCTNedR6dAxSch61Bdaf5kLqKXjaQm0uPrnXHVJVflUIkjGRAswCRZPRXFKMqhSYVYaZREr9krDZTAwKsr5PsXCg4o0ukYBIgXe3KwQ/u1EKcMlsLNBM55BU7Sg32ICmSBkYpAK11VnkwXGeIK1e1QUJvvFsg==
+ b=YWDP1+6PXzmD66ep6KUAaiPQx+xriOGUfQkvmSKzUq5AygQPO157cqodUyMRV4Ktz4pmYj9yRgOuOvyg67F2ybLbjBU0n4GPMa6od0TzFYXHcg5wY26bpaiqd1YMDcPKVHpnOhHU4yXg1Bcq2jywoYFI0H7i/WiXC+6nvrsOxW/lI2rYOyyL1EMjJzYke8cJicdUinavwEhb2qnCDq4dLA8fP2b0cSIy/dZiZvTCuJaLX05KGjmWhRiO/RQg7K6r8PYiK5qPwyt0Lto5J/V1VyKsSNd7QIILDmxrlEvx9WHUsn3JbSjgvSabd7sIsK04XJ2L2i0X78c8tHUPt8R0og==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=303bKJHbnk4ZUun2Amb9BywJ2qfUnHPw46jtdjLpvzU=;
- b=cRXsw1VgoAHHweoYaPm2Rx51tO3yvbQwSmYiHtkx8YcSszEKvWBoBO41hxBB81SKNv5sREy1EM6vMhIikcSV2uWsDIPJD4XSwgRP9TRT+hh+C7B+nz8Y8yyuv9SOKRnMryX/6CYIamr7+J/FvnlBhSS+MS3WgVanhidd9LnuKQSNO447AGB2WNTQUhUlB/KpEkWyHuGzziIbREbN69GC+KkhP65GuuWILMhMqPctcCGZKPf8HKh90vYONAvSnyBcRZfWF3USjp+L8QZQNZRC2FM/fbQ7ZH4GFTk+Dx73DewXaR7Yzzv9KWweDz6JCe+HwGW/ENqRowxioD/s3G0I2g==
+ bh=JAPvgzU7l+lbaJaAq7Hn9izTs/tS7Mx8Tp7dleH9BYg=;
+ b=qIupIjLHCDlk+jUhuXuZFAQSThj3RgPvbtBovfvUwFFqQ/SECIQVbsm1AVFrM6vij8zGT/bA0kt+F/jXZtOr75VgbOJotswdmWyvskYOV+4+sVsU5mDxna/C6WGjJBm8dglaI/a0GdxoGC0tHFpbgjRQHGVXDRIImX3L8BII8t3lsLDCDRXHfN1iN22gjTZ9AiB0OpuNbsHYRLajDXzvWala+ze2U0MClFVJAxlHSUi9yGfih+P+Pjs+Ra8enZRBD7eYSQKMNMYmtr+1UOOPz3w8ggbXFgsRcRZs6ge2v6FP8/Q+pqxcaes/Wegln1PoZQmixZmToQV312Cq1lhi5Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by PH8PR11MB6950.namprd11.prod.outlook.com (2603:10b6:510:226::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9228.10; Thu, 16 Oct
- 2025 02:13:54 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.9228.010; Thu, 16 Oct 2025
- 02:13:54 +0000
-Date: Thu, 16 Oct 2025 10:13:45 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Ian Rogers <irogers@google.com>
+Received: from DM4PR11MB6020.namprd11.prod.outlook.com (2603:10b6:8:61::19) by
+ PH0PR11MB5128.namprd11.prod.outlook.com (2603:10b6:510:39::17) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9228.12; Thu, 16 Oct 2025 04:44:24 +0000
+Received: from DM4PR11MB6020.namprd11.prod.outlook.com
+ ([fe80::4af6:d44e:b6b0:fdce]) by DM4PR11MB6020.namprd11.prod.outlook.com
+ ([fe80::4af6:d44e:b6b0:fdce%5]) with mapi id 15.20.9228.010; Thu, 16 Oct 2025
+ 04:44:24 +0000
+Message-ID: <a097ea5b-a4cf-4b47-91c2-6ba4b159a7e5@intel.com>
+Date: Thu, 16 Oct 2025 12:44:10 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 18/19] sched/fair: Avoid cache-aware scheduling for
+ memory-heavy processes
+To: kernel test robot <oliver.sang@intel.com>, Tim Chen
+	<tim.c.chen@linux.intel.com>
 CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	Namhyung Kim <namhyung@kernel.org>, <linux-perf-users@vger.kernel.org>,
-	<oliver.sang@intel.com>
-Subject: [linus:master] [perf test]  2d58468864:
- kmsg.sanitizer.indirect_leak/malloc/maps__by_name_index/__maps__remove/__maps__fixup_overlap_and_insert/maps__fixup_overlap_and_insert/machine__process_ksymbol_register/machine__process_ksymbol/free/map__put/__maps__remove/__maps__fixup_overlap_and_insert/maps__fixup_overlap_and_insert/machine__process_ksymbol_register/malloc/map__get/__maps__insert_sorted/__maps__fixup_overlap_and_insert/maps__fixup_overlap_and_insert/machine__process_ksymbol_register/maps__by_name_index/__maps__remove/__maps__fixup_overlap_and_insert/maps__fixup_overlap_and_insert/machine__process_ksymbol_register/machine__process_ksymbol/free/map__put/__maps__remove/__maps__fixup_overlap_and_insert/maps__fixup_overlap_and_insert/machine__process_ksymbol_register/malloc/map__get/__maps__insert_sorted/__maps__fixup_overlap_and_insert/maps__fixup_overlap_and_insert/machine__process_ksymbol_register
-Message-ID: <202510160935.b4c10a7e-lkp@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-X-ClientProxiedBy: KL1PR01CA0127.apcprd01.prod.exchangelabs.com
- (2603:1096:820:4::19) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+	<aubrey.li@linux.intel.com>, Peter Zijlstra <peterz@infradead.org>, "Ingo
+ Molnar" <mingo@redhat.com>, K Prateek Nayak <kprateek.nayak@amd.com>,
+	"Gautham R . Shenoy" <gautham.shenoy@amd.com>, Vincent Guittot
+	<vincent.guittot@linaro.org>, Juri Lelli <juri.lelli@redhat.com>, "Dietmar
+ Eggemann" <dietmar.eggemann@arm.com>, Steven Rostedt <rostedt@goodmis.org>,
+	Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>, "Valentin
+ Schneider" <vschneid@redhat.com>, Madadi Vineeth Reddy
+	<vineethr@linux.ibm.com>, Hillf Danton <hdanton@sina.com>, Shrikanth Hegde
+	<sshegde@linux.ibm.com>, Jianyong Wu <jianyong.wu@outlook.com>, Yangyu Chen
+	<cyy@cyyself.name>, Tingyin Duan <tingyin.duan@gmail.com>, Vern Hao
+	<vernhao@tencent.com>, Len Brown <len.brown@intel.com>, Aubrey Li
+	<aubrey.li@intel.com>, Zhao Liu <zhao1.liu@intel.com>, Chen Yu
+	<yu.chen.surf@gmail.com>, Libo Chen <libo.chen@oracle.com>, Adam Li
+	<adamli@os.amperecomputing.com>, Tim Chen <tim.c.chen@intel.com>
+References: <202510151429.2c3f3413-lkp@intel.com>
+Content-Language: en-US
+From: "Chen, Yu C" <yu.c.chen@intel.com>
+In-Reply-To: <202510151429.2c3f3413-lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SI2P153CA0029.APCP153.PROD.OUTLOOK.COM
+ (2603:1096:4:190::16) To DM4PR11MB6020.namprd11.prod.outlook.com
+ (2603:10b6:8:61::19)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -96,254 +113,118 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|PH8PR11MB6950:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0df47ea5-666d-4291-c315-08de0c59a7f1
+X-MS-TrafficTypeDiagnostic: DM4PR11MB6020:EE_|PH0PR11MB5128:EE_
+X-MS-Office365-Filtering-Correlation-Id: 13b11d0d-b9f3-4e74-f1b4-08de0c6eae47
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?rdwRA4wa/AJjoWVqzjnSnQ1Bwyc4TuYl5Eu3PYHYEEuXb9Cbu7PVa33dFuvq?=
- =?us-ascii?Q?dEniocbhnGesgIytNozqkIIlPGhEoC8Gh0Pc63l0mFsiuBJ9GRGJ0UE72Dz6?=
- =?us-ascii?Q?BaDUsDoC2IW8MlypZzSgK0EJmjHhGp+He5+SDX3KChOKd3UwIgAmgDq6h0xL?=
- =?us-ascii?Q?X8CLtXp5LFRs7r2CfIIcXhHGElwjzjk8GyaRyXWyYjaPaSu3ubMoNLP/ISta?=
- =?us-ascii?Q?1RvfYOgg2SpokSGB6V9S6nTn0ECxpOX9g2HAaDRZEvT04t24xVjk6DY7NrJF?=
- =?us-ascii?Q?xyjIlxQXA26RWjtdEE930PAVcdWO2uyCtgTJg1+gFL0K3R8gmniYIqx990hW?=
- =?us-ascii?Q?wj5GW99w08oVXB95TfJqd5nrF9Lgfhqp2drj+l1NfBE1mLAjfw1bDwFaPped?=
- =?us-ascii?Q?frCbLj9PmcNPXs68mQODUEMURMm1OvnXHDYoWNZqyD3f8H1dZ7xzh/ctrrXM?=
- =?us-ascii?Q?OKa+RYw4G1TeGorJe3yYI014fBpti1kDbNhcTDXq0VdgMnA9WhzBoee23yAK?=
- =?us-ascii?Q?1fEqWdwVZwLiwDG2xIQD9bVDvY1PDgd2AppW/u56rYCv0XsStRTGIjCEZoRj?=
- =?us-ascii?Q?H7gdH/S+bQEfeTrXMO2CCVtNUtF8SfExYZoOK+kRrEyuwTMNvvO35rg8qgfh?=
- =?us-ascii?Q?1WlzRGSQ597k4s4nolPvxefY5S1zmt4Z4lE8T2PLIOOKQbX1kGUVS1AlfI3X?=
- =?us-ascii?Q?ihfOD3CdrKcaDUqil1bMKibYjYgSFlajfvxOn7T1E3VmN+PPCi0e+t/6SEb9?=
- =?us-ascii?Q?b/UdeV1J3GFJov4ptKcUW/j+/5ok2gu1Er9CrmYUAJGkOVxxwyZZolQzIvM7?=
- =?us-ascii?Q?0bjED2QbTYt/W5SYPiE/vx41EJveytNMAp5/sAayK2TitW/pMymvr+co3Yhi?=
- =?us-ascii?Q?2rIlVa6Xbv9SjE6dQg+4dVsMHZArYOBhTnJCJaiHYcimfL9EvL0faB8fPCVX?=
- =?us-ascii?Q?ztSPfYkxOJf31dST9Tigmq9Q4JARTVuOFnTiTgzIupCxe4IvYLsxyPeUKOUu?=
- =?us-ascii?Q?VOPcnE0wnTx9Hm/glg2zHfjK5foKWX8zTkuYaBWokNqlZhpUUUCyFSyoB8R1?=
- =?us-ascii?Q?0TYJgPO+GOu4FPHgCwbO5aBfgA5Hep90awI2vO39BLqOX/D2UqWYEUqxpl6Q?=
- =?us-ascii?Q?aLuqIBszmUKwLC66gDGmt15kA6WwAvpq1A3JfqpoKmz6ZVI3s9SlF+ghOzJn?=
- =?us-ascii?Q?JBWGQvx9vWdEj7reAwdAraU8f+z+wOu2nggapX1XrMCBi1stSbXXYrHJ7YHn?=
- =?us-ascii?Q?PCWSLbK3rLo9Wy9SmAc0pekEh+xpFm0iX1P0+rao//hmftqtHCC7DOpre5lb?=
- =?us-ascii?Q?/aDJVjJba6rYWEao4IVtM8j1lmtm46RWzCyS/36UFAlun+5hbiNPprVYaq0q?=
- =?us-ascii?Q?uSbhByIAxFbaptuXgB1dFHR6B4egoALgLWams0geVZDKEVW/ESJB53CfaSZ3?=
- =?us-ascii?Q?/OSgaIaWqnI=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|7416014|366016|1800799024;
+X-Microsoft-Antispam-Message-Info: =?utf-8?B?UUR1RmtzT211a0pVK0FiM1VEZHBYaE5YYUZWQXlBcUVac0FmZUp4T3RBYXdo?=
+ =?utf-8?B?MjNlTk54Uklhby83VGU3M0ZDZ3VCTmpRR1lsL0FiV24vb3pIREpMWlJJaFlP?=
+ =?utf-8?B?WmJtQ24rL1NxSzl1NW5qMmpUaURuQWxSdlpJalBpcHYwU0NiSzZ4K0o2M1d0?=
+ =?utf-8?B?eUNyWW1NOUhPL1cvMFZsVXF1TXl3WlBhOE5NM20rSWFTQTNjWkEvSUR6dDNm?=
+ =?utf-8?B?QzVnaWxXdlZQemxDT056WnRtb3dHT095bVRqWjVEakhMNVJacFUwTmpXSW9L?=
+ =?utf-8?B?TkYwckcxaDBINTNQTldvUS9RcGdZN2ZCT01XV2VxWjB3R1hUbFVvNUpVYUpE?=
+ =?utf-8?B?S3JoMnlNR1ZSM1ozdFpvWE5XOHJCeldJekhiekwzTUtrV2RYM0dnRU52TTV6?=
+ =?utf-8?B?SlFDY2VxSTRTK29wbHAxZk9XK3kxd1J2TTZHR2xwRXZJWVFGR0Z0VnRjcVU5?=
+ =?utf-8?B?MmgvTnFCeEM2cXIzR1BhVnduNHkzRU5VUW1hZFdxS24vaTJLSkJ0bEtkQ0ly?=
+ =?utf-8?B?NGMzRDVLSkpGeHR4bEg1SkFPTzExQmVJUUNzZUxQMnE5YytsdmQ3bzE5eDlO?=
+ =?utf-8?B?ZGZMbFgxMjBxVFZCNm92Vy93S0JieEFXU1BieDFIa1VOOFRtdzNLVFNWT05O?=
+ =?utf-8?B?NWlES2xMWVA2UUpGT0NGSDBjaVVvVGljMUpaN3VHajRPSWxDSmZsQ01yVGxJ?=
+ =?utf-8?B?TldyQUFJZEM5QmR5VzJscjVHNWY1c1ZMVU1zekNOM0RlMlN4b01ROTk0cGYx?=
+ =?utf-8?B?U01LVjV5WDNJWk9oNW53K3VWSy9JQmcrcWc3ZU90NHI2b3Z6YWtYTHJMdi9l?=
+ =?utf-8?B?OFN6eDZpSXdvelVsUHZyZTUzaUt2ZTZpL3pZc1pHVU5ZRkU2cDRycTI5RnAx?=
+ =?utf-8?B?bXZZVDA4aDBsWUt1NGdiZHlTZk42ZmRieXJyQVEyaW4zazFUeFBTbUw4Z1ht?=
+ =?utf-8?B?ZlByUXk5VVVZcU1TeEZUZG5VT3FSSktVWGI1ZUxIeUVXN3dWcnhOZTRyYnp0?=
+ =?utf-8?B?SERucUJNU29laDlvczRENDNHbW9kVWw4ME16TlhPK0t0VDExak1kR0orN1N3?=
+ =?utf-8?B?Rm51QWI4VWw2eTN3Z0hic0NMVWorYUJXWEFkamUrdGVDMnc4YkVDR1cvNjJw?=
+ =?utf-8?B?RzJaNUFrY3Vnd3V2aVlwMzE0TG1FVXVhK1o1SlhPMk0wZlgveGR1RG4vc3Rw?=
+ =?utf-8?B?c08rYmhKaEJvOFB2endpUWhRSlArYUJVYTcranZubHFPakx5YkhHU3RNYWxq?=
+ =?utf-8?B?NXArcEhuQ2lVNlRtOXJWU2RKTUVCQ1ZuK0NXcmRTMFo2aHA0azJCVnQvbFNw?=
+ =?utf-8?B?N0dzb043MFdWRTVnUmtjdFBWdlhsNi85c1B0ZEo5eDNCUDJyY1EwSnp6dmhk?=
+ =?utf-8?B?NEZ6cXRjWnZMazlKLzZUczFhNzh4N25jVWxGay8wS0NabzZHT2c3cTdYL3kw?=
+ =?utf-8?B?ajQxelhVVFkzN0w2dThHbnJNdG9tL09ZWW11MkdJWWN2Ri9jak93cFF2akYv?=
+ =?utf-8?B?NG13cjhKUSt2Y3AxSXlON2lzaWR1TjBRc2ptQVdsRDJWdVkva2Y2b2p2SHhC?=
+ =?utf-8?B?ZHpyMXcxT2pscVRPTmlDdDNFZnc2NkhpcnNFTi9qc2p0U3k0bktMUmcwSXFy?=
+ =?utf-8?B?WnZpQTdoM25aWnpicmpLbDE5NjdQM3RuY3krd1dSTnZFQ0xnVHRhUExLc3ht?=
+ =?utf-8?B?bUxoNENhWjlFZFozdHdQVzQ2b3BwTytUK2pTQTRrT2pBVE9RYWorSjFIZjJU?=
+ =?utf-8?B?bENFa1lhT3dpRllGZCtob1AxN0VYUVNZYW9tWjV4Nlh3NVRndzJiUFhLaEVE?=
+ =?utf-8?B?SU4yRjBROUFheFBEVnZ4ZEZCYjVzRUR1dGpyZ2JmcEEzcm1DSUMyVWRyeE9Z?=
+ =?utf-8?B?akZ6emp5emMyTGFLU3NMUzZxNzBuMW00TVgrL3F3V2VqOHMxOS9aWkxIWXNU?=
+ =?utf-8?Q?Q0yZxVh9qlvNmcLKL3tPQnqpTqdxXeZB?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6020.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(1800799024);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9GT9XmQaPrIoE7i/cnby+r1eXVrODkmT+NKxQ1yRtvktRdTiNRtiDLRWlQ+C?=
- =?us-ascii?Q?SifIyxVs6wqJyBX6tOcBzHj151M2/Am6fQ4zrIez4RBEhO2GvJH87h+s2Bkr?=
- =?us-ascii?Q?5sDqvB/QFZmMM1R1KUzccoSMO6KoaQevlRek9jT6t4rX/pGb393LfbCsIItj?=
- =?us-ascii?Q?KdRHlt4RAw79ZzgqQnlqIX0u2Hb1h6DwZhSHrGw17+uqjlWq238Bn8Ut2Ygm?=
- =?us-ascii?Q?qJZjt2cNHgACA4KD830N+6oo7AaRXxiONaqLlYNlFBCt73ziXWXwxI+TFpFj?=
- =?us-ascii?Q?6r5s6X7dZmUbG7NNjCJ3UjebXiGE+335tS+ZfvA8dfF/wD+MIQPdXKUsxtFs?=
- =?us-ascii?Q?G+T1j/BmmBw2SN2aDF+5i2NvG7u+YZIXKUXEkWQuLW4zElsGMC6YkYoTyRX4?=
- =?us-ascii?Q?Hd/AJLgF+gcWPx1yzRdMbE2HBfbBuPmF3eICJdx2pHpmCnfmXnf/P/FUNc1D?=
- =?us-ascii?Q?u3jwGS/hTxVx56lgaHmeadA4uwFAwTbJ9F4Jn844A8iAii9YQr1VgJBCHAFu?=
- =?us-ascii?Q?EXYDUFn6vpAsFyh9D7yhRCN+Pk2G+X1HZGqKb8rraXCsa5d53VS1UxafAreF?=
- =?us-ascii?Q?9FlcOobvvUt0Lv2/VajA5w+dbj9Ykyc0paMn2IL+Hi1mKulsL0pR909mfBbo?=
- =?us-ascii?Q?zjdx+BUhGGgxiZHpC3CxiVFAhsSNev2ZABzDpNL/VyVG/Hc8CtaMNA/NIVIH?=
- =?us-ascii?Q?1VtP5bnlHSPLDG4dno7D5CO1d3ikWwV32g9dNdCyInsN++q2+MoPvK9wRt7/?=
- =?us-ascii?Q?NzuuTSrneOo/FVmou2IIzNY7U7xjNk7NjLEYF/OqNptFOE5ZeM0ZJtTPmzCa?=
- =?us-ascii?Q?3r8JlAP4pdv49JEFs95Pki7ciLUejjfQpFBntUcf188TB4E7I33KLH3JmtwC?=
- =?us-ascii?Q?d5RniuWNBUiB3J/N5uZ2QXHVzI7TDiT7NrlwXqXVxCyQkEeISd+ZPjNiiQ0C?=
- =?us-ascii?Q?eCHnRNoh76I1hwKJ9PY2NP8GqmPJgYJ17++4hj1u643fA+KpbEO4W0s9Jn2t?=
- =?us-ascii?Q?mCMjRomqk/f3cK60mmq/U3qdLZru1a5sI+e0eScMtb0ohKXD5WeTE8/Nh/0U?=
- =?us-ascii?Q?BlvyCR3HWjOUWZwFKvXZgyvsN9/4cEOxJSHzIq1HDtHoVRyaHDbBx036ptzx?=
- =?us-ascii?Q?71xoPTlRgp2CbgGFpdJstGnHVfvZEA7Qm3SAGZt9+hiEjmZP0AYFHt3fkD6T?=
- =?us-ascii?Q?UB4A3bt+PE/5Bqd7M0EHeC2z2h/B1qgWoDu7ANT+UJ+oxGk39TxtU7c/5nso?=
- =?us-ascii?Q?fuAFkmaVuA4EnDo01vPNnmLR0KZDbctQyI4EbWXMgJEHFSwL1mCYwjfupPVg?=
- =?us-ascii?Q?exyMGxltLOdIDEs79gDK9ejYRhukhEgAF2h/WhfaI/Pz1ugT2PIYiFzBzql8?=
- =?us-ascii?Q?HwBoALX0CgQPPFv2d4s54XgFwhZ4TOAwGVbSYfwdsQlbl5Voxxfh/jmYBxZY?=
- =?us-ascii?Q?BPQw+W2zFCnkzIioqzSDuH7tHQu1E1beS3Ue0c+tUOQJu+ooLc9t3mmYbaT7?=
- =?us-ascii?Q?Oxm5EfmvKE09ISje2nyYG6PS6xQ0G3AZsmUV2FJnxVVduHD62SHGRuynVpQu?=
- =?us-ascii?Q?yqyKqD16TdnWlCYjzS1vMFhcEnC/MwKBrTH+uTqO6XqPPhf8nQg62Zx58+o6?=
- =?us-ascii?Q?8g=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0df47ea5-666d-4291-c315-08de0c59a7f1
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?L3NqaGxxTk5jUjRBemhHL1NQZ2ZjSDFteEpmc3A2MjYzZE9GQjVqdjc5WFIr?=
+ =?utf-8?B?WnhwRFVweEZNRk9OTzNxVk1TT2ZJOW1oekJiUk1oWW90VTBqaVR3c1ByNXJJ?=
+ =?utf-8?B?cUJHMDczeXdUV2hPZ3JadnBlNTQ2R3dCNUxXVkJITUhaVjRZdW5ydk5rZC9O?=
+ =?utf-8?B?bzN2Zk9kNHBLem5FNXAxVHhiODIxdDJQS3I1eEhjeFdNM1pKWXh4NzRCbjlC?=
+ =?utf-8?B?Vnl3bEtkanVpWEZkRU0zUDdCYVhjVUpPSEVpZTVLV3ZYdWZMdTh0c01kQ2JM?=
+ =?utf-8?B?Z2RsV2Q0SElFVGRYdm4vMU4rUlppd2tiOEVPb0pkeCsyMFE5Uy9hQXIvQTlZ?=
+ =?utf-8?B?SzBzR0FUVmd2VlkwcjVwa09LWW9mZ3lyd3RnME5LQ0N3My8wR3BKeGFKUWYy?=
+ =?utf-8?B?R0tYYzJRTjhLU0RyczVBRnFSM0ZGVENTaitROWhwOSt2Ymg1MDAraEtSUUxp?=
+ =?utf-8?B?MklEM3Q2YmlaK1ZrcExudkJabFpxVEVBaG80aXVpMGxTemZ6eFRkTzVEdStU?=
+ =?utf-8?B?VWV3WUs0K01oSDR6VXNHbERJTllDcUlYb2R2Rk9tMkpCL0tpUzkrQWNCZC9I?=
+ =?utf-8?B?citmbzNZNzg2ZXcza0l6N0NDSllrSlRRRkVqLzRlSWxQNDdqMzVrbGFYUG8v?=
+ =?utf-8?B?MVVTQUFZZ0lTQXlHMURqYmcvOTFtRTFHaEtGcjZRWGxXdHNHUTBJTEdCeVJ4?=
+ =?utf-8?B?SzlWTEhXMWs4Z2Iwc200VElKVzNKcHVod2dzUzd3TzZwRDBUUUdocG53OTEw?=
+ =?utf-8?B?TC9EbTQxenlyT3hPL3VoTTIvRGorSGw3cUpQV0xxdCtQR21KZWdtcGMrZTBD?=
+ =?utf-8?B?QUdadExRNUs4Q1FadjA1dE9YTzhJZWRqSlpCZVcvRm5FRkZoM0VVOW9CeUpV?=
+ =?utf-8?B?VFVESmIvVlJzdTdoaXMxSjlQQ09LcnV4bTlVYlBpblVKTUphSGpCZWFJNG9H?=
+ =?utf-8?B?ZGpBUzFVc2VaOGpEOENXRVorQW5BWEVzSmU3VjhYM3lUNlZQeWxmWTFhcmNw?=
+ =?utf-8?B?RXBENDBoMnBtWnZ2eTdBOXNVSG1vMVcvSjAvUDUzbFEySXRTelhUaUdvTHBI?=
+ =?utf-8?B?aUxZMjAwMFJJWHBnZ3JpQTFyTnI4US9mbWo1TmhHQWdwVUtnQWtJSDYrVE40?=
+ =?utf-8?B?Qm0xcG1uYjd0QWtIbTQ2SlJYUlFRcGVhbFg4UzU3d0dIOFVuWjhlQ1d4OFUz?=
+ =?utf-8?B?ZG5aMzFGQ1BHd3kwcDVGdGdlZnR1Q21JQTdmVzlHMVpEWnRaVDEvOFhQU1N5?=
+ =?utf-8?B?SkJaMWUyc0VQZENzbHhKR2ZJekxpM1pTQ3hqRmt2MEd1a20zdmtKT0YvdEg5?=
+ =?utf-8?B?V3hORUVmejdWa0pvWktHVFg3SmhIOWhCSlNqY3NkZCtLc3AxUzc5TVk5SGhx?=
+ =?utf-8?B?ZUJvandJWVZwNWFNMUt4d0JyTGZHZW9Rd3hDTit6MUNXMDRLcUNtWndIZFYr?=
+ =?utf-8?B?ZkJ4SkppM2F0Y0Vqbm5ES2lDRTVWd2lSV0o4T1hGR0tOM2JDN2V5ZWF5M0p1?=
+ =?utf-8?B?QnJ2eW4rdHNjZlR2bXQ0RGg3Ry9QL0E1Z2R5UnBWR1dXRmtYZjlRcmpicTJE?=
+ =?utf-8?B?RWQ0OVNJdnBvOERkTkg4ekFCYWhSOHl6cE5sTzlkZTNJbXRzdC9yckRaN1JY?=
+ =?utf-8?B?M0FmWnZwdlhGbXpHVUFvSElNTXhMeU44WnJqeFg3T2FoVWwvdEYrTnVodW5U?=
+ =?utf-8?B?c1pwaENwK0szZVoycVdDQVZRN1ljOHNJSlBCY2ZtZ0xHbGt0dDV0MVJ4L3hF?=
+ =?utf-8?B?WG5qZjBqdGRReDQ1NExGRGdXdGtqT1E0UDRrNmdGL0tRZ01ndFJGalZOUC9m?=
+ =?utf-8?B?UDhyU3RZQVROOHdGVmZ1ekY2SjUxOUJVMG03VCtMWEVhK25NZUpNZlpJeUNF?=
+ =?utf-8?B?UzZQOTZyUFhFWWNTa1B0MW5kYVFmUHdYRzNiOTB6REMwaUM5NkN1K0FPbVdu?=
+ =?utf-8?B?Z1Y0Z0VsdXZlUDNscmRibVdWMG8wT3VWNnQ4ZFg4NlZ6M1ZLSTVjbHNvdGx5?=
+ =?utf-8?B?ZE1HRkxULzU5MU1aOFRTaHY0bUQwcUVtdnR0Y2VzZ0pSQ2tpV2JIUndzYm5u?=
+ =?utf-8?B?bzJacnZWZUVZRWxpV0IrblorUkI1WFJVMktRczlZSnMrUk5zeVg5T1BEMkpp?=
+ =?utf-8?Q?7nxOioYOhrlEgoyFlGjKDPl2d?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 13b11d0d-b9f3-4e74-f1b4-08de0c6eae47
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6020.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Oct 2025 02:13:54.3613
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Oct 2025 04:44:24.6851
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +UHQasyelMso+8jP3teYiw/Vv4ObQkJiuXYes90gBVAI5ZhuRuOrbTvX8ebjQCUHxZHk/YGsWC/z3b0yH66myA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB6950
+X-MS-Exchange-CrossTenant-UserPrincipalName: dZ/WcwRy1DJGxPBDF8s595yoi4at6D0/tjfm53cAdKTuSsDFCzuR82DRklEY7ogj3jcT3+4pR7xdnYqIcX/W4Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5128
 X-OriginatorOrg: intel.com
 
+On 10/15/2025 2:57 PM, kernel test robot wrote:
+> 
+> 
+> Hello,
+> 
+> kernel test robot noticed "UBSAN:array-index-out-of-bounds_in_drivers/base/cacheinfo.c" on:
 
+[snip]
 
-Hello,
+> [   12.549731][   T83] ------------[ cut here ]------------
+> [   12.550388][   T83] UBSAN: array-index-out-of-bounds in drivers/base/cacheinfo.c:37:9
+> [   12.551060][   T83] index 4294967295 is out of range for type 'unsigned long[8]'
+> [   12.551580][   T83] CPU: 0 UID: 0 PID: 83 Comm: systemd-journal Not tainted 6.17.0-rc4-00035-ge8b871200f11 #1 PREEMPTLAZY
+> [   12.551585][   T83] Call Trace:
+> [   12.551588][   T83]  __dump_stack (lib/dump_stack.c:95)
+> [   12.551594][   T83]  dump_stack_lvl (lib/dump_stack.c:123)
+> [   12.551601][   T83]  ubsan_epilogue.llvm.16751680356772289369 (lib/dump_stack.c:129 lib/ubsan.c:233)
+> [   12.551607][   T83]  __ubsan_handle_out_of_bounds (lib/ubsan.c:?)
+> [   12.551621][   T83]  get_cpu_cacheinfo (drivers/base/cacheinfo.c:?)
+> [   12.551625][   T83]  exceed_llc_capacity (include/linux/cacheinfo.h:? kernel/sched/fair.c:1256)
 
+Thanks 0day! It seems that for some reason the assignment of curr_cpu = 
+task_cpu(p);
+was after the check exceed_llc_capacity(), will fix this.
 
-we noticed the issue in new added test and test itself failed.
-
-
-kernel test robot noticed "kmsg.sanitizer.indirect_leak/malloc/maps__by_name_index/__maps__remove/__maps__fixup_overlap_and_insert/maps__fixup_overlap_and_insert/machine__process_ksymbol_register/machine__process_ksymbol/free/map__put/__maps__remove/__maps__fixup_overlap_and_insert/maps__fixup_overlap_and_insert/machine__process_ksymbol_register/malloc/map__get/__maps__insert_sorted/__maps__fixup_overlap_and_insert/maps__fixup_overlap_and_insert/machine__process_ksymbol_register/maps__by_name_index/__maps__remove/__maps__fixup_overlap_and_insert/maps__fixup_overlap_and_insert/machine__process_ksymbol_register/machine__process_ksymbol/free/map__put/__maps__remove/__maps__fixup_overlap_and_insert/maps__fixup_overlap_and_insert/machine__process_ksymbol_register/malloc/map__get/__maps__insert_sorted/__maps__fixup_overlap_and_insert/maps__fixup_overlap_and_insert/machine__process_ksymbol_register" on:
-
-commit: 2d584688643fac90428ab12513e05d6deff7c606 ("perf test: Add header shell test")
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-
-[test failed on      linus/master 3a8660878839faadb4f1a6dd72c3179c1df56787]
-[test failed on linux-next/master 52ba76324a9d7c39830c850999210a36ef023cde]
-[test failed on        fix commit 844f962ca6bf5b01d0af0bc62a7f06135581fe92]
-
-in testcase: perf-sanity-tests
-version: 
-with following parameters:
-
-	perf_compiler: clang
-	group: group-02
-
-
-
-config: x86_64-rhel-9.4-bpf
-compiler: gcc-14
-test machine: 20 threads 1 sockets (Commet Lake) with 16G memory
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202510160935.b4c10a7e-lkp@intel.com
-
-
-2025-10-13 10:33:04 sudo /usr/src/linux-perf-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/perf test 82 -v
- 82: perf header tests                                               : Running (1 active)
---- start ---
-test child forked, pid 11993
-Test perf header file
-[ perf record: Woken up 2 times to write data ]
-=================================================================
-==11998==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000039c50 at pc 0x55831a0ef091 bp 0x7ffd8cf52980 sp 0x7ffd8cf52978
-READ of size 8 at 0x502000039c50 thread T0
-    #0 0x55831a0ef090 in maps__by_name_index util/maps.c:423
-    #1 0x55831a0efc72 in __maps__remove util/maps.c:536
-    #2 0x55831a0f3849 in __maps__fixup_overlap_and_insert util/maps.c:956
-    #3 0x55831a0f3975 in maps__fixup_overlap_and_insert util/maps.c:975
-    #4 0x55831a0c92e0 in machine__process_ksymbol_register util/machine.c:756
-    #5 0x55831a0c9aa8 in machine__process_ksymbol util/machine.c:824
-    #6 0x558319f713be in perf_event__process_ksymbol util/event.c:297
-    #7 0x55831a10acce in machines__deliver_event util/session.c:1344
-    #8 0x55831a10b342 in perf_session__deliver_event util/session.c:1381
-    #9 0x55831a10ec96 in perf_session__process_event util/session.c:1674
-    #10 0x55831a116359 in process_simple util/session.c:2251
-    #11 0x55831a115319 in reader__read_event util/session.c:2180
-    #12 0x55831a115cbf in reader__process_events util/session.c:2229
-    #13 0x55831a116b48 in __perf_session__process_events util/session.c:2274
-    #14 0x55831a119c04 in perf_session__process_events util/session.c:2438
-    #15 0x558319a4b942 in process_buildids /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/builtin-record.c:1492
-    #16 0x558319a50376 in record__finish_output /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/builtin-record.c:1815
-    #17 0x558319a5e2f9 in __cmd_record /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/builtin-record.c:2876
-    #18 0x558319a6b9f4 in cmd_record /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/builtin-record.c:4350
-    #19 0x558319c7dc20 in run_builtin /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/perf.c:351
-    #20 0x558319c7e520 in handle_internal_command /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/perf.c:404
-    #21 0x558319c7ea76 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/perf.c:448
-    #22 0x558319c7f21d in main /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/perf.c:556
-    #23 0x7fa209c64ca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
-    #24 0x7fa209c64d64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
-    #25 0x5583199eb4f0 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/perf+0x102b4f0) (BuildId: 40dc84e2c3040544dfd4a81fbc58e1bb98e5bb4e)
-
-0x502000039c50 is located 0 bytes inside of 8-byte region [0x502000039c50,0x502000039c58)
-freed by thread T0 here:
-    #0 0x7fa20aebf8f8 in free ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:52
-    #1 0x55831a0e7d3a in map__put util/map.c:313
-    #2 0x55831a0efb77 in __maps__remove util/maps.c:530
-    #3 0x55831a0f3849 in __maps__fixup_overlap_and_insert util/maps.c:956
-    #4 0x55831a0f3975 in maps__fixup_overlap_and_insert util/maps.c:975
-    #5 0x55831a0c92e0 in machine__process_ksymbol_register util/machine.c:756
-    #6 0x55831a0c9aa8 in machine__process_ksymbol util/machine.c:824
-    #7 0x558319f713be in perf_event__process_ksymbol util/event.c:297
-    #8 0x55831a10acce in machines__deliver_event util/session.c:1344
-    #9 0x55831a10b342 in perf_session__deliver_event util/session.c:1381
-    #10 0x55831a10ec96 in perf_session__process_event util/session.c:1674
-    #11 0x55831a116359 in process_simple util/session.c:2251
-    #12 0x55831a115319 in reader__read_event util/session.c:2180
-    #13 0x55831a115cbf in reader__process_events util/session.c:2229
-    #14 0x55831a116b48 in __perf_session__process_events util/session.c:2274
-    #15 0x55831a119c04 in perf_session__process_events util/session.c:2438
-    #16 0x558319a4b942 in process_buildids /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/builtin-record.c:1492
-    #17 0x558319a50376 in record__finish_output /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/builtin-record.c:1815
-    #18 0x558319a5e2f9 in __cmd_record /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/builtin-record.c:2876
-    #19 0x558319a6b9f4 in cmd_record /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/builtin-record.c:4350
-    #20 0x558319c7dc20 in run_builtin /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/perf.c:351
-    #21 0x558319c7e520 in handle_internal_command /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/perf.c:404
-    #22 0x558319c7ea76 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/perf.c:448
-    #23 0x558319c7f21d in main /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/perf.c:556
-    #24 0x7fa209c64ca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
-
-previously allocated by thread T0 here:
-    #0 0x7fa20aec0c57 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69
-    #1 0x55831a0eb14a in map__get util/map.h:189
-    #2 0x55831a0f22ab in __maps__insert_sorted util/maps.c:791
-    #3 0x55831a0f38c0 in __maps__fixup_overlap_and_insert util/maps.c:965
-    #4 0x55831a0f3975 in maps__fixup_overlap_and_insert util/maps.c:975
-    #5 0x55831a0c92e0 in machine__process_ksymbol_register util/machine.c:756
-    #6 0x55831a0c9aa8 in machine__process_ksymbol util/machine.c:824
-    #7 0x558319f713be in perf_event__process_ksymbol util/event.c:297
-    #8 0x55831a10acce in machines__deliver_event util/session.c:1344
-    #9 0x55831a10b342 in perf_session__deliver_event util/session.c:1381
-    #10 0x55831a10ec96 in perf_session__process_event util/session.c:1674
-    #11 0x55831a116359 in process_simple util/session.c:2251
-    #12 0x55831a115319 in reader__read_event util/session.c:2180
-    #13 0x55831a115cbf in reader__process_events util/session.c:2229
-    #14 0x55831a116b48 in __perf_session__process_events util/session.c:2274
-    #15 0x55831a119c04 in perf_session__process_events util/session.c:2438
-    #16 0x558319a4b942 in process_buildids /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/builtin-record.c:1492
-    #17 0x558319a50376 in record__finish_output /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/builtin-record.c:1815
-    #18 0x558319a5e2f9 in __cmd_record /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/builtin-record.c:2876
-    #19 0x558319a6b9f4 in cmd_record /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/builtin-record.c:4350
-    #20 0x558319c7dc20 in run_builtin /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/perf.c:351
-    #21 0x558319c7e520 in handle_internal_command /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/perf.c:404
-    #22 0x558319c7ea76 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/perf.c:448
-    #23 0x558319c7f21d in main /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-2d584688643fac90428ab12513e05d6deff7c606/tools/perf/perf.c:556
-    #24 0x7fa209c64ca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
-
-SUMMARY: AddressSanitizer: heap-use-after-free util/maps.c:423 in maps__by_name_index
-Shadow bytes around the buggy address:
-  0x502000039980: fa fa fd fa fa fa 01 fa fa fa fd fa fa fa fd fa
-  0x502000039a00: fa fa 00 fa fa fa 00 fa fa fa 00 fa fa fa 06 fa
-  0x502000039a80: fa fa fd fd fa fa 00 fa fa fa fd fa fa fa fd fa
-  0x502000039b00: fa fa fd fa fa fa fd fa fa fa 00 fa fa fa 00 fa
-  0x502000039b80: fa fa 00 04 fa fa 00 fa fa fa 00 fa fa fa fd fa
-=>0x502000039c00: fa fa fd fa fa fa 00 fa fa fa[fd]fa fa fa 00 fa
-  0x502000039c80: fa fa 00 06 fa fa 00 01 fa fa 00 01 fa fa 00 03
-  0x502000039d00: fa fa 00 00 fa fa 00 05 fa fa 00 03 fa fa 00 02
-  0x502000039d80: fa fa 00 03 fa fa 00 02 fa fa 00 01 fa fa 00 06
-  0x502000039e00: fa fa fd fa fa fa fd fa fa fa 00 fa fa fa 00 fa
-  0x502000039e80: fa fa 00 fa fa fa fd fa fa fa fd fa fa fa 00 fa
-Shadow byte legend (one shadow byte represents 8 application bytes):
-  Addressable:           00
-  Partially addressable: 01 02 03 04 05 06 07 
-  Heap left redzone:       fa
-  Freed heap region:       fd
-  Stack left redzone:      f1
-  Stack mid redzone:       f2
-  Stack right redzone:     f3
-  Stack after return:      f5
-  Stack use after scope:   f8
-  Global redzone:          f9
-  Global init order:       f6
-  Poisoned by user:        f7
-  Container overflow:      fc
-  Array cookie:            ac
-  Intra object redzone:    bb
-  ASan internal:           fe
-  Left alloca redzone:     ca
-  Right alloca redzone:    cb
-==11998==ABORTING
-Unexpected signal in test_file
----- end(-1) ----
- 82: perf header tests                                               : FAILED!
-
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20251016/202510160935.b4c10a7e-lkp@intel.com
-
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+thanks,
+Chenyu
