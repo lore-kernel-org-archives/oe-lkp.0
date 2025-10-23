@@ -1,328 +1,295 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A47462D839C
-	for <oe-lkp@lists.linux.dev>; Thu, 23 Oct 2025 07:30:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.12
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761204635; cv=fail; b=VwJi5AvTFC9Wy3j5lQwQF/SA1d4Ch6mcNpb82du3sfL65kMj2sQ0/X7ma+nF+n3QzRCOv1ODfvlcNu0Q+KhDa+ggpIUDfQ+vH1fyUifA/xFlb/Wl7FEhjiv2c8C4LtqKkg7vvJCbqDvLYBNcotL+zG+bF221pctrH/y0VK8z878=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761204635; c=relaxed/simple;
-	bh=xk8Rq9yslEpfbOz1dWp/4+wpDgsFToOzuKqc0hFjmEE=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=BmXUbHQD+rWnW1pxi0UlLXywvD4rENWy6Cv8cTSvA+syQxgUGJF5lNXGIZjFAkmPmcuR+lGXDO7YDkg0g5GAFDHJBplrqo8WKqMyAcR1TiwKvqqEAxCDHd9G1zIqoXnvuMmSSgMULsw++cwJsSOVk3TUrg+1LHrPFFxHeSbMAH8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=B4KZjcnf; arc=fail smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B58A12DC777
+	for <oe-lkp@lists.linux.dev>; Thu, 23 Oct 2025 07:53:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1761206038; cv=none; b=LEhXiMoz5fadvqsILFQzIOgB/+fzxgfxYa0ueVODIItO9yst1gfGSPLA0zdJi5+7WM+ybxa9pidJ8kHhSNvy5si5R2JpovnJy0A//uAC2b35ys0o1UlGaUuryFVHugoYtjCDb/W92kJlfxqJs9wHcCikd81kqjxh9qVyK4c1eLs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1761206038; c=relaxed/simple;
+	bh=CmUJnmDN5lrR0urFzrhJD3MHidheDBMN7LCKKraUoq0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=seDMg5lOyTnTgz3Bu4DoRe/0Br0B/jBZvEkiyX8Y+5dSsNUHg3NQiZSF+oEum/tB4yvXAJT7ahK0bPhYgQuPzrFaopiADkgNjbkrZclQjGTTV5PK/0nGNh5Momy86y1I89dL/YdfphWTkDmD5y8cPBchuc50XZPkwlCXERrvNIc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=zI7HOAxb; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=dd+EfS0N; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=1FsqPMaJ; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=KYi9vLUX; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="B4KZjcnf"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1761204633; x=1792740633;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=xk8Rq9yslEpfbOz1dWp/4+wpDgsFToOzuKqc0hFjmEE=;
-  b=B4KZjcnfwm3j5JE0rzPTKzUwXcNDp0ZSI9b2h050e++C6LG4RkEtuHE1
-   HuGPb0VtqPszjsw7TdoyciwweLOzcldItZ3/KFRirw+DFxI6JMw+D+fCV
-   Grap6zCawk474CEgwJshic+0pvQ3lwRU19iy42GSfLEXqWWi6Wzhm9uBm
-   bG+k6hC2WEITShoPEnE3BpDaefEnTKXPFgCell185An77+BM2R1PEyHPo
-   97kgVI5TNiWeN5WPhiK8Ad3Mrj1aWdMs8qw3dE80ydDiX3t39mbGNJg0n
-   WrZ1mrbfuOBoaOzFMpmV3C888xeFJtiTc6S9kTpgZLyoOUBSKBgKwddHz
-   w==;
-X-CSE-ConnectionGUID: UWE4WlckTOar6ngNcHxnPw==
-X-CSE-MsgGUID: 1DEoxSBKQACaPwH0SUo6dw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11586"; a="74803382"
-X-IronPort-AV: E=Sophos;i="6.19,249,1754982000"; 
-   d="scan'208";a="74803382"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2025 00:30:33 -0700
-X-CSE-ConnectionGUID: ubFVTcRHRbmTbAloXmVUHw==
-X-CSE-MsgGUID: /IcHHgcyT2qSpIpodWTyOA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.19,249,1754982000"; 
-   d="scan'208";a="184148845"
-Received: from fmsmsx901.amr.corp.intel.com ([10.18.126.90])
-  by orviesa008.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2025 00:30:33 -0700
-Received: from FMSMSX902.amr.corp.intel.com (10.18.126.91) by
- fmsmsx901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27; Thu, 23 Oct 2025 00:30:32 -0700
-Received: from fmsedg903.ED.cps.intel.com (10.1.192.145) by
- FMSMSX902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27 via Frontend Transport; Thu, 23 Oct 2025 00:30:32 -0700
-Received: from SA9PR02CU001.outbound.protection.outlook.com (40.93.196.30) by
- edgegateway.intel.com (192.55.55.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27; Thu, 23 Oct 2025 00:30:32 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=CvRTO9GdPXdB8hzVqiYKLHDVkX3401D8VoQtg0CR/uVrPXJFMGdgrnQ3spkXSZj2XyLIH5vC4fiHgl28Vct+fguJA3YqknoII2O1v/XJuqK3ykkSrmzKUgvyyTEJS5T0yjwtohAowmJjLJtuDxXITjOMpnGwABoHKO5B5oerUsqkV6pnkOPVNGVwIjCXPFu1MtVr4lDBKtYGYdCbUAZt2+o3/pFmO5PltUwxeNvdW6s4OmduAs/+HgMSsLYWILtqMAPI/Pd9ChjBwkHVFW9P+NgEXvGGuYQhPHMObZoOWnx72ZFRRjFd5CKKb/YwuIdaeZaH6tGjtHtethXIJSuZzA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ciJ35czM3ox2GvNUTArBOd8LC8gu8e7/gT8hbj88Hmg=;
- b=ZbcqCZQ56wrIiKawQeM6i/NARsARbipyRdFsC7HZiVTGj/NS5G3qeS67JCtdJNxESvqPbXeVSfzppIvZtSlMMdA+2AiflULskOytz4ky8AJOqJZGtAW2QgtIvPzrCM7EqSD4MwwuF8grj7EqSKORCUDf27p7QquoErdTKoAQxcu3xyjKP9oWuDtNiPXmLgm3MVAP9C7xx9ZJZiQNTrF4+NwxaoDYCBfuWOt1BHjHk4lQdVnw5l+iW6ai88xl3YXdAg/ggf+5SmTblH4UvAG/nJ4x4OQWcOcjKxf8TjNv5OrtVYAI8IdsKlfLdTq+Bn8v3BB/QDGwkRJL6ROZob0ueA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by DM4PR11MB5312.namprd11.prod.outlook.com (2603:10b6:5:393::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9228.17; Thu, 23 Oct
- 2025 07:30:25 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.9253.011; Thu, 23 Oct 2025
- 07:30:25 +0000
-Date: Thu, 23 Oct 2025 15:30:17 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Thomas Gleixner <tglx@linutronix.de>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <oliver.sang@intel.com>
-Subject: [tglx-devel:rseq/slice-v2] [x86/uaccess]  227a9a48be:
- BUG:unable_to_handle_page_fault_for_address
-Message-ID: <202510231428.d088556-lkp@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-X-ClientProxiedBy: KUZPR02CA0001.apcprd02.prod.outlook.com
- (2603:1096:d10:33::6) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="zI7HOAxb";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="dd+EfS0N";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="1FsqPMaJ";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="KYi9vLUX"
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 7E1921F770;
+	Thu, 23 Oct 2025 07:53:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1761206030; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=BlLHjAIU8aeeRy23Cw2AHcLGg/QAn/jnt8vlILcYmCI=;
+	b=zI7HOAxbZK+w5V+1XPg8Wpub1jVgR9K7Zf7VxLTjsyMoJDfyA8LQqADG/J3RyWTH1zlH6C
+	YLJuezowSEBmXorB64rINo2SOd017wc3YJEv2pS/dnQ4cwYqbIBAnom4GDL2jRgckjpn65
+	BE2yFm3SEiUk9PbfnVwdacfZmrlxkfA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1761206030;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=BlLHjAIU8aeeRy23Cw2AHcLGg/QAn/jnt8vlILcYmCI=;
+	b=dd+EfS0NmqKjf8tVJhg4mTYL7jA9Um9AoaqJdd/PXX4a2Z0Nm9f1YfgfJ/SjvGG6WUpOBJ
+	crrm0ZI3Np7BgXDg==
+Authentication-Results: smtp-out2.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1761206026; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=BlLHjAIU8aeeRy23Cw2AHcLGg/QAn/jnt8vlILcYmCI=;
+	b=1FsqPMaJGQaPhtW5DODXGDyasYKBOBE35Eps578lutJApsTQ9OGsgaE4CcfAiRP7ao8AK7
+	FHGqVdTdXM2FfZotFa+psxIKt+Rlp5xk8C7jBSH+FF/M0ihVsudyqnIFIzcJVHqTldGs0B
+	CzsWo51yIEJD8t9FZ/17krNQlarPM3k=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1761206026;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=BlLHjAIU8aeeRy23Cw2AHcLGg/QAn/jnt8vlILcYmCI=;
+	b=KYi9vLUXZeHjO3xHktnzbz13c56IToo0OX4p0Pk/Pd2AIMUAJ6Iy4D08qCfb6sk/BvtVCH
+	/IFhDpGYjzb1pjBg==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 2644213285;
+	Thu, 23 Oct 2025 07:53:46 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id +oRTBwrf+Wj8YwAAD6G6ig
+	(envelope-from <tzimmermann@suse.de>); Thu, 23 Oct 2025 07:53:46 +0000
+Message-ID: <6c9eb081-45ad-4fbd-90df-ac87f0b6223a@suse.de>
+Date: Thu, 23 Oct 2025 09:53:45 +0200
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|DM4PR11MB5312:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8ee9385b-b9db-4d2c-417e-08de12060893
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?j0b4ffSFWH562v+AOS4MxXuxSc2fXmDCKkIMnBo6byR0rLNmJpFNuqQm0Wuz?=
- =?us-ascii?Q?LFiSl3TaBxmpehaSmGy85U8IMZwrze14FGCJa5mKJAcpDyQ9vpqbXi7ip0cD?=
- =?us-ascii?Q?q65cQjcpx+cTl3BriDdapX4gnYvrcfxZj6HbosC/iXVjunIriwZIQZBwVPBY?=
- =?us-ascii?Q?uyZvmNbztqd0u+ZE2z4afxApPOgPUT9Mmrl8tBq8jml5HbxpssBxSCheA0mS?=
- =?us-ascii?Q?CqG3iVVHDgt/fpHB1ZUdzJLbq42jv8oWnGEeQrHW55BzVgeHmRLEvlVA3+5X?=
- =?us-ascii?Q?v9Fi/ZRFAKfyqmEZJ0B9Diy0/0GUzdQ/+76JjPLwZF+Xc8bynyMj2mY0W+Xk?=
- =?us-ascii?Q?D4RCrKpGLTt93SmGqfi5IAebNHogWqiNOH8Hyc1302u5hLttGhiG8SIcaMYX?=
- =?us-ascii?Q?jByKQwSd4CXSbLDZJEd/JX9i5jY7sTJUCi2mhWGSK+xz2NHuEwCtmQUZTTSV?=
- =?us-ascii?Q?KZHyRNK0Dfat/Ml2qlYEiPzUFE7YY8LVPrgplo8qHRzrFrrlMLSKeb1kwPrJ?=
- =?us-ascii?Q?zdAUSmML/iVsVnLlIRN2Sp7WAAW77LzqJz9JtlciISRTVURETLu/f4lbeTro?=
- =?us-ascii?Q?cjQR04PMD3vK13y6OtbdtlmnEODPr8zN9lfoRbb4uC2TkHkpdSAbzPAjEkTT?=
- =?us-ascii?Q?/j4vzzuHoX0Iu9QEI3cWMFfvgLQyoXkMwQp9wuvSL7Lx3IV/hyHFDoCv9ayn?=
- =?us-ascii?Q?Yl85PVGHi4jzK1yKOIPaIG5s0QWtEmhptGPxNplKQBkuFDEUEWL+gVO5VuzL?=
- =?us-ascii?Q?A6ByaEuivyE+Ihe7C5YqMeCwmeDn6Tl2+4P2TnTC9isk2v04UAej1k/PxQ3z?=
- =?us-ascii?Q?I+bdl96B9a8kW6c8wOSwjoYsI87do9Np80gDtbdPPcQ3yEv1hgR/KbVVH9HS?=
- =?us-ascii?Q?IjeYcRbiwjfe6fHLBdCvYlUyapGKDZOnf2Uq55NtLKrW5ZVFm42oRtMsit9q?=
- =?us-ascii?Q?QykmBe1Kkn8ulA+YhVbiufVV2m3qytBobX6WmA30hIjruPC/pHbAVrFz4lvO?=
- =?us-ascii?Q?cK0fDFjsFpfpTNN5uM99tPRLtIxx6p/SU7INVOnuhOWRndZMS5q+9wgmzPUI?=
- =?us-ascii?Q?qkhg0WvwcSOWdhwACDSA17T9dKC8NToPh+txLk4KCzY8d8KNnHmfZ06HqP4f?=
- =?us-ascii?Q?HUxvn6hFHqlwWsc/VJX79IPqup6FKyizIdd68/IbrgWVF8j99D3RNOYccHwt?=
- =?us-ascii?Q?zhujJyhoQZOez1B5f/VlbXvReSzo7xo1S4w/IoMqtg4Av+iP3RXa3TSNguqz?=
- =?us-ascii?Q?15t8LSiKLa1avvGTvaPtrVgv3hXLWKbQpbGLd6hxxBnZ3B920aKgmqiMJFcM?=
- =?us-ascii?Q?kDACHJAXai9f+WhuZRzr/jKVTaXYvUzS/MLtcI0RJtWc4KpkMrMLopx1Q/Le?=
- =?us-ascii?Q?CIG6LnbNhGoTH1tr3r93nV5e/F61HqvRm7FI3jGEDQ4p8qjMnnvVneZQsGH9?=
- =?us-ascii?Q?DKjKV4uNN1ry3558sJMYr3jQygwL38BUoz3qO8VmPxb7G2Ja16EDwg=3D=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?omyXH7SV7Zelyi7BXEmS0S0yo9b3JSuYzFC6gcRn6gNffQUn6w80MfMj8Lmh?=
- =?us-ascii?Q?KucQBNiZPBPfFisGvcP2rIveYohCp6YMZUcCneguPLTAEFOuZ81crSYCbQ5y?=
- =?us-ascii?Q?Z/ntGwVrUmCmcjbX68rn2MNp7Px/eDp+BTmFDPhQCGswrCuXIrX1yr5VLP75?=
- =?us-ascii?Q?XWvI7wW4qG7H0sRwtC+9Vgaw5uzk+XVUj1KZ5ae58ZNMFoI8Iu3KU8kbO9Y/?=
- =?us-ascii?Q?2Pg0P9YlZ8hPuLU98YXai2n3PifNYp4LgyGyK2nnO2/67LlEA3O4IPbLSQMx?=
- =?us-ascii?Q?vc64hJt+HBWI40nmTTEQb58FkGjpLzwnUaDAc++xG2f7nQBqwmAppJePm3u/?=
- =?us-ascii?Q?KRtMqgVz3lEsYHY10OdYydjKJmuRet6iRX9L/Anw80aOn8n76fXG3ylMGVhU?=
- =?us-ascii?Q?OtLcXVJtLtgW/8q1GFuTr2des2XX7Jxu4joyK1ye6fs3ln3/lDKabESHzq2o?=
- =?us-ascii?Q?vJ0SZ9jP/uYnTtUDlUH6Q+gMpBT3ZiX8jzjHs2V4HNOhrsm1aDpQ2Nd46IN6?=
- =?us-ascii?Q?s/20o5ua89T+PFqstmZd/W+9111lqVUvO/l4UgjTgxepFqUjHBavmuDvZl3O?=
- =?us-ascii?Q?F+rJzNwSg+rl0kkDYLVrfQHooOf49Rf770g47VEa+3wVsG/BUPFD2PgMKGLw?=
- =?us-ascii?Q?rNhN5LDyKCH8myLXLK08EruZkH1l2VpzS/kIWKWio0vXjklMD4KnctHiUo2B?=
- =?us-ascii?Q?+DLNhFlZ5gTPFgiuCBUjKeUtQ2qB7A0qmR6tm97jHJjkqlgQs0cZgeas3gcA?=
- =?us-ascii?Q?gNYTOkD3lHFdfRKvpVzojhTnp6hyayAcMabqaBC6kIpakWzPddLvDJNqO1CV?=
- =?us-ascii?Q?lUJUYrxmqvHILy4W0cRbm9gwvaP1THywMgeaiY5vNltfZj9vg7b3rANWHafj?=
- =?us-ascii?Q?aUcfnpJ2dWGKtFWwDLWAQRFJrB7GRzOcU8ju98XN+GtTimOmRabH5x/zfsfq?=
- =?us-ascii?Q?cCKdxl9JGEYMVdjK2AM5FUYsWtd9W93B2X60dpfZG47/kVcDxWywUXt6B8T0?=
- =?us-ascii?Q?/XOYaPhIE4eIC4LbiUXSdSR087jkgZXXxjiKht8ALFmuJ96Vvx8QN+WBdv3C?=
- =?us-ascii?Q?010n9su/vdMZacrX/ueJkf+6DbTjvbdOUixzd/K4Ma62MvNAIs13UXT2AWix?=
- =?us-ascii?Q?zSn27YIOfOG1R6B1RtnHnnazeTFLrBIjlLdH5f2ZsWOvQwnYbEKWoUC6xPZZ?=
- =?us-ascii?Q?aXtEHE03BugQ2HVBedqMPNd54g4v8KlXFvI5vYTJi5n/K5zg/GniaCOKe4Hr?=
- =?us-ascii?Q?vNZxHp3hQ0MTO/pDrszOGZxsYsvOaLvSnahzZOQ2zH2q5wOgYBs1kGlNihct?=
- =?us-ascii?Q?f0rHViYejbq873QkX34iRjH2mbFAXORSobZyTr4rOP0lu1yEppYUKJDoa9Gf?=
- =?us-ascii?Q?9jibByIXO+nCFHzhOYh/JAZnEg5O4B6fpZca3PnCOM3ZJIKhK6aJHZWnLkBN?=
- =?us-ascii?Q?NIIAyY0V4vJMv3eKtFbIyw/gKagdAPXx5s+4XonQnAh7BTmhmtHa3U2RcxkT?=
- =?us-ascii?Q?gyjdEA3W9Ef63xuDm+h3gGa1d1EP2NcemPCa2LTYYJNR2MFEo2sn0P4cA+o3?=
- =?us-ascii?Q?YMDHsTbKewCph5X5hHX3VozvAwXMMlmVHQid41+YKeNkWNMjjbO8PpUi/vTH?=
- =?us-ascii?Q?Xg=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8ee9385b-b9db-4d2c-417e-08de12060893
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Oct 2025 07:30:25.7608
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: adKO77Pfn4LI6nimcRZ0bORwx1uk9lb++YUhhvMpEhRFsu/yqwByG0i2jvHLpYiUXVo5cuozSLAIhC4RPcTB6A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB5312
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [linux-next:master] [drm/qxl] e485883c81:
+ WARNING:at_drivers/gpu/drm/drm_vblank.c:#drm_wait_one_vblank
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, Gerd Hoffmann <kraxel@redhat.com>,
+ virtualization@lists.linux.dev, spice-devel@lists.freedesktop.org
+References: <202510221555.8c60c069-lkp@intel.com>
+Content-Language: en-US
+From: Thomas Zimmermann <tzimmermann@suse.de>
+Autocrypt: addr=tzimmermann@suse.de; keydata=
+ xsBNBFs50uABCADEHPidWt974CaxBVbrIBwqcq/WURinJ3+2WlIrKWspiP83vfZKaXhFYsdg
+ XH47fDVbPPj+d6tQrw5lPQCyqjwrCPYnq3WlIBnGPJ4/jreTL6V+qfKRDlGLWFjZcsrPJGE0
+ BeB5BbqP5erN1qylK9i3gPoQjXGhpBpQYwRrEyQyjuvk+Ev0K1Jc5tVDeJAuau3TGNgah4Yc
+ hdHm3bkPjz9EErV85RwvImQ1dptvx6s7xzwXTgGAsaYZsL8WCwDaTuqFa1d1jjlaxg6+tZsB
+ 9GluwvIhSezPgnEmimZDkGnZRRSFiGP8yjqTjjWuf0bSj5rUnTGiyLyRZRNGcXmu6hjlABEB
+ AAHNJ1Rob21hcyBaaW1tZXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPsLAjgQTAQgAOAIb
+ AwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftODH
+ AAoJEGgNwR1TC3ojx1wH/0hKGWugiqDgLNXLRD/4TfHBEKmxIrmfu9Z5t7vwUKfwhFL6hqvo
+ lXPJJKQpQ2z8+X2vZm/slsLn7J1yjrOsoJhKABDi+3QWWSGkaGwRJAdPVVyJMfJRNNNIKwVb
+ U6B1BkX2XDKDGffF4TxlOpSQzdtNI/9gleOoUA8+jy8knnDYzjBNOZqLG2FuTdicBXblz0Mf
+ vg41gd9kCwYXDnD91rJU8tzylXv03E75NCaTxTM+FBXPmsAVYQ4GYhhgFt8S2UWMoaaABLDe
+ 7l5FdnLdDEcbmd8uLU2CaG4W2cLrUaI4jz2XbkcPQkqTQ3EB67hYkjiEE6Zy3ggOitiQGcqp
+ j//OwE0EWznS4AEIAMYmP4M/V+T5RY5at/g7rUdNsLhWv1APYrh9RQefODYHrNRHUE9eosYb
+ T6XMryR9hT8XlGOYRwKWwiQBoWSDiTMo/Xi29jUnn4BXfI2px2DTXwc22LKtLAgTRjP+qbU6
+ 3Y0xnQN29UGDbYgyyK51DW3H0If2a3JNsheAAK+Xc9baj0LGIc8T9uiEWHBnCH+RdhgATnWW
+ GKdDegUR5BkDfDg5O/FISymJBHx2Dyoklv5g4BzkgqTqwmaYzsl8UxZKvbaxq0zbehDda8lv
+ hFXodNFMAgTLJlLuDYOGLK2AwbrS3Sp0AEbkpdJBb44qVlGm5bApZouHeJ/+n+7r12+lqdsA
+ EQEAAcLAdgQYAQgAIAIbDBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftOH6AAoJEGgNwR1T
+ C3ojVSkIALpAPkIJPQoURPb1VWjh34l0HlglmYHvZszJWTXYwavHR8+k6Baa6H7ufXNQtThR
+ yIxJrQLW6rV5lm7TjhffEhxVCn37+cg0zZ3j7zIsSS0rx/aMwi6VhFJA5hfn3T0TtrijKP4A
+ SAQO9xD1Zk9/61JWk8OysuIh7MXkl0fxbRKWE93XeQBhIJHQfnc+YBLprdnxR446Sh8Wn/2D
+ Ya8cavuWf2zrB6cZurs048xe0UbSW5AOSo4V9M0jzYI4nZqTmPxYyXbm30Kvmz0rYVRaitYJ
+ 4kyYYMhuULvrJDMjZRvaNe52tkKAvMevcGdt38H4KSVXAylqyQOW5zvPc4/sq9c=
+In-Reply-To: <202510221555.8c60c069-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Level: 
+X-Spamd-Result: default: False [-4.30 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	ARC_NA(0.00)[];
+	TO_DN_SOME(0.00)[];
+	MID_RHS_MATCH_FROM(0.00)[];
+	RCVD_TLS_ALL(0.00)[];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	FROM_HAS_DN(0.00)[];
+	RCPT_COUNT_FIVE(0.00)[6];
+	FROM_EQ_ENVFROM(0.00)[];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[intel.com:email,01.org:url,imap1.dmz-prg2.suse.org:helo,suse.de:mid]
+X-Spam-Flag: NO
+X-Spam-Score: -4.30
+
+Hi,
+
+see  [1] for a workaround. Most likely, the vblank timeout is simply 
+handled too late.
+
+[1] 
+https://lore.kernel.org/dri-devel/20251003032303.16518-1-chintanlike@gmail.com/
+
+Best regards
+Thomas
 
 
-
-Hello,
-
-kernel test robot noticed "BUG:unable_to_handle_page_fault_for_address" on:
-
-commit: 227a9a48be5d752c0a6854d1454c42fd670c1f3e ("x86/uaccess: Use unsafe wrappers for ASM GOTO")
-https://git.kernel.org/cgit/linux/kernel/git/tglx/devel.git rseq/slice-v2
-
-in testcase: boot
-
-config: i386-randconfig-141-20251022
-compiler: gcc-14
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-+---------------------------------------------+------------+------------+
-|                                             | 821a44ce12 | 227a9a48be |
-+---------------------------------------------+------------+------------+
-| boot_successes                              | 18         | 0          |
-| boot_failures                               | 0          | 18         |
-| BUG:unable_to_handle_page_fault_for_address | 0          | 18         |
-| Oops                                        | 0          | 18         |
-| EIP:copy_to_kernel_nofault                  | 0          | 18         |
-| Kernel_panic-not_syncing:Fatal_exception    | 0          | 18         |
-+---------------------------------------------+------------+------------+
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202510231428.d088556-lkp@intel.com
-
-
-[   16.992248][    T0] BUG: unable to handle page fault for address: ffcb2000
-[   16.994015][    T0] #PF: supervisor write access in kernel mode
-[   16.994645][    T0] #PF: error_code(0x0003) - permissions violation
-[   16.995321][    T0] *pde = 0326d067 *pte = 0326b121
-[   16.995868][    T0] Oops: Oops: 0003 [#1] SMP
-[   16.996321][    T0] CPU: 0 UID: 0 PID: 0 Comm: swapper Not tainted 6.18.0-rc1-00003-g227a9a48be5d #1 PREEMPT
-[   16.997384][    T0] EIP: copy_to_kernel_nofault (mm/maccess.c:78 (discriminator 7))
-[   16.997993][    T0] Code: 83 f9 03 76 12 8b 36 89 30 83 e9 04 eb ea 66 8b 36 66 89 30 83 e9 02 89 d8 89 d6 29 c8 29 ce 83 f9 01 77 ea 85 c9 74 04 8a 16 <88> 10 e8 1d fe ff ff 31 c0 eb 11 89 30 eb 03 66 89 30 e8 0d fe ff
-All code
-========
-   0:	83 f9 03             	cmp    $0x3,%ecx
-   3:	76 12                	jbe    0x17
-   5:	8b 36                	mov    (%rsi),%esi
-   7:	89 30                	mov    %esi,(%rax)
-   9:	83 e9 04             	sub    $0x4,%ecx
-   c:	eb ea                	jmp    0xfffffffffffffff8
-   e:	66 8b 36             	mov    (%rsi),%si
-  11:	66 89 30             	mov    %si,(%rax)
-  14:	83 e9 02             	sub    $0x2,%ecx
-  17:	89 d8                	mov    %ebx,%eax
-  19:	89 d6                	mov    %edx,%esi
-  1b:	29 c8                	sub    %ecx,%eax
-  1d:	29 ce                	sub    %ecx,%esi
-  1f:	83 f9 01             	cmp    $0x1,%ecx
-  22:	77 ea                	ja     0xe
-  24:	85 c9                	test   %ecx,%ecx
-  26:	74 04                	je     0x2c
-  28:	8a 16                	mov    (%rsi),%dl
-  2a:*	88 10                	mov    %dl,(%rax)		<-- trapping instruction
-  2c:	e8 1d fe ff ff       	call   0xfffffffffffffe4e
-  31:	31 c0                	xor    %eax,%eax
-  33:	eb 11                	jmp    0x46
-  35:	89 30                	mov    %esi,(%rax)
-  37:	eb 03                	jmp    0x3c
-  39:	66 89 30             	mov    %si,(%rax)
-  3c:	e8                   	.byte 0xe8
-  3d:	0d                   	.byte 0xd
-  3e:	fe                   	(bad)
-  3f:	ff                   	.byte 0xff
-
-Code starting with the faulting instruction
-===========================================
-   0:	88 10                	mov    %dl,(%rax)
-   2:	e8 1d fe ff ff       	call   0xfffffffffffffe24
-   7:	31 c0                	xor    %eax,%eax
-   9:	eb 11                	jmp    0x1c
-   b:	89 30                	mov    %esi,(%rax)
-   d:	eb 03                	jmp    0x12
-   f:	66 89 30             	mov    %si,(%rax)
-  12:	e8                   	.byte 0xe8
-  13:	0d                   	.byte 0xd
-  14:	fe                   	(bad)
-  15:	ff                   	.byte 0xff
-[   17.000167][    T0] EAX: ffcb2000 EBX: ffcb2001 ECX: 00000001 EDX: 82ba9f00
-[   17.000906][    T0] ESI: 82ba9f6b EDI: ee7fdb35 EBP: 82ba9f5c ESP: 82ba9f54
-[   17.001671][    T0] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00210002
-[   17.002508][    T0] CR0: 80050033 CR2: ffcb2000 CR3: 0326a000 CR4: 00000090
-[   17.003279][    T0] Call Trace:
-[   17.003638][    T0]  mem_init (arch/x86/mm/init_32.c:675 (discriminator 2) arch/x86/mm/init_32.c:720 (discriminator 2))
-[   17.004123][    T0]  mm_core_init (mm/mm_init.c:2708)
-[   17.004578][    T0]  start_kernel (init/main.c:972)
-[   17.006783][    T0]  i386_start_kernel (arch/x86/kernel/head32.c:79)
-[   17.007289][    T0]  startup_32_smp (arch/x86/kernel/head_32.S:293)
-[   17.007784][    T0] Modules linked in:
-[   17.008183][    T0] CR2: 00000000ffcb2000
-[   17.008631][    T0] ---[ end trace 0000000000000000 ]---
-[   17.009250][    T0] EIP: copy_to_kernel_nofault (mm/maccess.c:78 (discriminator 7))
-[   17.009853][    T0] Code: 83 f9 03 76 12 8b 36 89 30 83 e9 04 eb ea 66 8b 36 66 89 30 83 e9 02 89 d8 89 d6 29 c8 29 ce 83 f9 01 77 ea 85 c9 74 04 8a 16 <88> 10 e8 1d fe ff ff 31 c0 eb 11 89 30 eb 03 66 89 30 e8 0d fe ff
-All code
-========
-   0:	83 f9 03             	cmp    $0x3,%ecx
-   3:	76 12                	jbe    0x17
-   5:	8b 36                	mov    (%rsi),%esi
-   7:	89 30                	mov    %esi,(%rax)
-   9:	83 e9 04             	sub    $0x4,%ecx
-   c:	eb ea                	jmp    0xfffffffffffffff8
-   e:	66 8b 36             	mov    (%rsi),%si
-  11:	66 89 30             	mov    %si,(%rax)
-  14:	83 e9 02             	sub    $0x2,%ecx
-  17:	89 d8                	mov    %ebx,%eax
-  19:	89 d6                	mov    %edx,%esi
-  1b:	29 c8                	sub    %ecx,%eax
-  1d:	29 ce                	sub    %ecx,%esi
-  1f:	83 f9 01             	cmp    $0x1,%ecx
-  22:	77 ea                	ja     0xe
-  24:	85 c9                	test   %ecx,%ecx
-  26:	74 04                	je     0x2c
-  28:	8a 16                	mov    (%rsi),%dl
-  2a:*	88 10                	mov    %dl,(%rax)		<-- trapping instruction
-  2c:	e8 1d fe ff ff       	call   0xfffffffffffffe4e
-  31:	31 c0                	xor    %eax,%eax
-  33:	eb 11                	jmp    0x46
-  35:	89 30                	mov    %esi,(%rax)
-  37:	eb 03                	jmp    0x3c
-  39:	66 89 30             	mov    %si,(%rax)
-  3c:	e8                   	.byte 0xe8
-  3d:	0d                   	.byte 0xd
-  3e:	fe                   	(bad)
-  3f:	ff                   	.byte 0xff
-
-Code starting with the faulting instruction
-===========================================
-   0:	88 10                	mov    %dl,(%rax)
-   2:	e8 1d fe ff ff       	call   0xfffffffffffffe24
-   7:	31 c0                	xor    %eax,%eax
-   9:	eb 11                	jmp    0x1c
-   b:	89 30                	mov    %esi,(%rax)
-   d:	eb 03                	jmp    0x12
-   f:	66 89 30             	mov    %si,(%rax)
-  12:	e8                   	.byte 0xe8
-  13:	0d                   	.byte 0xd
-  14:	fe                   	(bad)
-  15:	ff                   	.byte 0xff
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20251023/202510231428.d088556-lkp@intel.com
-
-
+Am 23.10.25 um 04:29 schrieb kernel test robot:
+>
+> Hello,
+>
+> kernel test robot noticed "WARNING:at_drivers/gpu/drm/drm_vblank.c:#drm_wait_one_vblank" on:
+>
+> commit: e485883c815ee908de82547806d6edd65664b77b ("drm/qxl: Use vblank timer")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+>
+> in testcase: trinity
+> version:
+> with following parameters:
+>
+> 	runtime: 300s
+> 	group: group-01
+> 	nr_groups: 5
+>
+>
+>
+> config: x86_64-dcg_x86_64_defconfig-tdx
+> compiler: gcc-14
+> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+>
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>
+> we noticed the issue happens randomly. 6 times out of 50 runs as below.
+> but the parent keeps clean.
+>
+> =========================================================================================
+> tbox_group/testcase/rootfs/kconfig/compiler/runtime/group/nr_groups:
+>    vm-snb/trinity/yocto-x86_64-minimal-20190520.cgz/x86_64-dcg_x86_64_defconfig-tdx/gcc-14/300s/group-01/5
+>
+> 42dd66d377ccf786 e485883c815ee908de82547806d
+> ---------------- ---------------------------
+>         fail:runs  %reproduction    fail:runs
+>             |             |             |
+>             :50          12%           6:50    dmesg.RIP:drm_wait_one_vblank
+>             :50          12%           6:50    dmesg.WARNING:at_drivers/gpu/drm/drm_vblank.c:#drm_wait_one_vblank
+>
+>
+>
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202510221555.8c60c069-lkp@intel.com
+>
+>
+> [  256.077310][  T135] ------------[ cut here ]------------
+> [  256.078847][  T135] bochs-drm 0000:00:02.0: [drm] vblank wait timed out on crtc 0
+> [  256.080802][  T135] WARNING: CPU: 0 PID: 135 at drivers/gpu/drm/drm_vblank.c:1320 drm_wait_one_vblank (drivers/gpu/drm/drm_vblank.c:1320 (discriminator 5))
+> [  256.083260][  T135] Modules linked in: 8021q bridge stp llc nfc pppoe pppox ppp_generic slhc crypto_user ib_core nfnetlink scsi_transport_iscsi xfrm_user sctp ip6_udp_tunnel udp_tunnel uvesafb sr_mod cdrom intel_rapl_msr joydev ppdev ata_generic pata_acpi intel_rapl_common psmouse i2c_piix4 serio_raw bochs drm_shmem_helper ata_piix i2c_smbus parport_pc parport
+> [  256.094913][  T135] CPU: 0 UID: 0 PID: 135 Comm: kworker/0:4 Not tainted 6.18.0-rc1-00240-ge485883c815e #1 PREEMPT(none)
+> [  256.097761][  T135] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+> [  256.100575][  T135] Workqueue: events drm_fb_helper_damage_work
+> [  256.102578][  T135] RIP: 0010:drm_wait_one_vblank (drivers/gpu/drm/drm_vblank.c:1320 (discriminator 5))
+> [  256.104543][  T135] Code: 00 4d 8b 75 50 4d 85 f6 0f 84 5e 01 00 00 4c 89 ef e8 8d eb 74 00 89 e9 4c 89 f2 48 c7 c7 60 0b c6 a2 48 89 c6 e8 e9 d1 e2 fd <0f> 0b e9 9a fe ff ff 48 85 db 74 23 48 b8 00 00 00 00 00 fc ff df
+> All code
+> ========
+>     0:	00 4d 8b             	add    %cl,-0x75(%rbp)
+>     3:	75 50                	jne    0x55
+>     5:	4d 85 f6             	test   %r14,%r14
+>     8:	0f 84 5e 01 00 00    	je     0x16c
+>     e:	4c 89 ef             	mov    %r13,%rdi
+>    11:	e8 8d eb 74 00       	call   0x74eba3
+>    16:	89 e9                	mov    %ebp,%ecx
+>    18:	4c 89 f2             	mov    %r14,%rdx
+>    1b:	48 c7 c7 60 0b c6 a2 	mov    $0xffffffffa2c60b60,%rdi
+>    22:	48 89 c6             	mov    %rax,%rsi
+>    25:	e8 e9 d1 e2 fd       	call   0xfffffffffde2d213
+>    2a:*	0f 0b                	ud2		<-- trapping instruction
+>    2c:	e9 9a fe ff ff       	jmp    0xfffffffffffffecb
+>    31:	48 85 db             	test   %rbx,%rbx
+>    34:	74 23                	je     0x59
+>    36:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+>    3d:	fc ff df
+>
+> Code starting with the faulting instruction
+> ===========================================
+>     0:	0f 0b                	ud2
+>     2:	e9 9a fe ff ff       	jmp    0xfffffffffffffea1
+>     7:	48 85 db             	test   %rbx,%rbx
+>     a:	74 23                	je     0x2f
+>     c:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+>    13:	fc ff df
+> [  256.109982][  T135] RSP: 0018:ffffc9000079fb78 EFLAGS: 00010282
+> [  256.112311][  T135] RAX: 0000000000000000 RBX: ffff88815e2c0000 RCX: 0000000000000000
+> [  256.114875][  T135] RDX: 0000000000000000 RSI: 0000000000000004 RDI: 0000000000000001
+> [  256.117530][  T135] RBP: 0000000000000000 R08: 0000000000000000 R09: fffffbfff476a008
+> [  256.120090][  T135] R10: 0000000000000003 R11: 0000000000000001 R12: 1ffff920000f3f70
+> [  256.122749][  T135] R13: ffff88810fe460c8 R14: ffff88810be64d00 R15: ffff88815cfb2830
+> [  256.125298][  T135] FS:  0000000000000000(0000) GS:ffff888408834000(0000) knlGS:0000000000000000
+> [  256.131615][  T135] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  256.135805][  T135] CR2: 000000000109a850 CR3: 000000016d2a0000 CR4: 00000000000406f0
+> [  256.137327][  T135] Call Trace:
+> [  256.145896][  T135]  <TASK>
+> [  256.147603][  T135]  ? __pfx_drm_wait_one_vblank (drivers/gpu/drm/drm_vblank.c:1301)
+> [  256.149778][  T135]  ? __pfx_autoremove_wake_function (kernel/sched/wait.c:402)
+> [  256.153665][  T135]  ? do_raw_spin_unlock (arch/x86/include/asm/atomic.h:23 include/linux/atomic/atomic-arch-fallback.h:457 include/linux/atomic/atomic-instrumented.h:33 include/asm-generic/qspinlock.h:57 kernel/locking/spinlock_debug.c:101 kernel/locking/spinlock_debug.c:141)
+> [  256.157616][  T135]  ? _raw_spin_unlock_irqrestore (include/linux/spinlock_api_smp.h:152 (discriminator 3) kernel/locking/spinlock.c:194 (discriminator 3))
+> [  256.165734][  T135]  drm_client_modeset_wait_for_vblank (drivers/gpu/drm/drm_client_modeset.c:1331)
+> [  256.172077][  T135]  drm_fb_helper_fb_dirty (drivers/gpu/drm/drm_fb_helper.c:373)
+> [  256.177086][  T135]  ? do_raw_spin_lock (arch/x86/include/asm/atomic.h:107 include/linux/atomic/atomic-arch-fallback.h:2170 include/linux/atomic/atomic-instrumented.h:1302 include/asm-generic/qspinlock.h:111 kernel/locking/spinlock_debug.c:116)
+> [  256.181829][  T135]  ? __pfx_drm_fb_helper_fb_dirty (drivers/gpu/drm/drm_fb_helper.c:364)
+> [  256.187127][  T135]  ? __pfx_do_raw_spin_lock (kernel/locking/spinlock_debug.c:114)
+> [  256.192329][  T135]  process_one_work (arch/x86/include/asm/atomic.h:23 include/linux/atomic/atomic-arch-fallback.h:457 include/linux/jump_label.h:262 include/trace/events/workqueue.h:110 kernel/workqueue.c:3268)
+> [  256.197045][  T135]  worker_thread (kernel/workqueue.c:3340 (discriminator 2) kernel/workqueue.c:3427 (discriminator 2))
+> [  256.201991][  T135]  ? __kthread_parkme (arch/x86/include/asm/bitops.h:202 (discriminator 1) arch/x86/include/asm/bitops.h:232 (discriminator 1) include/asm-generic/bitops/instrumented-non-atomic.h:142 (discriminator 1) kernel/kthread.c:290 (discriminator 1))
+> [  256.206956][  T135]  ? __pfx_worker_thread (kernel/workqueue.c:3373)
+> [  256.216519][  T135]  ? __pfx_worker_thread (kernel/workqueue.c:3373)
+> [  256.220825][  T135]  kthread (kernel/kthread.c:463)
+> [  256.224107][  T135]  ? __pfx_kthread (kernel/kthread.c:412)
+> [  256.229092][  T135]  ? __pfx_kthread (kernel/kthread.c:412)
+> [  256.233881][  T135]  ? __pfx_kthread (kernel/kthread.c:412)
+> [  256.239125][  T135]  ret_from_fork (arch/x86/kernel/process.c:164)
+> [  256.244094][  T135]  ? __pfx_kthread (kernel/kthread.c:412)
+> [  256.248707][  T135]  ret_from_fork_asm (arch/x86/entry/entry_64.S:255)
+> [  256.254397][  T135]  </TASK>
+> [  256.260599][  T135] ---[ end trace 0000000000000000 ]---
+> [  349.555954][  T346] sh: can't kill pid 3589: No such process
+> LKP: ttyS0: 304: LKP: rebooting forcely
+> [  359.020039][  T304] sysrq: Emergency Sync
+> [  359.022624][    T9] Emergency Sync complete
+> [  359.032291][  T304] sysrq: Resetting
+>
+>
+>
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20251022/202510221555.8c60c069-lkp@intel.com
+>
+>
+>
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+--
+Thomas Zimmermann
+Graphics Driver Developer
+SUSE Software Solutions Germany GmbH
+Frankenstrasse 146, 90461 Nuernberg, Germany
+GF: Ivo Totev, Andrew Myers, Andrew McDonald, Boudien Moerman
+HRB 36809 (AG Nuernberg)
+
 
