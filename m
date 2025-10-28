@@ -1,254 +1,112 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6200E2C3770
-	for <oe-lkp@lists.linux.dev>; Tue, 28 Oct 2025 10:15:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E7F930C34A
+	for <oe-lkp@lists.linux.dev>; Tue, 28 Oct 2025 11:30:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761646525; cv=none; b=n6sR9D+wd+N04R7uKDZbXBKC/mDOrWUMlTZp9KK3lro+jX13clbP61m43dN5PQf24rR8RCW4GPhTT/e2+B3137iKmb03r/uFGYCdJOQSaK8yajCXWLgek25KjFLd+Ltg5HibcUaWlL5ZRtcS/Dm8YSejt0UVOtm7swRpmox9PAI=
+	t=1761651010; cv=none; b=GNrEC8i3kTeZASqhJluTU+aIje1f9qQfoPCdg24AxpleR96CrEkMP5egyiK/GX7VWDEYaZJe2iMESh1HTlvoIKNzXLyiEgEwYd6IalYVC3GNcSkCxo+Mmn2AcvCAvZZ32CMJVuu0UrNqPMyYUGIRK2tXRRqkxvG84CbfkpuRC1w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761646525; c=relaxed/simple;
-	bh=UoCiXQvj2Sq2/NL426GwurR0ILlmVvAH/lPEt50Ux1M=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=IML7+r0SysV2F9B3P5wReciaJMcVHcsLodjuNKDXZFpZoU8hkqB5l0tMoZG6i6Y9AvMNUOW0na4IIVTtM8LTkrrxI/HbivZlUZ6FkMW+q9bbEEIHvLYZ7DJa4yVyfN2WjKUdoijujOVnp3YckK90WYytVwckMiJgiXV8Fd14X2U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=f7qDCFop; arc=none smtp.client-ip=209.85.221.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1761651010; c=relaxed/simple;
+	bh=RYyZ8LxwRvrHfyL3AnEZcTl4DBVEIygndMncgI0gpA0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nYnlUfqmvgsG7ZCRyl3Q8BsCnS2HAEMEm1DwZDsV6IU2tBShW/+I5Ek7/tPAHOeVrb4XF16CrFeZXZK3exlRrhlL59Fm7QKyfSiPO+YlliH2Yu50dKrpMds221IP1wd+IN08BFvqTDBPJ95gHAVgOwrdQ5xO+rgnukfI4OhL7VI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=Ui5STRnS; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="f7qDCFop"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-3ece0e4c5faso5149063f8f.1
-        for <oe-lkp@lists.linux.dev>; Tue, 28 Oct 2025 03:15:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1761646521; x=1762251321; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
-         :references:cc:to:from:subject:user-agent:mime-version:date
-         :message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=RcF8Ar5LLr9hzVZDlVHpiZbKzJd4GeP+gldVmCFN2rk=;
-        b=f7qDCFop6D+VOROcpEwMtEFSOkK1eChyjeBzQYD0yPYJF0OLCIHEyOfqfGniehzcmp
-         wuUBF5mjqqTNfuCSpXf80XThJBkJ0HChftA3CNBsVJOqNVo989E7TyhxkzWD0T9dBxLt
-         rkYA+TTUU3UTTXoevy/6CD4ZwVEdK4WSqOBDwiFdLC9yLUxbUnEnHihXKCHGoS/bZup2
-         nWZs/LqYZnlcqUjRYWRoVgcWLk2Eeptg0rwDmprb8MtF5/vzIlD55H0RwpdSkv4j3G5o
-         hdH4IhPgNkhS3Sn+uB+bgv4Dh977R94EKyIG77/+5D+ZAlLQFom/jsAH5O41eGQAuM8k
-         FBrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1761646521; x=1762251321;
-        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
-         :references:cc:to:from:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=RcF8Ar5LLr9hzVZDlVHpiZbKzJd4GeP+gldVmCFN2rk=;
-        b=Pm8UfXYbfjZBYWJFUt6awb/fnCqaPzCYLOKF+oddtvFVmsmxTozCwbF0MqPM6zCnj1
-         GP8kVTPyBEcAwFYDduQr8ux2oPP1sx6ivtBQObSxGBdn510Fw58E/jdkviHIi0nJEkZT
-         LWMPKXh6is9sEv+3vuSSGEnFfEkxc5oW7MMlzfFTNkiQvIEi5OcVN4xT5CePaoHZfnUT
-         g51jzfbKAVyxO/BEUBokmQQg0eH47EZz6BtmFzQThYTEDcCob6WCJaF/ZoZsndfZBJ8T
-         jYq0VZY/6INw6sRm7Zk146kmrkEEXEtWX2vW7gsHoky32ZQ5zjXF03XWK4uyXYQp+GV8
-         2xcw==
-X-Gm-Message-State: AOJu0YwbCLH7ZwiFk0REoEbTdAZwYhXnKa4nAHlPHA2HyeeBRVNH60XD
-	7RJcs1gydpjMmheZHM0bDR89Eo3tAafsA0V1fdoeXgpcLGvEjMRGb1jMCJAXrEuDy2U=
-X-Gm-Gg: ASbGnctmC+a+/MZezXb65GJIhM+VYO/0gITVHZ2XTmzezf7ZN9Y8BPO5ImRc6glfw/J
-	ciOZe3gZ8nERVhffbpRXht3uAvbnBfVSO4xAC1Iyq5BUj8XMxAASulzqFjEbI7pJUijpVJbzibs
-	ggIJk/hqObG2l6vJbST3uF/qM7r2Rw9RkhohTEUypc3QxtzpDZ+mN9g/6rNdPcyK6hQ8nUU09FW
-	ggMBeTi1BCKc/wTINHeATIYbSXqyBLGh77Jntu0zMBTNSVBTGwozCraUM7Onsr+nYF8oP80445M
-	hGWzEdbUpLO6axevj4g/wan46i0B6LmlxaOK3g3yYbztss4wf6/t653XvEEcZX8PRb/p6fNMYpi
-	P2pTvKPOwRq2b35bkUv6JNwdcOr2lqwW4jPbkGG49xIuGQDg12WzDyy05muehaa6bHCAy+qoLx6
-	5khRcRpQPGiy1pb9ArsLDt2GwoX8gV
-X-Google-Smtp-Source: AGHT+IHPIlnZrrOdPRqyG1OjAT6/4AWS79Y7AzoL5XY82z8qq8Ksp3eDhmntS1lNzLzXcY/BAK+NiQ==
-X-Received: by 2002:a5d:64c3:0:b0:3ec:dfe5:17d0 with SMTP id ffacd0b85a97d-429a7e35d0cmr1819229f8f.9.1761646520499;
-        Tue, 28 Oct 2025 03:15:20 -0700 (PDT)
-Received: from ?IPV6:2403:580d:fda1::299? (2403-580d-fda1--299.ip6.aussiebb.net. [2403:580d:fda1::299])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7a41408757csm11054208b3a.59.2025.10.28.03.15.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Oct 2025 03:15:19 -0700 (PDT)
-Message-ID: <7e73f89d-ecc4-4adc-a151-1eca9f199c8f@suse.com>
-Date: Tue, 28 Oct 2025 20:45:15 +1030
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="Ui5STRnS"
+Received: from pps.filterd (m0353725.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 59S41A9X019381;
+	Tue, 28 Oct 2025 11:29:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=RYyZ8L
+	xwRvrHfyL3AnEZcTl4DBVEIygndMncgI0gpA0=; b=Ui5STRnSff13qOdsAiUUqR
+	HKT8I0s7Ks1Elb9hEMOGYisfKhF6qjoi5lvAJrSJhtsbtW/SX+KaMDvV+NteHFpv
+	ftfiOL8zscCuaI7e3fPTvMv8Fs7MSTFIvjpu18RFMk7W4VUhHbkRujFnFC24EBnw
+	RKSnd7x1r3DXUYtcLbUqvNQSUZKGgHJdP01blDigGed+Tga8oKagWaORjE9n9iaH
+	57p/OabpebbUqPvl9vyrh4cCAai2wsShOuO8a4Zniik6+Y+FIh/tW7cfZaM6vg1i
+	A3rTUjM0EI5Sk96Vxh/83UutATbSFcM2aVYt4y/xwXhkkSOGLm49aICbr2TlQ8TQ
+	==
+Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4a0mys3egy-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 28 Oct 2025 11:29:54 +0000 (GMT)
+Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma11.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 59S9uOqR006796;
+	Tue, 28 Oct 2025 11:29:54 GMT
+Received: from smtprelay07.fra02v.mail.ibm.com ([9.218.2.229])
+	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 4a1bk124ku-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 28 Oct 2025 11:29:53 +0000
+Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
+	by smtprelay07.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 59SBTqWm39977448
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 28 Oct 2025 11:29:52 GMT
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 4EF922004B;
+	Tue, 28 Oct 2025 11:29:52 +0000 (GMT)
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 200B520040;
+	Tue, 28 Oct 2025 11:29:52 +0000 (GMT)
+Received: from li-276bd24c-2dcc-11b2-a85c-945b6f05615c.ibm.com (unknown [9.155.201.149])
+	by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTPS;
+	Tue, 28 Oct 2025 11:29:52 +0000 (GMT)
+Date: Tue, 28 Oct 2025 12:29:50 +0100
+From: Jan Polensky <japo@linux.ibm.com>
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+        x86@kernel.org, Juri Lelli <juri.lelli@redhat.com>,
+        Tejun Heo <tj@kernel.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>, cgroups@vger.kernel.org,
+        aubrey.li@linux.intel.com, yu.c.chen@intel.com
+Subject: Re: [tip:sched/core] [sched]  b079d93796:
+ WARNING:possible_recursive_locking_detected_migration_is_trying_to_acquire_lock:at:set_cpus_allowed_force_but_task_is_already_holding_lock:at:cpu_stopper_thread
+Message-ID: <aQCpLifOIy1Ct4tL@li-276bd24c-2dcc-11b2-a85c-945b6f05615c.ibm.com>
+References: <202510271206.24495a68-lkp@intel.com>
+ <20251027110133.GI3245006@noisy.programming.kicks-ass.net>
+ <20251028090324.GQ4068168@noisy.programming.kicks-ass.net>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 4/4] btrfs: introduce btrfs_bio::async_csum
-From: Qu Wenruo <wqu@suse.com>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-btrfs@vger.kernel.org
-References: <202510281522.d23994ae-lkp@intel.com>
- <124eef27-79d1-40ec-9f54-f94509f904fb@suse.com>
-Content-Language: en-US
-Autocrypt: addr=wqu@suse.com; keydata=
- xsBNBFnVga8BCACyhFP3ExcTIuB73jDIBA/vSoYcTyysFQzPvez64TUSCv1SgXEByR7fju3o
- 8RfaWuHCnkkea5luuTZMqfgTXrun2dqNVYDNOV6RIVrc4YuG20yhC1epnV55fJCThqij0MRL
- 1NxPKXIlEdHvN0Kov3CtWA+R1iNN0RCeVun7rmOrrjBK573aWC5sgP7YsBOLK79H3tmUtz6b
- 9Imuj0ZyEsa76Xg9PX9Hn2myKj1hfWGS+5og9Va4hrwQC8ipjXik6NKR5GDV+hOZkktU81G5
- gkQtGB9jOAYRs86QG/b7PtIlbd3+pppT0gaS+wvwMs8cuNG+Pu6KO1oC4jgdseFLu7NpABEB
- AAHNGFF1IFdlbnJ1byA8d3F1QHN1c2UuY29tPsLAlAQTAQgAPgIbAwULCQgHAgYVCAkKCwIE
- FgIDAQIeAQIXgBYhBC3fcuWlpVuonapC4cI9kfOhJf6oBQJnEXVgBQkQ/lqxAAoJEMI9kfOh
- Jf6o+jIH/2KhFmyOw4XWAYbnnijuYqb/obGae8HhcJO2KIGcxbsinK+KQFTSZnkFxnbsQ+VY
- fvtWBHGt8WfHcNmfjdejmy9si2jyy8smQV2jiB60a8iqQXGmsrkuR+AM2V360oEbMF3gVvim
- 2VSX2IiW9KERuhifjseNV1HLk0SHw5NnXiWh1THTqtvFFY+CwnLN2GqiMaSLF6gATW05/sEd
- V17MdI1z4+WSk7D57FlLjp50F3ow2WJtXwG8yG8d6S40dytZpH9iFuk12Sbg7lrtQxPPOIEU
- rpmZLfCNJJoZj603613w/M8EiZw6MohzikTWcFc55RLYJPBWQ+9puZtx1DopW2jOwE0EWdWB
- rwEIAKpT62HgSzL9zwGe+WIUCMB+nOEjXAfvoUPUwk+YCEDcOdfkkM5FyBoJs8TCEuPXGXBO
- Cl5P5B8OYYnkHkGWutAVlUTV8KESOIm/KJIA7jJA+Ss9VhMjtePfgWexw+P8itFRSRrrwyUf
- E+0WcAevblUi45LjWWZgpg3A80tHP0iToOZ5MbdYk7YFBE29cDSleskfV80ZKxFv6koQocq0
- vXzTfHvXNDELAuH7Ms/WJcdUzmPyBf3Oq6mKBBH8J6XZc9LjjNZwNbyvsHSrV5bgmu/THX2n
- g/3be+iqf6OggCiy3I1NSMJ5KtR0q2H2Nx2Vqb1fYPOID8McMV9Ll6rh8S8AEQEAAcLAfAQY
- AQgAJgIbDBYhBC3fcuWlpVuonapC4cI9kfOhJf6oBQJnEXWBBQkQ/lrSAAoJEMI9kfOhJf6o
- cakH+QHwDszsoYvmrNq36MFGgvAHRjdlrHRBa4A1V1kzd4kOUokongcrOOgHY9yfglcvZqlJ
- qfa4l+1oxs1BvCi29psteQTtw+memmcGruKi+YHD7793zNCMtAtYidDmQ2pWaLfqSaryjlzR
- /3tBWMyvIeWZKURnZbBzWRREB7iWxEbZ014B3gICqZPDRwwitHpH8Om3eZr7ygZck6bBa4MU
- o1XgbZcspyCGqu1xF/bMAY2iCDcq6ULKQceuKkbeQ8qxvt9hVxJC2W3lHq8dlK1pkHPDg9wO
- JoAXek8MF37R8gpLoGWl41FIUb3hFiu3zhDDvslYM4BmzI18QgQTQnotJH8=
-In-Reply-To: <124eef27-79d1-40ec-9f54-f94509f904fb@suse.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20251028090324.GQ4068168@noisy.programming.kicks-ass.net>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: BnQHA89s6j3pnB4fu31QcCgwqTPIlcYA
+X-Authority-Analysis: v=2.4 cv=ct2WUl4i c=1 sm=1 tr=0 ts=6900a932 cx=c_pps
+ a=aDMHemPKRhS1OARIsFnwRA==:117 a=aDMHemPKRhS1OARIsFnwRA==:17
+ a=IkcTkHD0fZMA:10 a=x6icFKpwvdMA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=VnNF1IyMAAAA:8 a=-MEPCI2RMl-VrW-zF0sA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=zZCYzV9kfG8A:10 a=cPQSjfK2_nFv0Q5t_7PE:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMDI1MDAxMCBTYWx0ZWRfXyjhRkgSjL5cA
+ VNzoMBa6acvDZ3/4iat8ipQUSmf2Vsq99hX6wOUF5cZaWAHV1VNGJksdkd2VE2f0gXgO0N2JeVk
+ LZfhKmIGxWYap1gYZwstoFRA4YOk9M8LSdAvHv18PeC31PDDQpWq00ot1qxs/LecXmlfF9ZnyfQ
+ ileNQEKWx4Ig2cpZFAJyPKQOH9H11quQK2QFfnQ7tx/mAUVWmoGaxGpp66oZBRHDpUgEBAfyetQ
+ O6YvCOU5fYE/e4676+HFdHK4J8HGFc3Y+MqWkg7PD6eT9slFcq80U/qOyNJ7IT3l7K4cUmNKAK2
+ 63uR4SvgYRoClsb1AF3LjTJAvrPixM5mxIifHDmp13D555wQkTvDWgHmqLe97MW+WjaJS4nbOgj
+ fVd6N6iCcKrbOWrBuxoLXmnXjqzgFg==
+X-Proofpoint-GUID: BnQHA89s6j3pnB4fu31QcCgwqTPIlcYA
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-10-28_04,2025-10-22_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ bulkscore=0 phishscore=0 lowpriorityscore=0 impostorscore=0 malwarescore=0
+ spamscore=0 adultscore=0 priorityscore=1501 clxscore=1011 suspectscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2510020000 definitions=main-2510250010
 
+On Tue, Oct 28, 2025 at 10:03:24AM +0100, Peter Zijlstra wrote:
+> On Mon, Oct 27, 2025 at 12:01:33PM +0100, Peter Zijlstra wrote:
+>
+> Could someone confirm this fixes the problem?
+>
+Tested-by: Jan Polensky <japo@linux.ibm.com>
 
-
-在 2025/10/28 18:36, Qu Wenruo 写道:
-> 
-> 
-> 在 2025/10/28 17:49, kernel test robot 写道:
->>
->>
->> Hello,
->>
->> kernel test robot noticed "xfstests.btrfs.026.fail" on:
->>
->> commit: d72352d1c3a3a201dcd3684b05987f281b1d66aa ("[PATCH 4/4] btrfs: 
->> introduce btrfs_bio::async_csum")
->> url: https://github.com/intel-lab-lkp/linux/commits/Qu-Wenruo/btrfs- 
->> make-sure-all-btrfs_bio-end_io-is-called-in-task-context/20251024-185435
->> base: https://git.kernel.org/cgit/linux/kernel/git/kdave/linux.git 
->> for-next
->> patch link: https://lore.kernel.org/ 
->> all/44a1532190aee561c2a8ae7af9f84fc1e092ae9e.1761302592.git.wqu@suse.com/
->> patch subject: [PATCH 4/4] btrfs: introduce btrfs_bio::async_csum
->>
->> in testcase: xfstests
->> version: xfstests-x86_64-2cba4b54-1_20251020
->> with following parameters:
->>
->>     disk: 6HDD
->>     fs: btrfs
->>     test: btrfs-026
->>
->>
->>
->> config: x86_64-rhel-9.4-func
->> compiler: gcc-14
->> test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 
->> 3.40GHz (Haswell) with 8G memory
->>
->> (please refer to attached dmesg/kmsg for entire log/backtrace)
->>
->>
->>
->> If you fix the issue in a separate patch/commit (i.e. not just a new 
->> version of
->> the same patch/commit), kindly add following tags
->> | Reported-by: kernel test robot <oliver.sang@intel.com>
->> | Closes: https://lore.kernel.org/oe-lkp/202510281522.d23994ae- 
->> lkp@intel.com
-> 
-> Unfortunately I'm unable to reproduce the failure here.
-> 100+ runs no reproduce.
-> 
-> Thus I guess it may be some incompatibility with the series and the base 
-> (which is for-next branch, not the btrfs for-next branch).
-> 
-> Just to rule out the possibility, mind to re-test using my branch directly?
-> 
-> https://github.com/adam900710/linux/tree/async_csum
-> 
-> 
->  From the assets, the dmesg shows that all data checksum are zeros:
-> 
-> [   62.192305][  T269] BTRFS warning (device sdb2): csum failed root 5 
-> ino 258 off 275644416 csum 0xa54e4c94 expected csum 0x00000000 mirror 1
-> [   62.192397][   T12] BTRFS warning (device sdb2): csum failed root 5 
-> ino 258 off 275775488 csum 0xa54e4c94 expected csum 0x00000000 mirror 1
-> [   62.192470][ T5037] BTRFS warning (device sdb2): csum failed root 5 
-> ino 258 off 275906560 csum 0xa54e4c94 expected csum 0x00000000 mirror 1
-> 
-> This means we're running the end_io() functions before the csum is fully 
-> calculated.
-> 
-> If that's the case, it will eventually hits some use-after-free at other 
-> tests, which I hit too many times during development due to incorrect 
-> wait timing.
-
-My bad, and after looking into my local runs, there are some tests that 
-fails with the same dmesg errors.
-
-It turns out that there is a race on bi_iter, where csum_one_bio_work() 
-and lower storage layer can try to grab the same bi_iter.
-
-On much newer hardware like zen5, the checksum calculation is way faster 
-than IO, thus under most cases csum_one_bio_work() can get the bi_iter 
-before lower layer advancing it.
-
-But if lower layer advanced it before csum_one_bio_work(), then 
-csum_one_bio_work() will skip the calculation completely resulting the 
-csums to be all zero.
-
-Thanks for detecting this bug, I'll update the fix to add a new 
-saved_iter so that csum_one_bio_work() can always grab the correct iter.
-
-Thanks,
-Qu
-
-> 
-> But I'm only seeing this single report, which is pretty weird.
-> 
-> I hope it's just some bad code base.
-> 
-> Thanks,
-> Qu
->>
->> 2025-10-27 23:06:41 cd /lkp/benchmarks/xfstests
->> 2025-10-27 23:06:42 export TEST_DIR=/fs/sda1
->> 2025-10-27 23:06:42 export TEST_DEV=/dev/sda1
->> 2025-10-27 23:06:42 export FSTYP=btrfs
->> 2025-10-27 23:06:42 export SCRATCH_MNT=/fs/scratch
->> 2025-10-27 23:06:42 mkdir /fs/scratch -p
->> 2025-10-27 23:06:42 export SCRATCH_DEV_POOL="/dev/sda2 /dev/sda3 /dev/ 
->> sda4 /dev/sda5 /dev/sda6"
->> 2025-10-27 23:06:42 echo btrfs/026
->> 2025-10-27 23:06:42 ./check btrfs/026
->> FSTYP         -- btrfs
->> PLATFORM      -- Linux/x86_64 lkp-hsw-d01 6.18.0-rc1-00265- 
->> gd72352d1c3a3 #1 SMP PREEMPT_DYNAMIC Tue Oct 28 06:52:50 CST 2025
->> MKFS_OPTIONS  -- /dev/sda2
->> MOUNT_OPTIONS -- /dev/sda2 /fs/scratch
->>
->> btrfs/026       - output mismatch (see /lkp/benchmarks/xfstests/ 
->> results//btrfs/026.out.bad)
->>      --- tests/btrfs/026.out    2025-10-20 16:48:15.000000000 +0000
->>      +++ /lkp/benchmarks/xfstests/results//btrfs/026.out.bad    
->> 2025-10-27 23:06:53.540513519 +0000
->>      @@ -12,4 +12,4 @@
->>       5876dba1217b4c2915cda86f4c67640e  SCRATCH_MNT/bar
->>       File digests after remounting the file system:
->>       647d815906324ccdf288c7681f900ec0  SCRATCH_MNT/foo
->>      -5876dba1217b4c2915cda86f4c67640e  SCRATCH_MNT/bar
->>      +md5sum: /fs/scratch/bar: Input/output error
->>      ...
->>      (Run 'diff -u /lkp/benchmarks/xfstests/tests/btrfs/026.out /lkp/ 
->> benchmarks/xfstests/results//btrfs/026.out.bad'  to see the entire diff)
->> Ran: btrfs/026
->> Failures: btrfs/026
->> Failed 1 of 1 tests
->>
->>
->>
->>
->> The kernel config and materials to reproduce are available at:
->> https://download.01.org/0day-ci/ 
->> archive/20251028/202510281522.d23994ae-lkp@intel.com
->>
->>
->>
-> 
-> 
-
+Thank you for the quick fix. I’ve verified the patch on s390x and can confirm that it resolves the
+spin lock issue.
