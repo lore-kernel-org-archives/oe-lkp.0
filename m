@@ -1,115 +1,254 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0906C2D978C;
-	Tue, 28 Oct 2025 09:03:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6200E2C3770
+	for <oe-lkp@lists.linux.dev>; Tue, 28 Oct 2025 10:15:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761642221; cv=none; b=DdTff1ov4PgJEQpNYJu2G4H5+S+58XwEz9q4t6kQkyPxSeom/fQK5qLYZpzy7/HWEI41TLJ/4BfN4qfovRwzmoWaNwxDwYt0K/Rgq63HLNnYXqD8DPRCrukEqycY7UtnjxBs44znW8HxR8yhpHpln+odHI9V9qGgt8tuGv0f2cI=
+	t=1761646525; cv=none; b=n6sR9D+wd+N04R7uKDZbXBKC/mDOrWUMlTZp9KK3lro+jX13clbP61m43dN5PQf24rR8RCW4GPhTT/e2+B3137iKmb03r/uFGYCdJOQSaK8yajCXWLgek25KjFLd+Ltg5HibcUaWlL5ZRtcS/Dm8YSejt0UVOtm7swRpmox9PAI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761642221; c=relaxed/simple;
-	bh=FYchjVqAMBQv9LBq46poc1KVyQCj9SBIi0pkPIA8Og4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rFX4Hrkoe8o4vkMLJOUqWL6Sii49fGjeDAS9dUGY4kQ6FZMj0+AIEJT5W211pL5HbPdkA7xhWq6EwyJLTo1yAQkb0y8mWA2pkDKD1m7a2CKcBiz8FmAtI3yeWYp2/UodXT6CCnrpmXue2C4mqs/gU9K8NfHmuihPY7Kn3+yqVNk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=CGNB3GBc; arc=none smtp.client-ip=90.155.50.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	s=arc-20240116; t=1761646525; c=relaxed/simple;
+	bh=UoCiXQvj2Sq2/NL426GwurR0ILlmVvAH/lPEt50Ux1M=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=IML7+r0SysV2F9B3P5wReciaJMcVHcsLodjuNKDXZFpZoU8hkqB5l0tMoZG6i6Y9AvMNUOW0na4IIVTtM8LTkrrxI/HbivZlUZ6FkMW+q9bbEEIHvLYZ7DJa4yVyfN2WjKUdoijujOVnp3YckK90WYytVwckMiJgiXV8Fd14X2U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=f7qDCFop; arc=none smtp.client-ip=209.85.221.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="CGNB3GBc"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=+9Ze56vyjrFGBBLikcAq8sc6beALo9Z6C9Ec7GUdfW4=; b=CGNB3GBcvuX2cPKZk+73pjOZX+
-	QJKofhcWvyXNpepFZwC9YNGrYs+AzjkJX2Avt31iCqWoGx+ffgp43DbWt5D0zUKp+0mlknxdwlh6p
-	F2+X/4gILWHSJL7jg5yYffwUl0BpaBJXkr7Hd9DzKOWlv5sSuXs5MiQQ64AKYrDPHwvU5aUqhB5Ob
-	A5957Y+8KSfhPv0zh1Xh1gPqD6A60ZncX4t5rcoVD6YSrFnf+nzGusyCOtYW/A8e1F5v5GyjWO/Ft
-	Xq6jR3jlZ7MjOE3yH0GqKv1TqDn1ux8ATJm0Y9MhRRCculYdQZsggQsvwHM7yg/eEJvtx+FsmL3rI
-	ODQPG1KQ==;
-Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
-	by casper.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1vDfbw-00000009xri-12M5;
-	Tue, 28 Oct 2025 09:03:25 +0000
-Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
-	id 47151300289; Tue, 28 Oct 2025 10:03:24 +0100 (CET)
-Date: Tue, 28 Oct 2025 10:03:24 +0100
-From: Peter Zijlstra <peterz@infradead.org>
-To: kernel test robot <oliver.sang@intel.com>, japo@linux.ibm.com
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	x86@kernel.org, Juri Lelli <juri.lelli@redhat.com>,
-	Tejun Heo <tj@kernel.org>,
-	Vincent Guittot <vincent.guittot@linaro.org>,
-	cgroups@vger.kernel.org, aubrey.li@linux.intel.com,
-	yu.c.chen@intel.com
-Subject: Re: [tip:sched/core] [sched]  b079d93796:
- WARNING:possible_recursive_locking_detected_migration_is_trying_to_acquire_lock:at:set_cpus_allowed_force_but_task_is_already_holding_lock:at:cpu_stopper_thread
-Message-ID: <20251028090324.GQ4068168@noisy.programming.kicks-ass.net>
-References: <202510271206.24495a68-lkp@intel.com>
- <20251027110133.GI3245006@noisy.programming.kicks-ass.net>
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="f7qDCFop"
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-3ece0e4c5faso5149063f8f.1
+        for <oe-lkp@lists.linux.dev>; Tue, 28 Oct 2025 03:15:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1761646521; x=1762251321; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
+         :references:cc:to:from:subject:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=RcF8Ar5LLr9hzVZDlVHpiZbKzJd4GeP+gldVmCFN2rk=;
+        b=f7qDCFop6D+VOROcpEwMtEFSOkK1eChyjeBzQYD0yPYJF0OLCIHEyOfqfGniehzcmp
+         wuUBF5mjqqTNfuCSpXf80XThJBkJ0HChftA3CNBsVJOqNVo989E7TyhxkzWD0T9dBxLt
+         rkYA+TTUU3UTTXoevy/6CD4ZwVEdK4WSqOBDwiFdLC9yLUxbUnEnHihXKCHGoS/bZup2
+         nWZs/LqYZnlcqUjRYWRoVgcWLk2Eeptg0rwDmprb8MtF5/vzIlD55H0RwpdSkv4j3G5o
+         hdH4IhPgNkhS3Sn+uB+bgv4Dh977R94EKyIG77/+5D+ZAlLQFom/jsAH5O41eGQAuM8k
+         FBrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1761646521; x=1762251321;
+        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
+         :references:cc:to:from:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=RcF8Ar5LLr9hzVZDlVHpiZbKzJd4GeP+gldVmCFN2rk=;
+        b=Pm8UfXYbfjZBYWJFUt6awb/fnCqaPzCYLOKF+oddtvFVmsmxTozCwbF0MqPM6zCnj1
+         GP8kVTPyBEcAwFYDduQr8ux2oPP1sx6ivtBQObSxGBdn510Fw58E/jdkviHIi0nJEkZT
+         LWMPKXh6is9sEv+3vuSSGEnFfEkxc5oW7MMlzfFTNkiQvIEi5OcVN4xT5CePaoHZfnUT
+         g51jzfbKAVyxO/BEUBokmQQg0eH47EZz6BtmFzQThYTEDcCob6WCJaF/ZoZsndfZBJ8T
+         jYq0VZY/6INw6sRm7Zk146kmrkEEXEtWX2vW7gsHoky32ZQ5zjXF03XWK4uyXYQp+GV8
+         2xcw==
+X-Gm-Message-State: AOJu0YwbCLH7ZwiFk0REoEbTdAZwYhXnKa4nAHlPHA2HyeeBRVNH60XD
+	7RJcs1gydpjMmheZHM0bDR89Eo3tAafsA0V1fdoeXgpcLGvEjMRGb1jMCJAXrEuDy2U=
+X-Gm-Gg: ASbGnctmC+a+/MZezXb65GJIhM+VYO/0gITVHZ2XTmzezf7ZN9Y8BPO5ImRc6glfw/J
+	ciOZe3gZ8nERVhffbpRXht3uAvbnBfVSO4xAC1Iyq5BUj8XMxAASulzqFjEbI7pJUijpVJbzibs
+	ggIJk/hqObG2l6vJbST3uF/qM7r2Rw9RkhohTEUypc3QxtzpDZ+mN9g/6rNdPcyK6hQ8nUU09FW
+	ggMBeTi1BCKc/wTINHeATIYbSXqyBLGh77Jntu0zMBTNSVBTGwozCraUM7Onsr+nYF8oP80445M
+	hGWzEdbUpLO6axevj4g/wan46i0B6LmlxaOK3g3yYbztss4wf6/t653XvEEcZX8PRb/p6fNMYpi
+	P2pTvKPOwRq2b35bkUv6JNwdcOr2lqwW4jPbkGG49xIuGQDg12WzDyy05muehaa6bHCAy+qoLx6
+	5khRcRpQPGiy1pb9ArsLDt2GwoX8gV
+X-Google-Smtp-Source: AGHT+IHPIlnZrrOdPRqyG1OjAT6/4AWS79Y7AzoL5XY82z8qq8Ksp3eDhmntS1lNzLzXcY/BAK+NiQ==
+X-Received: by 2002:a5d:64c3:0:b0:3ec:dfe5:17d0 with SMTP id ffacd0b85a97d-429a7e35d0cmr1819229f8f.9.1761646520499;
+        Tue, 28 Oct 2025 03:15:20 -0700 (PDT)
+Received: from ?IPV6:2403:580d:fda1::299? (2403-580d-fda1--299.ip6.aussiebb.net. [2403:580d:fda1::299])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7a41408757csm11054208b3a.59.2025.10.28.03.15.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Oct 2025 03:15:19 -0700 (PDT)
+Message-ID: <7e73f89d-ecc4-4adc-a151-1eca9f199c8f@suse.com>
+Date: Tue, 28 Oct 2025 20:45:15 +1030
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251027110133.GI3245006@noisy.programming.kicks-ass.net>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 4/4] btrfs: introduce btrfs_bio::async_csum
+From: Qu Wenruo <wqu@suse.com>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-btrfs@vger.kernel.org
+References: <202510281522.d23994ae-lkp@intel.com>
+ <124eef27-79d1-40ec-9f54-f94509f904fb@suse.com>
+Content-Language: en-US
+Autocrypt: addr=wqu@suse.com; keydata=
+ xsBNBFnVga8BCACyhFP3ExcTIuB73jDIBA/vSoYcTyysFQzPvez64TUSCv1SgXEByR7fju3o
+ 8RfaWuHCnkkea5luuTZMqfgTXrun2dqNVYDNOV6RIVrc4YuG20yhC1epnV55fJCThqij0MRL
+ 1NxPKXIlEdHvN0Kov3CtWA+R1iNN0RCeVun7rmOrrjBK573aWC5sgP7YsBOLK79H3tmUtz6b
+ 9Imuj0ZyEsa76Xg9PX9Hn2myKj1hfWGS+5og9Va4hrwQC8ipjXik6NKR5GDV+hOZkktU81G5
+ gkQtGB9jOAYRs86QG/b7PtIlbd3+pppT0gaS+wvwMs8cuNG+Pu6KO1oC4jgdseFLu7NpABEB
+ AAHNGFF1IFdlbnJ1byA8d3F1QHN1c2UuY29tPsLAlAQTAQgAPgIbAwULCQgHAgYVCAkKCwIE
+ FgIDAQIeAQIXgBYhBC3fcuWlpVuonapC4cI9kfOhJf6oBQJnEXVgBQkQ/lqxAAoJEMI9kfOh
+ Jf6o+jIH/2KhFmyOw4XWAYbnnijuYqb/obGae8HhcJO2KIGcxbsinK+KQFTSZnkFxnbsQ+VY
+ fvtWBHGt8WfHcNmfjdejmy9si2jyy8smQV2jiB60a8iqQXGmsrkuR+AM2V360oEbMF3gVvim
+ 2VSX2IiW9KERuhifjseNV1HLk0SHw5NnXiWh1THTqtvFFY+CwnLN2GqiMaSLF6gATW05/sEd
+ V17MdI1z4+WSk7D57FlLjp50F3ow2WJtXwG8yG8d6S40dytZpH9iFuk12Sbg7lrtQxPPOIEU
+ rpmZLfCNJJoZj603613w/M8EiZw6MohzikTWcFc55RLYJPBWQ+9puZtx1DopW2jOwE0EWdWB
+ rwEIAKpT62HgSzL9zwGe+WIUCMB+nOEjXAfvoUPUwk+YCEDcOdfkkM5FyBoJs8TCEuPXGXBO
+ Cl5P5B8OYYnkHkGWutAVlUTV8KESOIm/KJIA7jJA+Ss9VhMjtePfgWexw+P8itFRSRrrwyUf
+ E+0WcAevblUi45LjWWZgpg3A80tHP0iToOZ5MbdYk7YFBE29cDSleskfV80ZKxFv6koQocq0
+ vXzTfHvXNDELAuH7Ms/WJcdUzmPyBf3Oq6mKBBH8J6XZc9LjjNZwNbyvsHSrV5bgmu/THX2n
+ g/3be+iqf6OggCiy3I1NSMJ5KtR0q2H2Nx2Vqb1fYPOID8McMV9Ll6rh8S8AEQEAAcLAfAQY
+ AQgAJgIbDBYhBC3fcuWlpVuonapC4cI9kfOhJf6oBQJnEXWBBQkQ/lrSAAoJEMI9kfOhJf6o
+ cakH+QHwDszsoYvmrNq36MFGgvAHRjdlrHRBa4A1V1kzd4kOUokongcrOOgHY9yfglcvZqlJ
+ qfa4l+1oxs1BvCi29psteQTtw+memmcGruKi+YHD7793zNCMtAtYidDmQ2pWaLfqSaryjlzR
+ /3tBWMyvIeWZKURnZbBzWRREB7iWxEbZ014B3gICqZPDRwwitHpH8Om3eZr7ygZck6bBa4MU
+ o1XgbZcspyCGqu1xF/bMAY2iCDcq6ULKQceuKkbeQ8qxvt9hVxJC2W3lHq8dlK1pkHPDg9wO
+ JoAXek8MF37R8gpLoGWl41FIUb3hFiu3zhDDvslYM4BmzI18QgQTQnotJH8=
+In-Reply-To: <124eef27-79d1-40ec-9f54-f94509f904fb@suse.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Mon, Oct 27, 2025 at 12:01:33PM +0100, Peter Zijlstra wrote:
 
-Could someone confirm this fixes the problem?
 
-> ---
-> Subject: sched: Fix the do_set_cpus_allowed() locking fix
+在 2025/10/28 18:36, Qu Wenruo 写道:
 > 
-> Commit abfc01077df6 ("sched: Fix do_set_cpus_allowed() locking")
-> overlooked that __balance_push_cpu_stop() calls select_fallback_rq()
-> with rq->lock held. This makes that set_cpus_allowed_force() will
-> recursively take rq->lock and the machine locks up.
 > 
-> Run select_fallback_rq() earlier, without holding rq->lock. This opens
-> up a race window where a task could get migrated out from under us, but
-> that is harmless, we want the task migrated.
+> 在 2025/10/28 17:49, kernel test robot 写道:
+>>
+>>
+>> Hello,
+>>
+>> kernel test robot noticed "xfstests.btrfs.026.fail" on:
+>>
+>> commit: d72352d1c3a3a201dcd3684b05987f281b1d66aa ("[PATCH 4/4] btrfs: 
+>> introduce btrfs_bio::async_csum")
+>> url: https://github.com/intel-lab-lkp/linux/commits/Qu-Wenruo/btrfs- 
+>> make-sure-all-btrfs_bio-end_io-is-called-in-task-context/20251024-185435
+>> base: https://git.kernel.org/cgit/linux/kernel/git/kdave/linux.git 
+>> for-next
+>> patch link: https://lore.kernel.org/ 
+>> all/44a1532190aee561c2a8ae7af9f84fc1e092ae9e.1761302592.git.wqu@suse.com/
+>> patch subject: [PATCH 4/4] btrfs: introduce btrfs_bio::async_csum
+>>
+>> in testcase: xfstests
+>> version: xfstests-x86_64-2cba4b54-1_20251020
+>> with following parameters:
+>>
+>>     disk: 6HDD
+>>     fs: btrfs
+>>     test: btrfs-026
+>>
+>>
+>>
+>> config: x86_64-rhel-9.4-func
+>> compiler: gcc-14
+>> test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 
+>> 3.40GHz (Haswell) with 8G memory
+>>
+>> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>>
+>>
+>>
+>> If you fix the issue in a separate patch/commit (i.e. not just a new 
+>> version of
+>> the same patch/commit), kindly add following tags
+>> | Reported-by: kernel test robot <oliver.sang@intel.com>
+>> | Closes: https://lore.kernel.org/oe-lkp/202510281522.d23994ae- 
+>> lkp@intel.com
 > 
-> select_fallback_rq() itself will not be subject to concurrency as it
-> will be fully serialized by p->pi_lock, so there is no chance of
-> set_cpus_allowed_force() getting called with different arguments and
-> selecting different fallback CPUs for one task.
+> Unfortunately I'm unable to reproduce the failure here.
+> 100+ runs no reproduce.
 > 
-> Fixes: abfc01077df6 ("sched: Fix do_set_cpus_allowed() locking")
-> Reported-by: Jan Polensky <japo@linux.ibm.com>
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> Closes: https://lore.kernel.org/oe-lkp/202510271206.24495a68-lkp@intel.com
-> ---
-> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-> index 1842285eac1e..67b5f2faab36 100644
-> --- a/kernel/sched/core.c
-> +++ b/kernel/sched/core.c
-> @@ -8044,18 +8044,15 @@ static int __balance_push_cpu_stop(void *arg)
->  	struct rq_flags rf;
->  	int cpu;
->  
-> -	raw_spin_lock_irq(&p->pi_lock);
-> -	rq_lock(rq, &rf);
-> -
-> -	update_rq_clock(rq);
-> -
-> -	if (task_rq(p) == rq && task_on_rq_queued(p)) {
-> +	scoped_guard (raw_spinlock_irq, &p->pi_lock) {
->  		cpu = select_fallback_rq(rq->cpu, p);
-> -		rq = __migrate_task(rq, &rf, p, cpu);
-> -	}
->  
-> -	rq_unlock(rq, &rf);
-> -	raw_spin_unlock_irq(&p->pi_lock);
-> +		rq_lock(rq, &rf);
-> +		update_rq_clock(rq);
-> +		if (task_rq(p) == rq && task_on_rq_queued(p))
-> +			rq = __migrate_task(rq, &rf, p, cpu);
-> +		rq_unlock(rq, &rf);
-> +	}
->  
->  	put_task_struct(p);
->  
+> Thus I guess it may be some incompatibility with the series and the base 
+> (which is for-next branch, not the btrfs for-next branch).
+> 
+> Just to rule out the possibility, mind to re-test using my branch directly?
+> 
+> https://github.com/adam900710/linux/tree/async_csum
+> 
+> 
+>  From the assets, the dmesg shows that all data checksum are zeros:
+> 
+> [   62.192305][  T269] BTRFS warning (device sdb2): csum failed root 5 
+> ino 258 off 275644416 csum 0xa54e4c94 expected csum 0x00000000 mirror 1
+> [   62.192397][   T12] BTRFS warning (device sdb2): csum failed root 5 
+> ino 258 off 275775488 csum 0xa54e4c94 expected csum 0x00000000 mirror 1
+> [   62.192470][ T5037] BTRFS warning (device sdb2): csum failed root 5 
+> ino 258 off 275906560 csum 0xa54e4c94 expected csum 0x00000000 mirror 1
+> 
+> This means we're running the end_io() functions before the csum is fully 
+> calculated.
+> 
+> If that's the case, it will eventually hits some use-after-free at other 
+> tests, which I hit too many times during development due to incorrect 
+> wait timing.
+
+My bad, and after looking into my local runs, there are some tests that 
+fails with the same dmesg errors.
+
+It turns out that there is a race on bi_iter, where csum_one_bio_work() 
+and lower storage layer can try to grab the same bi_iter.
+
+On much newer hardware like zen5, the checksum calculation is way faster 
+than IO, thus under most cases csum_one_bio_work() can get the bi_iter 
+before lower layer advancing it.
+
+But if lower layer advanced it before csum_one_bio_work(), then 
+csum_one_bio_work() will skip the calculation completely resulting the 
+csums to be all zero.
+
+Thanks for detecting this bug, I'll update the fix to add a new 
+saved_iter so that csum_one_bio_work() can always grab the correct iter.
+
+Thanks,
+Qu
+
+> 
+> But I'm only seeing this single report, which is pretty weird.
+> 
+> I hope it's just some bad code base.
+> 
+> Thanks,
+> Qu
+>>
+>> 2025-10-27 23:06:41 cd /lkp/benchmarks/xfstests
+>> 2025-10-27 23:06:42 export TEST_DIR=/fs/sda1
+>> 2025-10-27 23:06:42 export TEST_DEV=/dev/sda1
+>> 2025-10-27 23:06:42 export FSTYP=btrfs
+>> 2025-10-27 23:06:42 export SCRATCH_MNT=/fs/scratch
+>> 2025-10-27 23:06:42 mkdir /fs/scratch -p
+>> 2025-10-27 23:06:42 export SCRATCH_DEV_POOL="/dev/sda2 /dev/sda3 /dev/ 
+>> sda4 /dev/sda5 /dev/sda6"
+>> 2025-10-27 23:06:42 echo btrfs/026
+>> 2025-10-27 23:06:42 ./check btrfs/026
+>> FSTYP         -- btrfs
+>> PLATFORM      -- Linux/x86_64 lkp-hsw-d01 6.18.0-rc1-00265- 
+>> gd72352d1c3a3 #1 SMP PREEMPT_DYNAMIC Tue Oct 28 06:52:50 CST 2025
+>> MKFS_OPTIONS  -- /dev/sda2
+>> MOUNT_OPTIONS -- /dev/sda2 /fs/scratch
+>>
+>> btrfs/026       - output mismatch (see /lkp/benchmarks/xfstests/ 
+>> results//btrfs/026.out.bad)
+>>      --- tests/btrfs/026.out    2025-10-20 16:48:15.000000000 +0000
+>>      +++ /lkp/benchmarks/xfstests/results//btrfs/026.out.bad    
+>> 2025-10-27 23:06:53.540513519 +0000
+>>      @@ -12,4 +12,4 @@
+>>       5876dba1217b4c2915cda86f4c67640e  SCRATCH_MNT/bar
+>>       File digests after remounting the file system:
+>>       647d815906324ccdf288c7681f900ec0  SCRATCH_MNT/foo
+>>      -5876dba1217b4c2915cda86f4c67640e  SCRATCH_MNT/bar
+>>      +md5sum: /fs/scratch/bar: Input/output error
+>>      ...
+>>      (Run 'diff -u /lkp/benchmarks/xfstests/tests/btrfs/026.out /lkp/ 
+>> benchmarks/xfstests/results//btrfs/026.out.bad'  to see the entire diff)
+>> Ran: btrfs/026
+>> Failures: btrfs/026
+>> Failed 1 of 1 tests
+>>
+>>
+>>
+>>
+>> The kernel config and materials to reproduce are available at:
+>> https://download.01.org/0day-ci/ 
+>> archive/20251028/202510281522.d23994ae-lkp@intel.com
+>>
+>>
+>>
+> 
+> 
+
