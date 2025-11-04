@@ -1,262 +1,162 @@
-Received: from out-181.mta0.migadu.com (out-181.mta0.migadu.com [91.218.175.181])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E501086323
-	for <oe-lkp@lists.linux.dev>; Tue,  4 Nov 2025 08:59:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 185292561AA;
+	Tue,  4 Nov 2025 16:19:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762246792; cv=none; b=D5/F92IUU9waoUfx80uxNzf3r3tSRkwJLnLqTq5D/17P+kR+V+a344UXdBPN4nIYNE4ZWW/LpAtJs/lU6Ex4Xi+46wHViPXqlItcOPUcriqdzn6V1WSdwYGMG4QCl+JA4bxD4hRu+Suhf5QBxUdSKzTc1Clh5UvEjiWbixgWzPg=
+	t=1762273142; cv=none; b=F15Mc6Sx9HsNOJH3vT/uO0kY2gsEw/XcgQBGaLObbQzrZ56P6n7oBmqVhNvnN5ioHvhvWTnKioGeZiNtHdrIDM6Ok7+myOdkiEM2E6nKOIq5wQ3tX17hXhwSt6Pf2fwOs6ZaHEYGGPAnhhonPypbcAV9cT7v6dK8tyeH9cFNazY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762246792; c=relaxed/simple;
-	bh=GS6e2b3oH37jxFOIhSoa8Ixlw2ZpbQh35bnVCEiVku8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ZjmdbR3v2kDRAeyDdWiDEVy2fhoj043JQSvjSJzrmpnWwgA9UIB6Vug2BIx46B06E5rYqngbhrB//pbehbl8npcedxts3EgzGxFMrtBDzoNvS0EpDiRwZNXNk+2xkqZsWoCRfGQn69gjFyTrxa4nDmXww4oSqnK+/SF+cH6n6JA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=rkA5MSK0; arc=none smtp.client-ip=91.218.175.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1762273142; c=relaxed/simple;
+	bh=kmpj4lWIyED7ogsuryovdXOfRNSUgLZLKc3VjCHzvC4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=tdMF1irA8BdsCoe6liZP9+9Nhkvki5M2bV1vdmkqFx124zcMIHLgP4ZpAWLB0IyVqgU/JMOroff68OTqZfBicynLU0LvFt8LQVp/ki/qg9gZo8BC50K2t4t6kC4114e7v6+4t7/W0bU0pW998d/iKjVhHMIThKT8yI1hIin+Xy8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IhepErb1; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="rkA5MSK0"
-Message-ID: <9e4b1242-a4a0-4292-be0e-cfd24c640d3c@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1762246786;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ACoxnsLPwifItDCLqYhT5k8XWG0ViCrKK5nRSuUSDtc=;
-	b=rkA5MSK0BMXWXwjbNLCwrj3u4Fv4kpzo9wawRX6o70dvqp7dWu3z9EJU6RtFsxtf4MIKfo
-	jH60YzITDWU5qvfBCRfmr1vjQDlkhBVvgTtIAVUObBKzz5OOshhE9g2oitRB0BXXZoi6VN
-	NVRxzpbihEUnPNBKhCMsuj8VNiQUHY4=
-Date: Tue, 4 Nov 2025 16:59:32 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IhepErb1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 915A3C4CEF7;
+	Tue,  4 Nov 2025 16:19:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1762273141;
+	bh=kmpj4lWIyED7ogsuryovdXOfRNSUgLZLKc3VjCHzvC4=;
+	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+	b=IhepErb1RIJb3YrR26voEf+e64Nwm0Qifq/EBht/92BRMZ9EAT+4i+2hajdxPlrzn
+	 7+c/2gbHDP3BEtpNdZHaOkr6wk1b4BMIjVnKIfTwudVZRyeBWAY9davQFWh4m7PnoK
+	 /BK/EIYZilxRxenFX8c4dLcwmfni4K8Py4UuzcxnDx0H+d4SdVCLedLk+NgK+PFr99
+	 hbW4msFnqLXNVwyCZ7AjVJqnLPqomyK7PBXQ+NAHfoPfskCIwXKo7qHCLrg9Lx1I9p
+	 rnJepmIt0kNPeN0IlRrGaQ16rZI27s2lpN7jBGJaVI2hDJBgEPHmM1A/hd8587SIYe
+	 me5QZUVw0k9cQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+	id D3341CE0BB3; Tue,  4 Nov 2025 08:18:59 -0800 (PST)
+Date: Tue, 4 Nov 2025 08:18:59 -0800
+From: "Paul E. McKenney" <paulmck@kernel.org>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org
+Subject: Re: [paulmckrcu:dev.2025.10.30a] [rcutorture]  ab3482dc2a:
+ Oops:general_protection_fault,probably_for_non-canonical_address#:#[##]KASAN
+Message-ID: <0ae2bb3e-c34d-42cb-860f-aa3c941218e6@paulmck-laptop>
+Reply-To: paulmck@kernel.org
+References: <202511041306.c42f7162-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Subject: Re: [PATCH v1 21/26] mm: memcontrol: prepare for reparenting LRU
- pages for lruvec lock
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, cgroups@vger.kernel.org,
- linux-mm@kvack.org, hannes@cmpxchg.org, hughd@google.com, mhocko@suse.com,
- roman.gushchin@linux.dev, shakeel.butt@linux.dev, muchun.song@linux.dev,
- david@redhat.com, lorenzo.stoakes@oracle.com, ziy@nvidia.com,
- harry.yoo@oracle.com, imran.f.khan@oracle.com, kamalesh.babulal@oracle.com,
- axelrasmussen@google.com, yuanchu@google.com, weixugc@google.com,
- akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
- Muchun Song <songmuchun@bytedance.com>
-References: <202511041421.784bbd5e-lkp@intel.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Qi Zheng <qi.zheng@linux.dev>
-In-Reply-To: <202511041421.784bbd5e-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202511041306.c42f7162-lkp@intel.com>
 
-
-
-On 11/4/25 2:49 PM, kernel test robot wrote:
+On Tue, Nov 04, 2025 at 02:04:24PM +0800, kernel test robot wrote:
 > 
-
-[...]
-
+> hi, Paul,
 > 
+> we noticed there are fixup! commit for this change in newer branches
+> "dev.2025.10.31a" and "dev.2025.11.01a".
+> 
+> if issue in below report is already captured and fixed, please just ignore this
+> report. thanks!
+> 
+> 
+> Hello,
+> 
+> kernel test robot noticed "Oops:general_protection_fault,probably_for_non-canonical_address#:#[##]KASAN" on:
+> 
+> commit: ab3482dc2af45fa97143131e0e03e73e18e8fffa ("rcutorture: Make srcu{,d}_torture_init() announce the SRCU type")
+> https://github.com/paulmckrcu/linux dev.2025.10.30a
+> 
+> in testcase: rcutorture
+> version: 
+> with following parameters:
+> 
+> 	runtime: 300s
+> 	test: default
+> 	torture_type: srcud
+> 
+> 
+> 
+> config: x86_64-randconfig-101-20251101
+> compiler: clang-20
+> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+> 
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+
+I believe that this is fixed in 978598d63864 ("rcutorture: Make
+srcu{,d}_torture_init() announce the SRCU type"), which fixes a blunder
+where I failed to initialize the srcu_struct structures for some type
+of SRCU readers.
+
+Either way, thank you for your testing efforts, and I will add attribution
+given that you did report this earlier.
+
+							Thanx, Paul
+
 > If you fix the issue in a separate patch/commit (i.e. not just a new version of
 > the same patch/commit), kindly add following tags
 > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202511041421.784bbd5e-lkp@intel.com
+> | Closes: https://lore.kernel.org/oe-lkp/202511041306.c42f7162-lkp@intel.com
 > 
 > 
-> [    1.392214][   T45] WARNING: bad unlock balance detected!
-> [    1.393285][   T45] 6.18.0-rc3-00251-gdd9e066d9677 #1 Not tainted
-> [    1.394579][   T45] -------------------------------------
-> [    1.395442][   T45] kworker/u9:1/45 is trying to release lock (rcu_read_lock) at:
-> [    1.396977][   T45] rcu_read_unlock (include/linux/rcupdate.h:341 include/linux/rcupdate.h:897)
-> [    1.398160][   T45] but there are no more locks to release!
-> [    1.399337][   T45]
-> [    1.399337][   T45] other info that might help us debug this:
-> [    1.399707][   T45] 5 locks held by kworker/u9:1/45:
-> [    1.399707][   T45]  #0: c01ad6c4 ((wq_completion)async){+.+.}-{0:0}, at: process_one_work (kernel/workqueue.c:3238)
-> [    1.399707][   T45]  #1: c08e9f18 ((work_completion)(&entry->work)){+.+.}-{0:0}, at: process_one_work (kernel/workqueue.c:3239)
-> [    1.399707][   T45]  #2: c02ed27c (sb_writers#2){.+.+}-{0:0}, at: file_start_write+0x1e/0x30
-> [    1.399707][   T45]  #3: c042e0ec (&sb->s_type->i_mutex_key){++++}-{4:4}, at: generic_file_write_iter (mm/filemap.c:4404)
-> [    1.399707][   T45]  #4: eaa771a0 (lock#3){+.+.}-{3:3}, at: local_lock_acquire (include/linux/local_lock_internal.h:40)
-> [    1.399707][   T45]
-> [    1.399707][   T45] stack backtrace:
-> [    1.399707][   T45] CPU: 0 UID: 0 PID: 45 Comm: kworker/u9:1 Not tainted 6.18.0-rc3-00251-gdd9e066d9677 #1 PREEMPT(none)
-> [    1.399707][   T45] Workqueue: async async_run_entry_fn
-> [    1.399707][   T45] Call Trace:
-> [    1.399707][   T45]  dump_stack_lvl (lib/dump_stack.c:122)
-> [    1.399707][   T45]  ? rcu_read_unlock (include/linux/rcupdate.h:341 include/linux/rcupdate.h:897)
-> [    1.399707][   T45]  dump_stack (lib/dump_stack.c:130)
-> [    1.399707][   T45]  print_unlock_imbalance_bug (kernel/locking/lockdep.c:5300 kernel/locking/lockdep.c:5272)
-> [    1.399707][   T45]  ? rcu_read_unlock (include/linux/rcupdate.h:341 include/linux/rcupdate.h:897)
-> [    1.399707][   T45]  __lock_release+0x5e/0x150
-> [    1.399707][   T45]  ? rcu_read_unlock (include/linux/rcupdate.h:341 include/linux/rcupdate.h:897)
-> [    1.399707][   T45]  lock_release (kernel/locking/lockdep.c:470 kernel/locking/lockdep.c:5891 kernel/locking/lockdep.c:5875)
-> [    1.399707][   T45]  ? lru_deactivate_file (mm/swap.c:119)
-> [    1.399707][   T45]  rcu_read_unlock (include/linux/rcupdate.h:899)
-> [    1.399707][   T45]  lruvec_unlock_irqrestore (include/linux/memcontrol.h:1522)
-> [    1.399707][   T45]  folio_batch_move_lru (include/linux/mm.h:1501 mm/swap.c:179)
-> [    1.399707][   T45]  __folio_batch_add_and_move (mm/swap.c:196 (discriminator 2))
-> [    1.399707][   T45]  ? lru_deactivate_file (mm/swap.c:119)
-> [    1.399707][   T45]  folio_add_lru (mm/swap.c:514)
-> [    1.399707][   T45]  filemap_add_folio (mm/filemap.c:996)
-> [    1.399707][   T45]  __filemap_get_folio (mm/filemap.c:2023)
-> [    1.399707][   T45]  simple_write_begin (fs/libfs.c:932 (discriminator 1))
-> [    1.399707][   T45]  generic_perform_write (mm/filemap.c:4263)
-> [    1.399707][   T45]  __generic_file_write_iter (mm/filemap.c:4380)
-> [    1.399707][   T45]  generic_file_write_iter (mm/filemap.c:4406)
-> [    1.399707][   T45]  __kernel_write_iter (fs/read_write.c:619)
-> [    1.399707][   T45]  __kernel_write (fs/read_write.c:640)
-> [    1.399707][   T45]  kernel_write (fs/read_write.c:660 fs/read_write.c:650)
-> [    1.399707][   T45]  xwrite+0x27/0x80
-> [    1.399707][   T45]  do_copy (init/initramfs.c:417 (discriminator 1))
-> [    1.399707][   T45]  write_buffer (init/initramfs.c:470 (discriminator 1))
-> [    1.399707][   T45]  flush_buffer (init/initramfs.c:482 (discriminator 1))
-> [    1.399707][   T45]  __gunzip+0x21d/0x2c0
-> [    1.399707][   T45]  ? bunzip2 (lib/decompress_inflate.c:39)
-> [    1.399707][   T45]  ? __gunzip+0x2c0/0x2c0
-> [    1.399707][   T45]  gunzip (lib/decompress_inflate.c:208)
-> [    1.399707][   T45]  ? write_buffer (init/initramfs.c:476)
-> [    1.399707][   T45]  ? initrd_load (init/initramfs.c:64)
-> [    1.399707][   T45]  unpack_to_rootfs (init/initramfs.c:553)
-> [    1.399707][   T45]  ? write_buffer (init/initramfs.c:476)
-> [    1.399707][   T45]  ? initrd_load (init/initramfs.c:64)
-> [    1.399707][   T45]  ? reserve_initrd_mem (init/initramfs.c:719)
-> [    1.399707][   T45]  do_populate_rootfs (init/initramfs.c:734)
-> [    1.399707][   T45]  async_run_entry_fn (kernel/async.c:136 (discriminator 1))
-> [    1.399707][   T45]  ? async_schedule_node (kernel/async.c:118)
-> [    1.399707][   T45]  process_one_work (arch/x86/include/asm/atomic.h:23 include/linux/atomic/atomic-arch-fallback.h:457 include/linux/jump_label.h:262 include/trace/events/workqueue.h:110 kernel/workqueue.c:3268)
-> [    1.399707][   T45]  process_scheduled_works (kernel/workqueue.c:3346)
-> [    1.399707][   T45]  worker_thread (include/linux/list.h:381 (discriminator 2) kernel/workqueue.c:952 (discriminator 2) kernel/workqueue.c:3428 (discriminator 2))
-> [    1.399707][   T45]  kthread (kernel/kthread.c:465)
-> [    1.399707][   T45]  ? process_scheduled_works (kernel/workqueue.c:3373)
-> [    1.399707][   T45]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-> [    1.399707][   T45]  ret_from_fork (arch/x86/kernel/process.c:164)
-> [    1.399707][   T45]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-> [    1.399707][   T45]  ret_from_fork_asm (arch/x86/entry/entry_32.S:737)
-> [    1.399707][   T45]  entry_INT80_32 (arch/x86/entry/entry_32.S:945)
-> [    1.467118][   T32] Callback from call_rcu_tasks() invoked.
-> [    1.468370][   T45] ------------[ cut here ]------------
-> [    1.469508][   T45] WARNING: CPU: 0 PID: 45 at kernel/rcu/tree_plugin.h:443 __rcu_read_unlock (kernel/rcu/tree_plugin.h:443)
-> [    1.471711][   T45] Modules linked in:
-> [    1.472490][   T45] CPU: 0 UID: 0 PID: 45 Comm: kworker/u9:1 Not tainted 6.18.0-rc3-00251-gdd9e066d9677 #1 PREEMPT(none)
-> [    1.474777][   T45] Workqueue: async async_run_entry_fn
-> [    1.475823][   T45] EIP: __rcu_read_unlock (kernel/rcu/tree_plugin.h:443)
-> [    1.476872][   T45] Code: 0c d0 56 c2 ff 8b a4 02 00 00 75 11 8b 83 a8 02 00 00 85 c0 74 07 89 d8 e8 7c fe ff ff 8b 83 a4 02 00 00 3d ff ff ff 3f 76 02 <0f> 0b 5b 5d 31 c0 c3 2e 8d b4 26 00 00 00 00 55 89 e5 57 56 89 c6
+> [   85.244843][  T376] Oops: general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] KASAN
+> [   85.245696][  T376] KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+> [   85.246346][  T376] CPU: 0 UID: 0 PID: 376 Comm: rcu_torture_fak Tainted: G                T   6.17.0-rc1-00079-gab3482dc2af4 #1 PREEMPT(voluntary)  5c143d583914383a8f9ea9c18b817a947366c659
+> [   85.247433][  T376] Tainted: [T]=RANDSTRUCT
+> [   85.247685][  T376] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+> [   85.248336][  T376] RIP: 0010:call_srcu (kbuild/src/consumer/kernel/rcu/srcutiny.c:211 (discriminator 1792))
+> [   85.248645][  T376] Code: 43 e8 c1 4d 13 00 4d 8d 7c 24 70 4c 89 f8 48 c1 e8 03 80 3c 18 00 74 08 4c 89 ff e8 87 54 2d 00 4d 8b 27 4c 89 e0 48 c1 e8 03 <80> 3c 18 00 74 08 4c 89 e7 e8 0f 55 2d 00 4d 89 34 24 4d 89 37 e8
 > All code
 > ========
->     0:	0c d0                	or     $0xd0,%al
->     2:	56                   	push   %rsi
->     3:	c2 ff 8b             	ret    $0x8bff
->     6:	a4                   	movsb  %ds:(%rsi),%es:(%rdi)
->     7:	02 00                	add    (%rax),%al
->     9:	00 75 11             	add    %dh,0x11(%rbp)
->     c:	8b 83 a8 02 00 00    	mov    0x2a8(%rbx),%eax
->    12:	85 c0                	test   %eax,%eax
->    14:	74 07                	je     0x1d
->    16:	89 d8                	mov    %ebx,%eax
->    18:	e8 7c fe ff ff       	call   0xfffffffffffffe99
->    1d:	8b 83 a4 02 00 00    	mov    0x2a4(%rbx),%eax
->    23:	3d ff ff ff 3f       	cmp    $0x3fffffff,%eax
->    28:	76 02                	jbe    0x2c
->    2a:*	0f 0b                	ud2		<-- trapping instruction
->    2c:	5b                   	pop    %rbx
->    2d:	5d                   	pop    %rbp
->    2e:	31 c0                	xor    %eax,%eax
->    30:	c3                   	ret
->    31:	2e 8d b4 26 00 00 00 	cs lea 0x0(%rsi,%riz,1),%esi
->    38:	00
->    39:	55                   	push   %rbp
->    3a:	89 e5                	mov    %esp,%ebp
->    3c:	57                   	push   %rdi
->    3d:	56                   	push   %rsi
->    3e:	89 c6                	mov    %eax,%esi
+>    0:	43 e8 c1 4d 13 00    	rex.XB call 0x134dc7
+>    6:	4d 8d 7c 24 70       	lea    0x70(%r12),%r15
+>    b:	4c 89 f8             	mov    %r15,%rax
+>    e:	48 c1 e8 03          	shr    $0x3,%rax
+>   12:	80 3c 18 00          	cmpb   $0x0,(%rax,%rbx,1)
+>   16:	74 08                	je     0x20
+>   18:	4c 89 ff             	mov    %r15,%rdi
+>   1b:	e8 87 54 2d 00       	call   0x2d54a7
+>   20:	4d 8b 27             	mov    (%r15),%r12
+>   23:	4c 89 e0             	mov    %r12,%rax
+>   26:	48 c1 e8 03          	shr    $0x3,%rax
+>   2a:*	80 3c 18 00          	cmpb   $0x0,(%rax,%rbx,1)		<-- trapping instruction
+>   2e:	74 08                	je     0x38
+>   30:	4c 89 e7             	mov    %r12,%rdi
+>   33:	e8 0f 55 2d 00       	call   0x2d5547
+>   38:	4d 89 34 24          	mov    %r14,(%r12)
+>   3c:	4d 89 37             	mov    %r14,(%r15)
+>   3f:	e8                   	.byte 0xe8
 > 
 > Code starting with the faulting instruction
 > ===========================================
->     0:	0f 0b                	ud2
->     2:	5b                   	pop    %rbx
->     3:	5d                   	pop    %rbp
->     4:	31 c0                	xor    %eax,%eax
->     6:	c3                   	ret
->     7:	2e 8d b4 26 00 00 00 	cs lea 0x0(%rsi,%riz,1),%esi
->     e:	00
->     f:	55                   	push   %rbp
->    10:	89 e5                	mov    %esp,%ebp
->    12:	57                   	push   %rdi
->    13:	56                   	push   %rsi
->    14:	89 c6                	mov    %eax,%esi
-> [    1.480862][   T45] EAX: ffffffff EBX: c0bfd640 ECX: 00000000 EDX: 00000000
-> [    1.482292][   T45] ESI: eaa771c0 EDI: c119e160 EBP: c08e9c0c ESP: c08e9c08
-> [    1.483721][   T45] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00010286
-> [    1.485350][   T45] CR0: 80050033 CR2: ffbff000 CR3: 026c6000 CR4: 000006f0
-> [    1.486725][   T45] Call Trace:
-> [    1.487465][   T45]  rcu_read_unlock (include/linux/rcupdate.h:900)
-> [    1.488404][   T45]  lruvec_unlock_irqrestore (include/linux/memcontrol.h:1522)
-> [    1.489570][   T45]  folio_batch_move_lru (include/linux/mm.h:1501 mm/swap.c:179)
-> [    1.491100][   T45]  __folio_batch_add_and_move (mm/swap.c:196 (discriminator 2))
-> [    1.492318][   T45]  ? lru_deactivate_file (mm/swap.c:119)
-> [    1.493827][   T45]  folio_add_lru (mm/swap.c:514)
-> [    1.494817][   T45]  filemap_add_folio (mm/filemap.c:996)
-> [    1.495891][   T45]  __filemap_get_folio (mm/filemap.c:2023)
-> [    1.497735][   T45]  simple_write_begin (fs/libfs.c:932 (discriminator 1))
-> [    1.498813][   T45]  generic_perform_write (mm/filemap.c:4263)
-> [    1.500292][   T45]  __generic_file_write_iter (mm/filemap.c:4380)
-> [    1.501552][   T45]  generic_file_write_iter (mm/filemap.c:4406)
-> [    1.502790][   T45]  __kernel_write_iter (fs/read_write.c:619)
-> [    1.504090][   T45]  __kernel_write (fs/read_write.c:640)
-> [    1.505377][   T45]  kernel_write (fs/read_write.c:660 fs/read_write.c:650)
-> [    1.506306][   T45]  xwrite+0x27/0x80
-> [    1.507429][   T45]  do_copy (init/initramfs.c:417 (discriminator 1))
-> [    1.508361][   T45]  write_buffer (init/initramfs.c:470 (discriminator 1))
-> [    1.509300][   T45]  flush_buffer (init/initramfs.c:482 (discriminator 1))
-> [    1.510307][   T45]  __gunzip+0x21d/0x2c0
-> [    1.511424][   T45]  ? bunzip2 (lib/decompress_inflate.c:39)
-> [    1.512312][   T45]  ? __gunzip+0x2c0/0x2c0
-> [    1.513515][   T45]  gunzip (lib/decompress_inflate.c:208)
-> [    1.514359][   T45]  ? write_buffer (init/initramfs.c:476)
-> [    1.515304][   T45]  ? initrd_load (init/initramfs.c:64)
-> [    1.516217][   T45]  unpack_to_rootfs (init/initramfs.c:553)
-> [    1.517220][   T45]  ? write_buffer (init/initramfs.c:476)
-> [    1.518175][   T45]  ? initrd_load (init/initramfs.c:64)
-> [    1.519172][   T45]  ? reserve_initrd_mem (init/initramfs.c:719)
-> [    1.520375][   T45]  do_populate_rootfs (init/initramfs.c:734)
-> [    1.521401][   T45]  async_run_entry_fn (kernel/async.c:136 (discriminator 1))
-> [    1.522378][   T45]  ? async_schedule_node (kernel/async.c:118)
-> [    1.523492][   T45]  process_one_work (arch/x86/include/asm/atomic.h:23 include/linux/atomic/atomic-arch-fallback.h:457 include/linux/jump_label.h:262 include/trace/events/workqueue.h:110 kernel/workqueue.c:3268)
-> [    1.526446][   T45]  process_scheduled_works (kernel/workqueue.c:3346)
-> [    1.527578][   T45]  worker_thread (include/linux/list.h:381 (discriminator 2) kernel/workqueue.c:952 (discriminator 2) kernel/workqueue.c:3428 (discriminator 2))
-> [    1.528573][   T45]  kthread (kernel/kthread.c:465)
-> [    1.529483][   T45]  ? process_scheduled_works (kernel/workqueue.c:3373)
-> [    1.530780][   T45]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-> [    1.531779][   T45]  ret_from_fork (arch/x86/kernel/process.c:164)
-> [    1.532664][   T45]  ? kthread_is_per_cpu (kernel/kthread.c:412)
-> [    1.533736][   T45]  ret_from_fork_asm (arch/x86/entry/entry_32.S:737)
-> [    1.534846][   T45]  entry_INT80_32 (arch/x86/entry/entry_32.S:945)
-> [    1.536182][   T45] irq event stamp: 2161
-> [    1.536994][   T45] hardirqs last  enabled at (2161): _raw_spin_unlock_irqrestore (arch/x86/include/asm/irqflags.h:26 arch/x86/include/asm/irqflags.h:109 arch/x86/include/asm/irqflags.h:151 include/linux/spinlock_api_smp.h:151 kernel/locking/spinlock.c:194)
-> [    1.538763][   T45] hardirqs last disabled at (2160): _raw_spin_lock_irqsave (include/linux/spinlock_api_smp.h:109 kernel/locking/spinlock.c:162)
-> [    1.540674][   T45] softirqs last  enabled at (1956): handle_softirqs (kernel/softirq.c:469 (discriminator 2) kernel/softirq.c:650 (discriminator 2))
-> [    1.542454][   T45] softirqs last disabled at (1949): __do_softirq (kernel/softirq.c:657)
-> [    1.544105][   T45] ---[ end trace 0000000000000000 ]---
+>    0:	80 3c 18 00          	cmpb   $0x0,(%rax,%rbx,1)
+>    4:	74 08                	je     0xe
+>    6:	4c 89 e7             	mov    %r12,%rdi
+>    9:	e8 0f 55 2d 00       	call   0x2d551d
+>    e:	4d 89 34 24          	mov    %r14,(%r12)
+>   12:	4d 89 37             	mov    %r14,(%r15)
+>   15:	e8                   	.byte 0xe8
+> [   85.249962][  T376] RSP: 0000:ffff88813023fd28 EFLAGS: 00010046
+> [   85.250399][  T376] RAX: 0000000000000000 RBX: dffffc0000000000 RCX: dffffc0000000000
+> [   85.250914][  T376] RDX: ffffffff852cf470 RSI: ffffffff852d613b RDI: ffffffff852d5d8f
+> [   85.251426][  T376] RBP: ffff88813023fd68 R08: 0000000000000002 R09: 0000000000000000
+> [   85.251888][  T376] R10: 00000000a56728a8 R11: 000000005e2747a1 R12: 0000000000000000
+> [   85.252406][  T376] R13: 0000000000000246 R14: ffff88813023fd78 R15: ffffffffc0183310
+> [   85.252874][  T376] FS:  0000000000000000(0000) GS:0000000000000000(0000) knlGS:0000000000000000
+> [   85.253484][  T376] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   85.253976][  T376] CR2: 0000562ce1691468 CR3: 000000014ad8a000 CR4: 00000000000406b0
+> [   85.254529][  T376] Call Trace:
+> [   85.254754][  T376]  <TASK>
+> [   85.254937][  T376]  synchronize_srcu (kbuild/src/consumer/kernel/rcu/srcutiny.c:241)
+> [   85.255283][  T376]  ? rcu_read_lock_any_held (kbuild/src/consumer/kernel/rcu/update.c:403)
+> [   85.255601][  T376] srcu_torture_synchronize_expedited (kbuild/src/consumer/kernel/rcu/rcutorture.c:889) rcutorture
+> [   85.256310][  T376] rcu_torture_fakewriter (kbuild/src/consumer/kernel/rcu/rcutorture.c:1903) rcutorture
 > 
 > 
 > The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20251104/202511041421.784bbd5e-lkp@intel.com
-
-In this config file, CONFIG_MEMCG is not set:
-
-# CONFIG_MEMCG is not set
-
-In this case, folio_lruvec_lock*() was not modified (add
-rcu_read_lock()), will fix it in the next version.
-
-Thanks,
-Qi
-
+> https://download.01.org/0day-ci/archive/20251104/202511041306.c42f7162-lkp@intel.com
 > 
 > 
 > 
-
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+> 
