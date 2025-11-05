@@ -1,228 +1,150 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74D3F2FBDF9
-	for <oe-lkp@lists.linux.dev>; Wed,  5 Nov 2025 12:06:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.21
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762344408; cv=fail; b=S5H7gy/HCg785U8LEeVTKIvWOIYfQg1nfaWf7xWgStuSaw0VusXWnffUgTVT/za0MtToAfefN4xus46Ed0pCQHnYYmRAYvw8tM6dOxmi9bWZIRji1QKRw1RigAOaTvKUEdpLfY3K1J93IDSpXyL0olgQR7xX9VTBxW/T7x0gxp4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762344408; c=relaxed/simple;
-	bh=d/UKxGgmSxTw1RD9a5JFak+bFCNJwPHs4xrc5hQil/Y=;
-	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=evFh0pjAPUWfIg9T2LRVsQNzL3eR0jzgiH15vcLXBpMug5e2U90MWivqtF3y4G0JhrK4YSvxB7+OLJVrUtOs1CmZ/ZyDXZCetcr63mFWO3e6bbqFhji3l1tuNjGojy0+3zeKcg8RasacP4CL4CxoLo8HSZd9/ZNDXm1Zlv3wtvk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GbdhyIMR; arc=fail smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 047CC2FD1AD;
+	Wed,  5 Nov 2025 12:28:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1762345700; cv=none; b=R07EYbVhEGS2sZWFqlkF4Ww3rWaWiV5VRL0KmdIMVx2smjN9Xx4bjuCOZZYjg1dKOI7EtvCnSAzNzXue36a9Ew1OqTRIMWmuDGDx9fIKz4FoU7Z3SDCloELjR4RDdUQ7spFxJvdGT7TkYvx2/UQkh+EFqOw2WDvw1jNLcSqB3OY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1762345700; c=relaxed/simple;
+	bh=ZBUNYFaC+VVX4BgzNFr0jQiWV2aFK6ZjbIQY0VFc/WM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WQRs57k36hbLMz+h14FbMhIIgZnQ0Nh33zDud9hZASrDArlKNoE0xq7LdXZD7Q9e1EFuNcB5KOwVa59sJmw63wluDWnrpBmCWgTyaHAuoEdbth5s0QEdZqbOHZ9IjIXOXn7V1x6VsewTuGIQoeFewmSgPQdwWiKZOBcMTwGsiY4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=mbD4Rh9K; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GbdhyIMR"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1762344408; x=1793880408;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=d/UKxGgmSxTw1RD9a5JFak+bFCNJwPHs4xrc5hQil/Y=;
-  b=GbdhyIMRID1f5xmnh2coq9O3Gl1HeJewXvUkWq3MFgqrgrvHGl6tyKE8
-   X4v7inOUHpvxzH6gLGbFdXjNPQftHzRtcpWJKtGcKQP7mGBesxALhdMHW
-   fKNOCnuo8K4ZQmKOO1vFIVS5dLmxwkvSJnuj/i7xblskHLZMKjRtngW32
-   pvU/CHOcoZzQygN/vzLHlfclVEVQorv5U230iCMnDU0ubIeggqky8o/Mu
-   RKfmZJKscglnBypAZJa9HLlRjwlK22UbjGwAz23FS45Y61DI2zW57ktx9
-   J7asVqPJ8KQ8eHP7Pi2dN/JOYbrlLVbfC681ykhDOVEU2p3vv+vEpBzI5
-   A==;
-X-CSE-ConnectionGUID: JCdPUi0jS9OTCRXhDAUluA==
-X-CSE-MsgGUID: TMlfFDH7RCel5t6atOdmHQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11531"; a="64363057"
-X-IronPort-AV: E=Sophos;i="6.17,312,1747724400"; 
-   d="scan'208";a="64363057"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2025 04:06:47 -0800
-X-CSE-ConnectionGUID: XMmageQVTtS7dgQc7kzeeg==
-X-CSE-MsgGUID: 6WeqJAzCRIecGOvsFsjgCQ==
-X-ExtLoop1: 1
-Received: from fmsmsx901.amr.corp.intel.com ([10.18.126.90])
-  by fmviesa003.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2025 04:06:46 -0800
-Received: from FMSMSX901.amr.corp.intel.com (10.18.126.90) by
- fmsmsx901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27; Wed, 5 Nov 2025 04:06:43 -0800
-Received: from fmsedg901.ED.cps.intel.com (10.1.192.143) by
- FMSMSX901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27 via Frontend Transport; Wed, 5 Nov 2025 04:06:43 -0800
-Received: from CY7PR03CU001.outbound.protection.outlook.com (40.93.198.45) by
- edgegateway.intel.com (192.55.55.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27; Wed, 5 Nov 2025 04:06:43 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=rSmpYlfWtk+gZoVwjonzENGvFpqHw5ZFlrtvgIJVqlqPLu010PQpUYAEq4/Y6NAXLpI15P3/IlihBb4joQ6EUkTpun3iRPBL5Ydd/RhFvlyqsbQG4uBTu6txfEZObS0tXgxp5GE3miYq36j6KUylCf23T/qdMNrF0NjBNXwq4p+yjcfWnRc4vemgfjjjDhVY12L0xnF+nhF6cgOhD6JzCei1CLYFKVJsJGtm7gPPH04hOxqUae+d6pZ+DsFmu/mNhq+S8K1/Urh76ZoyGczc/pBLizhJWC7LRphk7ZVAbMFNCxcI1F7F59oRQSUlUNBY9OazzKVTiUn9pd0ytAwzKw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=P/Za+E1bhV0WxQJAh8jHJMVQXIUJBqjuF2pG5Zyg5xQ=;
- b=eAxIqVgLf6Jnwq65r1l+4tbhUgLnpZyIL9c8iyDkKhV1yGJ4R2zwNYp35CEiO/rrv4uqmsiZUeJzOcvdaAXikV/k0Dnc9PcNux7eplT4/Gsp9lP+whubcvQcbP/mZoD71EfTabFwWBFDJlMd36EANuWGxmJpRVZgqOcdteMm74qLPXQpUnmM6PsK5v4dwuBrOECG2cEQAV6VDWAGLEPeGcnV0i4mG2g2uk4blnwxLL3+0oNdTxRL1umxpreD0A2IXFEm8fBot3TyfCh64PXqLtbxC/cAeKQ6JXzNkrmqcOYqrxe45aeeQtkaTl4aakzmRd2BvkOaqdEIHVrG9icNFw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from BY5PR11MB4165.namprd11.prod.outlook.com (2603:10b6:a03:18c::26)
- by SN7PR11MB7511.namprd11.prod.outlook.com (2603:10b6:806:347::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9298.10; Wed, 5 Nov
- 2025 12:06:42 +0000
-Received: from BY5PR11MB4165.namprd11.prod.outlook.com
- ([fe80::d9f7:7a66:b261:8891]) by BY5PR11MB4165.namprd11.prod.outlook.com
- ([fe80::d9f7:7a66:b261:8891%7]) with mapi id 15.20.9275.015; Wed, 5 Nov 2025
- 12:06:42 +0000
-Date: Wed, 5 Nov 2025 20:06:32 +0800
-From: Philip Li <philip.li@intel.com>
-To: Peter Zijlstra <peterz@infradead.org>
-CC: "Chen, Yu C" <yu.c.chen@intel.com>, kernel test robot
-	<oliver.sang@intel.com>, Fernand Sieber <sieberf@amazon.com>,
-	<oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	<x86@kernel.org>, <aubrey.li@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="mbD4Rh9K"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=DhdLwiEgnDXsfa0lfNS/MpiahRLm84cONTTG9dPFdbE=; b=mbD4Rh9KY/pgPdEImqGvUr0ivi
+	QRMANNNUaxiNC81PedWW7IOsWb3qrsI9lC9aV3TRxWyhL69X6bsBLtGv2Vx3Q9MTJ3ziJtplinnTI
+	tY6xHU/na5UFz83PvmK5GvOyn8tAsZ7vSzInG58qvpJENgFStbHwtxi5euH5s1RrYofTo/Soa+Kdn
+	Ybfynv1GE+7tNMt3LRjAmH5VDEfSdg3GlWQxUw6TfIqbXG10d2FGv3WnHVDYGQ3Sq/pnNuwLw/z9T
+	LZ/xnw6rUpyV61V1K1KZRp6K6VIvIxTVe/FFJ4gS2B5QR7MyPp5Z+3tQ5pe5KRA/IkGu6bg7PHXlh
+	8heX73xA==;
+Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
+	by casper.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1vGccS-00000005gx4-2TK5;
+	Wed, 05 Nov 2025 12:28:09 +0000
+Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
+	id 5BBC530023C; Wed, 05 Nov 2025 13:28:08 +0100 (CET)
+Date: Wed, 5 Nov 2025 13:28:08 +0100
+From: Peter Zijlstra <peterz@infradead.org>
+To: Fernand Sieber <sieberf@amazon.com>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-kernel@vger.kernel.org, x86@kernel.org,
+	aubrey.li@linux.intel.com, yu.c.chen@intel.com, jstultz@google.com
 Subject: Re: [tip:sched/core] [sched/fair] 79104becf4:
  BUG:kernel_NULL_pointer_dereference,address
-Message-ID: <aQs9yFQloF9aFCbA@rli9-mobl>
+Message-ID: <20251105122808.GK988547@noisy.programming.kicks-ass.net>
 References: <202510211205.1e0f5223-lkp@intel.com>
- <20251021110449.GO3245006@noisy.programming.kicks-ass.net>
- <20251027125453.GY4067720@noisy.programming.kicks-ass.net>
- <3b30e40b-f1fb-4145-b4d9-a9279b9602d8@intel.com>
- <20251027135516.GA3419281@noisy.programming.kicks-ass.net>
- <20251027140718.GT1386988@noisy.programming.kicks-ass.net>
- <20251027140959.GU1386988@noisy.programming.kicks-ass.net>
- <e9f705f3-3a8f-4952-b5d5-e36f4fa1515d@intel.com>
- <20251105110026.GI988547@noisy.programming.kicks-ass.net>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20251105110026.GI988547@noisy.programming.kicks-ass.net>
-X-ClientProxiedBy: SG2PR04CA0156.apcprd04.prod.outlook.com (2603:1096:4::18)
- To BY5PR11MB4165.namprd11.prod.outlook.com (2603:10b6:a03:18c::26)
+ <20251104210456.652800-1-sieberf@amazon.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BY5PR11MB4165:EE_|SN7PR11MB7511:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9986ca3e-9663-439a-42cd-08de1c63c7fa
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?yeGg6mZ23UHctOqVaMADQXSvT4q4/V47kTZDabgN3CWs2D6RqrDzfUWTRI/k?=
- =?us-ascii?Q?mI4SORJAQp4uK8Lvy+NtEYK3GWaCT5fzTPL0DqdIq/kua9V6kmk0Fq/45l7R?=
- =?us-ascii?Q?2S0BC3LL/z40kZlvvkFdzYr47kuitThPIQknVNPrOpCm9RU1VLiRBPXHDpad?=
- =?us-ascii?Q?DVlUyNu54bxOXXh1kMsThubfZ+jlfkgEomsHFSs2kKqTbjv5ivBHUqTU1Jht?=
- =?us-ascii?Q?imBOpJt5n7r8qEiK3tUMBdpGqUNsn1hoVhiMp3ifKZ9smYBNzmOdgEPxdjtX?=
- =?us-ascii?Q?YdeDdS8kgoctPuI83rFQdszLywFDOly2h6JWwRyLGUdvHT4ixkW5hx+JejJT?=
- =?us-ascii?Q?Hfxw0YuEnH89guKnDDmpsNN0hLXVsRSqIQVf1Yy7/YvKo2omuOn5h1HMzPBA?=
- =?us-ascii?Q?+JrZs/0L9E5//SZz1iUdh+qApZLpv7OrF3WCimZL5UiaS1WEXB/JLabCR4Yy?=
- =?us-ascii?Q?wN9SvakZN2TZmdhokkg9IyJr5XGk9IrsWwmo+cz4rpTmQbWD/J4YtoNBBUQG?=
- =?us-ascii?Q?oEyKnJHTrHUFLh67vVDXB+lQ7C3Iie86LLmgUKe1n3dIUsxiK8HGb89FXz7/?=
- =?us-ascii?Q?hAWjrfsXVZltuFIw6pxYuptlZTohvOHXFgDETRWEixUzOAuM9Kdm6rdYMaDz?=
- =?us-ascii?Q?eqd33s24AjO+cEq7OX2IvLSfQ+jLTeidLe7A+xg/Zjzz9n+uKtYgiMOymOzQ?=
- =?us-ascii?Q?DdTokA6J8UySBG8x4okMrMJREzxXxNlIGqgdF/dMtvDi8irx64NEQkyZtNo/?=
- =?us-ascii?Q?331oHWnQJfHJfk2fd9mcO/2fEiS2IbvdGxMt23TUdVvcS6KtVmiEmKOSHD5G?=
- =?us-ascii?Q?jINceNrKLxJ5rf0bjYUaJYbPSN6iuNTiEDGj3B6ViFNavLU/5o+Ydv26iaHY?=
- =?us-ascii?Q?vryG/M9KPkLvQL0IdTNdmrYKcZSMqFTZm2/RKfz7SIgV+qu2UbMhMUab91OH?=
- =?us-ascii?Q?/r2kQx7rPsxORSP0VSxlKzYWUA5PC2q5QasRljj77ZrK/1KwdpViZfATMIv8?=
- =?us-ascii?Q?C7sKQqqMrFGJC3+FeEcp2YBewO1mQTSZA+Sz3rjHHFLBRP1ztFOH9e7yvqta?=
- =?us-ascii?Q?HdBTWxJFNLOgOBQ2Fq6RLNS3D5AWOm+HGquodQWMvo//b3fl5kp8BBiiM6gK?=
- =?us-ascii?Q?7uraNYRnSZDkA6sqx6mVEKQfRYh6o+8HtVA1VJF42r+4sbcAC1MKPBrlas7r?=
- =?us-ascii?Q?nUSW0GiisvMJ7lF5Xi6d7kxLJwn4p2IxE7j9XFsQ1Xa6zbZfsqSMzPLetbF3?=
- =?us-ascii?Q?FT9JfFkAFwItJs/wMxw2D/VyPiM3t/7GMQJ3qfxt9sn/9K3lEgcShVxU5sFV?=
- =?us-ascii?Q?gXgyeePKwOKcymBmpt1bGQnUq3qspJJktTV19baFeOmG2TBMmatPYbh2vK3g?=
- =?us-ascii?Q?hHSxXfhCMuFz5fL4h6IVhFxew1+P02Zt/EGnieM05IUfFymtUEBBTzKI0BjP?=
- =?us-ascii?Q?QE06ZccwJucD2y8OQpGLtTUb+t/O6/43kfF0zuVH9xdaL9wai7yTyA=3D=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR11MB4165.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0tO55EhGyTkpc9LiU5dq3jA1aZZK/cmP4DyKcZG4Op0DjSvZpGgOqpMgSx4z?=
- =?us-ascii?Q?5RIvCBokb/kG6D+W3PGnkGBrGLGNUvDAapQJNlDiV7bYjuYly4A2jJJ3FGA6?=
- =?us-ascii?Q?U8ljwO4WDkqNp/KSmeQMl8NlQVn2EvlTEjPr9HkuqgbU+x/A4T93edhwnRC9?=
- =?us-ascii?Q?0ZI35VeCchp84N+xiS/0E2G9PDKgfe6g1Fv3alOYyoYRvJlSGjk/2w8tBoo4?=
- =?us-ascii?Q?P6NXslE7rYacHby0lw/bMub6qxTP7ekzghDjG8OSyajwbYIYjDyQkLBU782/?=
- =?us-ascii?Q?wca2FONqLifyWPKX93JLC8Ln/wcui+r51sqlOqLZIvWSaAz7sUOxXVtrhW1u?=
- =?us-ascii?Q?+Uv57SwhBEMZyY27nsFt8kRu2r8Yy86vhRdLZ7RP4vuzXrNAp0uskUPAXRkV?=
- =?us-ascii?Q?L9VEwCh7zq0Y+hVz6mU2GZ10Yypi+7wQe31vHm7yLvCOIg08GwhNHA+Xu1FS?=
- =?us-ascii?Q?UbO4KgzEJ7bH3MSd86vbDqJHZm+M3z/ULWuHa8AGylJE8kYxznInFXFg4+iI?=
- =?us-ascii?Q?FE3UTjSFoYetzwSab5ObrJcgJW2dJwalh4/Kb4Th7TSLB1ZCNqL2ZOJJOhGN?=
- =?us-ascii?Q?eyTKBF4twFFyKGKplb3/cyNzLWzACcNuzj17p5WBHXsNLrmAaDmA/a4MPRAx?=
- =?us-ascii?Q?N/Mn5AXf3BZUMNqawrgJVcxOAi+UEJ7lIUOLnQJvW9hstdoTg7b0nbKkxKxH?=
- =?us-ascii?Q?OWSdI7BWMdQSAdyULzKAqGWXfZ91/4LCYIug5LOINqw7trcbruzwaKsKxhsL?=
- =?us-ascii?Q?h17m8yDF3vwe8dMbPnk4G6GE5uS+qCL7EOU0NsbG/EOowQP6r/kDCRcgIMxl?=
- =?us-ascii?Q?xF2W9xZNvPGz8cKWmG1SBcUxk99QvRqG0ovbBguk2a3SOodwJQc9wBeuUSuu?=
- =?us-ascii?Q?2L83c9yDcb6S7BjqJb7ncNm2Pye5nt99vqfGX80oC+ze8z4l0qujlkku5miF?=
- =?us-ascii?Q?dDxHZ8ki7b4BBbDpU1JdUGQtzWEEya/dRm9r/gdzn4BdFsYSFy/BBrAQ5e8K?=
- =?us-ascii?Q?OGTM3FNvUQvMjE9H9G60bHgbYbXhAKjHONfVp72jfjVnRpvfLTOEKLsojbmV?=
- =?us-ascii?Q?8Gr2Wabi3Ez7VnxoiHJkP4DS/V66as0IuUnXV+bUSdHWYOGjaEIFhfuiiRRn?=
- =?us-ascii?Q?HtYuAA7ILIvVwKhDh9XqVherSidhEWhighEmp0ph6QuSKChDbFTXMIyEV4nl?=
- =?us-ascii?Q?9IBQpztF9CAG+FSWP7CGrEmwj1OcBJ5kQASO/gtJ+SlRxGBQKV3bVqQDAzE4?=
- =?us-ascii?Q?aNPQEwFYPcuDFBLr+K5mxyt583S43YJTqGAdByThCKFm20xwEK20CS7rZ+PZ?=
- =?us-ascii?Q?HG3doM3GZwWUafdsJR/v7m/2WIvneEOM1HoXP/NFyE0sBiWz1rMWVvm0o/KJ?=
- =?us-ascii?Q?NU9cwioia0HRiWUZbSe5btkkUUyy58h+HAG3TzWP9cgsI+BrcOtI5jpreBV8?=
- =?us-ascii?Q?zT6jXUuIyMGyCx7uZansPidyipWC5TkT8HphxRk7i9DyjMcO9VeCjhLsrUs4?=
- =?us-ascii?Q?HIDprNU+tm/P/bziYQEd2r8icY5rUUMUhPn9sBQ98fiNJgAigRb2/2mSVWgN?=
- =?us-ascii?Q?6s8Wr/HRyhgD038CdJFAv+S5fEWUStaBCcq2VDv6?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9986ca3e-9663-439a-42cd-08de1c63c7fa
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR11MB4165.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Nov 2025 12:06:41.9006
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GXVEYeHaIy3/wQnCRe6sw5M5vV/uaQAZKFDtvjXJQDUCswSsScFvfQIN8jf0+XFKOuQG52em1fZaSp58nXPgNw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB7511
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251104210456.652800-1-sieberf@amazon.com>
 
-On Wed, Nov 05, 2025 at 12:00:26PM +0100, Peter Zijlstra wrote:
-> On Tue, Oct 28, 2025 at 10:30:08AM +0800, Chen, Yu C wrote:
-> > On 10/27/2025 10:09 PM, Peter Zijlstra wrote:
-> > > On Mon, Oct 27, 2025 at 03:07:18PM +0100, Peter Zijlstra wrote:
-> > > > On Mon, Oct 27, 2025 at 02:55:16PM +0100, Peter Zijlstra wrote:
-> > > > 
-> > > > > > May I know if you are using the kernel config 0day attached?
-> > > > > > I found that the config 0day attached
-> > > > > > (https://download.01.org/0day-ci/archive/20251021/202510211205.1e0f5223-lkp@intel.com/config-6.18.0-rc1-00001-g79104becf42b)
-> > > > > > has
-> > > > > > CONFIG_IA32_EMULATION=y
-> > > > > > CONFIG_IA32_EMULATION_DEFAULT_DISABLED=y
-> > > > 
-> > > > Yep, deleting that entry makes it all work.
-> > > 
-> > > 'work' might be over stating, it boots and starts trinity, which then
-> > > promptly (as in a handful of seconds) triggers OOM and dies. Not
-> > > actually reproducing the NULL deref I was looking for.
-> > 
-> > Change the following line in job-script
-> > export memory='16G'
-> > to
-> > export memory='64G'
-> > ?
+On Tue, Nov 04, 2025 at 11:04:55PM +0200, Fernand Sieber wrote:
+> Hi Peter,
 > 
-> Yes, that seems to help.
+> I spent some time today investigating this report. The crash happens when 
+> a proxy task yields.
 > 
-> > I had a try and can reproduce the NULL except at first run:
-> 
-> Took me two runs, but yes, I can see it now.
-> 
-> Anyway, this is two bugs in the robot, can we please fix all this to not
-> happen again?
+> Since it probably doesn't make sense that a task blocking the best pick 
+> yields, a simple workaround is to ignore the yield in this case:
 
-Got it, I will dig into the detail to understand the difference of local
-reproduce and internal cluster run. The image, kconfig, and memory
-are exactly the same for actual robot run and provided reproduce instruction,
-since the attachment is reproduced from the job execution. I didn't find the
-cause quickly, and i will be back to this asap and provide update.
+Well yield() as a whole doesn't make much sense outside of the strict RT
+setting where it is well defined.
 
-> 
->  - .config has 32bit disabled while robot provides 32bit images. Clearly
->    the actual robot runs 64bit images and the reproduction should
->    provide those too.
-> 
->  - job description is inaccurate in the amount of memory required.
-> 
-> The reproduction steps must exactly match what the real robot runs, not
-> something else.
-> 
+> --- a/kernel/sched/fair.c
+> +++ b/kernel/sched/fair.c
+> @@ -8993,6 +8993,11 @@ static void yield_task_fair(struct rq *rq)
+>  	if (unlikely(rq->nr_running == 1))
+>  		return;
+>  
+> +	/* Don't yield if we're running a proxy task */
+> +	if (rq->donor && rq->donor != curr) {
+> +		return;
+> +	}
+
+Well, yield_task_fair() should probably have:
+
+ 	struct task_struct curr = rq->donor;
+
+But yeah, if the task holding your resource is doing yield() you're
+'sad'. Basically a sched-fair yield() means: I've no fucking clue what
+I'm doing and lets hope we can make progress a little later.
+
+And it gets worse in the context of PI/proxy, because in that case your
+fair task can deadlock the system through sheer incompetence.
+
+Anyway, consider the PI case, we bump a fair task to FIFO and then
+yield() would do the FIFO yield -- with all the possible problems.
+
+And we want the same for proxy, if the boosting context is FIFO, we want
+a FIFO yield.
+
+So I'm thinking, for all things to be consistent, we want something
+like:
+
+diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
+index 6b8a9286e2fc..13112c680f92 100644
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -2143,7 +2143,7 @@ static void yield_task_dl(struct rq *rq)
+ 	 * it and the bandwidth timer will wake it up and will give it
+ 	 * new scheduling parameters (thanks to dl_yielded=1).
+ 	 */
+-	rq->curr->dl.dl_yielded = 1;
++	rq->donor->dl.dl_yielded = 1;
+ 
+ 	update_rq_clock(rq);
+ 	update_curr_dl(rq);
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 273e2871b59e..f1d8eb350f59 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -8980,7 +8980,7 @@ static void put_prev_task_fair(struct rq *rq, struct task_struct *prev, struct t
+  */
+ static void yield_task_fair(struct rq *rq)
+ {
+-	struct task_struct *curr = rq->curr;
++	struct task_struct *curr = rq->donor;
+ 	struct cfs_rq *cfs_rq = task_cfs_rq(curr);
+ 	struct sched_entity *se = &curr->se;
+ 
+diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+index 1fd97f2d7ec6..f1867fe8e5c5 100644
+--- a/kernel/sched/rt.c
++++ b/kernel/sched/rt.c
+@@ -1490,7 +1490,7 @@ static void requeue_task_rt(struct rq *rq, struct task_struct *p, int head)
+ 
+ static void yield_task_rt(struct rq *rq)
+ {
+-	requeue_task_rt(rq, rq->curr, 0);
++	requeue_task_rt(rq, rq->donor, 0);
+ }
+ 
+ static int find_lowest_rq(struct task_struct *task);
+diff --git a/kernel/sched/syscalls.c b/kernel/sched/syscalls.c
+index 8f0f603b530b..865ec5d6e824 100644
+--- a/kernel/sched/syscalls.c
++++ b/kernel/sched/syscalls.c
+@@ -1319,7 +1319,7 @@ static void do_sched_yield(void)
+ 	rq = this_rq_lock_irq(&rf);
+ 
+ 	schedstat_inc(rq->yld_count);
+-	current->sched_class->yield_task(rq);
++	rq->donor->sched_class->yield_task(rq);
+ 
+ 	preempt_disable();
+ 	rq_unlock_irq(rq, &rf);
