@@ -1,118 +1,103 @@
-Received: from fra-out-015.esa.eu-central-1.outbound.mail-perimeter.amazon.com (fra-out-015.esa.eu-central-1.outbound.mail-perimeter.amazon.com [18.158.153.154])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA73B2D8793
-	for <oe-lkp@lists.linux.dev>; Wed,  5 Nov 2025 08:44:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=18.158.153.154
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1153E30EF89;
+	Wed,  5 Nov 2025 11:00:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762332264; cv=none; b=D1u0qT7aVsxWo0ReGF+AiWIHQATMXTLs5cqLeubXIZQh2+so4YHMPFL/ZGdeV5TbSJjHIM9YuQ+uwhsnpUAlEae1lNyr/6X2t8NaGZ4tNzzO0Pphy2flXpePnjg8qbRK0VgFdaXb1exa7HO7ReIAWw+Ea+evsCfXEP7ETDDHiu4=
+	t=1762340437; cv=none; b=E/yEZJZ7mVQgZCaOomieixUoXkDK78rXDNk8C2IA6h43AR4xFGp2rBItvPj+puSYGjYCE6qf4HRmFgA9YiqZJWShq4d5Ux3S0LtUI5YoFDDtJwGUK+AQmcZf3LxkFaNq7aJlAcwbiKznFdFO/k10wGrDLLT0DnnQkMWr6E5Tjfg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762332264; c=relaxed/simple;
-	bh=ApELpbZUQySCYHgG/SY1HXXRiPlespAoItf9AGXPzNs=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=BFiHLhiMHk8bDcEjy696NPgIs5woz2h2Iooadi3myVZvCqO9yIu9z6dalyS/jAG0Nh/Zun4dR8ySSXwag0gL/rwiqKlkT4Js+iwii/Gge9Aq/WzZbrFOugJ8xrGj2Dtvqg4/u73xIp48uDlVii/UEHhHiy/esD+EcKpfVcLhm5U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com; spf=pass smtp.mailfrom=amazon.com; dkim=pass (2048-bit key) header.d=amazon.com header.i=@amazon.com header.b=THc8Rkoe; arc=none smtp.client-ip=18.158.153.154
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.com
+	s=arc-20240116; t=1762340437; c=relaxed/simple;
+	bh=0frN4Ydex62MR9blW5nQL3JIscHl7H6SztNBiRDUr9A=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=FBZJ1/bQ8/xHQYegmk4prJPgt9yPF8SjVKu30/YsiE4Il+Z101yU+R506mZHzXLoY8O120FI/3aU0iHxnGryik8hdaiUlk6FZfxvQpy+GI8HCFjXSwkl9qoBF+gQUohyMgH6MttP3d+9pj3w//0y8nGxLJCv0UZrnEZT07FNJU0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=iCKKnfn7; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=amazon.com header.i=@amazon.com header.b="THc8Rkoe"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazoncorp2;
-  t=1762332263; x=1793868263;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=OETOZaEKELLo2yX31GL8gno5Xhyn+WEg6KkFHfb4Yns=;
-  b=THc8RkoeiuJMZgesgNvG9svqbdb7x3efvAfVUzltQ1Vd6Wc7FU41WEcP
-   ZfCTjTKeVM8sHl3XaVRzx+QULA8UOvTp8JGcd9yzmls2+QJUQJ3vvlZQp
-   K6r/Gh8bYbMaDjKT/VM4XsntFO7KTynjhiSLOBuea0hYKRG2akm52/E/W
-   0mrW1Wr7aaBBOsacIS1wC8TxCr7AASoq3Nt+lq6KBqHz577M0bkGjFT8J
-   BgeHbJCKgIbW46xvzsBJvFcjPbns5h6J82Z3Bw/yMffSt/jqW6nCNnLjz
-   jzwgLkYcSBr4u3eZDLKyM5NBbX5gW5/5w6H45Ryg0ZxcXwihYVIhMrNEA
-   Q==;
-X-CSE-ConnectionGUID: u5r0VUocRai4fanS9l/zWw==
-X-CSE-MsgGUID: OOBmpqnESMSAkQm4+vEnvw==
-X-IronPort-AV: E=Sophos;i="6.19,281,1754956800"; 
-   d="scan'208";a="4579819"
-Received: from ip-10-6-11-83.eu-central-1.compute.internal (HELO smtpout.naws.eu-central-1.prod.farcaster.email.amazon.dev) ([10.6.11.83])
-  by internal-fra-out-015.esa.eu-central-1.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2025 08:43:56 +0000
-Received: from EX19MTAEUC002.ant.amazon.com [54.240.197.228:15557]
- by smtpin.naws.eu-central-1.prod.farcaster.email.amazon.dev [10.0.28.253:2525] with esmtp (Farcaster)
- id dd7f7493-43e4-439f-ac89-48832ad343c0; Wed, 5 Nov 2025 08:43:56 +0000 (UTC)
-X-Farcaster-Flow-ID: dd7f7493-43e4-439f-ac89-48832ad343c0
-Received: from EX19D003EUB001.ant.amazon.com (10.252.51.97) by
- EX19MTAEUC002.ant.amazon.com (10.252.51.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.29;
- Wed, 5 Nov 2025 08:43:55 +0000
-Received: from u5934974a1cdd59.ant.amazon.com (10.146.13.109) by
- EX19D003EUB001.ant.amazon.com (10.252.51.97) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.29;
- Wed, 5 Nov 2025 08:43:51 +0000
-From: Fernand Sieber <sieberf@amazon.com>
-To: kernel test robot <oliver.sang@intel.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	<x86@kernel.org>, Peter Zijlstra <peterz@infradead.org>,
-	<aubrey.li@linux.intel.com>, <yu.c.chen@intel.com>
-Subject: Re: [tip:sched/core] [sched/fair] 79104becf4: BUG:kernel_NULL_pointer_dereference,address
-Date: Wed, 5 Nov 2025 10:43:33 +0200
-Message-ID: <20251105084335.121098-1-sieberf@amazon.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20251104210456.652800-1-sieberf@amazon.com>
-References: 
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="iCKKnfn7"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=r4dNssuBIX3kLf4QLulycGpF4N2z+mVGDeDOZbf0Sz4=; b=iCKKnfn7I2hblI+EDuOylvkM43
+	LWVWUtBVQ92Y+eg3+G2VO0cBfRv2Dl3ir418Qi8U2HDUgURG7fhtNKlqn+x0HbKL7J/xExY+IonBV
+	R3wIxt3ILBNzHhSbJFWh9pXPLOOzSa56NwNX5SKILtXpijKahN5GOO+A11i8YpDKnOZs93dOc6Y0C
+	NGwhl3ykyU5BLFaVf/4gcVDYes6Olwhn6c5baQovL6oFH6pDn/cD+PNr8aYkhI6RZ/xWF4f5ZD98Q
+	MjR+lUS3u6oitkDAl9nJOCZE1Kdt+lzQN2+x8LTVA1KM1AoCb+QwMTbAFpw0jD2NBAId7BGBm2FJE
+	rZvGz0Sw==;
+Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
+	by casper.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1vGbFb-00000003i8h-0Lnl;
+	Wed, 05 Nov 2025 11:00:28 +0000
+Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
+	id ED3FE300230; Wed, 05 Nov 2025 12:00:26 +0100 (CET)
+Date: Wed, 5 Nov 2025 12:00:26 +0100
+From: Peter Zijlstra <peterz@infradead.org>
+To: "Chen, Yu C" <yu.c.chen@intel.com>
+Cc: kernel test robot <oliver.sang@intel.com>,
+	Fernand Sieber <sieberf@amazon.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-kernel@vger.kernel.org, x86@kernel.org,
+	aubrey.li@linux.intel.com
+Subject: Re: [tip:sched/core] [sched/fair] 79104becf4:
+ BUG:kernel_NULL_pointer_dereference,address
+Message-ID: <20251105110026.GI988547@noisy.programming.kicks-ass.net>
+References: <202510211205.1e0f5223-lkp@intel.com>
+ <20251021110449.GO3245006@noisy.programming.kicks-ass.net>
+ <20251027125453.GY4067720@noisy.programming.kicks-ass.net>
+ <3b30e40b-f1fb-4145-b4d9-a9279b9602d8@intel.com>
+ <20251027135516.GA3419281@noisy.programming.kicks-ass.net>
+ <20251027140718.GT1386988@noisy.programming.kicks-ass.net>
+ <20251027140959.GU1386988@noisy.programming.kicks-ass.net>
+ <e9f705f3-3a8f-4952-b5d5-e36f4fa1515d@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-ClientProxiedBy: EX19D045UWA002.ant.amazon.com (10.13.139.12) To
- EX19D003EUB001.ant.amazon.com (10.252.51.97)
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e9f705f3-3a8f-4952-b5d5-e36f4fa1515d@intel.com>
 
-Hi Peter,
+On Tue, Oct 28, 2025 at 10:30:08AM +0800, Chen, Yu C wrote:
+> On 10/27/2025 10:09 PM, Peter Zijlstra wrote:
+> > On Mon, Oct 27, 2025 at 03:07:18PM +0100, Peter Zijlstra wrote:
+> > > On Mon, Oct 27, 2025 at 02:55:16PM +0100, Peter Zijlstra wrote:
+> > > 
+> > > > > May I know if you are using the kernel config 0day attached?
+> > > > > I found that the config 0day attached
+> > > > > (https://download.01.org/0day-ci/archive/20251021/202510211205.1e0f5223-lkp@intel.com/config-6.18.0-rc1-00001-g79104becf42b)
+> > > > > has
+> > > > > CONFIG_IA32_EMULATION=y
+> > > > > CONFIG_IA32_EMULATION_DEFAULT_DISABLED=y
+> > > 
+> > > Yep, deleting that entry makes it all work.
+> > 
+> > 'work' might be over stating, it boots and starts trinity, which then
+> > promptly (as in a handful of seconds) triggers OOM and dies. Not
+> > actually reproducing the NULL deref I was looking for.
+> 
+> Change the following line in job-script
+> export memory='16G'
+> to
+> export memory='64G'
+> ?
 
-I have done more code analysis and I think the following code is a better 
-approach to handle proxy tasks:
+Yes, that seems to help.
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 00f9d6c05d4cf..65eb98a779f91 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -8983,9 +8983,10 @@ static void put_prev_task_fair(struct rq *rq, struct task_struct *prev, struct t
-  */
- static void yield_task_fair(struct rq *rq)
- {
--	struct task_struct *curr = rq->curr;
--	struct cfs_rq *cfs_rq = task_cfs_rq(curr);
--	struct sched_entity *se = &curr->se;
-+	struct task_struct *rq_curr = rq->curr;
-+	struct cfs_rq *cfs_rq = task_cfs_rq(rq_curr);
-+	struct sched_entity *se = &rq_curr->se;
-+	bool curr = cfs_rq->curr == se;
- 
- 	/*
- 	 * Are we the only task in the tree?
-@@ -9016,8 +9017,12 @@ static void yield_task_fair(struct rq *rq)
- 	 * ends up quickly running away.
- 	 */
- 	if (entity_eligible(cfs_rq, se)) {
-+		if (!curr)
-+			__dequeue_entity(cfs_rq, se);
- 		se->vruntime = se->deadline;
- 		se->deadline += calc_delta_fair(se->slice, se);
-+		if (!curr)
-+			__enqueue_entity(cfs_rq, se);
- 		update_min_vruntime(cfs_rq);
- 	}
- }
+> I had a try and can reproduce the NULL except at first run:
 
-I'll prepare rev4 of the patch accordingly.
+Took me two runs, but yes, I can see it now.
 
---Fernand
+Anyway, this is two bugs in the robot, can we please fix all this to not
+happen again?
 
+ - .config has 32bit disabled while robot provides 32bit images. Clearly
+   the actual robot runs 64bit images and the reproduction should
+   provide those too.
 
+ - job description is inaccurate in the amount of memory required.
 
-Amazon Development Centre (South Africa) (Proprietary) Limited
-29 Gogosoa Street, Observatory, Cape Town, Western Cape, 7925, South Africa
-Registration Number: 2004 / 034463 / 07
-
+The reproduction steps must exactly match what the real robot runs, not
+something else.
