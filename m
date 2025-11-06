@@ -1,113 +1,105 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8A47235360
-	for <oe-lkp@lists.linux.dev>; Thu,  6 Nov 2025 06:53:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43DA92DCF70
+	for <oe-lkp@lists.linux.dev>; Thu,  6 Nov 2025 07:23:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.15
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762412016; cv=fail; b=QarvMILprXQs690v2rYnNXDRogovY0YPJxUJmERru2i4jHOKy/msQiDuNH/UCfKv/Rmf62kzDcdxypp9gZIK7SyF++4CmBnTHp1ECeUD7m8VxVhLZHMID+CZQWSnLn3yXXtlWal0MkcMZmQXja9J8q/1Sr1yGgp2oFK5QFw0l7c=
+	t=1762413826; cv=fail; b=m81ds2BV+OnTqaeVByZR4PH4HYjyIzygZov0EopgZiY2E9D5jMP7LVOsMtL35vSYQqdr2UHYpNPkfLnDWV5c7Q9zzxJ6cSItUWwLXX1YXbLMjR1XexBXUpNjxcTjaGm3K5cvU1EENML3xV+48HEDeipeg7AJT0XoYodn0Df20Fw=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762412016; c=relaxed/simple;
-	bh=1BkZxAgPDSFwFR40d3vOIK5yyORY8vlUcF6hZzdm8pU=;
+	s=arc-20240116; t=1762413826; c=relaxed/simple;
+	bh=vL32HTRBDnAJC1Bc7LiJWD2ik4U8VY7LMcB+pJH8k/I=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=XmMw0fU+mGdLJAV5AWvc+Y/nR+2xcblo7ULpvUcpzqcYjn8oGE5LOMjUvbK76dwwnHgeOgP1m+Jmywg+gEZwWsBzNuhg6AWHbfcvsoQt987TZuiVBh2GkRmpLSld0XQqaoK3URCl0EMG2YyK1AH2ZD0UQyizv1tFkG8rwykp8lw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=i88dTcI8; arc=fail smtp.client-ip=192.198.163.10
+	 Content-Disposition:In-Reply-To:MIME-Version; b=pHPBjnTJapb5Yi1A0xH1i+SAFFXoJWW84vIIbE+mDMyY9mj1capVQXfxxSEDML+osLkaV8m6Jp4aUY/Lm4YUXoW1kpswtSmw4CbFkT/mW2w0JinMBfK4vlNyELDzCdZoyGnCLc+JrBFypguODyypdygYjesdDnSuM3LWJr6gV3w=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=M9Rw17d/; arc=fail smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="i88dTcI8"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="M9Rw17d/"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1762412015; x=1793948015;
+  t=1762413825; x=1793949825;
   h=date:from:to:cc:subject:message-id:in-reply-to:
    mime-version;
-  bh=1BkZxAgPDSFwFR40d3vOIK5yyORY8vlUcF6hZzdm8pU=;
-  b=i88dTcI8j41sJ9fMQOS8gofzZ/nS7ydnojciZr3s0+NT5Xt+CjvXiulq
-   n5fOAsaHQaoUzBOFMA/KWEQ7U57mDxB9BKlXN7wQ6I6XPStQt2A9ssc6K
-   nSA06R1UIyUa3RTmHZk0XVfcZ8m2OC3RJVAdQY/eCrzkQ1eycgVwT+5D5
-   mRyoY4IqEMQIpdqshx7rgwp83lx3SIDkTzxw5qA3AbHZ8ADJKuzB31jLb
-   80VC3l+nmK+f9Ufi7tVBS1XkTBmrpgkpk+3s/BbQ/x4h/x0rzajTwuCqS
-   2ZKpQRN2p/KgJiRRq0G37Kn66mjlbxf5gWIrAndg6A7k5EnYriRikI4s7
+  bh=vL32HTRBDnAJC1Bc7LiJWD2ik4U8VY7LMcB+pJH8k/I=;
+  b=M9Rw17d/l0/J9gQ60+Xd0FLsJM23jtzyntY/8C7hyBumlFAdNmv6MWge
+   bC50TE+6cZvnji2DtGa98Q0GYZgEtiL5wpQi+2fIcTBiZVQkDvmEXyxqO
+   0PPluw+q6BfDCA+iXCfOkAleO71x75+d+tKB6JNhHh9+wZnjVTr+cA1N7
+   b+kBbHy/yuDB0ef72BcgacOcCiNJW+x4GH/Nkgdg86fSU1HaVhj3sJrAB
+   bjyEOG5OTlCEiS0QWCdXebIZyZxOwLrr7GwMJRG3cSdM8jBac6NHr2noa
+   Ug3xHScxURwVLrxsUA0YAdp+rnudfqwLWq0JGSHNVp46UFMo3kwhSTu/f
    Q==;
-X-CSE-ConnectionGUID: LObdIFjxSr+IFS/PtAb4cg==
-X-CSE-MsgGUID: APtS/4JZRnOE/P5KMD9GYA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11604"; a="75891805"
+X-CSE-ConnectionGUID: DUMfIL2hSu6o6m9WuUG5TA==
+X-CSE-MsgGUID: x34+h1BOTPCUp5FFHTMR2Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11604"; a="68193936"
 X-IronPort-AV: E=Sophos;i="6.19,283,1754982000"; 
-   d="scan'208";a="75891805"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2025 22:53:33 -0800
-X-CSE-ConnectionGUID: FUyaHmHxRAecUuWTbeLS0A==
-X-CSE-MsgGUID: nyTx8qvqSFidZe81eLXUrQ==
+   d="scan'208";a="68193936"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2025 23:23:45 -0800
+X-CSE-ConnectionGUID: EVer1mwrQL6klPZwHkiZgg==
+X-CSE-MsgGUID: DM8R7CPiTnClL0+NHnizSw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.19,283,1754982000"; 
-   d="scan'208";a="186964599"
-Received: from fmsmsx902.amr.corp.intel.com ([10.18.126.91])
-  by orviesa010.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2025 22:53:33 -0800
-Received: from FMSMSX903.amr.corp.intel.com (10.18.126.92) by
- fmsmsx902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+   d="scan'208";a="218345154"
+Received: from fmsmsx903.amr.corp.intel.com ([10.18.126.92])
+  by orviesa002.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2025 23:23:45 -0800
+Received: from FMSMSX902.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27; Wed, 5 Nov 2025 22:53:31 -0800
-Received: from fmsedg901.ED.cps.intel.com (10.1.192.143) by
- FMSMSX903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ 15.2.2562.27; Wed, 5 Nov 2025 23:23:44 -0800
+Received: from fmsedg902.ED.cps.intel.com (10.1.192.144) by
+ FMSMSX902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27 via Frontend Transport; Wed, 5 Nov 2025 22:53:31 -0800
-Received: from BL2PR02CU003.outbound.protection.outlook.com (52.101.52.41) by
- edgegateway.intel.com (192.55.55.81) with Microsoft SMTP Server
+ 15.2.2562.27 via Frontend Transport; Wed, 5 Nov 2025 23:23:44 -0800
+Received: from DM5PR21CU001.outbound.protection.outlook.com (52.101.62.4) by
+ edgegateway.intel.com (192.55.55.82) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27; Wed, 5 Nov 2025 22:53:31 -0800
+ 15.2.2562.27; Wed, 5 Nov 2025 23:23:43 -0800
+Received: from SA0PR11MB4669.namprd11.prod.outlook.com (2603:10b6:806:99::21)
+ by DM4PR11MB6190.namprd11.prod.outlook.com (2603:10b6:8:ad::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9298.9; Thu, 6 Nov
+ 2025 07:23:38 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ULRaGsg5p67hq7tG9mW9mcgfS3iZGke7w0MA6o4shBoQuW4LuYcU97RcQVlXyeUtFrdAjbWK6fXLfPSffPYuNUjCC2dqae1i9ShQzIi125a/HPnOy2O15Argtt2S5sr3tGyt+hDHTpAVrQHPXay9xpzdV0q88iALXgB1qAG9OWzc+1h7GH7CNrbjOaJSW5wmJ9cUY8QZBbjJBO24sbPk95jY3Ex8GNB+7mxNVrPXNE4hH7HPaCUTpVGE8+EUO3mJGk6FojQekRrsjpf/LLGpAcGTqV9eUHf09uXfTtpTicdAsifYVf0u559hPUc79J9bty85Q7e7Sr6k7Igg9SLTwQ==
+ b=JMb2ef0+8qOJBguS0TGnQ+S84h5m4NaKOgvkLHm6GVJkW3fp8ty0HyY4v3sZWJUqVJ8dZSopH6TIhRFhqOaokopBuAFLZmc8Z9Mq0ACMGAt51GMKmSqtB16YAgGOaGIw0vgzV+8e37m+ckXO7sbnkBoQtpgLJudthCUcVmcABIZwO5COEM+W+bjTtrI7Av4kyct+omKPkLtRylgUiL57GS0zMNiQrm9vso/UU3QSSN/ySyzGnlv3SOGoet1kdaAWJgGoH1A0htky33vIUWz8lEYQW6bCUghtWaER+hMr3a3xpOTDvMZ6CXPq2EF2oHq7fpDp9bi6RG/pXxwgrFOimg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=n6OzqeKOuDc5h+hySYUb6GKJE7sJrG85o1Rb2/RDIHg=;
- b=V4SP/9ylRKSMhpciHPbktepcbOoPFPhHO3pAXrH0yKBZzt4YKiXq2yFawIWm7pQiUSjthJm9Y6eJ09tcxYrZ2i6Ci5wr/mDiKOWSCQl9klOZq7sPaFk11aXmoKEJCaGjr16sRUtGNtr7M55QkMWfKuiSi0yN7QZnqZ0M32D8KEi+1q6HYZFpVcw7HchSzYnstVzilz3wEqiXH4DSfdOQRhA2EJH0+qsR4I8Bv7YWOByo3JY2Y2thuI9UhwtLGdE6R5dSR/FkyHgN+OwQKzTKonYM1yZx5HkDr4Cf9iMhR6nkpjyAR8n32PfHw9AnOIcUDSe4ZGUDhF7H7f4ZvN/hAg==
+ bh=lnoHSybmK68fu2Pxc1wqX6YywNfvF4tzENet+CNMBBk=;
+ b=M0WDLsAPQ8gnJ+BJGsynC3EqFsXyzV3nvuFQxOOfMS6t6HDrBUb9zeQBHLUM6IkgbPk989AJvsuASt1LfXwfzgLiykg4cQ4ltCpHF7R0xfPeXcYVVOITTFEc+n5s3NPs2rvUrC+zVdxn0rO9GnAJdmg+o9UhzVSChvg85BHxL0q1O71DKSBcNbA7U+kC04L8ccDjC+HYChVFpAFaVHoAumYxTFp3ApAVnzyZ6C0uoCW7j8mL/JoUQJ8ZKkpccKsm7pLJ3NSsBuAMSMl4/LDz6hqHQxqIhM3ev94lw4dB45iOT56OXJv3B4J5fht5MF6g8xrLYdqKpvFqfUkewFB6Zg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by SA2PR11MB4780.namprd11.prod.outlook.com (2603:10b6:806:11d::21) with
+Received: from SJ2PR11MB8587.namprd11.prod.outlook.com (2603:10b6:a03:568::21)
+ by SA0PR11MB4669.namprd11.prod.outlook.com (2603:10b6:806:99::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9298.12; Thu, 6 Nov
- 2025 06:53:29 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.9298.006; Thu, 6 Nov 2025
- 06:53:28 +0000
-Date: Thu, 6 Nov 2025 14:53:09 +0800
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9298.10; Thu, 6 Nov
+ 2025 07:21:51 +0000
+Received: from SJ2PR11MB8587.namprd11.prod.outlook.com
+ ([fe80::4050:8bc7:b7c9:c125]) by SJ2PR11MB8587.namprd11.prod.outlook.com
+ ([fe80::4050:8bc7:b7c9:c125%7]) with mapi id 15.20.9298.010; Thu, 6 Nov 2025
+ 07:21:50 +0000
+Date: Thu, 6 Nov 2025 15:21:35 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Andrew Morton
-	<akpm@linux-foundation.org>, "Paul E. McKenney" <paulmck@kernel.org>, "Steven
- Rostedt" <rostedt@goodmis.org>, Masami Hiramatsu <mhiramat@kernel.org>,
-	"Dennis Zhou" <dennis@kernel.org>, Tejun Heo <tj@kernel.org>, Christoph
- Lameter <cl@linux.com>, Martin Liu <liumartin@google.com>, David Rientjes
-	<rientjes@google.com>, Shakeel Butt <shakeel.butt@linux.dev>, SeongJae Park
-	<sj@kernel.org>, Michal Hocko <mhocko@suse.com>, Johannes Weiner
-	<hannes@cmpxchg.org>, Sweet Tea Dorminy <sweettea@google.com>, "Lorenzo
- Stoakes" <lorenzo.stoakes@oracle.com>, "Liam R . Howlett"
-	<liam.howlett@oracle.com>, Mike Rapoport <rppt@kernel.org>, "Suren
- Baghdasaryan" <surenb@google.com>, Vlastimil Babka <vbabka@suse.cz>,
-	"Christian Brauner" <brauner@kernel.org>, Wei Yang
-	<richard.weiyang@gmail.com>, "David Hildenbrand" <david@redhat.com>, Miaohe
- Lin <linmiaohe@huawei.com>, Al Viro <viro@zeniv.linux.org.uk>, Yu Zhao
-	<yuzhao@google.com>, Roman Gushchin <roman.gushchin@linux.dev>, Mateusz Guzik
-	<mjguzik@gmail.com>, Matthew Wilcox <willy@infradead.org>, Baolin Wang
-	<baolin.wang@linux.alibaba.com>, "Aboorva Devarajan"
-	<aboorvad@linux.ibm.com>, <linux-mm@kvack.org>,
-	<linux-kernel@vger.kernel.org>, <linux-trace-kernel@vger.kernel.org>,
-	"Mathieu Desnoyers" <mathieu.desnoyers@efficios.com>,
-	<christian.koenig@amd.com>, <oliver.sang@intel.com>
-Subject: Re: [RFC PATCH v7 2/2] mm: Fix OOM killer inaccuracy on large
- many-core systems
-Message-ID: <202511061432.4e534796-lkp@intel.com>
+To: Pasha Tatashin <pasha.tatashin@soleen.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Jason Gunthorpe
+	<jgg@nvidia.com>, Mike Rapoport <rppt@kernel.org>,
+	<kexec@lists.infradead.org>, <linux-mm@kvack.org>,
+	<linux-kernel@vger.kernel.org>, <akpm@linux-foundation.org>,
+	<brauner@kernel.org>, <corbet@lwn.net>, <graf@amazon.com>, <jgg@ziepe.ca>,
+	<linux-kselftest@vger.kernel.org>, <masahiroy@kernel.org>,
+	<ojeda@kernel.org>, <pasha.tatashin@soleen.com>, <pratyush@kernel.org>,
+	<rdunlap@infradead.org>, <tj@kernel.org>, <yanjun.zhu@linux.dev>,
+	<oliver.sang@intel.com>
+Subject: Re: [PATCH v9 7/9] liveupdate: kho: move to kernel/liveupdate
+Message-ID: <202511061443.64dd159-lkp@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20251031144232.15284-3-mathieu.desnoyers@efficios.com>
-X-ClientProxiedBy: KL1PR01CA0027.apcprd01.prod.exchangelabs.com
- (2603:1096:820:1::15) To LV3PR11MB8603.namprd11.prod.outlook.com
+In-Reply-To: <20251101142325.1326536-8-pasha.tatashin@soleen.com>
+X-ClientProxiedBy: KL1PR02CA0029.apcprd02.prod.outlook.com
+ (2603:1096:820:d::16) To LV3PR11MB8603.namprd11.prod.outlook.com
  (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -116,237 +108,209 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SA2PR11MB4780:EE_
-X-MS-Office365-Filtering-Correlation-Id: dd7fa432-d73f-4920-fcb9-08de1d0130e8
+X-MS-TrafficTypeDiagnostic: SJ2PR11MB8587:EE_|SA0PR11MB4669:EE_|DM4PR11MB6190:EE_
+X-MS-Office365-Filtering-Correlation-Id: e02f1dd0-a769-488d-5339-08de1d05266f
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|7416014|366016|1800799024|7053199007;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?e8eFNVjCbWkiLD9N8nLOxiikUg76GmeJwdQY4utjcpkNgqJ8q+QBGlw6wveR?=
- =?us-ascii?Q?GC5TBjODyx8HjRaw9TGq7VAY8kmUDbhuHdGE3ZbshhrlxARtcfNhgCaZlApK?=
- =?us-ascii?Q?3nhtGp0cCgupwSZSIEFV2uuA6Kh1kfn6Q6KyQI0n3gTpnUihSgkEDQufnQ0Z?=
- =?us-ascii?Q?xghzo26Aq+Q4os4Ykt1wIr9IjZCHdZyrgFm4f89t/miLhXRD7Vewps+t+Ley?=
- =?us-ascii?Q?YZjHBrqQGGW/EuUrfFEaCYJxuQ5cZnePQBRH11egCfiiGMDQOlvGP5B+FDoN?=
- =?us-ascii?Q?ESOPCkXUcLgkW8CE4Z4vX0dNbN/ipW3TFhKwq4V402SzthW13QR5ILrWTMqH?=
- =?us-ascii?Q?j1bmI2FkJx/wC6havlFvZFhF/7+KD27ZYCxqjpOhqaNn1uQ6cgMzIIPQJe0G?=
- =?us-ascii?Q?12Kff6/9W0jkl214n/tKoGOvcPtGPChe1a4KzGaJVrgQLrhrV41UmlYc6uV7?=
- =?us-ascii?Q?HqQHuFoxEUsvxaBiPtDvS+nKn46+1hduRfVA8rtSgh/30NZphANciMu7Oquw?=
- =?us-ascii?Q?/uqMGM9gmi1i7gVmF3HkN8sIuj3GniiThddNDS57G698EbQ69Dq9nHRZsz0T?=
- =?us-ascii?Q?esH5izorS+xc8FTNhEBZDlN/Fy0UmKtMOc6Wlb6bvD0KYo0u4/6tVSJZuCs1?=
- =?us-ascii?Q?Rvo2/u5BqJXjdBo27YQprtBYJyZnQLRWV3cDteQi9K4oRrha81qUmOn8Q+aI?=
- =?us-ascii?Q?ORzKwD1wsTW4Icl9UtyNx7/C30zSAdv/bX6QiOKci0to0d8jsTDzkldV7fyH?=
- =?us-ascii?Q?+Yl/ditpSb6cJnMCTplNOb7fxEZcdbAY1OKkzVq5MiXSjIZXTSQEwaDvt2oR?=
- =?us-ascii?Q?c1u8bnNrQLg/9vL/Tupqr2eQqkbWNJmcP4Mngp3dn5HeWD4n/Cb49FB8QOZ7?=
- =?us-ascii?Q?so3Lw8chMq5/jSRqCgLp/COxYsFXVY4Tb9bVDRhIbhwwOcKIMwyWMVcP3OG9?=
- =?us-ascii?Q?Lto4SSU6TgMT1aSJ+EVN2LrQXN1FcNLJudI2drHtdM1hqMD2tAmJoNVxr8Fd?=
- =?us-ascii?Q?C0AKSA4rzr1nbInLmla6LFExL5ok1rOf8A9+CyDpM2cI3fY7W97F4W8kRXnH?=
- =?us-ascii?Q?ajCR+AgGmE/X8ipVmhLM5NZH2fgcmIaTri3mKtmem49Ih6rCoCJr0czih8ba?=
- =?us-ascii?Q?6wkck2OSoECavbOUXbr9QqnDyK55eib9UeBrStSacBcDURcOcHoR98+lLWnt?=
- =?us-ascii?Q?XMslPsXIJX9PJVAnpzNM3q7cm/YROYg87ffIHNHye6sNVWvLzsgE5zH79DNp?=
- =?us-ascii?Q?e1lnNegN1MtrjaTnK9FDxqnddCDdSlAF5nAidNrJk0FfiummxDz8ltF2SwLH?=
- =?us-ascii?Q?FfqYFJu5ueOc78RyuyNKLD/dn0Zc2bXuGbFfJy0NgGl+b67CDI85kadJJ06e?=
- =?us-ascii?Q?WsR9YgTD4nSDX0f4M0vILKO+7I5cCgJeut3MeWRjSLJH8ic6LqXxpx5o+52/?=
- =?us-ascii?Q?1pzgbs5hWR/JFV2DrNh12IEdoFgOL82YfEt6dSSa1Bn2Xuv9/070vg=3D=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(1800799024)(7053199007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?TFfPNVVRMUghy+3BkzZcZHxLT3Y4/9Dz+zVV1KhwqLyAJoCtdYD7WUorDdQt?=
+ =?us-ascii?Q?qTdKM1MAl7mGLp8ggd0TseRFT7e2nupNL4wokA5/rIarIz1xivjxRZ2vmnt3?=
+ =?us-ascii?Q?BgxyyuKe2j6JP5YqQL/+WJe8bCNhr7kvEkwKNWIGxECjIc/yvaSo6oiBuqfB?=
+ =?us-ascii?Q?oXgE6DGgrOup1ICK/NwTTICutJG9GGZTxDpmSQIhbFqCeKp4wtlyotcngjL1?=
+ =?us-ascii?Q?GBHAQadkkFCsyZ9zghrhrYdV50CA5Xr1EMQ3boeMJRoiqzIpTS6Tj3tBnlOm?=
+ =?us-ascii?Q?cF8uv4CpkYRixlHG4rZExvbSwBXQFnYik5b+Bo7sloTs+MNDNyS9tg4AG8ZX?=
+ =?us-ascii?Q?ZyI8VBkhX/bhoRhOOOoOiFSNlKjw4S7jK5Nd1GSxZX3lbwPl/Wu1az2H/Zb3?=
+ =?us-ascii?Q?s1SkUOjED8KODLNk+iwWvSNtUdvxqADiTz7IG+Tq7zasEs1dMUBML5HZ0OHN?=
+ =?us-ascii?Q?VlLzH5a4A72ZM4TDOXjcyiVDJDvm9BEaTmefumAcXqSO8lo9rdjoC97n1+5U?=
+ =?us-ascii?Q?ToWguzgdshGcVH3Ce8dkEZgvYIOTign5mMi1hSXDKIc8kHiN75Lrrzr7MMmG?=
+ =?us-ascii?Q?Ye4NzCc3bw7NzAGzbFAI1Fmn8Ii4GbK9Qph1oSai1kMchF15DhN3+K2Ooy0D?=
+ =?us-ascii?Q?Bg+PZx17K7QVdp4CB0ozxZK0NGqp9sBv8hu2IQY2B+WmOFrYMv52ZOGinLHS?=
+ =?us-ascii?Q?2QB/M5OvWyeMU2QdaNFZyaFmflhWwhktnwY+Yzk4FlcK+/hb37FB7bazqNbv?=
+ =?us-ascii?Q?HzJQs8JYz9ArPkWSvtQXTDyxDEGds1IICmB17cQ9eCfuYqk2fP7KZDZ5Yyu4?=
+ =?us-ascii?Q?13qo10dhLGOvZPmbPWUhAw7aTrWiy0Fouek1Hez1lqrcaIILYBXLjVpNHJfP?=
+ =?us-ascii?Q?AerzxD5Kd8u4kzWwgozTt0m4Jge8NI3IOcTBuQnqJjMPiOJoCQIYcK4ksAaP?=
+ =?us-ascii?Q?gYa86VrChk3JhCka07B2uExOSb+Z4bEUcsRT607tXnFCOFY0OwOtrzDp8K4S?=
+ =?us-ascii?Q?Qe7Y9z8eeFKxpMREC3roDqKlGc8rnoBgvSwwrh1u/ZgwTKoqB+8JxM8k7Avn?=
+ =?us-ascii?Q?MI1KhEUVXqr+rBazUMLmyKLIpAi6rY90Q7H1TYLqQw7TA7eQL4cP0ctf92Qs?=
+ =?us-ascii?Q?OTVN4L/yRJ6EEaVR3hAJEngAqXClJDT/d+DZqbENebTZazUMblxczMfcYBp1?=
+ =?us-ascii?Q?7uXIthqnFSkP3EdFXuDtFgnrQOf7BCNIMnXsYXHbPV21yM3NC5nQ+bwF95yz?=
+ =?us-ascii?Q?3j6B52BxWn/4P8rhL8zCWdfIHcKIfYTBoDvqoHLpxjW95mhK+xjwzPK/1gQ0?=
+ =?us-ascii?Q?lrhOmnPYP9h40FxUFGZQhEzddSXv4stqI1HUGPm3+VCNXpd02FM7BZKxTFr7?=
+ =?us-ascii?Q?R/p7ko4sIYYkKTZ1NkVJjMOvEbUa7OTHdontKonLh/c30W4qRGld5aSMqsGq?=
+ =?us-ascii?Q?VPYpMgal0omRqyaNl7hI0ZnqG0S/vV/SsO2KigxptHrZtHePsdPlYg=3D=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR11MB8587.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(1800799024)(7053199007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8Y4YXXoJSAuRY46+zOOJCriF+VzsiYnQflPWhEzu0eKgze5cc5oAhsVZgUN6?=
- =?us-ascii?Q?rWxFAZY4QzJOZH6X35fZgxbYgcyFm+Ze++gIS9JcgUyrEvj95pQhHIgnR4LZ?=
- =?us-ascii?Q?NyzJR/jg+COXqNw0+gWMNraXVk/v3jUs8F5uP+CRHR2ehV+6kLwF2lXaEPmP?=
- =?us-ascii?Q?gZloS2lDDm9YP/u4I558OWvYp93CaQlRFefNYhF6KB6jrHFDNK2FFdD1Aun1?=
- =?us-ascii?Q?Mlh2t5EOAlkTscSkjvYzZ2wEH+xUze5jjXB+zys9JBknwOO7UNw5OSLqku0H?=
- =?us-ascii?Q?nwuD1PAkNluHLvCpfDnk5UN/OxqAnQGok3teq4GM66Vt+1jJsMv+nTW623nj?=
- =?us-ascii?Q?XqJoGZSLaQRH2Bm/EOIUsSPGGdDY/uNvdslXzwo60Cu3X9dYg2PG0pYe3Mac?=
- =?us-ascii?Q?Kl9oT5jYn/0M+Oj2pCXKHL0C//pQba1fXvKUfBMk/UWJ519V9+WVeszXe1V+?=
- =?us-ascii?Q?oIRI3sNNrSbIpIh/eTdn4tqoqWwQW6FaMYC8YUY/VUgkxpkiGKaJWFD4Wy7y?=
- =?us-ascii?Q?BzMDhmvU454jdIt/ajs/zutUaYIHfZli9X++ni5odXU6fUVmsVCp+HJa6sq/?=
- =?us-ascii?Q?9GvzQ99upzjSr16saWvOE0npfKcN+ge+tPCdQVTYQNHlkWW/G6iAIBl1FPZk?=
- =?us-ascii?Q?qTA8yVwI3CGMRRibA2SAC/XV7Cpxx8DY0euyN+H+MzMorEl84NCXFEWuf6qi?=
- =?us-ascii?Q?OkNsiC8hGFUDTREGDC1tTJspqflixB8/2isOf2k4Ubq6jFfoKg0aQmYKw2LJ?=
- =?us-ascii?Q?yNgwgJfFNCS122JlD6ThY0vJpK/jhYoss9G+eBh3aKLhOVX+xGbyQYYiuopq?=
- =?us-ascii?Q?DdmbKQVgLUNWH7FyclA0efEOx26AeNJUjHFmuvfFC90mACwzIkzwiO7fICu/?=
- =?us-ascii?Q?ZrNgVHpwQ79qjsliv+HUvD+DFW3wfg3YT1gCe1I8O7joHIFisuH4AfOy7+x/?=
- =?us-ascii?Q?rWNwOnKefLcbJs8Shu3T2XJJIDWSEexwn7qHcUer12+uunRgl5ugDlkZAmjE?=
- =?us-ascii?Q?wfpR6GnPrxgRnvHjfspFYLXd6W4y1ffZ+mt6WnT4JMD8oSf8SSPrNwiQeO/G?=
- =?us-ascii?Q?TFDkMjKEhd4Dj3E+48HvDQx7o9tBoMDTvB75Z3lBm6S+PwTQFQCHvLr3uv07?=
- =?us-ascii?Q?MxIiHFx5Xys/iB0+Jp2zuSmktDSFBsFHggSzVf2BkW7AGtxqr2tWfVbe5ea6?=
- =?us-ascii?Q?Huq4BJkut8CUkd7ug2AfhQAN1PMwh+9pstYlbywBLrn+ezVckvy7r1wG7eLK?=
- =?us-ascii?Q?aMSgwYRaSjIu6wzAzILKBtfDSTFVJK5/yL724SvRnsd+FJWHlwp+mvAwWYtM?=
- =?us-ascii?Q?hRVrpT/pFALiCSV2yAy1GlxBTVZ4SICNEoSWMikBiIG+fmzZl/+noBpymiVX?=
- =?us-ascii?Q?ESHuLkx+gOljbiD/7+jougnndkM7X0UP9W72OvtC+OQeSKKzbYeagGHIrRtX?=
- =?us-ascii?Q?P6lcpk0CxDdzoALziZPMhbWtoDXxFzWb8NdPNDkn+ef5JCLXYYKYw99WTn4z?=
- =?us-ascii?Q?ZjsKRVQr7QCq2KKRTzUqraER+MgyZxrIsOA/mEcP9kn8dqEoQXHKDlGpyrac?=
- =?us-ascii?Q?Da84PJIcF1x9vuWdsq50+7b4DWzsG6x4uqouKYjE+R9JNLjF3sLOd2v/aB17?=
- =?us-ascii?Q?Ng=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: dd7fa432-d73f-4920-fcb9-08de1d0130e8
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?RxatM9EzQm/+G17MPUbyHUebjhiffeptaQ/CdXK7JwePCCLt1iAfdiCRAosR?=
+ =?us-ascii?Q?F0FiIj6JPzlBzLn3a34FNj61YlPtNL3/BqZU7803Hw9SJDXmSz3ykNkSBay7?=
+ =?us-ascii?Q?J4z1dfbkPo+NKXPVIp/cgQumu0tpYgmGiQx43h2UUJq2c6gZi51Ij/60swpq?=
+ =?us-ascii?Q?9jNfD9tCIX7iVtrW7VjHj4OYqDLYV+Bv5CMalj2jCpsBeyOzZPWOXBbrOgLH?=
+ =?us-ascii?Q?gcZjsYNg38WP74ht609Vn/y9t5VuPqvKdppLMRt+E3xhx/rS7qiAe1rAqi5y?=
+ =?us-ascii?Q?rMf9g0nUxC+CvYvWgViT/AohBIArvPHAgJ7xp45E8WcC3InwSDx8dhJCAx1b?=
+ =?us-ascii?Q?LycI/TpQ/6q9ftoVzTG404IOCKdn3YDsqS8BCyGmcPv8lTLotAmxU+TIpQPh?=
+ =?us-ascii?Q?IUHXEcBY8TQDHojuAUFHa2F7S9hvj/GSLFEL/XzT8Irn/o5XM0kE6yYMNVou?=
+ =?us-ascii?Q?6gQ2D4zlHcMACYQnUOH47QffklyeM6xulIyaNIDVEfCROX1b8S4tS9Wzbjx9?=
+ =?us-ascii?Q?Uxn/u06NWjhQ60BBIKn+H8h0VzYN8yejC8XJsoDEBWw9bFayx1Q59Tl8elLc?=
+ =?us-ascii?Q?yikdoLHsWJs1TUMse58anGQH3qIW8NEwXVsZStZb+SKT7m8sa9md7c3o1fPi?=
+ =?us-ascii?Q?m718fppHTO0bizasW25z8fe579Tyxf8vQDxZCod5HDvlRc7wRprr1JUc2L1g?=
+ =?us-ascii?Q?rOLKsuZlzd0PII3GdWioWocRiSqBMkq7NnhaCQUhEfEKVI01kr0fABrwoA34?=
+ =?us-ascii?Q?F/x9E5nSREAUtcz88NxXvzYRc7HA0sofzgfv+AtRcmj/I/yUbLce/Azq3hAi?=
+ =?us-ascii?Q?OH5C52ij7UpLvR44SlpgI5KUbJXJE3p9fjWtleTB25jL5wIe3Bv2npdDnkU6?=
+ =?us-ascii?Q?UMDLKuJI0BzJmeb0elc9qnXGR05VPcCTWv7UsvPTFo/iq19bjZXnSJSyTcMk?=
+ =?us-ascii?Q?MZj+VnxdChlP60mAW2n+/wJdJGpnZhhHjYhc2T/LnPVQy3kwhd1h7QwdMeOq?=
+ =?us-ascii?Q?dVx8P2594qJfSlFFY+XDEdmxMnUtMEvZzUn6BROGDogZT2zOmXRCEEXAmfkf?=
+ =?us-ascii?Q?/ieKBeDtIHA7O45A2YENEBn2RAKvAOOLRhlvNnAEd/uwlKIiFhmbn8W49/mB?=
+ =?us-ascii?Q?pV88OoNJlLJbVbJhdC8sLDP6o5hxAxxtELUZ4d396H3/HjDcetLSL0aKuIfI?=
+ =?us-ascii?Q?9xlAaaNjvMsaozdV4mlWknfwyoYHF11+0yBU7x3Nt8czgJUhl1qVbmDL1swM?=
+ =?us-ascii?Q?aJd1v1M9qGYaWJdmg/hI2NJKK/7wNvdBpVV+o4EZTU/zZEYFvYQ/JzEaMy9/?=
+ =?us-ascii?Q?+OgZdnE7CKEUQ7XcXI4lbjCfXpX7nZ2lbntBpdbyugy0QMvX2nLeieyp9E0e?=
+ =?us-ascii?Q?An4V3eCC0KJcyMzgfMigxuZKOtA0bQfT6i6yzHEOaORL3dVi9PDuhp6qFPsL?=
+ =?us-ascii?Q?+PO53cqSOjO6PnDfHsA+emh6hK2HJ6RFUqmI+aMk++sfOwPbx8zHMeGCWbnO?=
+ =?us-ascii?Q?Qu2itRPRybQTOObnlWFD5KdoZ1hoIPc7jpru/mKpmzwCmEnn21GIt4NPwaeQ?=
+ =?us-ascii?Q?8k4KUTKLJjh5iwonjodaV5fN5gmS4GlWhilwBa+7PROPr+FBxhOIsxZYYMiK?=
+ =?us-ascii?Q?Lg=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: e02f1dd0-a769-488d-5339-08de1d05266f
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Nov 2025 06:53:28.7163
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Nov 2025 07:21:50.8626
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nrykv3yd2dUg/XL4uSDg38QY161TI3vccMPI4s++5APBHazCapny56t8Hvo32x0h8CX4hj4r3y1/rCMfLEh8WQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB4780
+X-MS-Exchange-CrossTenant-UserPrincipalName: qP1Z+tOxlBR7UYDDw72g6zZXDYeuo/b4LVHb6M++R91nitayRkBBTTF1U/Gk+9Sp4DpBZQTUturmusHkSGQPrA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB4669
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
-kernel test robot noticed "BUG:Bad_rss-counter_state_mm:#type:MM_ANONPAGES_val:#Comm:kworker##Pid" on:
 
-commit: 25ae03e80acad812e536694c1a07a3f57784ae23 ("[RFC PATCH v7 2/2] mm: Fix OOM killer inaccuracy on large many-core systems")
-url: https://github.com/intel-lab-lkp/linux/commits/Mathieu-Desnoyers/lib-Introduce-hierarchical-per-cpu-counters/20251031-224455
-base: https://git.kernel.org/cgit/linux/kernel/git/akpm/mm.git mm-everything
-patch link: https://lore.kernel.org/all/20251031144232.15284-3-mathieu.desnoyers@efficios.com/
-patch subject: [RFC PATCH v7 2/2] mm: Fix OOM killer inaccuracy on large many-core systems
+as we understand, this commit is not the root cause of the WARNING. but just
+changes the stats as below table [1]
+
+we just report FYI there is a WARNING caused by related code in our tests, in
+case anybody think it's worth to look further. thanks
+
+
+kernel test robot noticed "WARNING:at_kernel/liveupdate/kexec_handover.c:#kho_add_subtree" on:
+
+commit: 91cb1aaea4b8276323b3814d35f6e62133f64c1b ("[PATCH v9 7/9] liveupdate: kho: move to kernel/liveupdate")
+url: https://github.com/intel-lab-lkp/linux/commits/Pasha-Tatashin/kho-make-debugfs-interface-optional/20251101-222610
+patch link: https://lore.kernel.org/all/20251101142325.1326536-8-pasha.tatashin@soleen.com/
+patch subject: [PATCH v9 7/9] liveupdate: kho: move to kernel/liveupdate
 
 in testcase: boot
 
-config: x86_64-randconfig-002-20251103
-compiler: clang-20
+config: x86_64-randconfig-001-20251015
+compiler: gcc-14
 test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
 
-
-in fact, we observed various BUG:Bad_rss-counter_state_mm issues for this commit
-but clean on parent, as below
-
-+------------------------------------------------------------------------+------------+------------+
-|                                                                        | 05880dc4af | 25ae03e80a |
-+------------------------------------------------------------------------+------------+------------+
-| BUG:Bad_rss-counter_state_mm:#type:MM_FILEPAGES_val:#Comm:kworker##Pid | 0          | 10         |
-| BUG:Bad_rss-counter_state_mm:#type:MM_ANONPAGES_val:#Comm:kworker##Pid | 0          | 17         |
-| BUG:Bad_rss-counter_state_mm:#type:MM_ANONPAGES_val:#Comm:swapper_Pid  | 0          | 2          |
-| BUG:Bad_rss-counter_state_mm:#type:MM_ANONPAGES_val:#Comm:modprobe_Pid | 0          | 3          |
-| BUG:Bad_rss-counter_state_mm:#type:MM_FILEPAGES_val:#Comm:modprobe_Pid | 0          | 1          |
-+------------------------------------------------------------------------+------------+------------+
+[1]
++--------------------------------------------------------------------------------------+------------+------------+
+|                                                                                      | dc74e80622 | 91cb1aaea4 |
++--------------------------------------------------------------------------------------+------------+------------+
+| WARNING:at_kernel/kexec_handover.c:#kho_add_subtree                                  | 8          |            |
+| WARNING:at_kernel/liveupdate/kexec_handover.c:#kho_add_subtree                       | 0          | 11         |
++--------------------------------------------------------------------------------------+------------+------------+
 
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202511061432.4e534796-lkp@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202511061443.64dd159-lkp@intel.com
 
 
-[   14.858862][   T67] BUG: Bad rss-counter state mm:ffff8881000655c0 type:MM_ANONPAGES val:0 Comm:kworker/u9:0 Pid:67
-[   14.894890][   T69] BUG: Bad rss-counter state mm:ffff888100061cc0 type:MM_FILEPAGES val:0 Comm:kworker/u9:0 Pid:69
-[   14.896108][   T69] BUG: Bad rss-counter state mm:ffff888100061cc0 type:MM_ANONPAGES val:0 Comm:kworker/u9:0 Pid:69
-[   14.918858][   T71] module: module-autoload: duplicate request for module crypto-aes
-[   14.919479][   T71] module: module-autoload: duplicate request for module crypto-aes-all
-[   14.920801][    T1] krb5: Running aes128-cts-hmac-sha256-128 enc plain<block
-[   14.921844][    T1] krb5: Running aes128-cts-hmac-sha256-128 enc plain==block
-[   14.922852][    T1] krb5: Running aes128-cts-hmac-sha256-128 enc plain>block
-[   14.923843][    T1] krb5: Running aes256-cts-hmac-sha384-192 enc no plain
-[   14.939591][    T1] krb5: Running aes256-cts-hmac-sha384-192 enc plain<block
-[   14.940614][    T1] krb5: Running aes256-cts-hmac-sha384-192 enc plain==block
-[   14.941586][    T1] krb5: Running aes256-cts-hmac-sha384-192 enc plain>block
-[   14.942547][    T1] krb5: Running camellia128-cts-cmac enc no plain
-[   15.018568][   T85] BUG: Bad rss-counter state mm:ffff888160f81340 type:MM_ANONPAGES val:0 Comm:kworker/u9:0 Pid:85
-[   15.054490][   T89] module: module-autoload: duplicate request for module crypto-camellia
-[   15.055466][   T89] module: module-autoload: duplicate request for module crypto-camellia-all
-[   15.056999][    T1] krb5: Running camellia128-cts-cmac enc 1 plain
-[   15.057912][    T1] krb5: Running camellia128-cts-cmac enc 9 plain
-[   15.058781][    T1] krb5: Running camellia128-cts-cmac enc 13 plain
-[   15.059603][    T1] krb5: Running camellia128-cts-cmac enc 30 plain
-[   15.061279][    T1] krb5: Running camellia256-cts-cmac enc no plain
-[   15.062207][    T1] krb5: Running camellia256-cts-cmac enc 1 plain
-[   15.063150][    T1] krb5: Running camellia256-cts-cmac enc 9 plain
-[   15.072917][    T1] krb5: Running camellia256-cts-cmac enc 13 plain
-[   15.073896][    T1] krb5: Running camellia256-cts-cmac enc 30 plain
-[   15.074834][    T1] krb5: Running aes128-cts-hmac-sha256-128 mic
-[   15.075625][    T1] krb5: Running aes256-cts-hmac-sha384-192 mic
-[   15.076396][    T1] krb5: Running camellia128-cts-cmac mic abc
-[   15.077225][    T1] krb5: Running camellia128-cts-cmac mic ABC
-[   15.078052][    T1] krb5: Running camellia256-cts-cmac mic 123
-[   15.078853][    T1] krb5: Running camellia256-cts-cmac mic !@#
-[   15.079621][    T1] krb5: Selftests succeeded
-[   15.080683][    T1] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 248)
-[   15.081610][    T1] io scheduler kyber registered
-[   15.082527][    T1] test_mul_u64_u64_div_u64: Starting mul_u64_u64_div_u64() test
-[   15.083365][    T1] test_mul_u64_u64_div_u64: ERROR: 0x000000000000000b * 0x0000000000000007 +/ 0x0000000000000003
-[   15.086382][    T1] test_mul_u64_u64_div_u64: ERROR: expected result: 000000000000001a
-[   15.087178][    T1] test_mul_u64_u64_div_u64: ERROR: obtained result: 0000000000000019
-[   15.088064][    T1] test_mul_u64_u64_div_u64: ERROR: 0x00000000ffffffff * 0x00000000ffffffff +/ 0x0000000000000002
-[   15.089105][    T1] test_mul_u64_u64_div_u64: ERROR: expected result: 7fffffff00000001
-[   15.089924][    T1] test_mul_u64_u64_div_u64: ERROR: obtained result: 7fffffff00000000
-[   15.090696][    T1] test_mul_u64_u64_div_u64: ERROR: 0x00000001ffffffff * 0x00000000ffffffff +/ 0x0000000000000002
-[   15.091734][    T1] test_mul_u64_u64_div_u64: ERROR: expected result: fffffffe80000001
-[   15.092502][    T1] test_mul_u64_u64_div_u64: ERROR: obtained result: fffffffe80000000
-[   15.093281][    T1] test_mul_u64_u64_div_u64: ERROR: 0x00000001ffffffff * 0x00000001ffffffff +/ 0x0000000000000004
-[   15.094337][    T1] test_mul_u64_u64_div_u64: ERROR: expected result: ffffffff00000001
-[   15.095172][    T1] test_mul_u64_u64_div_u64: ERROR: obtained result: ffffffff00000000
-[   15.095953][    T1] test_mul_u64_u64_div_u64: ERROR: 0xffff000000000000 * 0xffff000000000000 +/ 0xffff000000000001
-[   15.097175][    T1] test_mul_u64_u64_div_u64: ERROR: expected result: ffff000000000000
-[   15.098020][    T1] test_mul_u64_u64_div_u64: ERROR: obtained result: fffeffffffffffff
-[   15.098837][    T1] test_mul_u64_u64_div_u64: ERROR: 0x3333333333333333 * 0x3333333333333333 +/ 0x5555555555555555
-[   15.099924][    T1] test_mul_u64_u64_div_u64: ERROR: expected result: 1eb851eb851eb852
-[   15.100721][    T1] test_mul_u64_u64_div_u64: ERROR: obtained result: 1eb851eb851eb851
-[   15.101542][    T1] test_mul_u64_u64_div_u64: ERROR: 0x7fffffffffffffff * 0x0000000000000002 +/ 0x0000000000000003
-[   15.102565][    T1] test_mul_u64_u64_div_u64: ERROR: expected result: 5555555555555555
-[   15.103368][    T1] test_mul_u64_u64_div_u64: ERROR: obtained result: 5555555555555554
-[   15.107134][    T1] test_mul_u64_u64_div_u64: ERROR: 0xffffffffffffffff * 0x0000000000000002 +/ 0x8000000000000000
-[   15.108196][    T1] test_mul_u64_u64_div_u64: ERROR: expected result: 0000000000000004
-[   15.109049][    T1] test_mul_u64_u64_div_u64: ERROR: obtained result: 0000000000000003
-[   15.109887][    T1] test_mul_u64_u64_div_u64: ERROR: 0xffffffffffffffff * 0x0000000000000002 +/ 0xc000000000000000
-[   15.111017][    T1] test_mul_u64_u64_div_u64: ERROR: expected result: 0000000000000003
-[   15.111907][    T1] test_mul_u64_u64_div_u64: ERROR: obtained result: 0000000000000002
-[   15.112666][    T1] test_mul_u64_u64_div_u64: ERROR: 0xffffffffffffffff * 0x4000000000000004 +/ 0x8000000000000000
-[   15.113703][    T1] test_mul_u64_u64_div_u64: ERROR: expected result: 8000000000000008
-[   15.114527][    T1] test_mul_u64_u64_div_u64: ERROR: obtained result: 8000000000000007
-[   15.115424][    T1] test_mul_u64_u64_div_u64: ERROR: 0xffffffffffffffff * 0x4000000000000001 +/ 0x8000000000000000
-[   15.116279][    T1] test_mul_u64_u64_div_u64: ERROR: expected result: 8000000000000002
-[   15.116882][    T1] test_mul_u64_u64_div_u64: ERROR: obtained result: 8000000000000001
-[   15.117490][    T1] test_mul_u64_u64_div_u64: ERROR: 0xfffffffffffffffe * 0x8000000000000001 +/ 0xffffffffffffffff
-[   15.118363][    T1] test_mul_u64_u64_div_u64: ERROR: expected result: 8000000000000001
-[   15.119240][    T1] test_mul_u64_u64_div_u64: ERROR: obtained result: 8000000000000000
-[   15.119914][    T1] test_mul_u64_u64_div_u64: ERROR: 0xffffffffffffffff * 0x8000000000000001 +/ 0xfffffffffffffffe
-[   15.120785][    T1] test_mul_u64_u64_div_u64: ERROR: expected result: 8000000000000002
-[   15.121627][    T1] test_mul_u64_u64_div_u64: ERROR: obtained result: 8000000000000001
-[   15.122503][    T1] test_mul_u64_u64_div_u64: ERROR: 0xffffffffffffffff * 0x8000000000000001 +/ 0xfffffffffffffffd
-[   15.123624][    T1] test_mul_u64_u64_div_u64: ERROR: expected result: 8000000000000003
-[   15.124521][    T1] test_mul_u64_u64_div_u64: ERROR: obtained result: 8000000000000002
-[   15.125399][    T1] test_mul_u64_u64_div_u64: ERROR: 0x7fffffffffffffff * 0xffffffffffffffff +/ 0xc000000000000000
-[   15.126592][    T1] test_mul_u64_u64_div_u64: ERROR: expected result: aaaaaaaaaaaaaaa9
-[   15.127438][    T1] test_mul_u64_u64_div_u64: ERROR: obtained result: aaaaaaaaaaaaaaa8
-[   15.128411][    T1] test_mul_u64_u64_div_u64: ERROR: 0xffffffffffffffff * 0x7fffffffffffffff +/ 0xa000000000000000
-[   15.129565][    T1] test_mul_u64_u64_div_u64: ERROR: expected result: cccccccccccccccb
-[   15.130454][    T1] test_mul_u64_u64_div_u64: ERROR: obtained result: ccccccccccccccca
-[   15.131239][    T1] test_mul_u64_u64_div_u64: ERROR: 0xffffffffffffffff * 0x7fffffffffffffff +/ 0x9000000000000000
-[   15.132213][    T1] test_mul_u64_u64_div_u64: ERROR: expected result: e38e38e38e38e38c
-[   15.132793][    T1] test_mul_u64_u64_div_u64: ERROR: obtained result: e38e38e38e38e38b
-[   15.133374][    T1] test_mul_u64_u64_div_u64: ERROR: 0x7fffffffffffffff * 0x7fffffffffffffff +/ 0x5000000000000000
-[   15.134101][    T1] test_mul_u64_u64_div_u64: ERROR: expected result: ccccccccccccccca
-[   15.134674][    T1] test_mul_u64_u64_div_u64: ERROR: obtained result: ccccccccccccccc9
-[   15.135235][    T1] test_mul_u64_u64_div_u64: ERROR: 0xe6102d256d7ea3ae * 0x70a77d0be4c31201 +/ 0xd63ec35ab3220357
-[   15.135984][    T1] test_mul_u64_u64_div_u64: ERROR: expected result: 78f8bf8cc86c6e19
-[   15.136587][    T1] test_mul_u64_u64_div_u64: ERROR: obtained result: 78f8bf8cc86c6e18
-[   15.137140][    T1] test_mul_u64_u64_div_u64: ERROR: 0xf53bae05cb86c6e1 * 0x3847b32d2f8d32e0 +/ 0xcfd4f55a647f403c
-[   15.137964][    T1] test_mul_u64_u64_div_u64: ERROR: expected result: 42687f79d8998d36
-[   15.138541][    T1] test_mul_u64_u64_div_u64: ERROR: obtained result: 42687f79d8998d35
-[   15.139135][    T1] test_mul_u64_u64_div_u64: ERROR: 0x9951c5498f941092 * 0x1f8c8bfdf287a251 +/ 0xa3c8dc5f81ea3fe2
-[   15.139884][    T1] test_mul_u64_u64_div_u64: ERROR: expected result: 1d887cb259000920
-[   15.140444][    T1] test_mul_u64_u64_div_u64: ERROR: obtained result: 1d887cb25900091f
-[   15.141025][    T1] test_mul_u64_u64_div_u64: ERROR: 0x374fee9daa1bb2bb * 0x0d0bfbff7b8ae3ef +/ 0xc169337bd42d5179
-[   15.141759][    T1] test_mul_u64_u64_div_u64: ERROR: expected result: 03bb2dbaffcbb962
-[   15.142324][    T1] test_mul_u64_u64_div_u64: ERROR: obtained result: 03bb2dbaffcbb961
-[   15.142890][    T1] test_mul_u64_u64_div_u64: ERROR: 0xeac0d03ac10eeaf0 * 0x89be05dfa162ed9b +/ 0x92bb1679a41f0e4b
-[   15.143618][    T1] test_mul_u64_u64_div_u64: ERROR: expected result: dc5f5cc9e270d217
-[   15.144200][    T1] test_mul_u64_u64_div_u64: ERROR: obtained result: dc5f5cc9e270d216
-[   15.144767][    T1] test_mul_u64_u64_div_u64: Completed mul_u64_u64_div_u64() test, 56 tests, 23 errors, 61402015 ns
-[   15.147067][    T1] gpio_virtuser: Failed to create the debugfs tree: -2
-[   15.148313][    T1] gpio_winbond: chip ID at 2e is ffff
-[   15.148884][    T1] gpio_winbond: not an our chip
-[   15.149345][    T1] gpio_winbond: chip ID at 4e is ffff
-[   15.149721][    T1] gpio_winbond: not an our chip
-[   15.151343][    T1] IPMI message handler: version 39.2
-[   15.151885][    T1] ipmi device interface
-[   15.152644][    T1] ipmi_si: IPMI System Interface driver
-[   15.153494][    T1] ipmi_si: Unable to find any System Interface(s)
+[   12.679864][    T1] ------------[ cut here ]------------
+[   12.680514][    T1] WARNING: CPU: 0 PID: 1 at kernel/liveupdate/kexec_handover.c:711 kho_add_subtree (kernel/liveupdate/kexec_handover.c:711)
+[   12.681526][    T1] Modules linked in:
+[   12.681957][    T1] CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.18.0-rc3-00216-g91cb1aaea4b8 #1 VOLUNTARY
+[   12.682956][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+[   12.683951][    T1] RIP: 0010:kho_add_subtree (kernel/liveupdate/kexec_handover.c:711)
+[   12.684514][    T1] Code: c7 58 2e a7 85 31 ed e8 31 1a 00 00 48 c7 c7 c0 12 c9 86 85 c0 89 c3 40 0f 95 c5 31 c9 31 d2 89 ee e8 57 a0 13 00 85 db 74 02 <0f> 0b b9 01 00 00 00 31 d2 89 ee 48 c7 c7 90 12 c9 86 e8 3c a0 13
+All code
+========
+   0:	c7                   	(bad)
+   1:	58                   	pop    %rax
+   2:	2e a7                	cmpsl  %es:(%rdi),%ds:(%rsi)
+   4:	85 31                	test   %esi,(%rcx)
+   6:	ed                   	in     (%dx),%eax
+   7:	e8 31 1a 00 00       	call   0x1a3d
+   c:	48 c7 c7 c0 12 c9 86 	mov    $0xffffffff86c912c0,%rdi
+  13:	85 c0                	test   %eax,%eax
+  15:	89 c3                	mov    %eax,%ebx
+  17:	40 0f 95 c5          	setne  %bpl
+  1b:	31 c9                	xor    %ecx,%ecx
+  1d:	31 d2                	xor    %edx,%edx
+  1f:	89 ee                	mov    %ebp,%esi
+  21:	e8 57 a0 13 00       	call   0x13a07d
+  26:	85 db                	test   %ebx,%ebx
+  28:	74 02                	je     0x2c
+  2a:*	0f 0b                	ud2		<-- trapping instruction
+  2c:	b9 01 00 00 00       	mov    $0x1,%ecx
+  31:	31 d2                	xor    %edx,%edx
+  33:	89 ee                	mov    %ebp,%esi
+  35:	48 c7 c7 90 12 c9 86 	mov    $0xffffffff86c91290,%rdi
+  3c:	e8                   	.byte 0xe8
+  3d:	3c a0                	cmp    $0xa0,%al
+  3f:	13                   	.byte 0x13
+
+Code starting with the faulting instruction
+===========================================
+   0:	0f 0b                	ud2
+   2:	b9 01 00 00 00       	mov    $0x1,%ecx
+   7:	31 d2                	xor    %edx,%edx
+   9:	89 ee                	mov    %ebp,%esi
+   b:	48 c7 c7 90 12 c9 86 	mov    $0xffffffff86c91290,%rdi
+  12:	e8                   	.byte 0xe8
+  13:	3c a0                	cmp    $0xa0,%al
+  15:	13                   	.byte 0x13
+[   12.686315][    T1] RSP: 0018:ffffc9000001fc58 EFLAGS: 00010286
+[   12.687184][    T1] RAX: dffffc0000000000 RBX: 00000000ffffffff RCX: 0000000000000000
+[   12.688370][    T1] RDX: 1ffffffff0d9225c RSI: 0000000000000001 RDI: ffffffff86c912e0
+[   12.689572][    T1] RBP: 0000000000000001 R08: 0000000000000008 R09: fffffbfff0dfac6c
+[   12.690762][    T1] R10: 0000000000000000 R11: ffffffff86fd6367 R12: ffff888133ce6000
+[   12.691996][    T1] R13: ffffffff85a72d60 R14: ffff88810ce59888 R15: dffffc0000000000
+[   12.693231][    T1] FS:  0000000000000000(0000) GS:ffff888426da0000(0000) knlGS:0000000000000000
+[   12.694585][    T1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   12.695569][    T1] CR2: 00007f6d5dc8f0ac CR3: 00000000054ea000 CR4: 00000000000406f0
+[   12.696832][    T1] Call Trace:
+[   12.697400][    T1]  <TASK>
+[   12.697922][    T1]  kho_test_preserve+0x2fa/0x360
+[   12.698835][    T1]  ? folio_order (arch/x86/kvm/../../../virt/kvm/guest_memfd.c:181 (discriminator 3))
+[   12.699556][    T1]  ? kho_test_generate_data+0x107/0x180
+[   12.700561][    T1]  kho_test_init (lib/test_kho.c:222 lib/test_kho.c:327)
+[   12.701312][    T1]  ? vmalloc_test_init (lib/test_kho.c:314)
+[   12.702100][    T1]  ? add_device_randomness (drivers/char/random.c:944)
+[   12.702924][    T1]  ? mix_pool_bytes (drivers/char/random.c:944)
+[   12.703646][    T1]  ? trace_initcall_start (include/trace/events/initcall.h:27 (discriminator 3))
+[   12.704499][    T1]  ? vmalloc_test_init (lib/test_kho.c:314)
+[   12.705291][    T1]  do_one_initcall (init/main.c:1284)
+[   12.706047][    T1]  ? trace_initcall_start (init/main.c:1274)
+[   12.706897][    T1]  ? parse_one (kernel/params.c:143)
+[   12.707623][    T1]  ? kasan_save_track (mm/kasan/common.c:69 (discriminator 1) mm/kasan/common.c:78 (discriminator 1))
+[   12.708394][    T1]  ? __kmalloc_noprof (mm/slub.c:5659)
+[   12.709218][    T1]  do_initcalls (init/main.c:1344 (discriminator 3) init/main.c:1361 (discriminator 3))
+[   12.709976][    T1]  kernel_init_freeable (init/main.c:1595)
+[   12.710752][    T1]  ? rest_init (init/main.c:1475)
+[   12.711473][    T1]  kernel_init (init/main.c:1485)
+[   12.712165][    T1]  ? rest_init (init/main.c:1475)
+[   12.712871][    T1]  ret_from_fork (arch/x86/kernel/process.c:164)
+[   12.713609][    T1]  ? rest_init (init/main.c:1475)
+[   12.714326][    T1]  ret_from_fork_asm (arch/x86/entry/entry_64.S:255)
+[   12.715029][    T1]  </TASK>
+[   12.715548][    T1] irq event stamp: 131753
+[   12.716243][    T1] hardirqs last  enabled at (131763): __up_console_sem (arch/x86/include/asm/irqflags.h:26 arch/x86/include/asm/irqflags.h:109 arch/x86/include/asm/irqflags.h:151 kernel/printk/printk.c:345)
+[   12.717702][    T1] hardirqs last disabled at (131776): __up_console_sem (kernel/printk/printk.c:343 (discriminator 3))
+[   12.719185][    T1] softirqs last  enabled at (131460): handle_softirqs (kernel/softirq.c:469 (discriminator 1) kernel/softirq.c:650 (discriminator 1))
+[   12.720632][    T1] softirqs last disabled at (131455): __irq_exit_rcu (kernel/softirq.c:496 kernel/softirq.c:723)
+[   12.721755][    T1] ---[ end trace 0000000000000000 ]---
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20251106/202511061432.4e534796-lkp@intel.com
+https://download.01.org/0day-ci/archive/20251106/202511061443.64dd159-lkp@intel.com
 
 
 
