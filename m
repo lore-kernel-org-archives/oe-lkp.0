@@ -1,223 +1,258 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD7622DD60E
-	for <oe-lkp@lists.linux.dev>; Wed, 12 Nov 2025 06:00:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.17
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762927211; cv=fail; b=DZazFGDclUlGohajxr4vREXGk0w7k3YkbzGJmIXkZ/fmCHZEEAeXYdvBwk1DedNr6/9ugZIlftAYPpAsb1zdrxvptpHRXPWWtx0svm++nwcEZNUQLgMo0S3Q2kXl2HURWjtVpDKpyNotAOpWHBIOCU7uilEptv1ZvYbvdWB1Qgg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762927211; c=relaxed/simple;
-	bh=k3MwpVBL0daMhBLnbHi8++1ZT4JJ1A5mk8zu7CytfqE=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=dSPT+5EL5gEFumx3vEEjgz0F7oDtaIMTaPuWcUQbvcyMGFWdIIJEkJloLy/2lsGaJ53GpBsTcv9b8vcDOWEEtO9CVluf5+OnZ/dBLEytipgemR5upn0xqHhDsufVuYmg0GXLt809FFPi926UJOqOQpOBOz9AD74/XP0fDZsGrmA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Urdv2Is5; arc=fail smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7FAA2FE579
+	for <oe-lkp@lists.linux.dev>; Wed, 12 Nov 2025 09:33:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1762940016; cv=none; b=OvBws47Btno/mAuvgPeElrVvwcQYp+1jUfp/7HhOjLTzVBrx7BpYMUA/hikDTG+HodDJRdLOVkxpHeSk6Xxvvhzwch4TBt0h7sEaBVnB3QTx2xwPGnzfddmivvIhhhOPXxmoU4ThdAuweIYHN9Y5hAppG4binnn6JJuM5eUnwXg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1762940016; c=relaxed/simple;
+	bh=u+GJ+fgWLBOKon4AYLbpLjIvodZoyXHLoMwjO0TcmRg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=m61X1V/DtF9sn/4DFqXfAWUX74PTV7RIQbfpX6S1CAnHEPL7kHYOiWRjeshwmWHz9cFvzf6mZtsDYi6oFoNDoo4L3Jplqe5xk83be/LKkmNbKJ0br1Pj/ACOfsyWsbJLZ2YeulTXDc5GVHM01HFhWa9wgSAwoBoDoyESX671KHs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=b/UYt6Dj; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=aoAP8JQO; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=Q352pHDV; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=G4eBS/53; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Urdv2Is5"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1762927209; x=1794463209;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   mime-version;
-  bh=k3MwpVBL0daMhBLnbHi8++1ZT4JJ1A5mk8zu7CytfqE=;
-  b=Urdv2Is581f5l5wGz+wh9H7OU5tRZpWdGC2m4hemTSdFS/FkD3DFqJYN
-   9HKUTgsu8aSu1k3UwPXQL3t/eXwQrkCtMSlrGvSNenCqfUtC1/nmpskxj
-   dHrpj9R7uqhffNXUPrfMLw/B8slxsDMyqwnF4GKoFI9Z+SsYC8KeZCbDO
-   L0lPK3P8ng9cJQ0OIv9P5I3GXEOt7WccKNRFmQHvRldgh7Yyz4BxGcGxo
-   KUa3dQyGadgc3uIyA8B5/5kEUjrIRoCtjv5mSuTlyy6YcI+ratboaVPUt
-   RJy/AcV/qQeg5iEt0en09E2FudeyntrKodfenE++pNsR7+ndHrfUK8765
-   A==;
-X-CSE-ConnectionGUID: hkdVIKPoST2phBL4RciC+w==
-X-CSE-MsgGUID: j8LY6498TKi4/cU54H7lUA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11531"; a="64919711"
-X-IronPort-AV: E=Sophos;i="6.17,312,1747724400"; 
-   d="scan'208";a="64919711"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2025 22:00:08 -0800
-X-CSE-ConnectionGUID: KWWmdLyPR6G0XvzPx6HfIw==
-X-CSE-MsgGUID: 5zK9TzYRTj6cwr1Ve4zIKQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.19,298,1754982000"; 
-   d="scan'208";a="188393706"
-Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
-  by orviesa006.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2025 22:00:04 -0800
-Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
- ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27; Tue, 11 Nov 2025 22:00:04 -0800
-Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
- ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27 via Frontend Transport; Tue, 11 Nov 2025 22:00:04 -0800
-Received: from BYAPR05CU005.outbound.protection.outlook.com (52.101.85.33) by
- edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.27; Tue, 11 Nov 2025 22:00:04 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=nroZ7kVNIT1qMBvzGMeCgXUY63FzaGpk/WeOmfETqvu/HmzDVC7sx7ghwc3BT3uQR3aBu5eL/yrnD8t9l23/rRuldqNcRrTGEXNkT8jePxmZXCZJ8AtyRAvfoZopF5szZBo7lHa7OMXWZBZ8cwk/BecQwa52stVPS0BDIgHbtxXsA2+qxrJbxTGesw+k6RmGqYFtmkP5ls/xoNFuWnovEx17gKmXtOveGnh48z52iEy7JHEZa6+Qob476ce337KPSMNB+rLANKoy80cfqB5tj7r/IPx2URW4nJeUWAf9Ld3DXb/vJXUwksb4IyfAaelazZ4KYJYcffXAWImH+/UjxQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BFSIsiYMBKo96/Ep69Noz+GKnkM9anDv4rTE9Mp1WRg=;
- b=qEXvXPtbkwcdAOZups0cAv4CKrjjDp3v20CRPrHiGLCKHpV5S9jeokqITekxg4EJ6Cx+FRseuRQgyOt8cStpcVvboqJCkKSpBudxeOymPOCoK/Qnr8c/CR3gahDAQ9OdxmI+gXJFngMafXaGcnkos7IZCG+6x55Wtn+y/uJkSiNV+W3uXo5ndtFOZqvm3SDTRs46byUVkeEqdwbkUpFlZpCCnCo9osJoGaoq9i0JwU6obRTejKRq3gv+J/SCNJO/TeNg/YxSs6Up7UUQa5GfUL2cH17STu979Vmgu9IU35CXDnxxeTbRCZ6ukfkshLOsSPQX2GT+CtIpOf8EjF6bgw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by MW4PR11MB6690.namprd11.prod.outlook.com (2603:10b6:303:1e8::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9320.15; Wed, 12 Nov
- 2025 06:00:02 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.9320.013; Wed, 12 Nov 2025
- 06:00:02 +0000
-Date: Wed, 12 Nov 2025 13:59:49 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Ma Ke <make24@iscas.ac.cn>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <netdev@vger.kernel.org>,
-	<davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-	<pabeni@redhat.com>, <horms@kernel.org>, <sdf@fomichev.me>,
-	<atenart@kernel.org>, <kuniyu@google.com>, <yajun.deng@linux.dev>,
-	<gregkh@suse.de>, <ebiederm@xmission.com>, <linux-kernel@vger.kernel.org>,
-	<akpm@linux-foundation.org>, Ma Ke <make24@iscas.ac.cn>,
-	<stable@vger.kernel.org>, <oliver.sang@intel.com>
-Subject: Re: [PATCH] net: Fix error handling in netdev_register_kobject
-Message-ID: <202511121347.b3f6c2a3-lkp@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20251107080117.15099-1-make24@iscas.ac.cn>
-X-ClientProxiedBy: SG2PR02CA0126.apcprd02.prod.outlook.com
- (2603:1096:4:188::11) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="b/UYt6Dj";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="aoAP8JQO";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="Q352pHDV";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="G4eBS/53"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id C65B61F45E;
+	Wed, 12 Nov 2025 09:33:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1762940013; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=z7xhwIJIKNChEmHzgpJc+xaTvyWpzzX1wyegjJYFT8s=;
+	b=b/UYt6Dj305pVtxjmOzd7bgFCLxxub1rCIgX70FxdUxFR9h11sEFsbUE2XgvPSB+qNsHVK
+	+mXkRCgVF91ugifDXPhYVsvLpFzdzPQWWSsXs0+VH8gYp8svSIZ/WSDXc8Ua3PTYRD3P7G
+	ue6i/GlxUblbYVQb6J8Dn4MPOFYOry4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1762940013;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=z7xhwIJIKNChEmHzgpJc+xaTvyWpzzX1wyegjJYFT8s=;
+	b=aoAP8JQOcJRXC95bEDzi6WNPGSAZZQivBDuZ/28Db756BojWER7Uwm7lcN5qjS2bos1s7T
+	iIBYSZkXDDVEYNBA==
+Authentication-Results: smtp-out2.suse.de;
+	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=Q352pHDV;
+	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b="G4eBS/53"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1762940012; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=z7xhwIJIKNChEmHzgpJc+xaTvyWpzzX1wyegjJYFT8s=;
+	b=Q352pHDVmxQ7tTq3Ga27iseQNZhrkT60Sysj7z9dXgXDqQJ0CGW7GuuAkEgY9T2OnTdnE/
+	u3JUgFGwuhb5Eh+J6S2uRdKJTbgPmJqgoDwB0Gt/dCDlZh40xBFVB7jOiOA7vlSrker5TG
+	J/b7w/yB8ij7YlZFgv2L1UkdRgaCmaM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1762940012;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=z7xhwIJIKNChEmHzgpJc+xaTvyWpzzX1wyegjJYFT8s=;
+	b=G4eBS/536eeVjQS3boyERCL0o2r1L1/3z7N2c00m4qCRRnKHOgU4MkCb+u/S4pi0xSylsU
+	DEoBQqnMD1Y7tODg==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 74E1B3EA61;
+	Wed, 12 Nov 2025 09:33:32 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id bFXbG2xUFGk7BQAAD6G6ig
+	(envelope-from <vbabka@suse.cz>); Wed, 12 Nov 2025 09:33:32 +0000
+Message-ID: <a90b1707-b97a-454c-bced-a25068b28325@suse.cz>
+Date: Wed, 12 Nov 2025 10:33:32 +0100
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|MW4PR11MB6690:EE_
-X-MS-Office365-Filtering-Correlation-Id: ea82fba9-9312-4ad3-e139-08de21b0b813
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|7416014|376014|7053199007;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?aPZTAvMJT8mlMmxLKlDRpwqzk+n6cvJKa1ZLoksltIrj0acRamuJzdf2muV5?=
- =?us-ascii?Q?LMyqASdA48CxqdLgcuWRay+6RRVVwkfOsfppxfr6Jple0AIUDSsPBPDe3Syc?=
- =?us-ascii?Q?Ixl3es2VMzvG4D5FrYf6GLORzZWFKTPC5IucmHNVkLiSKLInHd+dt2JzZb2r?=
- =?us-ascii?Q?zaJVWdDrIq03yvfHcBc2tZJ05lKEx4IEpXU9eXxcroyn4DqRnqxRp5nWyjNP?=
- =?us-ascii?Q?inSE8VKtV7t2TKM0xErSPkcOM7N4fSTgk6k/dunMCJlsCJqe1ji929zT5Eb7?=
- =?us-ascii?Q?hoF9/XJxzwKBWVfH/VLiw+DdPOFNjzwhyf/MwNrB9krnLz/JMrziZo0kRqz7?=
- =?us-ascii?Q?gbkuEK7XRSaujxkKQtbIXmFJm+UuE0Wm9cZtuQNZgM+gfuk7S8bIKsBX3UmC?=
- =?us-ascii?Q?9jiSns+QnD38oK3H3O5/5rNfS7LTU7RMHafkeb6wwBPIN3SngpeprXCcUAhO?=
- =?us-ascii?Q?WKZKPROAUbm/FiCTL1wLf6HtuIxPMnjXSgTUZbR6813FBFs+0+eGbyu3GBv1?=
- =?us-ascii?Q?i1qNNJFmcVrtFXts7VZbB3mSBUMO7c21ctisXCrDP0MpY7OqziK5SAe5ez6X?=
- =?us-ascii?Q?1FnVFgZwfDU2KVCJz0Eaf2f3hdkTfck0QC0i8tYTepeSucY+22RKsWqk6Rqb?=
- =?us-ascii?Q?2jDBAGAPt+/kV5sN3mrQlbFkKEUiSSYpznqC3kmfnPxAygTBwC/kb0+669RQ?=
- =?us-ascii?Q?aLkqNWgD5Xl8bMIJOrLyewwlc8WGZJAGb3sJwl/mUTXXDqRXd4YPlds34ztP?=
- =?us-ascii?Q?8A99ZcJEYUUVwb5bQWgaNHBgfzt8+Tdf/fCR/u1tgpPsUtRIZjsqVd2HA4HD?=
- =?us-ascii?Q?PH/YRok5OCCKt+dOBjYe+m/PYcSAYVxMTILDq0CBjqdh5YLudgET1+dMxARo?=
- =?us-ascii?Q?dMZK+sI/19LnyhsoMCl5k2Qz4owRZExelHsODdQjtYvkVFh+ecT0Lbn0/hoX?=
- =?us-ascii?Q?27uhn+ShK6HPJdfdq9kGsItp/5X9UTx+5VlxHqDazP+VpNpLX4Z2Pagrdhbn?=
- =?us-ascii?Q?cQ6J7DUR7TUh4/6sgkP9ExKpodAOKPOPgF9zQp/t27zeQQKx45LgYmf3SYZ1?=
- =?us-ascii?Q?/0LQx2anSglETPl6A0d4CufTOqOQjlyWeJ6pT/0ebx6IbSh/KddMzzUXCsOB?=
- =?us-ascii?Q?inl82LfcEfyrhWyNOyU4Fo1mRMKwXnNfHc1qLFF5r8vH6JaeRArY1bKb4zTT?=
- =?us-ascii?Q?GjICN/+oRpTtqzQVTvi2qpmeVhhLlD6H7zV6dOZsiDzDgCDYR19tvzWS0eWO?=
- =?us-ascii?Q?PXjhTHrSkx3+7lOjBF3zWgKxWc2t/8jiFSIxHIPMT+alAlWeyMKZFpj8KNI3?=
- =?us-ascii?Q?INIX994tnnQ/crytCSFPnaqDqUM0KVBjtBSztLcVyqbVbsaMWBb+jgKaX8fy?=
- =?us-ascii?Q?CgLS+74ocUemkGsIycMndxYp4vgigWhsZRnOAV+pcfw8XXkktw=3D=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?G5IrA8JpVmhUFOY1HgqI7eRNJG85kt4BZBwF2bhbF3W0w0g2u2tlIRJ+uJ1X?=
- =?us-ascii?Q?YgJ72CwBgwcr675oaNWzPSiftMSoTn3kdSIB6Dp25+lo6qGcqO74fou94rgT?=
- =?us-ascii?Q?NHjeVaFNEikXf/95OFmSFkBWPxZRT29mrIg6xSnl/BHOsRuLGMPmbUmRrKFx?=
- =?us-ascii?Q?w1z0g5mQcCcQFcikGrESQ96ATKe8vqu/U43UPqD7p9twhQbbDav3VFA8nsaO?=
- =?us-ascii?Q?6rvuJNIrTs2JKov/jotLty/3ScxXLfq9l9A8j2D/q+GYHhn5UjNU+1IuEdCN?=
- =?us-ascii?Q?p+P6XJiP/ssTKidbAPirKlNKrKp0vsFeNm9Tbh7MBq4YBtEJo8aoDvFtwFRm?=
- =?us-ascii?Q?GxDrc5q3U5JI7u/BEf8ICXs+jgXL8wKxkwpDz3lle+RrG05BYK35U4r6uAyt?=
- =?us-ascii?Q?s8zFdG0qbhYUrultyL1p4IHUZnwwUDP+TnLzKYnSq0gmPEWjWSBXqjxuyVVV?=
- =?us-ascii?Q?2L4fwSGMm8U2AxFL5nS/DavFLKiQPirHvUepyWk97uCqRtslInGH11GJPFhY?=
- =?us-ascii?Q?s/0FJskikKiaUhUVHxwfMM7t0EnC8L5m6j3e0HTw5w1A1JFHncQWcTTeORk2?=
- =?us-ascii?Q?O4PjwXqpTcGwcZwZdU51ExPOUFKHIv6TGQiyKg8Rxyhm2kodfE9kMXkUVGjg?=
- =?us-ascii?Q?fAKlBWn2hNpJcv5MZe/VnkH3lzpCUHjvbAqPtJg88WR9lmO1As9YS9ZvvVID?=
- =?us-ascii?Q?xx5pGGmlq0pu7Wlyu81Jf9nw9vH+wVkwnlNUCYDcmd6he8s79gQu+eWOuPjW?=
- =?us-ascii?Q?PbUQV0AvQ6tgTBIngXoXArm4fj1WPwh0jDYPoT8MDIFeyZ1PmemKNshi1J+P?=
- =?us-ascii?Q?q5aiWZel29lRoIaUGdnM18exJmBBPF25qGaqLQtr9P+juB23AeqPSF5p9kv7?=
- =?us-ascii?Q?8DLR6okyjQO4W7p4MjboSfV7v6fVFi6Z1fhBGVjrSK3npycQOrgolLAch89X?=
- =?us-ascii?Q?rWHktBkdlKMhuzYC8qDPERXoC82+wVMe9GbpLj1KUjFPgnrfzQhBSsnXNVBf?=
- =?us-ascii?Q?iy/ODhY4rTIFS3TTv1VodrXj6cKWCMxr82pPsNxZak/qC9Zn8rYKHlo7FqfM?=
- =?us-ascii?Q?xQcwx7gqA57ZFcbpAMyML/h+irAVL8CH+KYz/DtiDLkayfC98Immd0zAcyEe?=
- =?us-ascii?Q?jbjWjrrifqJAx7wOzMdDQiudNVyBIFY/ZHR7cRWmKNR2oFyUMZ4yFgZYq7/M?=
- =?us-ascii?Q?TqiXQELNGnlGspnEj0PwIIQQ1haNskQpuh20TT4/jKqmVrlj7hkLDwkqR97Y?=
- =?us-ascii?Q?Srn2aHBVSNF06oYZbgOpZ73L56S2r6Uywbp47QrVDIxYOquDxEozCvhS8OV5?=
- =?us-ascii?Q?PKkim/dwaRbfYfT/ZNo0NfKADTMmu3FNiP6Vx89ywt5yUoldMyZwjotpVEKP?=
- =?us-ascii?Q?yzsiDEN53K1fA00lIAPFLXAOjtjarbMlaAdxYUxtxgBmH7mVK2vPrBz7RIx1?=
- =?us-ascii?Q?+5oLw7Av3q6GjfOKgGUD/O64HjjoTXdoOtVPznPOnkASs4z9xQ7xQT3XpeHE?=
- =?us-ascii?Q?nE1fE+9ZUGUGkQa7xlygmUaMbOq0W/orfkK5fT+aTxRoA7ZEN4D6wPOILCgy?=
- =?us-ascii?Q?nTe7N1FJhPIBomJ5mJ8zlJPrKvrtx5XnGxhpPRkUPfER3u9ibwml2u1NfdAD?=
- =?us-ascii?Q?jQ=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: ea82fba9-9312-4ad3-e139-08de21b0b813
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Nov 2025 06:00:02.1797
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GoRqYpBGMcZSyXs0mriyLD5EflHVcS30h0sDHERcBtbJ6DxjCnL2i/eleR2iFKWgH3I9YXp+UTevVb+C1TsBxg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB6690
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: poison_element vs highmem, was Re: [linux-next:master] [block]
+ ec7f31b2a2: BUG:unable_to_handle_page_fault_for_address
+To: Christoph Hellwig <hch@lst.de>, kernel test robot <oliver.sang@intel.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>,
+ Christoph Lameter <cl@gentwo.org>, David Rientjes <rientjes@google.com>,
+ Roman Gushchin <roman.gushchin@linux.dev>, Harry Yoo <harry.yoo@oracle.com>,
+ linux-mm@kvack.org, oe-lkp@lists.linux.dev, lkp@intel.com,
+ Jens Axboe <axboe@kernel.dk>, "Martin K. Petersen"
+ <martin.petersen@oracle.com>, Johannes Thumshirn
+ <johannes.thumshirn@wdc.com>, Anuj Gupta <anuj20.g@samsung.com>,
+ Kanchan Joshi <joshi.k@samsung.com>, linux-block@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <202511111411.9ebfa1ba-lkp@intel.com>
+ <20251111074828.GA6596@lst.de>
+Content-Language: en-US
+From: Vlastimil Babka <vbabka@suse.cz>
+Autocrypt: addr=vbabka@suse.cz; keydata=
+ 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
+ m6M14QORSWTLRg==
+In-Reply-To: <20251111074828.GA6596@lst.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Level: 
+X-Spam-Flag: NO
+X-Rspamd-Queue-Id: C65B61F45E
+X-Rspamd-Action: no action
+X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
+X-Spamd-Result: default: False [-4.51 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	NEURAL_HAM_SHORT(-0.20)[-0.999];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	RCPT_COUNT_TWELVE(0.00)[17];
+	ARC_NA(0.00)[];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	MIME_TRACE(0.00)[0:+];
+	FUZZY_RATELIMITED(0.00)[rspamd.com];
+	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	RCVD_TLS_ALL(0.00)[];
+	DKIM_TRACE(0.00)[suse.cz:+];
+	RCVD_COUNT_TWO(0.00)[2];
+	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	FROM_EQ_ENVFROM(0.00)[];
+	TO_DN_SOME(0.00)[];
+	DNSWL_BLOCKED(0.00)[2a07:de40:b281:106:10:150:64:167:received,2a07:de40:b281:104:10:150:64:97:from];
+	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	MID_RHS_MATCH_FROM(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:dkim,suse.cz:mid,suse.cz:email,imap1.dmz-prg2.suse.org:rdns,imap1.dmz-prg2.suse.org:helo]
+X-Spam-Score: -4.51
 
+On 11/11/25 08:48, Christoph Hellwig wrote:
+> Looks like this is due to the code in poison_element, which tries
+> to memset more than PAGE_SIZE for a single page.  This probably
+> implies we are the first users of the mempool page helpers for order > 0,
+> or at least the first one tested by anyone on 32-bit with highmem :)
+> 
+> That code seems to come from
+> 
+> commit bdfedb76f4f5aa5e37380e3b71adee4a39f30fc6
+> Author: David Rientjes <rientjes@google.com>
+> Date:   Wed Apr 15 16:14:17 2015 -0700
+> 
+>     mm, mempool: poison elements backed by slab allocator
+> 
+> originally.  The easiest fix would be to just skip poisoning for this
+> case, although that would reduce the usefulness of the poisoning.
 
-Hello,
+#syz test
 
-kernel test robot noticed "BUG_kmalloc-#k:Object_corrupt" on:
+----8<----
+From 4d97b55c208c611cb01062e0fbf9dbda9f5617d5 Mon Sep 17 00:00:00 2001
+From: Vlastimil Babka <vbabka@suse.cz>
+Date: Wed, 12 Nov 2025 10:29:52 +0100
+Subject: [PATCH] mm/mempool: fix poisoning order>0 pages with HIGHMEM
 
-commit: 6e383382971f4573e29f0e85c6e5667c8f5f46d6 ("[PATCH] net: Fix error handling in netdev_register_kobject")
-url: https://github.com/intel-lab-lkp/linux/commits/Ma-Ke/net-Fix-error-handling-in-netdev_register_kobject/20251107-160348
-base: https://git.kernel.org/cgit/linux/kernel/git/davem/net-next.git 6fc33710cd6c55397e606eeb544bdf56ee87aae5
-patch link: https://lore.kernel.org/all/20251107080117.15099-1-make24@iscas.ac.cn/
-patch subject: [PATCH] net: Fix error handling in netdev_register_kobject
+Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+---
+ mm/mempool.c | 28 ++++++++++++++++++++++------
+ 1 file changed, 22 insertions(+), 6 deletions(-)
 
-in testcase: boot
+diff --git a/mm/mempool.c b/mm/mempool.c
+index 1c38e873e546..75fea9441b93 100644
+--- a/mm/mempool.c
++++ b/mm/mempool.c
+@@ -68,10 +68,18 @@ static void check_element(mempool_t *pool, void *element)
+ 	} else if (pool->free == mempool_free_pages) {
+ 		/* Mempools backed by page allocator */
+ 		int order = (int)(long)pool->pool_data;
+-		void *addr = kmap_local_page((struct page *)element);
++#ifdef CONFIG_HIGHMEM
++		for (int i = 0; i < (1 << order); i++) {
++			struct page *page = (struct page *)element;
++			void *addr = kmap_local_page(page + i);
 
-config: i386-randconfig-014-20251110
-compiler: gcc-14
-test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m 4G
+-		__check_element(pool, addr, 1UL << (PAGE_SHIFT + order));
+-		kunmap_local(addr);
++			__check_element(pool, addr, PAGE_SIZE);
++			kunmap_local(addr);
++		}
++#else
++		void *addr = page_address((struct page *)element);
++		__check_element(pool, addr, PAGE_SIZE << order);
++#endif
+ 	}
+ }
 
-(please refer to attached dmesg/kmsg for entire log/backtrace)
+@@ -97,10 +105,18 @@ static void poison_element(mempool_t *pool, void *element)
+ 	} else if (pool->alloc == mempool_alloc_pages) {
+ 		/* Mempools backed by page allocator */
+ 		int order = (int)(long)pool->pool_data;
+-		void *addr = kmap_local_page((struct page *)element);
++#ifdef CONFIG_HIGHMEM
++		for (int i = 0; i < (1 << order); i++) {
++			struct page *page = (struct page *)element;
++			void *addr = kmap_local_page(page + i);
 
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202511121347.b3f6c2a3-lkp@intel.com
-
-
-[  OK  ] Started /etc/rc.local Compatibility.
-LKP: ttyS0: 250: skip deploy intel ucode as no ucode is specified
-[   15.199659] rc.local[250]: LKP: stdout: 250: skip deploy intel ucode as no ucode is specified
-[   15.508990][    T1] [Poison overwritten] 0xf5e12370-0xf5e12370 @offset=9072. First byte 0x6a instead of 0x6b
-[   15.511968][    T1] =============================================================================
-[   15.514232][    T1] BUG kmalloc-2k (Tainted: G S                 ): Object corrupt
-[   15.516308][    T1] -----------------------------------------------------------------------------
-[   15.516308][    T1]
-[   15.519187][    T1] Allocated in alloc_netdev_mqs+0x7d/0x470 age=517 cpu=1 pid=191
-[   15.521218][    T1]  __slab_alloc+0x53/0x80
-[   15.522561][    T1]  __kvmalloc_node_noprof (kbuild/src/consumer/mm/slub.c:4846 kbuild/src/consumer/mm/slub.c:5268 kbuild/src/consumer/mm/slub.c:5641 kbuild/src/consumer/mm/slub.c:7100)
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20251112/202511121347.b3f6c2a3-lkp@intel.com
-
-
-
+-		__poison_element(addr, 1UL << (PAGE_SHIFT + order));
+-		kunmap_local(addr);
++			__poison_element(addr, PAGE_SIZE);
++			kunmap_local(addr);
++		}
++#else
++		void *addr = page_address((struct page *)element);
++		__poison_element(addr, PAGE_SIZE << order);
++#endif
+ 	}
+ }
+ #else /* CONFIG_SLUB_DEBUG_ON */
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.51.1
+
 
