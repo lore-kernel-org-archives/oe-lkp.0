@@ -1,140 +1,81 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E60632DC77F
-	for <oe-lkp@lists.linux.dev>; Wed, 26 Nov 2025 09:02:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF25331B807
+	for <oe-lkp@lists.linux.dev>; Wed, 26 Nov 2025 09:49:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764147761; cv=none; b=EV3s3meCAykNFiV2GJNWsB/hele/V2Jdt91Sk9rj3awMHrmjzUPeHhJFVM8GQfaCk0c/zQmI7RXJ26XqJqmuqzwMTOk1ibLkzFfkbgORN7pj1oVr46QhcrtDpWzXJ3UW5TsisJO/1uPVE3C2sO4yUqR6iJwRZW9Yn6UYYvG3NcE=
+	t=1764150559; cv=none; b=tr30ehk7OZZEGtoxmGo11yL1e9FLvGCQGoeWm2d7VlSlWezfI59SzZynllkXoqhXQ7x/xQwNxhiXS9yjGjr+Mdh7ulSb0CJ+qgJvMD1JVqPErckjrduV5IS+Pi8WXOlqSpNH4PYS3KB0A2msuKM5ce8XFWrwD8eUXvfwX7Ts6fE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764147761; c=relaxed/simple;
-	bh=7S0o4A2Iqu7ypvA81Fuav1qx7vPiBxdCnjTecxYIvnE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mZGeBRUOAl+9vJ349o/EWFz5l3a6oeNwNkuhGSRTwZQ5ax0j6Y+f1FbKCXUew9Ux/t29wR9fJUNFlS4iWp5PaWwT6jKbZcvWjrrYV2EYwG7MrXFT7peul8tx8TKlpwkaK2pkNIXSsOqlpryJFeFeobYA9LgF4f7GFr9qhgFXWAU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=PwzhDNQm; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=JyhBzehp; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=dEptsKoL; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=JhkS8lWa; arc=none smtp.client-ip=195.135.223.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+	s=arc-20240116; t=1764150559; c=relaxed/simple;
+	bh=cGK1V5cr2XtVBUIwxDOJ1VtDwImhH9JCyGkX+QSHrAg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=iH+xNxo5b13Pc7797rzdczoDx4Z/ypRlQM+eGslfD6j3RIIGzc2o8EeyRv6X6JzS+uwFHrJavoM602LUTbqIPtwhF0LhU6YOQFbhq4P2TwIDh+6k97B8K1UXoObrbhQYKPsX2h7Lmcrp5kwPV9m0eYiTDfUM8wl8nZK7xPjXMIM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=K7uytnyb; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="PwzhDNQm";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="JyhBzehp";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="dEptsKoL";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="JhkS8lWa"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id D655B5BDF7;
-	Wed, 26 Nov 2025 09:02:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1764147758; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=+4DkFnCX2tMnm89mTI1dyopVVvuwQd722ablmjza3zo=;
-	b=PwzhDNQmxqBMD2AE93VTwTPSaGbmhSYvjBu5KXizIac+obx7HuOuJgdGUHpNJJhRw48kzX
-	34uTHnL7UITcljCRYRsEulqGicRfQgPVhS0yZTV5jNuEUC17uzpfOhpFbluPCCgXE72tWK
-	oKaZI+Wjg+sUHwHDe/BZ13N1jv9V3gU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1764147758;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=+4DkFnCX2tMnm89mTI1dyopVVvuwQd722ablmjza3zo=;
-	b=JyhBzehpq7fLNghYkyTuHSU0gE0hiYG17yoneUuv9vTVEeoenZxiANDU+mRhCoUXCQ/9Ik
-	2K+mCwxirbQMcGDQ==
-Authentication-Results: smtp-out2.suse.de;
-	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=dEptsKoL;
-	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b=JhkS8lWa
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1764147757; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=+4DkFnCX2tMnm89mTI1dyopVVvuwQd722ablmjza3zo=;
-	b=dEptsKoLJjaWA6VymHOdZWDb0Tsp8y3C4m4StoAfQNckIkOTKBNcUVcNgctyyJO+R3/W8y
-	Q5aYJOPngHsJ2NfZRibhcJKgXZQFHUQhQ2WW1eFtEMbDVd8sBLgH98Q5JSkKMK9O6WCU5O
-	UwFepEdUf5py4rkh7wYsFf9Knb3ASGk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1764147757;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=+4DkFnCX2tMnm89mTI1dyopVVvuwQd722ablmjza3zo=;
-	b=JhkS8lWa3mOU3avKJ6CBhI6Qi0RrOvCQ0cSArILuVmgAY8V0kyA1nYGwa6qfWLQHNBAa16
-	bro4TGOB5gMP6hDw==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id C628B3EA63;
-	Wed, 26 Nov 2025 09:02:37 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id hbF2Ly3CJmlmeAAAD6G6ig
-	(envelope-from <chrubis@suse.cz>); Wed, 26 Nov 2025 09:02:37 +0000
-Date: Wed, 26 Nov 2025 10:03:31 +0100
-From: Cyril Hrubis <chrubis@suse.cz>
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: Joel Granados <joel.granados@kernel.org>, lkp@intel.com,
-	linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-	oe-lkp@lists.linux.dev, ltp@lists.linux.it
-Subject: Re: [LTP] [linux-next:master] [sysctl]  50b496351d: ltp.proc01.fail
-Message-ID: <aSbCY9flDrZGC5NC@yuki.lan>
-References: <202511251654.9c415e9b-lkp@intel.com>
- <aSWI07xSK9zGsivq@yuki.lan>
- <aSZnS2a4hcHWB6V7@xsang-OptiPlex-9020>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K7uytnyb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75150C113D0;
+	Wed, 26 Nov 2025 09:49:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1764150559;
+	bh=cGK1V5cr2XtVBUIwxDOJ1VtDwImhH9JCyGkX+QSHrAg=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=K7uytnybsQ+iB+pXK7FSU23a44D0slh30ic/Mgcvibmyqq8lNuMOmLfTdpFKHvGDr
+	 qzvcyxgovIPuzNa9eHN8p3DQdbvr+upZbn5SklLVGY6nT3shefbLVzrBq2l6ZSsRAJ
+	 I8oFmC0t2ohpHUi9wj54qsU0tofRwgDVBHL76khriWLT0cCAQvVWt9L8Trg1QS8DRI
+	 yzaEKS5km8gWcIv+1dUYLy1S6ZU6OYQdTPGq1h0748Yo+cSWKnu/wxXuwac9e95tVd
+	 YTq6nRZ4xj/Hfh5BmCn1V+GfsYFnRhBb/T9SDBBxqNTmgE4C3Itc54r6nrqHJx/aQ2
+	 agegWz5R/FcBQ==
+Message-ID: <16995732-b7b9-4121-be36-e912a4154958@kernel.org>
+Date: Wed, 26 Nov 2025 10:49:14 +0100
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aSZnS2a4hcHWB6V7@xsang-OptiPlex-9020>
-X-Spam-Level: 
-X-Spam-Flag: NO
-X-Rspamd-Queue-Id: D655B5BDF7
-X-Rspamd-Action: no action
-X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
-X-Spamd-Result: default: False [-4.51 / 50.00];
-	BAYES_HAM(-3.00)[99.99%];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	ARC_NA(0.00)[];
-	MISSING_XM_UA(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	FUZZY_RATELIMITED(0.00)[rspamd.com];
-	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	TO_DN_SOME(0.00)[];
-	RCVD_TLS_ALL(0.00)[];
-	RCPT_COUNT_SEVEN(0.00)[7];
-	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	RCVD_COUNT_TWO(0.00)[2];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:dkim,suse.cz:email];
-	DNSWL_BLOCKED(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	DKIM_TRACE(0.00)[suse.cz:+]
-X-Spam-Score: -4.51
+User-Agent: Mozilla Thunderbird
+Subject: Re: [linux-next:master] [mm] f66e2727dd:
+ stress-ng.rawsock.ops_per_sec 46.9% regression
+To: kernel test robot <oliver.sang@intel.com>,
+ Kefeng Wang <wangkefeng.wang@huawei.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Sidhartha Kumar <sidhartha.kumar@oracle.com>,
+ Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+ Baolin Wang <baolin.wang@linux.alibaba.com>, Barry Song <baohua@kernel.org>,
+ Dev Jain <dev.jain@arm.com>, Lance Yang <lance.yang@linux.dev>,
+ Liam Howlett <liam.howlett@oracle.com>, Ryan Roberts <ryan.roberts@arm.com>,
+ Zi Yan <ziy@nvidia.com>, linux-mm@kvack.org
+References: <202511252236.33b899b3-lkp@intel.com>
+From: "David Hildenbrand (Red Hat)" <david@kernel.org>
+Content-Language: en-US
+In-Reply-To: <202511252236.33b899b3-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi!
-> I attached one results.json FYI.
+On 11/25/25 15:46, kernel test robot wrote:
+> 
+> 
+> Hello,
+> 
+> kernel test robot noticed a 46.9% regression of stress-ng.rawsock.ops_per_sec on:
+> 
+> 
+> commit: f66e2727ddfcbbe3dbb459e809824f721a914464 ("mm: huge_memory: use folio_can_map_prot_numa() for pmd folio")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 
-Looks like the test is getting unexpected EINVAL when reading from files
-from /proc/sys/net/ipv4/neigh/default/ and
-/proc/sys/net/ipv6/neigh/default/ directories.
+Unexpected, but maybe simple a symptom of doing the right thing?
 
-> it need some code change to upload it to download directory, we will consider
-> to implement it in the future. thanks
+"which skips unsuitable folio, i.e.  zone device, shared folios (KSM, 
+CoW), non-movable dma pinned, dirty file folio and folios that already 
+have the expected node affinity."
 
-Please do so, without the logs it's much harder to debug the problems.
+I suspect skipping shared folios or dirty file folios might make the 
+difference. The benchmark results would be misleading in that case: as 
+we shouldn't have migrated these pages in the first place beforehand.
 
 -- 
-Cyril Hrubis
-chrubis@suse.cz
+Cheers
+
+David
