@@ -1,80 +1,119 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B5542BDC3F;
-	Thu, 27 Nov 2025 09:07:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BADB579DA;
+	Thu, 27 Nov 2025 10:36:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764234454; cv=none; b=SLhkdv2LzhHbr+6EYRb+1vTJBHMGiHHnMNW5w4g2vMV7iTw6dmxQkoO1LMvUm3iO///1/AWz0311luGQ+4A6MN8wLdYVpmvN01jCJiWqVnX8ncaAgreNxMswhwFjmmooVKp1Lap2hHPhiXVnZ3ieoF6WC+F02IdGZ60CwiL//q8=
+	t=1764239763; cv=none; b=FsI0Epru4QR/SjB8hOgr2I1bkyjmHAsanU8o0AyTKdtEKcda7PaTKszjiQ8sJPYa4QnPwFhsP0DTwq15DZWWiKG4Tkdd+tEsGQUaF0jS8RLkkDeJgw8LRDwulUCoPZk38XyToHVt7zIVX1VGag6sQHpYl88fWmwkrJOGqxI3yjw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764234454; c=relaxed/simple;
-	bh=Z52/7k9+A2YBkOQKb14XV6zLCoEtdoIlmGh2V3vDHGc=;
+	s=arc-20240116; t=1764239763; c=relaxed/simple;
+	bh=zL8mz3J9kHqxw7t3BWknBnpVkGzh0V2YgO7SiDU0Pfs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rsldeS/wZ0NZmENRkgOFnadLRTxYsiesgrpDiCY+S8pj4HRMC78QEMudULjP8n58CGx8refgXRs+pEWtKMPar6enkQ8E2JkzNQfadeQAwrxsDK5BxGsfs6UNI1OqQl3g8Sm1lUbszLVsSNpaMSohjwmSJGO+a5dFFeTifjXlKfg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SQtM2fAs; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=uFeLSn4WwZ3a7PcJuL0UX/IOUzakThnGCu3Rwph1eICs1415Sc6oq/jCsmmdBIa3U15hchW5rVKhvvEhRoY6QkhMoIxHwvTL3vjXck7r9Dz3hPcjUyVxWGEet5b6bHQNfqvJLJ12u6SAr4QJPzWcdpavGSHdEqeGALRb4QUkWKE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FZiDWamt; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SQtM2fAs"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24F01C4CEF8;
-	Thu, 27 Nov 2025 09:07:30 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FZiDWamt"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B050BC4CEF8;
+	Thu, 27 Nov 2025 10:36:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1764234454;
-	bh=Z52/7k9+A2YBkOQKb14XV6zLCoEtdoIlmGh2V3vDHGc=;
+	s=k20201202; t=1764239763;
+	bh=zL8mz3J9kHqxw7t3BWknBnpVkGzh0V2YgO7SiDU0Pfs=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=SQtM2fAsX9ZkFIYOHedFQ8o1oz8C6te0hrlOi7Ql05u8lhbEKUc2qolbTrT34Qvei
-	 V+dAXT7siulddzODi1d0gsOvB31uh/pLN1pBuGd02YClKu6y8Yy+/0w9IEC0foV0WB
-	 KCCbcOscRAfrr+zDPqv47FyF2S/AR2zdRypUcijVm3HhBH59QuEL/zS8jGQKSah7L2
-	 4gnNGPs0ipUsgea4p9eEay/sW2w3DgtQ0mXPntVOoTOvLlt1qWxpDnX4KQX7lu+b6E
-	 QFcYugUwjcl5nvyh4gBUa2VBRsL9SMcq2lOrPw1WGk7LTvprrTrhcIcyBc63I7P6B/
-	 gA9UwZI0bcgZQ==
-Date: Thu, 27 Nov 2025 10:07:28 +0100
-From: Ingo Molnar <mingo@kernel.org>
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: kernel test robot <oliver.sang@intel.com>,
-	Tim Chen <tim.c.chen@linux.intel.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-kernel@vger.kernel.org, x86@kernel.org,
-	Chen Yu <yu.c.chen@intel.com>,
-	Vincent Guittot <vincent.guittot@linaro.org>,
-	Shrikanth Hegde <sshegde@linux.ibm.com>,
-	K Prateek Nayak <kprateek.nayak@amd.com>,
-	Srikar Dronamraju <srikar@linux.ibm.com>,
-	Mohini Narkhede <mohini.narkhede@intel.com>,
-	aubrey.li@linux.intel.com
-Subject: Re: [tip:tmp.tmp] [sched/fair]  eb2db043ab:
- BUG:kernel_NULL_pointer_dereference,address
-Message-ID: <aSgU0IDhF4uam0JA@gmail.com>
-References: <202511271605.bd46ddc3-lkp@intel.com>
- <20251127083815.GZ3245006@noisy.programming.kicks-ass.net>
+	b=FZiDWamtHG7lJ6FaU/w9R1Pb1V1hO6+QYIEUANhAx8K/285IWAQgt8COTkBsGBvsP
+	 0RuH0E9DzcScX0TugNFm+ACINbzCzIE00way5YTbug01FzXfPXU/EZguUKlv4RmLrI
+	 tSoU9do/HSWH40uDVcZlmWQjEseL1aXeeSFIrxOzzE1mOud6M5XB6XH1VAXzI95lWB
+	 1fk0r018PuixmShgbElcPQLTvI+ehLd7+zeL0d9/ZME1pfO/mZf4K7YCgfdVbx1JIi
+	 gxvOFqm6ZraKliJh7IgJuuzColnO5CQ/Q9sZR8NEaFZDTHa0oFZVuk5fPvIxgAiiwv
+	 LnJyA0iiYVWog==
+Date: Thu, 27 Nov 2025 11:35:55 +0100
+From: Joel Granados <joel.granados@kernel.org>
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: Cyril Hrubis <chrubis@suse.cz>, lkp@intel.com, 
+	linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org, oe-lkp@lists.linux.dev, 
+	ltp@lists.linux.itccccbjfeunckknjvluceftfithdduijkhkcinjndvek
+Subject: Re: [LTP] [linux-next:master] [sysctl]  50b496351d: ltp.proc01.fail
+Message-ID: <774fersjoa3ymtmorfoxs7xei3vjdf5h4dohkkjjgxo6qgpz5w@kqn6du5d62m7>
+References: <202511251654.9c415e9b-lkp@intel.com>
+ <aSWI07xSK9zGsivq@yuki.lan>
+ <aSZnS2a4hcHWB6V7@xsang-OptiPlex-9020>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="ryamdsvedtvawmwp"
+Content-Disposition: inline
+In-Reply-To: <aSZnS2a4hcHWB6V7@xsang-OptiPlex-9020>
+
+
+--ryamdsvedtvawmwp
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20251127083815.GZ3245006@noisy.programming.kicks-ass.net>
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, Nov 26, 2025 at 10:34:51AM +0800, Oliver Sang wrote:
+> hi, Cyril Hrubis,
+>=20
+> On Tue, Nov 25, 2025 at 11:45:39AM +0100, Cyril Hrubis wrote:
+> > Hi!
+> > > PATH=3D/lkp/benchmarks/ltp:/usr/local/sbin:/usr/local/bin:/usr/sbin:/=
+usr/bin:/lkp/lkp/src/bin
+> > > 2025-11-25 05:37:33 cd /lkp/benchmarks/ltp
+> > > 2025-11-25 05:37:33 export LTP_RUNTIME_MUL=3D2
+> > > 2025-11-25 05:37:33 export LTPROOT=3D/lkp/benchmarks/ltp
+> > > 2025-11-25 05:37:33 kirk -U ltp -f fs-00
+> >=20
+> > Oliver can you please record the test logs with '-o results.json' and
+> > include that file in the download directory?
+>=20
+> I attached one results.json FYI.
+I can see the errors and I can reproduce on my side. I'll take a look.
+thx.
+
+BTW: I saw this path in the logs
+/proc/sys/net/ipv5/neigh/default/anycast_delay
+
+not sure if "ipv5" is part of the suit, but worth mentioning from my
+side.
+
+Best
+
+>=20
+> it need some code change to upload it to download directory, we will cons=
+ider
+> to implement it in the future. thanks
+>=20
+>=20
+> >=20
+> > --=20
+> > Cyril Hrubis
+> > chrubis@suse.cz
 
 
-* Peter Zijlstra <peterz@infradead.org> wrote:
 
-> On Thu, Nov 27, 2025 at 04:35:37PM +0800, kernel test robot wrote:
-> > 
-> > 
-> > Hello,
-> > 
-> > kernel test robot noticed "BUG:kernel_NULL_pointer_dereference,address" on:
-> > 
-> > commit: eb2db043ab3a28ae76800f2a57e144420800d56d ("sched/fair: Skip sched_balance_running cmpxchg when balance is not due")
-> > https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git tmp.tmp
-> 
-> Not sure what this branch is, but tip/sched/core has the fixed commit.
+--=20
 
-Not sure how the test-bot picked up this temporary 
-branch and reported it despite it being gone from the 
-repo, but the branch hasn't been in -tip for days.
+Joel Granados
 
-This report can be safely ignored.
+--ryamdsvedtvawmwp
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Thanks,
+-----BEGIN PGP SIGNATURE-----
 
-	Ingo
+iQGzBAABCgAdFiEErkcJVyXmMSXOyyeQupfNUreWQU8FAmkoKXwACgkQupfNUreW
+QU+BoQwAkwC41SRb0XdYola4gkKhmFmXmfgWCSDrg3H0QpcoPIR7dRNCjuKGR/nM
+VWAkD9Dhr5ghHAhSPwzKRydLz7VskDqdusnAnaUkJKl7Kjx1e4NjSsDIohwHT6oc
+qbqNi8xDTNRoNO7mJnGIJu2tDn99s7U303q8RDIf6kfJ4PN5Cyl1R9T2u7rDN/XO
+SXCwjizCPW/shyLBys/B6f2zlIHX629kDMrVM6SwkA02bcqK52IOsvf1JWarJdN1
+brZKlSxfh47z+obIcxCOWWXDmsJMVIQQAtasfXfCB6FkG4T5+MS0+BMkFOsNzTIG
+1nMwZ75Wo3bCEHTGrBj/uLxNkW/D70ggkhxsHRox3wrSpeneswXsyBwBotXbJdLr
+PWMJNV/ZOr096pyosBypCEpVI6M3YE7TarwYzFI/qaApVXTBuGBydVB5BVJjWJ/a
+itv4h0P2rQchSpdKun9NUYUgEqi3ylCKD7kyR9+369HyCBICClnCxOHux+LazlGX
+4FSKrHm5
+=8z8u
+-----END PGP SIGNATURE-----
+
+--ryamdsvedtvawmwp--
