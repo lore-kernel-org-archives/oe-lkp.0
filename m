@@ -1,119 +1,148 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BADB579DA;
-	Thu, 27 Nov 2025 10:36:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D83C917BA2;
+	Thu, 27 Nov 2025 10:54:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764239763; cv=none; b=FsI0Epru4QR/SjB8hOgr2I1bkyjmHAsanU8o0AyTKdtEKcda7PaTKszjiQ8sJPYa4QnPwFhsP0DTwq15DZWWiKG4Tkdd+tEsGQUaF0jS8RLkkDeJgw8LRDwulUCoPZk38XyToHVt7zIVX1VGag6sQHpYl88fWmwkrJOGqxI3yjw=
+	t=1764240841; cv=none; b=BXgjg6nE2BYbkzONpHrunJJ0pvWFOufSN6w3tP7a9SXBD4CYH90X5gkKiLHRob+n67vzLl8KghfEUs8RLUTHugSScMuY4C8ZngIuQR5esu6yvxi6BpGWdjWsu30q3kzdG5Wn77sCWmCjIenT4jXLV7OV1IbynCCzlXIf0UPZ+oU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764239763; c=relaxed/simple;
-	bh=zL8mz3J9kHqxw7t3BWknBnpVkGzh0V2YgO7SiDU0Pfs=;
+	s=arc-20240116; t=1764240841; c=relaxed/simple;
+	bh=m908laCROEU9fWyjb2BB4szGW1mRmKkvS+ErKipnKdI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uFeLSn4WwZ3a7PcJuL0UX/IOUzakThnGCu3Rwph1eICs1415Sc6oq/jCsmmdBIa3U15hchW5rVKhvvEhRoY6QkhMoIxHwvTL3vjXck7r9Dz3hPcjUyVxWGEet5b6bHQNfqvJLJ12u6SAr4QJPzWcdpavGSHdEqeGALRb4QUkWKE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FZiDWamt; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=VHjyWYWq96++AiPfyV4ELOmrOFAyBEXWCQNQy+EZf/JrIQVpcFDGVVwoJ5nTB1hwjnBY4mUJf6+V2AqBhnCTQbtnLsMyjW5hnRU2DJPowzPBzlCp0DrzZ/G2TiGtssRE0pbccKYsK3n05fdrB3e+XMxPM8yDq9smXNV+TO/7NY0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=anYvLVKd; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FZiDWamt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B050BC4CEF8;
-	Thu, 27 Nov 2025 10:36:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="anYvLVKd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7DA8C4CEF8;
+	Thu, 27 Nov 2025 10:53:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1764239763;
-	bh=zL8mz3J9kHqxw7t3BWknBnpVkGzh0V2YgO7SiDU0Pfs=;
+	s=k20201202; t=1764240840;
+	bh=m908laCROEU9fWyjb2BB4szGW1mRmKkvS+ErKipnKdI=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=FZiDWamtHG7lJ6FaU/w9R1Pb1V1hO6+QYIEUANhAx8K/285IWAQgt8COTkBsGBvsP
-	 0RuH0E9DzcScX0TugNFm+ACINbzCzIE00way5YTbug01FzXfPXU/EZguUKlv4RmLrI
-	 tSoU9do/HSWH40uDVcZlmWQjEseL1aXeeSFIrxOzzE1mOud6M5XB6XH1VAXzI95lWB
-	 1fk0r018PuixmShgbElcPQLTvI+ehLd7+zeL0d9/ZME1pfO/mZf4K7YCgfdVbx1JIi
-	 gxvOFqm6ZraKliJh7IgJuuzColnO5CQ/Q9sZR8NEaFZDTHa0oFZVuk5fPvIxgAiiwv
-	 LnJyA0iiYVWog==
-Date: Thu, 27 Nov 2025 11:35:55 +0100
-From: Joel Granados <joel.granados@kernel.org>
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: Cyril Hrubis <chrubis@suse.cz>, lkp@intel.com, 
-	linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org, oe-lkp@lists.linux.dev, 
-	ltp@lists.linux.itccccbjfeunckknjvluceftfithdduijkhkcinjndvek
-Subject: Re: [LTP] [linux-next:master] [sysctl]  50b496351d: ltp.proc01.fail
-Message-ID: <774fersjoa3ymtmorfoxs7xei3vjdf5h4dohkkjjgxo6qgpz5w@kqn6du5d62m7>
-References: <202511251654.9c415e9b-lkp@intel.com>
- <aSWI07xSK9zGsivq@yuki.lan>
- <aSZnS2a4hcHWB6V7@xsang-OptiPlex-9020>
+	b=anYvLVKdnBeZh0Re0GdAB1eguMdnMme+JxIizaUmMbGqLmHOtwYgSzPlgU2a+2nOh
+	 uYCMarR8Z18I7XdVEptEIiB9ak1Kcpvn+89PMg9gnoljy+4nZ3ILlfOvo7b3jO0fUe
+	 oR9i9KqON1ts0muc6dYmBNHIujVbht5sOC13fxf6KmGZOJlmnh86fRkGhiHBEm4H/e
+	 PFBlyJoSf2CQoMiLIznE5rRu6Bs3sRmg4yV9I7Rnfk7Bz184NjFkZLbTBto2uVm6zT
+	 X/ZWjNiDAQVtZYZRfjoZYfQ54mNFQRFTxcnZZwN+gs/QR/moQQeZs17NKkOv3p+jOo
+	 UC8dww1JRPN4Q==
+Date: Thu, 27 Nov 2025 11:53:55 +0100
+From: Christian Brauner <brauner@kernel.org>
+To: NeilBrown <neil@brown.name>
+Cc: Amir Goldstein <amir73il@gmail.com>, Jeff Layton <jlayton@kernel.org>, 
+	kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, netfs@lists.linux.dev, 
+	linux-fsdevel@vger.kernel.org, linux-nfs@vger.kernel.org, linux-unionfs@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [linux-next:master] [VFS/nfsd/cachefiles/ovl] 7ab96df840:
+ WARNING:at_fs/dcache.c:#umount_check
+Message-ID: <20251127-engel-eschenholz-805b54630656@brauner>
+References: <202511252132.2c621407-lkp@intel.com>
+ <20251126-beerdigen-spanplatten-d86d4e9eaaa7@brauner>
+ <CAOQ4uxgHqKyaRfXAugnCP4sozgwiOGTGDYvx2A-XJdxfswo-Ug@mail.gmail.com>
+ <176419027888.634289.8284458326359928729@noble.neil.brown.name>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="ryamdsvedtvawmwp"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <aSZnS2a4hcHWB6V7@xsang-OptiPlex-9020>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <176419027888.634289.8284458326359928729@noble.neil.brown.name>
 
+On Thu, Nov 27, 2025 at 07:51:18AM +1100, NeilBrown wrote:
+> On Wed, 26 Nov 2025, Amir Goldstein wrote:
+> > On Wed, Nov 26, 2025 at 11:42 AM Christian Brauner <brauner@kernel.org> wrote:
+> > >
+> > > On Tue, Nov 25, 2025 at 09:48:18PM +0800, kernel test robot wrote:
+> > > >
+> > > > Hello,
+> > > >
+> > > > kernel test robot noticed "WARNING:at_fs/dcache.c:#umount_check" on:
+> > > >
+> > > > commit: 7ab96df840e60eb933abfe65fc5fe44e72f16dc0 ("VFS/nfsd/cachefiles/ovl: add start_creating() and end_creating()")
+> > > > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> > > >
+> > > > [test failed on linux-next/master d724c6f85e80a23ed46b7ebc6e38b527c09d64f5]
+> > >
+> > > Neil, can you please take a look at this soon?
+> > > I plan on sending the batch of PRs for this cycle on Friday.
+> > >
+> > > >
+> > > > in testcase: filebench
+> > > > version: filebench-x86_64-22620e6-1_20251009
+> > > > with following parameters:
+> > > >
+> > > >       disk: 1SSD
+> > > >       fs: ext4
+> > > >       fs2: nfsv4
+> > > >       test: ratelimcopyfiles.f
+> > > >       cpufreq_governor: performance
+> > > >
+> > 
+> > Test is copying to nfsv4 so that's the immediate suspect.
+> > WARN_ON is in unmount of ext4, but I suspect that nfs
+> > was loop mounted for the test.
+> > 
+> > FWIW, nfsd_proc_create() looks very suspicious.
+> > 
+> > nfsd_create_locked() does end_creating() internally (internal API change)
+> > but nfsd_create_locked() still does end_creating() regardless.
+> 
+> Thanks for looking at this Amir.  That omission in nfsproc.c is
+> certainly part of the problem but not all of it.
+> By skipping the end_creating() there, we avoid a duplicate unlock, but
+> also lose a dput() which we need.  Both callers of nfsd_create_locked()
+> have the same problem.
+> I think this should fix it.  The resulting code is a bit ugly but I can
+> fix that with the nfsd team once this gets upstream.
+> 
+> (FYI nfsd_proc_create() is only used for NFSv2 and as it was an nfsv4 test,
+>  that could wouldn't have been run)
+> 
+> Thanks,
+> NeilBrown
+> 
+> diff --git a/fs/nfsd/nfsproc.c b/fs/nfsd/nfsproc.c
+> index 28f03a6a3cc3..481e789a7697 100644
+> --- a/fs/nfsd/nfsproc.c
+> +++ b/fs/nfsd/nfsproc.c
+> @@ -407,6 +407,9 @@ nfsd_proc_create(struct svc_rqst *rqstp)
+>  		/* File doesn't exist. Create it and set attrs */
+>  		resp->status = nfsd_create_locked(rqstp, dirfhp, &attrs, type,
+>  						  rdev, newfhp);
+> +		/* nfsd_create_locked() unlocked the parent */
+> +		dput(dchild);
+> +		goto out_write;
+>  	} else if (type == S_IFREG) {
+>  		dprintk("nfsd:   existing %s, valid=%x, size=%ld\n",
+>  			argp->name, attr->ia_valid, (long) attr->ia_size);
+> diff --git a/fs/nfsd/vfs.c b/fs/nfsd/vfs.c
+> index 145f1c8d124d..4688f3fd59e2 100644
+> --- a/fs/nfsd/vfs.c
+> +++ b/fs/nfsd/vfs.c
+> @@ -1633,16 +1633,14 @@ nfsd_create(struct svc_rqst *rqstp, struct svc_fh *fhp,
+>  		return nfserrno(host_err);
+>  
+>  	err = fh_compose(resfhp, fhp->fh_export, dchild, fhp);
+> -	/*
+> -	 * We unconditionally drop our ref to dchild as fh_compose will have
+> -	 * already grabbed its own ref for it.
+> -	 */
+>  	if (err)
+>  		goto out_unlock;
+>  	err = fh_fill_pre_attrs(fhp);
+>  	if (err != nfs_ok)
+>  		goto out_unlock;
+>  	err = nfsd_create_locked(rqstp, fhp, attrs, type, rdev, resfhp);
+> +	/* nfsd_create_locked() unlocked the parent */
+> +	dput(dchild);
+>  	return err;
+>  
+>  out_unlock:
 
---ryamdsvedtvawmwp
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Nov 26, 2025 at 10:34:51AM +0800, Oliver Sang wrote:
-> hi, Cyril Hrubis,
->=20
-> On Tue, Nov 25, 2025 at 11:45:39AM +0100, Cyril Hrubis wrote:
-> > Hi!
-> > > PATH=3D/lkp/benchmarks/ltp:/usr/local/sbin:/usr/local/bin:/usr/sbin:/=
-usr/bin:/lkp/lkp/src/bin
-> > > 2025-11-25 05:37:33 cd /lkp/benchmarks/ltp
-> > > 2025-11-25 05:37:33 export LTP_RUNTIME_MUL=3D2
-> > > 2025-11-25 05:37:33 export LTPROOT=3D/lkp/benchmarks/ltp
-> > > 2025-11-25 05:37:33 kirk -U ltp -f fs-00
-> >=20
-> > Oliver can you please record the test logs with '-o results.json' and
-> > include that file in the download directory?
->=20
-> I attached one results.json FYI.
-I can see the errors and I can reproduce on my side. I'll take a look.
-thx.
-
-BTW: I saw this path in the logs
-/proc/sys/net/ipv5/neigh/default/anycast_delay
-
-not sure if "ipv5" is part of the suit, but worth mentioning from my
-side.
-
-Best
-
->=20
-> it need some code change to upload it to download directory, we will cons=
-ider
-> to implement it in the future. thanks
->=20
->=20
-> >=20
-> > --=20
-> > Cyril Hrubis
-> > chrubis@suse.cz
-
-
-
---=20
-
-Joel Granados
-
---ryamdsvedtvawmwp
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGzBAABCgAdFiEErkcJVyXmMSXOyyeQupfNUreWQU8FAmkoKXwACgkQupfNUreW
-QU+BoQwAkwC41SRb0XdYola4gkKhmFmXmfgWCSDrg3H0QpcoPIR7dRNCjuKGR/nM
-VWAkD9Dhr5ghHAhSPwzKRydLz7VskDqdusnAnaUkJKl7Kjx1e4NjSsDIohwHT6oc
-qbqNi8xDTNRoNO7mJnGIJu2tDn99s7U303q8RDIf6kfJ4PN5Cyl1R9T2u7rDN/XO
-SXCwjizCPW/shyLBys/B6f2zlIHX629kDMrVM6SwkA02bcqK52IOsvf1JWarJdN1
-brZKlSxfh47z+obIcxCOWWXDmsJMVIQQAtasfXfCB6FkG4T5+MS0+BMkFOsNzTIG
-1nMwZ75Wo3bCEHTGrBj/uLxNkW/D70ggkhxsHRox3wrSpeneswXsyBwBotXbJdLr
-PWMJNV/ZOr096pyosBypCEpVI6M3YE7TarwYzFI/qaApVXTBuGBydVB5BVJjWJ/a
-itv4h0P2rQchSpdKun9NUYUgEqi3ylCKD7kyR9+369HyCBICClnCxOHux+LazlGX
-4FSKrHm5
-=8z8u
------END PGP SIGNATURE-----
-
---ryamdsvedtvawmwp--
+Thanks for the quick fix. I've added a patch to
+vfs-6.19.directory.unlocking which I attributed to you.
+It'd be easier if you just shoot something I can apply directly next
+time. :)
