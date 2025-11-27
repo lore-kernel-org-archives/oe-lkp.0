@@ -1,197 +1,108 @@
-Received: from fout-b4-smtp.messagingengine.com (fout-b4-smtp.messagingengine.com [202.12.124.147])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1247923D290;
-	Wed, 26 Nov 2025 20:51:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.147
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CED511E1A17
+	for <oe-lkp@lists.linux.dev>; Thu, 27 Nov 2025 01:50:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764190293; cv=none; b=l2d1VHwSmfAf6ICmdTkmAOszPsRbHYJFdliq5U7Tf+QtxFAQrPYN+/rjLGsXDqFfSkdYoHIeHo+1Ib4eSEIDV98fJtuIfFkaZ2BGKWKNVvpjWDG4BV4KJHQXQstqnIwlTBcaF8d4uL0V4AT6wjtNkI8tGIB0LKxT6j6jWOhnZgQ=
+	t=1764208258; cv=none; b=YA29c5o4r6TM3hVzN9XothelROfKzWCZpQpIlTZCfTyCYLTnmaYikpxE0vqLvV+OZdCrU9Mp0x0IKS1kw7JZ7Ni4oNONeCgeYsQ81LHF023/Jek7xZPFcHu5jZ9hvQqZ3XjJQ1so4Ltsm4XFHZLJKs6mQF184oM0yhIBK+W30Bc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764190293; c=relaxed/simple;
-	bh=AKpy2VI1xw8KKWkaVooHuxoKcUKA0T55/4LqDmNkEBg=;
-	h=Content-Type:MIME-Version:From:To:Cc:Subject:In-reply-to:
-	 References:Date:Message-id; b=H6SPdr95FCnVxXjF3aJgip4yVKWpHmxun0jgN2+zqFuxwnXNLGyLciKVhmPmeQHDrWvrcLOcgZ73HPVzard0q0DfWZeJHZZqXfF77xoWgOQTprMxLgPYT3lpf4bA5FRNf2QhOCBEckSHJ2eu1opbYtO1xmwUC0imlQJZcAVLjyM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ownmail.net; spf=pass smtp.mailfrom=ownmail.net; dkim=pass (2048-bit key) header.d=ownmail.net header.i=@ownmail.net header.b=VVpB0lSc; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=vnalrjlR; arc=none smtp.client-ip=202.12.124.147
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ownmail.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ownmail.net
+	s=arc-20240116; t=1764208258; c=relaxed/simple;
+	bh=ZdmqS9hhrfqhIWJ7RxVbgZ4nHksmwGAq7i7nhI9kZwo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ncxlF1y0oeViP/LiMIfCTSbrgX00qKAh0K4NN8k4ynEsEAVDYdneZXzxbgOoMjUSm6ACdXq2Hwu8boFjXfDEchkaPwmyEvRbN1dLfKBi3QnhfYWtY6ZFJxRNWnrhWmeCNr63RbArpFPJIjuIwmtDnUkmTFoP2+oH0ap1i5j1u+8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=f6V7bhPI; arc=none smtp.client-ip=209.85.128.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ownmail.net header.i=@ownmail.net header.b="VVpB0lSc";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="vnalrjlR"
-Received: from phl-compute-01.internal (phl-compute-01.internal [10.202.2.41])
-	by mailfout.stl.internal (Postfix) with ESMTP id 116781D0008E;
-	Wed, 26 Nov 2025 15:51:30 -0500 (EST)
-Received: from phl-mailfrontend-01 ([10.202.2.162])
-  by phl-compute-01.internal (MEProxy); Wed, 26 Nov 2025 15:51:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ownmail.net; h=
-	cc:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:reply-to:subject:subject:to:to; s=fm3; t=
-	1764190289; x=1764276689; bh=yl+eQEMN8QMEUq91pZnkP+ILRrdhioI3CRA
-	AUiLxEfM=; b=VVpB0lScxy+qrjv9V6gfyM2sQ0S+3nYKq5BIbAkyaoMCUYKUJMx
-	Lq5KpC+ERZlk6l7cGURBQZfTGXSw4udnUj5JZ5UOKNe9VsbVIsJGg2+/fy/WWSCz
-	SdjHAVNxQpPEx96awjSiQ8yxnN8ysTxN8i9wIp650idZBcaXH6jItsgnStGLrowG
-	QJez7XtGlXXLsMO/J6PX10pBb6cZrzznu6zxGkMOdMM8qqRlWQo9hgg/bxE0CctR
-	ziQvXYYCGsQhcxmywD/xsTaom8Ybdbt2Kzlkl41CHud0lF99vrHls34yXLdpuAGH
-	pUIx0H2LkzbF/G1gh5eJXUiUQquBSjRqlPQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1764190289; x=
-	1764276689; bh=yl+eQEMN8QMEUq91pZnkP+ILRrdhioI3CRAAUiLxEfM=; b=v
-	nalrjlR9nF9tPOR1PqZ7mXTBJYGT7jK7VBOodSS7XwhCul+mh7qO1F1zKWHFaVEA
-	y/iqYnPOR5cTKdHJc34lDXdJCMRhUL+B4n8xq0uP7X4fTrHyNMUzbPnnyb1lvsRV
-	SIK+pAJgZhMCLie+7MUc3Ek8FjzFnRaa6UtQlWsQ+UJ3aX09aN2kg7MnR4UaCJI9
-	vnXnbbA2aFfivd6efyZJ/ySODMFJ/FEwnqjgC6CQxfeDZY0EHGt2VY5789GWjdC5
-	qJSZfQ10CsH/C6KRfxiBIDWm3VFVmg6Cd9NSMYlDrLRGVSorOatJkkn5hAn2oEfq
-	QbFq/Cr1aV40gzvKW0Q/g==
-X-ME-Sender: <xms:UWgnaXm-qG30pr1bf-e7n_GuhlhVB2zdd8IqqdlredIwiAmubkvJwA>
-    <xme:UWgnaS-hhPzNaz5wEOvtsR8INmIlCJ4tfeSYIP9RMOD9HUwSlNL7AREq4vU7qqthZ
-    sXwyQ_5iVJhBZsM-tgduX3js5Wl6tWt4DBhZhwxnwhmbMWZ9w>
-X-ME-Received: <xmr:UWgnadLoNdBAzYTvl1LECQuXGEQda_kA3omadsadRHUczaHfNIo-EfSYzTReMfskzhSNYl3OTi06QN7LMxpEiTWuHfWoIKeNJvc5EZlRfzDd>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggddvgeehfeehucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
-    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
-    gurheptgfgggfhvfevufgjfhffkfhrsehtqhertddttdejnecuhfhrohhmpefpvghilheu
-    rhhofihnuceonhgvihhlsgesohifnhhmrghilhdrnhgvtheqnecuggftrfgrthhtvghrnh
-    epvdeuteelkeejkeevteetvedtkeegleduieeftdeftefgtddtleejgfelgfevffeinecu
-    ffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurf
-    grrhgrmhepmhgrihhlfhhrohhmpehnvghilhgssehofihnmhgrihhlrdhnvghtpdhnsggp
-    rhgtphhtthhopeduuddpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtoheplhhinhhugi
-    dquhhnihhonhhfshesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhn
-    uhigqdhnfhhssehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugi
-    dqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhu
-    gidqfhhsuggvvhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehovg
-    dqlhhkpheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehnvghtfhhssehl
-    ihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepjhhlrgihthhonheskhgvrhhnvg
-    hlrdhorhhgpdhrtghpthhtohepsghrrghunhgvrheskhgvrhhnvghlrdhorhhgpdhrtghp
-    thhtohepohhlihhvvghrrdhsrghnghesihhnthgvlhdrtghomh
-X-ME-Proxy: <xmx:UWgnafhLIyYo-qt4Ew6KgmiVuZA-bQhJG6dDfUn5Uj6v_pJD0KEtQg>
-    <xmx:UWgnaR9K2IgAvytgn9_q0VtN3YIa4sOw88anH0BElMIGrJc49URaFw>
-    <xmx:UWgnacMIsTKdiu5fb4TaB5X6rXlDAcfiCqNPxiHAP9XSnq_VUv4Wdg>
-    <xmx:UWgnadD37WkBza8NleHzBpQvjJf6k2G2e8HWzgn516kMUKlLHRg7dQ>
-    <xmx:UWgnaVTG0esH90Mvi84aoRci8-WbsHUjgp5sHliwd7s5zbZaawHb-W4G>
-Feedback-ID: iab3e480c:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 26 Nov 2025 15:51:26 -0500 (EST)
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="f6V7bhPI"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-477b5e0323bso8227665e9.0
+        for <oe-lkp@lists.linux.dev>; Wed, 26 Nov 2025 17:50:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1764208254; x=1764813054; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=7f/NGt9PhiKtLJCrxLaPZKHO0hccYH7c0Hd/TG5qT70=;
+        b=f6V7bhPIgtIf+qsX/n1aLiH1QYPZOtcOPpJIzfGAcMUq+BIKRfNgz8BRptrBI1+Bbz
+         o69Pm1ZfgOQaCxFhmZXd1zQ9lRHP3WQt8SJ3qCAITRh6ub9daFtIEH4jSHFyFf8rYMTo
+         sB/6xRO7owdKVl6syTuXDwaU8/pVMkfEZbOerK66hj+ocDumnt/pyI1ZCafGWP26a1xP
+         +Og+RVQ4wSAIBL3VoKq8OV5+YajBtQW/IM0vAe4zp81cJHfIVWqpT16u14WPtUUdWjjq
+         hWk4Dx+zB5pY4mW4Sn/Sm/XJUTLfUn5Sp6o8JZF0sGFDZbk4Oa05PeWtMWDeRLudDVFK
+         2ZHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1764208254; x=1764813054;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=7f/NGt9PhiKtLJCrxLaPZKHO0hccYH7c0Hd/TG5qT70=;
+        b=In9JdXDWo/Wn9xgj88/T4tpIhS64Dg7UVFdY6fAcMgjzc5cA8yyLcwncvVvBvV5dGs
+         7FQUFCKfosTzk+QQG88LvYH6AWwpu0FtKX2W3IAzhM2RH/UlOfmN3da/8Opf3/DrO9SP
+         Zc6eyk480imcXjCWZ9G/GeaLeEcBrkQQOop4/wBEA0Lm1D/C7S+7s7BGeC/+Ah+ZBvcO
+         /NIxqaDzsZeEHHpuI9giZLXZg+9rNwm4SCimMyp1J+no1Vq6J4ubh1zqJWpGdcNL/axV
+         ATm8UP07k2LtkMqdQCtMyH2aGaosylcMYWXdP0h+bJnpLthhtsVKUGdbew3/w9/b6/oe
+         RgLQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVs6zW/9kWz2amtN0grwswAhn/RqnXIK6iwENY88i3yPXeHWnb2O519JraRddd+pppR7HYB4vA=@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz8g2Smphkil10PFnzktBxvnHQ4rfC6QKYaAKaWyEqBchctpAgH
+	5+DE2upd8drSZ+Pg9wH4aS0VPhwIqY03Bfzx5cs9w/30JeTa8xWKo0ZsaLM/rej8R2lzW5oi9dB
+	1ww4=
+X-Gm-Gg: ASbGncvLFwsj7N0a2woCskDGq1p4v+RvP4zx1pOGqgDvLFlb032k2tT9qUjnPSTayKU
+	TloZZc3Cteyhk9QXTWZuRNr0vvZmgZIDb64C0C1rQx9dJXUKwoDq7X8orgjES7iOsKJEz99byLG
+	LgxtppOCl0GOeOcTGlndqU2kWppydHagjzxq+ImeeUYpsWmyGikSzWxKvtfK/nmntWz+9MKFc6k
+	WpyZKrVraHRB6k+BWpD5DndKgvvZ8gwGjD9qRO0akVN9bHBl1lwwHIyz4QI7aLHzH97L91POEuj
+	I0tbZK+56T8SSExv92EzlbmPVAHLuS7w3pHWByrOJzuA9X4keVh84rMvH/kc1O/F0mvRnqjm/ol
+	NUKxpP7dEJCn6rWUG7OEGCcXPI22O3q6kWLdC1xNkxw/B0lKlTPU+1K0VVuMFa2H07I5jmK5XW6
+	X5A5JYT+/8d0/V95KWRBHiZL2qpAdG
+X-Google-Smtp-Source: AGHT+IGqCP3dOwbVcqjH02MwzgXNn1K1WcY5QlK3LzfxtqgvJWUDJ6ePKE/B0PPmZH/5i943qt1wYA==
+X-Received: by 2002:a05:600c:3ba7:b0:46e:59bd:f7e2 with SMTP id 5b1f17b1804b1-477c05139c2mr280548915e9.11.1764208254168;
+        Wed, 26 Nov 2025 17:50:54 -0800 (PST)
+Received: from autotest-wegao.qe.prg2.suse.org ([2a07:de40:b240:0:2ad6:ed42:2ad6:ed42])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-479111565a1sm5285835e9.5.2025.11.26.17.50.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Nov 2025 17:50:53 -0800 (PST)
+Date: Thu, 27 Nov 2025 01:50:51 +0000
+From: Wei Gao <wegao@suse.com>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: Andrei Vagin <avagin@google.com>,
+	Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
+	lkp@intel.com, linux-kernel@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, oe-lkp@lists.linux.dev,
+	ltp@lists.linux.it
+Subject: Re: [LTP] [linus:master] [fs/namespace] 78f0e33cd6:
+ ltp.listmount04.fail
+Message-ID: <aSeue5UPBm3QGH8-@autotest-wegao.qe.prg2.suse.org>
+References: <202511251629.ccc5680d-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: NeilBrown <neilb@ownmail.net>
-To: "Amir Goldstein" <amir73il@gmail.com>
-Cc: "Christian Brauner" <brauner@kernel.org>,
- "Jeff Layton" <jlayton@kernel.org>,
- "kernel test robot" <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
- lkp@intel.com, netfs@lists.linux.dev, linux-fsdevel@vger.kernel.org,
- linux-nfs@vger.kernel.org, linux-unionfs@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [linux-next:master] [VFS/nfsd/cachefiles/ovl] 7ab96df840:
- WARNING:at_fs/dcache.c:#umount_check
-In-reply-to:
- <CAOQ4uxgHqKyaRfXAugnCP4sozgwiOGTGDYvx2A-XJdxfswo-Ug@mail.gmail.com>
-References: <202511252132.2c621407-lkp@intel.com>,
- <20251126-beerdigen-spanplatten-d86d4e9eaaa7@brauner>,
- <CAOQ4uxgHqKyaRfXAugnCP4sozgwiOGTGDYvx2A-XJdxfswo-Ug@mail.gmail.com>
-Date: Thu, 27 Nov 2025 07:51:18 +1100
-Message-id: <176419027888.634289.8284458326359928729@noble.neil.brown.name>
-Reply-To: NeilBrown <neil@brown.name>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202511251629.ccc5680d-lkp@intel.com>
 
-On Wed, 26 Nov 2025, Amir Goldstein wrote:
-> On Wed, Nov 26, 2025 at 11:42=E2=80=AFAM Christian Brauner <brauner@kernel.=
-org> wrote:
-> >
-> > On Tue, Nov 25, 2025 at 09:48:18PM +0800, kernel test robot wrote:
-> > >
-> > > Hello,
-> > >
-> > > kernel test robot noticed "WARNING:at_fs/dcache.c:#umount_check" on:
-> > >
-> > > commit: 7ab96df840e60eb933abfe65fc5fe44e72f16dc0 ("VFS/nfsd/cachefiles/=
-ovl: add start_creating() and end_creating()")
-> > > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> > >
-> > > [test failed on linux-next/master d724c6f85e80a23ed46b7ebc6e38b527c09d6=
-4f5]
-> >
-> > Neil, can you please take a look at this soon?
-> > I plan on sending the batch of PRs for this cycle on Friday.
-> >
-> > >
-> > > in testcase: filebench
-> > > version: filebench-x86_64-22620e6-1_20251009
-> > > with following parameters:
-> > >
-> > >       disk: 1SSD
-> > >       fs: ext4
-> > >       fs2: nfsv4
-> > >       test: ratelimcopyfiles.f
-> > >       cpufreq_governor: performance
-> > >
->=20
-> Test is copying to nfsv4 so that's the immediate suspect.
-> WARN_ON is in unmount of ext4, but I suspect that nfs
-> was loop mounted for the test.
->=20
-> FWIW, nfsd_proc_create() looks very suspicious.
->=20
-> nfsd_create_locked() does end_creating() internally (internal API change)
-> but nfsd_create_locked() still does end_creating() regardless.
-
-Thanks for looking at this Amir.  That omission in nfsproc.c is
-certainly part of the problem but not all of it.
-By skipping the end_creating() there, we avoid a duplicate unlock, but
-also lose a dput() which we need.  Both callers of nfsd_create_locked()
-have the same problem.
-I think this should fix it.  The resulting code is a bit ugly but I can
-fix that with the nfsd team once this gets upstream.
-
-(FYI nfsd_proc_create() is only used for NFSv2 and as it was an nfsv4 test,
- that could wouldn't have been run)
-
-Thanks,
-NeilBrown
-
-diff --git a/fs/nfsd/nfsproc.c b/fs/nfsd/nfsproc.c
-index 28f03a6a3cc3..481e789a7697 100644
---- a/fs/nfsd/nfsproc.c
-+++ b/fs/nfsd/nfsproc.c
-@@ -407,6 +407,9 @@ nfsd_proc_create(struct svc_rqst *rqstp)
- 		/* File doesn't exist. Create it and set attrs */
- 		resp->status =3D nfsd_create_locked(rqstp, dirfhp, &attrs, type,
- 						  rdev, newfhp);
-+		/* nfsd_create_locked() unlocked the parent */
-+		dput(dchild);
-+		goto out_write;
- 	} else if (type =3D=3D S_IFREG) {
- 		dprintk("nfsd:   existing %s, valid=3D%x, size=3D%ld\n",
- 			argp->name, attr->ia_valid, (long) attr->ia_size);
-diff --git a/fs/nfsd/vfs.c b/fs/nfsd/vfs.c
-index 145f1c8d124d..4688f3fd59e2 100644
---- a/fs/nfsd/vfs.c
-+++ b/fs/nfsd/vfs.c
-@@ -1633,16 +1633,14 @@ nfsd_create(struct svc_rqst *rqstp, struct svc_fh *fh=
-p,
- 		return nfserrno(host_err);
-=20
- 	err =3D fh_compose(resfhp, fhp->fh_export, dchild, fhp);
--	/*
--	 * We unconditionally drop our ref to dchild as fh_compose will have
--	 * already grabbed its own ref for it.
--	 */
- 	if (err)
- 		goto out_unlock;
- 	err =3D fh_fill_pre_attrs(fhp);
- 	if (err !=3D nfs_ok)
- 		goto out_unlock;
- 	err =3D nfsd_create_locked(rqstp, fhp, attrs, type, rdev, resfhp);
-+	/* nfsd_create_locked() unlocked the parent */
-+	dput(dchild);
- 	return err;
-=20
- out_unlock:
+On Tue, Nov 25, 2025 at 04:33:35PM +0800, kernel test robot wrote:
+> 
+> 
+> Hello,
+> 
+> kernel test robot noticed "ltp.listmount04.fail" on:
+> 
+> commit: 78f0e33cd6c939a555aa80dbed2fec6b333a7660 ("fs/namespace: correctly handle errors returned by grab_requested_mnt_ns")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> 
+> [test failed on      linus/master fd95357fd8c6778ac7dea6c57a19b8b182b6e91f]
+> [test failed on linux-next/master d724c6f85e80a23ed46b7ebc6e38b527c09d64f5]
+> 
+> in testcase: ltp
+> version: 
+> with following parameters:
+> 
+> 	disk: 1SSD
+> 	fs: btrfs
+> 	test: syscalls-06/listmount04
+> 
+> 
+> 
+LTP patch:
+https://patchwork.ozlabs.org/project/ltp/patch/20251127143959.9416-1-wegao@suse.com/
