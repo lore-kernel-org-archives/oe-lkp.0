@@ -1,383 +1,453 @@
-Received: from mail-yx1-f66.google.com (mail-yx1-f66.google.com [74.125.224.66])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36C9A12DDA1
-	for <oe-lkp@lists.linux.dev>; Tue,  2 Dec 2025 00:51:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.66
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764636713; cv=none; b=L4N62wU3oY2QvuViYK2FlvrsxZ+ShWLnmm1Vcbu2Dtk0RGw1tsEx/J8rfDHPt1ynqerMOGPJagMohSSWSip4r6h9xjQiM0ml+bKORhLSF1yqYZ9h4zaUSgAZ9Q2vIGAueNa30VoZ6vcOHC1r1mbqUS4EUg1MEUZ+MAVzIKj2fNc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764636713; c=relaxed/simple;
-	bh=6edQxffvF4UyMBaQ9uyOb0pLg4HLk7JhkBX1GSxj9Hw=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=F26KtHBFFyBRkP4U/3l2vwl9MwuVY/3TO3i7ACb5UJeHsoJj74n34BzhPto9+zqGcSCrls4ai+KloPHs/64QKKYi2/GtB4+ECikaU2rM3ZTugCAXfL//CACNdjtNzMdwxLNhE3Fd6SdXEbCTJ8kEK3zfOfH2Cc5Y7a1TYlhl2WY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=csHUIyK7; arc=none smtp.client-ip=74.125.224.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C81DF6BB5B
+	for <oe-lkp@lists.linux.dev>; Tue,  2 Dec 2025 02:58:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1764644342; cv=fail; b=sP/FFhRPMr/J5+QNB/XmBRYpGH8m0gJv2qtnWu7QSwdeVP5DgSQx76oC3WZlysMIVb8PVgmBDumNrL4Fa3ZuA4pBpqRzccebzUW1IqKsBk2W7xJQRSS7/gk/LHAqeQrMERvB7YPV5/DoG5drG14cvlu5WCD5qnyAhWdj8UmJo1s=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1764644342; c=relaxed/simple;
+	bh=XPd/xUKGIyAkI60slMwRSYgI8qHlCjFI87GfIMoZuTE=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=KZXyg7PEgO18DB1XDs+A7eV0tHgoF77WDetssI+cS4YV86lME5iaVeAmgdhp4O8FAwG3w7+qR//mvb3at+YTs6je0CboXR/WXs3gmoDVea/ZccOdBE2a31eUN1/U+LAxRKWqtRehphVQgjh4gd/C0SxodVH9ATs6epEA1AEqehM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LXc3t7jH; arc=fail smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="csHUIyK7"
-Received: by mail-yx1-f66.google.com with SMTP id 956f58d0204a3-641e4744e59so5051068d50.2
-        for <oe-lkp@lists.linux.dev>; Mon, 01 Dec 2025 16:51:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1764636710; x=1765241510; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Sw4llkamKQGy9EEOzB2HCnc6Q6LrGhDG7WsSasDgkxc=;
-        b=csHUIyK7/PBT5v6oVpwYa1kfYGoTZgVj9nEnl2G3AH2s/GUDop90eLcGUm+DJow4rx
-         pnVHAMTbhUIFG+bj121nLyVAdrZOhIfpy3LF/xSAC0bMA+Uwd4AgTyRsm189Jh1WCY5t
-         KqI2qaQ08Asq+JGL3C+cqEU2Ri30RvxqhoibE0yXdbCZhKl+rxxyV6KC+1GbbKwo6mPR
-         0KBr7Db9PPZvK83z3n+fC/SXxyn2mOchL6IRSMGgIXwQ7J2WflsUOqrydTQieXfwXaw0
-         WQBxIncpsMtSOiFmG7RfT+HD2YOV02365I5nkS7itfb+dH7lC0fKIPZwzzbqeuhxv6nZ
-         D1/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764636710; x=1765241510;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=Sw4llkamKQGy9EEOzB2HCnc6Q6LrGhDG7WsSasDgkxc=;
-        b=XWzAmeNFBPXbVfYu+V6sj2haoGsH8Pz5ahXAQJg84G9qYl9diJ90S6uJuMdW5JjASn
-         7ejOrHygpxyndodROj/NDx1vHcfI2Y7LIQH5WN6wfzgOBkn9oCbFHEWKL+Mbp7eSaQoK
-         Z2PICai4Y0ulQ0hsVpjamgZV2RqC6zvKss5aqUN8mxCa7o6Eanxg+qgrDzeRhwDJ/w+e
-         TZaij6E8D2I91BbKkR4/OQuWpvHcqv4duMpvrffNluGQyHN1EfsoSnjK2GvzyZs56DRJ
-         BmVu11i1cUq1YbwGikPgbu7m5G2jTn8gUKLLlSRZQyRN9lxBxC2e2o7LDywbPJi8C/JO
-         SGlw==
-X-Gm-Message-State: AOJu0YwNfj9SUk+Ocq427wePWfnFYyavn51hoy0pHr95PwEZPrmVEzv/
-	EGQoaNucKHC+vNdpojpzoUpPRFovKDdXWPNBeijbdBrDEwS/n/7UP733
-X-Gm-Gg: ASbGncuxIMMWrudx1lBNqZl4N8Q07nx8pTbiMhC31U37sZQBImgXfuOUE8gtyHF/njb
-	0WHRhWNjzGATR/uTh1bsZZTSggnradvCy1JrkkK9IhMI8C/bdUl0d6FcPw6kdKvzsYX40zZe3sF
-	hI9O/XJgeNE8SnmDXGg/4w0Zj4AYa6XLXjDoY8ujXtQ1mZKcn/fgcLcm5e7HSR1D/XMr4cUkwna
-	KGa5yLNFzaGLWvUnEKQigCAklp346Z6sm4oy1Phf2O2dhTv+BKeZugUy5jNCzTdjIDC+KM1ABhV
-	2nEUvZrcGkyA65lKCaNBESp0v4/beJmYzE3obcoBoVY4GGqxFU96kSJ5NShelfHI95HTbf1x8tG
-	LxCjZMbJ5qC50uBVl7nybw+F3bXg3fc7ihUMae0LYr6CwQaKiEBnFCxWTHbUPtlNE+lWzIstOdv
-	f8s9zeVfqt4IjIeLkQ1V9zmxB80e0=
-X-Google-Smtp-Source: AGHT+IFLZZeOr+0GiYq7jqrzjZRrnQEzcSy9Bi5f8cLEJxba6K44yWPBtHueyhU+P/t9YpCsgNrCEA==
-X-Received: by 2002:a05:690e:1688:b0:63f:b634:5b3c with SMTP id 956f58d0204a3-6430296c57bmr31214283d50.0.1764636709988;
-        Mon, 01 Dec 2025 16:51:49 -0800 (PST)
-Received: from localhost ([2a03:2880:25ff:8::])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-78ad0d42041sm56941477b3.2.2025.12.01.16.51.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Dec 2025 16:51:49 -0800 (PST)
-From: Leo Martins <loemra.dev@gmail.com>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev,
-	lkp@intel.com,
-	linux-kernel@vger.kernel.org,
-	David Sterba <dsterba@suse.com>,
-	linux-btrfs@vger.kernel.org
-Subject: Re: [linus:master] [btrfs]  e8513c012d: addition_on#;use-after-free
-Date: Mon,  1 Dec 2025 16:51:41 -0800
-Message-ID: <20251202005146.3723457-1-loemra.dev@gmail.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <202511262228.6dda231e-lkp@intel.com>
-References: 
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LXc3t7jH"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1764644340; x=1796180340;
+  h=date:from:to:cc:subject:message-id:references:
+   content-transfer-encoding:in-reply-to:mime-version;
+  bh=XPd/xUKGIyAkI60slMwRSYgI8qHlCjFI87GfIMoZuTE=;
+  b=LXc3t7jH03o9q1RaR/9BhtMnnkPhVYJ15AVfcbD0rWLPVRTShYFTXqTF
+   rbHjXehhaRUntJucD960KyCCugjGmQ1TzeSeCA8q/AvxWd8hUsOJYXr3G
+   U3Ux/jTSjNJrBTfNJaDp7F9OK15+3/KdNBVWtGs38phIgwkYyn+eEzj8Y
+   9YE3Ya19v5DbcdIdx8Ix4a334wE9Zsh5m3jTsfMp1dPIEiPRS6OHSgqq/
+   e15tj6gUt1BqHRdF22BXlBMNvCXzDh0EPzZDehyx0u0npe14WF4cScqpj
+   QZ/xuNOaC/VQbNbYmUM//kGqrFNzDwxRcxog08Db9NgMcd6xxWxS997Fx
+   A==;
+X-CSE-ConnectionGUID: mKAAI4HER8WFaYZQScXh/Q==
+X-CSE-MsgGUID: Hrgn6KEoSKCjZjsw6Q98NQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11630"; a="66637300"
+X-IronPort-AV: E=Sophos;i="6.20,241,1758610800"; 
+   d="scan'208";a="66637300"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2025 18:59:00 -0800
+X-CSE-ConnectionGUID: ZXdUH1oUSvifyPTLyqLMGg==
+X-CSE-MsgGUID: ir5UwG03Rby4MUj5ZVX21g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.20,241,1758610800"; 
+   d="scan'208";a="193528164"
+Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
+  by orviesa010.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2025 18:59:00 -0800
+Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.29; Mon, 1 Dec 2025 18:58:58 -0800
+Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.29 via Frontend Transport; Mon, 1 Dec 2025 18:58:58 -0800
+Received: from CH1PR05CU001.outbound.protection.outlook.com (52.101.193.29) by
+ edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.29; Mon, 1 Dec 2025 18:58:58 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=b08LQa59eF98af7uJF6cldoRABfpxYfxx0Sc1Ke5TwBD7Jhb/EBWcjaCjHPfIp0lzuraETMJjvfApVo/MRAdg/9EgHhzP4kkdk8zRWLCoJ0SyujcpyPolYDtrq90oSYkSb0fWBZk7hAmp/xmDzKMoxAa1Nb09MMU4RY5SsP6yNiypQB6Z0BRBL9TOupjG3FvTYj96ao6EfKrQHTihTBfVDUme9cq5FGpTbbC+Leo5J8RMkbRt+S1Y69LMSGCffFKNU4iTnRAZ9E6VQ6HLgfeWPLzkMTiO8t2l+3HNaWJSuVd8jkNG7iBe+JAjkVQYxizEfsUEoEuFgw9hhpV0VR7eA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cpZtRlRhKUGgdjgix0H2TmfKnN+GzX+10FS9Iyx78nk=;
+ b=Uf36xArY4S3aKTolWRwHuiifjCVYKFReEO8A1VF98x92k1WmlUnuJ64LnfSTZq+5so2RE3MlPu8cz3Be1TTHLkZcBf/dh14y/TcrhCHHWPF3p40vTIunphXPBiLvP3LNcPxr3thec5F+0DMIcoX+nDugDeMECE9ndTAosvWlfqWPYwaFwaqwb02bgnvSWUwpTkV+0S/WG9i3UR1fqreDypWlSCEAvVCoX69u9k7WfpETJa8JLnnvGc3Qfg+sMYIy7fzkB9wV0mXMLWeQRVESHPQhuMIs7tBoDq+x59dIngnIsPy5Jo+xODWcHVqcRqSrt8uueBeum0ifxW4Xg/siSA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by DM4PR11MB6358.namprd11.prod.outlook.com (2603:10b6:8:b7::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9366.17; Tue, 2 Dec
+ 2025 02:58:51 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.9366.012; Tue, 2 Dec 2025
+ 02:58:50 +0000
+Date: Tue, 2 Dec 2025 10:58:41 +0800
+From: Oliver Sang <oliver.sang@intel.com>
+To: Mateusz Guzik <mjguzik@gmail.com>
+CC: Linus Torvalds <torvalds@linux-foundation.org>, <oe-lkp@lists.linux.dev>,
+	<lkp@intel.com>, <linux-kernel@vger.kernel.org>, Borislav Petkov
+	<bp@alien8.de>, Sean Christopherson <seanjc@google.com>, Thomas Gleixner
+	<tglx@linutronix.de>, <oliver.sang@intel.com>
+Subject: Re: [linus:master] [x86] 284922f4c5: stress-ng.sockfd.ops_per_sec
+ 6.1% improvement
+Message-ID: <aS5V4Xn9q32GDnnc@xsang-OptiPlex-9020>
+References: <202511281306.51105b46-lkp@intel.com>
+ <CAGudoHFTikYFRoJu2mRhNFv6GHPP4LNEDetMdsqkzAg1nTJfRA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAGudoHFTikYFRoJu2mRhNFv6GHPP4LNEDetMdsqkzAg1nTJfRA@mail.gmail.com>
+X-ClientProxiedBy: SI2PR06CA0013.apcprd06.prod.outlook.com
+ (2603:1096:4:186::18) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|DM4PR11MB6358:EE_
+X-MS-Office365-Filtering-Correlation-Id: cd1a6b1c-44b4-41ee-c97b-08de314eb89e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
+X-Microsoft-Antispam-Message-Info: =?utf-8?B?Vks1Z1psODdjOU5KbnlRYVFDVFdSQzByNnkxQTZYNW9nSGtjdnR4NThTZDVr?=
+ =?utf-8?B?Qkk2K2tGOXJ1TWFlMnhEMUREY204QXI3TDJreEgyNUE2c1NkYjVCUGVqRFN0?=
+ =?utf-8?B?YndUSnc2MnpoSGcyYnA0eFVrYXlIWlI3N1BndG5sbGhySG40Sk1LRyttUUFy?=
+ =?utf-8?B?QjFoLzZRMXZoeHlrek96d1RjUVFWMTl4U3U2eHlyeTlXRUV1UFVFNnNPTmxm?=
+ =?utf-8?B?dFBia3lPT3d3ekRJTWZoRFJ4Q2R3OERtZCthdEowQ0RBazBpdWZGR3ZuSWY3?=
+ =?utf-8?B?V2szLy9vNFRxYWE3WktYQlVPbnZKcXo3Tm5rQ01hMm81MjJ4VlFZVUhIYTk5?=
+ =?utf-8?B?QTd0NVhDZVpBa3FsZnB1VXpyWVVrVnZpcnFPbisyVDQvTDBFbFNtUFV2WGRs?=
+ =?utf-8?B?TkdyTlpmSnpRU0FNTHNadTdzN053bUsvNVptaDhzN1kwVFhrVGJkakpRdWZS?=
+ =?utf-8?B?QXlOODVNQ1dMb0NCVG15TGpNZlkwUW5QRUpZNm5UMnFPV25OQlJ2MFE4TWFh?=
+ =?utf-8?B?TWUyajdFaUt3b2dzUGUrQnF0WWNxSVpBQ2ZVY1BTWTE1Q2JMWkFlQkxIeGFo?=
+ =?utf-8?B?SGJzTVowUS9VTUI3cVNEbVQraUc5ZmdGNk9nWFJNOGZFV0FGbi9PQWwwd1VG?=
+ =?utf-8?B?Y1ROMm1rZVl4TDdXdElHcTIxTCt5N25ndUhUSG5veW9OSHVBbjhxa3c0eVFr?=
+ =?utf-8?B?clExa3pGektXMG93emJGZ2JiOHQ3UFpDR2hYQjZNcnBOSklBUlJrZlVpRm5Y?=
+ =?utf-8?B?L0NlL3IrZmxkYlp3Z3R3c29UQ0FwbnN5aWdSRms4WVBJSjYxaFZRWXg5YUph?=
+ =?utf-8?B?bGNwbnY0Q2RCdGcvWFZjMHR0VHU5UlJoS21taEJHUGg3YlErMHpXZHlGR3NJ?=
+ =?utf-8?B?ZVpLRk5BV0cvYy9HVnFHdXVUQ2g4b1RKVWRnbG9tQURLQlVEdXFoc2k4ZUtl?=
+ =?utf-8?B?K3JSWXN5RWNzN0hJQSs1bURhbzYyNGZOSkdIUVR3OFYwYVB6Q21iejhKN3A2?=
+ =?utf-8?B?bzlrNGw5bEdJOFFGa1ErQjJoSStyb2E5N1JWOXVXcXFpd1M4cGJDRGtXcGJi?=
+ =?utf-8?B?UVBTK2EzR0lZVFdoMWVHaDVCcDM1ajNYREE2Q2pJVTlUZDhvQU1FZjJPNWN0?=
+ =?utf-8?B?OGdZS2tyZjRUYXMyYlp3MXh2U2NaWGh4VVhQWVVENndvNzRUa0pXK1ViYm1I?=
+ =?utf-8?B?MFZibXhOb09ZeFZCTHRnb1pzK0Z2RFk4MXFWbG00RHBrTkVuaTVmenlFUTEz?=
+ =?utf-8?B?bm5pVXdXTnFHa1QrWnZBeXRkZWZxeDVKTzZOTVVPS3pmUHdzb0FOQXdTa2Fs?=
+ =?utf-8?B?c3ZZeGdWWkFKVnJGL09yM3RpbFptaGc5cXR2ZnVOMVhRei93Ymd5TmdmcjZR?=
+ =?utf-8?B?VnZsTytDeS9abmZWSlppclNKRlJCN0JSUTRhQllyTG1DY01EalBERGlnUWxo?=
+ =?utf-8?B?U2cyZUx1emxkdGRBWGtQQW1xa1NreXl2VFR5OC9aS1gwM3hZLzNzaXQ1RU1h?=
+ =?utf-8?B?cTRwSnZjSGRuYVZDT1VrNEh6Z2ZQckNoaGlyb3MxRC9ZQll0RDJVTVpmaUFN?=
+ =?utf-8?B?emxId285ekF6TTRpRWRLVnY3TVgrV01zczgrWWxKeGZ3T1RZbkhiMjNrRFRu?=
+ =?utf-8?B?R09ZS2h0RmdXT0tBWlNYUzZZUEVlcDdvWG1QbmtOK0E3ZHRWSThhVmM3ZnNV?=
+ =?utf-8?B?VS81OG15eFUzZFh2WGdaQXU5UEdZQ0xmZ3VxRGIzM3dxVDNmS1A0WVczMWtU?=
+ =?utf-8?B?QVRMOWhJajJxTkNjREFGa0dvN2FTUEdLd0doVkFQN1lwTVdFZFpGTE43ZnE1?=
+ =?utf-8?B?c09oYmJwb3UwcGozN01KQk1hcXRYRExJdm1Pc3lodElEL0RjditFOWVSc2Js?=
+ =?utf-8?B?VFpWcGtXV3U4QWllY1pjTGlRRzJ5TFNPVjZCRDdGVlNUMStPV2ZTbXg0cFBh?=
+ =?utf-8?B?VkpGT2FxMWZ5WmZuQWlQR0MramZMSmFudkcyd3ZsQkR4WXcrUVpnR2tLM21k?=
+ =?utf-8?B?ampZT1VaUFd3PT0=?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?WmFoYWdIWWNFTko0NlBYZ0xRaDhsRVBnNzB2Z2YvcUtNbSt2SzROaVJkK2Qv?=
+ =?utf-8?B?bG1PSm9yZFhCdkpiU1pzVlpHZ2J6T3JMSlFOcEJSQnJGbHJuS04wRk1Zb2Rp?=
+ =?utf-8?B?Wjk0K05GNmdGWEp5dGQwSVhYOTlBWEV3RjZqeTJBQWJPV3piTnVyZlY3UU8w?=
+ =?utf-8?B?RCtpWmkzOHJaMDJVMnFpYjlVcE92ZFVPMkxoNVl2dWM4MUcvZWlDZXU0aHRS?=
+ =?utf-8?B?cU1RZE5FVU5Jci9IRWh4UFNKRmNzakNFNW5Cd3pBNFV4M2NZWiszdFJrcTRH?=
+ =?utf-8?B?bDBhTzNscHZINjljTExhbzcreG0wSmQ3Ri9pSC9WTmMvc0VUeEhlWGVOcUlM?=
+ =?utf-8?B?czNpNlQyNnVOYU82dVVINHg5QTJ3WUVKYkQxTzI0eEVxbkVnSWpseWZIcjV5?=
+ =?utf-8?B?TDA0alhtN2VTQ05BZ2JUZkRpV1JmU1haemZZRE4wWDI5Q295NHFFV2FNOU5M?=
+ =?utf-8?B?a0hJTWk0ZUxaN0tyTmQxaVlyVDBWcnFBZjFBYXFTVE9KcnB3Wmd6eVZtVzBM?=
+ =?utf-8?B?YnVRTjh2RFZBc1VNNk96dFowWklYVk0ydWdta05tR1VOUGRaU3hGd3haQWVY?=
+ =?utf-8?B?NXppM0FRanRaUHQwL1NaTlJaRGRIdzAwZjdUb0pqdnFJNnN3c2V6R1hoeGMw?=
+ =?utf-8?B?eGExZ1dRYmhUMTc5N25QNmJJdXNhNVY2dnBFQlU2cDJmWDNlbzIrUG9ydGpl?=
+ =?utf-8?B?aUxaZ05mUGVmM1VJWEI0bnRWNTFwc1BGNFVMSWEva2RBcnJ6U0NHN1oxcERv?=
+ =?utf-8?B?OHdERnlOVzdZRGZXdksrNlhpUlpIMlFVcTdxS0R4ZklJTi9TYWVKOGljTEkz?=
+ =?utf-8?B?WjkvRldmbjBKYUxDbzBnbm9xZVF5aDVFczlPYjBqQ3MvdUd4bDdCdGlHeEhL?=
+ =?utf-8?B?K2tpK1NhNHN6ZEt4U1lTVUNVdGVJL2Y2R1pIc0hBa1Z3VjhzZVVQWHZsWWtp?=
+ =?utf-8?B?eWRNL2FTaTVoeGxWOW8yb1pNcDJzOUtYQnovMXdqajFhU1ErOExtMDRRM3I0?=
+ =?utf-8?B?bHMzYU5QMUxLdG16eWViZkFCa21hOTFXVzVsV09hV0VTaDlrNktkM0tFUXdp?=
+ =?utf-8?B?UGpWd0tENm5FMHprY0lXSmpTeldSMlNDalZOZUliNTVrM0dkdHJqNDI3Mjg5?=
+ =?utf-8?B?R3FHN1hqbGgveXhuZ25RL3hiNktvR2pxd3VtVExtaXFweUdBTTQzRlE1ckdG?=
+ =?utf-8?B?Y01CbWlwckg1dEtYanBiUURLVzFBeWhUUUJtWXZpRGxlSGdIYWdrWEVyVTVq?=
+ =?utf-8?B?MFd1bno3Z3phZW9DcEpRZENCK2lOS1lIRWxyNis4MXc3MmNHdmFuMlNhMFhh?=
+ =?utf-8?B?WHphNUd3RmdTY0VnL0FrVThtSzFKVEpQTitEWnBVWXA2a0dTeDRRV2IzYlR4?=
+ =?utf-8?B?MTJQZWtrL0dVMXMvRmVLRzlOTzVJaWExVVNXZnk0Sk9kR3RMSFNDaFEyc0xi?=
+ =?utf-8?B?U3hUbzVlbmtBM2dPUzFoSlB4NXdqNXlaTkRGam40VE1wcmdXczhyQzZYZ0JX?=
+ =?utf-8?B?Zm5vWEdKOEFpOUoveVk1LzBwU3o2K0pEbWZaZXNCeGlaWktZL2ZSL3hXSFVa?=
+ =?utf-8?B?dXk2RUQxYUtnK2JJOERUc2I3ZG5yanRyTzFFaCtuRVdoUnRqWHFYVVI0eXYy?=
+ =?utf-8?B?cWxCc21iUHBiWWQxMEt0ZEU0ZGU5eStiQy9Xc3N6ejYrOThWazg5Nnk4d2tE?=
+ =?utf-8?B?Ui92eXhmdU14TmVXZnFKRktBalJJQWZqWFA2ZkM5V0ZLVmE4d1daRHA1ZDNK?=
+ =?utf-8?B?YjZhVXU3MTdFaHdGRWZtRnJISEY2L0ZRUnJZUXVnQ0JIeDNqaUpCM2xLaFRq?=
+ =?utf-8?B?VzNXRjhET01PbkdpOUJLQmNpNnFSNWpIRlljVG0rcmUzb0JtTFpMM0NRVmla?=
+ =?utf-8?B?ZGhzbnBzUnhMR0M1cXU2N0dFUTRTRDJ0V2YvQmx6Ky9CUmtraU9IdTYvdHA5?=
+ =?utf-8?B?dGRvZUdVdFRzUGYwaGdnOU1KTzkzYTFhSC9wNHNvTlhFb3RxcE4xVTdYQm9n?=
+ =?utf-8?B?R1pVaXlFSFFnaS9FSmlDVHVjdlM0cXo4dXVnUGJFalREYzRLV3Y1OHZwWnNz?=
+ =?utf-8?B?empqbXNCODhjK2p3SGhTOVFCVC9GMlE1bjc3cjdaTkhkQWk2bWszTndsWjVK?=
+ =?utf-8?B?WURxb2QvT0UrT204Ykt2NEVmUGRYZVZUMnZOazI3MHIzK1NwL3JQOHZxUkd5?=
+ =?utf-8?B?M1E9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: cd1a6b1c-44b4-41ee-c97b-08de314eb89e
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Dec 2025 02:58:50.9134
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /xQtiyZib1iZD7MTqOwNSgxQUP+XukYfu4+G0FrjjxghWmtYUs0aLcP6MouF9P9JgYKhbkGTuYY8lWNCT0zjAw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB6358
+X-OriginatorOrg: intel.com
 
-On Wed, 26 Nov 2025 22:23:21 +0800 kernel test robot <oliver.sang@intel.com> wrote:
+hi, Mateusz Guzik,
+
+On Fri, Nov 28, 2025 at 11:11:46AM +0100, Mateusz Guzik wrote:
+> On Fri, Nov 28, 2025 at 7:30 AM kernel test robot <oliver.sang@intel.com> wrote:
+> >
+> >
+> >
+> > Hello,
+> >
+> > kernel test robot noticed a 6.1% improvement of stress-ng.sockfd.ops_per_sec on:
+> >
+> >
+> > commit: 284922f4c563aa3a8558a00f2a05722133237fe8 ("x86: uaccess: don't use runtime-const rewriting in modules")
+> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> >
+> >
+> > testcase: stress-ng
+> > config: x86_64-rhel-9.4
+> > compiler: gcc-14
+> > test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 256G memory
+> > parameters:
+> >
+> >         nr_threads: 100%
+> >         testtime: 60s
+> >         test: sockfd
+> >         cpufreq_governor: performance
+> >
+> >
+> >
+> > Details are as below:
+> > -------------------------------------------------------------------------------------------------->
+> >
+> >
+> > The kernel config and materials to reproduce are available at:
+> > https://download.01.org/0day-ci/archive/20251128/202511281306.51105b46-lkp@intel.com
+> >
+> > =========================================================================================
+> > compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
+> >   gcc-14/performance/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/lkp-spr-r02/sockfd/stress-ng/60s
+> >
+> > commit:
+> >   17d85f33a8 ("Merge tag 'for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/rdma/rdma")
+> >   284922f4c5 ("x86: uaccess: don't use runtime-const rewriting in modules")
+> >
+> > 17d85f33a83b84e7 284922f4c563aa3a8558a00f2a0
+> > ---------------- ---------------------------
+> >          %stddev     %change         %stddev
+> >              \          |                \
+> >   55674763            +6.1%   59075135        stress-ng.sockfd.ops
+> >     927326            +6.1%     983845        stress-ng.sockfd.ops_per_sec
+> >       3555 ±  3%     +10.6%       3932 ±  3%  perf-c2c.DRAM.remote
+> >       4834 ±  3%     +12.0%       5415 ±  3%  perf-c2c.HITM.local
+> >       2714 ±  2%     +12.5%       3054 ±  3%  perf-c2c.HITM.remote
+> >       0.51            +3.9%       0.53        perf-stat.i.MPKI
+> >   34903541            +5.2%   36715161        perf-stat.i.cache-misses
+> >  1.072e+08            +5.8%  1.133e+08        perf-stat.i.cache-references
+> >      18971            -5.5%      17932        perf-stat.i.cycles-between-cache-misses
+> >       0.46 ± 30%     +13.6%       0.52        perf-stat.overall.MPKI
+> >   31330827 ± 30%     +14.9%   36004895        perf-stat.ps.cache-misses
+> >   96530576 ± 30%     +15.3%  1.113e+08        perf-stat.ps.cache-references
+> >      48.32            -0.2       48.16        perf-profile.calltrace.cycles-pp._raw_spin_lock.unix_del_edges.unix_stream_read_generic.unix_stream_recvmsg.sock_recvmsg
+> >      48.23            -0.2       48.07        perf-profile.calltrace.cycles-pp.native_queued_spin_lock_slowpath._raw_spin_lock.unix_del_edges.unix_stream_read_generic.unix_stream_recvmsg
+> >      48.34            -0.2       48.18        perf-profile.calltrace.cycles-pp.unix_del_edges.unix_stream_read_generic.unix_stream_recvmsg.sock_recvmsg.____sys_recvmsg
+> >       0.56 ±  4%      +0.1        0.65 ±  9%  perf-profile.calltrace.cycles-pp.path_openat.do_filp_open.do_sys_openat2.__x64_sys_openat.do_syscall_64
+> >       0.62 ±  3%      +0.1        0.71 ±  8%  perf-profile.calltrace.cycles-pp.do_sys_openat2.__x64_sys_openat.do_syscall_64.entry_SYSCALL_64_after_hwframe.stress_sockfd
+> >       0.56 ±  3%      +0.1        0.65 ±  8%  perf-profile.calltrace.cycles-pp.do_filp_open.do_sys_openat2.__x64_sys_openat.do_syscall_64.entry_SYSCALL_64_after_hwframe
+> >      48.34            -0.2       48.18        perf-profile.children.cycles-pp.unix_del_edges
+> >       0.15 ±  3%      +0.0        0.17 ±  2%  perf-profile.children.cycles-pp.__scm_recv_common
+> >       0.08 ±  7%      +0.0        0.10 ±  7%  perf-profile.children.cycles-pp.lockref_put_return
+> >       0.09 ±  5%      +0.0        0.11 ±  6%  perf-profile.children.cycles-pp.__fput
+> >       0.35 ±  5%      +0.1        0.43 ± 12%  perf-profile.children.cycles-pp.do_open
+> >       0.63 ±  3%      +0.1        0.72 ±  8%  perf-profile.children.cycles-pp.do_sys_openat2
+> >       0.56 ±  3%      +0.1        0.65 ±  8%  perf-profile.children.cycles-pp.do_filp_open
+> >
+> 
+> While this may read suspicious as the change is supposed to be a nop
+> for core kernel, it in fact is not as it adds:
+> /* Used for modules: built-in code uses runtime constants */
+> +unsigned long USER_PTR_MAX;
+> +EXPORT_SYMBOL(USER_PTR_MAX);
+> 
+> this should probably be __ro_after_init.
+> 
+> The test at hand is heavily bottlenecked on the global lock in the
+> garbage collector, which is not annotated with anything.
+> 
+> On my kernel I see this (nm vmlinux | sort -nk 1):
+> ffffffff846c0a20 b bsd_socket_locks
+> ffffffff846c0e20 b bsd_socket_buckets
+> ffffffff846c1620 b unix_nr_socks
+> ffffffff846c1628 b gc_in_progress
+> ffffffff846c1630 b unix_graph_cyclic_sccs
+> ffffffff846c1638 b unix_gc_lock <--- THE LOCK
+> ffffffff846c1640 b unix_vertex_unvisited_index
+> ffffffff846c1648 b unix_graph_state
+> ffffffff846c1660 b unix_stream_bpf_prot
+> ffffffff846c1820 b unix_stream_prot_lock
+> ffffffff846c1840 b unix_dgram_bpf_prot
+> ffffffff846c1a00 b unix_dgram_prot_lock
+> 
+> note how bsd_socket_buckets looks suspicious in its own right, but
+> ignoring that bit, I'm guessing things got pushed around and it
+> changed some of cacheline bouncing.
+> 
+> while a full fix is beyond the scope of this patch(tm), perhaps the
+> annotation below will stabilize it against random breakage. can you
+> guys bench it.
+
+in our tests, below patch introduces more peformance improvements.
+
+in our oiginal report, 284922f4c5 has a 6.1% performance improvement comparing
+to parent 17d85f33a8.
+we applied your patch directly upon 284922f4c5. as below, now by
+"284922f4c5 + your patch"
+we observe a 12.8% performance improvements (still comparing to 17d85f33a8).
+
+full comparison is as below [1]
+
+Tested-by: kernel test robot <oliver.sang@intel.com>
+
+
+=========================================================================================
+compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
+  gcc-14/performance/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/lkp-spr-r02/sockfd/stress-ng/60s
+
+commit:
+  17d85f33a8 ("Merge tag 'for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/rdma/rdma")
+  284922f4c5 ("x86: uaccess: don't use runtime-const rewriting in modules")
+  c4f1335ec1 <---- patch
+
+17d85f33a83b84e7 284922f4c563aa3a8558a00f2a0 c4f1335ec1491688ec229c5cf26
+---------------- --------------------------- ---------------------------
+         %stddev     %change         %stddev     %change         %stddev
+             \          |                \          |                \
+  55674763            +6.1%   59075135           +12.8%   62793623        stress-ng.sockfd.ops
+    927326            +6.1%     983845           +12.8%    1045895        stress-ng.sockfd.ops_per_sec
+
 
 > 
+> diff --git a/net/unix/garbage.c b/net/unix/garbage.c
+> index 78323d43e63e..25f65817faab 100644
+> --- a/net/unix/garbage.c
+> +++ b/net/unix/garbage.c
+> @@ -199,7 +199,7 @@ static void unix_free_vertices(struct scm_fp_list *fpl)
+>         }
+>  }
 > 
-> Hello,
+> -static DEFINE_SPINLOCK(unix_gc_lock);
+> +static __cacheline_aligned_in_smp DEFINE_SPINLOCK(unix_gc_lock);
 > 
-> kernel test robot noticed "addition_on#;use-after-free" on:
-> 
-> commit: e8513c012de75fd65e2df5499572bc6ef3f6e409 ("btrfs: implement ref_tracker for delayed_nodes")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> 
-> [test failed on      linus/master 30f09200cc4aefbd8385b01e41bde2e4565a6f0e]
-> [test failed on linux-next/master 92fd6e84175befa1775e5c0ab682938eca27c0b2]
-> 
-> in testcase: blogbench
-> version: blogbench-x86_64-1.2-1_20251009
-> with following parameters:
-> 
-> 	disk: 1SSD
-> 	fs: btrfs
-> 	cpufreq_governor: performance
-> 
-> 
-> 
-> config: x86_64-rhel-9.4
-> compiler: gcc-14
-> test machine: 192 threads 4 sockets Intel(R) Xeon(R) Platinum 9242 CPU @ 2.30GHz (Cascade Lake) with 176G memory
-> 
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
-> 
-> 
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202511262228.6dda231e-lkp@intel.com
-> 
-> 
-> [   92.359770][ T1319] ------------[ cut here ]------------
-> [   92.365399][ T2115]       1513       283338         42318        194834         39930        140043         83712
-> [   92.365683][ T1319] refcount_t: addition on 0; use-after-free.
-> [   92.371060][ T2115]
-> [   92.381336][ T1319] WARNING: CPU: 29 PID: 1319 at lib/refcount.c:25 refcount_warn_saturate (lib/refcount.c:25 (discriminator 1))
-> [   92.389049][ T2115]       2174       291211         39936        202785         36246        141919         76774
-> [   92.389356][ T1319] Modules linked in:
-> [   92.398571][ T2115]
-> [   92.419599][ T1319]  dm_mod intel_rapl_msr intel_rapl_common intel_uncore_frequency intel_uncore_frequency_common skx_edac skx_edac_common nfit libnvdimm x86_pkg_temp_thermal intel_powerclamp coretemp btrfs kvm_intel blake2b_generic xor kvm raid6_pq snd_pcm irqbypass ipmi_ssif snd_timer ghash_clmulni_intel ahci ast rapl snd intel_cstate libahci acpi_power_meter nvme drm_client_lib binfmt_misc drm_shmem_helper mei_me soundcore intel_uncore ioatdma ipmi_si i2c_i801 pcspkr nvme_core acpi_ipmi libata mei drm_kms_helper i2c_smbus lpc_ich intel_pch_thermal dca ipmi_devintf wmi ipmi_msghandler acpi_pad joydev drm fuse nfnetlink
-> [   92.477068][ T1319] CPU: 29 UID: 0 PID: 1319 Comm: kworker/u770:33 Tainted: G S                  6.17.0-rc7-00022-ge8513c012de7 #1 VOLUNTARY
-> [   92.490808][ T1319] Tainted: [S]=CPU_OUT_OF_SPEC
-> [   92.495958][ T1319] Hardware name: Intel Corporation ............/S9200WKBRD2, BIOS SE5C620.86B.0D.01.0552.060220191912 06/02/2019
-> [   92.508765][ T1319] Workqueue: btrfs-endio-write btrfs_work_helper [btrfs]
-> [   92.516545][ T1319] RIP: 0010:refcount_warn_saturate (lib/refcount.c:25 (discriminator 1))
-> [   92.523057][ T1319] Code: 95 95 ff 0f 0b e9 4b 45 90 00 80 3d d3 40 98 01 00 0f 85 5e ff ff ff 48 c7 c7 88 fe ad 82 c6 05 bf 40 98 01 01 e8 9b 95 95 ff <0f> 0b c3 cc cc cc cc 48 c7 c7 e0 fe ad 82 c6 05 a3 40 98 01 01 e8
-> All code
-> ========
->    0:	95                   	xchg   %eax,%ebp
->    1:	95                   	xchg   %eax,%ebp
->    2:	ff 0f                	decl   (%rdi)
->    4:	0b e9                	or     %ecx,%ebp
->    6:	4b                   	rex.WXB
->    7:	45 90                	rex.RB xchg %eax,%r8d
->    9:	00 80 3d d3 40 98    	add    %al,-0x67bf2cc3(%rax)
->    f:	01 00                	add    %eax,(%rax)
->   11:	0f 85 5e ff ff ff    	jne    0xffffffffffffff75
->   17:	48 c7 c7 88 fe ad 82 	mov    $0xffffffff82adfe88,%rdi
->   1e:	c6 05 bf 40 98 01 01 	movb   $0x1,0x19840bf(%rip)        # 0x19840e4
->   25:	e8 9b 95 95 ff       	call   0xffffffffff9595c5
->   2a:*	0f 0b                	ud2		<-- trapping instruction
->   2c:	c3                   	ret
->   2d:	cc                   	int3
->   2e:	cc                   	int3
->   2f:	cc                   	int3
->   30:	cc                   	int3
->   31:	48 c7 c7 e0 fe ad 82 	mov    $0xffffffff82adfee0,%rdi
->   38:	c6 05 a3 40 98 01 01 	movb   $0x1,0x19840a3(%rip)        # 0x19840e2
->   3f:	e8                   	.byte 0xe8
-> 
-> Code starting with the faulting instruction
-> ===========================================
->    0:	0f 0b                	ud2
->    2:	c3                   	ret
->    3:	cc                   	int3
->    4:	cc                   	int3
->    5:	cc                   	int3
->    6:	cc                   	int3
->    7:	48 c7 c7 e0 fe ad 82 	mov    $0xffffffff82adfee0,%rdi
->    e:	c6 05 a3 40 98 01 01 	movb   $0x1,0x19840a3(%rip)        # 0x19840b8
->   15:	e8                   	.byte 0xe8
-> [   92.543676][ T1319] RSP: 0018:ffffc9000fcabca0 EFLAGS: 00010282
-> [   92.550187][ T1319] RAX: 0000000000000000 RBX: ffff888e3d2c8d68 RCX: 0000000000000000
-> [   92.558625][ T1319] RDX: ffff88984f36a3c0 RSI: 0000000000000001 RDI: ffff88984f35c200
-> [   92.567066][ T1319] RBP: ffff8881069c6368 R08: 00000000000008fd R09: 000000000000001d
-> [   92.575508][ T1319] R10: 5b5d393933353633 R11: 205d353131325420 R12: ffff888cd91ced20
-> [   92.583960][ T1319] R13: 0000000000081087 R14: ffff888ed98c2ba8 R15: ffff8881069c6000
-> [   92.592397][ T1319] FS:  0000000000000000(0000) GS:ffff8898cb53c000(0000) knlGS:0000000000000000
-> [   92.601843][ T1319] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   92.608920][ T1319] CR2: 0000000000000800 CR3: 0000002c7de24001 CR4: 00000000007726f0
-> [   92.617398][ T1319] PKRU: 55555554
-> [   92.621442][ T1319] Call Trace:
-> [   92.625216][ T1319]  <TASK>
-> [   92.628645][ T1319] btrfs_get_delayed_node+0xda/0x1b0 btrfs
-> [   92.636027][ T1319] btrfs_get_or_create_delayed_node+0x12a/0x1b0 btrfs
-> [   92.644356][ T1319] btrfs_delayed_update_inode (fs/btrfs/delayed-inode.c:1957) btrfs
-> [   92.651387][ T1319]  ? btrfs_update_root_times (fs/btrfs/root-tree.c:488) btrfs
-> [   92.658201][ T1319] btrfs_update_inode (fs/btrfs/inode.c:4174) btrfs
-> [   92.664431][ T1319] btrfs_finish_one_ordered (fs/btrfs/inode.c:4188 fs/btrfs/inode.c:3226) btrfs
-> [   92.671351][ T1319] btrfs_work_helper (fs/btrfs/async-thread.c:313) btrfs
-> [   92.677606][ T1319]  process_one_work (arch/x86/include/asm/jump_label.h:36 include/trace/events/workqueue.h:110 kernel/workqueue.c:3241)
-> [   92.682972][ T1319]  worker_thread (kernel/workqueue.c:3313 (discriminator 2) kernel/workqueue.c:3400 (discriminator 2))
-> [   92.688065][ T1319]  ? __pfx_worker_thread (kernel/workqueue.c:3346)
-> [   92.693679][ T1319]  kthread (kernel/kthread.c:463)
-> [   92.698145][ T1319]  ? __pfx_kthread (kernel/kthread.c:412)
-> [   92.703205][ T1319]  ret_from_fork (arch/x86/kernel/process.c:148)
-> [   92.708102][ T1319]  ? __pfx_kthread (kernel/kthread.c:412)
-> [   92.713169][ T1319]  ret_from_fork_asm (arch/x86/entry/entry_64.S:258)
-> [   92.718420][ T1319]  </TASK>
-> [   92.721904][ T1319] ---[ end trace 0000000000000000 ]---
-> [   92.772617][ T2117] [ perf record: Woken up 232 times to write data ]
-> [   92.772626][ T2117]
-> [   97.041836][ T2115]       2696       307116         30435        210930         28018        143529         49252
-> [   97.041848][ T2115]
-> [  107.042097][ T2115]       3311       309408         37927        214378         34672        141593         71871
-> [  107.042111][ T2115]
-> [  107.492140][ T2117] Warning:
-> [  107.492150][ T2117]
-> [  107.504083][ T2117] 174 out of order events recorded.
-> [  107.504089][ T2117]
-> [  107.572544][ T2117] [ perf record: Captured and wrote 680.421 MB /tmp/lkp/perf-sched.data (2685986 samples) ]
-> [  107.572552][ T2117]
-> [  116.735824][    C3] perf: interrupt took too long (2518 > 2500), lowering kernel.perf_event_max_sample_rate to 79000
-> [  116.747160][    C3] perf: interrupt took too long (3163 > 3147), lowering kernel.perf_event_max_sample_rate to 63000
-> [  116.760698][ T2117] Events enabled
-> [  116.760708][ T2117]
-> [  116.763935][    C3] perf: interrupt took too long (3955 > 3953), lowering kernel.perf_event_max_sample_rate to 50000
-> [  116.796549][   C67] perf: interrupt took too long (4953 > 4943), lowering kernel.perf_event_max_sample_rate to 40000
-> [  116.866088][  C131] perf: interrupt took too long (6210 > 6191), lowering kernel.perf_event_max_sample_rate to 32000
-> [  117.042049][ T2115]       3836       310809         30767        213835         28646        137339         48846
-> [  117.042057][ T2115]
-> [  117.739156][   C25] perf: interrupt took too long (7763 > 7762), lowering kernel.perf_event_max_sample_rate to 25000
-> [  119.838008][ T2117] [ perf record: Woken up 399 times to write data ]
-> [  119.838018][ T2117]
-> [  124.613970][ T2117] Warning:
-> [  124.613980][ T2117]
-> [  124.625324][ T2117] Processed 1601669 events and lost 6 chunks!
-> [  124.625332][ T2117]
-> [  124.635344][ T2117]
-> [  124.635349][ T2117]
-> [  124.642513][ T2117] Check IO/CPU overload!
-> [  124.642518][ T2117]
-> [  124.649994][ T2117]
-> [  124.649999][ T2117]
-> [  124.656077][ T2117] Warning:
-> [  124.656082][ T2117]
-> [  124.664342][ T2117] 35 out of order events recorded.
-> [  124.664347][ T2117]
-> [  124.678444][ T2117] [ perf record: Captured and wrote 252.317 MB /tmp/lkp/perf_c2c.data (1412807 samples) ]
-> [  124.678450][ T2117]
-> [  127.042332][ T2115]       4407       303071         35022        208647         31346        136630         47202
-> [  127.042344][ T2115]
-> [  137.042250][ T2115]       4943       299584         31810        208626         30129        128390         56528
-> [  137.042263][ T2115]
-> [  147.042441][ T2115]       5385       300009         27874        208644         24778        132677         46221
-> [  147.042453][ T2115]
-> [  157.042433][ T2115]       5910       307972         30431        216088         28665        137389         57696
-> [  157.042445][ T2115]
-> [  167.042628][ T2115]       6460       304663         35022        213949         31758        139786         62225
-> [  167.042640][ T2115]
-> [  177.042573][ T2115]       6967       307323         30606        213465         26983        141516         63168
-> [  177.042587][ T2115]
-> [  187.042733][ T2115]       7407       307075         26787        213546         24994        142923         41523
-> [  187.042745][ T2115]
-> [  197.042791][ T2115]       7927       308105         34190        214356         29643        140592         52914
-> [  197.042803][ T2115]
-> [  207.042918][ T2115]       8549       301948         38038        210474         34706        141120         67811
-> [  207.042931][ T2115]
-> [  217.042636][ T2115]       8955       297050         25135        208501         22518        135881         44260
-> [  217.042648][ T2115]
-> [  227.038865][ T2115]       9471       304296         32936        210610         29938        137844         62809
-> [  227.038870][ T2115]
-> [  237.038945][ T2115]       9964       305929         31628        213754         28012        141671         62429
-> [  237.038951][ T2115]
-> [  247.039008][ T2115]      10440       307726         30685        214830         28062        140111         62249
-> [  247.039015][ T2115]
-> [  257.039183][ T2115]      10802       292789         23345        205882         20689        138434         48453
-> [  257.039188][ T2115]
-> [  267.043497][ T2115]      11273       306881         30725        212403         27270        143693         60639
-> [  267.043508][ T2115]
-> [  277.043510][ T2115]      11797       302806         33279        211710         30071        142609         64344
-> [  277.043519][ T2115]
-> [  287.039432][ T2115]      12205       264441         24852        186434         24016        129256         56311
-> [  287.039437][ T2115]
-> [  297.043412][ T2115]      12673       310406         27331        217050         25960        146991         54571
-> [  297.043421][ T2115]
-> 
-> 
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20251126/202511262228.6dda231e-lkp@intel.com
-> 
-> 
-> 
-> -- 
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
+>  void unix_add_edges(struct scm_fp_list *fpl, struct unix_sock *receiver)
+>  {
 
-Hello,
 
-I believe I have identified the root cause of the warning.
-However, I'm having some troubles running the reproducer as I
-haven't setup lkp-tests yet. Could you test the patch below
-against your reproducer to see if it fixes the issue?
+[1]
+=========================================================================================
+compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
+  gcc-14/performance/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/lkp-spr-r02/sockfd/stress-ng/60s
 
----8<---
+commit: 
+  17d85f33a8 ("Merge tag 'for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/rdma/rdma")
+  284922f4c5 ("x86: uaccess: don't use runtime-const rewriting in modules")
+  c4f1335ec1 <---- patch
 
-[PATCH] btrfs: fix use-after-free in btrfs_get_or_create_delayed_node
+17d85f33a83b84e7 284922f4c563aa3a8558a00f2a0 c4f1335ec1491688ec229c5cf26
+---------------- --------------------------- ---------------------------
+         %stddev     %change         %stddev     %change         %stddev
+             \          |                \          |                \
+     19.11            +0.1%      19.14            +1.4%      19.38        turbostat.RAMWatt
+   9751559 ±  3%      -1.6%    9595510 ±  4%     -15.3%    8261973 ±  2%  proc-vmstat.pgalloc_normal
+   8538105 ±  3%      -1.2%    8435833 ±  3%     -18.8%    6932658        proc-vmstat.pgfree
+      3555 ±  3%     +10.6%       3932 ±  3%     +22.8%       4366 ±  8%  perf-c2c.DRAM.remote
+      4834 ±  3%     +12.0%       5415 ±  3%     +20.3%       5813 ±  8%  perf-c2c.HITM.local
+      2714 ±  2%     +12.5%       3054 ±  3%     +25.0%       3393 ±  8%  perf-c2c.HITM.remote
+     64099 ± 30%     +17.2%      75129 ± 11%     +62.4%     104104 ±  8%  sched_debug.cpu.nr_switches.avg
+    111196 ± 27%     +18.7%     131994 ±  7%     +48.0%     164614 ±  4%  sched_debug.cpu.nr_switches.max
+     18142 ± 31%     +20.8%      21917 ± 11%     +52.6%      27692 ±  9%  sched_debug.cpu.nr_switches.stddev
+  16326624 ±  7%      +6.8%   17434335 ± 11%     +47.3%   24056288 ±  8%  time.involuntary_context_switches
+     27.78            +5.1%      29.18           +16.7%      32.42        time.user_time
+  15140259 ±  8%      +7.8%   16319396 ± 12%     +51.9%   23004276 ±  9%  time.voluntary_context_switches
+  55674763            +6.1%   59075135           +12.8%   62793623        stress-ng.sockfd.ops
+    927326            +6.1%     983845           +12.8%    1045895        stress-ng.sockfd.ops_per_sec
+  16326624 ±  7%      +6.8%   17434335 ± 11%     +47.3%   24056288 ±  8%  stress-ng.time.involuntary_context_switches
+     27.78            +5.1%      29.18           +16.7%      32.42        stress-ng.time.user_time
+  15140259 ±  8%      +7.8%   16319396 ± 12%     +51.9%   23004276 ±  9%  stress-ng.time.voluntary_context_switches
+      0.51            +3.9%       0.53            +6.8%       0.55        perf-stat.i.MPKI
+  34903541            +5.2%   36715161           +10.8%   38686195 ±  2%  perf-stat.i.cache-misses
+ 1.072e+08            +5.8%  1.133e+08            +8.0%  1.157e+08        perf-stat.i.cache-references
+    518753 ±  7%      +7.6%     557957 ± 11%     +49.3%     774423 ±  8%  perf-stat.i.context-switches
+      9.18            -1.0%       9.09            -3.4%       8.87        perf-stat.i.cpi
+     18971            -5.5%      17932           -10.2%      17042        perf-stat.i.cycles-between-cache-misses
+      2.34 ±  8%      +6.6%       2.50 ± 12%     +48.6%       3.48 ±  8%  perf-stat.i.metric.K/sec
+      0.46 ± 30%     +13.6%       0.52           +16.8%       0.54        perf-stat.overall.MPKI
+      0.10 ± 30%     +10.3%       0.11           +13.1%       0.11        perf-stat.overall.ipc
+  31330827 ± 30%     +14.9%   36004895           +21.0%   37920039 ±  2%  perf-stat.ps.cache-misses
+  96530576 ± 30%     +15.3%  1.113e+08           +17.7%  1.136e+08        perf-stat.ps.cache-references
+    467600 ± 31%     +17.0%     546869 ± 12%     +62.5%     759773 ±  8%  perf-stat.ps.context-switches
+ 6.231e+10 ± 30%     +10.4%  6.876e+10           +13.0%  7.042e+10        perf-stat.ps.instructions
+ 3.809e+12 ± 30%     +10.4%  4.206e+12           +13.0%  4.305e+12        perf-stat.total.instructions
+     48.32            -0.2       48.16            -0.2       48.13        perf-profile.calltrace.cycles-pp._raw_spin_lock.unix_del_edges.unix_stream_read_generic.unix_stream_recvmsg.sock_recvmsg
+     48.23            -0.2       48.07            -0.2       48.04        perf-profile.calltrace.cycles-pp.native_queued_spin_lock_slowpath._raw_spin_lock.unix_del_edges.unix_stream_read_generic.unix_stream_recvmsg
+     48.34            -0.2       48.18            -0.2       48.15        perf-profile.calltrace.cycles-pp.unix_del_edges.unix_stream_read_generic.unix_stream_recvmsg.sock_recvmsg.____sys_recvmsg
+     49.18            -0.1       49.10            -1.7       47.47 ± 10%  perf-profile.calltrace.cycles-pp.__sys_sendmsg.do_syscall_64.entry_SYSCALL_64_after_hwframe.stress_sockfd
+     49.07            -0.1       48.99            -0.2       48.83        perf-profile.calltrace.cycles-pp.unix_stream_sendmsg.____sys_sendmsg.___sys_sendmsg.__sys_sendmsg.do_syscall_64
+     49.17            -0.1       49.09            -1.7       47.46 ± 10%  perf-profile.calltrace.cycles-pp.___sys_sendmsg.__sys_sendmsg.do_syscall_64.entry_SYSCALL_64_after_hwframe.stress_sockfd
+     49.11            -0.1       49.03            -0.2       48.88        perf-profile.calltrace.cycles-pp.____sys_sendmsg.___sys_sendmsg.__sys_sendmsg.do_syscall_64.entry_SYSCALL_64_after_hwframe
+     48.48            -0.1       48.40            -0.3       48.20        perf-profile.calltrace.cycles-pp.unix_add_edges.unix_stream_sendmsg.____sys_sendmsg.___sys_sendmsg.__sys_sendmsg
+     48.46            -0.1       48.39            -0.3       48.18        perf-profile.calltrace.cycles-pp._raw_spin_lock.unix_add_edges.unix_stream_sendmsg.____sys_sendmsg.___sys_sendmsg
+     48.36            -0.1       48.30            -0.3       48.09        perf-profile.calltrace.cycles-pp.native_queued_spin_lock_slowpath._raw_spin_lock.unix_add_edges.unix_stream_sendmsg.____sys_sendmsg
+      0.56 ±  4%      +0.1        0.65 ±  9%      +0.2        0.71 ± 13%  perf-profile.calltrace.cycles-pp.path_openat.do_filp_open.do_sys_openat2.__x64_sys_openat.do_syscall_64
+      0.62 ±  3%      +0.1        0.71 ±  8%      +0.2        0.79 ± 12%  perf-profile.calltrace.cycles-pp.do_sys_openat2.__x64_sys_openat.do_syscall_64.entry_SYSCALL_64_after_hwframe.stress_sockfd
+      0.56 ±  3%      +0.1        0.65 ±  8%      +0.2        0.72 ± 13%  perf-profile.calltrace.cycles-pp.do_filp_open.do_sys_openat2.__x64_sys_openat.do_syscall_64.entry_SYSCALL_64_after_hwframe
+     97.46            -0.2       97.30            -0.4       97.10        perf-profile.children.cycles-pp._raw_spin_lock
+     48.34            -0.2       48.18            -0.2       48.15        perf-profile.children.cycles-pp.unix_del_edges
+     96.94            -0.1       96.80            -0.4       96.59        perf-profile.children.cycles-pp.native_queued_spin_lock_slowpath
+     49.08            -0.1       49.00            -0.2       48.83        perf-profile.children.cycles-pp.unix_stream_sendmsg
+     49.17            -0.1       49.09            -0.2       48.94        perf-profile.children.cycles-pp.___sys_sendmsg
+     49.18            -0.1       49.10            -0.2       48.96        perf-profile.children.cycles-pp.__sys_sendmsg
+     49.11            -0.1       49.03            -0.2       48.88        perf-profile.children.cycles-pp.____sys_sendmsg
+     48.48            -0.1       48.40            -0.3       48.20        perf-profile.children.cycles-pp.unix_add_edges
+      0.05            -0.0        0.05 ± 30%      +0.0        0.06 ±  4%  perf-profile.children.cycles-pp.arch_exit_to_user_mode_prepare
+      0.05 ± 30%      -0.0        0.04 ± 46%      +0.0        0.07 ± 10%  perf-profile.children.cycles-pp.sock_def_readable
+      0.06            +0.0        0.06            +0.0        0.07        perf-profile.children.cycles-pp.alloc_empty_file
+      0.00            +0.0        0.00            +0.1        0.05        perf-profile.children.cycles-pp.refill_obj_stock
+      0.10 ±  4%      +0.0        0.10 ±  4%      +0.0        0.12 ±  3%  perf-profile.children.cycles-pp.__kmalloc_cache_noprof
+      0.16 ±  9%      +0.0        0.16 ± 15%      +0.1        0.23 ± 12%  perf-profile.children.cycles-pp.__schedule
+      0.16 ±  9%      +0.0        0.16 ± 15%      +0.1        0.23 ± 12%  perf-profile.children.cycles-pp.schedule
+      0.17 ±  2%      +0.0        0.18 ±  3%      +0.0        0.20        perf-profile.children.cycles-pp.scm_fp_copy
+      0.21            +0.0        0.21 ±  2%      +0.0        0.24        perf-profile.children.cycles-pp.__scm_send
+      0.05            +0.0        0.05 ±  9%      +0.0        0.06        perf-profile.children.cycles-pp.__cond_resched
+      0.07            +0.0        0.07 ±  6%      +0.0        0.08 ±  5%  perf-profile.children.cycles-pp.copy_msghdr_from_user
+      0.00            +0.0        0.00 ±331%      +0.1        0.05        perf-profile.children.cycles-pp.link_path_walk
+      0.01 ±223%      +0.0        0.01 ±174%      +0.1        0.06 ± 11%  perf-profile.children.cycles-pp.pick_next_task_fair
+      0.06            +0.0        0.06 ±  7%      +0.0        0.07        perf-profile.children.cycles-pp.free_uid
+      0.01 ±173%      +0.0        0.02 ±118%      +0.0        0.06 ±  6%  perf-profile.children.cycles-pp.unix_scm_to_skb
+      0.07 ±  6%      +0.0        0.08 ±  8%      +0.0        0.09 ±  6%  perf-profile.children.cycles-pp.__legitimize_path
+      0.06 ±  6%      +0.0        0.07 ± 10%      +0.0        0.08 ±  7%  perf-profile.children.cycles-pp.terminate_walk
+      0.15 ±  3%      +0.0        0.17 ±  2%      +0.0        0.18 ±  2%  perf-profile.children.cycles-pp.__scm_recv_common
+      0.00            +0.0        0.01 ±173%      +0.1        0.05        perf-profile.children.cycles-pp.kmem_cache_alloc_noprof
+      0.16 ±  3%      +0.0        0.17 ±  4%      +0.0        0.18 ±  2%  perf-profile.children.cycles-pp.scm_recv_unix
+      0.09 ±  7%      +0.0        0.10 ±  9%      +0.0        0.11 ±  6%  perf-profile.children.cycles-pp.dput
+      0.08 ±  7%      +0.0        0.10 ±  7%      +0.0        0.11 ±  5%  perf-profile.children.cycles-pp.lockref_put_return
+      0.09 ±  5%      +0.0        0.11 ±  6%      +0.0        0.12 ±  6%  perf-profile.children.cycles-pp.__fput
+      0.15 ±  4%      +0.0        0.16 ±  4%      +0.0        0.18 ±  4%  perf-profile.children.cycles-pp.task_work_run
+      0.16 ±  5%      +0.0        0.18 ±  6%      +0.0        0.19 ±  4%  perf-profile.children.cycles-pp.close_range
+      0.24 ±  3%      +0.0        0.26 ±  6%      +0.1        0.32 ±  4%  perf-profile.children.cycles-pp.exit_to_user_mode_loop
+      0.19 ± 10%      +0.1        0.25 ± 18%      +0.1        0.29 ± 25%  perf-profile.children.cycles-pp.chrdev_open
+      0.24 ±  8%      +0.1        0.31 ± 15%      +0.1        0.35 ± 21%  perf-profile.children.cycles-pp.do_dentry_open
+      0.24 ±  7%      +0.1        0.32 ± 15%      +0.1        0.36 ± 20%  perf-profile.children.cycles-pp.vfs_open
+      0.35 ±  5%      +0.1        0.43 ± 12%      +0.1        0.49 ± 15%  perf-profile.children.cycles-pp.do_open
+      0.63 ±  3%      +0.1        0.72 ±  8%      +0.2        0.82 ±  9%  perf-profile.children.cycles-pp.do_sys_openat2
+      0.63 ±  3%      +0.1        0.72 ±  8%      +0.2        0.82 ±  9%  perf-profile.children.cycles-pp.__x64_sys_openat
+      0.56 ±  3%      +0.1        0.65 ±  9%      +0.2        0.74 ± 10%  perf-profile.children.cycles-pp.path_openat
+      0.56 ±  3%      +0.1        0.65 ±  8%      +0.2        0.74 ± 10%  perf-profile.children.cycles-pp.do_filp_open
+     96.49            -0.1       96.34            -0.3       96.14        perf-profile.self.cycles-pp.native_queued_spin_lock_slowpath
+      0.06            +0.0        0.06 ±  4%      +0.0        0.07 ±  5%  perf-profile.self.cycles-pp.scm_fp_copy
+      0.00 ±331%      +0.0        0.01 ±173%      +0.1        0.06 ±  6%  perf-profile.self.cycles-pp.unix_scm_to_skb
+      0.08 ±  8%      +0.0        0.10 ±  8%      +0.0        0.11 ±  6%  perf-profile.self.cycles-pp.lockref_put_return
 
-Previously, btrfs_get_or_create_delayed_node sets the delayed_node's
-refcount before acquiring the root->delayed_nodes lock.
-Commit e8513c012de7 ("btrfs: implement ref_tracker for delayed_nodes")
-moves refcount_set inside the critical section which means
-there is no longer a memory barrier between setting the refcount and
-setting btrfs_inode->delayed_node = node.
-
-This allows btrfs_get_or_create_delayed_node to set
-btrfs_inode->delayed_node before setting the refcount.
-A different thread is then able to read and increase the refcount
-of btrfs_inode->delayed_node leading to a refcounting bug and
-a use-after-free warning.
-
-The fix is to move refcount_set back to where it was to take
-advantage of the implicit memory barrier provided by lock
-acquisition.
-
-Fixes: e8513c012de7 ("btrfs: implement ref_tracker for delayed_nodes")
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Closes: https://lore.kernel.org/oe-lkp/202511262228.6dda231e-lkp@intel.com
-Signed-off-by: Leo Martins <loemra.dev@gmail.com>
----
- fs/btrfs/delayed-inode.c | 34 ++++++++++++++++++----------------
- 1 file changed, 18 insertions(+), 16 deletions(-)
-
-diff --git a/fs/btrfs/delayed-inode.c b/fs/btrfs/delayed-inode.c
-index 364814642a91..f61f10000e33 100644
---- a/fs/btrfs/delayed-inode.c
-+++ b/fs/btrfs/delayed-inode.c
-@@ -152,37 +152,39 @@ static struct btrfs_delayed_node *btrfs_get_or_create_delayed_node(
- 		return ERR_PTR(-ENOMEM);
- 	btrfs_init_delayed_node(node, root, ino);
- 
-+	/* Cached in the inode and can be accessed. */
-+	refcount_set(&node->refs, 2);
-+	btrfs_delayed_node_ref_tracker_alloc(node, tracker, GFP_ATOMIC);
-+	btrfs_delayed_node_ref_tracker_alloc(node, &node->inode_cache_tracker, GFP_ATOMIC);
-+
- 	/* Allocate and reserve the slot, from now it can return a NULL from xa_load(). */
- 	ret = xa_reserve(&root->delayed_nodes, ino, GFP_NOFS);
--	if (ret == -ENOMEM) {
--		btrfs_delayed_node_ref_tracker_dir_exit(node);
--		kmem_cache_free(delayed_node_cache, node);
--		return ERR_PTR(-ENOMEM);
--	}
-+	if (ret == -ENOMEM)
-+		goto cleanup;
-+
- 	xa_lock(&root->delayed_nodes);
- 	ptr = xa_load(&root->delayed_nodes, ino);
- 	if (ptr) {
- 		/* Somebody inserted it, go back and read it. */
- 		xa_unlock(&root->delayed_nodes);
--		btrfs_delayed_node_ref_tracker_dir_exit(node);
--		kmem_cache_free(delayed_node_cache, node);
--		node = NULL;
--		goto again;
-+		goto cleanup;
- 	}
- 	ptr = __xa_store(&root->delayed_nodes, ino, node, GFP_ATOMIC);
- 	ASSERT(xa_err(ptr) != -EINVAL);
- 	ASSERT(xa_err(ptr) != -ENOMEM);
- 	ASSERT(ptr == NULL);
--
--	/* Cached in the inode and can be accessed. */
--	refcount_set(&node->refs, 2);
--	btrfs_delayed_node_ref_tracker_alloc(node, tracker, GFP_ATOMIC);
--	btrfs_delayed_node_ref_tracker_alloc(node, &node->inode_cache_tracker, GFP_ATOMIC);
--
--	btrfs_inode->delayed_node = node;
-+	WRITE_ONCE(btrfs_inode->delayed_node, node);
- 	xa_unlock(&root->delayed_nodes);
- 
- 	return node;
-+cleanup:
-+	btrfs_delayed_node_ref_tracker_free(node, tracker);
-+	btrfs_delayed_node_ref_tracker_free(node, &node->inode_cache_tracker);
-+	btrfs_delayed_node_ref_tracker_dir_exit(node);
-+	kmem_cache_free(delayed_node_cache, node);
-+	if (ret)
-+		return ERR_PTR(ret);
-+	goto again;
- }
- 
- /*
--- 
-2.47.3
