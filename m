@@ -1,253 +1,83 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 430812DAFBD
-	for <oe-lkp@lists.linux.dev>; Wed,  3 Dec 2025 10:45:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3C65322A0A;
+	Wed,  3 Dec 2025 17:16:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764758756; cv=none; b=B0aAXP2OBoCnGSJ1COJeEwmONBvHB0vEK0StTeZ2KvbdDLM5rmVQVOubYFIpKbY5OBuTSLd23qs2jvMohrGNsIyCFOfpiL/2OUs5SuifMrGSOVFmllaZ2ycSbC/7OHDQrnUI2cIx4Zv4vsVlfbkMdywPdD9TroJB7OCpq1k1FSU=
+	t=1764782181; cv=none; b=o5oVIAcobXeJ+CBTmq7AykuZiaUr5hTncmV7ixdxTP4SZaYmY20HHyYV7tkBrzv8P7W81NhSuosiYOB7XEDmQuihdUWmNevhCtJazMnW841ndYz8VpsoYx0Jo7MMiBMDlGCbugPc96spMKUl/1EAhpK7/DmE9YQ84Of3ovtoEhk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764758756; c=relaxed/simple;
-	bh=10t4BJX+q1wqD8KyLAGeZLJKdJKQTkkfESmLGD3t7xk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=q9mXUW9fzSsHwDMaC00stWnv4bDxHWjRnBVfNCPDi2X2Q8BRV41IMDVurgBUJOKaJLm40ozdkKjA4oLqoOmOxbSBB1jYG91O56TWKxunibSaPy0oGoYJl8wZQW8Ui+s//v9g5ChATgZYRndRF9gbxXQeFA1Zt+CeUOOIRXSsqFA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=S+E8Gc3d; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1764782181; c=relaxed/simple;
+	bh=ZDhl8eY/1xn/6xcrEAlM2dedGLPIBg6Rgcbj4tELf0U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Ku0MyPYiraEJ8GOLxpD8NoP0Rihx1u/6F9/76Bz74UyI36dpGMcfFMm7UXzS7k1Chr2eQeDsxw5KZW2p0WlLfUJer+pEgHjbr+mF9K/I3g0aGbA8MWhQzdg+z0GTGWP+3pDLobvGadtfQ4W5kJGBl2+il2VfBKdoVSMkYtPWHTY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=d/ZmF08h; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="S+E8Gc3d"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9862C4AF09
-	for <oe-lkp@lists.linux.dev>; Wed,  3 Dec 2025 10:45:55 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="d/ZmF08h"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37215C4CEF5;
+	Wed,  3 Dec 2025 17:16:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1764758755;
-	bh=10t4BJX+q1wqD8KyLAGeZLJKdJKQTkkfESmLGD3t7xk=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=S+E8Gc3dBSmNJrfy9rokj+2+YVq8s423165xd4KCUJ79glFjIJpzk+6D0wgAvMRzn
-	 Rr61oRUVzgN7c4H0XpeTOQDQMpCC75MN/0JFBuY2KzX+6hVOz0xjQ7DB++KWLchTDV
-	 A5z1sIeQvmjbVq/KUryiY4Slb9rZC8wiJDWRMyO/uyZBgSJdsEPXfbzuvczOPirkNf
-	 fYB+fVVRbpyQlF9LDgyQvA16mjLZqa1bd08NvFaknxgAWkeX7h9rdiCcoNQdDQcAUH
-	 1YIKrlwWeHFQjTyLPt/wNIJMoDVeI6VfzhTbr+exGGUnCWe3/LohlDOY096TipE9wc
-	 MQLoTldirTv8g==
-Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-640aa1445c3so10001513a12.1
-        for <oe-lkp@lists.linux.dev>; Wed, 03 Dec 2025 02:45:55 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCW6xXXOh04JNsG02UryqzrrWDdfKqAT9tqcCmhCl14Vt6ST/DaaUt+zn06/UevGiNxAsDOt/70=@lists.linux.dev
-X-Gm-Message-State: AOJu0YxU37a7WWRGqc/fwRVvrkGJbIvceE+VwfWSlnDBjIro0ciSzzhR
-	BnRJogo6ibngqgqUZNSCJHhpXig9FjZNqQ9YCF2SM9Hgtq1vWpRSN2ctd3dqI195R77pBE7dGzy
-	hxYx75paYM+LPlrp7MqwsYROgMxBn1tk=
-X-Google-Smtp-Source: AGHT+IEoOZjm4Dn/Ql73PBVO04tjThrP3m8G2aylGlBGtw+zYMw1zl1BUEovUUr8x3tzYA0w/sxgoJ908Xy+sMnFjW0=
-X-Received: by 2002:a17:907:3d87:b0:b76:45bf:ce38 with SMTP id
- a640c23a62f3a-b79dbea4522mr148989566b.19.1764758754400; Wed, 03 Dec 2025
- 02:45:54 -0800 (PST)
+	s=k20201202; t=1764782181;
+	bh=ZDhl8eY/1xn/6xcrEAlM2dedGLPIBg6Rgcbj4tELf0U=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=d/ZmF08hyjcbG8+hY4PPKF6v2P4p5ccwluRuWm8WVqlPGKAIo2gMwkfTz+DQoZWuv
+	 BiX1xytpbFVBo9EzW1wEKlPnu/AGPY4sPB9qV+GhTJVnEzaqZvF52fPfXngWS/IlXI
+	 XDfFp+aYJUQzNCMGqR/v09hjy/gNJ6Nax30SEwztVRh/WtsamXfK+MtXQNMdGG+LHW
+	 hgnfVxU1UVjm9/XXmfYJ8j349QLHgnrQ/F52TOXxBoytPpl4qdxnPq4LZi0X5k1bc9
+	 LYpRcHPwoPBr83cO66BywX0ntJPXCZ9rqN8yvp6zYZwODwpq7xEA7kZtFGDI9mw61n
+	 WQ7DIFdlsFREg==
+Date: Wed, 3 Dec 2025 18:16:15 +0100
+From: Ingo Molnar <mingo@kernel.org>
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: Peter Zijlstra <peterz@infradead.org>,
+	Tim Chen <tim.c.chen@linux.intel.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-kernel@vger.kernel.org, x86@kernel.org,
+	Chen Yu <yu.c.chen@intel.com>,
+	Vincent Guittot <vincent.guittot@linaro.org>,
+	Shrikanth Hegde <sshegde@linux.ibm.com>,
+	K Prateek Nayak <kprateek.nayak@amd.com>,
+	Srikar Dronamraju <srikar@linux.ibm.com>,
+	Mohini Narkhede <mohini.narkhede@intel.com>,
+	aubrey.li@linux.intel.com
+Subject: Re: [tip:tmp.tmp] [sched/fair]  eb2db043ab:
+ BUG:kernel_NULL_pointer_dereference,address
+Message-ID: <aTBwXwE-hdphxCtN@gmail.com>
+References: <202511271605.bd46ddc3-lkp@intel.com>
+ <20251127083815.GZ3245006@noisy.programming.kicks-ass.net>
+ <aSgU0IDhF4uam0JA@gmail.com>
+ <aSj97AJbXnJvvyqK@xsang-OptiPlex-9020>
+ <20251128093430.GE3245006@noisy.programming.kicks-ass.net>
+ <aS51CHrrzE3_7vM9@gmail.com>
+ <aS/enCbsTTlXiAEL@xsang-OptiPlex-9020>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAL3q7H6q-j8Xo_SHGyY0+pHj=BQHezTwxbP9VKQxgLruqxQdow@mail.gmail.com>
- <20251202210330.2705156-1-loemra.dev@gmail.com>
-In-Reply-To: <20251202210330.2705156-1-loemra.dev@gmail.com>
-From: Filipe Manana <fdmanana@kernel.org>
-Date: Wed, 3 Dec 2025 10:45:17 +0000
-X-Gmail-Original-Message-ID: <CAL3q7H5EA=NUOPwtgUNUMhOhGd85pSgsgy17KwBOWgWV9594+Q@mail.gmail.com>
-X-Gm-Features: AWmQ_bmICo-kdHDQZfqufIjTmQwNMF-BAeAM85sRxAu_ffdgThHcwLx69yp-12A
-Message-ID: <CAL3q7H5EA=NUOPwtgUNUMhOhGd85pSgsgy17KwBOWgWV9594+Q@mail.gmail.com>
-Subject: Re: [linus:master] [btrfs] e8513c012d: addition_on#;use-after-free
-To: Leo Martins <loemra.dev@gmail.com>
-Cc: Oliver Sang <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	linux-kernel@vger.kernel.org, David Sterba <dsterba@suse.com>, 
-	linux-btrfs@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aS/enCbsTTlXiAEL@xsang-OptiPlex-9020>
 
-On Tue, Dec 2, 2025 at 9:03=E2=80=AFPM Leo Martins <loemra.dev@gmail.com> w=
-rote:
->
-> On Tue, 2 Dec 2025 19:19:05 +0000 Filipe Manana <fdmanana@kernel.org> wro=
-te:
->
-> > On Tue, Dec 2, 2025 at 5:17=E2=80=AFPM Leo Martins <loemra.dev@gmail.co=
-m> wrote:
-> > >
-> > > On Tue, 2 Dec 2025 15:04:51 +0000 Filipe Manana <fdmanana@kernel.org>=
- wrote:
-> > >
-> > > > On Tue, Dec 2, 2025 at 8:40=E2=80=AFAM Oliver Sang <oliver.sang@int=
-el.com> wrote:
-> > > > >
-> > > > > hi, Leo Martins,
-> > > > >
-> > > > > On Mon, Dec 01, 2025 at 04:51:41PM -0800, Leo Martins wrote:
-> > > > >
-> > > > > [...]
-> > > > >
-> > > > > >
-> > > > > > Hello,
-> > > > > >
-> > > > > > I believe I have identified the root cause of the warning.
-> > > > > > However, I'm having some troubles running the reproducer as I
-> > > > > > haven't setup lkp-tests yet. Could you test the patch below
-> > > > > > against your reproducer to see if it fixes the issue?
-> > > > >
-> > > > > we confirmed your patch fixed the issues we reported in origial r=
-eport. thanks!
-> > > > >
-> > > > > Tested-by: kernel test robot <oliver.sang@intel.com>
-> > > > >
-> > > > > >
-> > > > > > ---8<---
-> > > > > >
-> > > > > > [PATCH] btrfs: fix use-after-free in btrfs_get_or_create_delaye=
-d_node
-> > > > > >
-> > > > > > Previously, btrfs_get_or_create_delayed_node sets the delayed_n=
-ode's
-> > > > > > refcount before acquiring the root->delayed_nodes lock.
-> > > > > > Commit e8513c012de7 ("btrfs: implement ref_tracker for delayed_=
-nodes")
-> > > > > > moves refcount_set inside the critical section which means
-> > > > > > there is no longer a memory barrier between setting the refcoun=
-t and
-> > > > > > setting btrfs_inode->delayed_node =3D node.
-> > > > > >
-> > > > > > This allows btrfs_get_or_create_delayed_node to set
-> > > > > > btrfs_inode->delayed_node before setting the refcount.
-> > > > > > A different thread is then able to read and increase the refcou=
-nt
-> > > > > > of btrfs_inode->delayed_node leading to a refcounting bug and
-> > > > > > a use-after-free warning.
-> > > > > >
-> > > > > > The fix is to move refcount_set back to where it was to take
-> > > > > > advantage of the implicit memory barrier provided by lock
-> > > > > > acquisition.
-> > > > > >
-> > > > > > Fixes: e8513c012de7 ("btrfs: implement ref_tracker for delayed_=
-nodes")
-> > > > > > Reported-by: kernel test robot <oliver.sang@intel.com>
-> > > > > > Closes: https://lore.kernel.org/oe-lkp/202511262228.6dda231e-lk=
-p@intel.com
-> > > > > > Signed-off-by: Leo Martins <loemra.dev@gmail.com>
-> > > > > > ---
-> > > > > >  fs/btrfs/delayed-inode.c | 34 ++++++++++++++++++--------------=
---
-> > > > > >  1 file changed, 18 insertions(+), 16 deletions(-)
-> > > > > >
-> > > > > > diff --git a/fs/btrfs/delayed-inode.c b/fs/btrfs/delayed-inode.=
-c
-> > > > > > index 364814642a91..f61f10000e33 100644
-> > > > > > --- a/fs/btrfs/delayed-inode.c
-> > > > > > +++ b/fs/btrfs/delayed-inode.c
-> > > > > > @@ -152,37 +152,39 @@ static struct btrfs_delayed_node *btrfs_g=
-et_or_create_delayed_node(
-> > > > > >               return ERR_PTR(-ENOMEM);
-> > > > > >       btrfs_init_delayed_node(node, root, ino);
-> > > > > >
-> > > > > > +     /* Cached in the inode and can be accessed. */
-> > > > > > +     refcount_set(&node->refs, 2);
-> > > > > > +     btrfs_delayed_node_ref_tracker_alloc(node, tracker, GFP_A=
-TOMIC);
-> > > > > > +     btrfs_delayed_node_ref_tracker_alloc(node, &node->inode_c=
-ache_tracker, GFP_ATOMIC);
-> > > > > > +
-> > > > > >       /* Allocate and reserve the slot, from now it can return =
-a NULL from xa_load(). */
-> > > > > >       ret =3D xa_reserve(&root->delayed_nodes, ino, GFP_NOFS);
-> > > > > > -     if (ret =3D=3D -ENOMEM) {
-> > > > > > -             btrfs_delayed_node_ref_tracker_dir_exit(node);
-> > > > > > -             kmem_cache_free(delayed_node_cache, node);
-> > > > > > -             return ERR_PTR(-ENOMEM);
-> > > > > > -     }
-> > > > > > +     if (ret =3D=3D -ENOMEM)
-> > > > > > +             goto cleanup;
-> > > > > > +
-> > > > > >       xa_lock(&root->delayed_nodes);
-> > > > > >       ptr =3D xa_load(&root->delayed_nodes, ino);
-> > > > > >       if (ptr) {
-> > > > > >               /* Somebody inserted it, go back and read it. */
-> > > > > >               xa_unlock(&root->delayed_nodes);
-> > > > > > -             btrfs_delayed_node_ref_tracker_dir_exit(node);
-> > > > > > -             kmem_cache_free(delayed_node_cache, node);
-> > > > > > -             node =3D NULL;
-> > > > > > -             goto again;
-> > > > > > +             goto cleanup;
-> > > > > >       }
-> > > > > >       ptr =3D __xa_store(&root->delayed_nodes, ino, node, GFP_A=
-TOMIC);
-> > > > > >       ASSERT(xa_err(ptr) !=3D -EINVAL);
-> > > > > >       ASSERT(xa_err(ptr) !=3D -ENOMEM);
-> > > > > >       ASSERT(ptr =3D=3D NULL);
-> > > > > > -
-> > > > > > -     /* Cached in the inode and can be accessed. */
-> > > > > > -     refcount_set(&node->refs, 2);
-> > > > > > -     btrfs_delayed_node_ref_tracker_alloc(node, tracker, GFP_A=
-TOMIC);
-> > > > > > -     btrfs_delayed_node_ref_tracker_alloc(node, &node->inode_c=
-ache_tracker, GFP_ATOMIC);
-> > > > > > -
-> > > > > > -     btrfs_inode->delayed_node =3D node;
-> > > > > > +     WRITE_ONCE(btrfs_inode->delayed_node, node);
-> > > >
-> > > > Why the WRITE_ONCE() change?
-> > >
-> > > Since there are lockless readers of btrfs_inode->delayed_node all wri=
-ters
-> > > should be marked with WRITE_ONCE to force the compiler to store atomi=
-cally.
-> >
-> > If by atomically you mean to avoid store/load tearing, then using the
-> > _ONCE() macros won't do anything because we are dealing with pointers.
-> > This has been discussed in the past, see:
-> >
-> > https://lore.kernel.org/linux-btrfs/cover.1715951291.git.fdmanana@suse.=
-com/
->
-> That is what I meant. Missed that discussion, thanks for the link.
-> I do still see some value in using WRITE_ONCE which is for the human
-> reader to realize that there are lockless readers, but that's pretty
-> minor.
 
-No and that's mentioned in the thread: using _ONCE() when it doesn't
-offer any protection but to signal someone reading the source code
-that it can be accessed in a lockless way is only confusing people and
-influencing people to repeat this pattern.
+* Oliver Sang <oliver.sang@intel.com> wrote:
 
-To make it clear that it's accessed in a lockless way, just make the
-reader side use data_race() if it's a safe race or smp_load_acquire()
-otherwise, with proper comments right above the read access. These
-also make KCSAN and other tools not report possible races.
+> we do have some default pattern for branches to ignore:
+> default_branch_denylist: (.*experimental.*|.*dont-build|origin/.*|remotes/.*|.*/orphan-.*)
+> (https://github.com/intel/lkp-tests/blob/master/repo/linux/DEFAULTS#L5)
+> 
+> but we also support repo specific configurations. such like for tip:
+> branch_denylist: auto-.*|tmp.*|base-.*|test.*|.*-for-linus|tip
+> (https://github.com/intel/lkp-tests/blob/master/repo/linux/tip#L19)
 
-> >
-> > >
-> > > >
-> > > > Can you explain in the changelog why it's being introduced?
-> > > > This seems unrelated and it was not there before the commit mention=
-ed
-> > > > in the Fixes tag.
-> > >
-> > > I'll send out a v2 without the WRITE_ONCE since it is not directly re=
-lated
-> > > to this bug and send out a separate patch updating writes to use WRIT=
-E_ONCE.
-> > >
-> > > Thanks.
-> > >
-> > > >
-> > > > Thanks.
-> > > >
-> > > > > >       xa_unlock(&root->delayed_nodes);
-> > > > > >
-> > > > > >       return node;
-> > > > > > +cleanup:
-> > > > > > +     btrfs_delayed_node_ref_tracker_free(node, tracker);
-> > > > > > +     btrfs_delayed_node_ref_tracker_free(node, &node->inode_ca=
-che_tracker);
-> > > > > > +     btrfs_delayed_node_ref_tracker_dir_exit(node);
-> > > > > > +     kmem_cache_free(delayed_node_cache, node);
-> > > > > > +     if (ret)
-> > > > > > +             return ERR_PTR(ret);
-> > > > > > +     goto again;
-> > > > > >  }
-> > > > > >
-> > > > > >  /*
-> > > > > > --
-> > > > > > 2.47.3
-> > > > >
-> > >
+That's useful to know, thanks!
+
+> the "tmp.*" is just updated from previous "tmp-.*" to cover tmp.tmp
+> (https://github.com/intel/lkp-tests/commit/acd36193a0dd2bbc1c6d4ef59dd2b33a2eece3e0)
+
+Thank you for the change, and LOL, I *swear* I didn't name it
+tmp.tmp just to break the pattern. ;-)
+
+Thanks,
+
+	Ingo
