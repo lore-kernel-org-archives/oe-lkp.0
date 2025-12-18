@@ -1,91 +1,101 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0C1825F798
-	for <oe-lkp@lists.linux.dev>; Wed, 17 Dec 2025 14:15:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B670F3BBF0
+	for <oe-lkp@lists.linux.dev>; Thu, 18 Dec 2025 04:38:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.9
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765980941; cv=fail; b=idC/jF+8ttMxL/xcixE7ikqcUA2PwwVK7Bqxzf6VWl9X8U/CySAvQqAZY5Xtxo2zVNDsG0+Ot8Ruk0L3r4sLGOcpkps3JCQtBIRErH09S3C23ytynWVEoziBdpSlfbBUme+AWzMXEcn/LHTa/W43uVCKupypCtRj+ubpqKfHDLo=
+	t=1766032690; cv=fail; b=mx1nivniLeEjyKR5obxAiBlm+dcWrGMgPjXNDtZ9zyGoJ6d87tQV8t5AxwyEH3dOPtJ+3TuNpndrXdG1tkQCWfiR/JYY0rHRWYv+ndwUjqAzlsMwMQMhMyL9IvGrdqF3gOvOhy7eIc0XCF7wg8KRvpfJnAbJqr+NY5Fp7YFPZJg=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765980941; c=relaxed/simple;
-	bh=ipsa/nxq481PU127qhhAZhYGGyQ/qX9muYH6vvPn2po=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=EZfqEsQETWsCHjwYOp8if0SR14jrbgG2odOL9NnHQn6dimU1/T8tEb32erd78/SrzbagUS8Ev2e7pNvWtb1ssFrmVKQu+YfKqMBDuVf+smEi+A2heXCWVkMpal8Nf8sp4g5XyGfrEbNOovKMpAOuWsYnUY9hRPt9HZlQEhPwBbQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=fail smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cKisFYZT; arc=fail smtp.client-ip=198.175.65.10
+	s=arc-20240116; t=1766032690; c=relaxed/simple;
+	bh=jvnets43fjedcRlZzoHI9nXEqVDq2Au7RVRrL0G55TE=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=pcQ64c29vqpRlVbaa+RRLWE5Iv1rEnAt8ELemqKYGkia4L0yJyd5AcnLg5a4Dp04K9h44FjKiNpg0gRKWiQ7nlrsIhzNur8waxdZjFMp4665SOVLvFTRkj56xXPAdXqHdul/wEPWNRxmNKgBTfwsOA5L6eLyyJ24j+d1+ne4xCc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PeoFeBWL; arc=fail smtp.client-ip=192.198.163.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cKisFYZT"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PeoFeBWL"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1765980938; x=1797516938;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ipsa/nxq481PU127qhhAZhYGGyQ/qX9muYH6vvPn2po=;
-  b=cKisFYZTNfjaQnf5PIhBwGv2Z6qGZcqSq6OFpbzRXNMnR790al11YemB
-   4ByhK86SRwI8gf/kOD54M2OpfGqQ3I2t1WZjmzd7WuSjIU2SUGxLZPrYi
-   GGLCf+sQ4znHHrEfAPFm6L9YhRN6w79KHGTgTYIJTUinLsZ+dmCoFdM2/
-   qDdHylT94Tr6adnydc3r0BBAVsvlTIOYFOy8N5bqApssecUqhEu6FHWfh
-   VMKshkJ1Sgohr/HyfRVDhfTGxmciqfIO/irUFU8mT4AcsLW7Vhr6aQ7Sc
-   PShn0jT8O+phPc54nTK+4C3ybrHa730YMZDxYf/kFMd05l6YlWsgWD3KE
-   A==;
-X-CSE-ConnectionGUID: xqHSTWTdRKiwgxw4wYLnIA==
-X-CSE-MsgGUID: hh92g/HtRrGbTB5VEOhl+A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11645"; a="85334651"
-X-IronPort-AV: E=Sophos;i="6.21,155,1763452800"; 
-   d="scan'208";a="85334651"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Dec 2025 06:15:37 -0800
-X-CSE-ConnectionGUID: g2i9X4xOTP2m9AiyBP3BWg==
-X-CSE-MsgGUID: DSxGnFt9T3Kv1gIz8BgsXA==
+  t=1766032689; x=1797568689;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=jvnets43fjedcRlZzoHI9nXEqVDq2Au7RVRrL0G55TE=;
+  b=PeoFeBWLoFtU/Rpvp7UGPbk659MZv6wKqwtcekNLDiSKU7XzYq4gB8LM
+   8xbdL4/0yjjz/YlA4620GAscxSX0LSTSsPNvvNzAc+peSP2hHs6b99iRy
+   xuWLi9x1hb04juD+UCCWzzHyOF6QPKr4FWvB1WTatDS1NQCZ9evkIVuTp
+   uTGFcVqcYb07emerZrUo1fSsiTJbugOE8MOC9DkG/QcdNcHUjV+9DS5h8
+   Ew2gyMLDxJfTRkzZ3Wa9Mql2ijXPfcdTIPnKxFNdOeHLMvU0Wd9qG83PV
+   8SllgCfP7yhIkjTR33yAg3v7sEUCrSUoCJN1T3+wvsLksDi1HLvVfvd4Q
+   g==;
+X-CSE-ConnectionGUID: OqktoeNpR1adZQ9daobmJw==
+X-CSE-MsgGUID: eGDB+DCKQpWfSN6cqG/3eg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11645"; a="78693727"
+X-IronPort-AV: E=Sophos;i="6.21,156,1763452800"; 
+   d="scan'208";a="78693727"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Dec 2025 20:38:07 -0800
+X-CSE-ConnectionGUID: yDFZj5IZS92oXEYrZGIVLA==
+X-CSE-MsgGUID: ZmO783PdRlq0xXLhApQLhA==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,155,1763452800"; 
-   d="scan'208";a="198801425"
-Received: from fmsmsx903.amr.corp.intel.com ([10.18.126.92])
-  by fmviesa009.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Dec 2025 06:15:36 -0800
-Received: from FMSMSX902.amr.corp.intel.com (10.18.126.91) by
- fmsmsx903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+X-IronPort-AV: E=Sophos;i="6.21,156,1763452800"; 
+   d="scan'208";a="198251938"
+Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
+  by orviesa009.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Dec 2025 20:38:05 -0800
+Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.29; Wed, 17 Dec 2025 06:15:36 -0800
-Received: from fmsedg901.ED.cps.intel.com (10.1.192.143) by
- FMSMSX902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ 15.2.2562.29; Wed, 17 Dec 2025 20:38:04 -0800
+Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.29 via Frontend Transport; Wed, 17 Dec 2025 06:15:36 -0800
-Received: from MW6PR02CU001.outbound.protection.outlook.com (52.101.48.47) by
- edgegateway.intel.com (192.55.55.81) with Microsoft SMTP Server
+ 15.2.2562.29 via Frontend Transport; Wed, 17 Dec 2025 20:38:04 -0800
+Received: from BN1PR04CU002.outbound.protection.outlook.com (52.101.56.50) by
+ edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.29; Wed, 17 Dec 2025 06:15:35 -0800
+ 15.2.2562.29; Wed, 17 Dec 2025 20:38:04 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=r/juRP8R3eiSBlzuTeYWV5FlwLXfG9DTkKxPZCfL0O5e2Ns+qH/v7t3ltcY6CztozJo2h9/MQmP9+Ax1IQhW3EjMMgUtu28r/NBHoVl9hTilCJ0c6GaqPjNzn8AKpKkl91GllSYGpbZ4g/phbQAZBAeFAq+JMZJGLa5yIQJd2XvDzj3pndbHZKy42T6roZ3rDQIOzkQc8xI7SRNM8kqPXY8Lml8/TqbJ6kCHSFy8gtXfOHtt5UyWrcCwElGUOG0Ob1EbDNeaa69Urh+qXCWpiSstc+dMD8Ud2+F4xxMq1LMr/F3qNCnNO3prpCVd6BZYkG4dpLQnpczzDy2lxd/xIQ==
+ b=f4/ZmIVOLwGYWEQT+CI7B55zSvn49OLTzF9AjNrR5yCe0Ifz+Ipu8tOXlwVtz4QwiNT2l7D3IlvUhY4tOy+1DJetjUx/GyHARJzBBp8Q75d+2K7jOPiaVXTIBsXG3yTg7xQZU0K4dCKCPmGYA2YhZi2DzekXMoUlw/Ij6WrfkjAP8OD/J9WGEVC5J4+MG4WObbGrTVpyuKVBoprj9zYe9yBJWEUTrwp2PwkbCG3lBlB0S9lcl3ejzg+vzMMg94ggRKmk2h9XhnWR/ENg+NeAhH+QOOjDLurNChwuy/s4tRikfapGZ2tDmpX5wEy8WTf+TKdNPapn0OqrNNvdKkvvRA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pGpZ9pmLUhzEMZ8f8835hUOOgJeKPBzItH5m3mmFHcQ=;
- b=L7C4zl1Py/GRrx0lL9D09QJFfqMQoHGkhjpG5LPtRO4fQTU3YhUyrWpeg4215Z0nbodhlzAvEWC50607eyqOE6OcZhCrrydXaZzszvdUdcL1Fe/zOKmMM0Z0Q8zLo4/PA4k2xUp/79pB63BNGD94ZnFlpR/MX9MALckTayUaYzCdEm1bY41kCHGqLmigKWiWuvCwsHosIKCrqfaA0tCeScO/BunKhyDu4jDOrAh+d3LRc3MjN1ilh9svlFIXLcAA+l2Zkv9yFT6jGeoU0NwJn3dwwkr69k9xOza90VPfWvdm+/phvImneINNpt/EZ64QWgvyrCTVFqVCrxnIdoa6Wg==
+ bh=A6bBVwr0tO+ks/PVOt76nCUny2pgQq3R+UsehNEwmPM=;
+ b=T1QN0IBS6PcBHJdqlP42vbh7mP92DXuVVP/8erYs2g/XWllIiKfC5N1EjW/Dh3bLh7TUMIY1tNNb31nISiJA+y8SHuPfDyNbXG4iqk6Nd3vTpA/wlc+hUtwi3oZTID4VKqR0aqzNfLjqJfWz0gGYabAmQ0LAVe+HNUNib3RB/Y7nF8kggnVTxFS9qgZgU85iAMpv0O2rcp2XmPw/Odq23HOJYTRj95XgnfwfVgN/YcmG30bqoVJoOkgwatTqKLe4GoY33FCgNFaY5HRvhxz1rOlrNGlOxQd2qZpIjQEtVQ9wETb+/NaEubY66rodYDgUtra2EKtq5wxJMVe2LkHWlg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by PH0PR11MB7588.namprd11.prod.outlook.com (2603:10b6:510:28b::16) with
+ by SJ0PR11MB8272.namprd11.prod.outlook.com (2603:10b6:a03:47d::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9412.13; Wed, 17 Dec
- 2025 14:15:33 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9434.6; Thu, 18 Dec
+ 2025 04:37:56 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.9434.001; Wed, 17 Dec 2025
- 14:15:33 +0000
-Date: Wed, 17 Dec 2025 22:15:24 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Jiri Slaby <jslaby@suse.cz>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <oliver.sang@intel.com>
-Subject: [jirislaby:devel] [serial]  2dd9c2acfb: WARNING:held_lock_freed
-Message-ID: <202512172240.63ac762f-lkp@intel.com>
+ ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.9434.001; Thu, 18 Dec 2025
+ 04:37:56 +0000
+Date: Thu, 18 Dec 2025 12:37:46 +0800
+From: Oliver Sang <oliver.sang@intel.com>
+To: Uladzislau Rezki <urezki@gmail.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>, Michal Hocko <mhocko@suse.com>,
+	Baoquan He <bhe@redhat.com>, Alexander Potapenko <glider@google.com>, "Andrey
+ Ryabinin" <ryabinin.a.a@gmail.com>, Marco Elver <elver@google.com>, "Michal
+ Hocko" <mhocko@kernel.org>, <linux-mm@kvack.org>, <oliver.sang@intel.com>
+Subject: Re: [linus:master] [mm/vmalloc]  9c47753167:
+ stress-ng.bigheap.realloc_calls_per_sec 21.3% regression
+Message-ID: <aUOFGneXSVE+DItX@xsang-OptiPlex-9020>
+References: <202512121138.986f6a6b-lkp@intel.com>
+ <aT_8woTbtklin3Bh@milan>
+ <aUI/MZ8sGDt8toOC@xsang-OptiPlex-9020>
+ <aUKONAP3CZn1kZw6@milan>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-X-ClientProxiedBy: SI1PR02CA0027.apcprd02.prod.outlook.com
- (2603:1096:4:1f4::18) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+In-Reply-To: <aUKONAP3CZn1kZw6@milan>
+X-ClientProxiedBy: SG3P274CA0004.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:be::16)
+ To LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -93,202 +103,174 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|PH0PR11MB7588:EE_
-X-MS-Office365-Filtering-Correlation-Id: c2f7694c-a826-45d5-46e1-08de3d76bdf8
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SJ0PR11MB8272:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5f093f95-e18f-4970-20b1-08de3def3708
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?H8i/hmMMulqfA+bMITsDxePHjpjT10Y4KXgEMvtMZ/5Z//KGUGn7nyn5v04O?=
- =?us-ascii?Q?NDA+PT+jhhPrXzw8lFussdWSG86kFXZGxIMqqzk88uQll4+1dkJHOwq4jtoU?=
- =?us-ascii?Q?o6jDvCuZCwPcZoeQ7LP5FwvXOTUCKyLVf5qhIAcp7tlOGnBGc3WoWOy+SNUs?=
- =?us-ascii?Q?H/fyVA4hqC6r6IXW+PvPcIO7JYi+dsetaWGu+dMHPft6h82KpjixgySSlzXR?=
- =?us-ascii?Q?MEy8VihgTGhuvIxa1KFzYYHgrLX+4DZIDKY4UUeOPbCj4ENncoqmu0BTbX8J?=
- =?us-ascii?Q?qiZu2C9g8BV0j5WiMb57uex/VonFeFBHtj9lbuxAyden72yZBtIuvNlVEYRN?=
- =?us-ascii?Q?M3pu+HEHk7320QIiixZ9Aujo94FFZHshFSXqccQxoTXobhFFDI/ATI69UOeS?=
- =?us-ascii?Q?AWRopKBt9kpfPJ15sH3nbhoKVE2Wg9NLtebHFc11f1sEy0kSPF5OWcySO1+c?=
- =?us-ascii?Q?WUnKkO2mFMonN4R2NTpzNUbeN/ss1H+m4kOGwScQse7nI+GWu/8s7GjcKDAI?=
- =?us-ascii?Q?sIQxQHVUqgrtychqx6SkZjCxDhzsEjJXEmjeRxe8HwYbEB2xqMpk0itJWw+7?=
- =?us-ascii?Q?eIATPJyWZ5PpjxUH1G//CekCeq9ugU3mxM4RRdYHS+uuTWJ7UCIlTqKyWjPI?=
- =?us-ascii?Q?hfvY7WE3cCJ7ltzZvukR9hHFw6mvE1jIgO4yFJxRaDHPMRQ4xLJ/sM6fk6sV?=
- =?us-ascii?Q?4hz4KpcSnsUcWDqMw46hTfR4w/0OGYsm8wsg9mihkq/qrEbITaxRgitR0zmM?=
- =?us-ascii?Q?b3Z3m7oy7zNXdTYDigU8WdyQ5oJ9i5nLdCOKuw74FR4Qn4XynYkUMMAJ8Otd?=
- =?us-ascii?Q?QwWWbP0b0RuNIPryLmMF0gNHo+vARwBa2rYyWg3cIRjGRK5AQoGbFspmc5an?=
- =?us-ascii?Q?gAvVXKJ3DrAc6yju041PPD/6+Xc4HPXIlIKzHxR6wOYBZolLIz6OydmToREY?=
- =?us-ascii?Q?f5dqGOPturxVPIceU3Tr091ryhFFV1IBcrRAW1SAqEDVgyaSpJsTMBo46UZP?=
- =?us-ascii?Q?P8Ebwnwm3vzvL7TEFAoQHBajp0qz73QJlcPSWza0bQCnttbIlWUjPSKDSpo5?=
- =?us-ascii?Q?Y17jgR7nIplD2MGBIzKMh7jIX3pYtxoYPkeph8GvlXPCfPMI9uNSyWPbvz0+?=
- =?us-ascii?Q?3Qy8k+yWmD9MkKoZ5z8IHzjFhOJD0Lty9xHSmRlR0uAM/+HLKaLsk6UcFzWx?=
- =?us-ascii?Q?C2PS1tE2QBi6lcCBQL0tLNiMf5K9mZuadanaFT7VHfs9Y0Xpk7luRs3ZEKWR?=
- =?us-ascii?Q?bY+gFZT2ATHY51QrkaSzVXjr853YmgE9eqACmQPNClfQyYndN2UOcpyLVbkG?=
- =?us-ascii?Q?ofR9WFGI9IuLr1UFBJgsPyW1Ix7wUKW+9sosw9aMeEBQHLY6P7JKf8r18C/4?=
- =?us-ascii?Q?aQfg43hodoKXr3BTlhxlf2QhoCWvZCdofIMvkhei82Fg/KIrYcK9OL+mLrvo?=
- =?us-ascii?Q?Cv5b1o+6J5dA4GRC85vDd9r6KzjBOJo574gFuIFkYZmFUhzkZN3vhQ=3D=3D?=
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?UT93M4L+FnR2ORjvI3twLv9GEtkgrpnvrV1XadUUKzZU/XTLxHjciT1tW07H?=
+ =?us-ascii?Q?DpT+/hhtAZNaGKtAM9H86RulTDm2UH4Yr8oea4kYseCEw8Rk8SQuogGL8/rB?=
+ =?us-ascii?Q?Daxl9qqNPlBl2L6gvLrpSRTFZMncotZsYWakaeJPRM1JBLpuI1XNwiB7MgJn?=
+ =?us-ascii?Q?pMqIlTOIDAu6YHpdPj99RpCycttuU7g6C/gh6WbegjIEB1vxsl6FQ4wkmIat?=
+ =?us-ascii?Q?nwuLBx1VqGaw0HIpEkjp5Obkcgnl8Wz16hNTvPVGyWYYrPYS+azgqt0e2RlK?=
+ =?us-ascii?Q?/L3sHhVejrBe/ptmd4vhTHcQvjn1M1xWtzOpzM7zWOYoXHeWoEG9OtdRrCJr?=
+ =?us-ascii?Q?91lUik6DDI6hdYTftXfRFA26fZPU6Dxh+pwOhtBP0alLDoM9N28qtNZqudbZ?=
+ =?us-ascii?Q?FdCxsql/cS4Xg/+31QdchwoRbs8XYzmzspP4np5Wm+zuyyql23eJNIMghvhN?=
+ =?us-ascii?Q?glp2goy78nU5E12EyjSgHVbV4GP1b9JKiJjaH/Ph9DMv2rMC9pRoDVF2jOfJ?=
+ =?us-ascii?Q?3oVQ77igb/whBAsFPU00kWQPKdtxp56dMF/bpsoTJTui5VfnA4VCe0zsqioM?=
+ =?us-ascii?Q?dKJ6h9UV0fjyxDsp6tDrd/HTtr8+/UFyanHwNJHfPO4K55hQmszoYHdkh50W?=
+ =?us-ascii?Q?aWfkAF2yNUHY5hb4tRkE9BtapzhI3IwkP7msbY36Fqi+BTWpPPhM4b7KnRmN?=
+ =?us-ascii?Q?P4UdG5YFI+a4wesvbeYEd9VqXFOB/ZCmBnNRe89L2ELU9oDVK1DaKUjC0G4l?=
+ =?us-ascii?Q?OPJ+raWKQwZwtSCJRv5q92VnGkrtgMVVzlmYPJKrcagiexlNEXTklmHZq3+E?=
+ =?us-ascii?Q?emfbgz15VtOJ5KFzLj8u4rhTkWWQJgSPQTm5pLkgIsvCbiEIEmJ7wIbo0igg?=
+ =?us-ascii?Q?ioSN2Z2gyICMRXVIGB31rOYqYMSGFeppaIyNpT3N4S7UQI3vsbVxWIVWr+Lf?=
+ =?us-ascii?Q?3LVYRcRqEC3iQSeVwkBWNyZ2TB+GRLI4tr7/wfqOlZQs2uYAiMD81sjhTz/N?=
+ =?us-ascii?Q?KT3UJKW5dSIS5yDGVU/1PFZQID5XSf56x0a0O2KEZc7VuxW0TX/osAY8SWQn?=
+ =?us-ascii?Q?8XpitNC9LD7wwNVMoG8A9+LklnxBA9QfuS1n1XHI9pY9A0o2yL3tkSOU4TU8?=
+ =?us-ascii?Q?BPomfZVXh1TNY4PWi18Jp9O9gIsahNDNkChps7fnfbZIQ4xLlR0vhQFTC2cl?=
+ =?us-ascii?Q?So7qdcDlssoQNTcVB842dtpgWJ8+lKJV6cR8uoSQnVXeh0hXi0xtE6D20zbi?=
+ =?us-ascii?Q?MxukKWutXd9xWY9F9k0cO8xJ+Zng4QMR8Y+1K2tBAlMvK0Hzugwku/MbbZbB?=
+ =?us-ascii?Q?+G6l+E0iI3X1l0KRnWkY/PrAc8aQxSt/JRHxDGwQT8hYhsIETJTH1vnHOkYv?=
+ =?us-ascii?Q?E5Y5We4lT3uHTOcNchDuojjUN4vnpdPo8QIdQFASq3jshzOVZx7jPbVHe8Sy?=
+ =?us-ascii?Q?t9KjwbaHEjhCNPTkLg+AdvqdUErSSxA4oU9OjFr1sCIER5iVdgwJVQ=3D=3D?=
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?MKs4W/IFZ4qq0XgB3huamng4xn88rRR7JAc7DRxy7BoW8jl4gC0GK+IZQsH3?=
- =?us-ascii?Q?8aqgT72J/4rwpVc44+CUq4JZbOeA2kwp4mTs0BCa0g31j5fdb5yqSe0MxlGr?=
- =?us-ascii?Q?WtVppaQ228ChofEHP6iuDI46H7hpFINNurXgaGMHrz80g10Fu3SvgVflWKOt?=
- =?us-ascii?Q?b3PApiWzqDkQoX6YYnfHGEcW6kQgg6LeT8S8hfBhVMV4VxfjNJz7PYctbnJf?=
- =?us-ascii?Q?sLNR2UdGP2Q2QUwIjuLPk44vFpgD5kvrfVx5rwH1ABhyUDnP1C/qU8GAi1kG?=
- =?us-ascii?Q?dUX8pSaSixXKcEgxfHFe2tpa6rQy+Dc8i5FP9Fw5uVouiR8QYBhc7Esczjzs?=
- =?us-ascii?Q?5k4PdEIADFP7V4uQiYEFN3iZPRBxYmsvCzcSxlJsSjoi3KZfcxkQ5yBjX5h2?=
- =?us-ascii?Q?WGkMJfXulX3As3d8Bf3gMhz2y3TAGt99o80FiVYnkSY0DQgtyGIu1X5Xfq1i?=
- =?us-ascii?Q?EJjOxYZHqD24YOMUpyYBnEKpMJALGCslxDOnSSA7/craQUfcgNj+0vin0wzx?=
- =?us-ascii?Q?zTcnFyE61lM2Ixs97gybhtLaAQRTbh17gz5B+FNvzYFyaDre0nQ5d6fZfHzQ?=
- =?us-ascii?Q?Y5Uj9yrnQqawnxmpJF2AvW2TfzEpbxMxfmp1mTSg4+2t87k3AWQyEW9UGIvD?=
- =?us-ascii?Q?5eYsxF/W3I/HcVTNg82fcCCHBe0AVijDROlP/cGbCUHblefQXgPzB7OWIrmD?=
- =?us-ascii?Q?QFNxaGRYMGaAwSnpGBYCwAEESLNkVOZ81TL78XRylRaPhnW/SMMmDMeTCB5q?=
- =?us-ascii?Q?qp8lJyjg/vfazzSFDKawHJMBAq4xIhebibkKrsOXoZovfzwbht1sLq1J++oh?=
- =?us-ascii?Q?RQd+5w8oOA80Zz9rMRrgLsvl60Tnx8l1swZUiEOqgS0IquixcxrIDZxTuys4?=
- =?us-ascii?Q?FHQbUuHXcvhWlYMgAkQnaF/WaAA3t9gADIk0Im8Clg1lESKM+SVdbI7YCVe0?=
- =?us-ascii?Q?sBVhcvWMakj6LvP2lwHJo9TGBCg2FPeVsZ7xBFYLGzCnA+phpEz2++dma0MQ?=
- =?us-ascii?Q?UjKZMJ6/dJdzlY/mlmYcoZNBwmfmu0bhSW4TZCKjXygaT3dXQlfzFizhKWgn?=
- =?us-ascii?Q?OikbdZjYABvag6LmIgk0w6sSbCoieH/7sbcjSGAGnDn2X1YEBebC/sqcwGZw?=
- =?us-ascii?Q?hQlbD1U45ow/GPtyj0912LN7WUqfZJl2KVNn5Co0G6KlaajzJFv3WWgMdcyF?=
- =?us-ascii?Q?Iomh0V5Silregyo0a8dGi6c/7bfXVp1yMhyzMBQSVB6XzGKeiLYb24vs+HqY?=
- =?us-ascii?Q?0JxRXletwT1nxpCla3qke0LZlNgS2OQErDZM0uQLOWQx6+y2y3hudfDyf4BV?=
- =?us-ascii?Q?KfIZfc/IOZI6BkNYijUXYJTXad1/3hTucO5daL3FmkgpcpA7L9nBYWYvz9hJ?=
- =?us-ascii?Q?BT87In/fefYTbMN7RSUruyIuElMCl5lb0mjiby0FtjKStwtu/ZrE7D9QsZ0a?=
- =?us-ascii?Q?Cd5UC5LF6wKz8IJO/3v6RdYS74zEiKoBS8SsBnlzEKMCFd/IV/NxMUBjeVxA?=
- =?us-ascii?Q?/6cTq91KGotcxAqY3t7Gyl+UYk3xiYwef/poWQcFhJHRbymT10TLLzuhjcvO?=
- =?us-ascii?Q?eBtccQYAL71/wBbYNwfMG9PMDkEo9HONZFaQbkVtVNMguZIW1yx3qopknQUH?=
- =?us-ascii?Q?Kg=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: c2f7694c-a826-45d5-46e1-08de3d76bdf8
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3+GKzGzX2JxMiIS7hE+fZWa05ZX0PjOUt9JcRmgSslwE5rpDC3pR3Sp/Vj8i?=
+ =?us-ascii?Q?P7gTqqsbvVYokz0U9fhNF6ZUaPM0WL6q2EKCjn0uBy/iDVFGMVQCGkI3dBSE?=
+ =?us-ascii?Q?hu8VBC7cidSx/KY3NS1UohAizDkparfyqFqy4e2zZnedF0yAN2G4UpBzsyO2?=
+ =?us-ascii?Q?MXbQ6XAEWVzkzM3SnEhIRddqkzIZcg/TdVF3zQT/C+n1jnDnHVy9UuwDEra8?=
+ =?us-ascii?Q?rCWBgsOY5SMbqYGM9Mi4bYSJ+b6ImaR3BK2AWWDoScHk8A745kfNkNmVqgAo?=
+ =?us-ascii?Q?rkTliG/M0d0jxXJfMp/OHFEXE927Uqnv2GXLZZHfhE7+OkksE+F0D6ksrYp8?=
+ =?us-ascii?Q?5hvdTDMbAgWJODMipugy38rBOSwkIXuRF7wDJ6ZCnpCOeiK+nyJdqmsX3Dej?=
+ =?us-ascii?Q?N+g7ZJZXUit+C2KC4d7Sdg+RrhIrcIh0dEOoWEunmC4v3GIt9FOJyAk32Yz+?=
+ =?us-ascii?Q?za6Po8IFDFY+/5IoJws0mHfCWBc2N4aPGH4hFJeigdiqWEIj4t4ICs7jZTre?=
+ =?us-ascii?Q?WhCMYrPi44xCsmkE5r3qbdEfXUtI+9wDpQZJkekVHlUdOKB+O5Ka6fN+uEnR?=
+ =?us-ascii?Q?q0eQ69a7V2j1pDYKhuyxQHFxNFkdgXMY2q23XvCqWPuVnT7n77dqOi6njSZL?=
+ =?us-ascii?Q?Xa/ojpCvN91cwh6z7zSMo5pMVBKle9XdlOPeBSmAHkit9+AqDMxu1ZMEVtPU?=
+ =?us-ascii?Q?s3PYmdh3vQshqJNnLsyDyujRazFuZRLm8vU5o3dAqIfHTnithKSMqw2ltFKK?=
+ =?us-ascii?Q?snYhgATkNd3b4Mp8VWXfux/SLMbOrZVHEXZtMUr58GmNN3WnyfKgitltnkaE?=
+ =?us-ascii?Q?KhZ7r/vBBp2lwA5ky/6gzzKppUR03r3Q4+0nyB6wNTtqffij+c29hmUF+xVe?=
+ =?us-ascii?Q?AzTLHCykHxQlfH5ub9XtvmVL/s/ycEnofhTSu4rHCsiafjPW46hrf0GOA1L5?=
+ =?us-ascii?Q?q1xH9B91yNZpUN6UvHYJQRTPlht5QTZ1vwNWxNiOw4a5cvh1qwbPrptkJbGO?=
+ =?us-ascii?Q?e1qfCRvgyHod7PquQr4IFQ/+x2wEEpZoIk7UEYCLlhEZ0/+z7thaqmrW6Mev?=
+ =?us-ascii?Q?9t0cyfD/dlGdL5B8FztOnYXVW8gc56A0A1GfTyjsWwhBOvvqrmls+xYLCtnz?=
+ =?us-ascii?Q?VOlzD/zveHtd7xqYoluqxfzDKXZNah1GOrtD2LZO5Np5GV7xLkHONS8vvyo7?=
+ =?us-ascii?Q?ByTmBbv3ikwgnrC7Ck7mzPxJZj7RR6yV1aQfp3T7YdMi1M+dFVQRxXzzcP1N?=
+ =?us-ascii?Q?tNwRdSEplhOi/Xg89AH8BhMlDaYUOLlKdx/Hir98r++d/cuqim2QU/5rhUEH?=
+ =?us-ascii?Q?P1HFdtA3IKOVRATFZK268C9foERp2LcX24pLz7NFOOqoBqtVE5wztUNXp9ya?=
+ =?us-ascii?Q?7Wvm46IKjxXVx1jstokgUxuFShl24ZpbwOATPT1RVvA28qLiLx9je/HaWT4a?=
+ =?us-ascii?Q?0ZmKfFeTPG91NG6YnhD+DZ05Wy5eNU8DcmR85g710iqPZVGGrTVJcj/PJP0Q?=
+ =?us-ascii?Q?wxEPEhfabG4rWv6qppeWCuIe27MqGaOvL7vblxjsxuo6j3eqYVb8X59ohORb?=
+ =?us-ascii?Q?9FGSSm07lRsHtOif5lXuND6sxMNNc9SxPWzjt8BksTachYMNi1/R2RUP3Q7i?=
+ =?us-ascii?Q?kA=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5f093f95-e18f-4970-20b1-08de3def3708
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Dec 2025 14:15:33.6555
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Dec 2025 04:37:56.4360
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nNslLf1NhJAxYeEzszsC/4jpDxm7Nko3ZArxml0L5uPsPQ9py7MeAS3CR/IWNxLCnympSdufVVuF7/LypCGilA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB7588
+X-MS-Exchange-CrossTenant-UserPrincipalName: UI/Wb7BDUC0PfEz40ihvzXSD5hToMThuI/h5Ox/d+dEBg6V+bPLBlQIdHmX6Pp1lVg/GCc+vT+lQfFpANdv/SQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB8272
 X-OriginatorOrg: intel.com
 
+hi, Uladzislau Rezki,
 
+On Wed, Dec 17, 2025 at 12:04:20PM +0100, Uladzislau Rezki wrote:
+> Hello, Oliver.
+> 
+> > > > 
+> > > > Hello,
+> > > > 
+> > > > kernel test robot noticed a 21.3% regression of stress-ng.bigheap.realloc_calls_per_sec on:
+> > > > 
+> > > > 
+> > > > commit: 9c47753167a6a585d0305663c6912f042e131c2d ("mm/vmalloc: defer freeing partly initialized vm_struct")
+> > > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> > > > 
+> > > > [still regression on linus/master      c9b47175e9131118e6f221cc8fb81397d62e7c91]
+> > > > [still regression on linux-next/master 008d3547aae5bc86fac3eda317489169c3fda112]
+> > > > 
+> > > > testcase: stress-ng
+> > > > config: x86_64-rhel-9.4
+> > > > compiler: gcc-14
+> > > > test machine: 256 threads 2 sockets Intel(R) Xeon(R) 6767P  CPU @ 2.4GHz (Granite Rapids) with 256G memory
+> > > > parameters:
+> > > > 
+> > > > 	nr_threads: 100%
+> > > > 	testtime: 60s
+> > > > 	test: bigheap
+> > > > 	cpufreq_governor: performance
+> > > > 
+> > > > 
+> > > > 
+> > > > If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> > > > the same patch/commit), kindly add following tags
+> > > > | Reported-by: kernel test robot <oliver.sang@intel.com>
+> > > > | Closes: https://lore.kernel.org/oe-lkp/202512121138.986f6a6b-lkp@intel.com
+> > > > 
+> > > > 
+> > 
+> > [...]
+> > 
+> > > > 
+> > > Could you please test below patch and confirm if it solves regression:
+> > 
+> > we directly apply the patch upon 9c47753167, so our test branch looks like below
+> > 
+> > * f7991e8a0136cb <---- below patch from you
+> > * 9c47753167a6a5 mm/vmalloc: defer freeing partly initialized vm_struct
+> > * 86e968d8ca6dc8 mm/vmalloc: support non-blocking GFP flags in alloc_vmap_area()
+> > 
+> > but found it has little performance impacts
+> > 
+> > =========================================================================================
+> > compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
+> >   gcc-14/performance/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/lkp-gnr-2sp3/bigheap/stress-ng/60s
+> > 
+> > 86e968d8ca6dc823 9c47753167a6a585d0305663c69 f7991e8a0136cb0fdf35f11e28a
+> > ---------------- --------------------------- ---------------------------
+> >          %stddev     %change         %stddev     %change         %stddev
+> >              \          |                \          |                \
+> >   48320196           -10.9%   43072080           -10.8%   43116499        stress-ng.bigheap.ops
+> >     785159            -9.8%     708390            -9.7%     708644        stress-ng.bigheap.ops_per_sec
+> >     879805           -21.3%     692805           -20.7%     697312        stress-ng.bigheap.realloc_calls_per_sec
+> > 
+> Thank you for testing. I had same expectations. No difference.
+> Honestly i can not figure out how: 
+> 
+> * 9c47753167a6a5 mm/vmalloc: defer freeing partly initialized vm_struct
+> * 86e968d8ca6dc8 mm/vmalloc: support non-blocking GFP flags in alloc_vmap_area()
+> 
+> can effect performance. I am not doing anything related to performance.
+> I would like to ask you if you could test one more thing. I see that
+> 
+> [still regression on linus/master      c9b47175e9131118e6f221cc8fb81397d62e7c91]
+> 
+> contains also below patch:
+> 
+> <snip>
+> commit a0615780439938e8e61343f1f92a4c54a71dc6a5
+>     mm/vmalloc: request large order pages from buddy allocator
+> <snip>
+> 
+> where we try to use larger order for vmalloc. Could you please revert
+> it and rerun same tests?
+> 
+> Thank you in advance!
 
-Hello,
+we've seen comments from Mateusz Guzik in
+https://lore.kernel.org/all/e4b6sjeh22uqhxhxudsbanlnyo2potwowuy7mkrp6tvxnftjn4@mcjyes2s3eu6/
+that this could be related with cacheline bouncing.
 
-kernel test robot noticed "WARNING:held_lock_freed" on:
+not sure if you still want us to do the test you mentioned?
 
-commit: 2dd9c2acfb03ee7a076cbd16ae9d3ee6f29bcd70 ("serial: drv->state -> xarray")
-https://git.kernel.org/cgit/linux/kernel/git/jirislaby/linux.git devel
-
-in testcase: boot
-
-config: i386-randconfig-141-20251214
-compiler: clang-20
-test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m 4G
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-+---------------------------------------------------+------------+------------+
-|                                                   | bd332738e0 | 2dd9c2acfb |
-+---------------------------------------------------+------------+------------+
-| WARNING:held_lock_freed                           | 0          | 12         |
-| is_freeing_memory#-#,with_a_lock_still_held_there | 0          | 12         |
-+---------------------------------------------------+------------+------------+
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202512172240.63ac762f-lkp@intel.com
-
-
-[    1.149928][    T1] WARNING: held lock freed!
-[    1.150447][    T1] 6.18.0-next-20251209-00027-g2dd9c2acfb03 #1 Not tainted
-[    1.150960][    T1] -------------------------
-[    1.150960][    T1] swapper/0/1 is freeing memory 43dba800-43dbabff, with a lock still held there!
-[    1.150960][    T1] 43dba9ac (&port->mutex){+.+.}-{4:4}, at: serial_core_unregister_port (arch/x86/include/asm/atomic.h:85 include/linux/atomic/atomic-arch-fallback.h:787 include/linux/atomic/atomic-arch-fallback.h:1238 include/linux/atomic/atomic-instrumented.h:611 drivers/tty/serial/serial_core.c:3151 drivers/tty/serial/serial_core.c:3312)
-[    1.150960][    T1] 4 locks held by swapper/0/1:
-[    1.150960][    T1]  #0: 427e8b40 (&dev->mutex){....}-{4:4}, at: __device_attach (drivers/base/dd.c:1007)
-[    1.150960][    T1]  #1: 427e8240 (serial_mutex){+.+.}-{4:4}, at: serial8250_register_8250_port (drivers/tty/serial/8250/8250_core.c:637 drivers/tty/serial/8250/8250_core.c:700)
-[    1.150960][    T1]  #2: 427e7930 (port_mutex){+.+.}-{4:4}, at: serial_core_unregister_port (drivers/tty/serial/serial_core.c:3310)
-[    1.150960][    T1]  #3: 43dba9ac (&port->mutex){+.+.}-{4:4}, at: serial_core_unregister_port (arch/x86/include/asm/atomic.h:85 include/linux/atomic/atomic-arch-fallback.h:787 include/linux/atomic/atomic-arch-fallback.h:1238 include/linux/atomic/atomic-instrumented.h:611 drivers/tty/serial/serial_core.c:3151 drivers/tty/serial/serial_core.c:3312)
-[    1.150960][    T1]
-[    1.150960][    T1] stack backtrace:
-[    1.150960][    T1] CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.18.0-next-20251209-00027-g2dd9c2acfb03 #1 PREEMPT(none)
-[    1.150960][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[    1.150960][    T1] Call Trace:
-[    1.150960][    T1]  ? __dump_stack (lib/dump_stack.c:95)
-[    1.150960][    T1]  ? dump_stack_lvl (lib/dump_stack.c:123)
-[    1.150960][    T1]  ? vprintk (kernel/printk/printk_safe.c:82)
-[    1.150960][    T1]  ? dump_stack (lib/dump_stack.c:129)
-[    1.150960][    T1]  ? debug_check_no_locks_freed (kernel/locking/lockdep.c:6695 kernel/locking/lockdep.c:6728)
-[    1.150960][    T1]  ? serial_core_unregister_port (include/linux/mutex.h:253 drivers/tty/serial/serial_core.c:3114 drivers/tty/serial/serial_core.c:3312)
-[    1.150960][    T1]  ? kfree (mm/slub.c:6671 mm/slub.c:6876)
-[    1.150960][    T1]  ? serial_core_unregister_port (include/linux/mutex.h:253 drivers/tty/serial/serial_core.c:3114 drivers/tty/serial/serial_core.c:3312)
-[    1.150960][    T1]  ? serial_ctrl_unregister_port (drivers/tty/serial/serial_ctrl.c:47)
-[    1.150960][    T1]  ? uart_remove_one_port (drivers/tty/serial/serial_port.c:150)
-[    1.150960][    T1]  ? serial8250_register_8250_port (drivers/tty/serial/8250/8250_core.c:719)
-[    1.150960][    T1]  ? serial8250_probe (include/linux/err.h:78 drivers/tty/serial/8250/8250_platform.c:196 drivers/tty/serial/8250/8250_platform.c:218)
-[    1.150960][    T1]  ? platform_probe (drivers/base/platform.c:?)
-[    1.150960][    T1]  ? really_probe (drivers/base/dd.c:583 drivers/base/dd.c:659)
-[    1.150960][    T1]  ? __driver_probe_device (drivers/base/dd.c:801)
-[    1.150960][    T1]  ? driver_probe_device (drivers/base/dd.c:831)
-[    1.150960][    T1]  ? platform_match (drivers/base/platform.c:?)
-[    1.150960][    T1]  ? __device_attach_driver (drivers/base/dd.c:960)
-[    1.150960][    T1]  ? bus_for_each_drv (drivers/base/bus.c:500)
-[    1.150960][    T1]  ? __pm_runtime_resume (drivers/base/power/runtime.c:1200)
-[    1.150960][    T1]  ? __device_attach (drivers/base/dd.c:1031)
-[    1.150960][    T1]  ? deferred_devs_show (drivers/base/dd.c:923)
-[    1.150960][    T1]  ? device_initial_probe (drivers/base/dd.c:?)
-[    1.150960][    T1]  ? bus_probe_device (drivers/base/bus.c:576)
-[    1.150960][    T1]  ? device_add (drivers/base/core.c:3696)
-[    1.150960][    T1]  ? dev_set_name (drivers/base/core.c:3494)
-[    1.150960][    T1]  ? platform_device_add (drivers/base/platform.c:757)
-[    1.150960][    T1]  ? platform_device_register (drivers/base/platform.c:820)
-[    1.150960][    T1]  ? exar_init (drivers/tty/serial/8250/8250_exar_st16c554.c:33)
-[    1.150960][    T1]  ? do_one_initcall (init/main.c:1378)
-[    1.150960][    T1]  ? kvm_sched_clock_read (arch/x86/kernel/kvmclock.c:91)
-[    1.150960][    T1]  ? sched_clock_noinstr (arch/x86/kernel/tsc.c:272)
-[    1.150960][    T1]  ? local_clock_noinstr (kernel/sched/clock.c:272 kernel/sched/clock.c:309)
-[    1.150960][    T1]  ? __lock_acquire (kernel/locking/lockdep.c:4674 kernel/locking/lockdep.c:5191)
-[    1.150960][    T1]  ? kvm_sched_clock_read (arch/x86/kernel/kvmclock.c:91)
-[    1.150960][    T1]  ? sched_clock_noinstr (arch/x86/kernel/tsc.c:272)
-[    1.150960][    T1]  ? local_clock_noinstr (kernel/sched/clock.c:272 kernel/sched/clock.c:309)
-[    1.150960][    T1]  ? kvm_sched_clock_read (arch/x86/kernel/kvmclock.c:91)
-[    1.150960][    T1]  ? sched_clock_noinstr (arch/x86/kernel/tsc.c:272)
-[    1.150960][    T1]  ? local_clock_noinstr (kernel/sched/clock.c:272 kernel/sched/clock.c:309)
-[    1.150960][    T1]  ? local_clock (arch/x86/include/asm/preempt.h:95 kernel/sched/clock.c:319)
-[    1.150960][    T1]  ? irqtime_account_irq (kernel/sched/cputime.c:?)
-[    1.150960][    T1]  ? irqtime_account_delta (include/linux/seqlock.h:452 include/linux/seqlock.h:524 include/linux/u64_stats_sync.h:152 include/linux/u64_stats_sync.h:188 kernel/sched/cputime.c:49)
-[    1.150960][    T1]  ? trace_hardirqs_on (kernel/trace/trace_preemptirq.c:80)
-[    1.150960][    T1]  ? irqentry_exit (kernel/entry/common.c:?)
-[    1.150960][    T1]  ? common_interrupt (arch/x86/kernel/irq.c:319)
-[    1.150960][    T1]  ? asm_common_interrupt (arch/x86/include/asm/idtentry.h:688)
-[    1.150960][    T1]  ? strlen (arch/x86/lib/string_32.c:?)
-[    1.150960][    T1]  ? next_arg (lib/cmdline.c:273)
-[    1.150960][    T1]  ? parameq (kernel/params.c:90 kernel/params.c:99)
-[    1.150960][    T1]  ? exar_pci_driver_init (drivers/tty/serial/8250/8250_exar_st16c554.c:32)
-[    1.150960][    T1]  ? do_initcall_level (init/main.c:1439)
-[    1.150960][    T1]  ? do_initcalls (init/main.c:1453)
-[    1.150960][    T1]  ? rest_init (init/main.c:1570)
-[    1.150960][    T1]  ? do_basic_setup (init/main.c:1476)
-[    1.150960][    T1]  ? kernel_init_freeable (init/main.c:1690)
-[    1.150960][    T1]  ? kernel_init (init/main.c:1580)
-[    1.150960][    T1]  ? ret_from_fork (arch/x86/kernel/process.c:164)
-[    1.150960][    T1]  ? __switch_to_asm (arch/x86/entry/entry_32.S:704)
-[    1.150960][    T1]  ? __switch_to_asm (arch/x86/entry/entry_32.S:704)
-[    1.150960][    T1]  ? rest_init (init/main.c:1570)
-[    1.150960][    T1]  ? ret_from_fork_asm (arch/x86/entry/entry_32.S:737)
-[    1.150960][    T1]  ? entry_INT80_32 (arch/x86/entry/entry_32.S:945)
-[    1.368042][    T1] CHRDEV "ttyARC" minor range requested (0-4294967294) is out of range of maximum range (0-1048575) for a single major
-[    1.369474][    T1] CHRDEV "ttyLP" minor range requested (0-4294967294) is out of range of maximum range (0-1048575) for a single major
-[    1.370859][    T1] CHRDEV "ttySIF" minor range requested (0-4294967294) is out of range of maximum range (0-1048575) for a single major
-[    1.385171][    T1] Rounding down aligned max_sectors from 4294967295 to 4294967288
-[    1.387226][    T1] db_root: cannot open: /etc/target
+if so, sorry that I cannot make a clean covert of a061578043993 on
+c9b47175e9131. could you prepare a patch for us? thanks
 
 
 
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20251217/202512172240.63ac762f-lkp@intel.com
-
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+> 
+> --
+> Uladzislau Rezki
