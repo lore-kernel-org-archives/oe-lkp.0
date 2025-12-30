@@ -1,132 +1,168 @@
-Received: from mail-ed1-f67.google.com (mail-ed1-f67.google.com [209.85.208.67])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B4D025D1E9
-	for <oe-lkp@lists.linux.dev>; Tue, 30 Dec 2025 22:04:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.67
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89E3F1A267
+	for <oe-lkp@lists.linux.dev>; Tue, 30 Dec 2025 22:45:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767132299; cv=none; b=i9PxxmhKPEu3XsnSf5sZIoV97/6UeCza49CmHj1Ajq99PT2s/8I4KDcF2klzZVFXEuLyf1i5V5mEuAMLZbLeJDicUnKeciZgw0QtAoI54d/gYB7LV2Chrjg4MXtLgr3Gjjq4u9HbTe1wmmm1LFNr6YWm8VgWLmSC9X70nmHCC2s=
+	t=1767134734; cv=none; b=lpG3kOZ1/YmDLXHZ94lrTOb7Uap3Ik/BMKPcrCK/6ztLRVQo9iQjSQX3Q5o7KeKJ5xd+ZrFE/asYT3c4POZdD9K3nwxNy4qYN/GXfnQeeKRoPiJHPM+xpOQgin/kWEy6wp69EOBTKEBqK2CLz2WkhlFedZW67r+XSPhOLfIkAWs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767132299; c=relaxed/simple;
-	bh=ciEnuCD23jowJ/L+XGQbb7pSaDpfH4eCH7oImwf2d0g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=G77/AUDjubXaBEwoJ8jKQqHrEth9gZGLsMLgkICh9fVWsfVh2hBel9M7vhFltIEKsrE4Q609BYTaumIjQiDKW5vQcW2T1SOkIZTFFYCqbFOxa1Rpe6IVKcx7O6k6cLT/6+H2wSLYtOMJDOInzoPs0dMpaF+LNWuuAPvAFVy45ss=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=O6m/1OyU; arc=none smtp.client-ip=209.85.208.67
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1767134734; c=relaxed/simple;
+	bh=eDvWa2VJe9lB6ijY6V2CsFsjFWajd38whDgN/+2Ttfk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=AExdlkYWdWKK6lgVvCRdUHKf3RYvqNDPG569wlrejRGCkQwGfnSbR1wYyg7by6xqY+K6uchiua2t7uKu0ZmtYi4SROoXWSrWPuSNXrKYRdGWpo1KMjxHYx+dj9b2rqpY4QYZKTR5Swcqw8LUgzcLBAFNzZdRA4oj0wpB5/RaBZY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Uzf2M0ZB; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="O6m/1OyU"
-Received: by mail-ed1-f67.google.com with SMTP id 4fb4d7f45d1cf-64d02c01865so13325738a12.1
-        for <oe-lkp@lists.linux.dev>; Tue, 30 Dec 2025 14:04:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1767132296; x=1767737096; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=iL9oUwPK6pMmNAMWI41vZfP4nRtVQLFCd6SfZyUQxgg=;
-        b=O6m/1OyU44qMcJ/J2XsYXHqXzKO1gpKsZsPsDAYO9pm+Xz1YVt+907y2rZbmorhI1Y
-         R7QxJkg5L7WW9Zy5sBaPA0UoOULnUCZOte+rePiHU3Gsdc3pYsYfC/XJl98Gogc0gNGE
-         dr7kZqNnUroVSA+hNnIUi31h+plDJD9LBq7QFyfArayFKBczBO5QWGUrqzL2CY2z03/M
-         5CMVE7/FyXMQR0QyGf3ilq5QgjciT86Rjd/Bk/dp4x0HPlX/K1vVzWO1U+MXeqTfIiBP
-         km9Mx3gsRKkdAxxEbfnwsrLDRYd2m1KgtguIPwRCx/7iOtG3O3AHkuqHhXHYeH+FQfPb
-         tP3A==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Uzf2M0ZB"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1767134730;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=3SJyXv/bGprmgznxb/DfZxykKGqJjlUpVS8LQMq/sY4=;
+	b=Uzf2M0ZB2SIAC0qjPW2Lrt2Mf3DeULk40X1KT4fbEJYm4hSSWDSpajFsbRkwhkxcVUv3rp
+	sriEL628LHbuGwo97He4BZQUGcB0T+VU59P1x4eXAwAhImRFv1l7x+vHFHaWE3u9c7ok4e
+	IXK4m5pHn9MOcayCmXO7LPlbOJwyvdU=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-107-WZeH1HhLO5-gKncqdM0YSA-1; Tue, 30 Dec 2025 17:45:29 -0500
+X-MC-Unique: WZeH1HhLO5-gKncqdM0YSA-1
+X-Mimecast-MFC-AGG-ID: WZeH1HhLO5-gKncqdM0YSA_1767134729
+Received: by mail-qt1-f199.google.com with SMTP id d75a77b69052e-4ee0488e746so226153641cf.0
+        for <oe-lkp@lists.linux.dev>; Tue, 30 Dec 2025 14:45:29 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767132296; x=1767737096;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=iL9oUwPK6pMmNAMWI41vZfP4nRtVQLFCd6SfZyUQxgg=;
-        b=kR7MOluG+CszskJKqYNeiTnBD4XXDsv+dAYsVgdghdiJH5aCca4VmSUpBDaHbP6tH8
-         ZDe4mMa91BX1HCtc4TLV6ffnOpSmX8SK2vRaW99UsADxDTOpsrJwacfX2Ubo3Ck28hob
-         UUPHGltP5x+413CMjfQxNIUfuqECoYKros8BsrFLZkq+HHGXoyiMoBY8wZjmT9IAVuVM
-         bTOCgMWnc8+sm1Odm2I/IWqI1uaGW5yaupGfn6Hif8rovNszuNAlfPtHr7Bo6Gnu+smT
-         s49MX1BZ2uIQUVxDfil5vehb4ZNyg6HA0WhAw/Lu53y3FB9NkckjfPPNg/EJ3G5jaThO
-         Yh7Q==
-X-Forwarded-Encrypted: i=1; AJvYcCUeBsLu93Pvb1+g+l9h/bLu6pRFc4+TmFYx/iRPFiErOv2JRUzngZ1mf4DviGidDzqHTqiEOHg=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yze4SFBw2Eb41X5Ue0nUMHt0zH53LumLGIcITjhtLHQUwIuCVgK
-	fmABxkjMVhmtimT0Z1jc8O/TKFv4A892N+s59p1oLfeZpKSfd0YBPiqTLNoIkLlo
-X-Gm-Gg: AY/fxX4MQyn9NX02AoNmbl2l2a7rxTQGoYkGvkrGzlzMsvQv8xvMMn1VVNI1jd54LwO
-	MNnE9TBJJaZjMHAzzEY2zKA9uK+TsHwjYFQfaTZMzqldo+Yao+nTJmRJGDvEARs7roYIL9qPCn+
-	zvJrMh/A4dGPZqtLr9oXNM/IOqiH/YCu9TKZBg4/tzYUINKESpcW3jOt2AZZ/tPLLxIgP66mriT
-	DH+jh2qb7qkAilRZJX/hTxocudhOU2QhKyNDeBQ0Z+h4QgW3WX2H/5Ph3uj9jBga19YoWjGzSHr
-	AvgJAXy51pADlXsG045Zj531rLKCYfk4lxPJAWX5J86QVx8u+AaPfk5pU7NihIYbP50ggMX/UZ0
-	liyiQneatxHkoza7FHWHFIs4px76T6jDGP4lNXdDXY4F4h/7euJOPgAvWIal9ofLPn4EfLgfHma
-	IfgxUWg6l4XyPSDG+TBaQb8zlYlCbCEk9r/bNWM6TO3WQZDTzHbJv+zCFYE2w=
-X-Google-Smtp-Source: AGHT+IFNqw3fHXA+0vU+KlB/nzXR38Cm2kP1GIXjrZY1/19S+eNMcf/p5//Z+VJzLtIGZInAPA2ybA==
-X-Received: by 2002:a05:6402:2685:b0:64b:6e44:217 with SMTP id 4fb4d7f45d1cf-64b8e2a6a78mr34031433a12.0.1767132296212;
-        Tue, 30 Dec 2025 14:04:56 -0800 (PST)
-Received: from f (cst-prg-87-163.cust.vodafone.cz. [46.135.87.163])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-64b90f5400bsm35893748a12.4.2025.12.30.14.04.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Dec 2025 14:04:55 -0800 (PST)
-Date: Tue, 30 Dec 2025 23:04:46 +0100
-From: Mateusz Guzik <mjguzik@gmail.com>
-To: Eric Sandeen <sandeen@redhat.com>
-Cc: linux-fsdevel <linux-fsdevel@vger.kernel.org>, 
-	linux-kernel@vger.kernel.org, Christian Brauner <brauner@kernel.org>, 
-	David Howells <dhowells@redhat.com>, lkp@intel.com, oe-lkp@lists.linux.dev, 
-	Alexander Viro <aviro@redhat.com>
-Subject: Re: [PATCH RFC] fs: cache-align lock_class_keys in struct
- file_system_type
-Message-ID: <o6cnjqy4ivjqaj4n5xphstfnk5jznufaygwmfkm2gyixqgfump@7fc6c6h6d5if>
-References: <9fbb6bf2-70ae-4d49-9221-751d28dcfd1a@redhat.com>
+        d=1e100.net; s=20230601; t=1767134729; x=1767739529;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=3SJyXv/bGprmgznxb/DfZxykKGqJjlUpVS8LQMq/sY4=;
+        b=sv9qCcpySODl4ZdJrgKYRvMvLhjAKA4D8nqHZWMp2JSDX16puT448DHL4Du2jfvas6
+         46OcBjQn66xahGDeL0OQWbmRQ6+rCTK26VlKymXOERmBxejc1M3J8bXqHf1WoY113rrQ
+         KNpzA6ldE77rN6Niky4jTRON/2q55bW6iMX1WsUouCe3mjK2N7CGGLHgLrwsa3ZXIVd/
+         ZMB8uNOZQyEKIdNJTo4L8mc6kVLVdkVcWLx52W0/Rj6i5qKttXIdjeIIvYsbUnz+tM9E
+         qq9XBBymCAA+FyaEuJswKEYvCZPHQJJ1RqkD/PeaN33KrYVYxQ/zwvl9XjcTCZ10jy79
+         KLSg==
+X-Forwarded-Encrypted: i=1; AJvYcCUkT9/gfBVJV6AFmrd+w9Uw+GQuZSYifkrtblCaxF0n0eV8b0SycnBjixuqLlx5evgRiItAxSQ=@lists.linux.dev
+X-Gm-Message-State: AOJu0YwQPw6bxTk6OyY56DOvz7mg1SSiUoJ8SsQN+FSrc/RzegkOvEBK
+	7bDCZSXdfp+imbYe9kTTpFJ/SYDdZyp0VzazjSSwMozMQLP3F9YZZYx1ZJVwWtRbEWXAzSf7z05
+	rqrHQnmoubo+01iDIkylYRgWv/jlPoqpd1X8mBocBc4UsZALydwFw38KbEQ==
+X-Gm-Gg: AY/fxX66zEfJ2Z/VEZrH+Hb6+wIgQlsddaJR+/6PKw6TVW+HyOW0XJqGZyWoub+AtV5
+	BxJuQfMLSXonUzxPg/Wouicl5ZmpWYiCfOiDyw3ZqhQqLnc0qE/qwlllXI5rJ424GbjpxLaQ9uF
+	dnuy4D1rJBql3eziQPKqZaUtoXfxtNfpw4L+umkbuA+8WW8xiufMdNHizdsZwMoZZc1IgyxeesL
+	IQXT7eW8xTcyizsDjU0dlDlSrs8HC1gU3jbDzNwwRaw0RoFq7j4BxQa2feKZKG7jInBI7uUmYSV
+	K9/lxw1nEFyH1q3ZGBn3mwV4BNx4tWZkEQxYZprMhtWTjax+QkeVZWLeLhvb9uEUq8QuvMxx74w
+	cAvu/rjvM7XD2U9f+EHHAIr0q1wmsnxa0jCt8eX1CEstFTvBP4umt
+X-Received: by 2002:a05:622a:199d:b0:4f1:af84:387a with SMTP id d75a77b69052e-4f35f3a0267mr525795971cf.5.1767134728727;
+        Tue, 30 Dec 2025 14:45:28 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IH/WUjGMG+vgFqxqR+gAUNbwR+a/ocaYU4UpFUbesLSCsG9fPvBLnEgNjci2CiKFig6Wxjpsg==
+X-Received: by 2002:a05:622a:199d:b0:4f1:af84:387a with SMTP id d75a77b69052e-4f35f3a0267mr525795741cf.5.1767134728403;
+        Tue, 30 Dec 2025 14:45:28 -0800 (PST)
+Received: from [10.0.0.82] (97-127-77-149.mpls.qwest.net. [97.127.77.149])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4f4ac65344bsm250027921cf.28.2025.12.30.14.45.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Dec 2025 14:45:27 -0800 (PST)
+Message-ID: <28f144f8-431d-4c3a-a362-56083bb77541@redhat.com>
+Date: Tue, 30 Dec 2025 16:45:26 -0600
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <9fbb6bf2-70ae-4d49-9221-751d28dcfd1a@redhat.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC] fs: cache-align lock_class_keys in struct
+ file_system_type
+To: Mateusz Guzik <mjguzik@gmail.com>
+Cc: linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+ linux-kernel@vger.kernel.org, Christian Brauner <brauner@kernel.org>,
+ David Howells <dhowells@redhat.com>, lkp@intel.com, oe-lkp@lists.linux.dev,
+ Alexander Viro <aviro@redhat.com>
+References: <9fbb6bf2-70ae-4d49-9221-751d28dcfd1a@redhat.com>
+ <o6cnjqy4ivjqaj4n5xphstfnk5jznufaygwmfkm2gyixqgfump@7fc6c6h6d5if>
+From: Eric Sandeen <sandeen@redhat.com>
+In-Reply-To: <o6cnjqy4ivjqaj4n5xphstfnk5jznufaygwmfkm2gyixqgfump@7fc6c6h6d5if>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: AqsgS-vZwUH3lTLLXXCNzMtrj8AoqgNBrCc4e-_cQzU_1767134729
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Tue, Dec 30, 2025 at 03:07:10PM -0600, Eric Sandeen wrote:
-> LKP reported that one of their tests was failing to even boot with my
-> "old mount API code" removal patch. The test was booting an i386 kernel
-> under QEMU, with lockdep enabled. Rather than a functional failure, it
-> seemed to have been slowed to a crawl and eventually timed out.
+On 12/30/25 4:04 PM, Mateusz Guzik wrote:
+> On Tue, Dec 30, 2025 at 03:07:10PM -0600, Eric Sandeen wrote:
+>> LKP reported that one of their tests was failing to even boot with my
+>> "old mount API code" removal patch. The test was booting an i386 kernel
+>> under QEMU, with lockdep enabled. Rather than a functional failure, it
+>> seemed to have been slowed to a crawl and eventually timed out.
+>>
+>> I narrowed the problem down to the removal of the ->mount op from
+>> file_system_type, which changed structure alignment and seems to have
+>> caused cacheline issues with this structure. Annotating the alignment
+>> fixes the problem for me.
+>>
+>> Reported-by: kernel test robot <oliver.sang@intel.com>
+>> Closes: https://lore.kernel.org/oe-lkp/202512230315.1717476b-lkp@intel.com
+>> Fixes: 51a146e05 ("fs: Remove internal old mount API code")
+>> Signed-off-by: Eric Sandeen <sandeen@redhat.com>
+>> ---
+>>
+>> RFC because I honestly don't understand why this should be so critical,
+>> especially the structure was not explicitly (or even very well) aligned
+>> before. I would welcome insights from folks who are smarter than me!
+>>
+>> diff --git a/include/linux/fs.h b/include/linux/fs.h
+>> index 9949d253e5aa..b3d8cad15de1 100644
+>> --- a/include/linux/fs.h
+>> +++ b/include/linux/fs.h
+>> @@ -2279,7 +2279,7 @@ struct file_system_type {
+>>  	struct file_system_type * next;
+>>  	struct hlist_head fs_supers;
+>>  
+>> -	struct lock_class_key s_lock_key;
+>> +	struct lock_class_key s_lock_key ____cacheline_aligned;
+>>  	struct lock_class_key s_umount_key;
+>>  	struct lock_class_key s_vfs_rename_key;
+>>  	struct lock_class_key s_writers_key[SB_FREEZE_LEVELS];
+>>
 > 
-> I narrowed the problem down to the removal of the ->mount op from
-> file_system_type, which changed structure alignment and seems to have
-> caused cacheline issues with this structure. Annotating the alignment
-> fixes the problem for me.
+> There is no way is about cacheline bouncing. According to the linked
+> thread the test vm has only 2 vcpus:
+>> test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m 4G
 > 
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> Closes: https://lore.kernel.org/oe-lkp/202512230315.1717476b-lkp@intel.com
-> Fixes: 51a146e05 ("fs: Remove internal old mount API code")
-> Signed-off-by: Eric Sandeen <sandeen@redhat.com>
-> ---
-> 
-> RFC because I honestly don't understand why this should be so critical,
-> especially the structure was not explicitly (or even very well) aligned
-> before. I would welcome insights from folks who are smarter than me!
-> 
-> diff --git a/include/linux/fs.h b/include/linux/fs.h
-> index 9949d253e5aa..b3d8cad15de1 100644
-> --- a/include/linux/fs.h
-> +++ b/include/linux/fs.h
-> @@ -2279,7 +2279,7 @@ struct file_system_type {
->  	struct file_system_type * next;
->  	struct hlist_head fs_supers;
->  
-> -	struct lock_class_key s_lock_key;
-> +	struct lock_class_key s_lock_key ____cacheline_aligned;
->  	struct lock_class_key s_umount_key;
->  	struct lock_class_key s_vfs_rename_key;
->  	struct lock_class_key s_writers_key[SB_FREEZE_LEVELS];
-> 
+> Even if the vcpu count was in hundreds and the ping pong was a problem it
+> still would not have prevented bootup.
 
-There is no way is about cacheline bouncing. According to the linked
-thread the test vm has only 2 vcpus:
-> test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m 4G
+Fair enough, it really didn't make sense to me.
 
-Even if the vcpu count was in hundreds and the ping pong was a problem it
-still would not have prevented bootup.
+> Instead something depends on the old layout for correctness.
 
-Instead something depends on the old layout for correctness.
+If I add ->mount back to the /end/ of the structure, it boots fine again,
+so I guess nothing is expecting specific offsets within the structure
+at least.
 
-By any chance is this type-punned somewhere?
+(If I turn off lockdep in the kernel config, it boots fine again too,
+FWIW.)
 
-While I can't be bothered to investigate, I *suspect* the way to catch
-this would patch out all of the lock_class_key vars & uses and boot with
-KMSAN (or was it KASAN?). Or whatever mechanism which can tell the
-access is oob.
+> By any chance is this type-punned somewhere?
+
+I don't think so... 
+
+> While I can't be bothered to investigate, I *suspect* the way to catch
+> this would patch out all of the lock_class_key vars & uses and boot with
+> KMSAN (or was it KASAN?). Or whatever mechanism which can tell the
+> access is oob.
+
+Can't do KASAN or KMSAN on i386, AFAIK. :(
+
+I suppose I could try such things on x86_64 just in case something shows
+up...
+
+Thanks!
+
+-Eric
+
