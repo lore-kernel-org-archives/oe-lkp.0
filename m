@@ -1,81 +1,81 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5FC613FEE
-	for <oe-lkp@lists.linux.dev>; Mon, 12 Jan 2026 08:34:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1CE8285CBA
+	for <oe-lkp@lists.linux.dev>; Mon, 12 Jan 2026 10:07:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768206865; cv=none; b=JV+H85462dpI+vRADpMEfS3bWg4u8DKUZ/HUkEfsAYmz1464tbdUOl5ukl4oZ+6U1zlVuYd5/9uX9jZJuN9OAzD2ANB0eBzF7f3Tlh0KVrpxl6Ji5VRGMcYp2+/kv8lYAshVTFKxQu4kKD5qr3BsCrShtIce2g5jDDo7MiPf4gg=
+	t=1768212439; cv=none; b=qM1vIieW/5dc5Lufm+MKJDzadNIhBCzfxpotP/+7AH0KmUqYv+zKFLXJPETLiEKoThuyPkxWpIkRmkqIk5pjfeZA0u47BjajHkiWGko0n5wTyzluUp6iQIof0Ua33rE9iknCoEc6Os2GXgoJIEnF7gZLzPIV+4+Eu6x5+8j63wQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768206865; c=relaxed/simple;
-	bh=PWLA9rQrRW5cT3zrV7KNFUKpsHVpIyLKClHyrlPvKto=;
+	s=arc-20240116; t=1768212439; c=relaxed/simple;
+	bh=aZ8aacK3rikAxUCk6B46kpqtTtcG10f+TkRrrpMTgDk=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=d5ccVlFpvMkcpBW2+jIslRWKnYhtmc6MfV9Dk/VaGA7zI1XxJZbMj+EyxY7jjd0l8udtSZGYBtVi6OnYHZmIBYzXfoPae5VlqglsuMST/a6z8xjT3Y86Qkdry+J5E0UJowx+o8kPw9l2T9vWBvpGF5jPUp2lamziDWe/SewlDpw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=jeESO6WA; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=cta12H05; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=o9X/K+4h; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=e23VvG/9; arc=none smtp.client-ip=195.135.223.131
+	 In-Reply-To:Content-Type; b=QWIjjro7Hmfei/JPdvSAKUT8EF//VSNKLaVhbUNKZdCbhdUjyXxFHTRKYxymJYpL+Ajq5QY72BNlibUHeAi/MiwBqESDtdBtmAyemIYy7gMDxTDHKvtBFcdBssfp9h0EZHkaRdN7JirR94A9oZvwDONoHZSdn+Q5KZJATL8es/8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=u2Q00Qc9; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=EFlyn43w; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=u2Q00Qc9; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=EFlyn43w; arc=none smtp.client-ip=195.135.223.130
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="jeESO6WA";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="cta12H05";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="o9X/K+4h";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="e23VvG/9"
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="u2Q00Qc9";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="EFlyn43w";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="u2Q00Qc9";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="EFlyn43w"
 Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id 8BB555BD5A;
-	Mon, 12 Jan 2026 08:34:20 +0000 (UTC)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 0D430337E3;
+	Mon, 12 Jan 2026 10:07:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1768206862; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1768212436; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=OwD4kApjFPZsXwhiMrMbTKQ84/M6yc6WaUVtiHu4Pmc=;
-	b=jeESO6WADv9AgSVoHcn6NAB7ObtrcAKb4tPO7avnvaj94x60Zp9nhVg9zHzYXEhF8t23GD
-	Nh4w4VMiQGWBGvL37cfbvOwCH9X3FG5HLwLKBtCYQIyyZRVGVavoaS98s8bFv121foYmxS
-	3MCjKPEKdDXvsdw23araazugZr7Es5o=
+	bh=dnFkkYe24LjpncnRCCigWcgDMCgT7sT3u049O+11iAY=;
+	b=u2Q00Qc9w6UYcYX+HbxFboRQ9ztDPj7SCkyjWeu8mnza+3V9s5dycSA9r/VV6SIg+5QACz
+	z2t3nFiHSVlr2zzPmkWBSqLH6D4jchaU9stqhHh9k8poSQrcLojcY98hhLo9Dz9dbvThRR
+	oUvzNqb9iRDhEHyuTrrkNBUqyMMCGmc=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1768206862;
+	s=susede2_ed25519; t=1768212436;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=OwD4kApjFPZsXwhiMrMbTKQ84/M6yc6WaUVtiHu4Pmc=;
-	b=cta12H05c5tqmPmhFF6z/nGqjln4lfmp2uZkQ2wZx5j3RcdvQtHVK/eAmQ234LV8t0p6RY
-	HgcfFhavB36cxgCA==
-Authentication-Results: smtp-out2.suse.de;
-	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b="o9X/K+4h";
-	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b="e23VvG/9"
+	bh=dnFkkYe24LjpncnRCCigWcgDMCgT7sT3u049O+11iAY=;
+	b=EFlyn43ws8OZytjW5ECJxRilGJbuaNVt/r3I81/7qC63ge+UYDiPi+vJ3LfEVS/J3Bwr9X
+	o9x3VIzMq0er/HBA==
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=u2Q00Qc9;
+	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b=EFlyn43w
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1768206860; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1768212436; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=OwD4kApjFPZsXwhiMrMbTKQ84/M6yc6WaUVtiHu4Pmc=;
-	b=o9X/K+4hg12a6N7Y4kXs7qpGVHcX8XxNnSz99lhiDK2wXTUqCsI8KLn1i5rnl/Sd/R8OQQ
-	BrGKxRmb0qexMZGb0mZ92kxjcm4SCYqDjXVQ1AUnXhB2L4fIJ7hThoAQK2wNNte1QaUmNx
-	SpuNPT4J+uQay72D/vTbswxKjDQflEs=
+	bh=dnFkkYe24LjpncnRCCigWcgDMCgT7sT3u049O+11iAY=;
+	b=u2Q00Qc9w6UYcYX+HbxFboRQ9ztDPj7SCkyjWeu8mnza+3V9s5dycSA9r/VV6SIg+5QACz
+	z2t3nFiHSVlr2zzPmkWBSqLH6D4jchaU9stqhHh9k8poSQrcLojcY98hhLo9Dz9dbvThRR
+	oUvzNqb9iRDhEHyuTrrkNBUqyMMCGmc=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1768206860;
+	s=susede2_ed25519; t=1768212436;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=OwD4kApjFPZsXwhiMrMbTKQ84/M6yc6WaUVtiHu4Pmc=;
-	b=e23VvG/9+lixfeBZyT6ecLDPoYmSBMLD/62W/v6JBWvQ7nO2+zsJHm2bDCsYX5JmgzxACo
-	CzygbK1AguftL6Ag==
+	bh=dnFkkYe24LjpncnRCCigWcgDMCgT7sT3u049O+11iAY=;
+	b=EFlyn43ws8OZytjW5ECJxRilGJbuaNVt/r3I81/7qC63ge+UYDiPi+vJ3LfEVS/J3Bwr9X
+	o9x3VIzMq0er/HBA==
 Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 805303EA63;
-	Mon, 12 Jan 2026 08:34:20 +0000 (UTC)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id F37C43EA67;
+	Mon, 12 Jan 2026 10:07:15 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
 	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id uCIGHwyyZGlRBgAAD6G6ig
-	(envelope-from <vbabka@suse.cz>); Mon, 12 Jan 2026 08:34:20 +0000
-Message-ID: <d7263d12-e6e5-48d9-85b5-0937f7c0dac9@suse.cz>
-Date: Mon, 12 Jan 2026 09:34:20 +0100
+	id qx0eO9PHZGk+YQAAD6G6ig
+	(envelope-from <vbabka@suse.cz>); Mon, 12 Jan 2026 10:07:15 +0000
+Message-ID: <1fc232e8-1fd2-4dde-8218-cc340a11633c@suse.cz>
+Date: Mon, 12 Jan 2026 11:07:15 +0100
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -83,12 +83,13 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [vbabka:b4/sheaves-for-all-rebased] [slab] 9b0317d1c2:
- xfstests.generic.629.fail
+Subject: Re: [vbabka:b4/sheaves-for-all-rebased] [slab] 3c9d05a883:
+ BUG_TestSlub_kfree_rcu_wq_destroy
 Content-Language: en-US
-To: kernel test robot <oliver.sang@intel.com>
+To: kernel test robot <oliver.sang@intel.com>,
+ Harry Yoo <harry.yoo@oracle.com>
 Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-mm@kvack.org
-References: <202601121022.41666cea-lkp@intel.com>
+References: <202601121442.c530bed3-lkp@intel.com>
 From: Vlastimil Babka <vbabka@suse.cz>
 Autocrypt: addr=vbabka@suse.cz; keydata=
  xsFNBFZdmxYBEADsw/SiUSjB0dM+vSh95UkgcHjzEVBlby/Fg+g42O7LAEkCYXi/vvq31JTB
@@ -129,10 +130,9 @@ Autocrypt: addr=vbabka@suse.cz; keydata=
  rywqgzTUhHFKKF6/9L/lYtrNcHU8Z6Y4Ju/MLUiNYkmtrGIMnkjKCiRqlRrZE/v5YFHbayRD
  dJKXobXTtCBYpLJM4ZYRpGZXne/FAtWNe4KbNJJqxMvrTOrnIatPj8NhBVI0RSJRsbilh6TE
  m6M14QORSWTLRg==
-In-Reply-To: <202601121022.41666cea-lkp@intel.com>
+In-Reply-To: <202601121442.c530bed3-lkp@intel.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Score: -4.51
 X-Spamd-Result: default: False [-4.51 / 50.00];
 	BAYES_HAM(-3.00)[100.00%];
 	NEURAL_HAM_LONG(-1.00)[-1.000];
@@ -143,50 +143,49 @@ X-Spamd-Result: default: False [-4.51 / 50.00];
 	ARC_NA(0.00)[];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
 	RCVD_TLS_ALL(0.00)[];
-	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	FUZZY_RATELIMITED(0.00)[rspamd.com];
 	TO_DN_SOME(0.00)[];
 	MIME_TRACE(0.00)[0:+];
 	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	FUZZY_RATELIMITED(0.00)[rspamd.com];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
 	MID_RHS_MATCH_FROM(0.00)[];
-	RCPT_COUNT_THREE(0.00)[4];
+	RCPT_COUNT_FIVE(0.00)[5];
 	FROM_EQ_ENVFROM(0.00)[];
 	FROM_HAS_DN(0.00)[];
 	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
 	RCVD_COUNT_TWO(0.00)[2];
 	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:rdns,imap1.dmz-prg2.suse.org:helo,suse.cz:dkim,suse.cz:mid,01.org:url,intel.com:email];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns,intel.com:email,suse.cz:mid,suse.cz:dkim,suse.cz:email];
 	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
 	DKIM_TRACE(0.00)[suse.cz:+]
-X-Spam-Level: 
-X-Rspamd-Action: no action
-X-Rspamd-Queue-Id: 8BB555BD5A
-X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
 X-Spam-Flag: NO
+X-Spam-Score: -4.51
+X-Rspamd-Queue-Id: 0D430337E3
+X-Rspamd-Action: no action
+X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
+X-Spam-Level: 
 
-On 1/12/26 03:54, kernel test robot wrote:
+On 1/12/26 08:45, kernel test robot wrote:
 > 
 > 
 > Hello,
 > 
-> kernel test robot noticed "xfstests.generic.629.fail" on:
+> kernel test robot noticed "BUG_TestSlub_kfree_rcu_wq_destroy" on:
 > 
-> commit: 9b0317d1c2ed590d69d39eba701cd3eb082ecc31 ("slab: remove cpu (partial) slabs usage from allocation paths")
+> commit: 3c9d05a88372eb667214035d903b5ea09be4459b ("slab: add sheaves to most caches")
 > https://git.kernel.org/cgit/linux/kernel/git/vbabka/linux.git b4/sheaves-for-all-rebased
 > 
-> in testcase: xfstests
-> version: xfstests-x86_64-df16c93a-1_20260105
+> in testcase: kunit
+> version: 
 > with following parameters:
 > 
-> 	disk: 4HDD
-> 	fs: btrfs
-> 	test: generic-629
+> 	group: group-00
 > 
 > 
 > 
-> config: x86_64-rhel-9.4-func
+> config: x86_64-rhel-9.4-kunit
 > compiler: gcc-14
-> test machine: 4 threads Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz (Skylake) with 32G memory
+> test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (Haswell) with 16G memory
 > 
 > (please refer to attached dmesg/kmsg for entire log/backtrace)
 > 
@@ -195,37 +194,75 @@ On 1/12/26 03:54, kernel test robot wrote:
 > If you fix the issue in a separate patch/commit (i.e. not just a new version of
 > the same patch/commit), kindly add following tags
 > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202601121022.41666cea-lkp@intel.com
+> | Closes: https://lore.kernel.org/oe-lkp/202601121442.c530bed3-lkp@intel.com
 > 
-> 2026-01-11 11:59:36 cd /lkp/benchmarks/xfstests
-> 2026-01-11 11:59:37 export TEST_DIR=/fs/sdb1
-> 2026-01-11 11:59:37 export TEST_DEV=/dev/sdb1
-> 2026-01-11 11:59:37 export FSTYP=btrfs
-> 2026-01-11 11:59:37 export SCRATCH_MNT=/fs/scratch
-> 2026-01-11 11:59:37 mkdir /fs/scratch -p
-> 2026-01-11 11:59:37 export SCRATCH_DEV_POOL="/dev/sdb2 /dev/sdb3 /dev/sdb4"
-> 2026-01-11 11:59:37 echo generic/629
-> 2026-01-11 11:59:37 ./check generic/629
-> FSTYP         -- btrfs
-> PLATFORM      -- Linux/x86_64 lkp-skl-d03 6.19.0-rc1-00010-g9b0317d1c2ed #1 SMP PREEMPT_DYNAMIC Sun Jan 11 19:50:05 CST 2026
-> MKFS_OPTIONS  -- /dev/sdb2
-> MOUNT_OPTIONS -- /dev/sdb2 /fs/scratch
 > 
-> generic/629        _check_dmesg: something found in dmesg (see /lkp/benchmarks/xfstests/results//generic/629.dmesg)
+> 
+> kern  :err   : [  137.071325] [   T4498]     # test_kfree_rcu: EXPECTATION FAILED at lib/tests/slub_kunit.c:182
+> Expected 0 == slab_errors, but
+> slab_errors == 2 (0x2)
+> kern  :info  : [  137.076926] [   T4491]     not ok 4 test_kfree_rcu
+> kern  :err   : [  137.133204] [   T2648] =============================================================================
+> kern  :err   : [  137.146570] [   T2648] BUG TestSlub_kfree_rcu_wq_destroy (Tainted: G S  B            N ): Objects remaining on __kmem_cache_shutdown()
+> kern  :err   : [  137.158349] [   T2648] -----------------------------------------------------------------------------
+> 
+> kern  :err   : [  137.169350] [   T2648] Object 0x00000000b072383a @offset=2240
+> kern  :err   : [  137.174817] [   T2648] Slab 0x000000005fc4154e objects=128 used=1 fp=0x000000000b8c0d81 flags=0x17ffffc0000200(workingset|node=0|zone=2|lastcpupid=0x1fffff)
+> kern  :warn  : [  137.188509] [   T2648] ------------[ cut here ]------------
+> kern  :warn  : [  137.193801] [   T2648] WARNING: mm/slub.c:1248 at __slab_err+0x19/0x20, CPU#1: 0/2648
+> kern  :warn  : [  137.202990] [   T2648] Modules linked in: slub_kunit linear_ranges binfmt_misc snd_hda_codec_intelhdmi snd_hda_codec_hdmi btrfs intel_rapl_msr intel_rapl_common blake2b x86_pkg_temp_thermal xor snd_hda_codec_alc269 raid6_pq intel_powerclamp snd_hda_scodec_component snd_hda_codec_realtek_lib coretemp i915 snd_hda_codec_generic sd_mod snd_hda_intel kvm_intel sg snd_hda_codec intel_gtt platform_profile snd_hda_core ttm drm_client_lib kvm dell_wmi snd_intel_dspcfg drm_buddy snd_intel_sdw_acpi dell_smbios drm_display_helper snd_hwdep dell_wmi_descriptor irqbypass ahci ghash_clmulni_intel sparse_keymap snd_pcm libahci mei_wdt cec rfkill rapl intel_cstate mei_me snd_timer dcdbas libata i2c_i801 snd drm_kms_helper i2c_smbus intel_uncore mei soundcore pcspkr lpc_ich video wmi fuse drm nfnetlink [last unloaded: mptcp_token_test]
+> kern  :warn  : [  137.275019] [   T2648] CPU: 1 UID: 0 PID: 2648 Comm: kworker/u33:0 Tainted: G S  B            N  6.19.0-rc1-00005-g3c9d05a88372 #1 PREEMPT(voluntary)
+> kern  :warn  : [  137.288184] [   T2648] Tainted: [S]=CPU_OUT_OF_SPEC, [B]=BAD_PAGE, [N]=TEST
+> kern  :warn  : [  137.294860] [   T2648] Hardware name: Dell Inc. OptiPlex 9020/0DNKMN, BIOS A05 12/05/2013
+> kern  :warn  : [  137.302746] [   T2648] Workqueue: test_kfree_rcu_destroy_wq cache_destroy_workfn [slub_kunit]
+> kern  :warn  : [  137.310986] [   T2648] RIP: 0010:__slab_err (kbuild/src/consumer/mm/slub.c:1249)
+> kern  :warn  : [  137.316370] [   T2648] Code: 00 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 0f 1f 44 00 00 e8 16 fd ff ff be 01 00 00 00 bf 05 00 00 00 e8 07 b8 2e 00 <0f> 0b c3 cc cc cc cc 44 89 e2 be 00 10 00 00 48 c7 c7 c0 12 bc 85
 
-Hm I didn't notice anything suspicious in dmesg.xz - any idea what this
-refers to?
+Thanks, found the root cause, which is a recent hotfix. Will make this part
+of the series, but I don't think we need to send it as a hotfix because the
+problem is only exposed when destroying cache with sheaves, and in the
+mainline/stable kernels only maple node and vma caches have sheaves and are
+never destroyed.
 
-> Ran: generic/629
-> Failures: generic/629
-> Failed 1 of 1 tests
-> 
-> 
-> 
-> 
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20260112/202601121022.41666cea-lkp@intel.com
-> 
-> 
-> 
+----8<----
+From 9f77c1e5dac6ff2ace6513cbbb2a69ba58f3ab44 Mon Sep 17 00:00:00 2001
+From: Vlastimil Babka <vbabka@suse.cz>
+Date: Mon, 12 Jan 2026 10:58:38 +0100
+Subject: [PATCH] mm/slab: add rcu_barrier() to kvfree_rcu_barrier_on_cache()
+
+After we submit the rcu_free sheaves to call_rcu() we need to make sure
+the rcu callbacks complete. kvfree_rcu_barrier() does that via
+flush_all_rcu_sheaves() but kvfree_rcu_barrier_on_cache() doesn't. Fix
+that.
+
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Closes: https://lore.kernel.org/oe-lkp/202601121442.c530bed3-lkp@intel.com
+Fixes: 0f35040de593 ("mm/slab: introduce kvfree_rcu_barrier_on_cache() for cache destruction")
+Cc: stable@vger.kernel.org
+Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+---
+ mm/slab_common.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/mm/slab_common.c b/mm/slab_common.c
+index eed7ea556cb1..ee994ec7f251 100644
+--- a/mm/slab_common.c
++++ b/mm/slab_common.c
+@@ -2133,8 +2133,11 @@ EXPORT_SYMBOL_GPL(kvfree_rcu_barrier);
+  */
+ void kvfree_rcu_barrier_on_cache(struct kmem_cache *s)
+ {
+-	if (s->cpu_sheaves)
++	if (s->cpu_sheaves) {
+ 		flush_rcu_sheaves_on_cache(s);
++		rcu_barrier();
++	}
++
+ 	/*
+ 	 * TODO: Introduce a version of __kvfree_rcu_barrier() that works
+ 	 * on a specific slab cache.
+-- 
+2.52.0
+
+
 
