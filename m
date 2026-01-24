@@ -1,338 +1,283 @@
-Received: from mail-yx1-f46.google.com (mail-yx1-f46.google.com [74.125.224.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83F9E27470
-	for <oe-lkp@lists.linux.dev>; Fri, 23 Jan 2026 19:45:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E07041C5D57
+	for <oe-lkp@lists.linux.dev>; Sat, 24 Jan 2026 11:12:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.177.32
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769197535; cv=pass; b=P+Z0ZZdGGl6HG0MzlRC++WjX1/V1CElZaGt1qERp6VEsKeIuBDIwBQ2A1Ofwmy3fRXGtMG+XvSNwNXKa99cZYeIo7p9k+1by/ZmSWx7mxleY3X81R+rV6A8QLXoK8W3nAQ1qLuD3Pi+eTicjRN8PtgcGonjHN3dfJyF3cGBvNLE=
+	t=1769253163; cv=fail; b=Z5b66xOKf6xogQUsphQmLTc4vzQVWICrxnvLwrUsnIbH3WbJr7Djy4tGZzbXENPCs48nF6q9Ib+/4eIDP9mcfLxRqEvnrDthCIDNQKyc7Pjw0iTZhU3u8p/6sL1tFobQ8cjShJvqT4gB82kSZlA3IjVWNkWBQ9py5Eoibupy3fc=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769197535; c=relaxed/simple;
-	bh=blNDMQ72O7NiZwaB/1j+EJBX0TL0rz0tuDTOW2bfdLU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=UazZtF9UdVfJ28opHTUhJSlssukg88R4VT8evfQBNPQTXuW0CIL4euIHUdmiNdQqL+K0bXOfjp0Bs3kfxhLo5HiRHJZo4jZncOVdS2+jUMMIi6xqsC4Swp7cpYNH+N38uPh5eI+FIN6iywxsk7aQK8hMK7OEEVTAX6xfXyyKc9w=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WcimtGNw; arc=pass smtp.client-ip=74.125.224.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1769253163; c=relaxed/simple;
+	bh=hmZ7879SeEW3q/KzZcW26uFSmXLKLTtyvWV8HoEeNJE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=tTn1BmHx8jYY/TepDWRagLctmIrgMefAbkrLrpDDx6pWJFR02sEk+C5I3TVbxemV8LObqFCRZumkvJYEM/0wlg/dyZMkg77yzwgs7QkjGAP+WiFHU4sKBcZEap+789RQucEijN+UHgs5tw108FQCSU6l2mvX+tjJDRigJzEA4yg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=Fu+djooW; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=sJG4QZcv; arc=fail smtp.client-ip=205.220.177.32
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WcimtGNw"
-Received: by mail-yx1-f46.google.com with SMTP id 956f58d0204a3-649523de977so2306472d50.0
-        for <oe-lkp@lists.linux.dev>; Fri, 23 Jan 2026 11:45:33 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1769197532; cv=none;
-        d=google.com; s=arc-20240605;
-        b=i4bVc5fOrQxItrFgDXUqF1cCWjMLro3xy3wjvOPyFiRtSXSulHbL8gDHmrNajbI7XL
-         W9m9GkAgfWAfCqRrVAxKwwnXMET3MdNXrLg/kXU1ifCYuCS5tWIPZIbVOvuZc0zOAGJd
-         9pOVGNInmupngJfyKEENAYmbcsXc/H+eqLxT2tgz63XNTeO5mos9s7vMRluGLdtZjJ/g
-         GCcqO1dPcgjlexB/lM3CsTxe7zV5RtXQJx0WKh8ISQqttCqeZIIa5dL8s2qNYK5LgwQ/
-         CbqJUYcCXjZK2+y+kZ88701/rpDlcuH7KBItQC2duN9d5LWQ/6Zpt8XxXXcPlc0aGOZ2
-         PYcQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=ASfq35FOcJ8RVt0sH2rmdPoKJho6BAcaErDRKGM9VaU=;
-        fh=ASSFPBOw2f5H/ZE+oKnGY44ZLFgt/TFfZiULeQnhPmg=;
-        b=TQXqB7u03Attf4SxnHVFlGDZNt7b9G5uQ3joqWCqOxP2cOQTDbl5RZyvs2jUwy1Act
-         5SWetM+SXyvqLC1LtTHam+mjJy+mtRGo4kaAtRKr1vp0hIEqWeBGj/lUZDKcumWlSGCZ
-         SxYwTMywIQwVKqQ1FxDUq8jvBPAcnoOl3eG3nsXiqY3q0ROfZjNz5TBg4b8b9ehQB1BN
-         iG3IVIRRRgFXl2kdTVOIbKTHUcpC1J8xfYeI0JWZuLh8rhxVVNJAtq1yTp9VixDjIivC
-         5cVnp4xn1cwFR6ysz/E2N1Keb2TvTyn+p4rhRq2O5DWp0jXqDC73CQycYOrqVi8zT2GK
-         GxzQ==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="Fu+djooW";
+	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="sJG4QZcv"
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 60OAg6kJ1280628;
+	Sat, 24 Jan 2026 11:12:34 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
+	:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=corp-2025-04-25; bh=Qb+uMiz9/YpeoI1Dy6
+	bVucxFF1UwDiZVa9CEll8O4Cg=; b=Fu+djooWvWBSVxfZsLbADbQCRV4lOWgrsU
+	+X/vvRMl6nrHL8BstRQ0lKSnMUFsAERGtu3TBxxvHOEpbg/CaEHLWJfX1FBi/JK8
+	RWv5sNmXUVA9Ij1OA0DQbgA8inkxwgMgDslKfLzNpGATFISCoKiBhfhvS9LH1CQj
+	voaQkLQAF4S9oSivaOY709oSypBTme7KSGsjelU1ykrv0GAkuSmtumUQ1aSFtyhD
+	z5dAp8iVSQ6eGjHqNQs9Y/M60QReywldYFTAMrYuxhf8syd3Q5YAp2wAR6ckn9md
+	vUhOylHFXYhkGJ3LSDVQvLjJ73YUq/fEEJYl5CY4KqOaHMh7q7gg==
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 4bvnps85ng-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Sat, 24 Jan 2026 11:12:34 +0000 (GMT)
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 60O8BkLS036177;
+	Sat, 24 Jan 2026 11:12:33 GMT
+Received: from ch1pr05cu001.outbound.protection.outlook.com (mail-northcentralusazon11010008.outbound.protection.outlook.com [52.101.193.8])
+	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 4bvmhjm0gb-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Sat, 24 Jan 2026 11:12:33 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=cKQVsTeGthrmDmzU2V4grfCb62EsgrPFu/tYqjOQRi4O/RPqLyyNRG+QaQ954mTRjk8/2/HLtAD3Pk9xhDBzoIdGtsMmFPMjqDdeJH4dknzsDr05nUQD3A3KP740CKmzxJvgNKCcPYg11+NmZR/9QeLA2XfRPHy3moUrO5eolWVWtseHW03rW4O27DCa5oqhAqSYaMmXLkqB7o2E9P183rT3Ag3n6XLsK0kyTN32gVA1/bkWgQqXQh37xmhnjvFsHxw0ASmgE+ZW9LhfO5hV3e3LDDBL/G+U8H6KCwzLAJQtJ/RAT86UDM+LuZvif1lzWjmZ02TV+KZLM5o50LxPSQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Qb+uMiz9/YpeoI1Dy6bVucxFF1UwDiZVa9CEll8O4Cg=;
+ b=DhyZY8tWuh6xqJxNjF08FH9vJlc2eP9VQQHtr/HLZyfEdBvRb4POoodEeQy9n3msUlwWutN+WFHfB43CBIpOyB+W445EfXDA9+Pob4tuwKWU8JP1l92d0Ok6fS30qsxiy6o+Mrwiq2uaIaRRnjkCvxxKXtNbmp8y4uzBHn52hxWczccTDFhu+b6ggLbCrjZvFeV1ouLjSYDseqmQ1dDcUz8FV2Yr93PaiMcIeUvrowfBR6qbyfpOWGBWkSQVPQyLggLtehv5YOkze3XoPsDOBl7uHhRePqDlYudQqDd+MzwWyXrpMiOUv7yyBh8pBmtLyYkNbnmeIt3Fs8uv6gEBgA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1769197532; x=1769802332; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ASfq35FOcJ8RVt0sH2rmdPoKJho6BAcaErDRKGM9VaU=;
-        b=WcimtGNwnqQia1/ejxFHLFepXkU9x84M9I/XxGrKl3Oe2LLdnkI5lu1en7j7p4O5Bx
-         ynh6qIuXb2wAktsIcYErf44Nt1FMqv9K3G470vUbkwHlbmPBsvUteawYd0Mggoq1jVR2
-         MsrdmaWmThAMFYOCnVElJhch0VLAvfgFFCAa6Ty2+TSk/faLiIjTCLWEXecM2uYIX/Ma
-         SmYSOqkG7efye7wddQvPCYtQ4eiy3UDX5P+N/fSabXbGv9ITwL8XInYSPzXswMkka3NC
-         4VffeZOiVs4tCrAaL651kGUoSfnFHYwPkzymBYc2V4/7AxE7Q4HuT/d6K316ASJrvnGy
-         DSqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769197532; x=1769802332;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=ASfq35FOcJ8RVt0sH2rmdPoKJho6BAcaErDRKGM9VaU=;
-        b=Neo6OmsrjjpRM7UD+gZ8Wq/Xrt2g+scRXmmE7U3VM8kOknpd1uB0TbwV8WzxvfddFG
-         2CARH/ssrbuz4s7HYhqy9YzJvWSIVylbvV7D7rcKduTD1Qkyvl19SKrS3eWnGvvG/yva
-         zsLsmJmvoS6O8MVzH/jbthiWwTwYsHl9mVN5Xh/2GsvFwkDXaWxZnKWmDKQwCugfEj/6
-         F9j9MiuMWGjNsOQa+kaRsh5xqDAQBmMmLMHyoERmsHyVcdePhfuPIAm1775Glw6Vdk6T
-         TfQfdEVe7M5Luk7CDvZzCx8q3yruVJC1cl5O2TLVaJpBuutGts3IRZTqmoaGtxhV4lbO
-         yOCg==
-X-Forwarded-Encrypted: i=1; AJvYcCUITcAoRvByk2fvEfvbr3hVNmmr2aRa1isJLOFX9+OKholTTg+TB3yLdwF3lw8eN7crvhDB60I=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzYROG66eQRMpLbN2TqPVxnZkufo6S4icqbgwFkSZY3vNz7UHWK
-	KZsM/HW+k58Bl9iP8Wdg6lb9f6wgcunNmNfN2UA7RmHGk3z6MiwuawoUpkqIO2VofHEcdq1rQWd
-	AytBv455vwhNdqNRk0rMZ/LIkF6jbcy4=
-X-Gm-Gg: AZuq6aKQvkwJoZq8dh+CVrM3ADRxrXn5PPIukO3tDQLdu15EPOeaATAzSySCLbA0O4x
-	cjvtcGL4gSAXWLTcFBQZWDoJYk8PkmXI6+X4K5WsYLmuohcRXWPGGhTEOZev0B4jmXLnP2G4bH9
-	AhaeXtUzzjFOvdBnx4gZs5wBMxW72fPPaRHTIzHp6nGKKDmpPS2m0JfuJwAt3qswM2VobOOIQJR
-	QvD0gjka3mAaaxC0oFJvAjJepvEOpoG4/woKsfkC44hmjSERas4eqb3BBT4dPCeTZ0Y
-X-Received: by 2002:a05:690e:12c1:b0:63e:2b26:a8ad with SMTP id
- 956f58d0204a3-6495bee31d2mr2956907d50.38.1769197527889; Fri, 23 Jan 2026
- 11:45:27 -0800 (PST)
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Qb+uMiz9/YpeoI1Dy6bVucxFF1UwDiZVa9CEll8O4Cg=;
+ b=sJG4QZcvdEYINVT0BCB7s9z9BHF1f4vlx69Xl5+Nyqo2x15r9e/gdH5/xiiGWjrV2NsIMj02KO35V0c0c3pccyQMCvGUKMXzwvFcwObVxQjF7oMEUkwasDe2rL7vorCJiywcYlxAheCvUDwsjx2hdrQ6x5nAurOPq9ttk3pLY/M=
+Received: from CH3PR10MB7329.namprd10.prod.outlook.com (2603:10b6:610:12c::16)
+ by SJ0PR10MB4797.namprd10.prod.outlook.com (2603:10b6:a03:2d8::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9542.12; Sat, 24 Jan
+ 2026 11:12:29 +0000
+Received: from CH3PR10MB7329.namprd10.prod.outlook.com
+ ([fe80::c2a4:fdda:f0c2:6f71]) by CH3PR10MB7329.namprd10.prod.outlook.com
+ ([fe80::c2a4:fdda:f0c2:6f71%7]) with mapi id 15.20.9542.010; Sat, 24 Jan 2026
+ 11:12:29 +0000
+Date: Sat, 24 Jan 2026 20:12:21 +0900
+From: Harry Yoo <harry.yoo@oracle.com>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, Vlastimil Babka <vbabka@suse.cz>,
+        linux-mm@kvack.org, surenb@google.com
+Subject: Re: [linux-next:master] [mm/slab]  4fad56bdb6:
+ BUG_kmalloc-#:Padding_overwritten.#-#@offset=
+Message-ID: <aXSpFYShAMM3MnXu@hyeyoo>
+References: <202601231457.f7b31e09-lkp@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202601231457.f7b31e09-lkp@intel.com>
+X-ClientProxiedBy: SE2P216CA0201.KORP216.PROD.OUTLOOK.COM
+ (2603:1096:101:2c3::9) To CH3PR10MB7329.namprd10.prod.outlook.com
+ (2603:10b6:610:12c::16)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202601211325.7e1f336-lkp@intel.com>
-In-Reply-To: <202601211325.7e1f336-lkp@intel.com>
-From: jim.cromie@gmail.com
-Date: Fri, 23 Jan 2026 12:45:02 -0700
-X-Gm-Features: AZwV_QhMufCtyLVL9Ght7zZS8puQS7LHhB5ZpYHTOyvnJ2RZofuZu27xL3QKNJo
-Message-ID: <CAJfuBxw-ZYCqq2DQnnfhNcXu7Jhy3V9Mkt82TjZ55+_AZfbbAg@mail.gmail.com>
-Subject: Re: [jimc:dd-shrink] [dyndbg] 1663ffb9c1: BUG:kernel_NULL_pointer_dereference,address
-To: kernel test robot <oliver.sang@intel.com>
-Cc: =?UTF-8?Q?=C5=81ukasz_Bartosik?= <ukaszb@chromium.org>, 
-	oe-lkp@lists.linux.dev, lkp@intel.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR10MB7329:EE_|SJ0PR10MB4797:EE_
+X-MS-Office365-Filtering-Correlation-Id: c798b521-01e5-426d-472d-08de5b39768c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|366016|1800799024|7053199007|220923002;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?PqfLBdYgbhKIPRmdIjLSg+NGFP9Jf4gFxR1p8orxvY6LCk3paFATYWV0KRvT?=
+ =?us-ascii?Q?ozuzaz891bLhg5HGbE+M8b48WMzQfW4z8NqoOHiGU3XQMNf1+yKSDqq1nWcv?=
+ =?us-ascii?Q?Vi2bd5SkJoqMxdNS8obUV7VqM4ZJZKELW49y6vZKi7JUKoQj7t5Wtz1bnC7R?=
+ =?us-ascii?Q?E0dtCniGY7UjbJrBb6jG60QE8kD+STxfQe4cjQSTN18ppmYoysT2VacILRQX?=
+ =?us-ascii?Q?ps9aCcuNTF98tAenu2pNVKVAXEnwE7Oc5rN6Th/pkBjjn0jfB9dPJ48+cWu9?=
+ =?us-ascii?Q?yicprjXK8blB/y2lRerfjmaBTtuz7aSAtTfC20V3wNBam23jO0y11BI9uKZo?=
+ =?us-ascii?Q?GQgf4t8PzN8Kzf+/e4RFJTfSTwdbIEbihFlg+0f9toN89i7rclVx6kHDDg4W?=
+ =?us-ascii?Q?oI7GJh91rwJXkTHTy4Ahqbhra+tDIRxwj9Ak+Syj+KCsUdgotDYigZcnmO29?=
+ =?us-ascii?Q?3PCiv4VGcxXkZv8KoJbYjT4RmKAsWRTM+hIMpllhCOOSiPahZHa+tptVHYjX?=
+ =?us-ascii?Q?ChtSA0zsUVfEL+yR3kUIzLsELCW4SX+YKyCfX+e25rCuj9dZ7c/t/2tOC4/f?=
+ =?us-ascii?Q?oIoUp3qj+CgV42b350PIbdJmifqMSZ3eATWvXrKZayB2EaBeLF+mwxum9pXK?=
+ =?us-ascii?Q?HzjQVo5+oqzSReR1rpBryXqadV9eGujIpq490WjnSdXQ5HBlPqSi7kviMQTX?=
+ =?us-ascii?Q?s9KwLgt8HXiSENaIj2+6ZrdA7NyksdpEtUedR61bVWu+nyvaRmG88lA2NgRK?=
+ =?us-ascii?Q?Ww+v8jzzIPAzUXEnZaIG3eYFkBrB9lgksIpzAK30np0cOLpJISvyzzjLPF1X?=
+ =?us-ascii?Q?G4Fi0+CcJjaO7BUEtuMxNHRQhIvwYtmr8KteA+glaxvdXob289BNFJJxgiiF?=
+ =?us-ascii?Q?MvrJy3kPq8f8953U/AtT2muKLjfrRNPQmoDovgBcbxzrYisa3h6pa+k895oA?=
+ =?us-ascii?Q?2j7ldIlnkXrdF74/OyGtgKfKfIh7MCM3YKi1q/Z+2eg8I4HP0jM0mRYckkTH?=
+ =?us-ascii?Q?GYkqGf4Qo6fSpM9dNn0KPdUiujCl9KqyUM5CaHw46Gmxjj/a6fIBM4WiKsdG?=
+ =?us-ascii?Q?Q+nLJ8KbRoeRE8vFi+Cw/tbOV7fDJ12KfPhlWhFhrU84yt2k2te65qXVsYAM?=
+ =?us-ascii?Q?eofpsjMfqcVeRyASBoTEqbKl/yyYct2MPrXPQeJMyIxzN918p0bTV2mI2EhK?=
+ =?us-ascii?Q?3r1Nx88FiKB5JLJprc2okI6RDR14l0Jak1eLh4iOwvimt11glW9D9ooXiZJ8?=
+ =?us-ascii?Q?917CilgBTKuDRR7LeAa1bs/cF4LF5MWl2OznKcN0TrhqNy4ro1OBaNHkTb8E?=
+ =?us-ascii?Q?gO276DFN6DDaNNsMfsjwbWnjh/JraHGQER5jEyLCeGQrORMW7mNptQHb2tJc?=
+ =?us-ascii?Q?lGYn3ab6fZmNc4tkq6A5wg+0hCDb4zrcVCyu0+AYOqwc8KMxGNwtgiSXsPZS?=
+ =?us-ascii?Q?dvMTQmcoSjqnNyROHEROfR79j/UgPmXV4yo0jWPzp675kEny6ek3o95L+S0r?=
+ =?us-ascii?Q?9+HkoUavPuDDdOnB9Ok166Lq5JThDQ61yoxaaX3OWAH4og5zDa6fKUECMa61?=
+ =?us-ascii?Q?gHpH5S/VCMRtD0gRCnloFXdb6fWANe83fA5qt6/TQg7DnaX9mTBoLb8NWaEV?=
+ =?us-ascii?Q?7Q3MZzbndkTMeqjJivfe0/Yfz7DJJ71J6G7arsUs0Dyu?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR10MB7329.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(7053199007)(220923002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?eOmTS8hDhQrOKnfCCtQ42zIHXs5mj14OVZl5+rjorgOX9jGjW+g5aDCoM4cF?=
+ =?us-ascii?Q?ulmZxmQ5DcBMbW47MWWHrpopPdS+/R/AAFIGxJ1o7+zJDA/1hf4VpocyNkhD?=
+ =?us-ascii?Q?fE3KseUDO5VTpLZrerYlPIDBrKh23dLQveRyED6mS8EzOQl2hTCuZvSvmuUf?=
+ =?us-ascii?Q?rS3kIQK3UWGFRBLY4JCDJ9lBE36p0z9d5/Bbwh9rUVdfBRrDer7jzpVTYV0k?=
+ =?us-ascii?Q?9b7B3qpz1C3HnSLcCnpfGkZnHdtYoozdC0htDGSBGfaXBGvkuiuQxcJJAeFC?=
+ =?us-ascii?Q?zCQOkrifAk7cEG9y2odMAmVG/bJOWOPJ4qEDrOgIMIrnbd9MKlbLEull1CIE?=
+ =?us-ascii?Q?XpIcg3wzI07g9cmTzaKQIi3UAaU+dPIAVs83IO5FAjV9xqtCdDzsWa7en/dE?=
+ =?us-ascii?Q?kEPILtXp4SP/kgUVaIgbbFBF73r3d/XJJPHf5LwKK6hkbfpPw4S+LFLKbggS?=
+ =?us-ascii?Q?PRZTSyDjriOC1A9IcqwJGhyDnq+CjBLyx9GlUoFRJSPqbbUj8ny8wX1kLN3o?=
+ =?us-ascii?Q?TMy/vu3EiYmZ+zqvsrqBD7rFS7QkXiFUKcpxBSaj+QpFgNZGTzi8kZD4FQcp?=
+ =?us-ascii?Q?sAoxQyokB4fgQedHUGPtd8292ZSjYhsIl89ZLs3ass5LvzHA/HGVBDi0Hn8S?=
+ =?us-ascii?Q?M9gsK6KpWoTFvT9+5Uh5sx6LFJffCrkJMT48LCdnBunqZjJZiZ+DnpcINPN1?=
+ =?us-ascii?Q?8F8tGskGZPIV7YteXZYOPAlf8LWgyiZC1uq8Q1xVCnG+auiylr/OOS0lTQFm?=
+ =?us-ascii?Q?+n3K/eUm92YGMqmVSREPg3FbM9N/k3iwRJmYcVAnDTgr4lZ9bLB8lfSjVw6L?=
+ =?us-ascii?Q?lj0i3Vs2FHjZoGaFYWT1T/C6JgwoHAqhRL363BOC2H+tgtcmKJ+izGRtvLLj?=
+ =?us-ascii?Q?jSvvajsj6xvrA4kR8T2aFrMhkYHrlilggflOyeKGfY/iVTRFwzU2Noh3gw4F?=
+ =?us-ascii?Q?qiDBmIgprv/Mle9Bao35MkV34Dtr2z1ZTz7ZaqgqBBKvWR5Px/5ID2jzMrV9?=
+ =?us-ascii?Q?cPHGSr1gLexoukn5dbe8/+TgKc3qbn2ZumqwuIDiI/gbGecWwoYZjBIbN0XS?=
+ =?us-ascii?Q?kBhjtuWBBbuXll/IACUMxMDxdSOe1wtdTxo1Y2hIWzPOxdfEbHKKfwqTJTTk?=
+ =?us-ascii?Q?cgWGyEMIYmG2ujr0bmt3hgq/oWMa8Sg3yAPWl591niKIAz3NmxLR46OZjfuC?=
+ =?us-ascii?Q?UU7MM7efIEP4eOXrhiZTW1cUPLJvU4frwG8w4Fylu6eHUEOvFvyUb3FEd4L2?=
+ =?us-ascii?Q?8wvHroNaPMxlU6jmnSKKwLtebxeER4eBv+AlYxQZSnOqwY2yTp6kEgMTKNUp?=
+ =?us-ascii?Q?6oprFEwbg6CYXXfdO3vJbnD22eLe9iqBbKasi9GGvBFAiQZYsUf9LIgeNyOG?=
+ =?us-ascii?Q?Scu5fbD5WYwa60HnmS0CBFaD+pB5ooUvwpY220S985JF0hG0lOyaqvi8cR2Y?=
+ =?us-ascii?Q?8c02HjwkNQAkcWKXyS6d3jg3SCYefoMI/zyuD23Jwqs2Sa9f4mV7s+M7lq5W?=
+ =?us-ascii?Q?Jw6SaSdx9KNsOZoSj27NYf5CB8ilEYg5yQQdPKrhiubpdVQ+hdLhx/ub4Ljd?=
+ =?us-ascii?Q?oAaWbj9ItQIyZEV6hGgkIUXPp7kBKRh8QePBG/9yrYgEGBnUyu8dXDRjrXll?=
+ =?us-ascii?Q?BVvj8FYQcG9BoeOupoY8YRkYcf49ofacGGUax6l/vGeQOf90A7gpT2/NSWlH?=
+ =?us-ascii?Q?Q0bsnyM812YkCSt16uuwCtEvzGUDsI6m3S1oqZ/cQus5zs8FWmpzVrAR9GfZ?=
+ =?us-ascii?Q?yWu9R7GkzA=3D=3D?=
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
+	Jdg5Hpmpoqt1LQWMF31NvguvoNAtPWtX3Qtwf/NN6IcypkhAyoXmmJmsUwCAc9Vnkrp5Cg+msA7yEgG+0XuMgIiTph6Z5gOSisfkc52hQ3ggEccK19lcu9koIUCHnZ058rEl7n0IyV3cwze6LuS39FRUZ0pfnTpBmYCsdsfSW+chmednxf1RuNTv567T5D3yfTElIXDzUnQTjGihP9JkHMP5+jqebY9mG6kMfpDYdrmWIJYI2kkI671k8jrfKFDiaRckgD8PuLhkPcH1tFn0cXdjRhjpqAw8LfJOEMOmL1zWogR5kYuaoCtO84tnulq4okL+9mfbwdoMsva2xC03n5UX6vGNV0Um4SylRbuMvZkvGDEYZR23HgFbBLo8m0GLDHFs6Gto9mv3Nz1nZeqDvJ2q4MBX48ABf3fSbmvjkDWUWzOOIvj9akZ912IDXqDOcUYKSv1y8esoCFd8Ey+NIutVigBgmq2ovYbQ46Qzk7fXvAmgZ2Qy83+Y+ZD2nqzlDCcpG3fmaZISSjT+saZ6K0ZIUJxKgDFQQJO5B39v2z9mW+TWMZUyfhJHdGQnmZ1sm5SqlWJgZdb/fSMDefWgQnOPXnS6SHQal7YxZ3ePbH4=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c798b521-01e5-426d-472d-08de5b39768c
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR10MB7329.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jan 2026 11:12:29.5484
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ys/mBuew9dh6Q5TVK6GjqOwndqbcI7vq/1Jw/OPmVNkaTIF56yx6d/VDXwIOGVUhsAqI2y1YpjN+CeD5sxJm0Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB4797
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.20,FMLib:17.12.100.49
+ definitions=2026-01-24_02,2026-01-22_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 adultscore=0 bulkscore=0
+ mlxscore=0 mlxlogscore=999 phishscore=0 malwarescore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2601150000
+ definitions=main-2601240088
+X-Authority-Analysis: v=2.4 cv=dY2NHHXe c=1 sm=1 tr=0 ts=6974a922 b=1 cx=c_pps
+ a=qoll8+KPOyaMroiJ2sR5sw==:117 a=qoll8+KPOyaMroiJ2sR5sw==:17
+ a=6eWqkTHjU83fiwn7nKZWdM+Sl24=:19 a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19
+ a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
+ a=vUbySO9Y5rIA:10 a=GoEa3M9JfhUA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=VwQbUJbxAAAA:8 a=QyXUC8HyAAAA:8 a=i3X5FwGiAAAA:8 a=yPCof4ZbAAAA:8
+ a=kfnae9sCGfUvCpJJaI4A:9 a=CjuIK1q_8ugA:10 a=mmqRlSCDY2ywfjPLJ4af:22 cc=ntf
+ awl=host:12104
+X-Proofpoint-GUID: CMXE9vcfKQXt_sHg-QNuwTGL_OmqHl7z
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTI0MDA4OSBTYWx0ZWRfX7/BQLU74Mj4Q
+ 4E/GWfjJctlQovIXw32uEnIzMovJ82Y6Q+E9/fooSMmjAApZ9Qq1+3/W3Xzu3PafGu1U13hKV42
+ ZEtfHvT06yh9JiYv8NOKto57a7kHHJ6M3w6Ph5DPzyQeEKslhEGoFcnYK9tLsSaH11gO8e0mYOF
+ A/XrGiejA5eK5IB+W0d2OBh+xl7Xr0lghhw9H9OqTFMbDqk4S1YhKkrgRkPs6ytDguBVunsb7Py
+ lz3z2WSiKpThZmjhL2G7Wl7fGiUNxxLCKgrXmhn7voMJAPIzdYR05xf8CuqYZYVJN/VSewGaJAH
+ F0yRTXNB6Dr6pf28HU1+realHs0M7Ui+N4IncJvdyDMO0YyklvP9AJnO/usZ399j2d/LZyeHerH
+ N+s/9KLV7H8FTxWUzNRT24wptot6pSv8b5PVYDxoAGgNJBU59V+veZ2cvOgH++RTBqUr1KFCSZR
+ zFCQStseDXmXa+TJt8/476wNAm46GKHL6h4Gc/Xo=
+X-Proofpoint-ORIG-GUID: CMXE9vcfKQXt_sHg-QNuwTGL_OmqHl7z
 
-thanks for this report.
-
-I tracked it down to a section alignment issue on i386, fixed in vmlinux.ld=
-s.h
-Since the bug is present in master, Ive fixed it in a separate patch,
-with the reported-by and closes tags.
-
-thanks.
-
-
-
-
-
-On Tue, Jan 20, 2026 at 11:08=E2=80=AFPM kernel test robot
-<oliver.sang@intel.com> wrote:
->
->
->
+On Fri, Jan 23, 2026 at 03:21:19PM +0800, kernel test robot wrote:
+> 
+> 
 > Hello,
->
-> kernel test robot noticed "BUG:kernel_NULL_pointer_dereference,address" o=
-n:
->
-> commit: 1663ffb9c19cba56a091fac48e06e248f009be26 ("dyndbg: resolve "prote=
-ction" of class'd pr_debug")
-> https://github.com/jimc/linux.git dd-shrink
->
+> 
+> kernel test robot noticed "BUG_kmalloc-#:Padding_overwritten.#-#@offset=" on:
+> 
+> commit: 4fad56bdb6b4c4bc0ea2d919df1ae4eef7b69919 ("mm/slab: save memory by allocating slabobj_ext array from leftover")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git
+> 
+> [test failed on linux-next/master e3b32dcb9f23e3c3927ef3eec6a5842a988fb574]
+> 
 > in testcase: boot
->
-> config: i386-randconfig-015-20260120
+> 
+> config: x86_64-randconfig-012-20260121
 > compiler: clang-20
-> test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m 4G
->
+> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 32G
+> 
 > (please refer to attached dmesg/kmsg for entire log/backtrace)
->
->
-> +---------------------------------------------+------------+------------+
-> |                                             | 9d6b17ecee | 1663ffb9c1 |
-> +---------------------------------------------+------------+------------+
-> | boot_successes                              | 12         | 0          |
-> | boot_failures                               | 0          | 12         |
-> | BUG:kernel_NULL_pointer_dereference,address | 0          | 12         |
-> | Oops                                        | 0          | 12         |
-> | EIP:strcmp                                  | 0          | 12         |
-> | Kernel_panic-not_syncing:Fatal_exception    | 0          | 12         |
-> +---------------------------------------------+------------+------------+
->
->
-> If you fix the issue in a separate patch/commit (i.e. not just a new vers=
-ion of
+> 
+> 
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
 > the same patch/commit), kindly add following tags
 > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202601211325.7e1f336-lkp@intel.c=
-om
->
->
->
-> [    1.266156][    T1] BUG: kernel NULL pointer dereference, address: 000=
-00000
-> [    1.267870][    T1] #PF: supervisor read access in kernel mode
-> [    1.269056][    T1] #PF: error_code(0x0000) - not-present page
-> [    1.269056][    T1] *pdpt =3D 0000000000000000 *pde =3D f000ff53f000ff=
-53
-> [    1.269056][    T1] Oops: Oops: 0000 [#1] SMP
-> [    1.269056][    T1] CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Tainted: G   =
-             T   6.19.0-rc6-00029-g1663ffb9c19c #1 PREEMPT(lazy)  d32193f03=
-a93c27f95904822137a3e5139e15ea4
-> [    1.269056][    T1] Tainted: [T]=3DRANDSTRUCT
-> [    1.269056][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 19=
-96), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-> [    1.269056][    T1] EIP: strcmp (arch/x86/lib/string_32.c:97)
-> [    1.269056][    T1] Code: 06 ac aa 84 c0 75 f7 31 c0 aa 89 d8 83 c4 04=
- 5e 5f 5b 5d 31 c9 31 d2 c3 90 90 90 90 90 90 90 90 90 55 89 e5 57 56 89 d7=
- 89 c6 <ac> ae 75 08 84 c0 75 f8 31 c0 eb 04 19 c0 0c 01 5e 5f 5d 31 d2 c3
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->    0:   06                      (bad)
->    1:   ac                      lods   %ds:(%rsi),%al
->    2:   aa                      stos   %al,%es:(%rdi)
->    3:   84 c0                   test   %al,%al
->    5:   75 f7                   jne    0xfffffffffffffffe
->    7:   31 c0                   xor    %eax,%eax
->    9:   aa                      stos   %al,%es:(%rdi)
->    a:   89 d8                   mov    %ebx,%eax
->    c:   83 c4 04                add    $0x4,%esp
->    f:   5e                      pop    %rsi
->   10:   5f                      pop    %rdi
->   11:   5b                      pop    %rbx
->   12:   5d                      pop    %rbp
->   13:   31 c9                   xor    %ecx,%ecx
->   15:   31 d2                   xor    %edx,%edx
->   17:   c3                      ret
->   18:   90                      nop
->   19:   90                      nop
->   1a:   90                      nop
->   1b:   90                      nop
->   1c:   90                      nop
->   1d:   90                      nop
->   1e:   90                      nop
->   1f:   90                      nop
->   20:   90                      nop
->   21:   55                      push   %rbp
->   22:   89 e5                   mov    %esp,%ebp
->   24:   57                      push   %rdi
->   25:   56                      push   %rsi
->   26:   89 d7                   mov    %edx,%edi
->   28:   89 c6                   mov    %eax,%esi
->   2a:*  ac                      lods   %ds:(%rsi),%al           <-- trapp=
-ing instruction
->   2b:   ae                      scas   %es:(%rdi),%al
->   2c:   75 08                   jne    0x36
->   2e:   84 c0                   test   %al,%al
->   30:   75 f8                   jne    0x2a
->   32:   31 c0                   xor    %eax,%eax
->   34:   eb 04                   jmp    0x3a
->   36:   19 c0                   sbb    %eax,%eax
->   38:   0c 01                   or     $0x1,%al
->   3a:   5e                      pop    %rsi
->   3b:   5f                      pop    %rdi
->   3c:   5d                      pop    %rbp
->   3d:   31 d2                   xor    %edx,%edx
->   3f:   c3                      ret
->
-> Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->    0:   ac                      lods   %ds:(%rsi),%al
->    1:   ae                      scas   %es:(%rdi),%al
->    2:   75 08                   jne    0xc
->    4:   84 c0                   test   %al,%al
->    6:   75 f8                   jne    0x0
->    8:   31 c0                   xor    %eax,%eax
->    a:   eb 04                   jmp    0x10
->    c:   19 c0                   sbb    %eax,%eax
->    e:   0c 01                   or     $0x1,%al
->   10:   5e                      pop    %rsi
->   11:   5f                      pop    %rdi
->   12:   5d                      pop    %rbp
->   13:   31 d2                   xor    %edx,%edx
->   15:   c3                      ret
-> [    1.269056][    T1] EAX: 00000000 EBX: 00000000 ECX: 00000000 EDX: 000=
-00000
-> [    1.269056][    T1] ESI: 00000000 EDI: 00000000 EBP: 46981c84 ESP: 469=
-81c7c
-> [    1.269056][    T1] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAG=
-S: 00010246
-> [    1.269056][    T1] CR0: 80050033 CR2: 00000000 CR3: 05e58000 CR4: 000=
-406b0
-> [    1.269056][    T1] Call Trace:
-> [    1.269056][    T1]  ? dynamic_debug_init (lib/dynamic_debug.c:1651)
-> [    1.269056][    T1]  ? rest_init (init/main.c:1570)
-> [    1.269056][    T1]  ? do_one_initcall (init/main.c:1378)
-> [    1.269056][    T1]  ? __lock_acquire (kernel/locking/lockdep.c:4674)
-> [    1.269056][    T1]  ? xas_create (include/linux/xarray.h:1217 (discri=
-minator 2))
-> [    1.269056][    T1]  ? lock_acquire (kernel/locking/lockdep.c:5868)
-> [    1.269056][    T1]  ? __register_sysctl_table (fs/proc/proc_sysctl.c:=
-1399)
-> [    1.269056][    T1]  ? __register_sysctl_table (fs/proc/proc_sysctl.c:=
-1399)
-> [    1.269056][    T1]  ? _raw_spin_unlock (arch/x86/include/asm/preempt.=
-h:95 include/linux/spinlock_api_smp.h:143 kernel/locking/spinlock.c:186)
-> [    1.269056][    T1]  ? __register_sysctl_table (fs/proc/proc_sysctl.c:=
-1399)
-> [    1.269056][    T1]  ? rest_init (init/main.c:1570)
-> [    1.269056][    T1]  ? dyndbg_setup (lib/dynamic_debug.c:1612)
-> [    1.269056][    T1]  ? rest_init (init/main.c:1570)
-> [    1.269056][    T1]  ? do_pre_smp_initcalls (init/main.c:1483 (discrim=
-inator 2))
-> [    1.269056][    T1]  ? rest_init (init/main.c:1570)
-> [    1.269056][    T1]  ? kernel_init_freeable (init/main.c:1678)
-> [    1.269056][    T1]  ? kernel_init (init/main.c:1580)
-> [    1.269056][    T1]  ? ret_from_fork (arch/x86/kernel/process.c:164)
-> [    1.269056][    T1]  ? rest_init (init/main.c:1570)
-> [    1.269056][    T1]  ? ret_from_fork_asm (arch/x86/entry/entry_32.S:73=
-7)
-> [    1.269056][    T1]  ? entry_INT80_32 (arch/x86/entry/entry_32.S:945)
-> [    1.269056][    T1] Modules linked in:
-> [    1.269056][    T1] CR2: 0000000000000000
-> [    1.269056][    T1] ---[ end trace 0000000000000000 ]---
-> [    1.269056][    T1] EIP: strcmp (arch/x86/lib/string_32.c:97)
-> [    1.269056][    T1] Code: 06 ac aa 84 c0 75 f7 31 c0 aa 89 d8 83 c4 04=
- 5e 5f 5b 5d 31 c9 31 d2 c3 90 90 90 90 90 90 90 90 90 55 89 e5 57 56 89 d7=
- 89 c6 <ac> ae 75 08 84 c0 75 f8 31 c0 eb 04 19 c0 0c 01 5e 5f 5d 31 d2 c3
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->    0:   06                      (bad)
->    1:   ac                      lods   %ds:(%rsi),%al
->    2:   aa                      stos   %al,%es:(%rdi)
->    3:   84 c0                   test   %al,%al
->    5:   75 f7                   jne    0xfffffffffffffffe
->    7:   31 c0                   xor    %eax,%eax
->    9:   aa                      stos   %al,%es:(%rdi)
->    a:   89 d8                   mov    %ebx,%eax
->    c:   83 c4 04                add    $0x4,%esp
->    f:   5e                      pop    %rsi
->   10:   5f                      pop    %rdi
->   11:   5b                      pop    %rbx
->   12:   5d                      pop    %rbp
->   13:   31 c9                   xor    %ecx,%ecx
->   15:   31 d2                   xor    %edx,%edx
->   17:   c3                      ret
->   18:   90                      nop
->   19:   90                      nop
->   1a:   90                      nop
->   1b:   90                      nop
->   1c:   90                      nop
->   1d:   90                      nop
->   1e:   90                      nop
->   1f:   90                      nop
->   20:   90                      nop
->   21:   55                      push   %rbp
->   22:   89 e5                   mov    %esp,%ebp
->   24:   57                      push   %rdi
->   25:   56                      push   %rsi
->   26:   89 d7                   mov    %edx,%edi
->   28:   89 c6                   mov    %eax,%esi
->   2a:*  ac                      lods   %ds:(%rsi),%al           <-- trapp=
-ing instruction
->   2b:   ae                      scas   %es:(%rdi),%al
->   2c:   75 08                   jne    0x36
->   2e:   84 c0                   test   %al,%al
->   30:   75 f8                   jne    0x2a
->   32:   31 c0                   xor    %eax,%eax
->   34:   eb 04                   jmp    0x3a
->   36:   19 c0                   sbb    %eax,%eax
->   38:   0c 01                   or     $0x1,%al
->   3a:   5e                      pop    %rsi
->   3b:   5f                      pop    %rdi
->   3c:   5d                      pop    %rbp
->   3d:   31 d2                   xor    %edx,%edx
->
->
+> | Closes: https://lore.kernel.org/oe-lkp/202601231457.f7b31e09-lkp@intel.com
+> 
+> 
+> 
+> [    3.646661][    T0] **   NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE   **
+> [    3.647660][    T0] **********************************************************
+> [    3.648834][    T0] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=2, Nodes=1
+> [    3.651537][    T0] Kernel/User page tables isolation: enabled
+> [    3.653242][    T0] =============================================================================
+> [    3.655191][    T0] BUG kmalloc-192 (Tainted: G                T  ): Padding overwritten. 0xffff88810006c028-0xffff88810006bfff @offset=8232
+> [    3.657925][    T0] -----------------------------------------------------------------------------
+> [    3.657925][    T0]
+> [    3.660319][    T0] Padding ffff88810006c028: 00 00 00 00 00 00 00 00 30 c0 06 00 81 88 ff ff  ........0.......
+> [    3.662476][    T0] Padding ffff88810006c038: 30 c0 06 00 81 88 ff ff 00 00 00 00 00 00 00 00  0...............
+> [    3.664649][    T0] Padding ffff88810006c048: 48 c0 06 00 81 88 ff ff 48 c0 06 00 81 88 ff ff  H.......H.......
+> 
+> 
 > The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20260121/202601211325.7e1f336-lkp=
-@intel.com
->
->
->
-> --
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
->
+> https://download.01.org/0day-ci/archive/20260123/202601231457.f7b31e09-lkp@intel.com
+
+Thanks for the report! It was very helpful to reproduce the bug.
+after some printk() debugging, I discovered that the slab being reported
+allocated the slabobj_ext array via kmalloc.
+
+So I added a warning to confirm that the array was allocated
+from the same slab we're allocating the array for:
+
+@@ -2145,6 +2164,12 @@ int alloc_slab_obj_exts(struct slab *slab, struct kmem_cache *s,
+                return -ENOMEM;
+        }
+
++       unsigned long start = (unsigned long)slab_address(slab);
++       unsigned long end = start + slab_size(slab);
++       unsigned long val = (unsigned long)vec;
++
++       WARN_ON_ONCE(val >= start && val < end);
+
+and it was hit:
+
+WARNING: mm/slub.c:2171 at alloc_slab_obj_exts+0x18a/0x1e0, CPU#0: swapper/0
+[...]
+Call Trace:
+ <TASK>
+ __alloc_tagging_slab_alloc_hook+0xac/0x220
+ __kmalloc_cache_noprof+0x196/0x470
+ ? __kmalloc_cache_noprof+0x200/0x470
+ ? shrinker_alloc+0xa9/0x3b0
+ shrinker_alloc+0xa9/0x3b0
+ vmalloc_init+0x616/0x8f0
+[...]
+
+I sent a fix to prevent this and confirmed that the fix resolved
+the reported issue.
+
+https://lore.kernel.org/linux-mm/20260124104614.9739-1-harry.yoo@oracle.com/
+
+Thanks!
+
+-- 
+Cheers,
+Harry / Hyeonggon
