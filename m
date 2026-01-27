@@ -1,1325 +1,206 @@
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C623733A71F
-	for <oe-lkp@lists.linux.dev>; Mon, 26 Jan 2026 17:13:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.214.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 820AB2D7BF
+	for <oe-lkp@lists.linux.dev>; Tue, 27 Jan 2026 02:46:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.12
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769447595; cv=pass; b=J4hqYwbNkk3qdhtCTG5s3N0RS9K5YyMAZUJjvGojSDmY+7PenT5AE5niQKSUopmXnpB9y8j9SnO8sLhlybSKGwyzDPL0DDhlUdxPqn09wugryUvYpcpCnun4TgO4WzzKssiyn/ozyhXFtv2/cl8bVb8Oagc3kh39aTAnz9owFHw=
+	t=1769481994; cv=fail; b=lx0UQ37jXp8MDj1BqHHdZ8f+b1iEjG8Cu8T4Nxy6bs8kh9tMbNNcuN/NLBfoS8+lJBkpJy+PvwsX372scMlsc8OTk1qQJ2lFa6opdkpI8XvCdEToXFzAWG9wrQ5fVIT/lQgzvWI9z6Pp5a3QAAeFas3DGX0YIBwShpCBxapD1XM=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769447595; c=relaxed/simple;
-	bh=JAm/kCUXLLxD2nQoiSJdd8W5QyGGc7uj3QIJdk1zLxU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ho8AqjPgi9uc58mh9DHqgxPzEQJPGEtYb3hBznUCZV++11SsjM5DgmI//6EMlf1HV4FcdHzCqJ7F2bR6iRGGcpmpdrf9h59eVeUzFrmeut2W2ZpSC3tXdMCvBbhFjlsAz67mHzDBrbT+X+PymUcHVxILieTbIkw7jF5aX3i0w/o=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=BEwgWHkc; arc=pass smtp.client-ip=209.85.214.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1769481994; c=relaxed/simple;
+	bh=FuS4ceyyXzECG9QOPaMTePrfJTfEskanKAZWBgLIVKE=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=l4RUCvC2X58zNOEQJP/F3c0CudR1M8v1I5AJbyS5aCtMgQNn+LRp4VUMUTor/EHZhUFYzYh573YcpsUqJydZVzZNCgoAHw8bS+aXmdV7snMVe5lk/WQ+lNWpwS44PrpxXf9pFqO9SEKgEKV3xpp+tiNhQLu45ZjRboXbSl3QIl0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gGv1XuHK; arc=fail smtp.client-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="BEwgWHkc"
-Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-2a35ae38bdfso161905ad.1
-        for <oe-lkp@lists.linux.dev>; Mon, 26 Jan 2026 09:13:11 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1769447591; cv=none;
-        d=google.com; s=arc-20240605;
-        b=JOxR+SMzboIEv7ET+iFu4Ex6MMCcJN1ZK/TXqi9XyENZwhbd1qEiZPbz3XKUREshPL
-         6zrckNIiwIb1MhykfS6PdbbPZ6b36NA6DbWz/cM8fP9YawwtD8HFNzFOC7UpnE4xGiR4
-         GHpewbqRVlAC5PdaCqgphj9tLgaa1UxlClJo/45mwPEisN+7JBdWP/Igr0EW72w4um02
-         MYGXB7mHTxMsjQGxFbC1NHAGFY0SemZf0vX7PBRaeMfGDjIDLeVTAfl7wAFaAxLW4WVk
-         Hw0NNTj7dg3kqBuu1NaqHW0PjY1Sbb2JffdiRPAfI4rDKQwBIWnfiS08H25Qztmg7YQC
-         trFg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=JUpcYEy+BtvtQdOomotBMJNDC5GCncgjNudyBNYHNO0=;
-        fh=WuqAjEXhRvRl7kvaqdSccOjaKd63G+2C1g7va+727C4=;
-        b=g5f4t9sz6PaXH/SVg1HGSfnVn9vC1L9pqy739AOWpPouWSHrrLLY2NGWNpXNR7GnuE
-         vtd73sDWyOI1wut/v4QUVzGZHeIqNNWLfh34cViNsUS4wR7aNzxjypPrsUWOmPHt3F7r
-         4dzg5QajM05SCjlG0xNR99s/Ywc6v7JJ2IfIioqr64YOox/3mt6uDgi2r8/bH2E4O3jz
-         7dGGTxsfjNx4H+aVcMWFQHF9uESPWjxn4+d/PWX6C42luMq0zHX6W1tuuhDpzVVV5WGn
-         Xnbu6wnxcCaOzBzVGJRQzyzwtlBxaWaE6qU13SnBfVUozgC37txtwLCmW5iz2+RRzpzk
-         kYzg==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1769447591; x=1770052391; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JUpcYEy+BtvtQdOomotBMJNDC5GCncgjNudyBNYHNO0=;
-        b=BEwgWHkcUkWyBJsPUUIoSvxsFYoUc95TxFk8luqC+Twh4JvJx8n8CsyLlaHigroDvz
-         m9MnIdzVK7RbY+fovEk4HU/lF4nAs9aZH5o4Z8Nbq+mdNYQERrNxGDl8KgsVcHwsjVIo
-         wCO8YPs/kE+LMRZvmqBSybwTPlLeb30ZltejBZnaFwJ+fqjo5wRzVmta709+WbhuBs37
-         lbrNtHU/S5JpT0zVXnVQvStjy9GxSQa108QPrer+n+fRf+8soCMGKqvu4F7UzV+WWZGP
-         bMo9Ws7sw4pQU+kRzr/b9wcOQh3gA3CDtVQo4sAPyozrR7NeJ3/a5zvoDo1aa9Z6Ergg
-         0t4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769447591; x=1770052391;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=JUpcYEy+BtvtQdOomotBMJNDC5GCncgjNudyBNYHNO0=;
-        b=ndDW2cs4Y7pAzy62IFMZFHK8bI31/w4MEilRuw5ikXnsHfBbdHTfjvZpvAO83Qy5Dh
-         TjPrlpRZOK4a/cfP2COsed8gEgFoDwXZRRkEJYe3ztnntjh48FY6WzoyjhlkQfMFjY8b
-         7FlqRrD2sT8An9pNn5W/Y9rNS2I62eOczLP5OwAHVHBFPT0KhZ6yuclKGOgmlNaH5zXI
-         iM16ND7moCBP6v1LCaQGcYgdtV48VxwYdGyIcVna9wB4A9ngsIofkc6wUudByo8qyhaH
-         AjTWGuVt01C/F5sOTgwy66yLtMpGzstpSUB5CPiHYJ2qCW2LMBUq75So6h4oEn5tnKJc
-         EdfA==
-X-Forwarded-Encrypted: i=1; AJvYcCXQKOqzFsMDtaOwZUhFMPE530ylBUUw7c+6ycPJZUdSD1rsWnUeTt82BN0WtsDBN44lmQXgXnw=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw3bOcEQVSeTPNzvHvyYHc1HvHnQUTTINKotmj9Snt8VJlg3Bej
-	6ARCLECE2/pg/IZzYTtRsVw7aejsGddwmId2qKTpQx2Lv0YdadVPLNoqL+HYE4lpZUiC8xtqzZ0
-	ssou4DZjBX/gZBGpdUf5+uNpgl7BvAd7Cwx+AtT8w
-X-Gm-Gg: AZuq6aKrYtpyMNZwszEIWL1yxbVTr9FP7oPJ1y7bsbGACGP1Q0sXvRAdVEAXzFwfMW+
-	BCPhKy143FcEwHnzkA3sNkB+1C+roK81b4ooOkcRKi3YzuEG4/2K0EAc/UwA+1HrtxZoYrxJ/TR
-	6BqJsWcps3Mb+13LbSmrU/bCJxfS20hmxdktwop9hv0ai2SL5MNKIiC+a98i7iaICYqS4wAl+Ex
-	6wN0GsO7p0jb8h8aSRzCJEgw/GBNTpZpYQOUMMjwC8DKC+q/JAdc2aWMbn0xUDhw3peAUCFfe8T
-	mGsGKslhNQUto6QALfwKHGRgeg==
-X-Received: by 2002:a17:902:ef09:b0:2a0:89b0:71d7 with SMTP id
- d9443c01a7336-2a844e77f45mr2203475ad.13.1769447590255; Mon, 26 Jan 2026
- 09:13:10 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gGv1XuHK"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1769481992; x=1801017992;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=FuS4ceyyXzECG9QOPaMTePrfJTfEskanKAZWBgLIVKE=;
+  b=gGv1XuHKPqCSuX+Whpy22HZehTBfEP+ePxpVmd0UVInya7Wns8TWH3i2
+   p87PDV74c7bqEVwa8wzjM4TesgVP28klLBMVrgKbA76t5CFqka1fs0sSg
+   FPh07RKK7FJukTL2nrkcGl++radXeJdcp5KazzNZ+j1IZJkjeAUpNXeQN
+   To7AcckKB0ikWOHx43It4JoxUfVtNIY1qsCboyo7HvXpmt4D0vFHbDL4R
+   G4m1wXxF2hr9p0sBML+bYLGwWZl2QxgkIZ0lKCugyGQVUw+SoHCLR2wiQ
+   R9gYLqmMf/aj4ZWThmU2mozzepPVHc6J0KJe1Dxg0uUAiHINvk1fELhcC
+   A==;
+X-CSE-ConnectionGUID: J0IyK4hoTH6ut72v7MGm1A==
+X-CSE-MsgGUID: sI8cUKCfSTqdsJYXC3oZ/Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11683"; a="82097075"
+X-IronPort-AV: E=Sophos;i="6.21,256,1763452800"; 
+   d="scan'208";a="82097075"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2026 18:46:31 -0800
+X-CSE-ConnectionGUID: bVBevrZ4SxansV55vSv7KQ==
+X-CSE-MsgGUID: 3+l4YXcdR8WKB9odPnrUMw==
+X-ExtLoop1: 1
+Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
+  by fmviesa003.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2026 18:46:29 -0800
+Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.35; Mon, 26 Jan 2026 18:46:28 -0800
+Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.35 via Frontend Transport; Mon, 26 Jan 2026 18:46:28 -0800
+Received: from PH0PR06CU001.outbound.protection.outlook.com (40.107.208.30) by
+ edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.35; Mon, 26 Jan 2026 18:46:28 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=lpSelBx1LokB4zGARd1bao/uH4o0lhlkMpFf986oBF20Ds6IgDfS3VvpjUtgXRADfgq7wDNe+dSiqaPiTp7xDH3cyVwSyIAB2eR+HV/BpKOApXrCHH2TPKM4Rv1bw4g2qqyJ6d4xaFpT88jCHeACsQFhbrSUaKDYJyBgtAVVNGoY2gbTDcwG4pRoXOjZ2PmHBK42BVmVzu6ajt3NuVrOemUf7qbKqdqXDxwBIXnHysOkbDX1rJxIKdE/pbfdidna1kMQIXu4hGef5bEfULi1PmsnvrSvn+fpeecW5y0xUwyQCdnnFLz/UtlWmYmKH0aGvqaVicGrD7wbf0bacLGcmQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=YZNAsJ8prChkQAZddQHmA0HLzxU1curwftIaXFjtBZ4=;
+ b=CBDTAd76VvMRC+ScaWuTcxAfP0GKZfe75dllRxQ6wzPTY5FY07emSZKXk7caU7ubb3RHJiGLWtsjqiXmgNpbCv33+gb6p79SxkdouRxKIN4Ud+3F5NiGkhis+Mz/JcHiUJALNaNeP5x/fmyeh8p5gMUnKBdMA9tTH2gTulHnD0qGtLwrYTv0NJ3qCFVBKNIUvhjF0tV17syBw0PPEPyn6L570XT76vnExBZb54c1bJRAKEClfz7XZPlDBKqJ2OmAWhHEIqJTXGMWpQO/nXgC8aqLb23e472zOpDjv+8Dfdp2cK7u+zUVV/AEDPTmDC88PgnIlNvR58FypE9732jVeQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by DS4PPF708A6BB3E.namprd11.prod.outlook.com (2603:10b6:f:fc02::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9542.16; Tue, 27 Jan
+ 2026 02:46:21 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.9542.010; Tue, 27 Jan 2026
+ 02:46:21 +0000
+Date: Tue, 27 Jan 2026 10:46:01 +0800
+From: Oliver Sang <oliver.sang@intel.com>
+To: Ian Rogers <irogers@google.com>
+CC: Swapnil Sapkal <swapnil.sapkal@amd.com>, <oe-lkp@lists.linux.dev>,
+	<lkp@intel.com>, <linux-perf-users@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <peterz@infradead.org>, <mingo@redhat.com>,
+	<acme@kernel.org>, <namhyung@kernel.org>, <james.clark@arm.com>,
+	<ravi.bangoria@amd.com>, <yu.c.chen@intel.com>, <mark.rutland@arm.com>,
+	<alexander.shishkin@linux.intel.com>, <jolsa@kernel.org>,
+	<rostedt@goodmis.org>, <vincent.guittot@linaro.org>,
+	<adrian.hunter@intel.com>, <kan.liang@linux.intel.com>,
+	<gautham.shenoy@amd.com>, <kprateek.nayak@amd.com>, <juri.lelli@redhat.com>,
+	<yangjihong@bytedance.com>, <void@manifault.com>, <tj@kernel.org>,
+	<sshegde@linux.ibm.com>, <ctshao@google.com>, <quic_zhonhan@quicinc.com>,
+	<thomas.falcon@intel.com>, <blakejones@google.com>, <ashelat@redhat.com>,
+	<leo.yan@arm.com>, <dvyukov@google.com>, <ak@linux.intel.com>,
+	<yujie.liu@intel.com>, <graham.woodward@arm.com>, <ben.gainey@arm.com>,
+	<vineethr@linux.ibm.com>, <tim.c.chen@linux.intel.com>, <linux@treblig.org>,
+	<santosh.shukla@amd.com>, <sandipan.das@amd.com>
+Subject: Re: [PATCH v5 02/10] perf header: Support CPU DOMAIN relation info
+Message-ID: <aXgm6US3q2n3nzVS@xsang-OptiPlex-9020>
+References: <20260119175833.340369-3-swapnil.sapkal@amd.com>
+ <202601262235.ee84b79e-lkp@intel.com>
+ <CAP-5=fXU9XcyFRv_zbjsg7HLr8S6BLjvNiwkF-a+Fv_78+16-A@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CAP-5=fXU9XcyFRv_zbjsg7HLr8S6BLjvNiwkF-a+Fv_78+16-A@mail.gmail.com>
+X-ClientProxiedBy: KU0P306CA0082.MYSP306.PROD.OUTLOOK.COM
+ (2603:1096:d10:2b::11) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260119175833.340369-3-swapnil.sapkal@amd.com> <202601262235.ee84b79e-lkp@intel.com>
-In-Reply-To: <202601262235.ee84b79e-lkp@intel.com>
-From: Ian Rogers <irogers@google.com>
-Date: Mon, 26 Jan 2026 09:12:58 -0800
-X-Gm-Features: AZwV_Qh4lqp6pOS6_4XbMeZAmqv0N3DtcyFZGtbL6e3fH1LSMYLaj2Yl-jc01us
-Message-ID: <CAP-5=fXU9XcyFRv_zbjsg7HLr8S6BLjvNiwkF-a+Fv_78+16-A@mail.gmail.com>
-Subject: Re: [PATCH v5 02/10] perf header: Support CPU DOMAIN relation info
-To: kernel test robot <oliver.sang@intel.com>
-Cc: Swapnil Sapkal <swapnil.sapkal@amd.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	peterz@infradead.org, mingo@redhat.com, acme@kernel.org, namhyung@kernel.org, 
-	james.clark@arm.com, ravi.bangoria@amd.com, yu.c.chen@intel.com, 
-	mark.rutland@arm.com, alexander.shishkin@linux.intel.com, jolsa@kernel.org, 
-	rostedt@goodmis.org, vincent.guittot@linaro.org, adrian.hunter@intel.com, 
-	kan.liang@linux.intel.com, gautham.shenoy@amd.com, kprateek.nayak@amd.com, 
-	juri.lelli@redhat.com, yangjihong@bytedance.com, void@manifault.com, 
-	tj@kernel.org, sshegde@linux.ibm.com, ctshao@google.com, 
-	quic_zhonhan@quicinc.com, thomas.falcon@intel.com, blakejones@google.com, 
-	ashelat@redhat.com, leo.yan@arm.com, dvyukov@google.com, ak@linux.intel.com, 
-	yujie.liu@intel.com, graham.woodward@arm.com, ben.gainey@arm.com, 
-	vineethr@linux.ibm.com, tim.c.chen@linux.intel.com, linux@treblig.org, 
-	santosh.shukla@amd.com, sandipan.das@amd.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|DS4PPF708A6BB3E:EE_
+X-MS-Office365-Filtering-Correlation-Id: c9e21eeb-a4bd-46dc-d915-08de5d4e40ba
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|7416014|376014|7053199007;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?P9H5SVjBhlcd12eZ2vKmZYr34/uySkOL2M9tvJAsNqrq9LQ0XE3aLE/6xRoC?=
+ =?us-ascii?Q?3aMyiULFpP1OTwYkTHcVC9V+lKv5anLDPhNFtF3ek4zVt6R/1HLLhgsdAitz?=
+ =?us-ascii?Q?FOR2uhtGN/pZ+kOGyjufSKi4pwzw2sENNIs77BZEer85MeRXvt0YV/OhjMDt?=
+ =?us-ascii?Q?aJidAGa1mPYsw55fmG17aD9Ar50kewfZNgTHUaDL0lewBTQ0Zm65pRsRmejv?=
+ =?us-ascii?Q?dHpqIZX0sTy7yiidOYmIzUneyIfPE3Hk94yVzPbKeYA/f/kl9lMsmy94DBO1?=
+ =?us-ascii?Q?40DNnStD/X01IPMpG5psMyt4g4Edyzgvl+zM8I6t/Lksiw4ZCSzDRABkBN0G?=
+ =?us-ascii?Q?AK9HeF+C3VQIgcxIL/KHpqNzJwNPiepID7ojvnO1OzAYw7LZf6fTLekaaZ7/?=
+ =?us-ascii?Q?PfqgiegIGpxCu58Nyi9Jz8SlrN8evkNI5GgwJUtKR0i4tw/sxl+i2YaAgAfr?=
+ =?us-ascii?Q?sPo73oYhZCCcHm79eH36WrwGtx9B+4iRbj0hJgeAHBrejtxhp2e7shXLMWzX?=
+ =?us-ascii?Q?DguJ1Hf6vYRdo4KUtmc5gNQYVxr0tkQglwFyN3X54FVBncmroSRAqJywo6rN?=
+ =?us-ascii?Q?EL+5fm6ey0qpS8G7sD/LdTJmmo9T4mOcVWKdgLrtat+wHK/Y0QtLOVY43IDo?=
+ =?us-ascii?Q?PBNcgyN+hRZL03Q1iwSg5ut3uSPhps2o8umg7KHhy+Ib5KluZkUWHbEg8jVQ?=
+ =?us-ascii?Q?4Tit0o+zpQzCdTLfJphZ30snuAwtO55KYh1hF+DfPXjRlP4Ggz/Pp/4FoPlk?=
+ =?us-ascii?Q?6cFEPPEEA5VLTKqZJxmXHZuY8mbA7+xAQ3L92kiMa/6LWPh89CAl2ev9pj9x?=
+ =?us-ascii?Q?pu6+5T2EblKGlO1lCTZUjGfXtdY+wHvShMgFHll7AzpPDWMNl8sXvMIO5USk?=
+ =?us-ascii?Q?Lcy5mQPECYgqEm5hgT7ocTCoytpoPyBtN5Lr/vAF6VbLT+l8oMnd1iFOmvgI?=
+ =?us-ascii?Q?ES1EOVFjDvQeCx4WqphTk1K+vf0jZ0qiatL68hjrNFmHc8G76iItMN8s/lQy?=
+ =?us-ascii?Q?GEHC89sJnu2spEdAn1dvOZXww3NcXd9ijsAld/u5bhxv6q2yygj0fc8LjIou?=
+ =?us-ascii?Q?6DRLVdTlf2ipHLFBSUtvv9+xzp1WusEy3/ggVynEHhfpmGc8ZgyzPIGwX6Uu?=
+ =?us-ascii?Q?64I1xlzlx2zk+sihMLtOcV8RxpoS9gnnYigiKgVbfONmmDbWckWQHVO21t76?=
+ =?us-ascii?Q?nSAp4wvvTUZ+dzw5kh5NeeIVDt+p/k1dfFsx+qarVTq9hk4SqT12M/oRopQi?=
+ =?us-ascii?Q?V78PWlBF2xczFZLWDa9zRBWQeu/GfLttOX/mwd6xBL17IshiG1QN0O6oR+Ql?=
+ =?us-ascii?Q?1TjIinD818H2mKvOTHPLNvprPZC/tGOUFrCWjq5GWCaJ/NEbuK6Nl0lJAF6e?=
+ =?us-ascii?Q?Xfl6S7r4mPM/yrZxnAxCxdpxlfhaXdFETl3vj/+CWTEcXBJ+Dvf2JKINxxqk?=
+ =?us-ascii?Q?iTOyQbL59rPMs5QYavhu+mVQNYNz/6nyQKlCUiPXy9gUYRlZIFoyO0sh3vET?=
+ =?us-ascii?Q?F7Pw5VkNPkfN+Yr7moqJd8E2IQsq15WjKbvCbhnSrz75idWVBoGy/EE+P8cP?=
+ =?us-ascii?Q?adyuGorgfQ//hM+dnsDv13ToOBnkRaQz3jINMHSc?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(7416014)(376014)(7053199007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VZST479WrkpULgzzNx4eKxJ2gxVAx0VuYGtT52VBtYIFQ01+Xw8PdICLKkYr?=
+ =?us-ascii?Q?z/A44CgwIgpuRvAlGBlfqRj+g+4UDQuRagA7Izd52Uiu2aAJr7prH/GRWwBG?=
+ =?us-ascii?Q?4OCIr+2E+ICtcw8ivdsSmSeg0c7LTIgP0vWB/EbnSo6acUVIewhFay11ByVX?=
+ =?us-ascii?Q?0giszYdWecuy/gY1cfBfckFItx+F5haTph0BafUlZdg4LU7R+sMBzxv/MAEP?=
+ =?us-ascii?Q?p8mXhi0k6IXMsU9O2voJNiuFaA/Hr+GNUfcoBwFV8LFFsgPcWLT+V9IQEZ6/?=
+ =?us-ascii?Q?qX3c7O9+oNlWac6wC0Wvn57KPWJbzpXABr9Tuh0jy1yTalZoetYV4rNiqYwl?=
+ =?us-ascii?Q?BskbLrAQuzk1pDC5VjBzPIPlrJjfRPyEtMOs5OaBX52K7PuWY8b1Vq0uUrje?=
+ =?us-ascii?Q?htNfNPnpOdmxYHkgUEQrG3dGWjEtruCetsqSqyxS/0KeOIgd3AdLRoBUJ8tW?=
+ =?us-ascii?Q?gL2d/YciqzylJGrvcvOk9tWzcOi809JjBiLs3AEREP5AGgqPiQbkNHi9XGXm?=
+ =?us-ascii?Q?r9NOMzKUYrJeJ2mTTJmgFX7/9cVP/HNidgGmnHfuWdRR/FUDbg4EZ2TFFYyJ?=
+ =?us-ascii?Q?6x2D+gkl4TFNZxdxtw6zfc+zSnIEUz8QZpLN4lk62aTD/1yYilqx6i4+2P3I?=
+ =?us-ascii?Q?+mE8mlnEqDHLzNLIfYOgr4kSbOGJuLVUJDSd8tabHeMI7h3UWaLp3+FMC5e6?=
+ =?us-ascii?Q?iLwTOlxT4dM2Lfn7AwnbpTjE7h9ks2VFCTmoXGW82EGxS6iyM0+PMOK/T7PS?=
+ =?us-ascii?Q?6fxr7RDSvhqHDLpHyF2BDWCuOOjAo4+b0gqbf+uGvnSiTvJthG9HBegBbdx7?=
+ =?us-ascii?Q?d0dOTRB84wT3bqPKNBwSQ3AMaB//a4Ahutbj9+EDOTBaUkaPMaqOhjhGVBeu?=
+ =?us-ascii?Q?60kbDoumvSRp0hnGMcKYXSvB6pbvkXCrn5sbCd9fs3bioI569g3AyUjSWzEp?=
+ =?us-ascii?Q?oPw0pD5/m72zplpNMzH2VZ9GzakNu4JjbRAaSxE9rCzdUJm03LJUig3IU+VW?=
+ =?us-ascii?Q?aym7ucEOWevN6cZNs8ribFx9FXEonTwfkGP3+UMEd3Ai8JXZgbTn8le28Llm?=
+ =?us-ascii?Q?TadDVGskgq2LXLdOzFYGtzHU3axoHdtCNqueXUNP8nqkRxJzqyfPKTEdLqeb?=
+ =?us-ascii?Q?XCLqO9WzJ7YlMkIvJD2+lFfhb4CMq+2rzyOvYJAh8QzRzApHLsJIKPLjzt3j?=
+ =?us-ascii?Q?LPJ46U/U+DjaeanbA2BGxHAC1fOhET6fnnSbm6Uu655OrxkDBDuoo3chDIdz?=
+ =?us-ascii?Q?jINlOwlD9dQep6/d4l7LOLc1ZFvH0DkUgLAeI2g81I7jfxaWjE7hVP58weEp?=
+ =?us-ascii?Q?L/Y9KyYRhBYaKwirCSIjBti42xfPdAAB9SW2gCbwCLNedb0YYGzlPmuc1tF2?=
+ =?us-ascii?Q?PI0BlbCgFzZ2aJkvTjo1ihiMU7GczTZZeSX8A809ubNZTd8hIJL9NTbMVUQW?=
+ =?us-ascii?Q?UyATtrCHsUG5Ta4oPCOVAAiK5VCqBPpntmzY9KleB01Wb9L/npBetd+2Ch8p?=
+ =?us-ascii?Q?ROjKggs5H8eXpc7WhjWqHhrPmZvaJimhbTjLl/zglJutfIXOFPTwF3wh3DW7?=
+ =?us-ascii?Q?gTxWBor6C4Z/juAErr0m3Rk3swEvEUYJjdDcl54/XTljQA/gLCswfg+S/dRd?=
+ =?us-ascii?Q?SL4kWQJr4ISL1Rm58U3cBomj5KJqcCxTSyvJkhqTVbNmj67zmcq8CoUjweDn?=
+ =?us-ascii?Q?INYZKqzP5pnW8OvXmfIBuImS3hyE6+QALXakNJxtGmGjVLoORh8v6lv5SHWZ?=
+ =?us-ascii?Q?UYyEZTmouQ=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: c9e21eeb-a4bd-46dc-d915-08de5d4e40ba
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jan 2026 02:46:20.9484
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: MqrcYyC+4RX6PsNQ819aQ+avb0mfWAlDhr2d558IirLc5VzOyd5ANOwI3s8R8Fn72d0VDydQ8Hx8Cxcdhyza0Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS4PPF708A6BB3E
+X-OriginatorOrg: intel.com
 
-On Mon, Jan 26, 2026 at 6:47=E2=80=AFAM kernel test robot <oliver.sang@inte=
-l.com> wrote:
->
->
->
-> Hello,
->
-> kernel test robot noticed "kmsg.sanitizer.direct_leak/calloc/zalloc/proce=
-ss_cpu_domain_info/perf_file_section__process/perf_header__process_sections=
-/perf_session__read_header" on:
->
-> commit: 6f993818d20c79b874f546cec1dcce40a9927c7b ("[PATCH v5 02/10] perf =
-header: Support CPU DOMAIN relation info")
-> url: https://github.com/intel-lab-lkp/linux/commits/Swapnil-Sapkal/tools-=
-lib-Add-list_is_first/20260120-021007
-> base: https://git.kernel.org/cgit/linux/kernel/git/perf/perf-tools-next.g=
-it perf-tools-next
-> patch link: https://lore.kernel.org/all/20260119175833.340369-3-swapnil.s=
-apkal@amd.com/
-> patch subject: [PATCH v5 02/10] perf header: Support CPU DOMAIN relation =
-info
->
-> in testcase: perf-sanity-tests
-> version:
-> with following parameters:
->
->         perf_compiler: gcc
->         group: group-02
->
->
->
-> config: x86_64-rhel-9.4-bpf
-> compiler: gcc-14
-> test machine: 256 threads 4 sockets INTEL(R) XEON(R) PLATINUM 8592+ (Emer=
-ald Rapids) with 256G memory
->
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
->
->
->
->
-> If you fix the issue in a separate patch/commit (i.e. not just a new vers=
-ion of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202601262235.ee84b79e-lkp@intel.=
-com
+hi, Ian,
 
-As always thanks for the testing! I believe this issue is addressed by:
-https://lore.kernel.org/lkml/20260122213516.671089-2-irogers@google.com/
-which is merged into the perf-tools-next tree:
-https://web.git.kernel.org/pub/scm/linux/kernel/git/perf/perf-tools-next.gi=
-t/commit/?h=3Dperf-tools-next&id=3Dd84f24c898864facc13412a58b78964f6a769d76
+On Mon, Jan 26, 2026 at 09:12:58AM -0800, Ian Rogers wrote:
 
-Thanks,
-Ian
+[...]
 
-> we found below tests impacted.
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> tbox_group/testcase/rootfs/kconfig/compiler/perf_compiler/group:
->   lkp-emr-2sp1/perf-sanity-tests/debian-13-x86_64-20250902.cgz/x86_64-rhe=
-l-9.4-bpf/gcc-14/gcc/group-02
->
-> 4d991caa3f1e36c3 6f993818d20c79b874f546cec1d
-> ---------------- ---------------------------
->        fail:runs  %reproduction    fail:runs
->            |             |             |
->            :6          100%           6:6     perf-sanity-tests.build_id_=
-cache_operations.fail
->            :6          100%           6:6     perf-sanity-tests.perf_evli=
-st_tests.fail
->            :6          100%           6:6     perf-sanity-tests.perf_head=
-er_tests.fail
->
->
->
->
-> 2026-01-24 13:53:34 sudo ASAN_OPTIONS=3Dfast_unwind_on_malloc=3D0 /usr/sr=
-c/linux-perf-x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/t=
-ools/perf/perf test 80 -v
->  80: build id cache operations                                       : Ru=
-nning (1 active)
-> --- start ---
-> test child forked, pid 14171
-> WARNING: perf not built with libbfd. PE binaries will not be tested.
-> WARNING: wine not found. PE binaries will not be run.
-> test binaries: /tmp/perf_buildid_test.ex.SHA1.fdj /tmp/perf_buildid_test.=
-ex.MD5.U8m /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6f993818d20c79b874f5=
-46cec1dcce40a9927c7b/tools/perf/tests/shell/../pe-file.exe
-> DEBUGINFOD_URLS=3D
-> Downloading debug info with build id 89e03056b3c150ac13d49ad72e7ccfe9e8e1=
-fb11
-> Adding 89e03056b3c150ac13d49ad72e7ccfe9e8e1fb11 /tmp/perf_buildid_test.ex=
-.SHA1.fdj: Ok
-> build id: 89e03056b3c150ac13d49ad72e7ccfe9e8e1fb11
-> link: /tmp/perf_buildid_test.debug.PIE/.build-id/89/e03056b3c150ac13d49ad=
-72e7ccfe9e8e1fb11
-> file: /tmp/perf_buildid_test.debug.PIE/.build-id/89/../../tmp/perf_buildi=
-d_test.ex.SHA1.fdj/89e03056b3c150ac13d49ad72e7ccfe9e8e1fb11/elf
-> OK for /tmp/perf_buildid_test.ex.SHA1.fdj
-> DEBUGINFOD_URLS=3D
-> Downloading debug info with build id ee26502b2cb816e82d08fd203ebf46b4
-> Adding ee26502b2cb816e82d08fd203ebf46b4 /tmp/perf_buildid_test.ex.MD5.U8m=
-: Ok
-> build id: ee26502b2cb816e82d08fd203ebf46b4
-> link: /tmp/perf_buildid_test.debug.dem/.build-id/ee/26502b2cb816e82d08fd2=
-03ebf46b4
-> file: /tmp/perf_buildid_test.debug.dem/.build-id/ee/../../tmp/perf_buildi=
-d_test.ex.MD5.U8m/ee26502b2cb816e82d08fd203ebf46b4/elf
-> OK for /tmp/perf_buildid_test.ex.MD5.U8m
-> running: perf record /tmp/perf_buildid_test.ex.SHA1.fdj
-> build id: 89e03056b3c150ac13d49ad72e7ccfe9e8e1fb11
-> link: /tmp/perf_buildid_test.debug.T5w/.build-id/89/e03056b3c150ac13d49ad=
-72e7ccfe9e8e1fb11
-> file: /tmp/perf_buildid_test.debug.T5w/.build-id/89/../../tmp/perf_buildi=
-d_test.ex.SHA1.fdj/89e03056b3c150ac13d49ad72e7ccfe9e8e1fb11/elf
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> =3D=3D14272=3D=3DERROR: LeakSanitizer: detected memory leaks
->
-> Direct leak of 131072 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f3a7fd98c57 in malloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:69
->     #1 0x563053942c76 in do_read_string util/header.c:261
->     #2 0x563053967c30 in process_cpu_domain_info util/header.c:3653
->     #3 0x56305396f9f3 in perf_file_section__process util/header.c:4386
->     #4 0x56305396cfb5 in perf_header__process_sections util/header.c:4144
->     #5 0x563053971ef1 in perf_session__read_header util/header.c:4620
->     #6 0x5630539cd802 in perf_session__open util/session.c:54
->     #7 0x5630539cea98 in __perf_session__new util/session.c:168
->     #8 0x5630532b6d43 in perf_session__new util/session.h:116
->     #9 0x5630532b798b in perf_session__list_build_ids /usr/src/perf_selft=
-ests-x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/per=
-f/builtin-buildid-list.c:113
->     #10 0x5630532b8891 in cmd_buildid_list /usr/src/perf_selftests-x86_64=
--rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-b=
-uildid-list.c:175
->     #11 0x5630535113bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x563053511b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x5630535120e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x563053512851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7f3a75ac0ca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7f3a75ac0d64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x563053277310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 73728 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f3a7fd98610 in calloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:77
->     #1 0x56305353dd0c in zalloc ../../lib/zalloc.c:8
->     #2 0x563053967c7f in process_cpu_domain_info util/header.c:3657
->     #3 0x56305396f9f3 in perf_file_section__process util/header.c:4386
->     #4 0x56305396cfb5 in perf_header__process_sections util/header.c:4144
->     #5 0x563053971ef1 in perf_session__read_header util/header.c:4620
->     #6 0x5630539cd802 in perf_session__open util/session.c:54
->     #7 0x5630539cea98 in __perf_session__new util/session.c:168
->     #8 0x5630532b6d43 in perf_session__new util/session.h:116
->     #9 0x5630532b798b in perf_session__list_build_ids /usr/src/perf_selft=
-ests-x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/per=
-f/builtin-buildid-list.c:113
->     #10 0x5630532b8891 in cmd_buildid_list /usr/src/perf_selftests-x86_64=
--rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-b=
-uildid-list.c:175
->     #11 0x5630535113bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x563053511b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x5630535120e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x563053512851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7f3a75ac0ca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7f3a75ac0d64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x563053277310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 65536 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f3a7fd98c57 in malloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:69
->     #1 0x563053942c76 in do_read_string util/header.c:261
->     #2 0x563053967a1c in process_cpu_domain_info util/header.c:3642
->     #3 0x56305396f9f3 in perf_file_section__process util/header.c:4386
->     #4 0x56305396cfb5 in perf_header__process_sections util/header.c:4144
->     #5 0x563053971ef1 in perf_session__read_header util/header.c:4620
->     #6 0x5630539cd802 in perf_session__open util/session.c:54
->     #7 0x5630539cea98 in __perf_session__new util/session.c:168
->     #8 0x5630532b6d43 in perf_session__new util/session.h:116
->     #9 0x5630532b798b in perf_session__list_build_ids /usr/src/perf_selft=
-ests-x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/per=
-f/builtin-buildid-list.c:113
->     #10 0x5630532b8891 in cmd_buildid_list /usr/src/perf_selftests-x86_64=
--rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-b=
-uildid-list.c:175
->     #11 0x5630535113bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x563053511b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x5630535120e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x563053512851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7f3a75ac0ca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7f3a75ac0d64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x563053277310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 65536 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f3a7fd98c57 in malloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:69
->     #1 0x563053942c76 in do_read_string util/header.c:261
->     #2 0x563053967e44 in process_cpu_domain_info util/header.c:3662
->     #3 0x56305396f9f3 in perf_file_section__process util/header.c:4386
->     #4 0x56305396cfb5 in perf_header__process_sections util/header.c:4144
->     #5 0x563053971ef1 in perf_session__read_header util/header.c:4620
->     #6 0x5630539cd802 in perf_session__open util/session.c:54
->     #7 0x5630539cea98 in __perf_session__new util/session.c:168
->     #8 0x5630532b6d43 in perf_session__new util/session.h:116
->     #9 0x5630532b798b in perf_session__list_build_ids /usr/src/perf_selft=
-ests-x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/per=
-f/builtin-buildid-list.c:113
->     #10 0x5630532b8891 in cmd_buildid_list /usr/src/perf_selftests-x86_64=
--rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-b=
-uildid-list.c:175
->     #11 0x5630535113bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x563053511b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x5630535120e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x563053512851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7f3a75ac0ca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7f3a75ac0d64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x563053277310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 10532 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f3a7fd98610 in calloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:77
->     #1 0x56305353dd0c in zalloc ../../lib/zalloc.c:8
->     #2 0x563053967e93 in process_cpu_domain_info util/header.c:3666
->     #3 0x56305396f9f3 in perf_file_section__process util/header.c:4386
->     #4 0x56305396cfb5 in perf_header__process_sections util/header.c:4144
->     #5 0x563053971ef1 in perf_session__read_header util/header.c:4620
->     #6 0x5630539cd802 in perf_session__open util/session.c:54
->     #7 0x5630539cea98 in __perf_session__new util/session.c:168
->     #8 0x5630532b6d43 in perf_session__new util/session.h:116
->     #9 0x5630532b798b in perf_session__list_build_ids /usr/src/perf_selft=
-ests-x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/per=
-f/builtin-buildid-list.c:113
->     #10 0x5630532b8891 in cmd_buildid_list /usr/src/perf_selftests-x86_64=
--rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-b=
-uildid-list.c:175
->     #11 0x5630535113bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x563053511b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x5630535120e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x563053512851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7f3a75ac0ca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7f3a75ac0d64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x563053277310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 4352 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f3a7fd98610 in calloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:77
->     #1 0x56305353dd0c in zalloc ../../lib/zalloc.c:8
->     #2 0x563053967a6b in process_cpu_domain_info util/header.c:3646
->     #3 0x56305396f9f3 in perf_file_section__process util/header.c:4386
->     #4 0x56305396cfb5 in perf_header__process_sections util/header.c:4144
->     #5 0x563053971ef1 in perf_session__read_header util/header.c:4620
->     #6 0x5630539cd802 in perf_session__open util/session.c:54
->     #7 0x5630539cea98 in __perf_session__new util/session.c:168
->     #8 0x5630532b6d43 in perf_session__new util/session.h:116
->     #9 0x5630532b798b in perf_session__list_build_ids /usr/src/perf_selft=
-ests-x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/per=
-f/builtin-buildid-list.c:113
->     #10 0x5630532b8891 in cmd_buildid_list /usr/src/perf_selftests-x86_64=
--rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-b=
-uildid-list.c:175
->     #11 0x5630535113bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x563053511b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x5630535120e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x563053512851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7f3a75ac0ca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7f3a75ac0d64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x563053277310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> SUMMARY: AddressSanitizer: 350756 byte(s) leaked in 6144 allocation(s).
-> failed: 89e03056b3c150ac13d49ad72e7ccfe9e8e1fb11 is not reported by "perf=
- buildid-list -i /tmp/perf_buildid_test.data.9pp"
-> Unexpected signal in check
-> ---- end(-1) ----
->  80: build id cache operations                                       : FA=
-ILED!
->
->
-> ...
->
->
-> 2026-01-24 13:55:59 sudo ASAN_OPTIONS=3Dfast_unwind_on_malloc=3D0 /usr/sr=
-c/linux-perf-x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/t=
-ools/perf/perf test 85 -v
->  85: perf evlist tests                                               : Ru=
-nning (1 active)
-> --- start ---
-> test child forked, pid 15479
-> Simple evlist test
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> =3D=3D15499=3D=3DERROR: LeakSanitizer: detected memory leaks
->
-> Direct leak of 131072 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f3c9bf85c57 in malloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:69
->     #1 0x55c6557f9c76 in do_read_string util/header.c:261
->     #2 0x55c65581ec30 in process_cpu_domain_info util/header.c:3653
->     #3 0x55c6558269f3 in perf_file_section__process util/header.c:4386
->     #4 0x55c655823fb5 in perf_header__process_sections util/header.c:4144
->     #5 0x55c655828ef1 in perf_session__read_header util/header.c:4620
->     #6 0x55c655884802 in perf_session__open util/session.c:54
->     #7 0x55c655885a98 in __perf_session__new util/session.c:168
->     #8 0x55c6551528d3 in perf_session__new util/session.h:116
->     #9 0x55c655152d1f in __cmd_evlist /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist=
-.c:46
->     #10 0x55c655153e1a in cmd_evlist /usr/src/perf_selftests-x86_64-rhel-=
-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist.=
-c:101
->     #11 0x55c6553c83bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x55c6553c8b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x55c6553c90e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x55c6553c9851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7f3c91cadca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7f3c91cadd64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x55c65512e310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 73728 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f3c9bf85610 in calloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:77
->     #1 0x55c6553f4d0c in zalloc ../../lib/zalloc.c:8
->     #2 0x55c65581ec7f in process_cpu_domain_info util/header.c:3657
->     #3 0x55c6558269f3 in perf_file_section__process util/header.c:4386
->     #4 0x55c655823fb5 in perf_header__process_sections util/header.c:4144
->     #5 0x55c655828ef1 in perf_session__read_header util/header.c:4620
->     #6 0x55c655884802 in perf_session__open util/session.c:54
->     #7 0x55c655885a98 in __perf_session__new util/session.c:168
->     #8 0x55c6551528d3 in perf_session__new util/session.h:116
->     #9 0x55c655152d1f in __cmd_evlist /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist=
-.c:46
->     #10 0x55c655153e1a in cmd_evlist /usr/src/perf_selftests-x86_64-rhel-=
-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist.=
-c:101
->     #11 0x55c6553c83bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x55c6553c8b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x55c6553c90e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x55c6553c9851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7f3c91cadca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7f3c91cadd64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x55c65512e310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 65536 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f3c9bf85c57 in malloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:69
->     #1 0x55c6557f9c76 in do_read_string util/header.c:261
->     #2 0x55c65581ea1c in process_cpu_domain_info util/header.c:3642
->     #3 0x55c6558269f3 in perf_file_section__process util/header.c:4386
->     #4 0x55c655823fb5 in perf_header__process_sections util/header.c:4144
->     #5 0x55c655828ef1 in perf_session__read_header util/header.c:4620
->     #6 0x55c655884802 in perf_session__open util/session.c:54
->     #7 0x55c655885a98 in __perf_session__new util/session.c:168
->     #8 0x55c6551528d3 in perf_session__new util/session.h:116
->     #9 0x55c655152d1f in __cmd_evlist /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist=
-.c:46
->     #10 0x55c655153e1a in cmd_evlist /usr/src/perf_selftests-x86_64-rhel-=
-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist.=
-c:101
->     #11 0x55c6553c83bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x55c6553c8b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x55c6553c90e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x55c6553c9851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7f3c91cadca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7f3c91cadd64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x55c65512e310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 65536 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f3c9bf85c57 in malloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:69
->     #1 0x55c6557f9c76 in do_read_string util/header.c:261
->     #2 0x55c65581ee44 in process_cpu_domain_info util/header.c:3662
->     #3 0x55c6558269f3 in perf_file_section__process util/header.c:4386
->     #4 0x55c655823fb5 in perf_header__process_sections util/header.c:4144
->     #5 0x55c655828ef1 in perf_session__read_header util/header.c:4620
->     #6 0x55c655884802 in perf_session__open util/session.c:54
->     #7 0x55c655885a98 in __perf_session__new util/session.c:168
->     #8 0x55c6551528d3 in perf_session__new util/session.h:116
->     #9 0x55c655152d1f in __cmd_evlist /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist=
-.c:46
->     #10 0x55c655153e1a in cmd_evlist /usr/src/perf_selftests-x86_64-rhel-=
-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist.=
-c:101
->     #11 0x55c6553c83bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x55c6553c8b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x55c6553c90e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x55c6553c9851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7f3c91cadca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7f3c91cadd64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x55c65512e310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 10532 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f3c9bf85610 in calloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:77
->     #1 0x55c6553f4d0c in zalloc ../../lib/zalloc.c:8
->     #2 0x55c65581ee93 in process_cpu_domain_info util/header.c:3666
->     #3 0x55c6558269f3 in perf_file_section__process util/header.c:4386
->     #4 0x55c655823fb5 in perf_header__process_sections util/header.c:4144
->     #5 0x55c655828ef1 in perf_session__read_header util/header.c:4620
->     #6 0x55c655884802 in perf_session__open util/session.c:54
->     #7 0x55c655885a98 in __perf_session__new util/session.c:168
->     #8 0x55c6551528d3 in perf_session__new util/session.h:116
->     #9 0x55c655152d1f in __cmd_evlist /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist=
-.c:46
->     #10 0x55c655153e1a in cmd_evlist /usr/src/perf_selftests-x86_64-rhel-=
-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist.=
-c:101
->     #11 0x55c6553c83bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x55c6553c8b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x55c6553c90e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x55c6553c9851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7f3c91cadca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7f3c91cadd64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x55c65512e310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 4352 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f3c9bf85610 in calloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:77
->     #1 0x55c6553f4d0c in zalloc ../../lib/zalloc.c:8
->     #2 0x55c65581ea6b in process_cpu_domain_info util/header.c:3646
->     #3 0x55c6558269f3 in perf_file_section__process util/header.c:4386
->     #4 0x55c655823fb5 in perf_header__process_sections util/header.c:4144
->     #5 0x55c655828ef1 in perf_session__read_header util/header.c:4620
->     #6 0x55c655884802 in perf_session__open util/session.c:54
->     #7 0x55c655885a98 in __perf_session__new util/session.c:168
->     #8 0x55c6551528d3 in perf_session__new util/session.h:116
->     #9 0x55c655152d1f in __cmd_evlist /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist=
-.c:46
->     #10 0x55c655153e1a in cmd_evlist /usr/src/perf_selftests-x86_64-rhel-=
-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist.=
-c:101
->     #11 0x55c6553c83bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x55c6553c8b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x55c6553c90e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x55c6553c9851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7f3c91cadca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7f3c91cadd64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x55c65512e310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> SUMMARY: AddressSanitizer: 350756 byte(s) leaked in 6144 allocation(s).
-> Simple evlist [Failed to list event]
-> Group evlist test
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> =3D=3D15528=3D=3DERROR: LeakSanitizer: detected memory leaks
->
-> Direct leak of 131072 byte(s) in 1024 object(s) allocated from:
->     #0 0x7efcde5dfc57 in malloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:69
->     #1 0x56040444bc76 in do_read_string util/header.c:261
->     #2 0x560404470c30 in process_cpu_domain_info util/header.c:3653
->     #3 0x5604044789f3 in perf_file_section__process util/header.c:4386
->     #4 0x560404475fb5 in perf_header__process_sections util/header.c:4144
->     #5 0x56040447aef1 in perf_session__read_header util/header.c:4620
->     #6 0x5604044d6802 in perf_session__open util/session.c:54
->     #7 0x5604044d7a98 in __perf_session__new util/session.c:168
->     #8 0x560403da48d3 in perf_session__new util/session.h:116
->     #9 0x560403da4d1f in __cmd_evlist /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist=
-.c:46
->     #10 0x560403da5e1a in cmd_evlist /usr/src/perf_selftests-x86_64-rhel-=
-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist.=
-c:101
->     #11 0x56040401a3bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x56040401ab8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x56040401b0e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x56040401b851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7efcd4307ca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7efcd4307d64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x560403d80310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 73728 byte(s) in 1024 object(s) allocated from:
->     #0 0x7efcde5df610 in calloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:77
->     #1 0x560404046d0c in zalloc ../../lib/zalloc.c:8
->     #2 0x560404470c7f in process_cpu_domain_info util/header.c:3657
->     #3 0x5604044789f3 in perf_file_section__process util/header.c:4386
->     #4 0x560404475fb5 in perf_header__process_sections util/header.c:4144
->     #5 0x56040447aef1 in perf_session__read_header util/header.c:4620
->     #6 0x5604044d6802 in perf_session__open util/session.c:54
->     #7 0x5604044d7a98 in __perf_session__new util/session.c:168
->     #8 0x560403da48d3 in perf_session__new util/session.h:116
->     #9 0x560403da4d1f in __cmd_evlist /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist=
-.c:46
->     #10 0x560403da5e1a in cmd_evlist /usr/src/perf_selftests-x86_64-rhel-=
-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist.=
-c:101
->     #11 0x56040401a3bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x56040401ab8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x56040401b0e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x56040401b851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7efcd4307ca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7efcd4307d64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x560403d80310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 65536 byte(s) in 1024 object(s) allocated from:
->     #0 0x7efcde5dfc57 in malloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:69
->     #1 0x56040444bc76 in do_read_string util/header.c:261
->     #2 0x560404470a1c in process_cpu_domain_info util/header.c:3642
->     #3 0x5604044789f3 in perf_file_section__process util/header.c:4386
->     #4 0x560404475fb5 in perf_header__process_sections util/header.c:4144
->     #5 0x56040447aef1 in perf_session__read_header util/header.c:4620
->     #6 0x5604044d6802 in perf_session__open util/session.c:54
->     #7 0x5604044d7a98 in __perf_session__new util/session.c:168
->     #8 0x560403da48d3 in perf_session__new util/session.h:116
->     #9 0x560403da4d1f in __cmd_evlist /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist=
-.c:46
->     #10 0x560403da5e1a in cmd_evlist /usr/src/perf_selftests-x86_64-rhel-=
-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist.=
-c:101
->     #11 0x56040401a3bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x56040401ab8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x56040401b0e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x56040401b851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7efcd4307ca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7efcd4307d64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x560403d80310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 65536 byte(s) in 1024 object(s) allocated from:
->     #0 0x7efcde5dfc57 in malloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:69
->     #1 0x56040444bc76 in do_read_string util/header.c:261
->     #2 0x560404470e44 in process_cpu_domain_info util/header.c:3662
->     #3 0x5604044789f3 in perf_file_section__process util/header.c:4386
->     #4 0x560404475fb5 in perf_header__process_sections util/header.c:4144
->     #5 0x56040447aef1 in perf_session__read_header util/header.c:4620
->     #6 0x5604044d6802 in perf_session__open util/session.c:54
->     #7 0x5604044d7a98 in __perf_session__new util/session.c:168
->     #8 0x560403da48d3 in perf_session__new util/session.h:116
->     #9 0x560403da4d1f in __cmd_evlist /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist=
-.c:46
->     #10 0x560403da5e1a in cmd_evlist /usr/src/perf_selftests-x86_64-rhel-=
-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist.=
-c:101
->     #11 0x56040401a3bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x56040401ab8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x56040401b0e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x56040401b851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7efcd4307ca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7efcd4307d64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x560403d80310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 10532 byte(s) in 1024 object(s) allocated from:
->     #0 0x7efcde5df610 in calloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:77
->     #1 0x560404046d0c in zalloc ../../lib/zalloc.c:8
->     #2 0x560404470e93 in process_cpu_domain_info util/header.c:3666
->     #3 0x5604044789f3 in perf_file_section__process util/header.c:4386
->     #4 0x560404475fb5 in perf_header__process_sections util/header.c:4144
->     #5 0x56040447aef1 in perf_session__read_header util/header.c:4620
->     #6 0x5604044d6802 in perf_session__open util/session.c:54
->     #7 0x5604044d7a98 in __perf_session__new util/session.c:168
->     #8 0x560403da48d3 in perf_session__new util/session.h:116
->     #9 0x560403da4d1f in __cmd_evlist /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist=
-.c:46
->     #10 0x560403da5e1a in cmd_evlist /usr/src/perf_selftests-x86_64-rhel-=
-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist.=
-c:101
->     #11 0x56040401a3bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x56040401ab8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x56040401b0e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x56040401b851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7efcd4307ca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7efcd4307d64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x560403d80310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 4352 byte(s) in 1024 object(s) allocated from:
->     #0 0x7efcde5df610 in calloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:77
->     #1 0x560404046d0c in zalloc ../../lib/zalloc.c:8
->     #2 0x560404470a6b in process_cpu_domain_info util/header.c:3646
->     #3 0x5604044789f3 in perf_file_section__process util/header.c:4386
->     #4 0x560404475fb5 in perf_header__process_sections util/header.c:4144
->     #5 0x56040447aef1 in perf_session__read_header util/header.c:4620
->     #6 0x5604044d6802 in perf_session__open util/session.c:54
->     #7 0x5604044d7a98 in __perf_session__new util/session.c:168
->     #8 0x560403da48d3 in perf_session__new util/session.h:116
->     #9 0x560403da4d1f in __cmd_evlist /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist=
-.c:46
->     #10 0x560403da5e1a in cmd_evlist /usr/src/perf_selftests-x86_64-rhel-=
-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist.=
-c:101
->     #11 0x56040401a3bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x56040401ab8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x56040401b0e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x56040401b851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7efcd4307ca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7efcd4307d64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x560403d80310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> SUMMARY: AddressSanitizer: 350756 byte(s) leaked in 6144 allocation(s).
-> Group evlist [Failed to list event group]
-> Event configuration evlist test
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> =3D=3D15547=3D=3DERROR: LeakSanitizer: detected memory leaks
->
-> Direct leak of 131072 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f6169abfc57 in malloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:69
->     #1 0x559f7b345c76 in do_read_string util/header.c:261
->     #2 0x559f7b36ac30 in process_cpu_domain_info util/header.c:3653
->     #3 0x559f7b3729f3 in perf_file_section__process util/header.c:4386
->     #4 0x559f7b36ffb5 in perf_header__process_sections util/header.c:4144
->     #5 0x559f7b374ef1 in perf_session__read_header util/header.c:4620
->     #6 0x559f7b3d0802 in perf_session__open util/session.c:54
->     #7 0x559f7b3d1a98 in __perf_session__new util/session.c:168
->     #8 0x559f7ac9e8d3 in perf_session__new util/session.h:116
->     #9 0x559f7ac9ed1f in __cmd_evlist /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist=
-.c:46
->     #10 0x559f7ac9fe1a in cmd_evlist /usr/src/perf_selftests-x86_64-rhel-=
-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist.=
-c:101
->     #11 0x559f7af143bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x559f7af14b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x559f7af150e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x559f7af15851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7f615f7e7ca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7f615f7e7d64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x559f7ac7a310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 73728 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f6169abf610 in calloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:77
->     #1 0x559f7af40d0c in zalloc ../../lib/zalloc.c:8
->     #2 0x559f7b36ac7f in process_cpu_domain_info util/header.c:3657
->     #3 0x559f7b3729f3 in perf_file_section__process util/header.c:4386
->     #4 0x559f7b36ffb5 in perf_header__process_sections util/header.c:4144
->     #5 0x559f7b374ef1 in perf_session__read_header util/header.c:4620
->     #6 0x559f7b3d0802 in perf_session__open util/session.c:54
->     #7 0x559f7b3d1a98 in __perf_session__new util/session.c:168
->     #8 0x559f7ac9e8d3 in perf_session__new util/session.h:116
->     #9 0x559f7ac9ed1f in __cmd_evlist /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist=
-.c:46
->     #10 0x559f7ac9fe1a in cmd_evlist /usr/src/perf_selftests-x86_64-rhel-=
-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist.=
-c:101
->     #11 0x559f7af143bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x559f7af14b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x559f7af150e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x559f7af15851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7f615f7e7ca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7f615f7e7d64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x559f7ac7a310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 65536 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f6169abfc57 in malloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:69
->     #1 0x559f7b345c76 in do_read_string util/header.c:261
->     #2 0x559f7b36aa1c in process_cpu_domain_info util/header.c:3642
->     #3 0x559f7b3729f3 in perf_file_section__process util/header.c:4386
->     #4 0x559f7b36ffb5 in perf_header__process_sections util/header.c:4144
->     #5 0x559f7b374ef1 in perf_session__read_header util/header.c:4620
->     #6 0x559f7b3d0802 in perf_session__open util/session.c:54
->     #7 0x559f7b3d1a98 in __perf_session__new util/session.c:168
->     #8 0x559f7ac9e8d3 in perf_session__new util/session.h:116
->     #9 0x559f7ac9ed1f in __cmd_evlist /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist=
-.c:46
->     #10 0x559f7ac9fe1a in cmd_evlist /usr/src/perf_selftests-x86_64-rhel-=
-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist.=
-c:101
->     #11 0x559f7af143bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x559f7af14b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x559f7af150e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x559f7af15851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7f615f7e7ca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7f615f7e7d64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x559f7ac7a310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 65536 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f6169abfc57 in malloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:69
->     #1 0x559f7b345c76 in do_read_string util/header.c:261
->     #2 0x559f7b36ae44 in process_cpu_domain_info util/header.c:3662
->     #3 0x559f7b3729f3 in perf_file_section__process util/header.c:4386
->     #4 0x559f7b36ffb5 in perf_header__process_sections util/header.c:4144
->     #5 0x559f7b374ef1 in perf_session__read_header util/header.c:4620
->     #6 0x559f7b3d0802 in perf_session__open util/session.c:54
->     #7 0x559f7b3d1a98 in __perf_session__new util/session.c:168
->     #8 0x559f7ac9e8d3 in perf_session__new util/session.h:116
->     #9 0x559f7ac9ed1f in __cmd_evlist /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist=
-.c:46
->     #10 0x559f7ac9fe1a in cmd_evlist /usr/src/perf_selftests-x86_64-rhel-=
-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist.=
-c:101
->     #11 0x559f7af143bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x559f7af14b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x559f7af150e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x559f7af15851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7f615f7e7ca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7f615f7e7d64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x559f7ac7a310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 10532 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f6169abf610 in calloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:77
->     #1 0x559f7af40d0c in zalloc ../../lib/zalloc.c:8
->     #2 0x559f7b36ae93 in process_cpu_domain_info util/header.c:3666
->     #3 0x559f7b3729f3 in perf_file_section__process util/header.c:4386
->     #4 0x559f7b36ffb5 in perf_header__process_sections util/header.c:4144
->     #5 0x559f7b374ef1 in perf_session__read_header util/header.c:4620
->     #6 0x559f7b3d0802 in perf_session__open util/session.c:54
->     #7 0x559f7b3d1a98 in __perf_session__new util/session.c:168
->     #8 0x559f7ac9e8d3 in perf_session__new util/session.h:116
->     #9 0x559f7ac9ed1f in __cmd_evlist /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist=
-.c:46
->     #10 0x559f7ac9fe1a in cmd_evlist /usr/src/perf_selftests-x86_64-rhel-=
-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist.=
-c:101
->     #11 0x559f7af143bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x559f7af14b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x559f7af150e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x559f7af15851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7f615f7e7ca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7f615f7e7d64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x559f7ac7a310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 4352 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f6169abf610 in calloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:77
->     #1 0x559f7af40d0c in zalloc ../../lib/zalloc.c:8
->     #2 0x559f7b36aa6b in process_cpu_domain_info util/header.c:3646
->     #3 0x559f7b3729f3 in perf_file_section__process util/header.c:4386
->     #4 0x559f7b36ffb5 in perf_header__process_sections util/header.c:4144
->     #5 0x559f7b374ef1 in perf_session__read_header util/header.c:4620
->     #6 0x559f7b3d0802 in perf_session__open util/session.c:54
->     #7 0x559f7b3d1a98 in __perf_session__new util/session.c:168
->     #8 0x559f7ac9e8d3 in perf_session__new util/session.h:116
->     #9 0x559f7ac9ed1f in __cmd_evlist /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist=
-.c:46
->     #10 0x559f7ac9fe1a in cmd_evlist /usr/src/perf_selftests-x86_64-rhel-=
-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-evlist.=
-c:101
->     #11 0x559f7af143bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #12 0x559f7af14b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #13 0x559f7af150e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #14 0x559f7af15851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #15 0x7f615f7e7ca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x7f615f7e7d64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #17 0x559f7ac7a310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> SUMMARY: AddressSanitizer: 350756 byte(s) leaked in 6144 allocation(s).
-> Event configuration evlist [Failed to list verbose info]
-> ---- end(-1) ----
->  85: perf evlist tests                                               : FA=
-ILED!
->
->
-> ...
->
->
-> 2026-01-24 13:56:27 sudo ASAN_OPTIONS=3Dfast_unwind_on_malloc=3D0 /usr/sr=
-c/linux-perf-x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/t=
-ools/perf/perf test 87 -v
->  87: perf header tests                                               : Ru=
-nning (1 active)
-> --- start ---
-> test child forked, pid 15636
-> Test perf header file
-> [ perf record: Woken up 2 times to write data ]
-> [ perf record: Captured and wrote 0.213 MB /tmp/__perf_test_header.perf.d=
-ata.LAgPK (4662 samples) ]
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> =3D=3D15661=3D=3DERROR: LeakSanitizer: detected memory leaks
->
-> Direct leak of 131072 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f5bd6234c57 in malloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:69
->     #1 0x55684cf14c76 in do_read_string util/header.c:261
->     #2 0x55684cf39c30 in process_cpu_domain_info util/header.c:3653
->     #3 0x55684cf419f3 in perf_file_section__process util/header.c:4386
->     #4 0x55684cf3efb5 in perf_header__process_sections util/header.c:4144
->     #5 0x55684cf43ef1 in perf_session__read_header util/header.c:4620
->     #6 0x55684cf9f802 in perf_session__open util/session.c:54
->     #7 0x55684cfa0a98 in __perf_session__new util/session.c:168
->     #8 0x55684c8cf199 in perf_session__new util/session.h:116
->     #9 0x55684c8e5d65 in cmd_report /usr/src/perf_selftests-x86_64-rhel-9=
-.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-report.c=
-:1629
->     #10 0x55684cae33bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #11 0x55684cae3b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #12 0x55684cae40e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #13 0x55684cae4851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #14 0x7f5bcbf5cca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #15 0x7f5bcbf5cd64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x55684c849310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 73728 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f5bd6234610 in calloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:77
->     #1 0x55684cb0fd0c in zalloc ../../lib/zalloc.c:8
->     #2 0x55684cf39c7f in process_cpu_domain_info util/header.c:3657
->     #3 0x55684cf419f3 in perf_file_section__process util/header.c:4386
->     #4 0x55684cf3efb5 in perf_header__process_sections util/header.c:4144
->     #5 0x55684cf43ef1 in perf_session__read_header util/header.c:4620
->     #6 0x55684cf9f802 in perf_session__open util/session.c:54
->     #7 0x55684cfa0a98 in __perf_session__new util/session.c:168
->     #8 0x55684c8cf199 in perf_session__new util/session.h:116
->     #9 0x55684c8e5d65 in cmd_report /usr/src/perf_selftests-x86_64-rhel-9=
-.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-report.c=
-:1629
->     #10 0x55684cae33bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #11 0x55684cae3b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #12 0x55684cae40e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #13 0x55684cae4851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #14 0x7f5bcbf5cca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #15 0x7f5bcbf5cd64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x55684c849310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 65536 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f5bd6234c57 in malloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:69
->     #1 0x55684cf14c76 in do_read_string util/header.c:261
->     #2 0x55684cf39a1c in process_cpu_domain_info util/header.c:3642
->     #3 0x55684cf419f3 in perf_file_section__process util/header.c:4386
->     #4 0x55684cf3efb5 in perf_header__process_sections util/header.c:4144
->     #5 0x55684cf43ef1 in perf_session__read_header util/header.c:4620
->     #6 0x55684cf9f802 in perf_session__open util/session.c:54
->     #7 0x55684cfa0a98 in __perf_session__new util/session.c:168
->     #8 0x55684c8cf199 in perf_session__new util/session.h:116
->     #9 0x55684c8e5d65 in cmd_report /usr/src/perf_selftests-x86_64-rhel-9=
-.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-report.c=
-:1629
->     #10 0x55684cae33bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #11 0x55684cae3b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #12 0x55684cae40e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #13 0x55684cae4851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #14 0x7f5bcbf5cca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #15 0x7f5bcbf5cd64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x55684c849310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 65536 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f5bd6234c57 in malloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:69
->     #1 0x55684cf14c76 in do_read_string util/header.c:261
->     #2 0x55684cf39e44 in process_cpu_domain_info util/header.c:3662
->     #3 0x55684cf419f3 in perf_file_section__process util/header.c:4386
->     #4 0x55684cf3efb5 in perf_header__process_sections util/header.c:4144
->     #5 0x55684cf43ef1 in perf_session__read_header util/header.c:4620
->     #6 0x55684cf9f802 in perf_session__open util/session.c:54
->     #7 0x55684cfa0a98 in __perf_session__new util/session.c:168
->     #8 0x55684c8cf199 in perf_session__new util/session.h:116
->     #9 0x55684c8e5d65 in cmd_report /usr/src/perf_selftests-x86_64-rhel-9=
-.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-report.c=
-:1629
->     #10 0x55684cae33bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #11 0x55684cae3b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #12 0x55684cae40e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #13 0x55684cae4851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #14 0x7f5bcbf5cca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #15 0x7f5bcbf5cd64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x55684c849310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 10532 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f5bd6234610 in calloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:77
->     #1 0x55684cb0fd0c in zalloc ../../lib/zalloc.c:8
->     #2 0x55684cf39e93 in process_cpu_domain_info util/header.c:3666
->     #3 0x55684cf419f3 in perf_file_section__process util/header.c:4386
->     #4 0x55684cf3efb5 in perf_header__process_sections util/header.c:4144
->     #5 0x55684cf43ef1 in perf_session__read_header util/header.c:4620
->     #6 0x55684cf9f802 in perf_session__open util/session.c:54
->     #7 0x55684cfa0a98 in __perf_session__new util/session.c:168
->     #8 0x55684c8cf199 in perf_session__new util/session.h:116
->     #9 0x55684c8e5d65 in cmd_report /usr/src/perf_selftests-x86_64-rhel-9=
-.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-report.c=
-:1629
->     #10 0x55684cae33bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #11 0x55684cae3b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #12 0x55684cae40e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #13 0x55684cae4851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #14 0x7f5bcbf5cca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #15 0x7f5bcbf5cd64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x55684c849310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> Direct leak of 4352 byte(s) in 1024 object(s) allocated from:
->     #0 0x7f5bd6234610 in calloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:77
->     #1 0x55684cb0fd0c in zalloc ../../lib/zalloc.c:8
->     #2 0x55684cf39a6b in process_cpu_domain_info util/header.c:3646
->     #3 0x55684cf419f3 in perf_file_section__process util/header.c:4386
->     #4 0x55684cf3efb5 in perf_header__process_sections util/header.c:4144
->     #5 0x55684cf43ef1 in perf_session__read_header util/header.c:4620
->     #6 0x55684cf9f802 in perf_session__open util/session.c:54
->     #7 0x55684cfa0a98 in __perf_session__new util/session.c:168
->     #8 0x55684c8cf199 in perf_session__new util/session.h:116
->     #9 0x55684c8e5d65 in cmd_report /usr/src/perf_selftests-x86_64-rhel-9=
-.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/builtin-report.c=
-:1629
->     #10 0x55684cae33bf in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:348
->     #11 0x55684cae3b8f in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-9.4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/pe=
-rf.c:398
->     #12 0x55684cae40e5 in run_argv /usr/src/perf_selftests-x86_64-rhel-9.=
-4-bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:442
->     #13 0x55684cae4851 in main /usr/src/perf_selftests-x86_64-rhel-9.4-bp=
-f-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf.c:549
->     #14 0x7f5bcbf5cca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildI=
-d: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #15 0x7f5bcbf5cd64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x29d64) (BuildId: def5460e3cee00bfee25b429c97bcc4853e5b3a8)
->     #16 0x55684c849310 in _start (/usr/src/perf_selftests-x86_64-rhel-9.4=
--bpf-6f993818d20c79b874f546cec1dcce40a9927c7b/tools/perf/perf+0x1048310) (B=
-uildId: 07c75edf5764b1417259ec0a6cb5fc6de1859c88)
->
-> SUMMARY: AddressSanitizer: 350756 byte(s) leaked in 6144 allocation(s).
-> Unexpected signal in test_file
-> ---- end(-1) ----
->  87: perf header tests                                               : FA=
-ILED!
->
->
->
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20260126/202601262235.ee84b79e-lk=
-p@intel.com
->
->
->
-> --
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
->
+> 
+> As always thanks for the testing! I believe this issue is addressed by:
+> https://lore.kernel.org/lkml/20260122213516.671089-2-irogers@google.com/
+> which is merged into the perf-tools-next tree:
+> https://web.git.kernel.org/pub/scm/linux/kernel/git/perf/perf-tools-next.git/commit/?h=perf-tools-next&id=d84f24c898864facc13412a58b78964f6a769d76
+
+thanks a lot for information!
+
+> 
+> Thanks,
+> Ian
