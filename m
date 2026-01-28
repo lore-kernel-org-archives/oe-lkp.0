@@ -1,165 +1,323 @@
-Received: from mail-dl1-f42.google.com (mail-dl1-f42.google.com [74.125.82.42])
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44D543469FD
-	for <oe-lkp@lists.linux.dev>; Tue, 27 Jan 2026 11:20:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.42
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769512813; cv=pass; b=Ciml/bfSjE/0R61oVlMT8qXODXWOzi0OBY+spz3AL5WDgMaAgPy0aKQfqAnotSpP3VYiOjJ3iMu2/IDIOsk7JU09Ka7yzuG1yUQ8qAQsKR5jMoIzZMA2tlg7riUlfmNswx/prQECEh6qX7F2B4MHKiSl2kmzGoY9cT+jf8wIVHY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769512813; c=relaxed/simple;
-	bh=crKfGbjqP0vQ/lB323LrfgWwK/MTeB+j4XPxswidJlI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=fq59qIgYNx0abcsl/8db0U1oG4pDGCSuA2AhODwsrkCMd03tmp0o30SN7wap1kqsQ1URnptv+GUeV5D6BnkpVScHQ0JpXhZJqXN9Mh/cHeVvryfpehkqxSsJiiTwKy78Uhwh0zAGXkeUBUYo2O6bR/NetZbSc7jJj1h5fqfnJr8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=zo8Ir6lt; arc=pass smtp.client-ip=74.125.82.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF18D30FC34
+	for <oe-lkp@lists.linux.dev>; Wed, 28 Jan 2026 10:32:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1769596325; cv=none; b=UTm0ZegA9XBpAknvLc0lK+GbFvrH1JSaJVRWd3QoIaI9Z4NqJd0TVGg4D/TZpZx8U8hCLE8IHkUbZrerBUUIOTDYLiyIwWidJuiqAyh8CDc1lqn2zaa3BR5foHn3R4PF3c0ITpRAmT3Lz5NQ3Lflu2DINpPrywRAYPpgkSbs/vA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1769596325; c=relaxed/simple;
+	bh=DxmDK6IzpYnu24G2j1l7gf8HO0lHZfROLHdPbgxSXmQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=JogJBNP6pzuPz/EuWEBsVmvMPkk96nCVyMW0d427tlK/6RUlveiW6Q4Ytik94QCx2+XPpUPAiYdAqmExjhyHV170iiimoLJrfLGbnK+uR+g62q+dpCkP+l8rqahMm1G3RU/YWjjsv06zDjZdWkfC44uzVKIiNTkQ83ELvK55HMo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=paGs2MPA; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=1IvdI8Kg; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=2+Vu2MWK; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=l/DocQuu; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="zo8Ir6lt"
-Received: by mail-dl1-f42.google.com with SMTP id a92af1059eb24-12460a7caa2so7923570c88.1
-        for <oe-lkp@lists.linux.dev>; Tue, 27 Jan 2026 03:20:12 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1769512811; cv=none;
-        d=google.com; s=arc-20240605;
-        b=ZQyhJJu6xvhAHXFcJEVikdnbyzY8n0d/DXj0n2CeJt274OqgUbhjJfCeHwIH7jlSIg
-         Tdv4zA5uVtm8b6jtekit7mHCsx9ibuy43B2hoaZWCJU+CO81PFay+JTC3VPlcblr3Kn1
-         gfWfF8eZgp1r4m4dorSyL1R0d0GND7+OPHsw5zNzwtQeAQ15CZn8B/crSRz+PNnScbE5
-         V6FtZvk+AhpEvsWAfERlQKMaDZ/h+nHBAIkz3zgkK+OkmcQ9JYpp3Fhce6QW5fJhXCsX
-         wx/moSL1KFupNfPq//nmV7vQAWSJHeILSZ0QvtMVg+s+/ZfiKN7rS/RCBve/cyJ3ON9i
-         gZIw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=V8ID9chnybMElnOgkdtWrOybJmoUuP4G5J0BRDiINok=;
-        fh=B2Zf+uluKloQvFns9+oM6V36VlBufCPCQF2X1MSWPHc=;
-        b=Otsnj3Gy5X5S3P/6GguI+H9HQxiRxcoVIFXVZEdqBns5RbzCqTWuPLJWLJbaw8sAqf
-         uD0vaSaKP6GzBMhDILRP5ykILICw9+72uOmhS6xksfKAtW7SiMVTjcBaZZXjT8f8X9Be
-         gQNPl0CvtrQ9kSpukLhbjEvQt7FL63cvdjwXQbRWQBmL4o96PybjxUCTq64sWC5RaUV4
-         mOO3XySXkEFVFcYpoJXO6bQmzKTUomR1NeOqjJUtJuL/cLqIHyI4mcX1tOV8hv3f/+/I
-         SzNvyJCQ/kvrOCxZQb9UVj0zcpaLgDkVPgMcjy/rV73+IpGm2JB5ZNWcyZ1InUIatQFa
-         toMQ==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1769512811; x=1770117611; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=V8ID9chnybMElnOgkdtWrOybJmoUuP4G5J0BRDiINok=;
-        b=zo8Ir6lt100943/wSnlZujTcPae8SsLuSLfwoJ/Is/f1XG3EmegTbh6ztanUAbq6Zr
-         CQFpTa0Q1dwgyNyPAtOT9d3o79eVIuxtp43e1T6CzJrC2rsjHhOaHOoCakJenZtypV94
-         HbeE7E1aGkl9TEW11FTiAdPLIo9ehjJhck/RBNaqRit5Bqvp6q3DbAtMeDmg/Av2eoG9
-         04NchgC7Hm7kX18m00sJNaeGHDI8rGGAQdhgOLfejyJI6OTKk6N0kuWn3yVnqzCc6lh9
-         Mrrt2rW9eZIzuZf55Kwk4ZPJ0aO7dJG8etTDbA2NhUttdeAXtoN1p2Ic8UwrMBV5BD/8
-         jkPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769512811; x=1770117611;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=V8ID9chnybMElnOgkdtWrOybJmoUuP4G5J0BRDiINok=;
-        b=Gdlo5fbO0Kk/xh54qZLIPNbewdDsAaA6tiaTUGFB1mSrzP/S2cMFruKdd1VyDVl86f
-         Y8MpB32NcYh0XhY+sljISC79rRjAwU3FMhqJ1Z3/iF9KaX76aFWSv3golB0Y+I4GL39w
-         fEngRirNfBsskt+18gqsy3c8J9hbHWgDLEaeNJhjBcx1QQjz8k3yVtbQgenYwiFgpbCG
-         lMIu1h1rUv70PMrUWuETcV1nci+eJo7ZtAmRHUpK/RKxgDFaWc+8B/dK7kg0hws/9r1o
-         a3WgFvTC53YzDJ2DtQ/ZacZWzvUvVl63kNatZD3NSNdTnomopGCDhDwODfnWIoBwPCxM
-         rbfg==
-X-Gm-Message-State: AOJu0YzZIFSdknEh+S+MmZecicYZ+6Gqq1wWDqP5yX1NgN1riyjPH4Ga
-	1ZM6+K/r7E9TRkum1BWA6oGI5dSCodHR343ixrSbuG+7tZBd16Y7ltA0RLV+x8EtmiGkU4isSlE
-	3Ps96jAmvYrAwkb5xHHCo4WMlwW7iPBgO1RD4JhCF
-X-Gm-Gg: AZuq6aImeQKkmn9DnmIeIXAXf43CAVPCdyo1ZXOCB/dfPzq7tsKbPKYni3tOG8R6LBf
-	ZtbzLdI3QHYiSCxUxelhq0KV2v+UE7D1ScC+6mAxC1nTwvMMBELWTMJmluYS/UzWJKQLzEjSsG5
-	3qdNCm1+GPx38NY73M8r0vCkeVGv4+ZV7dBENx3ddxLJOZVbiITOFfYl24GfjK1krG6Wgmg5fEj
-	NkHU/s4SR28sW9t7bRoCbEz9L1azyA56bcZTmiNR4RnvkF9ZfreF/ZYjgOLWUjCmmz+UD2jXxgm
-	laULx5MAN5II+cRBE+5SQ+UuHg==
-X-Received: by 2002:a05:7022:6b96:b0:11f:2c9e:87f8 with SMTP id
- a92af1059eb24-124a00ceb44mr846041c88.34.1769512810986; Tue, 27 Jan 2026
- 03:20:10 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="paGs2MPA";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="1IvdI8Kg";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="2+Vu2MWK";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="l/DocQuu"
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id DB5A033B1D;
+	Wed, 28 Jan 2026 10:31:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1769596320; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=UpdfhkK6uEG2H192iOC+tRwDfkcZNxrrp7CmiUGW5DU=;
+	b=paGs2MPAgURFips7AXZvzJ7wKcamjiMOXMu/Z+pN7glue2CgaCltfQ/kPyqIpJRoukxADC
+	zLxotAK+4/NTTgMqhu+m2y7Qdmrp9t8zGxZdAfhGeGWhlx3pSTPOkVObBuTNmX239QzZKF
+	HDWMo43c+g8I+DY8etSue4nlmNo6n1g=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1769596320;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=UpdfhkK6uEG2H192iOC+tRwDfkcZNxrrp7CmiUGW5DU=;
+	b=1IvdI8KgId43JOQki51RxfYNoxPE1LfCvQ7bOyUp4oLNYzxB+C8IZrrir8Lz5S6sTdKCWi
+	5F4CQYC4SGGxnzAw==
+Authentication-Results: smtp-out1.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1769596319; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=UpdfhkK6uEG2H192iOC+tRwDfkcZNxrrp7CmiUGW5DU=;
+	b=2+Vu2MWKP5PQ3ZzWI2VD7vFWC5SKbNBL6+hYiHbx5tt3qEygV6cUKvazmWBTuP6+5mRkR4
+	/flTleT+t7ZqzCrTsftyhU+oi5RxPDXTbG9X+WrAmoyTvjCMhdEivqPNYXXKcMdo/tis1h
+	5x5qUYcpRJgsluo+BflSNguqO2P3sBs=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1769596319;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=UpdfhkK6uEG2H192iOC+tRwDfkcZNxrrp7CmiUGW5DU=;
+	b=l/DocQuuwipKGC0S5dlX2SMnzcjP0+a1HXN9X2BKCmsXWPVhPCjSskO3+dNWIe2Y5xHFqD
+	PqxAh1AVM032CJDw==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id BDEAD3EA62;
+	Wed, 28 Jan 2026 10:31:59 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id maQGLp/leWmhFwAAD6G6ig
+	(envelope-from <vbabka@suse.cz>); Wed, 28 Jan 2026 10:31:59 +0000
+Message-ID: <3dfb6857-3705-4042-9a30-da488434d9e3@suse.cz>
+Date: Wed, 28 Jan 2026 11:31:59 +0100
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202601261546.d7ae2447-lkp@intel.com> <CANpmjNMEyvL3SKMF3Za7vgQ=zYujDmJiR_s0KUcyC-3EHMdhsw@mail.gmail.com>
-In-Reply-To: <CANpmjNMEyvL3SKMF3Za7vgQ=zYujDmJiR_s0KUcyC-3EHMdhsw@mail.gmail.com>
-From: Marco Elver <elver@google.com>
-Date: Tue, 27 Jan 2026 12:19:34 +0100
-X-Gm-Features: AZwV_Qg4r9Xt-BuPJ65Eo_cjtMH75s-rsaXhOdiDf-wuKcj3wylsfe9VFHgILk8
-Message-ID: <CANpmjNOJ4f+x4y5na-oK7dtQazz3AoeSZPrmaLUMXx4=BGAQ-w@mail.gmail.com>
-Subject: Re: [tip:locking/core] [cleanup] 3931d4b980: ktools.maple.make.fail
+User-Agent: Mozilla Thunderbird
+Subject: Re: [vbabka:b4/sheaves-for-all-rebased] [slab] aa8fdb9e25:
+ will-it-scale.per_process_ops 46.5% regression
+Content-Language: en-US
 To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, 
-	x86@kernel.org, Peter Zijlstra <peterz@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-mm@kvack.org,
+ Harry Yoo <harry.yoo@oracle.com>, Hao Li <hao.li@linux.dev>,
+ Mateusz Guzik <mjguzik@gmail.com>
+References: <202601132136.77efd6d7-lkp@intel.com>
+From: Vlastimil Babka <vbabka@suse.cz>
+Autocrypt: addr=vbabka@suse.cz; keydata=
+ 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
+ m6M14QORSWTLRg==
+In-Reply-To: <202601132136.77efd6d7-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Score: -4.30
+X-Spamd-Result: default: False [-4.30 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	RCVD_TLS_ALL(0.00)[];
+	ARC_NA(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	RCPT_COUNT_SEVEN(0.00)[7];
+	FUZZY_RATELIMITED(0.00)[rspamd.com];
+	MID_RHS_MATCH_FROM(0.00)[];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	FROM_HAS_DN(0.00)[];
+	FREEMAIL_CC(0.00)[lists.linux.dev,intel.com,kvack.org,oracle.com,linux.dev,gmail.com];
+	TO_DN_SOME(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo]
+X-Spam-Level: 
+X-Spam-Flag: NO
 
-On Mon, 26 Jan 2026 at 12:54, Marco Elver <elver@google.com> wrote:
->
-> On Mon, 26 Jan 2026 at 08:37, kernel test robot <oliver.sang@intel.com> w=
-rote:
-> > Hello,
-> >
-> > kernel test robot noticed "ktools.maple.make.fail" on:
-> >
-> > commit: 3931d4b980398012b66c8ff203bfa2ab3df71a71 ("cleanup: Basic compa=
-tibility with context analysis")
-> > https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git locking/core
-> >
-> > in testcase: ktools
-> > version:
-> > with following parameters:
-> >
-> >         test: radix-tree/maple
-> >
-> > config: x86_64-rhel-9.4-func
-> > compiler: gcc-14
-> > test machine: 36 threads 1 sockets Intel(R) Core(TM) i9-9980XE CPU @ 3.=
-00GHz (Skylake) with 32G memory
-> >
-> > (please refer to attached dmesg/kmsg for entire log/backtrace)
-> >
-> >
-> > If you fix the issue in a separate patch/commit (i.e. not just a new ve=
-rsion of
-> > the same patch/commit), kindly add following tags
-> > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> > | Closes: https://lore.kernel.org/oe-lkp/202601261546.d7ae2447-lkp@inte=
-l.com
-> >
-> > KERNEL SELFTESTS: linux_headers_dir is /usr/src/linux-headers-x86_64-rh=
-el-9.4-func-3931d4b980398012b66c8ff203bfa2ab3df71a71
-> >
-> > Generating generated/map-shift.h
-> > Generating generated/bit-length.h
-> > cp ../shared/autoconf.h generated/autoconf.h
-> > cc -I../shared -I. -I../../include -I../../arch/x86/include -I../../../=
-lib -g -Og -Wall -D_LGPL_SOURCE -fsanitize=3Daddress -fsanitize=3Dundefined=
-    -c -o main.o main.c
-> > cc -c -I../shared -I. -I../../include -I../../arch/x86/include -I../../=
-../lib -g -Og -Wall -D_LGPL_SOURCE -fsanitize=3Daddress -fsanitize=3Dundefi=
-ned  ../shared/xarray-shared.c -o xarray-shared.o
-> > sed -e 's/^static //' -e 's/__always_inline //' -e 's/inline //' < ../.=
-./../lib/radix-tree.c > radix-tree.c
-> > cc -I../shared -I. -I../../include -I../../arch/x86/include -I../../../=
-lib -g -Og -Wall -D_LGPL_SOURCE -fsanitize=3Daddress -fsanitize=3Dundefined=
-    -c -o radix-tree.o radix-tree.c
-> > In file included from ../shared/linux/cleanup.h:2,
-> >                  from ../shared/linux/../../../../include/linux/idr.h:1=
-8,
-> >                  from ../shared/linux/idr.h:5,
-> >                  from radix-tree.c:18:
-> > ../shared/linux/../../../../include/linux/idr.h: In function =E2=80=98c=
-lass_idr_alloc_destructor=E2=80=99:
-> > ../shared/linux/../../../../include/linux/cleanup.h:283:9: error: expec=
-ted declaration specifiers before =E2=80=98__no_context_analysis=E2=80=99
-> >   283 |         __no_context_analysis                                  =
-         \
-> >       |         ^~~~~~~~~~~~~~~~~~~~~
->
-> Sigh, apparently user space code in tools/ now liberally uses headers
-> from include/linux/ directly. E.g. see previous fixup be8254f69446
-> ("radix-tree: add missing cleanup.h"). I guess we have to somehow
-> import some of these definitions into tools/testing/shared/linux until
-> it works.
+On 1/13/26 14:57, kernel test robot wrote:
+> 
+> 
+> Hello,
+> 
+> kernel test robot noticed a 46.5% regression of will-it-scale.per_process_ops on:
+> 
+> 
+> commit: aa8fdb9e2516055552de11cabaacde4d77ad7d72 ("slab: refill sheaves from all nodes")
+> https://git.kernel.org/cgit/linux/kernel/git/vbabka/linux.git b4/sheaves-for-all-rebased
+> 
+> testcase: will-it-scale
+> config: x86_64-rhel-9.4
+> compiler: gcc-14
+> test machine: 192 threads 2 sockets Intel(R) Xeon(R) 6740E  CPU @ 2.4GHz (Sierra Forest) with 256G memory
+> parameters:
+> 
+> 	nr_task: 100%
+> 	mode: process
+> 	test: mmap2
+> 	cpufreq_governor: performance
+> 
+> 
+> In addition to that, the commit also has significant impact on the following tests:
+> 
+> +------------------+----------------------------------------------------------------------------------------------------+
+> | testcase: change | stress-ng: stress-ng.pkey.ops_per_sec  28.4% regression                                            |
+> | test machine     | 192 threads 2 sockets Intel(R) Xeon(R) 6740E  CPU @ 2.4GHz (Sierra Forest) with 256G memory        |
+> | test parameters  | cpufreq_governor=performance                                                                       |
+> |                  | nr_threads=100%                                                                                    |
+> |                  | test=pkey                                                                                          |
+> |                  | testtime=60s                                                                                       |
+> +------------------+----------------------------------------------------------------------------------------------------+
+> | testcase: change | will-it-scale: will-it-scale.per_process_ops  32.8% regression                                     |
+> | test machine     | 224 threads 4 sockets Intel(R) Xeon(R) Platinum 8380H CPU @ 2.90GHz (Cooper Lake) with 192G memory |
+> | test parameters  | cpufreq_governor=performance                                                                       |
+> |                  | mode=process                                                                                       |
+> |                  | nr_task=100%                                                                                       |
+> |                  | test=brk2                                                                                          |
+> +------------------+----------------------------------------------------------------------------------------------------+
+> 
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202601132136.77efd6d7-lkp@intel.com
+> 
+> 
+> Details are as below:
+> -------------------------------------------------------------------------------------------------->
+> 
+> 
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20260113/202601132136.77efd6d7-lkp@intel.com
+> 
+> =========================================================================================
+> compiler/cpufreq_governor/kconfig/mode/nr_task/rootfs/tbox_group/test/testcase:
+>   gcc-14/performance/x86_64-rhel-9.4/process/100%/debian-13-x86_64-20250902.cgz/lkp-srf-2sp2/mmap2/will-it-scale
+> 
+> commit: 
+>   6a67958ab0 ("slab: remove unused PREEMPT_RT specific macros")
+>   aa8fdb9e25 ("slab: refill sheaves from all nodes")
 
-Fix: https://lore.kernel.org/all/20260127111428.3747328-1-elver@google.com/
+Hi,
+
+as discussed at [1] this particular commit restores a behavior analogical to
+one that existed before sheaves, so while it may show a regression in
+isolation, there should hopefully be also corresponding improvement in an
+earlier commit, and those two more or less cancelled out.
+
+What would be more useful is to know the whole series effect (excluding some
+preparatory patches). Could you please compare that if anything stands out?
+In next-20260127 that would be:
+
+before: d86c9915f4b5 ("mm/slab: make caches with sheaves mergeable")
+
+after: ca43eb67282a ("mm/slub: cleanup and repurpose some stat items")
+
+Additionally, does the patch below improve anything? (on top of
+ca43eb67282a). Thanks!
+
+[1] https://lore.kernel.org/all/85d872a3-8192-4668-b5c4-c81ffadc74da@suse.cz/
+
+----8<----
+From 5ac96a0bde0c3ea5cecfb4e478e49c9f6deb9c19 Mon Sep 17 00:00:00 2001
+From: Vlastimil Babka <vbabka@suse.cz>
+Date: Tue, 27 Jan 2026 22:40:26 +0100
+Subject: [PATCH] slub: avoid list_lock contention from __refill_objects_any()
+
+Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+---
+ mm/slub.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
+
+diff --git a/mm/slub.c b/mm/slub.c
+index 7d7e1ae1922f..3458dfbab85d 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -3378,7 +3378,8 @@ static inline bool pfmemalloc_match(struct slab *slab, gfp_t gfpflags);
+ 
+ static bool get_partial_node_bulk(struct kmem_cache *s,
+ 				  struct kmem_cache_node *n,
+-				  struct partial_bulk_context *pc)
++				  struct partial_bulk_context *pc,
++				  bool allow_spin)
+ {
+ 	struct slab *slab, *slab2;
+ 	unsigned int total_free = 0;
+@@ -3390,7 +3391,10 @@ static bool get_partial_node_bulk(struct kmem_cache *s,
+ 
+ 	INIT_LIST_HEAD(&pc->slabs);
+ 
+-	spin_lock_irqsave(&n->list_lock, flags);
++	if (allow_spin)
++		spin_lock_irqsave(&n->list_lock, flags);
++	else if (!spin_trylock_irqsave(&n->list_lock, flags))
++		return false;
+ 
+ 	list_for_each_entry_safe(slab, slab2, &n->partial, slab_list) {
+ 		struct freelist_counters flc;
+@@ -6544,7 +6548,8 @@ EXPORT_SYMBOL(kmem_cache_free_bulk);
+ 
+ static unsigned int
+ __refill_objects_node(struct kmem_cache *s, void **p, gfp_t gfp, unsigned int min,
+-		      unsigned int max, struct kmem_cache_node *n)
++		      unsigned int max, struct kmem_cache_node *n,
++		      bool allow_spin)
+ {
+ 	struct partial_bulk_context pc;
+ 	struct slab *slab, *slab2;
+@@ -6556,7 +6561,7 @@ __refill_objects_node(struct kmem_cache *s, void **p, gfp_t gfp, unsigned int mi
+ 	pc.min_objects = min;
+ 	pc.max_objects = max;
+ 
+-	if (!get_partial_node_bulk(s, n, &pc))
++	if (!get_partial_node_bulk(s, n, &pc, allow_spin))
+ 		return 0;
+ 
+ 	list_for_each_entry_safe(slab, slab2, &pc.slabs, slab_list) {
+@@ -6650,7 +6655,8 @@ __refill_objects_any(struct kmem_cache *s, void **p, gfp_t gfp, unsigned int min
+ 					n->nr_partial <= s->min_partial)
+ 				continue;
+ 
+-			r = __refill_objects_node(s, p, gfp, min, max, n);
++			r = __refill_objects_node(s, p, gfp, min, max, n,
++						  /* allow_spin = */ false);
+ 			refilled += r;
+ 
+ 			if (r >= min) {
+@@ -6691,7 +6697,8 @@ refill_objects(struct kmem_cache *s, void **p, gfp_t gfp, unsigned int min,
+ 		return 0;
+ 
+ 	refilled = __refill_objects_node(s, p, gfp, min, max,
+-					 get_node(s, local_node));
++					 get_node(s, local_node),
++					 /* allow_spin = */ true);
+ 	if (refilled >= min)
+ 		return refilled;
+ 
+-- 
+2.52.0
+
+
