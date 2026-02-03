@@ -1,357 +1,340 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BF5A3446A7;
-	Tue,  3 Feb 2026 12:57:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770123436; cv=none; b=TnHvTY9JXZALKr6+JDJTWY7c+5AmdAWiDyNAqSZiGFVZ/3dM5qhqZNQeIT1CenjGdaO0P+r/5iW30LLaONeU+W2/EtOMWiljBM6QBqUCWIuJoIcwyDppqGVLctSHywx0Z0pEbqy8PMnftMuWPNbSeCf0QFWImlDukolvJvY+t14=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770123436; c=relaxed/simple;
-	bh=6GFUfYtoKHy55EZcUs9ojwoaABxPUQGH/pkHIMwTj0k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Rsgak+9h+0d58pusnG4v2fnDKcZoksOS7hHoCn+VO4OAcgtq2hUgrPhvxCVxC8KPpcTgtVBprLo75QCG6R0pjhsqfCUMuQNhTnGxBVk+99+hviEc2FANq4Vt09GbXz2YlgpfKsXnjozwaqjNhIDHXU92JKkw2bi5en0ghro1hx0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LvaSzOoY; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A52F23A1A29
+	for <oe-lkp@lists.linux.dev>; Tue,  3 Feb 2026 13:54:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.15
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770126869; cv=fail; b=XFK8rZ5itboXY/9otHeGtdrzi9k6YShzHUYFWkXOzgAphkMSEVklSXzZ1WvmyJiiddRZVtD2nSPhjYxPalC7qUSs5esaz5wAS68N7Soc9NATQm0UrTuLWmb0VRS/7y6FFGxg+O0/NHqCfXvixUBACTpGWnIptj/m2QlD8rEsNBM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770126869; c=relaxed/simple;
+	bh=aOuJNUArTL8xJMZ9jbfY/SN9o+3vXVLsR2owvAksAxc=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=A+uC3Ce/bBSIxotnpXm5/HCr0mDnsraZ0faErYoCiaMpMPC3Ua5PXgDU+PBzpopRGQdg+8UtiHITVdhqU94/jE5hzenjHjg95mT78CUkgCxQgggkyWlhZ0Itp446i/Hy0D1+s2Uc+GkGst8/0UKXVxmS5z8d4bsAyb8IEbxShIw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ckdqO+j8; arc=fail smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LvaSzOoY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B8F4C19421;
-	Tue,  3 Feb 2026 12:57:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770123436;
-	bh=6GFUfYtoKHy55EZcUs9ojwoaABxPUQGH/pkHIMwTj0k=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=LvaSzOoYe5wHCmKGYm38XkP4QWBOWCfr0+XQNyOyIeooL1gQ2GYh2bUTB4mt01fNA
-	 Ma3ykQG7mvyAw/FyTHEUP8uB9ba9YfgXRjYosi1aGNWLEeL88IFfOIfj/M015BstWQ
-	 //wkcQULl1+Xtz2cn2vlqTnqa0D1UxVTvQjge6sE7QJbOr5XvLU6W/ZpnuptoXx2+6
-	 8xf3sQrvWbnqgLEFQvDedz/58UGi66zwQhTy8i011PZhPXpXgkbWF6myCOWgs13Fwe
-	 7mGg8dsVsWxM5azmy6+xafRKm6F3lYx35iWoabf0kaKuFtM3Akx5devoPvCbNXPp2v
-	 kx71Wx8S80bGA==
-Date: Tue, 3 Feb 2026 13:57:11 +0100
-From: Christian Brauner <brauner@kernel.org>
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, 
-	Jeff Layton <jlayton@kernel.org>, linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Subject: Re: [linux-next:master] [fs]  313c47f4fe:
- BUG:kernel_hang_in_test_stage
-Message-ID: <20260203-galopp-wachdienst-02c010334a81@brauner>
-References: <202601270735.29b7c33e-lkp@intel.com>
- <20260130-badeunfall-flaggen-d4df12bcb501@brauner>
- <20260131-dahin-nahtlos-06f69134584a@brauner>
- <aYFPw4WeItF84APy@xsang-OptiPlex-9020>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ckdqO+j8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1770126866; x=1801662866;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   mime-version;
+  bh=aOuJNUArTL8xJMZ9jbfY/SN9o+3vXVLsR2owvAksAxc=;
+  b=ckdqO+j8hjqp1pE4X6fR4JXwN1OXeLj7vHXjWnHNgigmckMYLeCi+u0j
+   H5iwEAhW4oIVbdH1Gbk+rzUQ6nfC+qKpb3xiS1+WC98GOeTmz96OFjWX4
+   Q7mF3FLdrhjhmp02WilZPZKOEx0Rv2zRDlykVJpXGV0v0abHGCHRAWKBz
+   DboM+qIZLP4rvZv8Cr0imarVsmxiIEX1ceJMStKs7YKn4fimmeeJCOKro
+   zUDNpc2o+kIVV3nARH+nl8F3c3Nfgy0agZNTMcHhTtPBbH7AVeFOu6tuH
+   rht3r9EXL4odRpJwBsquMyJIK/tcQlcGXeZlge3FrmBZue4uzG/fzHTC0
+   w==;
+X-CSE-ConnectionGUID: jk9RUi1hQ8CDndLS1WOgTA==
+X-CSE-MsgGUID: +2I9bVI4QQSTIoes7KRBIw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11690"; a="74920412"
+X-IronPort-AV: E=Sophos;i="6.21,270,1763452800"; 
+   d="scan'208";a="74920412"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 05:54:24 -0800
+X-CSE-ConnectionGUID: 8SYtYv4fQ6GUKrflVGQe+g==
+X-CSE-MsgGUID: FH36fxgATXywbfjKrWcasA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,270,1763452800"; 
+   d="scan'208";a="209567094"
+Received: from fmsmsx901.amr.corp.intel.com ([10.18.126.90])
+  by fmviesa006.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 05:54:23 -0800
+Received: from FMSMSX902.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.35; Tue, 3 Feb 2026 05:54:23 -0800
+Received: from fmsedg901.ED.cps.intel.com (10.1.192.143) by
+ FMSMSX902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.35 via Frontend Transport; Tue, 3 Feb 2026 05:54:23 -0800
+Received: from DM1PR04CU001.outbound.protection.outlook.com (52.101.61.50) by
+ edgegateway.intel.com (192.55.55.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.35; Tue, 3 Feb 2026 05:54:22 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=anWD/03RTyt7T3rg/n9kSkwA0jLVyrNbt+HMTEM6p1b4hJ0G2vE0dL92qjZurC7OM0hgSgQrc1HM2Q0+H35WQfh9AR0dhDRvuW8AmZIwQ58yxQ4exnzocbc3n67U9tXur6DfFdXtxWCtH93dYdcsmNhBEJ6fTKlWzkMO9ETPt91iJybfniugF3QBkbdFjwYgTfOF6Cwd8nVSfGIkoi22KQgSMs8THGH4eSKpOVLBAFRbeTi6O1jOFGJbdtiU0a7zkHPUe9vHbkfTKsoIhtAkiBIEsqJuE/6yhdCzP1ReK9W1uI09seAC/wMF0OOGTf81gO76rzz95NqmdH9FeI+rqA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=45T8dnfYGQ88mzutasgH/npTrOx8/TlxIC9o3vEJbKU=;
+ b=SIZH7fLVwgRPXu3KjxaCPADBn4UdOYNER0ISnPS0URqcAZQ2ZR1XWytsbcQt3LpxUpB6Ixc4cm8SHTFRfBbFM2ESyhex6yeLldXfCXbdTYE5XEbN8imabjaMhBJMQ+TCavtB3tMpNpdr9ajxWewFqYLU/M4EEldchHVUsCC7hn9W2BUmqpnj92NI3yByBkqScij/mSLLBQaNY79Pz9JXA0OACsA+EOnnV+sh8zr1ygsycGtJxd8gj2Uhf9V11fdlHwV8JvIiQgbZ7CkVEfX8FuNRFJT598R/OVeAWU7maHgqYILDRy98d1C4orvRyWyhzRzegM9z3MYmHmjcrv/Ylw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by IA0PR11MB7329.namprd11.prod.outlook.com (2603:10b6:208:437::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9564.16; Tue, 3 Feb
+ 2026 13:54:19 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::e4de:b1d:5557:7257]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::e4de:b1d:5557:7257%5]) with mapi id 15.20.9564.016; Tue, 3 Feb 2026
+ 13:54:19 +0000
+Date: Tue, 3 Feb 2026 21:54:08 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: <sunliming@linux.dev>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-raid@vger.kernel.org>,
+	<song@kernel.org>, <yukuai@fnnas.com>, <linux-kernel@vger.kernel.org>,
+	sunliming <sunliming@kylinos.cn>, <oliver.sang@intel.com>
+Subject: Re: [PATCH 2/3] lib/raid6: Optimizing the raid6_select_algo time
+ through asynchronous processing
+Message-ID: <202602032100.d8e49b6f-lkp@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20260128104923.338443-3-sunliming@linux.dev>
+X-ClientProxiedBy: KUZPR03CA0019.apcprd03.prod.outlook.com
+ (2603:1096:d10:24::17) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <aYFPw4WeItF84APy@xsang-OptiPlex-9020>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|IA0PR11MB7329:EE_
+X-MS-Office365-Filtering-Correlation-Id: 62ce0793-6496-4db0-2c9d-08de632bb9f3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024|7053199007;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?zUJtdQ+TKjZH9cmFHV1PKI14Z9hBYzN/Vo3Z/s+dAnCJbft/NAmX3IxtWw7n?=
+ =?us-ascii?Q?yuRLgnPvY1vDZWhgUXEwY8dV/XY8ELYen9iMT0zw+trtX/mgtQ7QAgE5lb+Y?=
+ =?us-ascii?Q?CWQN2cjWTtYvKq53wsVWVTPJKSGRRofhaG/DAWg1pj8XXYEMmdUrqfi4KVNX?=
+ =?us-ascii?Q?FWnKFWbTTOJyaQ6Hb83y9VEH1PKOt62lGdc8E6m5B8w3i4VU3jjj/5Ir5SpL?=
+ =?us-ascii?Q?VySQOD5JtOK6nKjlZquCdVHAQTbTtldsxrbb2/Sj+02JEKR2EiDJJvIH4WVf?=
+ =?us-ascii?Q?uNLyRjbs2ESEuPAHX2HWsq34tW0OpeLsB+GdQ2u+fy5nnGKdiNgQgzpgwYqz?=
+ =?us-ascii?Q?K4sRI98zHs8jBguMgPQZWcO1mIahhgjRow9oFyRNsprvJNvAbd2oRim85iD2?=
+ =?us-ascii?Q?t9/jsdc33zYU4lDNo7Mo3r3bbS3xmP70kU89tr8jg1RnTgHFJ4RNhUYp9vUa?=
+ =?us-ascii?Q?cMCWpxcSPERz5aZUaL+r+DLi3E69oykr6josfxvXz4uMC05kPUa1vud6q8d3?=
+ =?us-ascii?Q?7hpPleOTzxJn5f+X6Mp7KZWbftuSRJkCWyOPOighpEi+10oJuCnBS3lIjBRi?=
+ =?us-ascii?Q?167a0umKTHeLiAjKXIep2t8Nbf1NXWtSLB0VxAeDC/IfHM2hu7nK+CJBK/br?=
+ =?us-ascii?Q?W/OqSUFPUeFNcTNys9NQe3Hl7wlxl8rVf6twDmlgN/tZbtNKJ14UF1466+o0?=
+ =?us-ascii?Q?5+xI+qVhzu54XmZntUQ8Pu8p6n7L2EqDIIVOOpkhM0PWGXuFQ0IyRvhrRU7A?=
+ =?us-ascii?Q?COIUj1J00q+QzW9nwb3qFhSClmbBbTC57iag7inWTCcnIXfSVxLVomDp9MtV?=
+ =?us-ascii?Q?pCoDHjK4piaxslKEqCwI6dQj/KSiKh/3sGA48FsdmuaAAnTLzgCfnIZ/nZIQ?=
+ =?us-ascii?Q?qNVU8Q7SRfoe6a21FPwbcuZxRd6P5uOiw6KjcrZzsVaZT3+NUgqmV/9tG3eH?=
+ =?us-ascii?Q?b93orNq8j7ZO7obT0BEc2z1VBEXuDnoFmuAtnOaQOeauXyWJf26c3qccEc2X?=
+ =?us-ascii?Q?YSyoTTnG6hFkprkU35pyGOtImIzrQCMDrPvTQaeemYCTXpznLm1fpqS9pjGz?=
+ =?us-ascii?Q?z0lTYxBZ1/vNfR8jTHjVR0wYLysVq3lxuh3PwTnHaDNg1eQqdynG1ShD/1at?=
+ =?us-ascii?Q?qyWtsLxZDWGFYD1ZFc2WELBQk8tPP6RyCScxxL190+HSonw8eDAkVoYfLqBw?=
+ =?us-ascii?Q?x/m+M3bBF/xz/h2SvUrrN0K7PhatmpxM4xV08ApRPW1QEel/KuUismGVnO9w?=
+ =?us-ascii?Q?QjKYXmJolSrq1PsBWbb7YFjMjyf62RplgEIOC4zpi1MranR+AEdzz+TKrltc?=
+ =?us-ascii?Q?2HxLUqKVTg10YadXy/+eJX6vrnrSzb4nbUKKDQO0r/TWvNYTjLyWacDmy5/j?=
+ =?us-ascii?Q?NiQ7NrgRtsv4yEMQHFzHgYouFVrHqBscQQdQf50DxoiWu+e+E+Bm6O6d8jl7?=
+ =?us-ascii?Q?YGk6u8CSWT2mv31O2Lq20JBtocqWwTrz5iVJ+pSkD60CNRr/r7MLyC2YYdRi?=
+ =?us-ascii?Q?50EkxtBjAz5/1SpI9ehqsii4HALSU4A8yklg?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(7053199007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7juaWJALIQd1T74P2P8+2bVIInTqufq7mp14X8EaOJLWXozx/yG9FS22lknr?=
+ =?us-ascii?Q?+RkwQCMnLCdTRnXaz8Fqeslp/z004PZnaEYBkkYk6qleq9JpJ6ENVZWBXzG+?=
+ =?us-ascii?Q?dyikkfIvyBFCEb0tdavlAtpp0bRk6WrzFnPgo603WAXOdgHKfeEqCcXrTXYK?=
+ =?us-ascii?Q?KudQ028Hp9ypcviZ5wbjKrLxzVdxQYxGtOs2t+poIctfp+fJe5g/C79ZbeXy?=
+ =?us-ascii?Q?PmCOyKGVUSMci2e00+b/b+4LSPPGU+21lfmW7UTu2GK2rtaCrXcr6Zz8swN1?=
+ =?us-ascii?Q?IazydvLrOUFArKJulIL5PQWXwcYaUCWdEwxIMQNk+EtwgIafinUopfF8G4Jm?=
+ =?us-ascii?Q?Y0dCmGeYSw9kfTFYbRhuXVEA++EsWaJRM8JFVOlZIZhgpSvTuIhe/KyooA3m?=
+ =?us-ascii?Q?KU7Q0UeDnbzp731tYu5ysgR3ItGot2dSOV6XwNd6RwqZ8cAhtjLC1Hirj8DD?=
+ =?us-ascii?Q?Y8xAh6kpHItAu/yrkoJt+zu0HPJ8/pSi5d2hD3FCM6bP7BwIgl3cSMphYtIQ?=
+ =?us-ascii?Q?7zNhquadsSbsEL/jBvwhdkoxnsX0hdA23AGpARXjM7+qXw9Bpj+J/cftRzPj?=
+ =?us-ascii?Q?aviwnbSK53633E8O3QAegWGQsQ/i11v41lEa4nIIEPa+ZST6qtCvNBy8vNud?=
+ =?us-ascii?Q?EjzINW/MwoBYt+sNKNp0UQIssMsmTydVdorcUoaXz75BQqN3xleqC8bj25DM?=
+ =?us-ascii?Q?vyfKbeV9xDA30F8yTJnvlaJ7gDrKSJ2Sp49lb9pO8KlrRG73ok5TPFSC6Mju?=
+ =?us-ascii?Q?F5bGMLMl6ahEit12JK5R3DixYhr/zM5xc11Kvkjf1mUw88DaXs6e6aKHTRXz?=
+ =?us-ascii?Q?xolJdwoSjRgZdPVGwiuxXNUVzk8/XStemI025ih05hYBqKNRSmMwINKEspii?=
+ =?us-ascii?Q?kkmgitjlxSdZ3CGw/iiiXxAJO8U4iZrksmJxrQMTeqcvD+JrOzZSY3x+T0mA?=
+ =?us-ascii?Q?TEkvoIo9Z9v8I7KqOrq8xLDGo6vtojIWL9HaWsfODCAFZDA8U1avQZb4tACw?=
+ =?us-ascii?Q?4U2k6dVdGAVPy4mioEOAQR95EhPeOHY1znr4KBVnw9nzOjfwMxOKPXjmbzMV?=
+ =?us-ascii?Q?XpFtmqjLMBOcP6NQo7c7zU84mpwei9kSIjd4Nqzjt1sQI/83T/n/yOGRt0po?=
+ =?us-ascii?Q?yu6pH4EyaDhkdqM0l8eCIZ8hCgrkQJMIK7bhtzX+mj0lGrjl5uVGPuHR7sYi?=
+ =?us-ascii?Q?K/bPchAsJypqTQEXWfCP/GhJqSgGcdYYfYEHcgTYZQTZOEs0kSvryr7DIYm1?=
+ =?us-ascii?Q?2ymwnipLW0s8WanEOnljUAsfwuh2EfTPeOXcR8Jv0zBI0l7X4uCRWKWnSXdG?=
+ =?us-ascii?Q?QFusk/rZ4bc8L1IxQ6i8xZKYJdaF7Dq9th9oX+jCt/yzx5gLsV3j1l6brQUD?=
+ =?us-ascii?Q?aoo+aC5LWY9CQ+43YdwBvEtedE++zF1ng9unQOlcPhEoZ8nOafWSjY21LUnG?=
+ =?us-ascii?Q?PsVvEpCWGomRTNi7jDYMu3Rcbdeeo+loxh2uaAdYzY7I3ktW6XVW99mh3JLV?=
+ =?us-ascii?Q?I4MreYacr4Sz3qwSTQN4pAC/0OL0ZZAJcmP6IDRbI9sa9mdLOa8CPgPVIgdk?=
+ =?us-ascii?Q?sF206+XOvFhAvl3hmC98M4rKSvvo4VsG3xFPrCuywRM1b+7+A8FhkdR3Yhkf?=
+ =?us-ascii?Q?u3YChE/zsOrg0i9GxTyv73cyYfZdh9xpzNcn4A/SRVksYhkVGEzPWq2nzZA1?=
+ =?us-ascii?Q?xzivU9VZAdU7FFhRwmod5WvwyJO6STEYnQOL7v2YT+hp1qv6FZXzd1Y14D4P?=
+ =?us-ascii?Q?ERa8vjwe1w=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 62ce0793-6496-4db0-2c9d-08de632bb9f3
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Feb 2026 13:54:18.9740
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QFSksX/uppo0DgrkvBmMInCXfMQ2lr1CHD0GF1RuFSAttF35HxpZtYpqmyX0Ex1gfb8/Cwnm5NtxY8wtEby3Aw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR11MB7329
+X-OriginatorOrg: intel.com
 
-On Tue, Feb 03, 2026 at 09:30:43AM +0800, Oliver Sang wrote:
-> hi, Christian Brauner,
->=20
-> sorry for late. it cost us some time to double confirm.
->=20
-> On Sat, Jan 31, 2026 at 12:41:12PM +0100, Christian Brauner wrote:
-> > On Fri, Jan 30, 2026 at 05:59:00PM +0100, Christian Brauner wrote:
-> > > On Tue, Jan 27, 2026 at 02:26:09PM +0800, kernel test robot wrote:
-> > > >=20
-> > > >=20
-> > > > Hello,
-> > > >=20
-> > > > kernel test robot noticed "BUG:kernel_hang_in_test_stage" on:
-> > > >=20
-> > > > commit: 313c47f4fe4d07eb2969f429a66ad331fe2b3b6f ("fs: use nullfs u=
-nconditionally as the real rootfs")
-> > > > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git ma=
-ster
-> > > >=20
-> > > > [test failed on linux-next/master ca3a02fda4da8e2c1cb6baee5d72352e9=
-e2cfaea]
-> > > >=20
-> > > > in testcase: trinity
-> > > > version:=20
-> > > > with following parameters:
-> > > >=20
-> > > > 	runtime: 300s
-> > > > 	group: group-00
-> > > > 	nr_groups: 5
-> > > >=20
-> > > >=20
-> > > >=20
-> > > > config: x86_64-kexec
-> > > > compiler: clang-20
-> > > > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp =
-2 -m 32G
-> > > >=20
-> > > > (please refer to attached dmesg/kmsg for entire log/backtrace)
-> > >=20
-> > > The reproducer doesn't work:
-> > >=20
-> > > ubuntu@pengar:~/data/kernel/linux/MODULES/lkp-tests$ sudo bin/lkp qem=
-u -k ../../vmlinux -m ./modules.cgz job-script # job-script
-> > > result_root: /home/ubuntu/.lkp//result/trinity/group-00-5-300s/vm-snb=
-/yocto-x86_64-minimal-20190520.cgz/x86_64-kexec/clang-20/313c47f4fe4d07eb29=
-69f429a66ad331fe2b3b6f/15
-> > > downloading initrds ...
-> > > skip downloading /home/ubuntu/.lkp/cache/osimage/yocto/yocto-x86_64-m=
-inimal-20190520.cgz
-> > > 19270 blocks
-> > > /usr/bin/wget -q --timeout=3D3600 --tries=3D1 --local-encoding=3DUTF-=
-8 https://download.01.org/0day-ci/lkp-qemu/osimage/pkg/debian-x86_64-201804=
-03.cgz/trinity-static-x86_64-x86_64-1c734c75-1_2020-01-06.cgz -N -P /home/u=
-buntu/.lkp/cache/osimage/pkg/debian-x86_64-20180403.cgz
-> > > Failed to download osimage/pkg/debian-x86_64-20180403.cgz/trinity-sta=
-tic-x86_64-x86_64-1c734c75-1_2020-01-06.cgz
-> > > cat: '': No such file or directory
-> > > exec command: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -fsdev =
-local,id=3Dtest_dev,path=3D/home/ubuntu/.lkp//result/trinity/group-00-5-300=
-s/vm-snb/yocto-x86_64-minimal-20190520.cgz/x86_64-kexec/clang-20/313c47f4fe=
-4d07eb2969f429a66ad331fe2b3b6f/15,security_model=3Dnone -device virtio-9p-p=
-ci,fsdev=3Dtest_dev,mount_tag=3D9p/virtfs_mount -kernel ../../vmlinux -appe=
-nd root=3D/dev/ram0 RESULT_ROOT=3D/result/trinity/group-00-5-300s/vm-snb/yo=
-cto-x86_64-minimal-20190520.cgz/x86_64-kexec/clang-20/313c47f4fe4d07eb2969f=
-429a66ad331fe2b3b6f/0 BOOT_IMAGE=3D/pkg/linux/x86_64-kexec/clang-20/313c47f=
-4fe4d07eb2969f429a66ad331fe2b3b6f/vmlinuz-6.19.0-rc1-00006-g313c47f4fe4d br=
-anch=3Dinternal-devel/devel-hourly-20260124-050739 job=3D/lkp/jobs/schedule=
-d/vm-meta-17/trinity-group-00-5-300s-yocto-x86_64-minimal-20190520.cgz-313c=
-47f4fe4d-20260126-53110-19zhjsh-2.yaml user=3Dlkp ARCH=3Dx86_64 kconfig=3Dx=
-86_64-kexec commit=3D313c47f4fe4d07eb2969f429a66ad331fe2b3b6f intremap=3Dpo=
-sted_msi watchdog_thresh=3D240 rcuperf.shutdown=3D0 rcuscale.shutdown=3D0 r=
-efscale.shutdown=3D0 audit=3D0 kunit.enable=3D0 ia32_emulation=3Don max_upt=
-ime=3D7200 LKP_LOCAL_RUN=3D1 selinux=3D0 debug apic=3Ddebug sysrq_always_en=
-abled rcupdate.rcu_cpu_stall_timeout=3D100 net.ifnames=3D0 printk.devkmsg=
-=3Don panic=3D-1 softlockup_panic=3D1 nmi_watchdog=3Dpanic oops=3Dpanic loa=
-d_ramdisk=3D2 prompt_ramdisk=3D0 drbd.minor_count=3D8 systemd.log_level=3De=
-rr ignore_loglevel console=3Dtty0 earlyprintk=3DttyS0,115200 console=3DttyS=
-0,115200 vga=3Dnormal rw  ip=3Ddhcp result_service=3D9p/virtfs_mount -initr=
-d /home/ubuntu/.lkp/cache/final_initrd -smp 2 -m 12872M -no-reboot -device =
-i6300esb -rtc base=3Dlocaltime -device e1000,netdev=3Dnet0 -netdev user,id=
-=3Dnet0 -display none -monitor null -serial stdio
-> > > qemu-system-x86_64: Error loading uncompressed kernel without PVH ELF=
- Note
-> > >=20
-> > > The paths for the downloads in the job script are wrong or don't work.
-> > > Even if I manually modify the above path I still get in the next step:
-> > >=20
-> > > /usr/bin/wget -q --timeout=3D3600 --tries=3D1 --local-encoding=3DUTF-=
-8 https://download.01.org/0day-ci/lkp-qemu/modules.cgz -N -P /home/ubuntu/.=
-lkp/cache
-> > > Failed to download modules.cgz
-> > > cat: '': No such file or directory
-> > >=20
-> > > I need a way to reproduce the issue to figure out exactly what is
-> > > happening.
-> >=20
-> > Ok, I got it all working and can run the reproducer.
->=20
-> not sure how you solve it? from above log, the problem is caused by
-> trinity-static-x86_64-x86_64-1c734c75-1_2020-01-06.cgz, do you have any l=
-og?
-> internally, it's a soft link pointing to a debian version, so maybe there=
- are
-> some code issue for uploading to https://download.01.org/0day-ci.
->=20
-> if you could share more information with us, we could check further to im=
-prove
-> our process and reproducer. thanks a lot!
->=20
-> we will also check by ourselves, so no problem at all if you ignore this.
 
-I manually edited the job-script file to point to something existing on
-the server. If I delete everything that I did and restart the test using
-just the parameters and the job-script provided with your link then I
-run into the issues I mentioned in my first mail again...
 
-        ubuntu@pengar:~/data/kernel/linux/MODULES/lkp-tests$ sudo bin/lkp q=
-emu -k ~/data/repro.nullfs/lkp/vmlinuz-6.19.0-rc1-00006-g313c47f4fe4d -m ~/=
-data/repro.nullfs/lkp/modules-313c47f4fe4d.cgz job-script
-        The approx. disk space requirements are
+Hello,
 
-        10M             simple boot test in rootfs openwrt
-        50M             simple boot test in rootfs debian
-        1G              plan to run a number of different tests
-        100G or more    IO tests
+kernel test robot noticed "Oops:int3:#[##]SMP_KASAN_NOPTI" on:
 
-        Please enter a dir with enough disk space, or simply press Enter to=
- accept the default.
-        You may still symlink /home/ubuntu/.lkp to a more suitable place in=
- future.
-        /home/ubuntu/.lkp =3D> /home/ubuntu/data/lkp/
-        ~/data/kernel/linux/MODULES/lkp-tests/programs/lkp-src/pkg ~/data/k=
-ernel/linux/MODULES/lkp-tests
-        x86_64
-        =3D=3D> Making package: lkp-src 0-1 (Tue Feb  3 10:27:03 UTC 2026)
-        =3D=3D> Checking runtime dependencies...
-        =3D=3D> Checking buildtime dependencies...
-        =3D=3D> WARNING: Using existing $srcdir/ tree
-        =3D=3D> Removing existing $pkgdir/ directory...
-        =3D=3D> Starting build()...
-        make: Entering directory '/home/ubuntu/data/kernel/linux/MODULES/lk=
-p-tests/bin/event'
-        gcc  -D_FORTIFY_SOURCE=3D2  -c -o wakeup.o wakeup.c
-        gcc  -Wl,-O1,--sort-common,--as-needed,-z,relro -static -o wakeup w=
-akeup.o
-        rm -f wakeup.o
-        strip wakeup
-        make: Leaving directory '/home/ubuntu/data/kernel/linux/MODULES/lkp=
--tests/bin/event'
-        =3D=3D> Entering fakeroot environment...
-        x86_64
-        =3D=3D> Starting package()...
-        =3D=3D> Creating package "lkp-src"...
-        10999 blocks
-        renamed '/home/ubuntu/.lkp/cache/lkp-x86_64.cgz.tmp' -> '/home/ubun=
-tu/.lkp/cache/lkp-x86_64.cgz'
-        =3D=3D> Leaving fakeroot environment.
-        =3D=3D> Finished making: lkp-src 0-1 (Tue Feb  3 10:27:05 UTC 2026)
-        ~/data/kernel/linux/MODULES/lkp-tests
-        result_root: /home/ubuntu/.lkp//result/trinity/group-00-5-300s/vm-s=
-nb/yocto-x86_64-minimal-20190520.cgz/x86_64-kexec/clang-20/313c47f4fe4d07eb=
-2969f429a66ad331fe2b3b6f/0
-        downloading initrds ...
-        use local modules: /home/ubuntu/.lkp/cache/modules-313c47f4fe4d.cgz
-        /usr/bin/wget -q --timeout=3D3600 --tries=3D1 --local-encoding=3DUT=
-F-8 https://download.01.org/0day-ci/lkp-qemu/osimage/yocto/yocto-x86_64-min=
-imal-20190520.cgz -N -P /home/ubuntu/.lkp/cache/osimage/yocto
-        19270 blocks
-        /usr/bin/wget -q --timeout=3D3600 --tries=3D1 --local-encoding=3DUT=
-F-8 https://download.01.org/0day-ci/lkp-qemu/osimage/pkg/debian-x86_64-2018=
-0403.cgz/trinity-static-x86_64-x86_64-1c734c75-1_2020-01-06.cgz -N -P /home=
-/ubuntu/.lkp/cache/osimage/pkg/debian-x86_64-20180403.cgz
-        Failed to download osimage/pkg/debian-x86_64-20180403.cgz/trinity-s=
-tatic-x86_64-x86_64-1c734c75-1_2020-01-06.cgz
-        cat: '': No such file or directory
-        exec command: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -fsde=
-v local,id=3Dtest_dev,path=3D/home/ubuntu/.lkp//result/trinity/group-00-5-3=
-00s/vm-snb/yocto-x86_64-minimal-20190520.cgz/x86_64-kexec/clang-20/313c47f4=
-fe4d07eb2969f429a66ad331fe2b3b6f/0,security_model=3Dnone -device virtio-9p-=
-pci,fsdev=3Dtest_dev,mount_tag=3D9p/virtfs_mount -kernel /home/ubuntu/data/=
-repro.nullfs/lkp/vmlinuz-6.19.0-rc1-00006-g313c47f4fe4d -append root=3D/dev=
-/ram0 RESULT_ROOT=3D/result/trinity/group-00-5-300s/vm-snb/yocto-x86_64-min=
-imal-20190520.cgz/x86_64-kexec/clang-20/313c47f4fe4d07eb2969f429a66ad331fe2=
-b3b6f/0 BOOT_IMAGE=3D/pkg/linux/x86_64-kexec/clang-20/313c47f4fe4d07eb2969f=
-429a66ad331fe2b3b6f/vmlinuz-6.19.0-rc1-00006-g313c47f4fe4d branch=3Dinterna=
-l-devel/devel-hourly-20260124-050739 job=3D/lkp/jobs/scheduled/vm-meta-17/t=
-rinity-group-00-5-300s-yocto-x86_64-minimal-20190520.cgz-313c47f4fe4d-20260=
-126-53110-19zhjsh-2.yaml user=3Dlkp ARCH=3Dx86_64 kconfig=3Dx86_64-kexec co=
-mmit=3D313c47f4fe4d07eb2969f429a66ad331fe2b3b6f intremap=3Dposted_msi watch=
-dog_thresh=3D240 rcuperf.shutdown=3D0 rcuscale.shutdown=3D0 refscale.shutdo=
-wn=3D0 audit=3D0 kunit.enable=3D0 ia32_emulation=3Don max_uptime=3D7200 LKP=
-_LOCAL_RUN=3D1 selinux=3D0 debug apic=3Ddebug sysrq_always_enabled rcupdate=
-=2Ercu_cpu_stall_timeout=3D100 net.ifnames=3D0 printk.devkmsg=3Don panic=3D=
--1 softlockup_panic=3D1 nmi_watchdog=3Dpanic oops=3Dpanic load_ramdisk=3D2 =
-prompt_ramdisk=3D0 drbd.minor_count=3D8 systemd.log_level=3Derr ignore_logl=
-evel console=3Dtty0 earlyprintk=3DttyS0,115200 console=3DttyS0,115200 vga=
-=3Dnormal rw  ip=3Ddhcp result_service=3D9p/virtfs_mount -initrd /home/ubun=
-tu/.lkp/cache/final_initrd -smp 2 -m 12169M -no-reboot -device i6300esb -rt=
-c base=3Dlocaltime -device e1000,netdev=3Dnet0 -netdev user,id=3Dnet0 -disp=
-lay none -monitor null -serial stdio
-        early console in setup code
-        No EFI environment detected.
-        early console in extract_kernel
-        input_data: 0x00000000031ee2c4
-        input_len: 0x0000000000ce259d
-        output: 0x0000000001000000
-        output_len: 0x0000000002e81808
-        kernel_total_size: 0x0000000002c28000
-        needed_size: 0x0000000003000000
-        trampoline_32bit: 0x0000000000000000
+commit: e806b74f91ad2c995a3313d4cc369c85fab1da5f ("[PATCH 2/3] lib/raid6: Optimizing the raid6_select_algo time through asynchronous processing")
+url: https://github.com/intel-lab-lkp/linux/commits/sunliming-linux-dev/lib-raid6-Divide-the-raid6-algorithm-selection-process-into-two-parts/20260128-185709
+base: https://git.kernel.org/cgit/linux/kernel/git/akpm/mm.git mm-nonmm-unstable
+patch link: https://lore.kernel.org/all/20260128104923.338443-3-sunliming@linux.dev/
+patch subject: [PATCH 2/3] lib/raid6: Optimizing the raid6_select_algo time through asynchronous processing
 
-        Decompressing Linux... Parsing ELF... done.
-        Booting the kernel (entry_offset: 0x0000000002718ff0).
+in testcase: perf-sanity-tests
+version: 
+with following parameters:
 
-So I edit job-script and do:
+	perf_compiler: gcc
+	group: group-01
 
-        # export bm_initrd=3D'/osimage/pkg/debian-x86_64-20180403.cgz/trini=
-ty-static-x86_64-x86_64-1c734c75-1_2020-01-06.cgz'
-        export bm_initrd=3D'/osimage/pkg/debian-13-x86_64-20250902.cgz/trin=
-ity-x86_64-294c4652-1_20251011.cgz'
 
-but that doesn't work because the glibc version is too old for the
-trinity test thing. So I switch to another bm_initrd:
 
-        # original: export bm_initrd=3D'/osimage/pkg/debian-x86_64-20180403=
-=2Ecgz/trinity-static-x86_64-x86_64-1c734c75-1_2020-01-06.cgz'
-        # export bm_initrd=3D'/osimage/pkg/debian-13-x86_64-20250902.cgz/tr=
-inity-x86_64-294c4652-1_20251011.cgz'
-        export bm_initrd=3D'/osimage/pkg/yocto-x86_64-minimal-20190520.cgz/=
-trinity-static-x86_64-x86_64-1c734c75-1_2020-01-06.cgz'
+config: x86_64-rhel-9.4-bpf
+compiler: gcc-14
+test machine: 16 threads 1 sockets Intel(R) Xeon(R) E-2278G CPU @ 3.40GHz (Coffee Lake-E) with 32G memory
 
-And that one got it working and I managed to reproduce the issue.
+(please refer to attached dmesg/kmsg for entire log/backtrace)
 
-The tests executes random VFS system calls including pivot_root(). I
-added debugging output into that system call:
 
-And then it becomes clear:
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202602032100.d8e49b6f-lkp@intel.com
 
-        [   21.185641][ T5251] VFS: BEFORE PIVOT ROOT FROM /var/volatile/tm=
-p to /var/volatile/tmp
-        [   21.185645][ T5251] pivot_root: overmounts from nullfs BEFORE PI=
-VOT ROOT (nullfs):
-        [   21.185646][ T5251]   [0] ffff88816a4e3c80 (rootfs)
-        [   21.185709][ T5251] VFS: AFTER PIVOT ROOT FROM / to /
-        [   21.192478][ T5251] pivot_root: overmounts from nullfs AFTER PIV=
-OT ROOT (nullfs):
-        [   21.192480][ T5251]   [0] ffff88816a4e2d80 (tmpfs)
-        [   21.201027][ T5251]   [1] ffff88816a4e3c80 (rootfs)
 
-        <snip>
 
-        [   29.328721][ T5250] VFS: BEFORE PIVOT ROOT FROM /var/volatile/tm=
-p to /var/volatile/tmp
-        [   29.331584][ T5250] pivot_root: overmounts from nullfs BEFORE PI=
-VOT ROOT (nullfs):
-        [   29.334168][ T5250]   [0] ffff88810ca52300 (rootfs)
-        [   29.335742][ T5250] VFS: AFTER PIVOT ROOT FROM / to /
-        [   29.337399][ T5250] pivot_root: overmounts from nullfs AFTER PIV=
-OT ROOT (nullfs):
-        [   29.339935][ T5250]   [0] ffff88811efba300 (tmpfs)
-        [   29.341133][ T5250]   [1] ffff88810ca52300 (rootfs)
 
-        <snip>
+[   81.117339][  T479] xor: automatically using best checksumming function   avx
+[   81.122258][  T109] raid6: avx2x2   gen() 17654 MB/s
+[   81.157936][  T109] raid6: avx2x1   gen() 10371 MB/s
+[   81.172813][  T109] raid6: using algorithm avx2x2 gen() 17654 MB/s
+[   81.205659][  T109] raid6: .... xor() 12927 MB/s, rmw enabled
+[   81.221136][   C15] Oops: int3: 0000 [#1] SMP KASAN NOPTI
+[   81.221144][   C15] CPU: 15 UID: 0 PID: 109 Comm: kworker/15:0 Tainted: G S                  6.19.0-rc6-00161-ge806b74f91ad #1 PREEMPT(full)
+[   81.221149][   C15] Tainted: [S]=CPU_OUT_OF_SPEC
+[   81.221150][   C15] Hardware name: Intel Corporation Mehlow UP Server Platform/Moss Beach Server, BIOS CNLSE2R1.R00.X188.B13.1903250419 03/25/2019
+[   81.221153][   C15] Workqueue: events benchmark_work_func [raid6_pq]
+[   81.221160][   C15] RIP: 0010:benchmark_work_func (recov_avx512.c:?) raid6_pq
+[   81.221163][   C15] Code: cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc <cc> cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc
+All code
+========
+   0:	cc                   	int3
+   1:	cc                   	int3
+   2:	cc                   	int3
+   3:	cc                   	int3
+   4:	cc                   	int3
+   5:	cc                   	int3
+   6:	cc                   	int3
+   7:	cc                   	int3
+   8:	cc                   	int3
+   9:	cc                   	int3
+   a:	cc                   	int3
+   b:	cc                   	int3
+   c:	cc                   	int3
+   d:	cc                   	int3
+   e:	cc                   	int3
+   f:	cc                   	int3
+  10:	cc                   	int3
+  11:	cc                   	int3
+  12:	cc                   	int3
+  13:	cc                   	int3
+  14:	cc                   	int3
+  15:	cc                   	int3
+  16:	cc                   	int3
+  17:	cc                   	int3
+  18:	cc                   	int3
+  19:	cc                   	int3
+  1a:	cc                   	int3
+  1b:	cc                   	int3
+  1c:	cc                   	int3
+  1d:	cc                   	int3
+  1e:	cc                   	int3
+  1f:	cc                   	int3
+  20:	cc                   	int3
+  21:	cc                   	int3
+  22:	cc                   	int3
+  23:	cc                   	int3
+  24:	cc                   	int3
+  25:	cc                   	int3
+  26:	cc                   	int3
+  27:	cc                   	int3
+  28:	cc                   	int3
+  29:	cc                   	int3
+  2a:*	cc                   	int3		<-- trapping instruction
+  2b:	cc                   	int3
+  2c:	cc                   	int3
+  2d:	cc                   	int3
+  2e:	cc                   	int3
+  2f:	cc                   	int3
+  30:	cc                   	int3
+  31:	cc                   	int3
+  32:	cc                   	int3
+  33:	cc                   	int3
+  34:	cc                   	int3
+  35:	cc                   	int3
+  36:	cc                   	int3
+  37:	cc                   	int3
+  38:	cc                   	int3
+  39:	cc                   	int3
+  3a:	cc                   	int3
+  3b:	cc                   	int3
+  3c:	cc                   	int3
+  3d:	cc                   	int3
+  3e:	cc                   	int3
+  3f:	cc                   	int3
 
-        [   30.507784][ T1768] /lkp/lkp/src/monitors/meminfo: line 45: date=
-: not found
-        [   30.507784][ T1768] /lkp/lkp/src/monitors/meminfo: line 46: cat:=
- not found
-        [   30.507784][ T1768] /lkp/lkp/src/monitors/meminfo: line 25: /lkp=
-/lkp/src/bin/event/wait: not found
+Code starting with the faulting instruction
+===========================================
+   0:	cc                   	int3
+   1:	cc                   	int3
+   2:	cc                   	int3
+   3:	cc                   	int3
+   4:	cc                   	int3
+   5:	cc                   	int3
+   6:	cc                   	int3
+   7:	cc                   	int3
+   8:	cc                   	int3
+   9:	cc                   	int3
+   a:	cc                   	int3
+   b:	cc                   	int3
+   c:	cc                   	int3
+   d:	cc                   	int3
+   e:	cc                   	int3
+   f:	cc                   	int3
+  10:	cc                   	int3
+  11:	cc                   	int3
+  12:	cc                   	int3
+  13:	cc                   	int3
+  14:	cc                   	int3
+  15:	cc                   	int3
+[   81.221166][   C15] RSP: 0018:ffff888101557b58 EFLAGS: 00000282
+[   81.221169][   C15] RAX: 0000000000000029 RBX: 1ffff110202aaf6b RCX: 0000000000000000
+[   81.221171][   C15] RDX: 0000000000000029 RSI: ffffffff81513d9c RDI: ffffed10202aaf5e
+[   81.221173][   C15] RBP: ffff88836aad0000 R08: 0000000000000000 R09: fffffbfff0b21df4
+[   81.221175][   C15] R10: ffffffff8590efa7 R11: 0000000000000001 R12: ffff888101557bb8
+[   81.221178][   C15] R13: ffff88836aad8000 R14: ffff888101557bb8 R15: ffff8887887c33c0
+[   81.221180][   C15] FS:  0000000000000000(0000) GS:ffff888801e6a000(0000) knlGS:0000000000000000
+[   81.221182][   C15] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   81.221185][   C15] CR2: 00007fbfb077d000 CR3: 000000084d2f6001 CR4: 00000000003726f0
+[   81.221187][   C15] Call Trace:
+[   81.221189][   C15]  <TASK>
+[   81.221194][   C15]  ? rcu_is_watching (kbuild/src/consumer/arch/x86/include/asm/atomic.h:23 kbuild/src/consumer/include/linux/atomic/atomic-arch-fallback.h:457 kbuild/src/consumer/include/linux/context_tracking.h:128 kbuild/src/consumer/kernel/rcu/tree.c:751)
+[   81.221199][   C15]  ? rcu_is_watching (kbuild/src/consumer/arch/x86/include/asm/atomic.h:23 kbuild/src/consumer/include/linux/atomic/atomic-arch-fallback.h:457 kbuild/src/consumer/include/linux/context_tracking.h:128 kbuild/src/consumer/kernel/rcu/tree.c:751)
+[   81.221203][   C15]  ? lock_acquire (kbuild/src/consumer/include/trace/events/lock.h:24 (discriminator 2) kbuild/src/consumer/kernel/locking/lockdep.c:5831 (discriminator 2))
+[   81.221208][   C15]  ? process_one_work (kbuild/src/consumer/arch/x86/include/asm/jump_label.h:37 kbuild/src/consumer/include/trace/events/workqueue.h:110 kbuild/src/consumer/kernel/workqueue.c:3262)
 
-During random system call execution
-pivot_root("/var/volatile/tmp", "/var/volatile/tmp")
-is called. This makes the "/var/volatile/tmp" tmpfs mount the rootfs for
-everyone and mounts the old rootfs on top of the new rootfs. That means
-as soon as anything is called that relies on binaries that are located
-in the old rootfs they won't find it anymore as the fs root of all
-tasks has been set to /var/volatile/tmp
 
-Before nullfs that pivot_root() call would have failed because the
-initramfs mount had no parent mount. nullfs makes that finally work.
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20260203/202602032100.d8e49b6f-lkp@intel.com
 
-I would like to try and enable nullfs unconditional before we resort to
-making it a boot option. pivot_root() is inherently destructive for a
-test setup so I would just do:
 
-diff --git a/syscalls/pivot_root.c b/syscalls/pivot_root.c
-index 3a33fcc5..13c00b07 100644
---- a/syscalls/pivot_root.c
-+++ b/syscalls/pivot_root.c
-@@ -11,4 +11,5 @@ struct syscallentry syscall_pivot_root =3D {
-        .arg2name =3D "put_old",
-        .arg2type =3D ARG_ADDRESS,
-        .group =3D GROUP_VFS,
-+       .flags =3D AVOID_SYSCALL, /* May end up switching everyone's rootfs=
-=2E */
- };
 
-You would see the same problem if instead of running from the initramfs
-mount you'd be running from a separate rootfs. In other words running
-these tests with a rootfs would surface the same error.
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
 
-I'd appreciate it if you would patch trinity with my diff above (no
-attribution needed). I suspect people generally don't run system call
-fuzzers in their workloads so I'd like to move forward and only revert
-if we have to.
