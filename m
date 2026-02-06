@@ -1,92 +1,101 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23C4432AAA1
-	for <oe-lkp@lists.linux.dev>; Fri,  6 Feb 2026 03:15:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07C9F34CFD3
+	for <oe-lkp@lists.linux.dev>; Fri,  6 Feb 2026 08:43:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.10
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770347759; cv=fail; b=aIkAJZkdbL1a1DUdUqV2YAw7uzyHcUdbNWKUL9rOLiR6+LIk/YeV1clM/TowAUcs5z05/2mRp5McB0yAICq/DE8ClAifaoM6oB1JGaFEtqwRHY2wZOCmie0v7u8gukSSE+aA1R73BmgZ1QfCU2aa5zZpj7ZcUFELxPJBlKO6Qpo=
+	t=1770367412; cv=fail; b=pRpBAT+IpQep8HKKxWawdw+U+wvX2MFot5wJA41cJ4Mpj1q3uso5/Fu7rP7Ux64JvxnQRrxobY1tBRaV/uI1amZ5YnELR8D3WLRZaqcl3G0ATyDO4ff0ccmn5lR3TL9+IIMXb/T0BoKYIjuupcIW6pcGMJ5oFuPedn15Gkio2Zk=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770347759; c=relaxed/simple;
-	bh=T1wH6YZrON7xWxsSo8IOD2JLhCILHoH2/u3cCMTWek8=;
+	s=arc-20240116; t=1770367412; c=relaxed/simple;
+	bh=46Fw145lxawUS23RVi0igb2p1m5OZv7zIu04sJKYEkY=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=BoVd+p54/3xek7J48nPf6jtXQhaJTPul3ECa5/jIwd3X8nxijCqNkuF3dFcaDXZJTabWjAa0QxI4u1MXbaTKRrfjBdrVWPxJNt0Tm5BWN0y3AicWVJ0uGCSObyNuywYaCu5gw2f3HDj4eDyCFKLltg6tLreYUHBQ0cLFdzHqEQM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ioftfaLY; arc=fail smtp.client-ip=192.198.163.17
+	 Content-Disposition:MIME-Version; b=Rzu72ymaeTD4o0yJ90UddqmcFkc5EfAzNAl8OD3KR4u85jlTJRGNrL/TqteuTETqQHyBAl1DUixNsBwS9cDQsojWRoX92rfhqMiPWgfMoJIbDuzJiIyXBsI6SHwUUWwggkICszzpPpTFa5EXtOfJmEGWNr597O0F6t10AJN/J9o=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=S1/SUiZf; arc=fail smtp.client-ip=198.175.65.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ioftfaLY"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="S1/SUiZf"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770347759; x=1801883759;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=T1wH6YZrON7xWxsSo8IOD2JLhCILHoH2/u3cCMTWek8=;
-  b=ioftfaLY7hRJOYLK9dOq4jguWZyutIHTBbJdIftyJ5Jlh3edKIJsaWBP
-   7kbAF3ICUU5yvZxlKf6C3c7YVvq8KsXmIXTR6zQonb2TDMSVTw+Uoomt6
-   swGHpRchXOoiks2t0AS+ISfOuTYYATHE8CEd2xCIziF/bsKPM4lGurL90
-   4NE857Zku/4wFEw6u39Gmm2jep4oqQJdRMWUlPuOXbCwoMWeaae0sUICO
-   xJIwBGA8gQhVIAqwbk6Y5kh8dt6rN03vcBynXpLNqfeKi38WNWpqNOyn0
-   Y0smnKMASA2HDjTbe1JkVasPuhU8GljsRQUqx05YBYHG/oXbfOuw+rz7Z
-   A==;
-X-CSE-ConnectionGUID: Ptc17DCGQRSGQPZ+7FtLWA==
-X-CSE-MsgGUID: ZpK5KgQSSnmrf37WvO8H3A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11692"; a="71447570"
-X-IronPort-AV: E=Sophos;i="6.21,275,1763452800"; 
-   d="scan'208";a="71447570"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2026 19:15:59 -0800
-X-CSE-ConnectionGUID: Y6uujUcPRlyZtNdlN/RHbw==
-X-CSE-MsgGUID: HdzFNmztTPStFsMR0mmoRQ==
+  t=1770367412; x=1801903412;
+  h=date:from:to:cc:subject:message-id:
+   content-transfer-encoding:mime-version;
+  bh=46Fw145lxawUS23RVi0igb2p1m5OZv7zIu04sJKYEkY=;
+  b=S1/SUiZf2K2qXoSO0noc1sWCfix3rMM7UXYDvql4ZY+Hl8RcNqZ2Jr+w
+   1JMGtmiTCWtq345kzVIeGHJJLURcNz3Q2ypPeehGKrLn3EvUFsGJz3/en
+   84mJBWBzPNpJDQxLwMhm7YY0dhtY2jJR2961K7u0gco2d7hix9AU5AsPn
+   yONWkHBMhyTw4dUGdPApsrLMjzLOLhUdeDPv12vJHDeHI4CAgBwMUt4wT
+   b3czIIUl2J0eV5ZZhyKk4ZhmIc1tn8k0IFuZshyKFqrgMrf/CGEwMrx+y
+   nlbKYzkg5A2NJaPlzYvv8OalGS3XR7b0AW+H9hlEy2diHw8SZdhW5pkHP
+   g==;
+X-CSE-ConnectionGUID: 9CB4trPUTc2IxNgpQZQzuQ==
+X-CSE-MsgGUID: G9KHkz7KT3mu+aBJuFpazw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11692"; a="88997462"
+X-IronPort-AV: E=Sophos;i="6.21,276,1763452800"; 
+   d="scan'208";a="88997462"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2026 00:43:31 -0800
+X-CSE-ConnectionGUID: fxmMQ2cAToGN9EsNc0vXag==
+X-CSE-MsgGUID: 9UkkPZQmQfybdVNOGzWz2A==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,275,1763452800"; 
-   d="scan'208";a="209843187"
-Received: from fmsmsx903.amr.corp.intel.com ([10.18.126.92])
-  by orviesa006.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2026 19:15:58 -0800
-Received: from FMSMSX901.amr.corp.intel.com (10.18.126.90) by
- fmsmsx903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+X-IronPort-AV: E=Sophos;i="6.21,276,1763452800"; 
+   d="scan'208";a="210176564"
+Received: from fmsmsx901.amr.corp.intel.com ([10.18.126.90])
+  by fmviesa006.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2026 00:43:31 -0800
+Received: from FMSMSX902.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.35; Thu, 5 Feb 2026 19:15:57 -0800
-Received: from fmsedg903.ED.cps.intel.com (10.1.192.145) by
- FMSMSX901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ 15.2.2562.35; Fri, 6 Feb 2026 00:43:30 -0800
+Received: from fmsedg902.ED.cps.intel.com (10.1.192.144) by
+ FMSMSX902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.35 via Frontend Transport; Thu, 5 Feb 2026 19:15:57 -0800
-Received: from BL0PR03CU003.outbound.protection.outlook.com (52.101.53.68) by
- edgegateway.intel.com (192.55.55.83) with Microsoft SMTP Server
+ 15.2.2562.35 via Frontend Transport; Fri, 6 Feb 2026 00:43:30 -0800
+Received: from CY3PR05CU001.outbound.protection.outlook.com (40.93.201.48) by
+ edgegateway.intel.com (192.55.55.82) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.35; Thu, 5 Feb 2026 19:15:57 -0800
+ 15.2.2562.35; Fri, 6 Feb 2026 00:43:30 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=NlFjE72WzlAPkEW47X4OCK2UOECH5ExnpzpQWzspt9r4uxqYTb015ckwd8UXjptz5lSbajd2apyxacECOpwfVgBDz6DCfP3nq/tj1ZCTDz5bbIbkqmCYGufVC+Aubtri8UAwkQWk2KQ+jfBSEB9i3Sb5T2sPW9FE8AInS4tI2JELskFJy0w0kOih8KF1+h+w8+XPmozlDEK4u6pRFd+NaDmreRF3jj8ftROvKmG2F+twHF4UugZBlGoPl3LhAvSX0sOQ5QI/3hcUn2IM9gH9QYTVlrYMSECAsou44ojIy6infekCDb5K0Rbu+qu9Rqs2wgq5cbP4duK57zdzbzdZBA==
+ b=JcXLysm9AtbAK2+/UZk8Qhjw36LcfMuBsWTKtW6P1oMi1h4USb5ySWYkdEMPV4K+EBAee55Ddhc/8SVyUFyeNvWL3P2rBSZlWpcFNtBKpx8H2xEe6LaaXwTtfWPuS1uVhpajl7eAJ8b0yJ3usj07tywT2xIl04WXB5Mg11jNrnKVBfviTmpftZK309EUoR53bVsF46PDN/DdTDQ23TWH5xbpc6fp6/pzfn35hNTFtk+3m3VVGiTOQyuYr4V9I+DS4XQ6pr7zZ12CkCEWuj6XEk25t5AMe6tWgX7qeDsG1KEnS4mfvmOgGs+XHZRYg79GhwF3/VVJ/hVzMI0XlWKCGw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lQDetzL9FxRYL2KeGY6FN+zPeDLM7TbJkaUJKO2DNQw=;
- b=HWjtgRN3o8HIwi2TjfjiyphX438RIr86sqeOksE/tvw6dCJlibKq8hjP84xJDtoiM64DGUHJ8zjGB+7nhcyPrN8OvTt9Wmy5EaVpQ0J5/KdwLOqZ+kSkiDFujmnXYx+CP/dGgRmlg58dz6ti1zfpbN3CYqCs0GgdaRavPTP7X7Ggke36pHMlFLPAczPJSDDP0mGcFq1bwEo9F/4aVsJbLtDoTTMZRZ4apiS6jZIkl0qc6n0sJXCZJUNu6A21Alnv39bsOHV53UZBGqpik3763Tctx8wuMziIAj0ttiJvLPySGp0MYkH09NLJ+rlmHZi5/0CXcnAG9p53+s4FKcoQQA==
+ bh=pWvzNuoJ7ATFL6jNAxZSC1o9fESXEOFn3VWCZu3zXKM=;
+ b=QDT9OcD6R06hisR6i19IBzXcPjQYZD8NRc68p0P9/YLkoXBtDSA7HTDFg82+4kJyOSQ/TsF+zF1SQc6zO7FCfU+F4HE9TzFV4+4Sfwl3e4hM+yUMhWvbLGeI0lMtLlArt4NtTq3KJNow2BzpFiZBCW1BUCHcQB/NQvznwaAxp6+kAE6GRxC9EQjNqshp1bVAlsRuBe+crRfPZeX9QhEpOVrbuRMHJ96gQz535CtssepsZDKLsr74yciWGFp+45PZifaDd2BRXi1g72WwoGVh3eR6BSrDUetHrwJ7b+x3fSzMzR0iP8QVjt6IztBY8i+Lox6IrtuaK3WbtlG5pdRhYA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by DS0PR11MB7382.namprd11.prod.outlook.com (2603:10b6:8:131::13) with
+ by PH8PR11MB6803.namprd11.prod.outlook.com (2603:10b6:510:1cb::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9587.13; Fri, 6 Feb
- 2026 03:15:50 +0000
+ 2026 08:43:28 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::e4de:b1d:5557:7257]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::e4de:b1d:5557:7257%5]) with mapi id 15.20.9587.010; Fri, 6 Feb 2026
- 03:15:50 +0000
-Date: Fri, 6 Feb 2026 11:15:40 +0800
+ 08:43:28 +0000
+Date: Fri, 6 Feb 2026 16:43:15 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Peter Zijlstra <peterz@infradead.org>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	<aubrey.li@linux.intel.com>, <yu.c.chen@intel.com>, <oliver.sang@intel.com>
-Subject: [peterz-queue:sched/flat] [sched/fair]  596061ecef: Oops
-Message-ID: <202602061046.eee12820-lkp@intel.com>
-Content-Type: text/plain; charset="us-ascii"
+To: Vlastimil Babka <vbabka@suse.cz>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Andrew Morton
+	<akpm@linux-foundation.org>, Michal Hocko <mhocko@suse.com>, Brendan Jackman
+	<jackmanb@google.com>, David Hildenbrand <david@kernel.org>, David Rientjes
+	<rientjes@google.com>, Johannes Weiner <hannes@cmpxchg.org>, Joshua Hahn
+	<joshua.hahnjy@gmail.com>, Liam Howlett <liam.howlett@oracle.com>, "Lorenzo
+ Stoakes" <lorenzo.stoakes@oracle.com>, Mike Rapoport <rppt@kernel.org>,
+	"Pedro Falcato" <pfalcato@suse.de>, Suren Baghdasaryan <surenb@google.com>,
+	Zi Yan <ziy@nvidia.com>, <linux-mm@kvack.org>, <oliver.sang@intel.com>
+Subject: [linux-next:master] [mm/page_alloc]  6698721815:
+ vm-scalability.throughput 16.9% improvement
+Message-ID: <202602061659.a17e1110-lkp@intel.com>
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 User-Agent: s-nail v14.9.25
-X-ClientProxiedBy: SI2PR01CA0027.apcprd01.prod.exchangelabs.com
- (2603:1096:4:192::7) To LV3PR11MB8603.namprd11.prod.outlook.com
+X-ClientProxiedBy: SI2PR01CA0035.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:192::13) To LV3PR11MB8603.namprd11.prod.outlook.com
  (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -95,153 +104,236 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|DS0PR11MB7382:EE_
-X-MS-Office365-Filtering-Correlation-Id: ba40db35-7c99-4c96-678d-08de652e076f
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|PH8PR11MB6803:EE_
+X-MS-Office365-Filtering-Correlation-Id: 976b5334-4c18-4637-13e9-08de655bcbf8
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?7HxQLPcHw7tV0ua0NgJhP44eiroJm0NWCTnLHgEI6YxjCNHIg+ozMfD/ZR/Y?=
- =?us-ascii?Q?5FAYvTA8lPupstyMoXbIP/E4uXMVyXCsNxrj5xDyGCpv60+T9XtU4aJnOCDy?=
- =?us-ascii?Q?K2FL+ksclHZL2fm6WZFTDcu+IxRA/bhfyC5FPLXN7yI8FYxAkRzugcMym8iv?=
- =?us-ascii?Q?ObgakPA+A5A8WLhXCUOZx9ZcFfaFTYQB1AfllgJHt3Bfm+uw/O10FS6b7v4L?=
- =?us-ascii?Q?OCqDyFx/FWmXfFw6R7FcHvzuIPpYMhOpxtqrQTOyysW2fTa3IBVQTC31EmMg?=
- =?us-ascii?Q?YY8gw9oNhROriKpst1b3o61/npQH9qhcpzYUi1CRvcr3VodZiiMS9EhU+URk?=
- =?us-ascii?Q?Y1LbJlb8+Xv2FWpAJ7ZfpdfG/lmCUd2+lU2jToWKmhdx1fC03Gs8LySABGim?=
- =?us-ascii?Q?YG6bGL04bvwJNY6tXvjTvWTCFDRwx+EC/DvSq9fkSmhPuV+08VxZOlKhYmlI?=
- =?us-ascii?Q?2KWyMEyEGXLFoxjsY3zz9/BfDqgYdXTo69AHq6EB9SOpcXAIM3B3kl9yu+Ce?=
- =?us-ascii?Q?wIDHk3Cm2QZVUyTDRS0BJ8tt/Q3PILJjSV8xdcVGcw2ywPtooFLGkoWpAHDr?=
- =?us-ascii?Q?xmxcgMt1iAC2rVzoGIfE/69T053J55m1F7Ny5uth0BA/mFiP8CibWWvGhT83?=
- =?us-ascii?Q?Jx+6RdLRv8CqBQerCvTaPbfa8QenZVqakGABYvvFUhSVcxOKkyGkpYo5VEw0?=
- =?us-ascii?Q?oAHiivh/q/+watZSB7TfId6bCtJPxs4joR7Ae5IUiG4LLcpKlTx7DHScgwdm?=
- =?us-ascii?Q?fUydxfYrEUxFqrQ7d5fuubRhJXZIQ11s3TuDupzq4eFSrtZZ3brMI4pD9kI+?=
- =?us-ascii?Q?8SRziFVwq7Vos2T9AAVuBuY84Ct92VY0vz1YhDysa2BYssy9az8SXUnuf04Z?=
- =?us-ascii?Q?L69bjztZ5Gje1llN6cSH5FFpiByPkDsD22fG/ijMw6hT8yM4tBJbvQzM4ttP?=
- =?us-ascii?Q?B6rd8KteoUpmbt493SWIt3JflGIFoE4mL6WGHGInkzV7IhiNKW+7vSwklagj?=
- =?us-ascii?Q?J0+Y57KSW10DWAyyMt0aiMalby7NjITpsevCpJNeAAwwQxkTPKfbQ2e+CRzL?=
- =?us-ascii?Q?SFEOw9CexUOhIw70WM5bnejbOmLoM04CQSHj0GlqqYgdjz5Ky6v/yv5OXAyl?=
- =?us-ascii?Q?gI0s7DSpblM12n0m7taAtQbk6DqDpvYE2qMqyF4zixbKO+Wjr5bJUDBpFOEb?=
- =?us-ascii?Q?89NzFoQwblcUiUGo8HIrQXgVWg7ggDDm3zmyhLRzyGYXw5xgAU7DCUWc47w7?=
- =?us-ascii?Q?gXMYXTvI0JSO7E8pQzValJAjEgkY0lHANEDNpK9auMmgih49gctxL94IFRyS?=
- =?us-ascii?Q?CI1qf7F+lfdLhF5OjYY++1lOzG7SRUVD8LcxnTTrY48djjXkusxchfFZxJFz?=
- =?us-ascii?Q?L2dK3Nv/mXl/8oUoql50e67PjZPyq/M6lEANAvM5R18WrULYdc8k8p9Rn9Fy?=
- =?us-ascii?Q?qlFrqOt2IGUzdniBS11G4PAkeyzHI4IMmhnYoCEPmazFTVZH2fE5Cqv/GBQH?=
- =?us-ascii?Q?hlPIjivn1MEDlvewfB0sQukhctn9I6e9yrnnujsnVXV0zQczl37kC9qjwd7F?=
- =?us-ascii?Q?pZVh36s1/c5oVEeAPNPvF71gxGuCNzvjB2W5ph8s?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|7416014|366016;
+X-Microsoft-Antispam-Message-Info: =?iso-8859-1?Q?TJKbgZntt78utWsJj/BM+pZPUbzS+4SXr+XER9+ZKx1PXcgf017O8zquVN?=
+ =?iso-8859-1?Q?t+4LAoF7d5EWhDlyawnYZqNlWPOhrZo5oTHbQP5Wf9sysXlsoMX0XGrX4L?=
+ =?iso-8859-1?Q?BBpNftQZ8X+jkao/GBCGXDe5xOYKt/wBuoweztYwQqb+6lTBCdqo5u9yJw?=
+ =?iso-8859-1?Q?GffLlkwty8WdcgMfQjx78gdzY0nUGcQOnSHTEGnmZRZXtngiJhsCw4r88C?=
+ =?iso-8859-1?Q?hqpi6sW7E5JVL9tI0GrXriVhq8xL6k10FKSYKWfKyCsv/y2blszIPAJCdc?=
+ =?iso-8859-1?Q?wmIy/eqpEM116VrLT0SPSC9kU0qHErd8cUv9FjqzihlwIHlfr5TOZUdH9C?=
+ =?iso-8859-1?Q?BOORPKFamIgMRXC0P8qxWyvg4cT+hToixfvZhnKeWbzVM8MLpK+kZN6qor?=
+ =?iso-8859-1?Q?eb1TEepnXKxUdb7Xhq2SXUUXFIhTAsVT9pjRD/KH7R27wMt4QPuRTLBG+w?=
+ =?iso-8859-1?Q?/sZF6TpfQW7XZEf97JIN4K+6ZcMOXZ1hC2aIKza5gfMePoYCCHiNcKBQrw?=
+ =?iso-8859-1?Q?WwfxKpBp8hnd8aTdstS/dsQFBrnAkzpp9lkNIYX69cWuza8HNk7AEu2nw0?=
+ =?iso-8859-1?Q?2OSSbHM1KtvVnoUMBAzCuRdX3eXpohEnSOeiKXXCsVKMU+YvrMd8/vNcpq?=
+ =?iso-8859-1?Q?FFRwfSVCnPAGKYN1YkZzEVF6iNArpsd2HzK/28aTxC++NsHE5GJw8gDnfn?=
+ =?iso-8859-1?Q?shT81saQDmfrVnsoUuVsakwPxmW6h8Rt7ilqbZBQxEDN7e5tD3hFyUvx69?=
+ =?iso-8859-1?Q?6s5GC9g5rgaOT5jfk2AJpolgOe81ORC/SxBxUCv2wIpjyeFVq9mtgFNB8h?=
+ =?iso-8859-1?Q?r+RBBi68k5j8Hln/cQnTR98Suc3lbtvxuj49ucn1H9qCwXh8diRoVCTe4F?=
+ =?iso-8859-1?Q?ZyZYh4qlFOh47F7bqG8j3Qr5w1K6qlJGYjLpP3s/fu+p2d4ZKV4ERdo+2R?=
+ =?iso-8859-1?Q?dQxihi9Ss+mCqCfCF8b+q8U+E6cZ0ekyPEJUMeBvH/Rka88U+FbKiNlIx5?=
+ =?iso-8859-1?Q?AgvIRlbIRW9LgEX8YwOo/WbcTCP776eEPJzBlpQx+Y325J0JO0eF00Keik?=
+ =?iso-8859-1?Q?N5wvhuGxVPxrY1x7vtON8sEYd5sqXUYn8CT49KVS1NpnRApv+aY27ChV4c?=
+ =?iso-8859-1?Q?aIi8EHQO7KkT0eXO7HNXBzwsyGmStxW7FtOj3WXCEArZB08s0vf3ygOMuy?=
+ =?iso-8859-1?Q?Nq+2Irw9XnJK+P/R5V4M0fW2Tf20sdtnRxNRVt8Z4yVPjorXccwXY4IpcX?=
+ =?iso-8859-1?Q?WARBzuSurqSGMbbGAsohxvmD+AQEXE7OnMWF5y7FsGxPUcavBEUSTI/Aa/?=
+ =?iso-8859-1?Q?mvTJ27qf12g4TLeUycM5u/H+Fswo9bKDjeJcv3zp1A1YTI31hKvE1Dybfb?=
+ =?iso-8859-1?Q?BIMcPxC+Du/slUyD8aFaToghJ02WlHNQimbymsPvx5Bximshv/85NFkr4j?=
+ =?iso-8859-1?Q?0Uq5sFmQx1tCftYEVZXN2ChYNWuUJa/qNgn+Iru1/CDtVMy4+vYo1tkJut?=
+ =?iso-8859-1?Q?pTKIPyRqetDpXM2+5EpLokAWIEVoBjxaL5h7fzkjBfOTIfLSwZXSkc5d7X?=
+ =?iso-8859-1?Q?zQ/j3qsPdJF9HTxI0gXNhxl6h8ndTvoS23xgG+D63wyP0Gum9cBWVFau0f?=
+ =?iso-8859-1?Q?u8ktkNlLET2g4HMNO+VS+O/I7BA71tZajb?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(366016);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?it+B9cmS+cE4aD/vCu+eVdwrdzHwRNjw558rYcU4X8zjFIPWbWae6Rv7YCtX?=
- =?us-ascii?Q?pU3MDHXCYqIaE/ZnDTAaufu+PRse0FqnvwXL9GduLQusqa9eExFk5fQTMMr9?=
- =?us-ascii?Q?pDMRk+jmzgx/KOsq/m9q2J2Ykf2bsaJ7eTSdnOiyNVlGwzIxZVYDJDIzFCX+?=
- =?us-ascii?Q?U9eOCgiN/0yrrNwI8ybc/KWrWiC9OOZVzD0zrb4/1XI1j5joSGcycVwHt6IL?=
- =?us-ascii?Q?9V9xNueeN4fRA4PpjP5WrYhst+CfVrdqiJYgXPSc9czMrTeXe4yGhFIlwm97?=
- =?us-ascii?Q?kFvrcQkeVUicYaruUra5B1MYSDcYQG74mRaH391UQREyN5Gui/c37BNVP42c?=
- =?us-ascii?Q?xwVs11qazknU+ivDxf1gF/ciOnlRBODHFYLvh5LgodAJNe3ToXfBAxJ3Rc62?=
- =?us-ascii?Q?NBwDc5uQzdpD0sXF7dHp7DUN6kMEFAt6JW1HxfUXbKJDNnQcWFexCLUIlnKO?=
- =?us-ascii?Q?86HtVqos+6+YGDx08lYedmcaPVu/y60T1CZ5E18pXBBKOhBHVcMPOM0FDaVn?=
- =?us-ascii?Q?jtPIFnn6KSB3VCbk2FGk4OogUWaXZk8Evor+ggM/zO2hj2JkvhRYtpkjHUb/?=
- =?us-ascii?Q?VktJJDd0hyiSjP7SKOeuB8/SK6ZtFeNtrfkqJCafCgKaRpAVv7KZ91QhlUgz?=
- =?us-ascii?Q?MX0AOFI4FVPiICwTKrBqy/5wyqTqDpJxEJz4Rbqe7rkCu/ZoMs+C8g+G4XJp?=
- =?us-ascii?Q?O1pmbnU5G2Za1TRqO/KUqdbcX+9JdO+xjz6+ahFnXjvDWtTOXmkWS6vMOCIp?=
- =?us-ascii?Q?bESvHURiOfdWjKIYUYifj5h7fMn+z3KMsPBtHjTDXS1Lu+neB/EU/M5XDj7K?=
- =?us-ascii?Q?FEq3SK+dDh5YT6fhUtJdKjIYdMEabKNGRDTm5B9k418FFaopcSqpE3/Y4XnZ?=
- =?us-ascii?Q?67v+x8v0BqgjQgXpf8wbKXHR85qUubpWPmxUVQdAHvSNniTxhjYn77gy31re?=
- =?us-ascii?Q?uxQGR7xqir7CMKJYWDXOZSklbk4GJiuXrRgBXVqjMwhEwZjsS/n86q9OjG+d?=
- =?us-ascii?Q?WmOtIxbFksQFP8rmDKUfw+FFGNrPU8ON7CvKOE3WU5b1g49h+xDM9MXgD7YA?=
- =?us-ascii?Q?M+xzqJ3+LWPyxrQS4emaFJMOkbjyYrufPDVtZiRrtsLBRPjZaqNqIuVabMFz?=
- =?us-ascii?Q?FNRGAoFCnYf7SVvVbbVxfHw/G1+s6gUqD7Zt+xVmC17Q9z20+KT0H4JEcwHk?=
- =?us-ascii?Q?hD+3C5+i83nivWhCxjDkBceHfV7Am6Up3FV4t+nPXRuIZNxN7ILNcF892AWG?=
- =?us-ascii?Q?neBtqRk7iMFgDJbglg93g0abjS9AL9+8mxplflnKwsqNq/285IRxZgwK4VEN?=
- =?us-ascii?Q?E/hENlDV6P0KY503JwSh+VE3NFf8w/6/e0lZeQ8ncFXBhzkNUWFSr/OQ8DqK?=
- =?us-ascii?Q?tcCJ+9bgR4f8lRiv4Ume1p0qyfDu1uMpJ9e4oaajPAQIkVA8b9VI3VJzBpPV?=
- =?us-ascii?Q?2qzx03uVbvjwWOyx/nYYxNmBdk2pN8i/bpdwZyJ0SsZMKBxAbUQITOh4Nrfw?=
- =?us-ascii?Q?aoBzEDubn+FcZs2ULEN4SpNKfk0uSq7OdLyAuULBhEcUrY+y7l97oet3M5ig?=
- =?us-ascii?Q?zCddsW+hW9d4/+50auOP/X7g6gwc24SRlG0x9OGDxBvyR3qvFOqdFCgEWGhp?=
- =?us-ascii?Q?YSRrFLos1cQD9qVcw80lrauCdCKxZk4ALbkiw3FqEQEBTDydpXZV3qnIMbuV?=
- =?us-ascii?Q?G/j9DPJ4eh4xQeiqvP6j7ANJBw+nMz5JotnBPLzsuBSepS91BaNEZd/Db299?=
- =?us-ascii?Q?1ro+EvQ0yw=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: ba40db35-7c99-4c96-678d-08de652e076f
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?LZYHOjjD/OEF3SM5mbDHHHR/7RKxFHbi+hEv3i4SCxba6X7ZBMNAWD0kN6?=
+ =?iso-8859-1?Q?JBTisJcp+ZoBsoAN74i9NZC+WqcPzT1f8bfT89r35gjTtM7LTEd6lifzNJ?=
+ =?iso-8859-1?Q?JcPBFpdu7iK3xqvh/bgEfnCEJrJaC7O02ECsmZ0Rs1m5+QylGoQGOyEHYq?=
+ =?iso-8859-1?Q?rtm+Kjj+Rdp/DIXDg4D+7HoYpDjwH5Ae7g7XKvfrm+zI+85HnyAhXAwbFH?=
+ =?iso-8859-1?Q?NW/tbFaWAzTzC8Xcq86uMghVZu9JxnvQmxQS+cBYWG+8IvbqrmGTndHd7b?=
+ =?iso-8859-1?Q?8HlYJUANJ9y8F1xKq2knOiCoHl3MxTTRb6bjlhmlmANotWUQV8dWsVmqUC?=
+ =?iso-8859-1?Q?XbMEq0htc5MPJEfCRTWJoHedQQLzW789ba1b/0IPup58GPaLKvqzZlzs3p?=
+ =?iso-8859-1?Q?teYp+cdD8xh0p48iXZkPtyXqHk58HDEghdrscUUZ8DS8GFSxnyHRa+LgYu?=
+ =?iso-8859-1?Q?zALaza1mqmIqId3LexX0O8TbCu1G9WSJ6wfk0qmo6pOcZqBXqJPDdpgxFs?=
+ =?iso-8859-1?Q?Nd64Jgkk1nRlrB+sOY0VChwdc15gflh8tWBysqdIiaWhVUTWzGEs7CKCr6?=
+ =?iso-8859-1?Q?U816Jv4YlaPSgIdubHHaC5LiDYOsXzF4C6a0YNNOyBq/9y40n/UOkGXsHj?=
+ =?iso-8859-1?Q?rdIdS82I9/P5NhdOzaBX1YLmuBzndulHC6QGhSnXGh2J/dEUAOoZcAiLeJ?=
+ =?iso-8859-1?Q?7a3Z63O4U5jffbRU824qc4l1sg+eyKcJHMWei4Z7Ug7gaaPo+8/ey6HYUc?=
+ =?iso-8859-1?Q?3R5axVlRLicF33qXYwwsuwIxiSXGYV6mJNxOw8oX2uYmUFCUZS92IsnYbn?=
+ =?iso-8859-1?Q?sE7Rt+WGSUfa5NSgX0pY2eFXkWl/LiEv571SwPJhV9ghwSVUFqd4/AZ+zL?=
+ =?iso-8859-1?Q?6Nr1ti/7pXWWxGHwc/9O3F25lSNZ4ZhzqMV9jnnQrtBnHcGntE/IKiG9dF?=
+ =?iso-8859-1?Q?pOY4808TEjCbyiY+4roMgAGch1IJvZlVW3g9wICjmxyfKhOJQJnMHbZ3vw?=
+ =?iso-8859-1?Q?MP8MepOQhuo9iyNJOUryh7uo2LK3V/zVQuqgps2qYxMScB/6FeozNGfExT?=
+ =?iso-8859-1?Q?Hcmb5GgjH/S6u2tavkyWPO6tUBQcOWCqrH0dQx0NEtk+ej9XXWswOW2E28?=
+ =?iso-8859-1?Q?ZHexrnt1TXdV/DSijlrvTB1yw4Yf4n5QkoEq6AdXnoT7pEdzZ5eNgmRuYC?=
+ =?iso-8859-1?Q?A6EVqERvSn0u4M3ViEPi9yFt0iEi1Gp+WKQA4VUyHcIVs25w4fWjqosq8Q?=
+ =?iso-8859-1?Q?UUFU0lH3ycGTogI5SEv50RTArPX+UJCllmM+oeb0DhzNHu1jRjUWsrJ16g?=
+ =?iso-8859-1?Q?HkHNZD2BRg4UtSuxqbkrngH2tHEaEUJI7Vuvvx/MAp1UIk06K6j27Gbisi?=
+ =?iso-8859-1?Q?Rqm3ulSB/ChKPzZpXLtdqN0qRg+q3ZvK2LXe5RZrUft06llu7UA1A0RI4O?=
+ =?iso-8859-1?Q?vnl/rBVg3Ihfghicw2EmtLdgx4zpK2GaW1xyH7CPkaYoDUsnNvELB4ktNx?=
+ =?iso-8859-1?Q?6k7LQPFKyBW207JFnytbOss0BOd0D2L5KLqkuUO9ODJ7M/cgfoDeDTGZVK?=
+ =?iso-8859-1?Q?SkGZg9nHgQdW7Gb/LHdYHF0A09murwjKAxYI+Ise7nxLi846RGRhFpATuR?=
+ =?iso-8859-1?Q?SMBke+bf8392F4x1i25jue8lTmUOzoieL2wHXkW/TpnBGUTe1uw+H6hpH/?=
+ =?iso-8859-1?Q?K56gYKGGGRJBfge3rlGM1aDmdcMLSdBfrBLo4j8YwbatMm6cIK7YLlOKYs?=
+ =?iso-8859-1?Q?U9zkG1CoWLr66jC+N6Sx3Tgm7Ni6BYy+a/4LCiHJzsUQKSbRyTuS1r/pGM?=
+ =?iso-8859-1?Q?ZQPrxknekg=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 976b5334-4c18-4637-13e9-08de655bcbf8
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2026 03:15:50.2158
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2026 08:43:28.3793
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8O76sYYkwNXtZdopV4xeSntdRjjZ7tEZzYYEkjlXR0jDtAqNf9Acxw3n5q3lotbyDZenyFAyIXeQxI7zZdyRMQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB7382
+X-MS-Exchange-CrossTenant-UserPrincipalName: VF3w9pDDWV0mJrJHqdSlhp75QHtAaQAXpyDcenslJ8m2wN68hBxKIZfAA8aEQTKod4XIjWldsSZ9xqk8V5olPw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB6803
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
-kernel test robot noticed "Oops" on:
+kernel test robot noticed a 16.9% improvement of vm-scalability.throughput on:
 
-commit: 596061ecef8ab0561e92704bcdc166fb91ecdec1 ("sched/fair: Add newidle balance to pick_task_fair()")
-https://git.kernel.org/cgit/linux/kernel/git/peterz/queue.git sched/flat
 
-in testcase: stress-ng
-version: stress-ng-x86_64-30f8b2f05-1_20251212
-with following parameters:
+commit: 66987218154918a6341a3e3eeeee58110a69e0bb ("mm/page_alloc: ignore the exact initial compaction result")
+https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 
-	nr_threads: 100%
-	testtime: 60s
-	test: pipeherd
+
+testcase: vm-scalability
+config: x86_64-rhel-9.4
+compiler: gcc-14
+test machine: 256 threads 4 sockets INTEL(R) XEON(R) PLATINUM 8592+ (Emerald Rapids) with 256G memory
+parameters:
+
+	runtime: 300s
+	test: lru-file-readonce
 	cpufreq_governor: performance
 
 
-
-config: x86_64-rhel-9.4
-compiler: gcc-14
-test machine: 192 threads 2 sockets Intel(R) Xeon(R) 6740E  CPU @ 2.4GHz (Sierra Forest) with 256G memory
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202602061046.eee12820-lkp@intel.com
-
-
-
-[  368.640460][T10417] #PF: supervisor write access in kernel mode
-[  368.640462][T10417] #PF: error_code(0x0002) - not-present page
-[  368.640465][T10417] PGD 0 P4D 0
-[  368.643193][T10417] Oops: Oops: 0002 [#1] SMP NOPTI
-[  368.643198][T10417] CPU: 8 UID: 0 PID: 10417 Comm: stress-ng-pipeh Tainted: G S                  6.19.0-rc6-00148-g596061ecef8a #1 PREEMPTLAZY
-[  368.646302][T10417] Tainted: [S]=CPU_OUT_OF_SPEC
-[  368.646303][T10417] Hardware name: IEIT SYSTEMS NF5180-M8-A0-R0-00/NF5180-M8-A0-R0-00, BIOS 00.14.04 09/23/2024
-[  368.646304][T10417] RIP: 0010:pick_next_task_fair (kernel/sched/sched.h:2673 kernel/sched/fair.c:9114)
-[  368.649951][T10417] Code: 48 89 c3 49 81 be a8 02 00 00 a8 e1 bb 82 0f 85 e5 00 00 00 49 c7 86 a0 02 00 00 00 00 00 00 49 89 dd 49 8b 84 24 88 0a 00 00 <48> 89 83 a0 02 00 00 49 c7 84 24 88 0a 00 00 00 00 00 00 4c 39 f3
-All code
-========
-   0:	48 89 c3             	mov    %rax,%rbx
-   3:	49 81 be a8 02 00 00 	cmpq   $0xffffffff82bbe1a8,0x2a8(%r14)
-   a:	a8 e1 bb 82 
-   e:	0f 85 e5 00 00 00    	jne    0xf9
-  14:	49 c7 86 a0 02 00 00 	movq   $0x0,0x2a0(%r14)
-  1b:	00 00 00 00 
-  1f:	49 89 dd             	mov    %rbx,%r13
-  22:	49 8b 84 24 88 0a 00 	mov    0xa88(%r12),%rax
-  29:	00 
-  2a:*	48 89 83 a0 02 00 00 	mov    %rax,0x2a0(%rbx)		<-- trapping instruction
-  31:	49 c7 84 24 88 0a 00 	movq   $0x0,0xa88(%r12)
-  38:	00 00 00 00 00 
-  3d:	4c 39 f3             	cmp    %r14,%rbx
-
-Code starting with the faulting instruction
-===========================================
-   0:	48 89 83 a0 02 00 00 	mov    %rax,0x2a0(%rbx)
-   7:	49 c7 84 24 88 0a 00 	movq   $0x0,0xa88(%r12)
-   e:	00 00 00 00 00 
-  13:	4c 39 f3             	cmp    %r14,%rbx
+Details are as below:
+-------------------------------------------------------------------------------------------------->
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20260206/202602061046.eee12820-lkp@intel.com
+https://download.01.org/0day-ci/archive/20260206/202602061659.a17e1110-lkp@intel.com
 
+=========================================================================================
+compiler/cpufreq_governor/kconfig/rootfs/runtime/tbox_group/test/testcase:
+  gcc-14/performance/x86_64-rhel-9.4/debian-13-x86_64-20250902.cgz/300s/lkp-emr-2sp1/lru-file-readonce/vm-scalability
+
+commit: 
+  d17f02417a ("mm/rmap: separate out fork-only logic on anon_vma_clone()")
+  6698721815 ("mm/page_alloc: ignore the exact initial compaction result")
+
+d17f02417a337de0 66987218154918a6341a3e3eeee 
+---------------- --------------------------- 
+         %stddev     %change         %stddev
+             \          |                \  
+      2.07 ±201%    +213.6%       6.50 ± 96%  vmstat.memory.buff
+     30.09 ±  3%      +2.8       32.89 ±  3%  mpstat.cpu.all.idle%
+      0.15 ±  3%      +0.0        0.16 ±  3%  mpstat.cpu.all.irq%
+      1.10            +0.1        1.21        mpstat.cpu.all.usr%
+     29.13 ±  4%      +2.7       31.84 ±  2%  turbostat.C6%
+  10961264           -12.1%    9635977        turbostat.IRQ
+     39.55            +6.9%      42.27        turbostat.RAMWatt
+    881807 ± 13%     -19.1%     713350 ±  4%  numa-meminfo.node0.KReclaimable
+    881807 ± 13%     -19.1%     713350 ±  4%  numa-meminfo.node0.SReclaimable
+   1055803 ± 11%     -15.9%     888061 ±  4%  numa-meminfo.node0.Slab
+    702201 ±  7%     +18.8%     833965 ± 11%  numa-meminfo.node2.KReclaimable
+    702201 ±  7%     +18.8%     833965 ± 11%  numa-meminfo.node2.SReclaimable
+    837079 ±  6%     +16.2%     973054 ± 10%  numa-meminfo.node2.Slab
+    426746 ±  2%     +17.3%     500442 ±  2%  vm-scalability.median
+      1166 ± 28%   +1053.6        2219 ± 15%  vm-scalability.stddev%
+  1.11e+08 ±  2%     +16.9%  1.297e+08        vm-scalability.throughput
+     54.43           -10.4%      48.78        vm-scalability.time.elapsed_time
+     54.43           -10.4%      48.78        vm-scalability.time.elapsed_time.max
+    103326 ±  4%     -15.5%      87260 ±  3%  vm-scalability.time.involuntary_context_switches
+     17909            -3.9%      17205        vm-scalability.time.percent_of_cpu_this_job_got
+      9605 ±  2%     -14.1%       8252        vm-scalability.time.system_time
+      1.17 ± 24%      -0.6        0.58 ± 82%  perf-profile.calltrace.cycles-pp.ksys_mmap_pgoff.do_syscall_64.entry_SYSCALL_64_after_hwframe
+      1.17 ± 24%      -0.6        0.58 ± 82%  perf-profile.calltrace.cycles-pp.vm_mmap_pgoff.ksys_mmap_pgoff.do_syscall_64.entry_SYSCALL_64_after_hwframe
+      0.97 ± 37%      -0.6        0.40 ± 57%  perf-profile.children.cycles-pp.rcu_pending
+      0.03 ±223%      +0.2        0.24 ± 33%  perf-profile.children.cycles-pp.__get_user_pages
+      0.03 ±223%      +0.2        0.24 ± 33%  perf-profile.children.cycles-pp.get_user_pages_remote
+      0.27 ± 52%      +0.2        0.50 ± 20%  perf-profile.children.cycles-pp.load_elf_interp
+      0.08 ±101%      +0.2        0.33 ± 46%  perf-profile.children.cycles-pp.get_arg_page
+      0.59 ± 37%      -0.4        0.21 ±102%  perf-profile.self.cycles-pp.__percpu_counter_sum
+      0.03 ±223%      +0.2        0.21 ± 30%  perf-profile.self.cycles-pp.sched_setaffinity
+      7.31 ±  2%     +19.9%       8.77 ±  4%  perf-stat.i.MPKI
+     58.30            +2.2       60.49        perf-stat.i.cache-miss-rate%
+ 7.426e+08           +17.5%  8.722e+08        perf-stat.i.cache-misses
+ 1.228e+09           +12.0%  1.376e+09        perf-stat.i.cache-references
+    580.71 ±  7%     -16.7%     483.74 ±  3%  perf-stat.i.cycles-between-cache-misses
+      7.41           +18.3%       8.76 ±  5%  perf-stat.overall.MPKI
+     60.61            +3.0       63.61        perf-stat.overall.cache-miss-rate%
+    704.31           -17.1%     583.78        perf-stat.overall.cycles-between-cache-misses
+      1296 ±  2%     -11.5%       1147 ±  5%  perf-stat.overall.path-length
+ 7.497e+08           +16.2%  8.715e+08        perf-stat.ps.cache-misses
+ 1.237e+09           +10.8%   1.37e+09        perf-stat.ps.cache-references
+ 5.281e+11 ±  2%      -3.7%  5.086e+11        perf-stat.ps.cpu-cycles
+ 5.569e+12 ±  2%     -11.5%  4.928e+12 ±  5%  perf-stat.total.instructions
+   3008740 ±  2%     +33.6%    4020245 ±  3%  proc-vmstat.allocstall_movable
+    482140 ± 81%     +81.6%     875667 ± 51%  proc-vmstat.compact_stall
+    313239 ± 60%    +108.2%     652063 ± 45%  proc-vmstat.compact_success
+      8065            -2.8%       7836        proc-vmstat.nr_page_table_pages
+  39936876 ±  2%     -59.1%   16330199        proc-vmstat.numa_foreign
+  95893347           -76.7%   22371986        proc-vmstat.numa_hit
+  95488037           -77.0%   21972039        proc-vmstat.numa_local
+  39916786 ±  2%     -59.1%   16315472        proc-vmstat.numa_miss
+  40314192 ±  2%     -58.5%   16714902        proc-vmstat.numa_other
+    687855            -2.2%     672475        proc-vmstat.pgfault
+     37269            -2.4%      36389        proc-vmstat.pgreuse
+ 7.849e+08            -8.8%  7.158e+08 ±  3%  proc-vmstat.pgscan_direct
+ 2.277e+08 ±  5%     +29.8%  2.956e+08 ±  9%  proc-vmstat.pgscan_kswapd
+ 7.849e+08            -8.8%  7.158e+08 ±  3%  proc-vmstat.pgsteal_direct
+ 2.277e+08 ±  5%     +29.8%  2.956e+08 ±  9%  proc-vmstat.pgsteal_kswapd
+  23897099           -77.3%    5427738 ±  5%  numa-numastat.node0.local_node
+   9808674 ±  3%     -65.9%    3340632 ±  3%  numa-numastat.node0.numa_foreign
+  23996306           -76.9%    5539552 ±  4%  numa-numastat.node0.numa_hit
+   9935480 ±  3%     -48.6%    5104083 ±  2%  numa-numastat.node0.numa_miss
+  10033238 ±  3%     -48.0%    5215298 ±  3%  numa-numastat.node0.other_node
+  23818598 ±  2%     -77.6%    5336433 ±  3%  numa-numastat.node1.local_node
+  10422599 ±  4%     -60.6%    4107508 ±  5%  numa-numastat.node1.numa_foreign
+  23903690 ±  2%     -77.3%    5425282 ±  3%  numa-numastat.node1.numa_hit
+   9568102 ±  3%     -62.3%    3606134 ±  2%  numa-numastat.node1.numa_miss
+   9650828 ±  3%     -61.7%    3694897 ±  2%  numa-numastat.node1.other_node
+  23244424           -76.6%    5433322 ±  3%  numa-numastat.node2.local_node
+  10157128 ±  2%     -58.5%    4212315 ±  3%  numa-numastat.node2.numa_foreign
+  23367486           -76.3%    5531118 ±  3%  numa-numastat.node2.numa_hit
+   9655573 ±  4%     -59.5%    3909187 ±  3%  numa-numastat.node2.numa_miss
+   9778660 ±  4%     -59.0%    4007790 ±  2%  numa-numastat.node2.other_node
+  24517225 ±  2%     -76.5%    5765127 ±  3%  numa-numastat.node3.local_node
+   9548474 ±  4%     -51.1%    4669743 ±  4%  numa-numastat.node3.numa_foreign
+  24615123 ±  2%     -76.2%    5866615 ±  3%  numa-numastat.node3.numa_hit
+  10757630 ±  2%     -65.6%    3696067 ±  3%  numa-numastat.node3.numa_miss
+  10851465           -65.0%    3796917 ±  2%  numa-numastat.node3.other_node
+   1363284 ±  6%     +12.5%    1533491 ±  7%  numa-vmstat.node0.nr_free_pages_blocks
+    219953 ± 13%     -19.0%     178205 ±  4%  numa-vmstat.node0.nr_slab_reclaimable
+   9808674 ±  3%     -65.9%    3340632 ±  3%  numa-vmstat.node0.numa_foreign
+  23996706           -76.9%    5539212 ±  4%  numa-vmstat.node0.numa_hit
+  23897500           -77.3%    5427399 ±  5%  numa-vmstat.node0.numa_local
+   9935480 ±  3%     -48.6%    5104083 ±  2%  numa-vmstat.node0.numa_miss
+  10033238 ±  3%     -48.0%    5215298 ±  3%  numa-vmstat.node0.numa_other
+   1470383 ± 20%     -82.6%     255546 ± 73%  numa-vmstat.node0.workingset_nodereclaim
+  10422599 ±  4%     -60.6%    4107508 ±  5%  numa-vmstat.node1.numa_foreign
+  23903980 ±  2%     -77.3%    5425155 ±  3%  numa-vmstat.node1.numa_hit
+  23818888 ±  2%     -77.6%    5336306 ±  3%  numa-vmstat.node1.numa_local
+   9568102 ±  3%     -62.3%    3606134 ±  2%  numa-vmstat.node1.numa_miss
+   9650828 ±  3%     -61.7%    3694897 ±  2%  numa-vmstat.node1.numa_other
+   1342994 ±  6%     +14.2%    1533478 ±  9%  numa-vmstat.node2.nr_free_pages_blocks
+    175084 ±  7%     +19.0%     208437 ± 10%  numa-vmstat.node2.nr_slab_reclaimable
+  10157128 ±  2%     -58.5%    4212315 ±  3%  numa-vmstat.node2.numa_foreign
+  23367487           -76.3%    5530880 ±  3%  numa-vmstat.node2.numa_hit
+  23244424           -76.6%    5433084 ±  3%  numa-vmstat.node2.numa_local
+   9655573 ±  4%     -59.5%    3909187 ±  3%  numa-vmstat.node2.numa_miss
+   9778660 ±  4%     -59.0%    4007790 ±  2%  numa-vmstat.node2.numa_other
+   9548474 ±  4%     -51.1%    4669743 ±  4%  numa-vmstat.node3.numa_foreign
+  24615201 ±  2%     -76.2%    5866947 ±  3%  numa-vmstat.node3.numa_hit
+  24517303 ±  2%     -76.5%    5765459 ±  3%  numa-vmstat.node3.numa_local
+  10757630 ±  2%     -65.6%    3696067 ±  3%  numa-vmstat.node3.numa_miss
+  10851465           -65.0%    3796917 ±  2%  numa-vmstat.node3.numa_other
+
+
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provided
+for informational purposes only. Any difference in system hardware or software
+design or configuration may affect actual performance.
 
 
 -- 
