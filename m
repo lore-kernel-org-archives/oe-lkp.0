@@ -1,100 +1,94 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8735135CB6C
-	for <oe-lkp@lists.linux.dev>; Thu, 12 Feb 2026 14:16:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CDB8E573
+	for <oe-lkp@lists.linux.dev>; Thu, 12 Feb 2026 15:12:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.12
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770905817; cv=fail; b=Dxj5ymAuwVJKTCg646h1glGctCQO6s/mwbqdVSSspkyiBJs/HM5ZQApYRvHj4glK4SCHY4IX0sdoPS+TmbJyD8dk4pHtLWhNXENHewUstMQOlSj44N/282kQTECdsYj7gLTuZPtLOy91viKqxZz26mjrr9PAtTLmUFBW29ywLZk=
+	t=1770909135; cv=fail; b=PurTmRfYsBSiDzKJ5/+9cQM4v0HXAzN6CI0ap6UiDk0qih9jHKsB52VXbfNFbOoT3CrZKMYWOVgnO9dbMf+xsTvuwWifNgaBUq0SuezmUOvMOHQ/VobdBGV9zws9BTSxJrptz3qa+K3ZTdPOLV42BSHLG6NBatUxfjh6zQB0vSY=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770905817; c=relaxed/simple;
-	bh=0gX/8WwmT2RI/G7t8X178aArWj6msbMGS4rHVYRM1WE=;
+	s=arc-20240116; t=1770909135; c=relaxed/simple;
+	bh=7wmMi5n9wPsGkg+Qbm+wYbyD6IgZcSq4DbLsmMXx9F8=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=oYhRnd1mMZ0OsAyPA1LLWIayMZWCdKOLorQsmDT3zKi9rDI7jsa5OJhItIr04FDJK2YtQWLDTPWFzxRG1TlA251P3q5X0KAQx8T77TZ/7xpLrpR/UcpM7swcvWkP4ntAN580cuAEOjMYjS1FqUIuuJk4ALTVpZzY7xKYdhqTJ6g=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hs1n9VgM; arc=fail smtp.client-ip=192.198.163.14
+	 Content-Disposition:MIME-Version; b=Xgkm/+KTLTVo1qEZjCt+0QCmd+6REs2tNmx2pSngKmk2u9dbIVtnnb3XPviqGaFFIUSVMB+V0CseGmt6SeiA+eLWqLMqq6sa3xA+uRGUZqZfPLudUaNl3qcA0zIFas3tWSZrt9eIlgyXWmuyLnYuVyHv5PGEraAnwzT5GjhrIBE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iFass1FM; arc=fail smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hs1n9VgM"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iFass1FM"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770905815; x=1802441815;
+  t=1770909133; x=1802445133;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=0gX/8WwmT2RI/G7t8X178aArWj6msbMGS4rHVYRM1WE=;
-  b=hs1n9VgMrVpojnr7Lg6YhzbI0MIn8bET4cqh87pJeCIIqQmdvcpG9jWr
-   J0Gd1MUXKKKsShmoNIr5c9Gyw2+lQXHDd8N0l9mq3qPx1hDJsrbmIt5UQ
-   HaKAmTOr//ECEUIMqGzgJ5TJke7j1swoUHsxCE5iZq8gBVjzxKa7J9Azp
-   5wjranozrOtTH7Hacvw0eKyXw9gq6xKzmT60kCzBJ7EUX3l92Il1MBaST
-   rBsy/0C7E7PZ+5r3xOQxmCItFyrL/cmhRb3zwFVZYKl8xYov9TLtmMqKM
-   GZCM/+o0w+YmrpvunEGbSLqwfyzZSWcWuZgZhRiQeVMO/mXd76oamQMpH
-   w==;
-X-CSE-ConnectionGUID: +UZklIHmQTmkiMHcJ/NViA==
-X-CSE-MsgGUID: kdKfK5erQ3CHxZm2S2rwhA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11699"; a="72151294"
+  bh=7wmMi5n9wPsGkg+Qbm+wYbyD6IgZcSq4DbLsmMXx9F8=;
+  b=iFass1FMoOAhVFjCYVXNUGojRUNZsyE6bE2Dt65+fjrfuui5gSRB2eht
+   kOAyBZaVPwGvq8cVq5cHWE21vAIy2VOeOuxJoZlN94nZGGgLS0WH1yNrA
+   VWd78n+S4JYHY//CZvb/jQgl9ua/eDefiz4QB67ZGrKaw56ukDNDh2ctL
+   M84csx/xg/l+TIMWCGJVZ8FTWvtS/GEycR8srko8/6vO1PF7o55xAKXzH
+   OJLCKSvfnwm43WtfwD6hWUqML9sbSpF9bPmfc3kEJ9arV99069ImlpmZm
+   0VgUEYAUn2r3BpIpoedXGfMQFGVhE2fB83eS5sQUZE2515X2sJZa2YgGX
+   Q==;
+X-CSE-ConnectionGUID: A5n94SnLT6SaSc80FeS1Zw==
+X-CSE-MsgGUID: FXAa0G6YQtKU2pWCGsNy/g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11699"; a="75925028"
 X-IronPort-AV: E=Sophos;i="6.21,286,1763452800"; 
-   d="scan'208";a="72151294"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2026 06:16:54 -0800
-X-CSE-ConnectionGUID: YReDxbKkRzi57zAK6bcKwQ==
-X-CSE-MsgGUID: LNOkbvZdQ02MkxnfhZka6Q==
+   d="scan'208";a="75925028"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2026 07:12:12 -0800
+X-CSE-ConnectionGUID: ix64DR02QSWt7qJC38fn9w==
+X-CSE-MsgGUID: pqgBdHukQ1eQfwLdF6eLLA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,286,1763452800"; 
-   d="scan'208";a="242191708"
-Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
-  by fmviesa001.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2026 06:16:54 -0800
-Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
- ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.35; Thu, 12 Feb 2026 06:16:53 -0800
-Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
+   d="scan'208";a="217587190"
+Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
+  by orviesa005.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2026 07:12:13 -0800
+Received: from ORSMSX903.amr.corp.intel.com (10.22.229.25) by
  ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.35 via Frontend Transport; Thu, 12 Feb 2026 06:16:53 -0800
-Received: from SA9PR02CU001.outbound.protection.outlook.com (40.93.196.49) by
- edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
+ 15.2.2562.35; Thu, 12 Feb 2026 07:12:11 -0800
+Received: from ORSEDG903.ED.cps.intel.com (10.7.248.13) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.35; Thu, 12 Feb 2026 06:16:53 -0800
+ 15.2.2562.35 via Frontend Transport; Thu, 12 Feb 2026 07:12:11 -0800
+Received: from CO1PR03CU002.outbound.protection.outlook.com (52.101.46.28) by
+ edgegateway.intel.com (134.134.137.113) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.35; Thu, 12 Feb 2026 07:12:11 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Wfri9MJW85576h8xmOmjW2fvUqzpRQynPT9LToZNx/e6xsMktlS4c7t8357D6YaD6ZGth+UWC24RKzVitsaZrB+BI1B6JeqsqBvrq3mAZrIMRIR5SH3Cx7nsvLByqgZyG4ebs7MwD0M7QY0tg60iX8ak7XbyMvMC1hA4WDASMNeABbgGzPNJE2VlL+EA/iWzgqdZjQ3tJL53SiFveaN1ST7KNe/5epbvi/Po2sVbqCIbHebxuLwRlwbg7n8XANpTEd6r0JNHPQFzZljKzZiMyUB8iv5NQpr8gEgVOZnE9z3eiq7cxb/ST+so1qEyVbUiVqsqB1Bjy5H4OFqlUncLRg==
+ b=t/YBDxxSA4ay8dS3XD0OpTLHEh2sN0oWNNCRIuvU6YpDF1OdL8HbWyiSV3S0EvvRp4UzWIqf5W/btmZNSvFDLVM9NnBzXyMwYl6iDHFB9KyzAK+eoN0SefsvMG7mSEBxqTue1CrF6q3gpVYw5NffsBdbQBBSluURpyVv/crGsMQT2CJXfXmcGWO7ZLIKhnAw/kfoU4jrMA/FdgmCEQtmOO/rs6hI94pnZqFpN2k+sztIfIIXalGvPCW8Dma3+btYwggvlTEYcXyvECPhfMFeviaHgsoHEaGy1b0S2py26NN74ZA5BqP23ELklnuDtc3w9bCXk9VU7pBaPJOYYOU2OA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZQowB/tqCo/uymW/+T6dR0n4GzshZxoQX0DmDIooqKg=;
- b=Of5ipPzo285wRk/bPN31rLpGg3oBhwj5nPtEVhbQ9sOwQd7HyH1kZ0KrUNV+fOs9SGBb5XL2jo04G68EPu+MAX+cGidTkdj/KQswg/9UONjCj04WgDJ5x6feLJrgc6AcgTWzoWDrF6najmJOiJn9uAuSfeMTcpKmSoefDiPqU0nboUUEXIo4EoK6yl6Ic0KfLZfqt5+6r07vgg8Y81NFIEM76iT9tLA+k4ZJjwP9pYnJjUFChm06HsWfTffB9jsRvpc0tOLYuuFCB1s9VwkfmX2/9DYmUGeH8KeReXrKfqCSaWJkpVPm0ujhOTwGUvS7AmFdAEdgxUePO6aqNPcgaQ==
+ bh=7r2V4AVsE47+tg3yZ5m51dQOR5rASrpEMIwMsqLI3j0=;
+ b=aHWlTqdgwqdj1WddDcedDhXQoyvv5Qygq3cyAVZEi9aTxrhZgLi3s+Rc02IBFizzeeODv53Er+Dx/Eg2COyop/Adv8JDrjq/ho7pjQKxkoKXYOAiK46nyskXqrZNo7gTt8QrxXE3xA6ZFv1h0Z3BIBjs8EEC0F54prLCIGr39cG/5OUd8EVWuvF/6Nger3Xb4QhzFBQe77c3CG+t2fVVRpXlF2qSMSC+VGpGysGdPzTkWpSfAppIDjkbaXYvgzJ/BZ/Dc+a4vN8EUbddP0YgFU7B52ih36OOnFOmShY43qWIq5GNAR3YliWNf9pnHeywmGbNmd0dzNnJba80ifn7hQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by IA1PR11MB7892.namprd11.prod.outlook.com (2603:10b6:208:3fc::18) with
+ by CO1PR11MB4979.namprd11.prod.outlook.com (2603:10b6:303:99::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9611.10; Thu, 12 Feb
- 2026 14:16:48 +0000
+ 2026 15:12:08 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::e4de:b1d:5557:7257]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::e4de:b1d:5557:7257%5]) with mapi id 15.20.9611.012; Thu, 12 Feb 2026
- 14:16:48 +0000
-Date: Thu, 12 Feb 2026 22:16:36 +0800
+ 15:12:08 +0000
+Date: Thu, 12 Feb 2026 23:12:00 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Ian Rogers <irogers@google.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Arnaldo Carvalho de Melo
-	<acme@redhat.com>, James Clark <james.clark@linaro.org>, Adrian Hunter
-	<adrian.hunter@intel.com>, Alexander Shishkin
-	<alexander.shishkin@linux.intel.com>, Howard Chu <howardchu95@gmail.com>,
-	Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>, Namhyung Kim
-	<namhyung@kernel.org>, Peter Zijlstra <peterz@infradead.org>, Stephen Brennan
-	<stephen.s.brennan@oracle.com>, Tony Jones <tonyj@suse.de>,
-	<linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<oliver.sang@intel.com>
-Subject: [linux-next:master] [perf test]  54a23bff77:
- perf-sanity-tests.test_addr2line_inline_unwinding.fail
-Message-ID: <202602122137.a1396559-lkp@intel.com>
+To: Christian Brauner <brauner@kernel.org>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Christian Brauner
+	<christianvanbrauner@gmail.com>, <oliver.sang@intel.com>
+Subject: [brauner-github:work.xattr.socket] [kernfs]  3631352a7a:
+ BUG:sleeping_function_called_from_invalid_context_at_kernel/workqueue.c
+Message-ID: <202602122354.69217204-lkp@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
 User-Agent: s-nail v14.9.25
-X-ClientProxiedBy: SG3P274CA0013.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:be::25)
- To LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+X-ClientProxiedBy: SG2PR04CA0191.apcprd04.prod.outlook.com
+ (2603:1096:4:14::29) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -102,317 +96,252 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|IA1PR11MB7892:EE_
-X-MS-Office365-Filtering-Correlation-Id: 732bcd4c-1999-48f6-2ab7-08de6a415c20
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|CO1PR11MB4979:EE_
+X-MS-Office365-Filtering-Correlation-Id: f11da349-6f8e-4768-d016-08de6a4916eb
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|366016|1800799024;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?A8PGdqTK6p+UOqm7WEkL/ksW08zy4JtncxMjPvPh2WsSc3g2JfwBww6Qznjb?=
- =?us-ascii?Q?JGV8rcez2iOdT909Lce/SqaExEXi1mWTvHHiTRuR5KlF1/zTvT5AnHYbHAPs?=
- =?us-ascii?Q?v0XJ4kNcIBXCHqGra29tup7l93GAaBfOorXa6ONqDjLMlScPDJIJl6Q1h49u?=
- =?us-ascii?Q?dtL7wRSumGZyYB9IWot7JHOl6k3bWmWkARhrpW1eZOD4LqRi/U3OqQEc/1jY?=
- =?us-ascii?Q?jY4WRi2CvmQiJVio4XihIp9W+W+rVWk444rlABwjNvl5EhbpMBOvn7zsq6jT?=
- =?us-ascii?Q?G2o8QiI7hUQTtpuwMi+5Qmj73ZUM8/KHeE/OPdeTW9fIaBYShCF9uPP2N31r?=
- =?us-ascii?Q?ixrqi4R8j4f3mQXVauMZ3xqzIxqF2xfSDQVWAqCmvA18qN6cLvyOt3sTvCME?=
- =?us-ascii?Q?j7o7omdDq7njepPi+SWwxqK6pMmAkFmZaUI/q8LIJxSPaO2Sqbn7VvWulUO+?=
- =?us-ascii?Q?wpzqns46MFXrZa6SWTb/i2enLp/RbZ/3vNfBiA1n0ihx5IUezwL21z0+d3CI?=
- =?us-ascii?Q?r4EhahaFbW3+SQJvsuMTf+MB/mE3zVnNyaVbJiBh0cZbGnnc/Tmn1KXWXIoj?=
- =?us-ascii?Q?EWDb/81zFPbZFcB6A+HLbBEWkpoY9xsOaITR7fK5ouMaRNEt2k94hqslmsPo?=
- =?us-ascii?Q?Z0Lj5u+tlvHVGV4lLmd5CX03ullgzWnH9y8JO9Rc9TDbXg/zlmRTEurK7erQ?=
- =?us-ascii?Q?gBYhFUUKdxyb44eTuHm9N8KItGSdDO79/Z6Ldnj+yqLRWZAn+jODapV1JN1y?=
- =?us-ascii?Q?ltmXjoJieBVDnfs68AooL5Zjnl1aFC3o18imVb9RNr8u4I3J3ZAIN2d7vH1P?=
- =?us-ascii?Q?sfxuVP1xydu2R8fDQj//50qFO1HrTKMXZ9WEELFwUa/64HhOrbEEFIgGlgA1?=
- =?us-ascii?Q?cwyPa43P9aKd+Nid024ExYXxnt6KTNAGQLCyoSvPZ+APmaFG7SB1oOQRsZeO?=
- =?us-ascii?Q?YHQrLWAT9lvApW3S8W/EwqstxJTwXPWqWBLaaPSmCFUIfBwUJZkeEXg+M/88?=
- =?us-ascii?Q?ObwdxnbjlQ6Gq16AFTn53tyBHa1+qPOyj6HMw7orC7aLpx0FPmOhJdt/WbsG?=
- =?us-ascii?Q?UENM1oWD2dYrDNnJtxRCHPwLo9ipfDoEfCPbT4SPhv8eJ1fnZv/I6aKDMR48?=
- =?us-ascii?Q?k1as2Q7qxwxJfn1nwteRO4oIDjSpAOEKn3LGh5UhPTQBw6T0EOXfyAj4Q9yu?=
- =?us-ascii?Q?8VvNKCylC2RTpXWBshgYlSKt6JKMP2Ziru6l2SOaA8/fAx+KP9UL+g2eLwQM?=
- =?us-ascii?Q?jWpbzjSAByKtWA07YSOd21FfeTrpvZHSgB6BfZedF/xAvpnamvBJz6kte2pK?=
- =?us-ascii?Q?gW31rSGMJ8FA3vJAQ0pZFxPzxHJWCZcf10CnEinOQyi3FNq1qgCqrL1TqnxU?=
- =?us-ascii?Q?E4j9pMg9z6Qfeiwx/zdsGWngpqgfju5cC+QnOuz+PM0dwlmSmRIVJVa5V8F5?=
- =?us-ascii?Q?Zwi592HwtIen4Lb7VBYd9+CgEMDO9DYxoXtoADsaAmn5jn4u049t6dGg8kHU?=
- =?us-ascii?Q?Xalj7wU+mg4AW4VeR7H1yhpkGILGXvEGQqVSKC6432fVfaVql2D7DU2Hg+1O?=
- =?us-ascii?Q?ghZsaH5SDi/MmPV0ZEemLDwV/EHxWGDoLNpOttz2?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?QDoq4l3HQ07Ne3ogacGNguwnhtXWjVAXDJS39O7SVixbxLJCYPneo+rQDJ2C?=
+ =?us-ascii?Q?EWd4917LuP/apjX3WA5MuVnR6HEYEnedHBZVTXoq03dV2nkCbUfoCpfjBtId?=
+ =?us-ascii?Q?xGf2sVmyAWNUWwj2mf0nU3Xai9bHyaaWw3gsHmwBT49uoZHmRd8ZQSxtQzAb?=
+ =?us-ascii?Q?Y3F5aPeDd+RH28Ttiaj2Jt8CNmxj9tOQml0UzpUwE2pbxzBwO7AN18zgvHLi?=
+ =?us-ascii?Q?uXlCMboGrhshknM7PxYDvxoLgO/Yx9VxTHZZVFqgZ1838ab0SDveZO9mVy76?=
+ =?us-ascii?Q?G5O2FRNGdGyoQ5gf/wZZKDBob4sRmGiR4tl4dG6rqs6y/jYjzIG+ma7QsZ4r?=
+ =?us-ascii?Q?/S++Q01f8MfozXelacI1E0Zh48KwA0cjANnmBzu9ZIPos0gMmnSMzE7F7GtZ?=
+ =?us-ascii?Q?eXsgAkDyhry6EOohz42FpiZ8nt0fHWqnPboR6xx7zy3I6b6s+Rmx4hj/9U/c?=
+ =?us-ascii?Q?YH+vYWKroOBKNJW3qD1UbeXUsBsKIVMgtfT6MSBhD6jFsKhzc4tkgDk9B0cp?=
+ =?us-ascii?Q?wnip7elInqRPFccos3bNfXIEX5b5Rj9nu0Q1Gsl347/D955pG+PLbjSMacbB?=
+ =?us-ascii?Q?8LYMCEp4s/6vvhsXRyRr+0hu4u10KGINhgetyT2OTc0nTOFUkVWVsjMY6kxU?=
+ =?us-ascii?Q?TfZWCnHVHXUasZC70UXW8BrZsTjQjuqXk/I+GGsO0iRcToXllzLt7dzgCXnE?=
+ =?us-ascii?Q?WJtIGE/hleapFpZpUOBe7VOL8CMFhi5inOnCDjQsK8b0OojcilIuEzL5S6XJ?=
+ =?us-ascii?Q?pvC1aDmKqYq076zkuZpe+zgiblyjYe+1WSiqQNKeALCq12yMoogl+CpM3XEg?=
+ =?us-ascii?Q?iLBn16z65HHaXNwiI4g5W4x1Fic0fyKQQSD5fjiKj0ENAki6x1vGnqxAPH2V?=
+ =?us-ascii?Q?pQGlYGnXa+2fGcJ1+zI614ImBRfG576ljEMw7DrOYNnZSn5ThRR+zBV1/+HD?=
+ =?us-ascii?Q?0LVcvjMxP35uKtWTh1Emmlf2QI196WJ0FjJpJ0t5LgfSUKM7yR5dHBrvvZrd?=
+ =?us-ascii?Q?aeucrVnYngKEvwUyzNbLoGgCXU2yDTJE+3GV+ENENnQ8101FIBrXD5pNeJCE?=
+ =?us-ascii?Q?ZOCiBL+qiyKP8EAK/230265Py0vAGKWoJDR4nD7xPeIWqU2KUHmzkLffN5kW?=
+ =?us-ascii?Q?W3Qk16ti7R4wRLIns0qJp2A/KKJWNwmwDO700+wfY4OlFfIdOmML8W4xNd4K?=
+ =?us-ascii?Q?r0Ti8z9CaPWxkIIOSELS17iUs8qZ5jWaCvS/aIw9UEj13Y73He+yn+Dl/yKO?=
+ =?us-ascii?Q?Po9hNdROip/81v1rbRzSRDEmnNMVmngzDhO19LXprPVU0O0e4b3KEp3u3QRi?=
+ =?us-ascii?Q?2wdYdgAoUjXDQKnhwU6dtoxPjoetdEQa7jAcT3PFYRM3evsBGyCydFOko1Q5?=
+ =?us-ascii?Q?1UNoKWB82jvBnMJDd8OTR0Yh4eWQoHH7l6IGTOgLQoYWOadup7MtWfL44CI+?=
+ =?us-ascii?Q?T2Ny4pSgJqChl0OmDecRAYs+OLiPCEFfQLPEGB2ZigccLP8XaK0WNwDkxvx/?=
+ =?us-ascii?Q?tpfRjH6qEha5ZVlG7VRDikvDj7HD5uJOK+83nR50FD9gL/O8BydhHQ9OUiq2?=
+ =?us-ascii?Q?HWFNbqbPyOYuJzBtXnmbCYkZ0rBBrSuG9JFLaJo2?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FaYoQySsQsvqScoK7m/0aYvhRoPdV8xqjfoNrSOnYDjnLxz8HGhl540awghM?=
- =?us-ascii?Q?SXOC+SNoRoFPC3KQxnP5vkG0BCGyxNkYtj4VqzO3SVxq8tezqrBxvSHieF6e?=
- =?us-ascii?Q?4kVlANptcJ0Y8FWrluQUkcNAwgoecvmcdUNfqI+A/QeXq9Ano+onpQydW4uD?=
- =?us-ascii?Q?CqqlGp/2N2/vW3F5+mRpTYe97Gd0lb3HpTYI2gP+/JrQa5Ce22cg4KGsraYW?=
- =?us-ascii?Q?5jubv5GjmNVBh6ZX+Ni35Icyk0CvNM/Ke8D/ZTWVaNbBSg/lQBmOB4ydQI65?=
- =?us-ascii?Q?l96JZEB6N9/gVAIHyNRZtVJodGZiKiwXCPxbQZ+tNIFrzifgl275bnfcP2f6?=
- =?us-ascii?Q?WUE2gv+yabPDrXYqr48Fjk84cktBVVU/Z+Hv852NkMG92Gki5TWe/LWhJU0R?=
- =?us-ascii?Q?t0MrNbpx3C0zThGvBv52LfVHwB1xRNkA0uYRXhXy5HZdi18oSfa3tO5005MW?=
- =?us-ascii?Q?ePLGjEZCxnbxStytL4bZMG3utsDTt55KOd3qOwXTvcGUAKYV7gKY5p9AyHqX?=
- =?us-ascii?Q?tHcu3E1RoA2B3rOs+aKS/W4gRxac7625U/ZVZ+M/V5mR0qaZgwdTvygREmpB?=
- =?us-ascii?Q?CE2cUba9pEg9OQDvmfVDskVinLGdztIn7ZiPyCtE9kcUpqQnf7RshKixuodJ?=
- =?us-ascii?Q?XXLN8oV/5F7v5mq4yrXxom44gFVWPjJs0EqNMy6rkgbfgurhBkTdZEwC7I/G?=
- =?us-ascii?Q?tVO3G7kmZ+/7+xikirJp1IxseaxpB16qyU89C+zgI9cvSLM8i5593qX/0mXh?=
- =?us-ascii?Q?1ny/jLEF7ch2YGaMd+nFHTVpKzdWyfrHMerJqdp0/uMvJVglP6RBDxCNgzU6?=
- =?us-ascii?Q?AAKbRmmy077A91rtoSgS4T2FyKXpL4W9XUyPM9miOXqJpdH6d0D0OioCe4BP?=
- =?us-ascii?Q?gHAbJ4OrZrhIJ6ViT2ZengaZW6qX7X8eO0QjWdenstXi7bXE6Ktsg7MMgGtn?=
- =?us-ascii?Q?kKnV73fRZv5oG8vwHOeAEb0mbbWqfj2zW9WTOfnKZqXkEk+v/tLIvArkP2II?=
- =?us-ascii?Q?DgzdXLxSmPeXOQHLPiJjiKfA4gcjDb+Cn5KK+WkXA05xo/5BFUkDOaJrBfhu?=
- =?us-ascii?Q?k8U7YJtC3hQYQUddfodPY6u/ETkeXgBbNkABfgv03RWWFgfbAAK2qFaH/w5s?=
- =?us-ascii?Q?KSlvyv0K5ZiREd2QXxkMmzyuMd3suYgI5UhRcP73YPqUuBH9sD/CwhtwaE9i?=
- =?us-ascii?Q?aCySkoeKmvr34omDGpxIKPxE6FbfEpaiTxoHJwYcF+DAbB65sc9jngmp/H/j?=
- =?us-ascii?Q?ilImZQem3vdenq/f2EhPCyTBILOiOQvsdbwtdoTelnrZRbgMOPV+FTo47jnv?=
- =?us-ascii?Q?3VFsOkJsr4cg/l7ovDQDovUjL4a58nBXJbensGUg10pIs/76Y/g3rRRpyZ2k?=
- =?us-ascii?Q?iZUFFzX4MclT78a2HO8qoKUHjKtGnKCFV4YQLO8RoJetjodcJ5dm+6YO8T97?=
- =?us-ascii?Q?G5AUbNj/6A4+rxNWnz7yGyyA0P7CRv73Tn0YLW1gv68A6bOxY6wm96wu6HMf?=
- =?us-ascii?Q?fHwfFOjspmVgEETtZyO2O6nnBxFRDTxpNMfslSDi0SNy0dfqwsdBhVfCN3Td?=
- =?us-ascii?Q?bPC0feQEvGlKPpmHqw2r91ugP3o90kRzZjWiUxipPMZRmO494LBarCUKVLKF?=
- =?us-ascii?Q?oufDXBZethG3RNFIJjzxXQrwZDKtm59UM8ktgjHjolkEFEf1NHyDSD2J/7Bt?=
- =?us-ascii?Q?cc5NBgaUBlAREfGqhuCm9hvP5nL72lJv85fx1aFUbC4pKFqbdQJul40Di8X2?=
- =?us-ascii?Q?ZrXUdzgphw=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 732bcd4c-1999-48f6-2ab7-08de6a415c20
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?qlxMx7B9epa3gv7X6Zt8vQVR6WU4Ih7NPVeofLBkfYwAZ8abRc9wZBo/egUE?=
+ =?us-ascii?Q?ThDLZPUY8GgAFnZQ++0oXO+orLuCRsFEcFuIao6fLTpgzheqIcKHPyByUupF?=
+ =?us-ascii?Q?zQjJw4DFyW5+eh40/h3DvhmLDQOTJASg2cO4DCo+mSkn3kWSZ9kf3jpe1AIA?=
+ =?us-ascii?Q?kKSmSA2K/ivRNKkEIy1uMlKt1bF6vnqBSuwaFXw9uTrEuQbD4d2AU9Kxh/f7?=
+ =?us-ascii?Q?VjjdQsDIm0WdyCbKbYn+CY+u9lPSgeFGabdJNeO8AmupW3xsD68qALB2UmLL?=
+ =?us-ascii?Q?jUaC4uijOjaBdTHrbEspKpJWHXBLPg5+UZA5XKxiUAb/HWJNXWP7Z08BpnB3?=
+ =?us-ascii?Q?pVgu/20vJOxktM0Bu5Y1bR23qnaFanHZumXWb50kiEICza63VSiQU/4NLGRq?=
+ =?us-ascii?Q?IKr37ffLMYMlYy9wYPuXbPi+D8KWUxz62e0H8UXo191hY9zw/UBgeos1qVD7?=
+ =?us-ascii?Q?5bT7O8Dz5DtVQFzXh0U1Jpv9RWDkyK4EvJLjhZkZLj7a5xTv+dA5GkhwkTGo?=
+ =?us-ascii?Q?Uz5aVXCTEpBwTntUe0x75ZCGuTHhHqyUSl3zygIwA5fTROS3NSW9cuwmDFIm?=
+ =?us-ascii?Q?tnI+j4s2jEOe1/vAt5wqj1j+WgRIivodY8lBEkCWh1Pd3JJViHW2yZ3D1yme?=
+ =?us-ascii?Q?OZLvMCd+vBSFCrgJP2buGkyszIhXTsB8Vkw1WNvTj+LWM9xBbRSy4COZ7cDc?=
+ =?us-ascii?Q?wZ0t/Z6RaGehvjD3wuOylqnQ5a5K1LSYN4/9RQ/Jrsq7+3xiqaEFmZXe76Ih?=
+ =?us-ascii?Q?OSTIEeRb3XebOoQOGRgrfjJZWV+ipa3/rBbglIoUejzCcYZk4f39ulfqsPHj?=
+ =?us-ascii?Q?/bqPaoT6WZA5O8WJ9RHXtg85yj/BVEduQ9pJ8vPejShF/HDCpHYehC34kLCQ?=
+ =?us-ascii?Q?ZNKYWRvos2JBvlcEk46Sym3RiDrtOIse/U6oh8U3G7e2UYYlFcrosP1Ec7t+?=
+ =?us-ascii?Q?Lc7Uu71E6gyQOVr6xcisXhR5FsYIZM8qu0xP0l+zvUJjITb6YRIBrg1ZpkgC?=
+ =?us-ascii?Q?OIsqk9LK4wpeaUxFjnN65e5oP+z0kCLgvxp0TL+DIh/3uHew4azrVYyMiC3i?=
+ =?us-ascii?Q?pZt+FifRs6fEde+PIBOEJfMmgZkvKqxtkJHt4oXh5kvGXoTUscssHlciO+/S?=
+ =?us-ascii?Q?1zaQpvqkPDGGNt8edDwPub1P3o/KyEoO2dKhUOZWe1NaVIFxNMbaJzcT/k62?=
+ =?us-ascii?Q?BHrVp3hlgFTNGTVv6cUGYBzNsiHRD9est46LH2cFA8PQqJXmoIyGJR8GZTtB?=
+ =?us-ascii?Q?w5XJN4IxiShoAd6REbQ7mNfmYQ88n/2ixwM94dhWzfUNkgOBHRmf0Ls+H6Qw?=
+ =?us-ascii?Q?c2La1g7R8fmpBX9FTUZdcZEDjDb6tVkT7+88IN7Afrldw5S6wJad5CCIYeAx?=
+ =?us-ascii?Q?DvoQyBmIeUhEPIATgDyglQI4jUphdJ4RwSz4dewQUJb/rSEQ/U2UzQrgDP5a?=
+ =?us-ascii?Q?CjA8WJkhOXVPKgwDYy9oEyNIoGjq0HzuAhBZQ8i6ZOtihAaNHeSwrc7tIEmk?=
+ =?us-ascii?Q?rP9VyXtzEPmYlmpu/ApHJqFkJAd4J4l5XS0AGm3H7/VeC8og70LjMiRmsFzm?=
+ =?us-ascii?Q?EacPtEawp75b5wAUHY/sdsJA9wSEb+D7s1z3hQs9UQZZujVi2pOpmIfig5l5?=
+ =?us-ascii?Q?f+4Kg8B6oL99+WIYiTiiwObEyjir+yoUMRnL47gWXeq1DCE6hZttIOoOchA+?=
+ =?us-ascii?Q?yy4qcFbWuIL4Y33Q4NiqrMHTfKJFpM6Siaw+Ak1E81UIAO1V0G1l+lbsEamD?=
+ =?us-ascii?Q?+Ju0jq1gtg=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: f11da349-6f8e-4768-d016-08de6a4916eb
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Feb 2026 14:16:48.5756
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Feb 2026 15:12:08.4926
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4URSfh/xOoZKKkdHuiLvjEa+lu/sNSf1dvPfg1hdQf9uaQ7H0VNFJRSxepnheYly5QNXfu+e/JdC+Z64ERaHtQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB7892
+X-MS-Exchange-CrossTenant-UserPrincipalName: Bv0PNO0eoHzGZl/71Yf0lzG6dj4LnQimczYkxkD9+okasf2HasJnS2ukA9fP5Ha7mnqkc0VxjKLjIv5ab5jrog==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB4979
 X-OriginatorOrg: intel.com
+
 
 
 Hello,
 
+kernel test robot noticed "BUG:sleeping_function_called_from_invalid_context_at_kernel/workqueue.c" on:
 
-for new added "test addr2line inline unwinding", we found it failed consistently
-in our tests. not sure if we miss any dependency. below report is FYI.
+commit: 3631352a7a1d5666723822eb421dd039b3b8ea8e ("kernfs: adapt to rhashtable-based simple_xattrs with lazy allocation")
+https://github.com/brauner/linux.git work.xattr.socket
 
+in testcase: boot
 
-kernel test robot noticed "perf-sanity-tests.test_addr2line_inline_unwinding.fail" on:
-
-commit: 54a23bff770961e024e2c61cd1f46888190c3e79 ("perf test: Test addr2line unwinding works with inline functions")
-https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-
-
-in testcase: perf-sanity-tests
-version: 
-with following parameters:
-
-	perf_compiler: clang
-	group: group-02
-
-
-
-config: x86_64-rhel-9.4-bpf
-compiler: gcc-14
-test machine: 20 threads 1 sockets (Commet Lake) with 16G memory
+config: x86_64-rhel-9.4-rust
+compiler: clang-20
+test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 32G
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
++-------------------------------------------------------------------------+------------+------------+
+|                                                                         | 2115f2915b | 3631352a7a |
++-------------------------------------------------------------------------+------------+------------+
+| BUG:sleeping_function_called_from_invalid_context_at_kernel/workqueue.c | 0          | 6          |
++-------------------------------------------------------------------------+------------+------------+
 
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202602122137.a1396559-lkp@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202602122354.69217204-lkp@intel.com
+
+
+
+[   39.161797][    C0] BUG: sleeping function called from invalid context at kernel/workqueue.c:4390
+[   39.164598][    C0] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 110, name: udevadm
+[   39.167222][    C0] preempt_count: 100, expected: 0
+[   39.168816][    C0] RCU nest depth: 0, expected: 0
+[   39.170370][    C0] CPU: 0 UID: 0 PID: 110 Comm: udevadm Not tainted 6.19.0-01456-g3631352a7a1d #1 PREEMPT(voluntary)
+[   39.170375][    C0] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+[   39.170378][    C0] Call Trace:
+[   39.170398][    C0]  <IRQ>
+[   39.170403][    C0]  dump_stack_lvl (lib/dump_stack.c:123)
+[   39.170427][    C0]  __might_resched (kernel/sched/core.c:8830)
+[   39.170497][    C0]  __cancel_work_sync (include/linux/kernel.h:61 kernel/workqueue.c:4390)
+[   39.170503][    C0]  ? simple_xattrs_free (fs/xattr.c:1747)
+[   39.170506][    C0]  rhashtable_free_and_destroy (lib/rhashtable.c:1153)
+[   39.170515][    C0]  ? kfree (mm/slub.c:?)
+[   39.170521][    C0]  ? kernfs_put (fs/kernfs/dir.c:544)
+[   39.170525][    C0]  kernfs_free_rcu (fs/kernfs/dir.c:553)
+[   39.170533][    C0]  rcu_do_batch (arch/x86/include/asm/preempt.h:27 kernel/rcu/tree.c:2624)
+[   39.170543][    C0]  rcu_core (kernel/rcu/tree.c:2871)
+[   39.170546][    C0]  handle_softirqs (arch/x86/include/asm/jump_label.h:37 include/trace/events/irq.h:142 kernel/softirq.c:623)
+[   39.170555][    C0]  __irq_exit_rcu (arch/x86/include/asm/jump_label.h:37 kernel/softirq.c:725)
+[   39.170559][    C0]  sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1056)
+[   39.170570][    C0]  </IRQ>
+[   39.170572][    C0]  <TASK>
+[   39.170573][    C0]  asm_sysvec_apic_timer_interrupt (arch/x86/include/asm/idtentry.h:697)
+[   39.170581][    C0] RIP: 0010:__d_lookup (fs/dcache.c:2418)
+[   39.170587][    C0] Code: 00 00 00 00 00 66 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00 66 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00 66 90 0f 1f 44 00 00 <55> 41 57 41 56 41 55 41 54 53 48 89 f3 49 89 fe 44 8b 2e 49 bf 00
+All code
+========
+   0:	00 00                	add    %al,(%rax)
+   2:	00 00                	add    %al,(%rax)
+   4:	00 66 66             	add    %ah,0x66(%rsi)
+   7:	66 66 66 66 2e 0f 1f 	data16 data16 data16 cs nopw 0x0(%rax,%rax,1)
+   e:	84 00 00 00 00 00 
+  14:	66 66 66 66 66 66 2e 	data16 data16 data16 data16 data16 cs nopw 0x0(%rax,%rax,1)
+  1b:	0f 1f 84 00 00 00 00 
+  22:	00 
+  23:	66 90                	xchg   %ax,%ax
+  25:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+  2a:*	55                   	push   %rbp		<-- trapping instruction
+  2b:	41 57                	push   %r15
+  2d:	41 56                	push   %r14
+  2f:	41 55                	push   %r13
+  31:	41 54                	push   %r12
+  33:	53                   	push   %rbx
+  34:	48 89 f3             	mov    %rsi,%rbx
+  37:	49 89 fe             	mov    %rdi,%r14
+  3a:	44 8b 2e             	mov    (%rsi),%r13d
+  3d:	49                   	rex.WB
+  3e:	bf                   	.byte 0xbf
+	...
+
+Code starting with the faulting instruction
+===========================================
+   0:	55                   	push   %rbp
+   1:	41 57                	push   %r15
+   3:	41 56                	push   %r14
+   5:	41 55                	push   %r13
+   7:	41 54                	push   %r12
+   9:	53                   	push   %rbx
+   a:	48 89 f3             	mov    %rsi,%rbx
+   d:	49 89 fe             	mov    %rdi,%r14
+  10:	44 8b 2e             	mov    (%rsi),%r13d
+  13:	49                   	rex.WB
+  14:	bf                   	.byte 0xbf
+	...
+[   39.170590][    C0] RSP: 0018:ffffce2d404db9a0 EFLAGS: 00000246
+[   39.170594][    C0] RAX: ffff88920147dd98 RBX: ffffce2d404dbaf8 RCX: 0000000000000006
+[   39.170595][    C0] RDX: 0000000000000000 RSI: ffffce2d404dbaf8 RDI: ffff88920ef9c780
+[   39.170597][    C0] RBP: 0000000000000100 R08: 0000002800000001 R09: ffffffff90435034
+[   39.170599][    C0] R10: 0000000000000000 R11: ffffffff8df80580 R12: ffff88926f3a0000
+[   39.170601][    C0] R13: ffff889333fb16c0 R14: ffffce2d404dbae8 R15: ffff88920ef9c780
+[   39.170603][    C0]  ? kernfs_evict_inode (fs/kernfs/inode.c:282)
+[   39.170612][    C0]  lookup_fast (fs/namei.c:1875)
+[   39.170617][    C0]  path_lookupat (include/linux/err.h:78 fs/namei.c:2276 fs/namei.c:2780 fs/namei.c:2804)
+[   39.170620][    C0]  do_o_path (fs/namei.c:4802)
+[   39.170623][    C0]  ? alloc_empty_file (fs/file_table.c:258)
+[   39.170628][    C0]  path_openat (fs/namei.c:4824)
+[   39.170632][    C0]  ? kernfs_iop_permission (fs/kernfs/inode.c:299)
+[   39.170635][    C0]  do_file_open (fs/namei.c:4860)
+[   39.170659][    C0]  ? kernfs_iop_getattr (fs/kernfs/inode.c:202)
+[   39.170662][    C0]  ? kmem_cache_alloc_noprof (include/linux/kernel.h:?)
+[   39.170665][    C0]  ? do_getname (fs/namei.c:183)
+[   39.170667][    C0]  ? __check_object_size (mm/usercopy.c:198)
+[   39.170674][    C0]  ? strncpy_from_user (arch/x86/include/asm/uaccess_64.h:70 lib/strncpy_from_user.c:129)
+[   39.170680][    C0]  do_sys_openat2 (include/linux/err.h:78 include/linux/file.h:177 fs/open.c:1366)
+[   39.170689][    C0]  __x64_sys_openat (fs/open.c:1383)
+[   39.170692][    C0]  do_syscall_64 (arch/x86/entry/syscall_64.c:?)
+[   39.170703][    C0]  ? __memcg_slab_free_hook (include/linux/mm.h:2516)
+[   39.170708][    C0]  ? __x64_sys_close (fs/open.c:1511)
+[   39.170711][    C0]  ? kmem_cache_free (mm/slub.c:?)
+[   39.170714][    C0]  ? __x64_sys_close (fs/open.c:1511)
+[   39.170717][    C0]  ? do_syscall_64 (arch/x86/include/asm/atomic64_64.h:15 include/linux/atomic/atomic-arch-fallback.h:2583 include/linux/atomic/atomic-long.h:38 include/linux/atomic/atomic-instrumented.h:3189 include/linux/unwind_deferred.h:37 include/linux/irq-entry-common.h:296 include/linux/entry-common.h:196 arch/x86/entry/syscall_64.c:100)
+[   39.170720][    C0]  ? do_sys_openat2 (fs/open.c:1367)
+[   39.170722][    C0]  ? __x64_sys_openat (fs/open.c:1383)
+[   39.170725][    C0]  ? do_syscall_64 (arch/x86/include/asm/atomic64_64.h:15 include/linux/atomic/atomic-arch-fallback.h:2583 include/linux/atomic/atomic-long.h:38 include/linux/atomic/atomic-instrumented.h:3189 include/linux/unwind_deferred.h:37 include/linux/irq-entry-common.h:296 include/linux/entry-common.h:196 arch/x86/entry/syscall_64.c:100)
+[   39.170731][    C0]  ? do_syscall_64 (arch/x86/include/asm/atomic64_64.h:15 include/linux/atomic/atomic-arch-fallback.h:2583 include/linux/atomic/atomic-long.h:38 include/linux/atomic/atomic-instrumented.h:3189 include/linux/unwind_deferred.h:37 include/linux/irq-entry-common.h:296 include/linux/entry-common.h:196 arch/x86/entry/syscall_64.c:100)
+[   39.170735][    C0]  entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:131)
+[   39.170740][    C0] RIP: 0033:0x7fbfe837a687
+[   39.170745][    C0] Code: 48 89 fa 4c 89 df e8 58 b3 00 00 8b 93 08 03 00 00 59 5e 48 83 f8 fc 74 1a 5b c3 0f 1f 84 00 00 00 00 00 48 8b 44 24 10 0f 05 <5b> c3 0f 1f 80 00 00 00 00 83 e2 39 83 fa 08 75 de e8 23 ff ff ff
+All code
+========
+   0:	48 89 fa             	mov    %rdi,%rdx
+   3:	4c 89 df             	mov    %r11,%rdi
+   6:	e8 58 b3 00 00       	call   0xb363
+   b:	8b 93 08 03 00 00    	mov    0x308(%rbx),%edx
+  11:	59                   	pop    %rcx
+  12:	5e                   	pop    %rsi
+  13:	48 83 f8 fc          	cmp    $0xfffffffffffffffc,%rax
+  17:	74 1a                	je     0x33
+  19:	5b                   	pop    %rbx
+  1a:	c3                   	ret
+  1b:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+  22:	00 
+  23:	48 8b 44 24 10       	mov    0x10(%rsp),%rax
+  28:	0f 05                	syscall
+  2a:*	5b                   	pop    %rbx		<-- trapping instruction
+  2b:	c3                   	ret
+  2c:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+  33:	83 e2 39             	and    $0x39,%edx
+  36:	83 fa 08             	cmp    $0x8,%edx
+  39:	75 de                	jne    0x19
+  3b:	e8 23 ff ff ff       	call   0xffffffffffffff63
+
+Code starting with the faulting instruction
+===========================================
+   0:	5b                   	pop    %rbx
+   1:	c3                   	ret
+   2:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+   9:	83 e2 39             	and    $0x39,%edx
+   c:	83 fa 08             	cmp    $0x8,%edx
+   f:	75 de                	jne    0xffffffffffffffef
+  11:	e8 23 ff ff ff       	call   0xffffffffffffff39
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20260212/202602122137.a1396559-lkp@intel.com
+https://download.01.org/0day-ci/archive/20260212/202602122354.69217204-lkp@intel.com
 
 
-2026-02-10 04:50:32 sudo ASAN_OPTIONS=fast_unwind_on_malloc=0 /usr/src/linux-perf-x86_64-rhel-9.4-bpf-54a23bff770961e024e2c61cd1f46888190c3e79/tools/perf/perf test 76 -v
- 76: test addr2line inline unwinding                                 : Running (1 active)
---- start ---
-test child forked, pid 11320
-Inline unwinding verification test
-[ perf record: Woken up 136 times to write data ]
-[ perf record: Captured and wrote 33.858 MB /tmp/perf-test-inline-addr2line.v74NZkItW4/perf.data (4206 samples) ]
-
-=================================================================
-==11324==ERROR: LeakSanitizer: detected memory leaks
-
-Direct leak of 61808 byte(s) in 8 object(s) allocated from:
-    #0 0x7fb5922e0610 in calloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:77
-    #1 0x7fb5920c1808  (/lib/x86_64-linux-gnu/libelf.so.1+0x3808) (BuildId: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
-    #2 0x7fb5920c25f9  (/lib/x86_64-linux-gnu/libelf.so.1+0x45f9) (BuildId: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
-    #3 0x5560ff9ea997 in symsrc__init util/symbol-elf.c:1164
-    #4 0x5560ff56702e in dso__load util/symbol.c:1795
-    #5 0x5560ff5fb064 in map__load util/map.c:351
-    #6 0x5560ff5fb44b in map__find_symbol util/map.c:385
-    #7 0x5560ff47a46d in thread__find_symbol util/event.c:725
-    #8 0x5560ffa84913 in __report_module util/unwind-libdw.c:54
-    #9 0x5560ffa85240 in report_module util/unwind-libdw.c:117
-    #10 0x5560ffa86a99 in frame_callback util/unwind-libdw.c:248
-    #11 0x7fb59206dae2 in dwfl_thread_getframes (/lib/x86_64-linux-gnu/libdw.so.1+0x78ae2) (BuildId: bafe9cb5bbbe6cee778d0d137730ea5c223d553e)
-    #12 0x7fb59206de53 in dwfl_getthread_frames (/lib/x86_64-linux-gnu/libdw.so.1+0x78e53) (BuildId: bafe9cb5bbbe6cee778d0d137730ea5c223d553e)
-    #13 0x5560ffa8763d in unwind__get_entries util/unwind-libdw.c:307
-    #14 0x5560ff5f2dde in thread__resolve_callchain_unwind util/machine.c:2977
-    #15 0x5560ff5f2f32 in __thread__resolve_callchain util/machine.c:3004
-    #16 0x5560ff5c80c0 in sample__for_each_callchain_node util/callchain.c:1818
-    #17 0x5560ff4132c6 in build_id__mark_dso_hit util/build-id.c:77
-    #18 0x5560fef31015 in process_sample_event /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-54a23bff770961e024e2c61cd1f46888190c3e79/tools/perf/builtin-record.c:1504
-    #19 0x5560ff61d75e in evlist__deliver_sample util/session.c:1276
-    #20 0x5560ff61f490 in machines__deliver_event util/session.c:1432
-    #21 0x5560ff6210b1 in perf_session__deliver_event util/session.c:1523
-    #22 0x5560ff60c775 in ordered_events__deliver_event util/session.c:134
-    #23 0x5560ff64a011 in do_flush util/ordered-events.c:245
-    #24 0x5560ff64aeb6 in __ordered_events__flush util/ordered-events.c:324
-    #25 0x5560ff64b3c7 in ordered_events__flush util/ordered-events.c:342
-    #26 0x5560ff617d42 in perf_event__process_finished_round util/session.c:787
-    #27 0x5560ff621c1d in perf_session__process_user_event util/session.c:1583
-
-Direct leak of 4424 byte(s) in 1 object(s) allocated from:
-    #0 0x7fb5922e0610 in calloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:77
-    #1 0x7fb5920c1808  (/lib/x86_64-linux-gnu/libelf.so.1+0x3808) (BuildId: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
-    #2 0x7fb5920c25f9  (/lib/x86_64-linux-gnu/libelf.so.1+0x45f9) (BuildId: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
-    #3 0x5560ff9ea997 in symsrc__init util/symbol-elf.c:1164
-    #4 0x5560ff56702e in dso__load util/symbol.c:1795
-    #5 0x5560ff5fb064 in map__load util/map.c:351
-    #6 0x5560ff5fb44b in map__find_symbol util/map.c:385
-    #7 0x5560ff47a46d in thread__find_symbol util/event.c:725
-    #8 0x5560ffa84913 in __report_module util/unwind-libdw.c:54
-    #9 0x5560ffa85240 in report_module util/unwind-libdw.c:117
-    #10 0x5560ffa874ca in unwind__get_entries util/unwind-libdw.c:299
-    #11 0x5560ff5f2dde in thread__resolve_callchain_unwind util/machine.c:2977
-    #12 0x5560ff5f2f32 in __thread__resolve_callchain util/machine.c:3004
-    #13 0x5560ff5c80c0 in sample__for_each_callchain_node util/callchain.c:1818
-    #14 0x5560ff4132c6 in build_id__mark_dso_hit util/build-id.c:77
-    #15 0x5560fef31015 in process_sample_event /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-54a23bff770961e024e2c61cd1f46888190c3e79/tools/perf/builtin-record.c:1504
-    #16 0x5560ff61d75e in evlist__deliver_sample util/session.c:1276
-    #17 0x5560ff61f490 in machines__deliver_event util/session.c:1432
-    #18 0x5560ff6210b1 in perf_session__deliver_event util/session.c:1523
-    #19 0x5560ff60c775 in ordered_events__deliver_event util/session.c:134
-    #20 0x5560ff64a011 in do_flush util/ordered-events.c:245
-    #21 0x5560ff64aeb6 in __ordered_events__flush util/ordered-events.c:324
-    #22 0x5560ff64b3c7 in ordered_events__flush util/ordered-events.c:342
-    #23 0x5560ff617d42 in perf_event__process_finished_round util/session.c:787
-    #24 0x5560ff621c1d in perf_session__process_user_event util/session.c:1583
-    #25 0x5560ff6249ac in perf_session__process_event util/session.c:1805
-    #26 0x5560ff62c265 in process_simple util/session.c:2399
-    #27 0x5560ff62b225 in reader__read_event util/session.c:2328
-
-Indirect leak of 18368 byte(s) in 8 object(s) allocated from:
-    #0 0x7fb5922e0c57 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69
-    #1 0x7fb5920c9550  (/lib/x86_64-linux-gnu/libelf.so.1+0xb550) (BuildId: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
-    #2 0x7fb5920ca517  (/lib/x86_64-linux-gnu/libelf.so.1+0xc517) (BuildId: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
-    #3 0x7fb5920ca0b1 in elf_rawdata (/lib/x86_64-linux-gnu/libelf.so.1+0xc0b1) (BuildId: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
-    #4 0x5560ff9e0c10 in elf_section_by_name util/symbol-elf.c:193
-    #5 0x5560ff9e9ae1 in read_gnu_debugdata util/symbol-elf.c:1086
-    #6 0x5560ff9eaac5 in symsrc__init util/symbol-elf.c:1173
-    #7 0x5560ff56702e in dso__load util/symbol.c:1795
-    #8 0x5560ff5fb064 in map__load util/map.c:351
-    #9 0x5560ff5fb44b in map__find_symbol util/map.c:385
-    #10 0x5560ff47a46d in thread__find_symbol util/event.c:725
-    #11 0x5560ffa84913 in __report_module util/unwind-libdw.c:54
-    #12 0x5560ffa85240 in report_module util/unwind-libdw.c:117
-    #13 0x5560ffa86a99 in frame_callback util/unwind-libdw.c:248
-    #14 0x7fb59206dae2 in dwfl_thread_getframes (/lib/x86_64-linux-gnu/libdw.so.1+0x78ae2) (BuildId: bafe9cb5bbbe6cee778d0d137730ea5c223d553e)
-    #15 0x7fb59206de53 in dwfl_getthread_frames (/lib/x86_64-linux-gnu/libdw.so.1+0x78e53) (BuildId: bafe9cb5bbbe6cee778d0d137730ea5c223d553e)
-    #16 0x5560ffa8763d in unwind__get_entries util/unwind-libdw.c:307
-    #17 0x5560ff5f2dde in thread__resolve_callchain_unwind util/machine.c:2977
-    #18 0x5560ff5f2f32 in __thread__resolve_callchain util/machine.c:3004
-    #19 0x5560ff5c80c0 in sample__for_each_callchain_node util/callchain.c:1818
-    #20 0x5560ff4132c6 in build_id__mark_dso_hit util/build-id.c:77
-    #21 0x5560fef31015 in process_sample_event /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-54a23bff770961e024e2c61cd1f46888190c3e79/tools/perf/builtin-record.c:1504
-    #22 0x5560ff61d75e in evlist__deliver_sample util/session.c:1276
-    #23 0x5560ff61f490 in machines__deliver_event util/session.c:1432
-    #24 0x5560ff6210b1 in perf_session__deliver_event util/session.c:1523
-    #25 0x5560ff60c775 in ordered_events__deliver_event util/session.c:134
-    #26 0x5560ff64a011 in do_flush util/ordered-events.c:245
-    #27 0x5560ff64aeb6 in __ordered_events__flush util/ordered-events.c:324
-
-Indirect leak of 3203 byte(s) in 8 object(s) allocated from:
-    #0 0x7fb5922e0c57 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69
-    #1 0x7fb5920ca3fa  (/lib/x86_64-linux-gnu/libelf.so.1+0xc3fa) (BuildId: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
-    #2 0x7fb5920ca0b1 in elf_rawdata (/lib/x86_64-linux-gnu/libelf.so.1+0xc0b1) (BuildId: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
-    #3 0x5560ff9e0c10 in elf_section_by_name util/symbol-elf.c:193
-    #4 0x5560ff9e9ae1 in read_gnu_debugdata util/symbol-elf.c:1086
-    #5 0x5560ff9eaac5 in symsrc__init util/symbol-elf.c:1173
-    #6 0x5560ff56702e in dso__load util/symbol.c:1795
-    #7 0x5560ff5fb064 in map__load util/map.c:351
-    #8 0x5560ff5fb44b in map__find_symbol util/map.c:385
-    #9 0x5560ff47a46d in thread__find_symbol util/event.c:725
-    #10 0x5560ffa84913 in __report_module util/unwind-libdw.c:54
-    #11 0x5560ffa85240 in report_module util/unwind-libdw.c:117
-    #12 0x5560ffa86a99 in frame_callback util/unwind-libdw.c:248
-    #13 0x7fb59206dae2 in dwfl_thread_getframes (/lib/x86_64-linux-gnu/libdw.so.1+0x78ae2) (BuildId: bafe9cb5bbbe6cee778d0d137730ea5c223d553e)
-    #14 0x7fb59206de53 in dwfl_getthread_frames (/lib/x86_64-linux-gnu/libdw.so.1+0x78e53) (BuildId: bafe9cb5bbbe6cee778d0d137730ea5c223d553e)
-    #15 0x5560ffa8763d in unwind__get_entries util/unwind-libdw.c:307
-    #16 0x5560ff5f2dde in thread__resolve_callchain_unwind util/machine.c:2977
-    #17 0x5560ff5f2f32 in __thread__resolve_callchain util/machine.c:3004
-    #18 0x5560ff5c80c0 in sample__for_each_callchain_node util/callchain.c:1818
-    #19 0x5560ff4132c6 in build_id__mark_dso_hit util/build-id.c:77
-    #20 0x5560fef31015 in process_sample_event /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-54a23bff770961e024e2c61cd1f46888190c3e79/tools/perf/builtin-record.c:1504
-    #21 0x5560ff61d75e in evlist__deliver_sample util/session.c:1276
-    #22 0x5560ff61f490 in machines__deliver_event util/session.c:1432
-    #23 0x5560ff6210b1 in perf_session__deliver_event util/session.c:1523
-    #24 0x5560ff60c775 in ordered_events__deliver_event util/session.c:134
-    #25 0x5560ff64a011 in do_flush util/ordered-events.c:245
-    #26 0x5560ff64aeb6 in __ordered_events__flush util/ordered-events.c:324
-    #27 0x5560ff64b3c7 in ordered_events__flush util/ordered-events.c:342
-
-Indirect leak of 1280 byte(s) in 1 object(s) allocated from:
-    #0 0x7fb5922e0c57 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69
-    #1 0x7fb5920c9550  (/lib/x86_64-linux-gnu/libelf.so.1+0xb550) (BuildId: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
-    #2 0x7fb5920ca517  (/lib/x86_64-linux-gnu/libelf.so.1+0xc517) (BuildId: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
-    #3 0x7fb5920ca0b1 in elf_rawdata (/lib/x86_64-linux-gnu/libelf.so.1+0xc0b1) (BuildId: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
-    #4 0x5560ff9e0c10 in elf_section_by_name util/symbol-elf.c:193
-    #5 0x5560ff9e9ae1 in read_gnu_debugdata util/symbol-elf.c:1086
-    #6 0x5560ff9eaac5 in symsrc__init util/symbol-elf.c:1173
-    #7 0x5560ff56702e in dso__load util/symbol.c:1795
-    #8 0x5560ff5fb064 in map__load util/map.c:351
-    #9 0x5560ff5fb44b in map__find_symbol util/map.c:385
-    #10 0x5560ff47a46d in thread__find_symbol util/event.c:725
-    #11 0x5560ffa84913 in __report_module util/unwind-libdw.c:54
-    #12 0x5560ffa85240 in report_module util/unwind-libdw.c:117
-    #13 0x5560ffa874ca in unwind__get_entries util/unwind-libdw.c:299
-    #14 0x5560ff5f2dde in thread__resolve_callchain_unwind util/machine.c:2977
-    #15 0x5560ff5f2f32 in __thread__resolve_callchain util/machine.c:3004
-    #16 0x5560ff5c80c0 in sample__for_each_callchain_node util/callchain.c:1818
-    #17 0x5560ff4132c6 in build_id__mark_dso_hit util/build-id.c:77
-    #18 0x5560fef31015 in process_sample_event /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-54a23bff770961e024e2c61cd1f46888190c3e79/tools/perf/builtin-record.c:1504
-    #19 0x5560ff61d75e in evlist__deliver_sample util/session.c:1276
-    #20 0x5560ff61f490 in machines__deliver_event util/session.c:1432
-    #21 0x5560ff6210b1 in perf_session__deliver_event util/session.c:1523
-    #22 0x5560ff60c775 in ordered_events__deliver_event util/session.c:134
-    #23 0x5560ff64a011 in do_flush util/ordered-events.c:245
-    #24 0x5560ff64aeb6 in __ordered_events__flush util/ordered-events.c:324
-    #25 0x5560ff64b3c7 in ordered_events__flush util/ordered-events.c:342
-    #26 0x5560ff617d42 in perf_event__process_finished_round util/session.c:787
-    #27 0x5560ff621c1d in perf_session__process_user_event util/session.c:1583
-
-Indirect leak of 190 byte(s) in 1 object(s) allocated from:
-    #0 0x7fb5922e0c57 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69
-    #1 0x7fb5920ca3fa  (/lib/x86_64-linux-gnu/libelf.so.1+0xc3fa) (BuildId: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
-    #2 0x7fb5920ca0b1 in elf_rawdata (/lib/x86_64-linux-gnu/libelf.so.1+0xc0b1) (BuildId: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
-    #3 0x5560ff9e0c10 in elf_section_by_name util/symbol-elf.c:193
-    #4 0x5560ff9e9ae1 in read_gnu_debugdata util/symbol-elf.c:1086
-    #5 0x5560ff9eaac5 in symsrc__init util/symbol-elf.c:1173
-    #6 0x5560ff56702e in dso__load util/symbol.c:1795
-    #7 0x5560ff5fb064 in map__load util/map.c:351
-    #8 0x5560ff5fb44b in map__find_symbol util/map.c:385
-    #9 0x5560ff47a46d in thread__find_symbol util/event.c:725
-    #10 0x5560ffa84913 in __report_module util/unwind-libdw.c:54
-    #11 0x5560ffa85240 in report_module util/unwind-libdw.c:117
-    #12 0x5560ffa874ca in unwind__get_entries util/unwind-libdw.c:299
-    #13 0x5560ff5f2dde in thread__resolve_callchain_unwind util/machine.c:2977
-    #14 0x5560ff5f2f32 in __thread__resolve_callchain util/machine.c:3004
-    #15 0x5560ff5c80c0 in sample__for_each_callchain_node util/callchain.c:1818
-    #16 0x5560ff4132c6 in build_id__mark_dso_hit util/build-id.c:77
-    #17 0x5560fef31015 in process_sample_event /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-54a23bff770961e024e2c61cd1f46888190c3e79/tools/perf/builtin-record.c:1504
-    #18 0x5560ff61d75e in evlist__deliver_sample util/session.c:1276
-    #19 0x5560ff61f490 in machines__deliver_event util/session.c:1432
-    #20 0x5560ff6210b1 in perf_session__deliver_event util/session.c:1523
-    #21 0x5560ff60c775 in ordered_events__deliver_event util/session.c:134
-    #22 0x5560ff64a011 in do_flush util/ordered-events.c:245
-    #23 0x5560ff64aeb6 in __ordered_events__flush util/ordered-events.c:324
-    #24 0x5560ff64b3c7 in ordered_events__flush util/ordered-events.c:342
-    #25 0x5560ff617d42 in perf_event__process_finished_round util/session.c:787
-    #26 0x5560ff621c1d in perf_session__process_user_event util/session.c:1583
-    #27 0x5560ff6249ac in perf_session__process_event util/session.c:1805
-
-SUMMARY: AddressSanitizer: 89273 byte(s) leaked in 27 allocation(s).
-Unexpected signal in test_inlinedloop
----- end(-1) ----
- 76: test addr2line inline unwinding                                 : FAILED!
 
 -- 
 0-DAY CI Kernel Test Service
