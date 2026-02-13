@@ -1,253 +1,128 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 165011624DF
-	for <oe-lkp@lists.linux.dev>; Fri, 13 Feb 2026 04:24:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60222257459
+	for <oe-lkp@lists.linux.dev>; Fri, 13 Feb 2026 09:35:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770956699; cv=none; b=JGqQH5bPEDZ0GBpFum6xuL/p4SEpAF8UrJjdMSzt+NC1M2cqG52v4t+SLsUjJXOgXRrlfeDU9CvY3xz2AetLiw8ydkUuD7y5ocFskD86BkFVK7mHnF7TPxL3tZ2ZCz6uSDxbdT0cHNzUAYPTHEELZOwR+zt9CHqr3DWKCUylBbg=
+	t=1770975337; cv=none; b=Va/IaHkRsgVm+gxrzBJf1JAVKx9I6qilfCXiKi0mXe9sd772J+j/sht2chslMsL6+Gl1QT9GBwbpxNnjMShQ0ThFJ/UTNq90it8KvK24CAkRTXqCKHI0hutgTMCHm+HA0viEX8AikVeGaDAQbIWkQCH9LksbYQocebpMCQ20WLM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770956699; c=relaxed/simple;
-	bh=1jFmDSzDqJ0DrUyoleD81f5yJuaRF4j6eEwd1FKd4ZQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=OhOjkZhua0g2sE9MiIHq/Ln5tWKkurVXiOVdJ+DYJZDXe9LuViQAYIuTQ2xtFUEI87tnruat6pYzu/apFzDTPfFZZf100ktYyeQ+iKKkuJ4mBaSqxNNAOyhbT2ySqh+6qfOX1m8Dulrl9ZVKLXWYYPaXQSxSNFWdjAzjZ4KkgZ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=dS/Oud9L; arc=none smtp.client-ip=209.85.128.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1770975337; c=relaxed/simple;
+	bh=a0hIZ9W64EiB/jTlbZha/E4Dyvy53mjVGMKxveCfXmY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lXKU9tB/wUfwIVBOfFUOANW5flgPT7KqcBumKufElbiKoY5A/a1s418hZghQfT02ec3TBrCHckkevvFsn3j9qL0JLKt+im4bYu7u4mhqgYDoieKGUXlj+YKv8qfsX4c0lcwXeuUXfMEQEA3keeGElbII7SGLRn3dfbFoE4YAXrE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=SrR+scQ+; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=RQT2SYqJ; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=hxP6FrLx; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=kh0DXS0J; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="dS/Oud9L"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4806e0f6b69so3541845e9.3
-        for <oe-lkp@lists.linux.dev>; Thu, 12 Feb 2026 20:24:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1770956694; x=1771561494; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=fcfM9D0anavF+QlaAjFX3HhihpWHjbNx8O3GDAo8CV4=;
-        b=dS/Oud9LxgDDdPjShqs4/aa/c1ppg5umHjSa+2rdDJCqE5VIByTmliwhH9Y8nndaxv
-         kc5NRdO/3+a2r4Dhq3pIcDxSqkm1HgkazmlYvSVhKhYUqonVzuhGTz0VK20AyPsYaA5x
-         bgGFmkhZvdiqtPNhfOvHHta161A5u3dgZkZIZPaNLM5SYlNXW2kr0suT3rRFnfdPivJu
-         t8eS9GU9K7zAue1wFP8Rl5WGXIOzKZwuXUvulL1xkY7uxmE57/7MrzmcyN0xjOXje1kx
-         fXf49drt0kFOI7/595lfbygUos44qTzth6Z+JgtjjK3C3p5CL0WqIXa5ejbTud0uvaoP
-         RHBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770956694; x=1771561494;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=fcfM9D0anavF+QlaAjFX3HhihpWHjbNx8O3GDAo8CV4=;
-        b=jqz59uZE60gagK9u26LIceeulQQyojn0FHrdc0Sfz+i2L7LQHcgZ8JaDA+99yknPmA
-         5Qo/gEJhTVk9xniHMqT94hNrR1ZDQ3iLWGIT+9KYm9gz9NlKLy5K5IJqeNCDJDnH4x+5
-         HEMyqvxulXm2QBq+UWtPhu03wTU4EK7ELi7ol2lBFq2DFzRt1vTc3kBE+B516W/42PKe
-         TiOJBy85QGutn9EKaVNNcS455scdwvaSADYZYaqGqvlqzeq+FjbpmbQj8h59pblwVpGD
-         y6ReFP2Zx9TBcHu9sz7nbbcg/1xT1GelW1luPw2/rrfkdPHJrVZUnhGUOSmr41kUIvBe
-         XiDg==
-X-Gm-Message-State: AOJu0Yy7OVrogkyZ3to8b95Da9Lq0NTKP7cuQ9tvj8KqfGFh7DYqsYuo
-	1eJpXAhYegZh+2Zqc5eq3gnn4updQ0Qzcww2R9U7K1lGZWeShO7y7ZKj9Sb1gQWqRRg=
-X-Gm-Gg: AZuq6aI+VwkWCYv0ErBixbEX4awQ+q54CWcfwjMfz0SThsQW1oT5ujqb82Yk0cTc+Vl
-	B6h2sZzsHxKjl6I8846fw7IW/x22ttFiVr2s9K4FrRQfCySJeS1hieUIrTGh6+G2XfBKJrX0X3l
-	cT3IDFiE/WCaahVJzHBQoWUzk1ebQw5D9njlnqTdhXRtqKTr1FW5rT0rbdKOqkC5y7fsWWbAcw7
-	pk8Z3bR/tAVv8vCfQFdNj+qhR6olNtyF6s6GfO1aNblXU2BnnXgcYRJknbj7PQtvdGEtP5NVglf
-	i4WNJ6C4oGvckRCAUSuxbt1a4z8/5HzeNQdHZMIWwQLWVIXDOVo0qGvBWH7l8RyrzyUzZ29zZdj
-	NNixHKN0m7+ntjDyoFRZD8N+nTuyA1wSeSdQ5jXx0/ohRI5AVWHHluu0GcqsIPKJYhdRk3D6Odn
-	z0YPFRWq6/ulvcCms/X8QwvwEory750+swT60u4yFsvk5Haolx3fo=
-X-Received: by 2002:a05:600c:3e14:b0:480:4a8f:2d5c with SMTP id 5b1f17b1804b1-483710904ecmr18440065e9.29.1770956694367;
-        Thu, 12 Feb 2026 20:24:54 -0800 (PST)
-Received: from ?IPV6:2403:580d:fda1::299? (2403-580d-fda1--299.ip6.aussiebb.net. [2403:580d:fda1::299])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-824c6bb3549sm907150b3a.59.2026.02.12.20.24.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 Feb 2026 20:24:53 -0800 (PST)
-Message-ID: <be41f741-8c26-4fdf-8cb3-987b7e2abc11@suse.com>
-Date: Fri, 13 Feb 2026 14:54:46 +1030
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="SrR+scQ+";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="RQT2SYqJ";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="hxP6FrLx";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="kh0DXS0J"
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 8A6213E6D7;
+	Fri, 13 Feb 2026 09:35:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1770975333; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=zlDkK35DtBY17drznjj/ZH9stt2AhfeyFIosjNUZrGw=;
+	b=SrR+scQ+RQ6n6Fe94OiP4USP9QFGi0ktX0XY7fmPOeTvdHh7kz13fJ1kyke8cT9Q7QjWK+
+	94J5X62ZU80Em98rope7ynkRA7OnhKtpEAGpajDsGeDKvUMW/SzWsvo7TaXlvwZtFWRcl1
+	x1tbQ5jOr6kQcs/LyzmjY48Yvnai83k=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1770975333;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=zlDkK35DtBY17drznjj/ZH9stt2AhfeyFIosjNUZrGw=;
+	b=RQT2SYqJPatvMF00CeOTQc0dL9/YBKt5t+nJtndqmCZLYBP4cJAi2b0vuQtRFko8KjS/V7
+	lS6UIPIILck8uTDQ==
+Authentication-Results: smtp-out1.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1770975332; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=zlDkK35DtBY17drznjj/ZH9stt2AhfeyFIosjNUZrGw=;
+	b=hxP6FrLxX24Ait7vKnw3lgRCigUFeBMbTDGhcI5MF/r9tC2BMgHvoxiERoyclGfi1xfC2q
+	Gpeww8ewqakQ00e788MC25GDSdX/XkJx5xIgn3AZS/r5VeWWSBnh8IqvmU271IInOPWEPx
+	WWCye01EP85iHPYLYvAUlsMICujL7rU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1770975332;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=zlDkK35DtBY17drznjj/ZH9stt2AhfeyFIosjNUZrGw=;
+	b=kh0DXS0J/ZxpHM1qMm3tmAvu2kG+6aPypxcEjhmcpxOmHCdyM3e904jKzZ8djkxhBY70DV
+	9HPompKZ9J2jjQAw==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 708B33EA62;
+	Fri, 13 Feb 2026 09:35:32 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id jeg4GmTwjmlcRwAAD6G6ig
+	(envelope-from <chrubis@suse.cz>); Fri, 13 Feb 2026 09:35:32 +0000
+Date: Fri, 13 Feb 2026 10:35:35 +0100
+From: Cyril Hrubis <chrubis@suse.cz>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: Christian Brauner <brauner@kernel.org>, lkp@intel.com,
+	linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+	oe-lkp@lists.linux.dev, ltp@lists.linux.it
+Subject: Re: [LTP] [linux-next:master] [mount]  4f5ba37ddc: ltp.fsmount02.fail
+Message-ID: <aY7wZwHXH2zS_Sj-@yuki.lan>
+References: <202602122354.412c5e65-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/3] btrfs: update per-profile available estimation
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-btrfs@vger.kernel.org
-References: <202602130252.89b82f3f-lkp@intel.com>
-Content-Language: en-US
-From: Qu Wenruo <wqu@suse.com>
-Autocrypt: addr=wqu@suse.com; keydata=
- xsBNBFnVga8BCACyhFP3ExcTIuB73jDIBA/vSoYcTyysFQzPvez64TUSCv1SgXEByR7fju3o
- 8RfaWuHCnkkea5luuTZMqfgTXrun2dqNVYDNOV6RIVrc4YuG20yhC1epnV55fJCThqij0MRL
- 1NxPKXIlEdHvN0Kov3CtWA+R1iNN0RCeVun7rmOrrjBK573aWC5sgP7YsBOLK79H3tmUtz6b
- 9Imuj0ZyEsa76Xg9PX9Hn2myKj1hfWGS+5og9Va4hrwQC8ipjXik6NKR5GDV+hOZkktU81G5
- gkQtGB9jOAYRs86QG/b7PtIlbd3+pppT0gaS+wvwMs8cuNG+Pu6KO1oC4jgdseFLu7NpABEB
- AAHNGFF1IFdlbnJ1byA8d3F1QHN1c2UuY29tPsLAlAQTAQgAPgIbAwULCQgHAgYVCAkKCwIE
- FgIDAQIeAQIXgBYhBC3fcuWlpVuonapC4cI9kfOhJf6oBQJnEXVgBQkQ/lqxAAoJEMI9kfOh
- Jf6o+jIH/2KhFmyOw4XWAYbnnijuYqb/obGae8HhcJO2KIGcxbsinK+KQFTSZnkFxnbsQ+VY
- fvtWBHGt8WfHcNmfjdejmy9si2jyy8smQV2jiB60a8iqQXGmsrkuR+AM2V360oEbMF3gVvim
- 2VSX2IiW9KERuhifjseNV1HLk0SHw5NnXiWh1THTqtvFFY+CwnLN2GqiMaSLF6gATW05/sEd
- V17MdI1z4+WSk7D57FlLjp50F3ow2WJtXwG8yG8d6S40dytZpH9iFuk12Sbg7lrtQxPPOIEU
- rpmZLfCNJJoZj603613w/M8EiZw6MohzikTWcFc55RLYJPBWQ+9puZtx1DopW2jOwE0EWdWB
- rwEIAKpT62HgSzL9zwGe+WIUCMB+nOEjXAfvoUPUwk+YCEDcOdfkkM5FyBoJs8TCEuPXGXBO
- Cl5P5B8OYYnkHkGWutAVlUTV8KESOIm/KJIA7jJA+Ss9VhMjtePfgWexw+P8itFRSRrrwyUf
- E+0WcAevblUi45LjWWZgpg3A80tHP0iToOZ5MbdYk7YFBE29cDSleskfV80ZKxFv6koQocq0
- vXzTfHvXNDELAuH7Ms/WJcdUzmPyBf3Oq6mKBBH8J6XZc9LjjNZwNbyvsHSrV5bgmu/THX2n
- g/3be+iqf6OggCiy3I1NSMJ5KtR0q2H2Nx2Vqb1fYPOID8McMV9Ll6rh8S8AEQEAAcLAfAQY
- AQgAJgIbDBYhBC3fcuWlpVuonapC4cI9kfOhJf6oBQJnEXWBBQkQ/lrSAAoJEMI9kfOhJf6o
- cakH+QHwDszsoYvmrNq36MFGgvAHRjdlrHRBa4A1V1kzd4kOUokongcrOOgHY9yfglcvZqlJ
- qfa4l+1oxs1BvCi29psteQTtw+memmcGruKi+YHD7793zNCMtAtYidDmQ2pWaLfqSaryjlzR
- /3tBWMyvIeWZKURnZbBzWRREB7iWxEbZ014B3gICqZPDRwwitHpH8Om3eZr7ygZck6bBa4MU
- o1XgbZcspyCGqu1xF/bMAY2iCDcq6ULKQceuKkbeQ8qxvt9hVxJC2W3lHq8dlK1pkHPDg9wO
- JoAXek8MF37R8gpLoGWl41FIUb3hFiu3zhDDvslYM4BmzI18QgQTQnotJH8=
-In-Reply-To: <202602130252.89b82f3f-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202602122354.412c5e65-lkp@intel.com>
+X-Spam-Score: -8.30
+X-Spamd-Result: default: False [-8.30 / 50.00];
+	REPLY(-4.00)[];
+	BAYES_HAM(-3.00)[99.99%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	FUZZY_RATELIMITED(0.00)[rspamd.com];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	ARC_NA(0.00)[];
+	MISSING_XM_UA(0.00)[];
+	RCPT_COUNT_SEVEN(0.00)[7];
+	RCVD_TLS_ALL(0.00)[];
+	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	FROM_HAS_DN(0.00)[];
+	TO_DN_SOME(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[yuki.lan:mid,suse.cz:email,imap1.dmz-prg2.suse.org:helo]
+X-Spam-Level: 
+X-Spam-Flag: NO
 
+Hi!
+> commit: 4f5ba37ddcdf5eaac2408178050183345d56b2d3 ("mount: add FSMOUNT_NAMESPACE")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 
+The relevant part of the log is:
 
-在 2026/2/13 11:45, kernel test robot 写道:
-> 
-> Hello,
-> 
-> kernel test robot noticed "INFO:trying_to_register_non-static_key" on:
-> 
-> commit: 50b35a50fe83cb7870710b173f8b5ee78dd20107 ("[PATCH v2 2/3] btrfs: update per-profile available estimation")
-> url: https://github.com/intel-lab-lkp/linux/commits/Qu-Wenruo/btrfs-introduce-the-device-layout-aware-per-profile-available-space/20260204-105811
-> base: https://git.kernel.org/cgit/linux/kernel/git/kdave/linux.git for-next
-> patch link: https://lore.kernel.org/all/b4d6fcecccd3c2c3b5359131e0493f190d1f5959.1770173615.git.wqu@suse.com/
-> patch subject: [PATCH v2 2/3] btrfs: update per-profile available estimation
-> 
-> in testcase: perf-sanity-tests
-> version:
-> with following parameters:
-> 
-> 	perf_compiler: gcc
-> 	group: group-02
-> 
-> 
-> 
-> config: x86_64-rhel-9.4-bpf
-> compiler: gcc-14
-> test machine: 22 threads 1 sockets Intel(R) Core(TM) Ultra 9 185H @ 4.5GHz (Meteor Lake) with 32G memory
-> 
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
+fsmount02.c:56: TFAIL: invalid-flags: fsmount() succeeded unexpectedly (index: 1)
 
-Thanks for the report, it's already fixed in btrfs/for-next branch.
+This is another case where new flag was added so the invalid flag value
+is not invalid anymore. The test needs to be adjusted if/once the patch
+hits mainline.
 
-Thanks,
-Qu
-
-
-> 
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202602130252.89b82f3f-lkp@intel.com
-> 
-> 
-> kern  :err   : [   91.987109] [   T4552] INFO: trying to register non-static key.
-> kern  :err   : [   91.988642] [   T4552] The code is fine but needs lockdep annotation, or maybe
-> kern  :err   : [   91.990349] [   T4552] you didn't initialize this object before use?
-> kern  :err   : [   91.991930] [   T4552] turning off the locking correctness validator.
-> kern  :warn  : [   91.993525] [   T4552] CPU: 1 UID: 0 PID: 4552 Comm: mount Tainted: G S      W           6.19.0-rc8-00146-g50b35a50fe83 #1 PREEMPT(full)
-> kern  :warn  : [   91.993530] [   T4552] Tainted: [S]=CPU_OUT_OF_SPEC, [W]=WARN
-> kern  :warn  : [   91.993531] [   T4552] Hardware name: ASUSTeK COMPUTER INC. NUC14RVS-B/NUC14RVSU9, BIOS RVMTL357.0047.2025.0108.1408 01/08/2025
-> kern  :warn  : [   91.993532] [   T4552] Call Trace:
-> kern  :warn  : [   91.993533] [   T4552]  <TASK>
-> kern  :warn  : [   91.993535] [   T4552]  dump_stack_lvl (lib/dump_stack.c:122)
-> kern  :warn  : [   91.993541] [   T4552]  register_lock_class (kernel/locking/lockdep.c:985 kernel/locking/lockdep.c:1299)
-> kern  :warn  : [   91.993545] [   T4552]  __lock_acquire (kernel/locking/lockdep.c:5113)
-> kern  :warn  : [   91.993549] [   T4552]  lock_acquire (include/linux/preempt.h:469 (discriminator 2) include/trace/events/lock.h:24 (discriminator 2) include/trace/events/lock.h:24 (discriminator 2) kernel/locking/lockdep.c:5831 (discriminator 2))
-> kern  :warn  : [   91.993551] [   T4552]  ? btrfs_update_per_profile_avail (fs/btrfs/volumes.c:5537) btrfs
-> kern  :warn  : [   91.993701] [   T4552]  ? rcu_is_watching (arch/x86/include/asm/atomic.h:23 include/linux/atomic/atomic-arch-fallback.h:457 include/linux/context_tracking.h:128 kernel/rcu/tree.c:751)
-> kern  :warn  : [   91.993704] [   T4552]  ? lock_acquire (include/trace/events/lock.h:24 (discriminator 2) kernel/locking/lockdep.c:5831 (discriminator 2))
-> kern  :warn  : [   91.993706] [   T4552]  _raw_spin_lock (include/linux/spinlock_api_smp.h:134 kernel/locking/spinlock.c:154)
-> kern  :warn  : [   91.993710] [   T4552]  ? btrfs_update_per_profile_avail (fs/btrfs/volumes.c:5537) btrfs
-> kern  :warn  : [   91.993849] [   T4552] btrfs_update_per_profile_avail (fs/btrfs/volumes.c:5537) btrfs
-> kern  :warn  : [   91.993988] [   T4552]  ? __pfx_btrfs_update_per_profile_avail (fs/btrfs/volumes.c:5518) btrfs
-> kern  :warn  : [   91.994127] [   T4552]  ? btrfs_verify_dev_extents (fs/btrfs/volumes.c:8602) btrfs
-> kern  :warn  : [   91.994268] [   T4552]  ? __lock_release+0x5d/0x1b0
-> kern  :warn  : [   91.994270] [   T4552]  ? rcu_is_watching (arch/x86/include/asm/atomic.h:23 include/linux/atomic/atomic-arch-fallback.h:457 include/linux/context_tracking.h:128 kernel/rcu/tree.c:751)
-> kern  :warn  : [   91.994274] [   T4552] btrfs_verify_dev_extents (fs/btrfs/volumes.c:8604) btrfs
-> kern  :warn  : [   91.994415] [   T4552]  ? __pfx_btrfs_verify_dev_extents (fs/btrfs/volumes.c:8512) btrfs
-> kern  :warn  : [   91.994562] [   T4552]  ? btrfs_verify_dev_items (fs/btrfs/volumes.c:8641) btrfs
-> kern  :warn  : [   91.994704] [   T4552] open_ctree (fs/btrfs/disk-io.c:3533) btrfs
-> kern  :warn  : [   91.994842] [   T4552] btrfs_fill_super.cold (fs/btrfs/super.c:981) btrfs
-> kern  :warn  : [   91.994976] [   T4552] btrfs_get_tree_super (fs/btrfs/super.c:1945) btrfs
-> kern  :warn  : [   91.995108] [   T4552] btrfs_get_tree_subvol (fs/btrfs/super.c:2087) btrfs
-> kern  :warn  : [   91.995241] [   T4552]  vfs_get_tree (fs/super.c:1751)
-> kern  :warn  : [   91.995245] [   T4552]  vfs_cmd_create (fs/fsopen.c:231)
-> kern  :warn  : [   91.995249] [   T4552]  __do_sys_fsconfig (fs/fsopen.c:474)
-> kern  :warn  : [   91.995251] [   T4552]  ? __pfx___do_sys_fsconfig (fs/fsopen.c:356)
-> kern  :warn  : [   91.995255] [   T4552]  ? lock_release (kernel/locking/lockdep.c:470 (discriminator 4) kernel/locking/lockdep.c:5891 (discriminator 4) kernel/locking/lockdep.c:5875 (discriminator 4))
-> kern  :warn  : [   91.995257] [   T4552]  ? do_syscall_64 (arch/x86/include/asm/irqflags.h:42 arch/x86/include/asm/irqflags.h:119 include/linux/entry-common.h:108 arch/x86/entry/syscall_64.c:90)
-> kern  :warn  : [   91.995261] [   T4552]  do_syscall_64 (arch/x86/entry/syscall_64.c:63 (discriminator 1) arch/x86/entry/syscall_64.c:94 (discriminator 1))
-> kern  :warn  : [   91.995263] [   T4552]  ? __pfx_ksys_read (fs/read_write.c:705)
-> kern  :warn  : [   91.995265] [   T4552]  ? kfree (mm/slub.c:6674 (discriminator 3) mm/slub.c:6882 (discriminator 3))
-> kern  :warn  : [   91.995268] [   T4552]  ? do_syscall_64 (include/linux/irq-entry-common.h:298 include/linux/entry-common.h:196 arch/x86/entry/syscall_64.c:100)
-> kern  :warn  : [   91.995270] [   T4552]  ? do_syscall_64 (arch/x86/entry/syscall_64.c:113)
-> kern  :warn  : [   91.995272] [   T4552]  ? __do_sys_fsconfig (fs/fsopen.c:499)
-> kern  :warn  : [   91.995274] [   T4552]  ? __do_sys_fsconfig (fs/fsopen.c:499)
-> kern  :warn  : [   91.995277] [   T4552]  ? __pfx___do_sys_fsconfig (fs/fsopen.c:356)
-> kern  :warn  : [   91.995279] [   T4552]  ? do_syscall_64 (include/linux/irq-entry-common.h:298 include/linux/entry-common.h:196 arch/x86/entry/syscall_64.c:100)
-> kern  :warn  : [   91.995282] [   T4552]  ? do_syscall_64 (arch/x86/entry/syscall_64.c:113)
-> kern  :warn  : [   91.995284] [   T4552]  ? do_syscall_64 (arch/x86/entry/syscall_64.c:113)
-> kern  :warn  : [   91.995286] [   T4552]  ? do_syscall_64 (include/linux/irq-entry-common.h:298 include/linux/entry-common.h:196 arch/x86/entry/syscall_64.c:100)
-> kern  :warn  : [   91.995288] [   T4552]  ? do_syscall_64 (arch/x86/entry/syscall_64.c:113)
-> kern  :warn  : [   91.995290] [   T4552]  ? do_syscall_64 (arch/x86/entry/syscall_64.c:113)
-> kern  :warn  : [   91.995292] [   T4552]  ? irqentry_exit (include/linux/irq-entry-common.h:298 include/linux/irq-entry-common.h:341 kernel/entry/common.c:196)
-> kern  :warn  : [   91.995294] [   T4552]  ? trace_hardirqs_on_prepare (kernel/trace/trace_preemptirq.c:64 (discriminator 4) kernel/trace/trace_preemptirq.c:59 (discriminator 4))
-> kern  :warn  : [   91.995296] [   T4552]  ? lockdep_hardirqs_on_prepare (kernel/locking/lockdep.c:4629 (discriminator 4))
-> kern  :warn  : [   91.995299] [   T4552]  ? irqentry_exit (arch/x86/include/asm/jump_label.h:37 include/linux/context_tracking_state.h:138 include/linux/context_tracking.h:41 include/linux/irq-entry-common.h:301 include/linux/irq-entry-common.h:341 kernel/entry/common.c:196)
-> kern  :warn  : [   91.995301] [   T4552]  entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:131)
-> kern  :warn  : [   91.995304] [   T4552] RIP: 0033:0x7fb38ba0e4aa
-> kern  :warn  : [   91.995331] [   T4552] Code: 73 01 c3 48 8b 0d 4e 59 0d 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 49 89 ca b8 af 01 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 1e 59 0d 00 f7 d8 64 89 01 48
-> All code
-> ========
->     0:	73 01                	jae    0x3
->     2:	c3                   	ret
->     3:	48 8b 0d 4e 59 0d 00 	mov    0xd594e(%rip),%rcx        # 0xd5958
->     a:	f7 d8                	neg    %eax
->     c:	64 89 01             	mov    %eax,%fs:(%rcx)
->     f:	48 83 c8 ff          	or     $0xffffffffffffffff,%rax
->    13:	c3                   	ret
->    14:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
->    1b:	00 00 00
->    1e:	66 90                	xchg   %ax,%ax
->    20:	49 89 ca             	mov    %rcx,%r10
->    23:	b8 af 01 00 00       	mov    $0x1af,%eax
->    28:	0f 05                	syscall
->    2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping instruction
->    30:	73 01                	jae    0x33
->    32:	c3                   	ret
->    33:	48 8b 0d 1e 59 0d 00 	mov    0xd591e(%rip),%rcx        # 0xd5958
->    3a:	f7 d8                	neg    %eax
->    3c:	64 89 01             	mov    %eax,%fs:(%rcx)
->    3f:	48                   	rex.W
-> 
-> Code starting with the faulting instruction
-> ===========================================
->     0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
->     6:	73 01                	jae    0x9
->     8:	c3                   	ret
->     9:	48 8b 0d 1e 59 0d 00 	mov    0xd591e(%rip),%rcx        # 0xd592e
->    10:	f7 d8                	neg    %eax
->    12:	64 89 01             	mov    %eax,%fs:(%rcx)
->    15:	48                   	rex.W
-> kern  :warn  : [   91.995334] [   T4552] RSP: 002b:00007ffd1dd07898 EFLAGS: 00000246 ORIG_RAX: 00000000000001af
-> kern  :warn  : [   91.995337] [   T4552] RAX: ffffffffffffffda RBX: 000055a8acde41d0 RCX: 00007fb38ba0e4aa
-> kern  :warn  : [   91.995339] [   T4552] RDX: 0000000000000000 RSI: 0000000000000006 RDI: 0000000000000003
-> kern  :warn  : [   91.995340] [   T4552] RBP: 000055a8acde5d20 R08: 0000000000000000 R09: 0000000000000000
-> kern  :warn  : [   91.995342] [   T4552] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> kern  :warn  : [   91.995343] [   T4552] R13: 00007fb38bba0580 R14: 00007fb38bba226c R15: 00007fb38bb87a23
-> kern  :warn  : [   91.995347] [   T4552]  </TASK>
-> kern  :info  : [   92.094700] [   T4552] BTRFS info (device nvme0n1p5): enabling ssd optimizations
-> kern  :info  : [   92.096302] [   T4552] BTRFS info (device nvme0n1p5): turning on async discard
-> kern  :info  : [   92.097968] [   T4552] BTRFS info (device nvme0n1p5): enabling free space tree
-> 
-> 
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20260213/202602130252.89b82f3f-lkp@intel.com
-> 
-> 
-> 
-
+-- 
+Cyril Hrubis
+chrubis@suse.cz
