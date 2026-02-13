@@ -1,457 +1,317 @@
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EBEC226CF7
-	for <oe-lkp@lists.linux.dev>; Thu, 12 Feb 2026 18:50:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.214.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D00A1DA23
+	for <oe-lkp@lists.linux.dev>; Fri, 13 Feb 2026 01:15:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.16
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770922207; cv=pass; b=haUHnugBqh7mRZ4onMmUm0ua9RSFM0qSmzlpoEvX3dVzO+KXkEjVxOLQVt1Z7VIO4rDg3z10U8kwdipmoimbZxMe/5e7iRafTwZd1n7kRWRE2rFOZl47MJ4A37y8AGqjT3WA8BaPePyzYO4SAzQfas7q2PXvrpyTZCHitMH2Af8=
+	t=1770945323; cv=fail; b=c0ELTdkw/MvCc3F1KXMWiMQPkLnQsPUcc6Xa+SC4nbTcr9wU8Lgz+Df3yrdLEY+kzatV9cj0dmFIvmdyjMu+SpXJVpers3ckju20bdaKREugeNPpmh4ZPGScvrOyJbLzGIsbc7JPWSs7OMI7ssajZh5C67lnR3hO5dRGwwcx/Ok=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770922207; c=relaxed/simple;
-	bh=RlQQm/KgNhHAJ9uha6TUzPPZEoKEw0uqWF+NRqjljiw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Cl8wBirienwSIrZwnrEyQAx+8rVIyJ8uoDMIagTAeiQOqQP4vc4w6KYB61OKPih5C+ILE5LXA9KojE8uS1e8AwgStZ7pFl4tB0bAPIL+MQ1O8h20j4MFK2d3McFCFQoz56qIx6mqHm2HyrGSfFePTT57G7TRDFPJEDerVXobFao=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=tp0RsT1f; arc=pass smtp.client-ip=209.85.214.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1770945323; c=relaxed/simple;
+	bh=XKv5cr3P4trt4uDrZRHsMtASEFbCmWF78DyyrV9Bzzg=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=i1D10FyaZIwAsfdsd3x46b4Sn60nT9n37Rr3ubuvsu6ObTXWNw4NykAIKywU4khNcGMXUeC/athp0DfCUBShWds12ODvZjEMDTIQhj4e8Led6PVktN4loQ+4dZa//pupNo5dcTpBpZ0YbtnyLZQO+FmqkKh+6E+H1LBFpWRTUqQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=A8f06Kgg; arc=fail smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="tp0RsT1f"
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2a964077671so7985ad.0
-        for <oe-lkp@lists.linux.dev>; Thu, 12 Feb 2026 10:50:04 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1770922204; cv=none;
-        d=google.com; s=arc-20240605;
-        b=jyrrSJ9i2lF4SIXMlakddnDWwPMFqcXyxpXp92EJel65i9hQFZElKhMTWEtzANKuFA
-         hru9EGwQVkAZBhpIJujKGD6eBbCYDtWf+cpEhJKnrJMxw1kOsbrE0xvf5gvF/iKf/Ft5
-         BUOquOU9jGXUAl4pwceqx6ZCh4YJaA+mMHysdpO2IOloWlmNFLG+2aYa+qDZcA4gfszn
-         KXFBHmGH15FdMqry/0eLbvykSGGdj7q04ekG5f82X+hiKI72p5uIL2NZGFiIQpoDFQ2M
-         HucutGwId7hCLrJgd8OC289DrH/MYlALCV/R38w9g7Sv0oP+AEtxOnZNOTWdUvsKq17R
-         bd3g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=ZPuCW932IFyia6cjtLvR9VgL7zJH46CZShO30RmPl7w=;
-        fh=k6J2m3R+rZwy/pbycEwkHL8QToyEcaxpHTOs9WxN08k=;
-        b=dESZq/TKnUi9105q6tQK0f1OaKcHRxNmFeqez8pytpyepYSO3dMJQIoAtc+kSBWW3s
-         Qu+7tEi8ZktZ/ylAccSJ3WcW4IwrxLjbjHA0IeHUuaoLCFwSDzguII7kS1cP+5UoVQZr
-         QYjv8aA59J8rT6eGWv9eg2tM77mMTASdd0O/hdFo5m337a3h+GUZ3thT775qt6Euw7If
-         zjD9lTv3uqgbiN3wjAezit6XiS7N3wx2tk4YEUMNp2NxpkkLIXqg9p/830JK6jSXyYH4
-         FMryyD+wSZ4ux42ZisTpjupQasMgEEOC9kxllj8uS42Xc/k4XTXSOH8oNS45KeuQ74EJ
-         lTBw==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1770922204; x=1771527004; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZPuCW932IFyia6cjtLvR9VgL7zJH46CZShO30RmPl7w=;
-        b=tp0RsT1fT1qSqSgWMWzc4MqoSdg+D+6wweODRo+JDBd/fPFMEqN4I3j2fexah0T/Wf
-         T+6X758kUl/yCdxUdXveQBdoJHrf/womrrD+jKr8ofR4cgHte34mTYvbF00lJqW/oIZV
-         8R116/py9H7Gdu3nhAHmvNNHaEf3TwnH564wjrri85rwB3sg0J6KX8UFUBpSI+O3Kp4L
-         FYIVmXdjoXNXXWItbl8FIVd/ol4/IKljTp8odrHvKQo+em+GgUj7uLecQwCI+wXxiVkq
-         dEokHv3ufU4JbxndV1CUg5X15p8UjMym9aHzdeDlCRQYTsZrvKOJDW82A2GP9ZOSvxlA
-         pFBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770922204; x=1771527004;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=ZPuCW932IFyia6cjtLvR9VgL7zJH46CZShO30RmPl7w=;
-        b=Q7z3xtqFGiYr6P26SELu/OVtBTClaJIqSPujyN98CCtFFJPviyRyT8oU6ZQInwzCRp
-         xyuTkpknyhs+tOokYVqB/6X2GBV3AcOS89192Z7T3uprXqFaL0vQOsyZr+4I6sK3dRM9
-         wqsyfn9PcV2Dn8jRc5y7rEaEYufdvFg04FgAtbfU6wtgAgrHBxDVOuayWXd85Z9uOlNd
-         0z/jbozDQLXNV5OtMgkT500Fd3mUlqLGSwWUD+nRofeyScfLdV826ITp4ZCdBTn/UKWK
-         7snoCLGNpdHf4xre5LWbH4iUzW3mJwwiLWhlOkr6t7qHD2YxAzdgmhQOP2teip69a34L
-         qlRg==
-X-Gm-Message-State: AOJu0YwE998vanp7BdQqOsrOgWLX+WqzjYeTlKXlPNp4lu76uGaBYmiJ
-	Wwey0GScol/J3s8sph7TRV9UjZUVkMppg1i4q/BbnAnt0JG2qsbZlfSAJi7yfAVtVm4bosluRmO
-	2daPzOrIaBLaMJMdoInSQ4UFOzmFEmYrl81RVV1ZPOYPtpGQki6k5cC4kZ6o=
-X-Gm-Gg: AZuq6aLZ8XMzgyjqn8WHUqP746XZAdKvF4r51mlzFRRRfzrHxbxSnCZ2Gv6vE+IYyJt
-	pBSzCzyxZ83A0/BNIFCj/bk7nnC4g7vdb7z/Wjka+O8o47zdlCO6xX2Z6z/AwunjjWycGJ2GWme
-	rA3AtfNUKvanWIg2T+AhL3xaTVF3T+0ePoaCLnKiP7cH22Jgd2qCAsSRCuPix0bdkdpSwekDmQi
-	ogxaSL0ekL8gjaxrlBIyO3X37EInA+mu8BKa0hOc1YLTVf+cjRWYui5vNr1RJyPypTgD51q/2O5
-	9tKYRlmLveYaZfJc3GngYM/GCqkdq2UYbrQd
-X-Received: by 2002:a17:903:32c1:b0:2a0:89b0:71d6 with SMTP id
- d9443c01a7336-2ab4c7e4f86mr136845ad.17.1770922203374; Thu, 12 Feb 2026
- 10:50:03 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="A8f06Kgg"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1770945321; x=1802481321;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   mime-version;
+  bh=XKv5cr3P4trt4uDrZRHsMtASEFbCmWF78DyyrV9Bzzg=;
+  b=A8f06KggfAwjxqkFjmcGEY89iwbrA1b0p3uzdaE1+vDQW9lFxO6k0r64
+   XNqzbkfIqrlrIIEwaKtvLSNiVO4ar4FJVIDAwsVHiMmbel98kJ7pLYGbE
+   GoTSpbXZYsSBX4yv5XDqxmkSCdOzHuO9qCg8EQifSSdBuKMPqoEapxaM5
+   /8K7Tsgsz8BDOYn2Q47lTOfQzvc3l0GV8oHesyRhz3KlMceKQiu8QSGQL
+   stI9HD7O4qbS2FI8o3UGleBqjfLZ6VjnGpHNQXrbdUx2EtkWEZRZftdNd
+   bNlKGBkDaLMMgp2FF/6nK208CsfH95f1cmhEI8SSWmmLhXYxxXPQ4ke2g
+   Q==;
+X-CSE-ConnectionGUID: viS3ls7LQAi+Il7PrfMjgQ==
+X-CSE-MsgGUID: MujLtnA2QbelBzRtGHDBbA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11699"; a="72312683"
+X-IronPort-AV: E=Sophos;i="6.21,287,1763452800"; 
+   d="scan'208";a="72312683"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2026 17:15:21 -0800
+X-CSE-ConnectionGUID: GvN0+w04SQCvr6CID8EMSA==
+X-CSE-MsgGUID: iv77Pw24Sh2ie7FpJ3l05Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,287,1763452800"; 
+   d="scan'208";a="211527749"
+Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
+  by fmviesa006.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2026 17:15:20 -0800
+Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.35; Thu, 12 Feb 2026 17:15:20 -0800
+Received: from ORSEDG902.ED.cps.intel.com (10.7.248.12) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.35 via Frontend Transport; Thu, 12 Feb 2026 17:15:20 -0800
+Received: from CH4PR04CU002.outbound.protection.outlook.com (40.107.201.61) by
+ edgegateway.intel.com (134.134.137.112) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.35; Thu, 12 Feb 2026 17:15:19 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=dybtwONV7aAa8mFhl1HGWhaxGfD6XFFxIpb7aOfyeDvRmt59jh5vigagtB4hIG6oHfMOEZg32Vjb2IFxK1Vwgrf5rYyQbRDd/wQg8cZP0r1qGcho8DxJwcmQM6MQ4toMuDo6H9COdMFmlAQqlCZE87G9Igr9akgOjWe+FUwlsA8qU7lmS5cKK2rj+1fPDobkHGwuRMMVgqX1uy/vznEmDLIqr9MdJDN4ivCWwgMfjDfIUar7Xc+SahLlvS6qLCU60WojR7AdahRgyhpc2F6NtyC2xmKePGc+Pgf3WZi4s72gAkUpIsvMo6kaDyEPkMEnYfrHhHKi+PLud+uTvBWyKg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Bzu5Ep5lwxszaq9LV5tD2zTj1LTap6Mxcw/EFOeMMxQ=;
+ b=WTpB42z3cFY6oGQBpYwEXakHmZn/Iu+dMVcA7IjPJbXra5JnSa4EhIz0IFC+U2IAgQQX1A48xWlfR6jrUjl7MHrmMu0//7Bz1j7Ax5VbTh3urpy32EtJ2GOKt7LiE2aoHVxRhLKtv0Th+5QCGqYTSjaritb2CdY9zT4UKHK6Aol4nvLkGnqlinx81fscUY9g9ARSozDdmUEkV2N/A5/dtoxbmOpXz99+yN6NVlAqQkDg2Akg4N2sHetXKd0r0nNaMWI6VgO6vtevzlB5Z9r+yEVjRco13ZtEBn3B4ZIEqMI94fXJzAsNeEORhiAD2pFomInzRb9S+2IkZIjPVv3ACg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by CY5PR11MB6416.namprd11.prod.outlook.com (2603:10b6:930:34::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9611.13; Fri, 13 Feb
+ 2026 01:15:17 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::e4de:b1d:5557:7257]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::e4de:b1d:5557:7257%5]) with mapi id 15.20.9611.012; Fri, 13 Feb 2026
+ 01:15:17 +0000
+Date: Fri, 13 Feb 2026 09:15:11 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Qu Wenruo <wqu@suse.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-btrfs@vger.kernel.org>,
+	<oliver.sang@intel.com>
+Subject: Re: [PATCH v2 2/3] btrfs: update per-profile available estimation
+Message-ID: <202602130252.89b82f3f-lkp@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <b4d6fcecccd3c2c3b5359131e0493f190d1f5959.1770173615.git.wqu@suse.com>
+X-ClientProxiedBy: CH0PR03CA0380.namprd03.prod.outlook.com
+ (2603:10b6:610:119::8) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202602122137.a1396559-lkp@intel.com>
-In-Reply-To: <202602122137.a1396559-lkp@intel.com>
-From: Ian Rogers <irogers@google.com>
-Date: Thu, 12 Feb 2026 10:49:51 -0800
-X-Gm-Features: AZwV_QiUHF0uXq3EDUoFrpLzyRagjVdNtq0BhT4zQAfPpDTy6RItQ_AWnXpSzts
-Message-ID: <CAP-5=fUOdSF8QJVezSVv+WzTy45bVubw+JbyB1JEfuT3PYedyA@mail.gmail.com>
-Subject: Re: [linux-next:master] [perf test] 54a23bff77: perf-sanity-tests.test_addr2line_inline_unwinding.fail
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, 
-	Arnaldo Carvalho de Melo <acme@redhat.com>, James Clark <james.clark@linaro.org>, 
-	Adrian Hunter <adrian.hunter@intel.com>, 
-	Alexander Shishkin <alexander.shishkin@linux.intel.com>, Howard Chu <howardchu95@gmail.com>, 
-	Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
-	Peter Zijlstra <peterz@infradead.org>, Stephen Brennan <stephen.s.brennan@oracle.com>, 
-	Tony Jones <tonyj@suse.de>, linux-perf-users@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|CY5PR11MB6416:EE_
+X-MS-Office365-Filtering-Correlation-Id: 92ff0478-c969-4990-a691-08de6a9d5931
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7053199007;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?25OT15q3nw95ohLiP8oum/zVRr1f8ilBmuKYdVu+dlDVJy2Qh9YZ3xA8OCVu?=
+ =?us-ascii?Q?be3Nqo+KNgb3lraAi4yEahP5k46eOtNdhNmdhdvR0kWrVJ6AFSkzm0bl9gu1?=
+ =?us-ascii?Q?qoM/A71znIA9fF2eYsI7QzwhYsMOuUxdpyU+l26AdAhxCAessOAMty0WFr2d?=
+ =?us-ascii?Q?f29aWvtJ8pGm9Q3g86Qq+I4ty/OOrcDOKgEuojQ+2+EFKQN/WtKzP6PcAbzd?=
+ =?us-ascii?Q?im06Pi/SSTtnIALgUSBKFPk8pN2Nf192X0wA44Ji6yEkjy3myOJ7fSGv3NRN?=
+ =?us-ascii?Q?P/jr1iX9xlv1NWm1Cq/omVlQG8RcrpTKV6kvsopInLoNfrXhGUOmT1cIelj/?=
+ =?us-ascii?Q?luG9MxBNQ9HUw08+a/q9UAOP7yRa/iFZ7JOZmus3S4rjCuFsi4y0zWPThAPX?=
+ =?us-ascii?Q?kcPK3zls3cXelmSMsqzMaxmev9x/aYVNIFeb3bcKlrDqfJg0KATVq9Un+gr0?=
+ =?us-ascii?Q?Xvjxfxt7VHx8TBWyNhgj0Lq9D+2eCzi9LbgbFuw+74+YEyl8ZE9hsKdSZK/7?=
+ =?us-ascii?Q?Kmye2OL6BqZ69W7VMmlRfC4akEjLi76RHEgyCUONaGbf6W8MXs+8wOifGD6w?=
+ =?us-ascii?Q?CEMhorxEN4hov43Co+n+2m0+HlnhQrwkcmJfAVEHhmK5+waSaEpzKKtSFsrv?=
+ =?us-ascii?Q?cJnP0H9hsvUjTAn0Xkms2l6BiirjBsc8ScPD9y1B7Vaul/NoUV9vD8OcOR7r?=
+ =?us-ascii?Q?wEWtQd+RqREyPmfZ0Kr+WqCuTQMNYj1W0HEoZ4cDZ9ubLkWghSbpIittqcti?=
+ =?us-ascii?Q?LpF7O7wERA1dpPDuf9zF7W+JTh5o6VcfTPMveAgsDxSOyM/ZXiGIs5ouWhMY?=
+ =?us-ascii?Q?pTtgCDKTtHFaiklCOYKnGDN1oa1/7dufScozl2GYWIPHe8o49+OHyZE1Vgvq?=
+ =?us-ascii?Q?kCzuf2BPrwutF80R8wXrLnxv1NqATu5UeWGVRkAK6H3itCAAHQGLUytKN1k5?=
+ =?us-ascii?Q?DJwGHsZSkKGc94mrTxjCabp8UDvVKYk/fj5HVeO/eTeSo6bkSy5i2crjacBT?=
+ =?us-ascii?Q?t/A1+c2r7RcKc7LCLNQ55s72z6A+8kV9+p65UzyiCrpE/fPd4MRXeOpcRTtv?=
+ =?us-ascii?Q?XhZXaycvlkg/+04Yz0YlxA0hFbG8D5SRYHXSJpFgPl4WWnybb4l7dKMEZmmY?=
+ =?us-ascii?Q?9sQtpLhOMTNDDTs4UolNJFkDTBvHoDtSOW/8d5YYQXoa13pPWH6oxNtE+Tse?=
+ =?us-ascii?Q?HR+LQZWitNRQuzdvPWDkXXr+QoL9TXcHQLhVf+lVeVqWD+cYEA4nthH6mS4b?=
+ =?us-ascii?Q?Sf8Drrdz3rnAGRaLM1TJXitlKFBLb/U5Sy/ePeAbzKYn+qi+pbFjk1VfrAUp?=
+ =?us-ascii?Q?erryX8wA5qpp5PrNEPuIv+9mkPKoprWtXyA5zl214uNa76ezr+GM9NHjeJiH?=
+ =?us-ascii?Q?b4+WAWarXy0T9IYs0mChPRw8kOkWiRSGgZIOqYOGu0EzGVP1ojYtM2Nls3fh?=
+ =?us-ascii?Q?G9E6Wc8Rz+vF6CmFZiTalcZYK/4HUZvs3bB3D+wP53qPYAKmP9QYdDU/MuzF?=
+ =?us-ascii?Q?ZyVZ3O5CpCNzICsaDxwccdwlNNZi4tvYHfycIavwGkzcCZRtyPN8Wei7dA?=
+ =?us-ascii?Q?=3D=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7053199007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3ZkejRxZCLs0g1G4dzg5OT9rpWjxv1gbMGFeTSsJ/GINq9egSVpsWbPAS9Gl?=
+ =?us-ascii?Q?FYub2oqDXY72Ij4YHw45LfPqb+Qle6B5gUKZzyQag+1+uyQXS77FuOUhHJ44?=
+ =?us-ascii?Q?BLwIVv6QrdrGX2ut/m6liMqHBDT/Y+IM/LcGgVzocvmuPs61WKUJN1Pk3GVY?=
+ =?us-ascii?Q?Iaj04DxdrF3bDbw2c2nAsDBl8AtU0Y0y2cidyE74MmoQ5MfaRnBx7salvuYT?=
+ =?us-ascii?Q?Ovj5n5wvVppe4oLUtn/FcG7HV3XfYlwt/SSHazvpoF1PJHAep/JwDv5ZKYHy?=
+ =?us-ascii?Q?7zsF+Kx4afWEeYR6zH+RR1pTIlXe9uaJ/ISYJYtn2Wd70xUxQe2m/tCaBf5y?=
+ =?us-ascii?Q?Uh47pdQ924Jd5z64EoBUqjcnRb46lddThAbarUafpiH2CmGXbMu1QYc7VQog?=
+ =?us-ascii?Q?vcr14FzQZ0x+yvXCKml4fzpHf8hdUDoz3ozSoz+NEQ4CyUQ+M7J0TpbwYrJn?=
+ =?us-ascii?Q?3ekL0cL3jar6UW8KF8uW7oj6exFkHNlxP8xE8fnVdgssscVk1pNSXMAaLqtP?=
+ =?us-ascii?Q?XBKReSVsG1wMTeUs0AaOthK586oahHfftydeDyUv+cZmNanrBcSj61USkuBd?=
+ =?us-ascii?Q?eoRmOkWK5DDJaqmJGv4xabC7QJhkRy/MdkFjHpX8/dNlqk+FVd2ADFythC9D?=
+ =?us-ascii?Q?SNq2VVc5/hwpuS/9hV/MKW82fOENNtmDEm/yR61ru3YIwb9HxzrplSp4SRQy?=
+ =?us-ascii?Q?yR0Nxpi56dmkzIEwRBpNDPYnbda13Vbkzeq7pApN3h/Al69l83he2l4A93dV?=
+ =?us-ascii?Q?0mMf3MbGEzpt/DUg/9VDnBJSTgvJjFtpte8bJyVElFS4SgGipVjPmyZ7LXJI?=
+ =?us-ascii?Q?bL03IUoLGKMlscN8FuZW2yPdwiVoWubYyMWpZAib5vQSrjkyW50tUdltlfi1?=
+ =?us-ascii?Q?tYAX0ZiwUY7HJ+6hjDw5/OXp5l51OdRXSC9iPmLxYi4gzxQBSrS25D3oSLu+?=
+ =?us-ascii?Q?UL8rQZeCtLO8O0EWzq0qQ/eX64TOjF6UTRTJn/Fy5ChyuyfNFHDjKRFmBSbB?=
+ =?us-ascii?Q?nMrzkDNTSDTKH18zIGU2FvaWugqj2cOAMVb0kjAA/J15SGoMQQZ0rmaQf/2t?=
+ =?us-ascii?Q?DD43Mw+yjBEDxzx9Id6c/9sAK/EGia2Z4d++rh+2x9IkVacuSHZTqWnTbQlU?=
+ =?us-ascii?Q?BUG2vOU1jSUDadRPfYlUFLX6o0F73N7yhRVA2Oe7DLmcS1YXJadbHDMJy8cI?=
+ =?us-ascii?Q?k/sFsEDInhTFCWrlPxpePBvoVl87NEzgBdz87Nf1rAipzJMSCODFBS44riVn?=
+ =?us-ascii?Q?HZ4fwXIUgsbE5dj6twlk1H0RKjx+leCS9nACO49brF01wMBHzXFZwgltY9Wn?=
+ =?us-ascii?Q?zUKetGykZGo9RVhHkMMg++e6r1bJTUDJz5yeWY5trN1PUzl7CjBJAIwcr7lY?=
+ =?us-ascii?Q?ZFAnYh4QSVE0BcxlNruf/30EPbukPZ5khMOpkWbR3Dsn/bFj8YwHfuX++w2V?=
+ =?us-ascii?Q?iVCUFlunfKtk0y3Rtyiqf7pndghTYPSfHDBvD5zN/d8iO1mlv+unTyrZsEuP?=
+ =?us-ascii?Q?7vaj5snhq5k39CgxgafVn/d8wRJxr5QBkT/Sqwowrk56SAjEkVVFj9XSgsEB?=
+ =?us-ascii?Q?bjorrZriSDK/kCvrTqe9qoBnHAn57zGzdLXS0U0Iai/UZlNenAdZJ+zhn4rD?=
+ =?us-ascii?Q?7AMz7JTd53S5jydemaK4LC9DkDCmdrntTNRUWYw5onrSPyFSZB6J/DH/bnTp?=
+ =?us-ascii?Q?XK+MaHd4UoM70qlpyheflz6pudYL2UdTWaN10FD1KQnE3oip1VeKa9Fea4xx?=
+ =?us-ascii?Q?lU/fqrCD3g=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 92ff0478-c969-4990-a691-08de6a9d5931
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Feb 2026 01:15:17.4574
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: M89W3ND4tFMcA8ju3tGXDtLBKUcxD0vKOPyg7huuiWGXqIAaflAXTbgLLlodJVGbcqJq1eWAgDhjkzdUWb6yMA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR11MB6416
+X-OriginatorOrg: intel.com
 
-On Thu, Feb 12, 2026 at 6:16=E2=80=AFAM kernel test robot <oliver.sang@inte=
-l.com> wrote:
->
->
-> Hello,
->
->
-> for new added "test addr2line inline unwinding", we found it failed consi=
-stently
-> in our tests. not sure if we miss any dependency. below report is FYI.
->
->
-> kernel test robot noticed "perf-sanity-tests.test_addr2line_inline_unwind=
-ing.fail" on:
->
-> commit: 54a23bff770961e024e2c61cd1f46888190c3e79 ("perf test: Test addr2l=
-ine unwinding works with inline functions")
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
->
->
-> in testcase: perf-sanity-tests
-> version:
-> with following parameters:
->
->         perf_compiler: clang
->         group: group-02
->
->
->
-> config: x86_64-rhel-9.4-bpf
-> compiler: gcc-14
-> test machine: 20 threads 1 sockets (Commet Lake) with 16G memory
->
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
->
->
-> If you fix the issue in a separate patch/commit (i.e. not just a new vers=
-ion of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202602122137.a1396559-lkp@intel.=
-com
->
->
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20260212/202602122137.a1396559-lk=
-p@intel.com
->
->
-> 2026-02-10 04:50:32 sudo ASAN_OPTIONS=3Dfast_unwind_on_malloc=3D0 /usr/sr=
-c/linux-perf-x86_64-rhel-9.4-bpf-54a23bff770961e024e2c61cd1f46888190c3e79/t=
-ools/perf/perf test 76 -v
->  76: test addr2line inline unwinding                                 : Ru=
-nning (1 active)
-> --- start ---
-> test child forked, pid 11320
-> Inline unwinding verification test
-> [ perf record: Woken up 136 times to write data ]
-> [ perf record: Captured and wrote 33.858 MB /tmp/perf-test-inline-addr2li=
-ne.v74NZkItW4/perf.data (4206 samples) ]
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> =3D=3D11324=3D=3DERROR: LeakSanitizer: detected memory leaks
->
-> Direct leak of 61808 byte(s) in 8 object(s) allocated from:
->     #0 0x7fb5922e0610 in calloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:77
->     #1 0x7fb5920c1808  (/lib/x86_64-linux-gnu/libelf.so.1+0x3808) (BuildI=
-d: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
->     #2 0x7fb5920c25f9  (/lib/x86_64-linux-gnu/libelf.so.1+0x45f9) (BuildI=
-d: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
->     #3 0x5560ff9ea997 in symsrc__init util/symbol-elf.c:1164
->     #4 0x5560ff56702e in dso__load util/symbol.c:1795
->     #5 0x5560ff5fb064 in map__load util/map.c:351
->     #6 0x5560ff5fb44b in map__find_symbol util/map.c:385
->     #7 0x5560ff47a46d in thread__find_symbol util/event.c:725
->     #8 0x5560ffa84913 in __report_module util/unwind-libdw.c:54
->     #9 0x5560ffa85240 in report_module util/unwind-libdw.c:117
->     #10 0x5560ffa86a99 in frame_callback util/unwind-libdw.c:248
->     #11 0x7fb59206dae2 in dwfl_thread_getframes (/lib/x86_64-linux-gnu/li=
-bdw.so.1+0x78ae2) (BuildId: bafe9cb5bbbe6cee778d0d137730ea5c223d553e)
->     #12 0x7fb59206de53 in dwfl_getthread_frames (/lib/x86_64-linux-gnu/li=
-bdw.so.1+0x78e53) (BuildId: bafe9cb5bbbe6cee778d0d137730ea5c223d553e)
->     #13 0x5560ffa8763d in unwind__get_entries util/unwind-libdw.c:307
->     #14 0x5560ff5f2dde in thread__resolve_callchain_unwind util/machine.c=
-:2977
->     #15 0x5560ff5f2f32 in __thread__resolve_callchain util/machine.c:3004
->     #16 0x5560ff5c80c0 in sample__for_each_callchain_node util/callchain.=
-c:1818
->     #17 0x5560ff4132c6 in build_id__mark_dso_hit util/build-id.c:77
->     #18 0x5560fef31015 in process_sample_event /usr/src/perf_selftests-x8=
-6_64-rhel-9.4-bpf-54a23bff770961e024e2c61cd1f46888190c3e79/tools/perf/built=
-in-record.c:1504
->     #19 0x5560ff61d75e in evlist__deliver_sample util/session.c:1276
->     #20 0x5560ff61f490 in machines__deliver_event util/session.c:1432
->     #21 0x5560ff6210b1 in perf_session__deliver_event util/session.c:1523
->     #22 0x5560ff60c775 in ordered_events__deliver_event util/session.c:13=
-4
->     #23 0x5560ff64a011 in do_flush util/ordered-events.c:245
->     #24 0x5560ff64aeb6 in __ordered_events__flush util/ordered-events.c:3=
-24
->     #25 0x5560ff64b3c7 in ordered_events__flush util/ordered-events.c:342
->     #26 0x5560ff617d42 in perf_event__process_finished_round util/session=
-.c:787
->     #27 0x5560ff621c1d in perf_session__process_user_event util/session.c=
-:1583
 
-Hmm.. this looks a lot like this 1 liner fix is missing:
-https://lore.kernel.org/lkml/20260117052849.2205545-2-irogers@google.com/
-but it is in linux-next:
-https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/=
-tools/perf/util/symbol-elf.c?id=3D92d65d9c31621befe0a5f7c0bd43bd217613c6b6
+Hello,
 
-> Direct leak of 4424 byte(s) in 1 object(s) allocated from:
->     #0 0x7fb5922e0610 in calloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:77
->     #1 0x7fb5920c1808  (/lib/x86_64-linux-gnu/libelf.so.1+0x3808) (BuildI=
-d: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
->     #2 0x7fb5920c25f9  (/lib/x86_64-linux-gnu/libelf.so.1+0x45f9) (BuildI=
-d: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
->     #3 0x5560ff9ea997 in symsrc__init util/symbol-elf.c:1164
->     #4 0x5560ff56702e in dso__load util/symbol.c:1795
->     #5 0x5560ff5fb064 in map__load util/map.c:351
->     #6 0x5560ff5fb44b in map__find_symbol util/map.c:385
->     #7 0x5560ff47a46d in thread__find_symbol util/event.c:725
->     #8 0x5560ffa84913 in __report_module util/unwind-libdw.c:54
->     #9 0x5560ffa85240 in report_module util/unwind-libdw.c:117
->     #10 0x5560ffa874ca in unwind__get_entries util/unwind-libdw.c:299
->     #11 0x5560ff5f2dde in thread__resolve_callchain_unwind util/machine.c=
-:2977
->     #12 0x5560ff5f2f32 in __thread__resolve_callchain util/machine.c:3004
->     #13 0x5560ff5c80c0 in sample__for_each_callchain_node util/callchain.=
-c:1818
->     #14 0x5560ff4132c6 in build_id__mark_dso_hit util/build-id.c:77
->     #15 0x5560fef31015 in process_sample_event /usr/src/perf_selftests-x8=
-6_64-rhel-9.4-bpf-54a23bff770961e024e2c61cd1f46888190c3e79/tools/perf/built=
-in-record.c:1504
->     #16 0x5560ff61d75e in evlist__deliver_sample util/session.c:1276
->     #17 0x5560ff61f490 in machines__deliver_event util/session.c:1432
->     #18 0x5560ff6210b1 in perf_session__deliver_event util/session.c:1523
->     #19 0x5560ff60c775 in ordered_events__deliver_event util/session.c:13=
-4
->     #20 0x5560ff64a011 in do_flush util/ordered-events.c:245
->     #21 0x5560ff64aeb6 in __ordered_events__flush util/ordered-events.c:3=
-24
->     #22 0x5560ff64b3c7 in ordered_events__flush util/ordered-events.c:342
->     #23 0x5560ff617d42 in perf_event__process_finished_round util/session=
-.c:787
->     #24 0x5560ff621c1d in perf_session__process_user_event util/session.c=
-:1583
->     #25 0x5560ff6249ac in perf_session__process_event util/session.c:1805
->     #26 0x5560ff62c265 in process_simple util/session.c:2399
->     #27 0x5560ff62b225 in reader__read_event util/session.c:2328
->
-> Indirect leak of 18368 byte(s) in 8 object(s) allocated from:
->     #0 0x7fb5922e0c57 in malloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:69
->     #1 0x7fb5920c9550  (/lib/x86_64-linux-gnu/libelf.so.1+0xb550) (BuildI=
-d: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
->     #2 0x7fb5920ca517  (/lib/x86_64-linux-gnu/libelf.so.1+0xc517) (BuildI=
-d: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
->     #3 0x7fb5920ca0b1 in elf_rawdata (/lib/x86_64-linux-gnu/libelf.so.1+0=
-xc0b1) (BuildId: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
->     #4 0x5560ff9e0c10 in elf_section_by_name util/symbol-elf.c:193
->     #5 0x5560ff9e9ae1 in read_gnu_debugdata util/symbol-elf.c:1086
+kernel test robot noticed "INFO:trying_to_register_non-static_key" on:
 
-Here is the read_gnu_debugdata, so "type =3D=3D
-DSO_BINARY_TYPE__GNU_DEBUGDATA" on line 1171 should be true. I'm
-failing to eyeball where there is a missing elf_end (the allocation
-happens inside an elf_begin). The code is:
-```
-Elf *embedded =3D read_gnu_debugdata(dso, elf, name, &new_fd);
+commit: 50b35a50fe83cb7870710b173f8b5ee78dd20107 ("[PATCH v2 2/3] btrfs: update per-profile available estimation")
+url: https://github.com/intel-lab-lkp/linux/commits/Qu-Wenruo/btrfs-introduce-the-device-layout-aware-per-profile-available-space/20260204-105811
+base: https://git.kernel.org/cgit/linux/kernel/git/kdave/linux.git for-next
+patch link: https://lore.kernel.org/all/b4d6fcecccd3c2c3b5359131e0493f190d1f5959.1770173615.git.wqu@suse.com/
+patch subject: [PATCH v2 2/3] btrfs: update per-profile available estimation
 
-if (!embedded)
-goto out_elf_end;
+in testcase: perf-sanity-tests
+version: 
+with following parameters:
 
-elf_end(elf);
-...
-out_elf_end:
-elf_end(elf);
-```
+	perf_compiler: gcc
+	group: group-02
 
-So I believe the issue is that the fix above wasn't applied when this
-test was run, but I'm not sure how that could have happened. Fwiw,
-local testing didn't reproduce the issue.
 
-Thanks,
-Ian
 
->     #6 0x5560ff9eaac5 in symsrc__init util/symbol-elf.c:1173
->     #7 0x5560ff56702e in dso__load util/symbol.c:1795
->     #8 0x5560ff5fb064 in map__load util/map.c:351
->     #9 0x5560ff5fb44b in map__find_symbol util/map.c:385
->     #10 0x5560ff47a46d in thread__find_symbol util/event.c:725
->     #11 0x5560ffa84913 in __report_module util/unwind-libdw.c:54
->     #12 0x5560ffa85240 in report_module util/unwind-libdw.c:117
->     #13 0x5560ffa86a99 in frame_callback util/unwind-libdw.c:248
->     #14 0x7fb59206dae2 in dwfl_thread_getframes (/lib/x86_64-linux-gnu/li=
-bdw.so.1+0x78ae2) (BuildId: bafe9cb5bbbe6cee778d0d137730ea5c223d553e)
->     #15 0x7fb59206de53 in dwfl_getthread_frames (/lib/x86_64-linux-gnu/li=
-bdw.so.1+0x78e53) (BuildId: bafe9cb5bbbe6cee778d0d137730ea5c223d553e)
->     #16 0x5560ffa8763d in unwind__get_entries util/unwind-libdw.c:307
->     #17 0x5560ff5f2dde in thread__resolve_callchain_unwind util/machine.c=
-:2977
->     #18 0x5560ff5f2f32 in __thread__resolve_callchain util/machine.c:3004
->     #19 0x5560ff5c80c0 in sample__for_each_callchain_node util/callchain.=
-c:1818
->     #20 0x5560ff4132c6 in build_id__mark_dso_hit util/build-id.c:77
->     #21 0x5560fef31015 in process_sample_event /usr/src/perf_selftests-x8=
-6_64-rhel-9.4-bpf-54a23bff770961e024e2c61cd1f46888190c3e79/tools/perf/built=
-in-record.c:1504
->     #22 0x5560ff61d75e in evlist__deliver_sample util/session.c:1276
->     #23 0x5560ff61f490 in machines__deliver_event util/session.c:1432
->     #24 0x5560ff6210b1 in perf_session__deliver_event util/session.c:1523
->     #25 0x5560ff60c775 in ordered_events__deliver_event util/session.c:13=
-4
->     #26 0x5560ff64a011 in do_flush util/ordered-events.c:245
->     #27 0x5560ff64aeb6 in __ordered_events__flush util/ordered-events.c:3=
-24
->
-> Indirect leak of 3203 byte(s) in 8 object(s) allocated from:
->     #0 0x7fb5922e0c57 in malloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:69
->     #1 0x7fb5920ca3fa  (/lib/x86_64-linux-gnu/libelf.so.1+0xc3fa) (BuildI=
-d: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
->     #2 0x7fb5920ca0b1 in elf_rawdata (/lib/x86_64-linux-gnu/libelf.so.1+0=
-xc0b1) (BuildId: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
->     #3 0x5560ff9e0c10 in elf_section_by_name util/symbol-elf.c:193
->     #4 0x5560ff9e9ae1 in read_gnu_debugdata util/symbol-elf.c:1086
->     #5 0x5560ff9eaac5 in symsrc__init util/symbol-elf.c:1173
->     #6 0x5560ff56702e in dso__load util/symbol.c:1795
->     #7 0x5560ff5fb064 in map__load util/map.c:351
->     #8 0x5560ff5fb44b in map__find_symbol util/map.c:385
->     #9 0x5560ff47a46d in thread__find_symbol util/event.c:725
->     #10 0x5560ffa84913 in __report_module util/unwind-libdw.c:54
->     #11 0x5560ffa85240 in report_module util/unwind-libdw.c:117
->     #12 0x5560ffa86a99 in frame_callback util/unwind-libdw.c:248
->     #13 0x7fb59206dae2 in dwfl_thread_getframes (/lib/x86_64-linux-gnu/li=
-bdw.so.1+0x78ae2) (BuildId: bafe9cb5bbbe6cee778d0d137730ea5c223d553e)
->     #14 0x7fb59206de53 in dwfl_getthread_frames (/lib/x86_64-linux-gnu/li=
-bdw.so.1+0x78e53) (BuildId: bafe9cb5bbbe6cee778d0d137730ea5c223d553e)
->     #15 0x5560ffa8763d in unwind__get_entries util/unwind-libdw.c:307
->     #16 0x5560ff5f2dde in thread__resolve_callchain_unwind util/machine.c=
-:2977
->     #17 0x5560ff5f2f32 in __thread__resolve_callchain util/machine.c:3004
->     #18 0x5560ff5c80c0 in sample__for_each_callchain_node util/callchain.=
-c:1818
->     #19 0x5560ff4132c6 in build_id__mark_dso_hit util/build-id.c:77
->     #20 0x5560fef31015 in process_sample_event /usr/src/perf_selftests-x8=
-6_64-rhel-9.4-bpf-54a23bff770961e024e2c61cd1f46888190c3e79/tools/perf/built=
-in-record.c:1504
->     #21 0x5560ff61d75e in evlist__deliver_sample util/session.c:1276
->     #22 0x5560ff61f490 in machines__deliver_event util/session.c:1432
->     #23 0x5560ff6210b1 in perf_session__deliver_event util/session.c:1523
->     #24 0x5560ff60c775 in ordered_events__deliver_event util/session.c:13=
-4
->     #25 0x5560ff64a011 in do_flush util/ordered-events.c:245
->     #26 0x5560ff64aeb6 in __ordered_events__flush util/ordered-events.c:3=
-24
->     #27 0x5560ff64b3c7 in ordered_events__flush util/ordered-events.c:342
->
-> Indirect leak of 1280 byte(s) in 1 object(s) allocated from:
->     #0 0x7fb5922e0c57 in malloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:69
->     #1 0x7fb5920c9550  (/lib/x86_64-linux-gnu/libelf.so.1+0xb550) (BuildI=
-d: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
->     #2 0x7fb5920ca517  (/lib/x86_64-linux-gnu/libelf.so.1+0xc517) (BuildI=
-d: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
->     #3 0x7fb5920ca0b1 in elf_rawdata (/lib/x86_64-linux-gnu/libelf.so.1+0=
-xc0b1) (BuildId: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
->     #4 0x5560ff9e0c10 in elf_section_by_name util/symbol-elf.c:193
->     #5 0x5560ff9e9ae1 in read_gnu_debugdata util/symbol-elf.c:1086
->     #6 0x5560ff9eaac5 in symsrc__init util/symbol-elf.c:1173
->     #7 0x5560ff56702e in dso__load util/symbol.c:1795
->     #8 0x5560ff5fb064 in map__load util/map.c:351
->     #9 0x5560ff5fb44b in map__find_symbol util/map.c:385
->     #10 0x5560ff47a46d in thread__find_symbol util/event.c:725
->     #11 0x5560ffa84913 in __report_module util/unwind-libdw.c:54
->     #12 0x5560ffa85240 in report_module util/unwind-libdw.c:117
->     #13 0x5560ffa874ca in unwind__get_entries util/unwind-libdw.c:299
->     #14 0x5560ff5f2dde in thread__resolve_callchain_unwind util/machine.c=
-:2977
->     #15 0x5560ff5f2f32 in __thread__resolve_callchain util/machine.c:3004
->     #16 0x5560ff5c80c0 in sample__for_each_callchain_node util/callchain.=
-c:1818
->     #17 0x5560ff4132c6 in build_id__mark_dso_hit util/build-id.c:77
->     #18 0x5560fef31015 in process_sample_event /usr/src/perf_selftests-x8=
-6_64-rhel-9.4-bpf-54a23bff770961e024e2c61cd1f46888190c3e79/tools/perf/built=
-in-record.c:1504
->     #19 0x5560ff61d75e in evlist__deliver_sample util/session.c:1276
->     #20 0x5560ff61f490 in machines__deliver_event util/session.c:1432
->     #21 0x5560ff6210b1 in perf_session__deliver_event util/session.c:1523
->     #22 0x5560ff60c775 in ordered_events__deliver_event util/session.c:13=
-4
->     #23 0x5560ff64a011 in do_flush util/ordered-events.c:245
->     #24 0x5560ff64aeb6 in __ordered_events__flush util/ordered-events.c:3=
-24
->     #25 0x5560ff64b3c7 in ordered_events__flush util/ordered-events.c:342
->     #26 0x5560ff617d42 in perf_event__process_finished_round util/session=
-.c:787
->     #27 0x5560ff621c1d in perf_session__process_user_event util/session.c=
-:1583
->
-> Indirect leak of 190 byte(s) in 1 object(s) allocated from:
->     #0 0x7fb5922e0c57 in malloc ../../../../src/libsanitizer/asan/asan_ma=
-lloc_linux.cpp:69
->     #1 0x7fb5920ca3fa  (/lib/x86_64-linux-gnu/libelf.so.1+0xc3fa) (BuildI=
-d: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
->     #2 0x7fb5920ca0b1 in elf_rawdata (/lib/x86_64-linux-gnu/libelf.so.1+0=
-xc0b1) (BuildId: d6a40be9eadcbcb0562b7bb13bbe81166e82cc40)
->     #3 0x5560ff9e0c10 in elf_section_by_name util/symbol-elf.c:193
->     #4 0x5560ff9e9ae1 in read_gnu_debugdata util/symbol-elf.c:1086
->     #5 0x5560ff9eaac5 in symsrc__init util/symbol-elf.c:1173
->     #6 0x5560ff56702e in dso__load util/symbol.c:1795
->     #7 0x5560ff5fb064 in map__load util/map.c:351
->     #8 0x5560ff5fb44b in map__find_symbol util/map.c:385
->     #9 0x5560ff47a46d in thread__find_symbol util/event.c:725
->     #10 0x5560ffa84913 in __report_module util/unwind-libdw.c:54
->     #11 0x5560ffa85240 in report_module util/unwind-libdw.c:117
->     #12 0x5560ffa874ca in unwind__get_entries util/unwind-libdw.c:299
->     #13 0x5560ff5f2dde in thread__resolve_callchain_unwind util/machine.c=
-:2977
->     #14 0x5560ff5f2f32 in __thread__resolve_callchain util/machine.c:3004
->     #15 0x5560ff5c80c0 in sample__for_each_callchain_node util/callchain.=
-c:1818
->     #16 0x5560ff4132c6 in build_id__mark_dso_hit util/build-id.c:77
->     #17 0x5560fef31015 in process_sample_event /usr/src/perf_selftests-x8=
-6_64-rhel-9.4-bpf-54a23bff770961e024e2c61cd1f46888190c3e79/tools/perf/built=
-in-record.c:1504
->     #18 0x5560ff61d75e in evlist__deliver_sample util/session.c:1276
->     #19 0x5560ff61f490 in machines__deliver_event util/session.c:1432
->     #20 0x5560ff6210b1 in perf_session__deliver_event util/session.c:1523
->     #21 0x5560ff60c775 in ordered_events__deliver_event util/session.c:13=
-4
->     #22 0x5560ff64a011 in do_flush util/ordered-events.c:245
->     #23 0x5560ff64aeb6 in __ordered_events__flush util/ordered-events.c:3=
-24
->     #24 0x5560ff64b3c7 in ordered_events__flush util/ordered-events.c:342
->     #25 0x5560ff617d42 in perf_event__process_finished_round util/session=
-.c:787
->     #26 0x5560ff621c1d in perf_session__process_user_event util/session.c=
-:1583
->     #27 0x5560ff6249ac in perf_session__process_event util/session.c:1805
->
-> SUMMARY: AddressSanitizer: 89273 byte(s) leaked in 27 allocation(s).
-> Unexpected signal in test_inlinedloop
-> ---- end(-1) ----
->  76: test addr2line inline unwinding                                 : FA=
-ILED!
->
-> --
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
->
+config: x86_64-rhel-9.4-bpf
+compiler: gcc-14
+test machine: 22 threads 1 sockets Intel(R) Core(TM) Ultra 9 185H @ 4.5GHz (Meteor Lake) with 32G memory
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202602130252.89b82f3f-lkp@intel.com
+
+
+kern  :err   : [   91.987109] [   T4552] INFO: trying to register non-static key.
+kern  :err   : [   91.988642] [   T4552] The code is fine but needs lockdep annotation, or maybe
+kern  :err   : [   91.990349] [   T4552] you didn't initialize this object before use?
+kern  :err   : [   91.991930] [   T4552] turning off the locking correctness validator.
+kern  :warn  : [   91.993525] [   T4552] CPU: 1 UID: 0 PID: 4552 Comm: mount Tainted: G S      W           6.19.0-rc8-00146-g50b35a50fe83 #1 PREEMPT(full)
+kern  :warn  : [   91.993530] [   T4552] Tainted: [S]=CPU_OUT_OF_SPEC, [W]=WARN
+kern  :warn  : [   91.993531] [   T4552] Hardware name: ASUSTeK COMPUTER INC. NUC14RVS-B/NUC14RVSU9, BIOS RVMTL357.0047.2025.0108.1408 01/08/2025
+kern  :warn  : [   91.993532] [   T4552] Call Trace:
+kern  :warn  : [   91.993533] [   T4552]  <TASK>
+kern  :warn  : [   91.993535] [   T4552]  dump_stack_lvl (lib/dump_stack.c:122)
+kern  :warn  : [   91.993541] [   T4552]  register_lock_class (kernel/locking/lockdep.c:985 kernel/locking/lockdep.c:1299)
+kern  :warn  : [   91.993545] [   T4552]  __lock_acquire (kernel/locking/lockdep.c:5113)
+kern  :warn  : [   91.993549] [   T4552]  lock_acquire (include/linux/preempt.h:469 (discriminator 2) include/trace/events/lock.h:24 (discriminator 2) include/trace/events/lock.h:24 (discriminator 2) kernel/locking/lockdep.c:5831 (discriminator 2))
+kern  :warn  : [   91.993551] [   T4552]  ? btrfs_update_per_profile_avail (fs/btrfs/volumes.c:5537) btrfs
+kern  :warn  : [   91.993701] [   T4552]  ? rcu_is_watching (arch/x86/include/asm/atomic.h:23 include/linux/atomic/atomic-arch-fallback.h:457 include/linux/context_tracking.h:128 kernel/rcu/tree.c:751)
+kern  :warn  : [   91.993704] [   T4552]  ? lock_acquire (include/trace/events/lock.h:24 (discriminator 2) kernel/locking/lockdep.c:5831 (discriminator 2))
+kern  :warn  : [   91.993706] [   T4552]  _raw_spin_lock (include/linux/spinlock_api_smp.h:134 kernel/locking/spinlock.c:154)
+kern  :warn  : [   91.993710] [   T4552]  ? btrfs_update_per_profile_avail (fs/btrfs/volumes.c:5537) btrfs
+kern  :warn  : [   91.993849] [   T4552] btrfs_update_per_profile_avail (fs/btrfs/volumes.c:5537) btrfs
+kern  :warn  : [   91.993988] [   T4552]  ? __pfx_btrfs_update_per_profile_avail (fs/btrfs/volumes.c:5518) btrfs
+kern  :warn  : [   91.994127] [   T4552]  ? btrfs_verify_dev_extents (fs/btrfs/volumes.c:8602) btrfs
+kern  :warn  : [   91.994268] [   T4552]  ? __lock_release+0x5d/0x1b0
+kern  :warn  : [   91.994270] [   T4552]  ? rcu_is_watching (arch/x86/include/asm/atomic.h:23 include/linux/atomic/atomic-arch-fallback.h:457 include/linux/context_tracking.h:128 kernel/rcu/tree.c:751)
+kern  :warn  : [   91.994274] [   T4552] btrfs_verify_dev_extents (fs/btrfs/volumes.c:8604) btrfs
+kern  :warn  : [   91.994415] [   T4552]  ? __pfx_btrfs_verify_dev_extents (fs/btrfs/volumes.c:8512) btrfs
+kern  :warn  : [   91.994562] [   T4552]  ? btrfs_verify_dev_items (fs/btrfs/volumes.c:8641) btrfs
+kern  :warn  : [   91.994704] [   T4552] open_ctree (fs/btrfs/disk-io.c:3533) btrfs
+kern  :warn  : [   91.994842] [   T4552] btrfs_fill_super.cold (fs/btrfs/super.c:981) btrfs
+kern  :warn  : [   91.994976] [   T4552] btrfs_get_tree_super (fs/btrfs/super.c:1945) btrfs
+kern  :warn  : [   91.995108] [   T4552] btrfs_get_tree_subvol (fs/btrfs/super.c:2087) btrfs
+kern  :warn  : [   91.995241] [   T4552]  vfs_get_tree (fs/super.c:1751)
+kern  :warn  : [   91.995245] [   T4552]  vfs_cmd_create (fs/fsopen.c:231)
+kern  :warn  : [   91.995249] [   T4552]  __do_sys_fsconfig (fs/fsopen.c:474)
+kern  :warn  : [   91.995251] [   T4552]  ? __pfx___do_sys_fsconfig (fs/fsopen.c:356)
+kern  :warn  : [   91.995255] [   T4552]  ? lock_release (kernel/locking/lockdep.c:470 (discriminator 4) kernel/locking/lockdep.c:5891 (discriminator 4) kernel/locking/lockdep.c:5875 (discriminator 4))
+kern  :warn  : [   91.995257] [   T4552]  ? do_syscall_64 (arch/x86/include/asm/irqflags.h:42 arch/x86/include/asm/irqflags.h:119 include/linux/entry-common.h:108 arch/x86/entry/syscall_64.c:90)
+kern  :warn  : [   91.995261] [   T4552]  do_syscall_64 (arch/x86/entry/syscall_64.c:63 (discriminator 1) arch/x86/entry/syscall_64.c:94 (discriminator 1))
+kern  :warn  : [   91.995263] [   T4552]  ? __pfx_ksys_read (fs/read_write.c:705)
+kern  :warn  : [   91.995265] [   T4552]  ? kfree (mm/slub.c:6674 (discriminator 3) mm/slub.c:6882 (discriminator 3))
+kern  :warn  : [   91.995268] [   T4552]  ? do_syscall_64 (include/linux/irq-entry-common.h:298 include/linux/entry-common.h:196 arch/x86/entry/syscall_64.c:100)
+kern  :warn  : [   91.995270] [   T4552]  ? do_syscall_64 (arch/x86/entry/syscall_64.c:113)
+kern  :warn  : [   91.995272] [   T4552]  ? __do_sys_fsconfig (fs/fsopen.c:499)
+kern  :warn  : [   91.995274] [   T4552]  ? __do_sys_fsconfig (fs/fsopen.c:499)
+kern  :warn  : [   91.995277] [   T4552]  ? __pfx___do_sys_fsconfig (fs/fsopen.c:356)
+kern  :warn  : [   91.995279] [   T4552]  ? do_syscall_64 (include/linux/irq-entry-common.h:298 include/linux/entry-common.h:196 arch/x86/entry/syscall_64.c:100)
+kern  :warn  : [   91.995282] [   T4552]  ? do_syscall_64 (arch/x86/entry/syscall_64.c:113)
+kern  :warn  : [   91.995284] [   T4552]  ? do_syscall_64 (arch/x86/entry/syscall_64.c:113)
+kern  :warn  : [   91.995286] [   T4552]  ? do_syscall_64 (include/linux/irq-entry-common.h:298 include/linux/entry-common.h:196 arch/x86/entry/syscall_64.c:100)
+kern  :warn  : [   91.995288] [   T4552]  ? do_syscall_64 (arch/x86/entry/syscall_64.c:113)
+kern  :warn  : [   91.995290] [   T4552]  ? do_syscall_64 (arch/x86/entry/syscall_64.c:113)
+kern  :warn  : [   91.995292] [   T4552]  ? irqentry_exit (include/linux/irq-entry-common.h:298 include/linux/irq-entry-common.h:341 kernel/entry/common.c:196)
+kern  :warn  : [   91.995294] [   T4552]  ? trace_hardirqs_on_prepare (kernel/trace/trace_preemptirq.c:64 (discriminator 4) kernel/trace/trace_preemptirq.c:59 (discriminator 4))
+kern  :warn  : [   91.995296] [   T4552]  ? lockdep_hardirqs_on_prepare (kernel/locking/lockdep.c:4629 (discriminator 4))
+kern  :warn  : [   91.995299] [   T4552]  ? irqentry_exit (arch/x86/include/asm/jump_label.h:37 include/linux/context_tracking_state.h:138 include/linux/context_tracking.h:41 include/linux/irq-entry-common.h:301 include/linux/irq-entry-common.h:341 kernel/entry/common.c:196)
+kern  :warn  : [   91.995301] [   T4552]  entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:131)
+kern  :warn  : [   91.995304] [   T4552] RIP: 0033:0x7fb38ba0e4aa
+kern  :warn  : [   91.995331] [   T4552] Code: 73 01 c3 48 8b 0d 4e 59 0d 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 49 89 ca b8 af 01 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 1e 59 0d 00 f7 d8 64 89 01 48
+All code
+========
+   0:	73 01                	jae    0x3
+   2:	c3                   	ret
+   3:	48 8b 0d 4e 59 0d 00 	mov    0xd594e(%rip),%rcx        # 0xd5958
+   a:	f7 d8                	neg    %eax
+   c:	64 89 01             	mov    %eax,%fs:(%rcx)
+   f:	48 83 c8 ff          	or     $0xffffffffffffffff,%rax
+  13:	c3                   	ret
+  14:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+  1b:	00 00 00 
+  1e:	66 90                	xchg   %ax,%ax
+  20:	49 89 ca             	mov    %rcx,%r10
+  23:	b8 af 01 00 00       	mov    $0x1af,%eax
+  28:	0f 05                	syscall
+  2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping instruction
+  30:	73 01                	jae    0x33
+  32:	c3                   	ret
+  33:	48 8b 0d 1e 59 0d 00 	mov    0xd591e(%rip),%rcx        # 0xd5958
+  3a:	f7 d8                	neg    %eax
+  3c:	64 89 01             	mov    %eax,%fs:(%rcx)
+  3f:	48                   	rex.W
+
+Code starting with the faulting instruction
+===========================================
+   0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
+   6:	73 01                	jae    0x9
+   8:	c3                   	ret
+   9:	48 8b 0d 1e 59 0d 00 	mov    0xd591e(%rip),%rcx        # 0xd592e
+  10:	f7 d8                	neg    %eax
+  12:	64 89 01             	mov    %eax,%fs:(%rcx)
+  15:	48                   	rex.W
+kern  :warn  : [   91.995334] [   T4552] RSP: 002b:00007ffd1dd07898 EFLAGS: 00000246 ORIG_RAX: 00000000000001af
+kern  :warn  : [   91.995337] [   T4552] RAX: ffffffffffffffda RBX: 000055a8acde41d0 RCX: 00007fb38ba0e4aa
+kern  :warn  : [   91.995339] [   T4552] RDX: 0000000000000000 RSI: 0000000000000006 RDI: 0000000000000003
+kern  :warn  : [   91.995340] [   T4552] RBP: 000055a8acde5d20 R08: 0000000000000000 R09: 0000000000000000
+kern  :warn  : [   91.995342] [   T4552] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+kern  :warn  : [   91.995343] [   T4552] R13: 00007fb38bba0580 R14: 00007fb38bba226c R15: 00007fb38bb87a23
+kern  :warn  : [   91.995347] [   T4552]  </TASK>
+kern  :info  : [   92.094700] [   T4552] BTRFS info (device nvme0n1p5): enabling ssd optimizations
+kern  :info  : [   92.096302] [   T4552] BTRFS info (device nvme0n1p5): turning on async discard
+kern  :info  : [   92.097968] [   T4552] BTRFS info (device nvme0n1p5): enabling free space tree
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20260213/202602130252.89b82f3f-lkp@intel.com
+
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
