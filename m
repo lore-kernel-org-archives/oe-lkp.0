@@ -1,83 +1,47 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60222257459
-	for <oe-lkp@lists.linux.dev>; Fri, 13 Feb 2026 09:35:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FB35212554;
+	Fri, 13 Feb 2026 10:40:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.92.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770975337; cv=none; b=Va/IaHkRsgVm+gxrzBJf1JAVKx9I6qilfCXiKi0mXe9sd772J+j/sht2chslMsL6+Gl1QT9GBwbpxNnjMShQ0ThFJ/UTNq90it8KvK24CAkRTXqCKHI0hutgTMCHm+HA0viEX8AikVeGaDAQbIWkQCH9LksbYQocebpMCQ20WLM=
+	t=1770979220; cv=none; b=CgcVLDrzapoxhkAcGwuo4PamPBHw8SFKhDzUsFdACufwOP/1UnwjbBecb7VRXxSah1mRY0QIlbsfCh8TKaN/0dNeQSqror2rRL7oAPrKaYM7LuwRhtkFIu/0J4QPZBALyk7FEV/yMOnTs2ykMoXEEAgGHnRJl9oQ+HhuvWMOYC4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770975337; c=relaxed/simple;
-	bh=a0hIZ9W64EiB/jTlbZha/E4Dyvy53mjVGMKxveCfXmY=;
+	s=arc-20240116; t=1770979220; c=relaxed/simple;
+	bh=wjW61QZ10cOrhbZlfyG4Qh5LOhsbteEfB728u9A7fcM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lXKU9tB/wUfwIVBOfFUOANW5flgPT7KqcBumKufElbiKoY5A/a1s418hZghQfT02ec3TBrCHckkevvFsn3j9qL0JLKt+im4bYu7u4mhqgYDoieKGUXlj+YKv8qfsX4c0lcwXeuUXfMEQEA3keeGElbII7SGLRn3dfbFoE4YAXrE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=SrR+scQ+; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=RQT2SYqJ; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=hxP6FrLx; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=kh0DXS0J; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+	 Content-Type:Content-Disposition:In-Reply-To; b=r3d92u1RGCCiv6FtPbETWNUOJ3QCrtclM0Nj50ZnIRXc2lpb19+C1z3vbDwa/nfY8h9iOBioS3vSE0PVDE+/kON8iYnH/PWgZ7wyrhvzH2E62aLNmfWr/3CZqhDId7U/MQVPQeIHQcFHhysqt/sa/Wl0D0iUM1E6AOgQJ8iMD78=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=Rn5JBYfr; arc=none smtp.client-ip=90.155.92.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="SrR+scQ+";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="RQT2SYqJ";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="hxP6FrLx";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="kh0DXS0J"
-Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 8A6213E6D7;
-	Fri, 13 Feb 2026 09:35:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1770975333; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=zlDkK35DtBY17drznjj/ZH9stt2AhfeyFIosjNUZrGw=;
-	b=SrR+scQ+RQ6n6Fe94OiP4USP9QFGi0ktX0XY7fmPOeTvdHh7kz13fJ1kyke8cT9Q7QjWK+
-	94J5X62ZU80Em98rope7ynkRA7OnhKtpEAGpajDsGeDKvUMW/SzWsvo7TaXlvwZtFWRcl1
-	x1tbQ5jOr6kQcs/LyzmjY48Yvnai83k=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1770975333;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=zlDkK35DtBY17drznjj/ZH9stt2AhfeyFIosjNUZrGw=;
-	b=RQT2SYqJPatvMF00CeOTQc0dL9/YBKt5t+nJtndqmCZLYBP4cJAi2b0vuQtRFko8KjS/V7
-	lS6UIPIILck8uTDQ==
-Authentication-Results: smtp-out1.suse.de;
-	none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1770975332; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=zlDkK35DtBY17drznjj/ZH9stt2AhfeyFIosjNUZrGw=;
-	b=hxP6FrLxX24Ait7vKnw3lgRCigUFeBMbTDGhcI5MF/r9tC2BMgHvoxiERoyclGfi1xfC2q
-	Gpeww8ewqakQ00e788MC25GDSdX/XkJx5xIgn3AZS/r5VeWWSBnh8IqvmU271IInOPWEPx
-	WWCye01EP85iHPYLYvAUlsMICujL7rU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1770975332;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=zlDkK35DtBY17drznjj/ZH9stt2AhfeyFIosjNUZrGw=;
-	b=kh0DXS0J/ZxpHM1qMm3tmAvu2kG+6aPypxcEjhmcpxOmHCdyM3e904jKzZ8djkxhBY70DV
-	9HPompKZ9J2jjQAw==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 708B33EA62;
-	Fri, 13 Feb 2026 09:35:32 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id jeg4GmTwjmlcRwAAD6G6ig
-	(envelope-from <chrubis@suse.cz>); Fri, 13 Feb 2026 09:35:32 +0000
-Date: Fri, 13 Feb 2026 10:35:35 +0100
-From: Cyril Hrubis <chrubis@suse.cz>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Rn5JBYfr"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=Mr4WwEfHM9lsDpvP8bCsFh+L0GJ21etyDlQl4BSqcCs=; b=Rn5JBYfrZR6ciG2U/58/dfehK8
+	zwuxEZHS5v4e7JbwjlbC7pmBZKdkVG74oL6l87tmg9YbjXY4Nlm+xfy53n1VN/EEvg136+HAuuTYJ
+	Xioltl5JQT+v6ZAvLD67BXr+ZXPXVLzg3jqptPdBX+XZD/d0q9VFkYt2GxhUjXL0TgLzmv1YNtpdP
+	0uFglwqGxJ5qooDTSxI7weWtPR5mtE5yAWVOaeot1sTuEJMJCthio/rkN51aGapI1ZL8VMB5y8N02
+	lehvZjaypi/7kiMRzF9OkaX5PqceQ7f6X6p7fG4eqzqHbxd8TvdQDNeBQu5KfUaWfBPaV95srYK10
+	NyRXqYNg==;
+Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
+	by desiato.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1vqqaq-0000000C64V-33dK;
+	Fri, 13 Feb 2026 10:40:13 +0000
+Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
+	id 769793007B5; Fri, 13 Feb 2026 11:40:06 +0100 (CET)
+Date: Fri, 13 Feb 2026 11:40:06 +0100
+From: Peter Zijlstra <peterz@infradead.org>
 To: kernel test robot <oliver.sang@intel.com>
-Cc: Christian Brauner <brauner@kernel.org>, lkp@intel.com,
-	linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-	oe-lkp@lists.linux.dev, ltp@lists.linux.it
-Subject: Re: [LTP] [linux-next:master] [mount]  4f5ba37ddc: ltp.fsmount02.fail
-Message-ID: <aY7wZwHXH2zS_Sj-@yuki.lan>
-References: <202602122354.412c5e65-lkp@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	Ingo Molnar <mingo@kernel.org>, sched-ext@lists.linux.dev,
+	aubrey.li@linux.intel.com, yu.c.chen@intel.com
+Subject: Re: [linus:master] [sched/core]  704069649b:
+ kernel-selftests.kvm.hardware_disable_test.fail
+Message-ID: <20260213104006.GK3016024@noisy.programming.kicks-ass.net>
+References: <202602122157.4e861298-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -86,43 +50,28 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202602122354.412c5e65-lkp@intel.com>
-X-Spam-Score: -8.30
-X-Spamd-Result: default: False [-8.30 / 50.00];
-	REPLY(-4.00)[];
-	BAYES_HAM(-3.00)[99.99%];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	FUZZY_RATELIMITED(0.00)[rspamd.com];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	ARC_NA(0.00)[];
-	MISSING_XM_UA(0.00)[];
-	RCPT_COUNT_SEVEN(0.00)[7];
-	RCVD_TLS_ALL(0.00)[];
-	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	FROM_HAS_DN(0.00)[];
-	TO_DN_SOME(0.00)[];
-	FROM_EQ_ENVFROM(0.00)[];
-	RCVD_COUNT_TWO(0.00)[2];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[yuki.lan:mid,suse.cz:email,imap1.dmz-prg2.suse.org:helo]
-X-Spam-Level: 
-X-Spam-Flag: NO
+In-Reply-To: <202602122157.4e861298-lkp@intel.com>
 
-Hi!
-> commit: 4f5ba37ddcdf5eaac2408178050183345d56b2d3 ("mount: add FSMOUNT_NAMESPACE")
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+On Thu, Feb 12, 2026 at 10:08:04PM +0800, kernel test robot wrote:
+> 
+> 
+> Hello,
+> 
+> we found the kernel-selftests.kvm.hardware_disable_test failed consistently upon
+> this commit but pass on parent. unfortunately, we didn't find many useful
+> information in dmesg. this report is just FYI what we observed in our tests.
+> 
+> 
+> 
+> kernel test robot noticed "kernel-selftests.kvm.hardware_disable_test.fail" on:
+> 
+> commit: 704069649b5bfb7bf1fe32c0281fe9036806a59a ("sched/core: Rework sched_class::wakeup_preempt() and rq_modified_*()")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> 
+> 
 
-The relevant part of the log is:
+So this commit has been in tip (and thus -next) since 17 Dev '25. How
+come this is only reported now?
 
-fsmount02.c:56: TFAIL: invalid-flags: fsmount() succeeded unexpectedly (index: 1)
-
-This is another case where new flag was added so the invalid flag value
-is not invalid anymore. The test needs to be adjusted if/once the patch
-hits mainline.
-
--- 
-Cyril Hrubis
-chrubis@suse.cz
+Anyway, let me see if I can manage to build the kvm selftests today
+(last time I tried it was an utter trainwreck).
