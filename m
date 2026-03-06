@@ -1,337 +1,264 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 177F914EC73
-	for <oe-lkp@lists.linux.dev>; Thu,  5 Mar 2026 07:00:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.7
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772694053; cv=fail; b=XC0tYcYGjatQKTIZwPO7FjLGl+OFYYUKPWQumA7Q0g7dlgxCQH4RMA9+Jf7MUuLeIiJ6ex0nNNqGmXiTBfI+E08EZvGmodK5vBPfQFqTjulqFaa6ngy2DHRHSAnMvUL7a/nTshc2sluN4/kKqQtWlKSkSS64sK+wIHUPA9FoatU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772694053; c=relaxed/simple;
-	bh=4rsTmU/n5+pnhYq6qlxAKZEniwpvqOaIpk3euN0gqP4=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=aIkRlJI8RMziN443yOzN7SfPjYMQvGLpGa9g+hfGTtNelXO1M8QlJ8N59qzuT/y5sopuEwa5c5aCt1yydkwdwoxoOgxOKwk2VUURd2LoYBWBSG3ckaFztB9p+4Za0Uhdzz+6cNgn36NuHKRjP8zkH72p7jQTynJtEFIoo+cU6vA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KlIDJ9Yk; arc=fail smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DD282459DC
+	for <oe-lkp@lists.linux.dev>; Fri,  6 Mar 2026 12:19:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772799546; cv=none; b=AMEDDiVQ01bcIHXo/R+N8IfcbCnrmGBELCtiDA9lzFQVte95UK6FhgDDIZVT4QMsnYGZ/TiTBDisJ17JB3ppk/dCCQZMmBNNWiksW+mSC8bDZt8KxK0q8LxCqOXSWFQ4SN3qGerNuFoAEUoOkyN1c5mq//YQZwLaW9sdTxTnkok=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772799546; c=relaxed/simple;
+	bh=LCC7J/h5b++rn5nF+GMJnm+f9PI2LrhYFABtKkMZvuA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=vDnkrPzZ2iLRkWZ1QTb+HdjhHJa7vfb/uQdoODE+0IEgwd3I5rAPfzrT33yK3WK7O9oES57lYfHRPQkI5RhZMczdCQBVtSDk7/YHbVrK9V9jVGFbm9iKmvnAWHecmLXE00M0aBc4E4oHz9Llzf4NLV/Ye3ll/r27HAdTzdB7GFY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=UYkMh+9c; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=xv2f40NE; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=UYkMh+9c; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=xv2f40NE; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KlIDJ9Yk"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772694051; x=1804230051;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   mime-version;
-  bh=4rsTmU/n5+pnhYq6qlxAKZEniwpvqOaIpk3euN0gqP4=;
-  b=KlIDJ9YkGOP0AkFvxCp4XNPMPxNus87NxnFK2VboYeKcMftZM+KA4/A3
-   tLI/RRkBM2pPK3eswD+l8T2U/Hr/ksqtQwanJr6HQyf5t4Rk7hFZXaAI5
-   a8PNpuGwV6DUVmittcFGyUnl3+hEcjfpnAVd9P855l1jbYtS1sKD+0TjX
-   1V5Es9rEE9BRkSIP+GuNRLzkSLd48W8XUv66LHvhm75rwaO7s0/6ZCk6H
-   8KHoYTeCxWexmdcmJI95S7zgtDxnPUQpQKcQQnT+jyW4JPXka0WkgMpP4
-   msNhy69/T0IgeqHLBrqAe1L8qbd3P/V6a0o9IDHMT3040DkybnTV9KRIc
-   A==;
-X-CSE-ConnectionGUID: 8wJhvnacTkyVsXBkPRuZjA==
-X-CSE-MsgGUID: XBs4VAn6Tl6JlUYNvW6NkQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11719"; a="99239952"
-X-IronPort-AV: E=Sophos;i="6.21,325,1763452800"; 
-   d="scan'208";a="99239952"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2026 23:00:50 -0800
-X-CSE-ConnectionGUID: eQSWWbzWSkG5y/V1kvMXeg==
-X-CSE-MsgGUID: DvZCB1aiTpKuYsFICnHg5Q==
-X-ExtLoop1: 1
-Received: from fmsmsx903.amr.corp.intel.com ([10.18.126.92])
-  by fmviesa003.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2026 23:00:50 -0800
-Received: from FMSMSX902.amr.corp.intel.com (10.18.126.91) by
- fmsmsx903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Wed, 4 Mar 2026 23:00:49 -0800
-Received: from fmsedg902.ED.cps.intel.com (10.1.192.144) by
- FMSMSX902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Wed, 4 Mar 2026 23:00:49 -0800
-Received: from CH5PR02CU005.outbound.protection.outlook.com (40.107.200.39) by
- edgegateway.intel.com (192.55.55.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Wed, 4 Mar 2026 23:00:47 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=nbD9LN7cJ9/LZg+LKFfRCzdy13wjWI9qSZo3PEEeKQIRglSVDwltwQgZG87iy8HDpWIRW9aQ5QSLYlaTEo19Ti4+BalgWSHLxMjxXflwPnMh9Kc0eQfF7KpvuMuHyicSNFnbT1itzPWJGPMlzx/J+RRFQvP/Vj2JBrcmA0uGjD8s1GSPz4T/2YTwjwP2fzRkWXssHpG+KYYn/ISNNsqyXSu2LZP43zJGWn8wbDrIiAFIpYAhwq6MSpWCIDP+jeatUKC/st+VJxUf0iMLVCzA2HyjsKpwvQYpOT28nzlRsj7GLZ4EAYBx95bHiZmxh8F9LQAgahAKe6U9AcwaIipDeQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=c5Oxn0RITVTS1IkxYHGTlUDb2pzyYWseL+Kp5vcC8pY=;
- b=TWuNnF0iP5oNycOY5ZDUp3jB0ko0Mm4uLM8tCVo5bbcy5X8bK5HAJ9pB93nKneOaHfdCXYOjNYLDVBBUDYa+S3uVmY3xu9GDgKS9jhnhqDcLF++gc10wY6biDnzOc/J5AwIwbXbXiIjVZNZcOB6UcSiILD8bMsQk3KjWE+tTOsx7J5EiBmI4SI6EM6vfMIVr6rdLTxbT9yKxdsqdMrMYHL4imFlP3ayPyxEmaZGMX4bCsQltmnHNAZU8h2f4qHQ/9h8iJe9jGjoiXrpoSSfs9kvtTTI8GHl5+rtbZogt32k2XooylwVA3BYzl99hoOQQ5qbrHAGrr6Pzxv5tPmWG4Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by PH3PPF7708D4D9D.namprd11.prod.outlook.com (2603:10b6:518:1::d31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9678.18; Thu, 5 Mar
- 2026 07:00:45 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::e4de:b1d:5557:7257]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::e4de:b1d:5557:7257%5]) with mapi id 15.20.9678.017; Thu, 5 Mar 2026
- 07:00:45 +0000
-Date: Thu, 5 Mar 2026 15:00:34 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: "Matthew Wilcox (Oracle)" <willy@infradead.org>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Axel Rasmussen
-	<axelrasmussen@google.com>, <linux-mm@kvack.org>, Johannes Weiner
-	<hannes@cmpxchg.org>, Michal Hocko <mhocko@kernel.org>, Roman Gushchin
-	<roman.gushchin@linux.dev>, Shakeel Butt <shakeel.butt@linux.dev>,
-	<cgroups@vger.kernel.org>, "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-	<oliver.sang@intel.com>
-Subject: Re: [PATCH 3/3] ptdesc: Account page tables to memcgs again
-Message-ID: <202603051407.fde83fdb-lkp@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20260225162319.315281-4-willy@infradead.org>
-X-ClientProxiedBy: KL1PR02CA0026.apcprd02.prod.outlook.com
- (2603:1096:820:d::13) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="UYkMh+9c";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="xv2f40NE";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="UYkMh+9c";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="xv2f40NE"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 2A6CE3E7F0;
+	Fri,  6 Mar 2026 12:19:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1772799542;
+	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+	 cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=RLt4nl9ne4qIzBZODffLLX9iNOga67tehke/LTcSxmE=;
+	b=UYkMh+9cJIdB7QoOjLQp56y5Z0uF2eZAefdRWxMGvHOKU08t+sHIWOJujm5LftrKT8gzNa
+	a2Wo9QzFrApL7LNa/Ofa9s8l96QhN0VNGjg2UYW1otLC30xa6BZUoPxbb/AWRUJ+E2fu7u
+	//yOhYGV40diX7Hvzd8noqdHU4hlO0I=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1772799542;
+	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+	 cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=RLt4nl9ne4qIzBZODffLLX9iNOga67tehke/LTcSxmE=;
+	b=xv2f40NEhvtcg7ncuiEg2A7WdRU0Ik0vsbs329RjIKH+djpuWWbEIUUfVKr8W0T5GeCZ0R
+	MiCmuri2pYywKQAg==
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=UYkMh+9c;
+	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b=xv2f40NE
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1772799542;
+	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+	 cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=RLt4nl9ne4qIzBZODffLLX9iNOga67tehke/LTcSxmE=;
+	b=UYkMh+9cJIdB7QoOjLQp56y5Z0uF2eZAefdRWxMGvHOKU08t+sHIWOJujm5LftrKT8gzNa
+	a2Wo9QzFrApL7LNa/Ofa9s8l96QhN0VNGjg2UYW1otLC30xa6BZUoPxbb/AWRUJ+E2fu7u
+	//yOhYGV40diX7Hvzd8noqdHU4hlO0I=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1772799542;
+	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+	 cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=RLt4nl9ne4qIzBZODffLLX9iNOga67tehke/LTcSxmE=;
+	b=xv2f40NEhvtcg7ncuiEg2A7WdRU0Ik0vsbs329RjIKH+djpuWWbEIUUfVKr8W0T5GeCZ0R
+	MiCmuri2pYywKQAg==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id E020D3EA75;
+	Fri,  6 Mar 2026 12:19:01 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id iCBiNTXGqmloLgAAD6G6ig
+	(envelope-from <pvorel@suse.cz>); Fri, 06 Mar 2026 12:19:01 +0000
+Date: Fri, 6 Mar 2026 13:19:00 +0100
+From: Petr Vorel <pvorel@suse.cz>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: "Darrick J. Wong" <djwong@kernel.org>,
+	Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
+	lkp@intel.com, oe-lkp@lists.linux.dev, linux-ext4@vger.kernel.org,
+	Christoph Hellwig <hch@lst.de>, ltp@lists.linux.it,
+	Amir Goldstein <amir73il@gmail.com>
+Subject: Re: [LTP] [linux-next:master] [ext4]  81d2e13a57: ltp.fanotify22.fail
+Message-ID: <20260306121900.GB519430@pevik>
+Reply-To: Petr Vorel <pvorel@suse.cz>
+References: <202602042124.87bd00e3-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|PH3PPF7708D4D9D:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3f972475-65ef-4a62-478d-08de7a84ebbd
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7053199007;
-X-Microsoft-Antispam-Message-Info: rUZjUcK3eKIf5cOulmhbdjp3X+uz1txEQ6M+N5rz966cczxu29SvkHsHnjZW1LopARAlWu2TogWYgZFVTEdmdRlozmtOCIp3Zu1TmUaebbCc8J3ZyAu5JpMnkrdY7NpnqK697w4lcOKL05/y1qev1dpKlmAsOdnjfa8FoKEm/XnOa8uJTBDmTcBj+EovWy6CM3eBgoVovm54eDDAfbXx/vRNUiSfqM8BL9SO5iZNQj/A74qNB8LCuRNkru82Q4JCyYdejw8M8UjU50690HAOi3JlKiWxbdjCSxCGxFATCBbbOxB2PptIaxWidBU4eCrzIg5+oJqzinHqBhJFDhjBVySGzwersE8bTJ62NLOIvpQClxSVfeeFByoFispoc/2hk9XZ1rgM7Jzsy2CeBeCDQVzT0QZkyFZ3aKIOvwlkinlwKRdJXKsPjqi7/dtkCapuy9obrjPkCHpPBJ1XY89S0g2wjxUI45/M+2frjzruOIN/ajGxGhWjHcKvw5OYDDlp3xR8ytAg5V/F+a7L/eEWcj5oSdG7HTdP9WTv2e8JmMbf/bIoEPdRuEGKjT7p7m+elfHxfc9YHfxBtAWQKK+MK9Gb2vtSINfQqXHwlb/fI3xWjLK1Ssy8G8QTel2xOXBjL3oTil0KBblIjTGhjEzSXr+L1oRhBSjrbRNNvw7/YFcIeGibsKrfRkKFprNQPkn6gg5Z6nz8bnpD9dZHuuK63B9Za51qkJ5b610GaExb49e5qd2cmVx6XwqKWRqNc/2G
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9kKqxMiJ/qaFjt2LT0LSLEOPWYWeTXQuPhkFCpCz0gdBLduB2dr6VzXY0J2f?=
- =?us-ascii?Q?DrtpkT9uWVA/3W/q/Un3khDYOMG/8Ex+hqq1ox6pu2R1iNFOlip8hcA3EeeR?=
- =?us-ascii?Q?XD9g0qn6Pyl1zVj5R6Y9meXeZQ5AkFtk9tjHz1aT+15EEJudUzwncxBJCD2L?=
- =?us-ascii?Q?9U+b4b2fOgFyXEjLGND1PeHmfZLokRVCb0sfaSxxATF8QMQk1Urao6bKaupW?=
- =?us-ascii?Q?pDhO6gljuRJGmEpB0pT74Oe8/vl/aADuKWxub83Lmp19qztImPN5ABmj2LJK?=
- =?us-ascii?Q?pGSS1eTb3ALczZKBR5vh8pTAhIKjQpitkS5cjI7SuwofSYhO3nqcoGa7t9Ja?=
- =?us-ascii?Q?SIGBrdNJTn1z3TwXemQGDOeVl1PH7jU47DnUN8AZHEFQzyjrtD6lUQfEOq9C?=
- =?us-ascii?Q?5YQWUzxTd3Ip7fEE5mv+rTX1FrNRoGAnDNUWmuOs7572AOIWHmTEN+BtYHmJ?=
- =?us-ascii?Q?/k1mNNAD+5Qal1Fqwz62IA8m4vNdOe5oSJ8/TmPrNrwQrPrzeWnNNFCPTjsT?=
- =?us-ascii?Q?dNI7OEylU8Z2kexBeVrP6VudMeVuZGc3hZxHJGZvuS5oQs8D2CX8JA8Sit43?=
- =?us-ascii?Q?9pUOIirjxECFSlPCqfBhx7YPS/YyjF/KGEXJNUGES9LrfeZ/hBt07QPDtv6n?=
- =?us-ascii?Q?sB6TFJjQr0bXb3c9lJ1f3jk6Y1xGOrFiuxJ7BR7+ZHeevI1xIcoZNGHnLJa8?=
- =?us-ascii?Q?qvyHVgzu8BhPZqsgzuSs+cYA9r65x8iCquuegKg6xN8lYgL8j8p4Bky9NyIu?=
- =?us-ascii?Q?xGvQFxbYqu+3eADumOrIjjxxZebO0zHqp2vkfUMp+7npEWVq+tzFvr0MT2/P?=
- =?us-ascii?Q?/XtFSiP0wcAGhzlvbFyDsh+yTfsq/bHfjK7O6ESTI5YacE9XMe3B4uPxOxxJ?=
- =?us-ascii?Q?r+LJzUUJfYpIxHvfRDItlWOspz8EnSEJlr0K/zF+GCPklU2vCJSYQ0CJbPA5?=
- =?us-ascii?Q?9q2oQ04FZvGZrWRv6GhoqbzhIKrY4F48O+s+c06uMq3Otxtjk/2kAAGLmfOl?=
- =?us-ascii?Q?sHOvKsgOcNlgWhLhaIbqMGx2UYLuG4MFwtwJa8Q9vxivcuy6QPb5tdT8tFub?=
- =?us-ascii?Q?ZJtssOH1e5o+bllQEmwpe+p7r+NSqyImyjScQLKFPagejuhQGTVjKEMPUD+n?=
- =?us-ascii?Q?ItXVrSM1TlgQPQhA1DXVby0JIS5YEyX5/jFdMdhUiw/ana34NrSuj7nY23af?=
- =?us-ascii?Q?ggUvHaMrXPW1nX3t36pVv/ZokkaePeSqlFF22n1wgHWpKu6NMeWgJRyBvdz+?=
- =?us-ascii?Q?Pgslv3wi7A5iUOqwy4Elut+5+vc4qCWn6+njEYDzXsr+ksYfh4nlR/svbFWa?=
- =?us-ascii?Q?nPkZ52eUnCs4edxb/76MZomafo2kCyTwFaYU3scnF2IdxRjorgOMRIVloXXC?=
- =?us-ascii?Q?ZItPrK9zjJ8+lLu8ONJgvi+BzHH1DvAMq+mREaidbfVWbexTcUwgyOpbUMef?=
- =?us-ascii?Q?CRlN6Mgms590iokhVlMXCeDofqn/F9ggSGT4un/FdV2w8hIsHkD37FxIFyLm?=
- =?us-ascii?Q?kW2rI/kZnYVZvY2o8goSgqKU4bk9H2J7hpz+gzRu/bMXxVAltyIM8nMC/Uq0?=
- =?us-ascii?Q?hScWMDKphRZaft0/M5NEDCt2NJEwby7NAWRhzWHREjc3MnmK9Y1Ry1aYiBiF?=
- =?us-ascii?Q?pGnt6Y6+D007uwXiXd+GI4LIJnsIVdNXr9tOd4TuxBIOfbsOWwhVWcnYuWU0?=
- =?us-ascii?Q?xseUL59yM3eXO4fH9tQq+gMJlkaLvtDiNW3MCltrLOyVII6h+6HAJF0HZCSn?=
- =?us-ascii?Q?XLVtIDCDug=3D=3D?=
-X-Exchange-RoutingPolicyChecked: biWGBg/fvcMW+1ohedHzPE3q8eKpkF1BAp3svqvyg7wKhF/S1zPJuaDYb5pWltC0ipZMdTAPezzxJgxn0vNveGnqu6KFyg2qy+aBzmwgTciCJwWacGvXW6A45ORL3lhiN0VnbH9fesd1DbntQR9PU4xxUSQgA+kyhqjpqu6Ph1ISxghkOzxV3QJVE0j3A+lPZGtqzCpCGS9GFhpOQvXo8S5YNtFpxS5HAsM4N8BB/V8oocZD21zFCiWoZv3f7mW/oSJ5j556rXyn5OyhABla6elHbhbp0RhF8X0WDyo1aNyFp3Xbg7SHITZaTjYV8TSkWjUtUsZTJQnKTbM3ZfFU2A==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3f972475-65ef-4a62-478d-08de7a84ebbd
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Mar 2026 07:00:45.0307
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qM/1VQfjxxth8QnxIfNECeX94YYDk3qz3zkauD5hk8U9wsda4e4BmvR0nyrjOsjGayWdmC2tvTYJyOqCau0c4w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH3PPF7708D4D9D
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202602042124.87bd00e3-lkp@intel.com>
+X-Rspamd-Action: no action
+X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
+X-Spamd-Result: default: False [-3.71 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	MID_RHS_NOT_FQDN(0.50)[];
+	HAS_REPLYTO(0.30)[pvorel@suse.cz];
+	R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	ARC_NA(0.00)[];
+	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	FUZZY_RATELIMITED(0.00)[rspamd.com];
+	TO_DN_SOME(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	FREEMAIL_CC(0.00)[kernel.org,suse.cz,intel.com,lists.linux.dev,vger.kernel.org,lst.de,lists.linux.it,gmail.com];
+	DKIM_TRACE(0.00)[suse.cz:+];
+	RCVD_COUNT_TWO(0.00)[2];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	RCVD_TLS_ALL(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns,intel.com:email,suse.cz:dkim,suse.cz:replyto,01.org:url];
+	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	RCPT_COUNT_SEVEN(0.00)[10];
+	MISSING_XM_UA(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	REPLYTO_EQ_FROM(0.00)[]
+X-Rspamd-Queue-Id: 2A6CE3E7F0
+X-Spam-Flag: NO
+X-Spam-Score: -3.71
+X-Spam-Level: 
+
+Hi all,
+
+[ Cc Amir, although this might be more related to ext4 than fanotify ]
+
+Kind regards,
+Petr
+
+> Hello,
+
+> kernel test robot noticed "ltp.fanotify22.fail" on:
+
+> commit: 81d2e13a57c9d73582527966fae24d4fd73826ca ("ext4: convert to new fserror helpers")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+
+> [test failed on linux-next/master 33a647c659ffa5bdb94abc345c8c86768ff96215]
+
+> in testcase: ltp
+> version: 
+> with following parameters:
+
+> 	disk: 1HDD
+> 	fs: btrfs
+> 	test: syscalls-02/fanotify22
+
+
+> config: x86_64-rhel-9.4-ltp
+> compiler: gcc-14
+> test machine: 4 threads 1 sockets Intel(R) Core(TM) i3-3220 CPU @ 3.30GHz (Ivy Bridge) with 8G memory
+
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202602042124.87bd00e3-lkp@intel.com
+
+
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20260204/202602042124.87bd00e3-lkp@intel.com
+
+
+> user  :notice: [  423.546026] [    T265] 	Hostname:   lkp-ivb-d04
+
+> user  :notice: [  423.554417] [    T265] 	Python:     3.13.5 (main, Jun 25 2025, 18:55:22) [GCC 14.2.0]
+
+> user  :notice: [  423.570800] [    T265] 	Directory:  /tmp/kirk.root/tmpefuyb6o0
 
 
 
-Hello,
+> user  :notice: [  423.584852] [    T265] Connecting to SUT: default
 
-kernel test robot noticed "BUG:kernel_NULL_pointer_dereference,address" on:
-
-commit: 1445ef3d5f2fefd1fcedb68cff3fff0a33994791 ("[PATCH 3/3] ptdesc: Account page tables to memcgs again")
-url: https://github.com/intel-lab-lkp/linux/commits/Matthew-Wilcox-Oracle/memcg-Add-memcg_stat_mod/20260226-003144
-base: https://git.kernel.org/cgit/linux/kernel/git/akpm/mm.git mm-everything
-patch link: https://lore.kernel.org/all/20260225162319.315281-4-willy@infradead.org/
-patch subject: [PATCH 3/3] ptdesc: Account page tables to memcgs again
-
-in testcase: boot
-
-config: x86_64-randconfig-r052-20250414
-compiler: gcc-14
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 32G
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
+> user  :warn  : [  423.586640] [   T5587] /lkp/benchmarks/ltp/kirk[5563]: fanotify22: start (command: fanotify22)
 
 
+> user  :notice: [  423.605665] [    T265] Starting suite: temp_single_test
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202603051407.fde83fdb-lkp@intel.com
+> user  :notice: [  423.613894] [    T265] ---------------------------------
 
+> kern  :info  : [  423.633832] [   T5592] loop: module loaded
+> kern  :info  : [  423.657047] [   T5591] loop0: detected capacity change from 0 to 614400
+> kern  :err   : [  423.821741] [   T5591] /dev/zero: Can't lookup blockdev
+> kern  :info  : [  424.033575] [   T5591] EXT4-fs (loop0): mounted filesystem 6b5acef8-3cdb-48f2-8af0-b27b5ee321e9 r/w with ordered data mode. Quota mode: none.
+> kern  :info  : [  424.098309] [   T5607] EXT4-fs (loop0): unmounting filesystem 6b5acef8-3cdb-48f2-8af0-b27b5ee321e9.
+> kern  :info  : [  424.345598] [   T5607] EXT4-fs (loop0): mounted filesystem 6b5acef8-3cdb-48f2-8af0-b27b5ee321e9 r/w with ordered data mode. Quota mode: none.
+> kern  :crit  : [  424.414068] [   T5607] EXT4-fs error (device loop0): __ext4_remount:6794: comm fanotify22: Abort forced by user
+> kern  :err   : [  424.423984] [   T5607] Aborting journal on device loop0-8.
+> kern  :crit  : [  424.463989] [   T5607] EXT4-fs (loop0): Remounting filesystem read-only
+> kern  :info  : [  424.470416] [   T5607] EXT4-fs (loop0): re-mounted 6b5acef8-3cdb-48f2-8af0-b27b5ee321e9 ro.
+> kern  :info  : [  424.479591] [   T5607] EXT4-fs (loop0): unmounting filesystem 6b5acef8-3cdb-48f2-8af0-b27b5ee321e9.
+> kern  :warn  : [  424.490528] [   T5607] EXT4-fs (loop0): warning: mounting fs with errors, running e2fsck is recommended
+> kern  :info  : [  424.539426] [   T5607] EXT4-fs (loop0): mounted filesystem 6b5acef8-3cdb-48f2-8af0-b27b5ee321e9 r/w with ordered data mode. Quota mode: none.
+> kern  :crit  : [  424.552662] [   T5607] EXT4-fs error (device loop0): ext4_lookup:1785: inode #32386: comm fanotify22: iget: bogus i_mode (377)
+> kern  :info  : [  424.617262] [   T5607] EXT4-fs (loop0): unmounting filesystem 6b5acef8-3cdb-48f2-8af0-b27b5ee321e9.
+> kern  :warn  : [  424.703481] [   T5607] EXT4-fs (loop0): warning: mounting fs with errors, running e2fsck is recommended
+> kern  :info  : [  424.752431] [   T5607] EXT4-fs (loop0): mounted filesystem 6b5acef8-3cdb-48f2-8af0-b27b5ee321e9 r/w with ordered data mode. Quota mode: none.
+> kern  :crit  : [  424.765440] [   T5607] EXT4-fs error (device loop0): ext4_lookup:1777: inode #32385: comm fanotify22: bad inode number: 1
+> kern  :crit  : [  424.776331] [   T5607] EXT4-fs error (device loop0): ext4_lookup:1785: inode #32386: comm fanotify22: iget: bogus i_mode (377)
+> kern  :info  : [  424.845037] [   T5607] EXT4-fs (loop0): unmounting filesystem 6b5acef8-3cdb-48f2-8af0-b27b5ee321e9.
+> kern  :warn  : [  424.928434] [   T5607] EXT4-fs (loop0): warning: mounting fs with errors, running e2fsck is recommended
+> kern  :info  : [  424.985535] [   T5607] EXT4-fs (loop0): mounted filesystem 6b5acef8-3cdb-48f2-8af0-b27b5ee321e9 r/w with ordered data mode. Quota mode: none.
+> kern  :crit  : [  424.998543] [   T5607] EXT4-fs error (device loop0): ext4_lookup:1785: inode #32386: comm fanotify22: iget: bogus i_mode (377)
+> kern  :crit  : [  425.115411] [   T5607] EXT4-fs error (device loop0): __ext4_remount:6794: comm fanotify22: Abort forced by user
+> kern  :err   : [  425.125337] [   T5607] Aborting journal on device loop0-8.
+> kern  :crit  : [  425.191808] [   T5607] EXT4-fs (loop0): Remounting filesystem read-only
+> kern  :info  : [  425.198225] [   T5607] EXT4-fs (loop0): re-mounted 6b5acef8-3cdb-48f2-8af0-b27b5ee321e9 ro.
+> kern  :info  : [  425.207311] [   T5607] EXT4-fs (loop0): unmounting filesystem 6b5acef8-3cdb-48f2-8af0-b27b5ee321e9.
+> kern  :warn  : [  425.218247] [   T5607] EXT4-fs (loop0): warning: mounting fs with errors, running e2fsck is recommended
+> kern  :info  : [  425.255422] [   T5607] EXT4-fs (loop0): mounted filesystem 6b5acef8-3cdb-48f2-8af0-b27b5ee321e9 r/w with ordered data mode. Quota mode: none.
+> kern  :info  : [  425.300422] [   T5591] EXT4-fs (loop0): unmounting filesystem 6b5acef8-3cdb-48f2-8af0-b27b5ee321e9.
+> user  :notice: [  425.421952] [    T265] \x1b[1;37mfanotify22: \x1b[0m\x1b[1;31mfail\x1b[0m | \x1b[1;33mtainted\x1b[0m  (1.808s)
 
+> user  :warn  : [  425.427743] [   T5635] /lkp/benchmarks/ltp/kirk[5563]: fanotify22: end (returncode: 1)
+> user  :notice: [  425.447575] [    T265]                                                                                                                                 
 
-[   14.109191][    T1] BUG: kernel NULL pointer dereference, address: 0000000000000880
-[   14.109653][    T1] #PF: supervisor read access in kernel mode
-[   14.109989][    T1] #PF: error_code(0x0000) - not-present page
-[   14.110322][    T1] PGD 12a8ff067 P4D 12a8ff067 PUD 0
-[   14.110622][    T1] Oops: Oops: 0000 [#1] SMP
-[   14.110878][    T1] CPU: 0 UID: 0 PID: 1 Comm: systemd Not tainted 7.0.0-rc1-00154-g1445ef3d5f2f #1 PREEMPT(full)
-[   14.111462][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[   14.112082][    T1] RIP: 0010:mem_cgroup_lruvec (include/linux/memcontrol.h:729 (discriminator 1))
-[   14.112396][    T1] Code: 74 09 48 8d 83 40 22 00 00 eb 1f 4d 85 e4 75 07 4c 8b 25 bd c3 1e 02 48 63 83 b8 1e 00 00 49 8b 84 c4 58 07 00 00 48 83 c0 40 <48> 39 98 40 08 00 00 74 07 48 89 98 40 08 00 00 5b 41 5c 5d c3 cc
-All code
-========
-   0:	74 09                	je     0xb
-   2:	48 8d 83 40 22 00 00 	lea    0x2240(%rbx),%rax
-   9:	eb 1f                	jmp    0x2a
-   b:	4d 85 e4             	test   %r12,%r12
-   e:	75 07                	jne    0x17
-  10:	4c 8b 25 bd c3 1e 02 	mov    0x21ec3bd(%rip),%r12        # 0x21ec3d4
-  17:	48 63 83 b8 1e 00 00 	movslq 0x1eb8(%rbx),%rax
-  1e:	49 8b 84 c4 58 07 00 	mov    0x758(%r12,%rax,8),%rax
-  25:	00 
-  26:	48 83 c0 40          	add    $0x40,%rax
-  2a:*	48 39 98 40 08 00 00 	cmp    %rbx,0x840(%rax)		<-- trapping instruction
-  31:	74 07                	je     0x3a
-  33:	48 89 98 40 08 00 00 	mov    %rbx,0x840(%rax)
-  3a:	5b                   	pop    %rbx
-  3b:	41 5c                	pop    %r12
-  3d:	5d                   	pop    %rbp
-  3e:	c3                   	ret
-  3f:	cc                   	int3
-
-Code starting with the faulting instruction
-===========================================
-   0:	48 39 98 40 08 00 00 	cmp    %rbx,0x840(%rax)
-   7:	74 07                	je     0x10
-   9:	48 89 98 40 08 00 00 	mov    %rbx,0x840(%rax)
-  10:	5b                   	pop    %rbx
-  11:	41 5c                	pop    %r12
-  13:	5d                   	pop    %rbp
-  14:	c3                   	ret
-  15:	cc                   	int3
-[   14.113448][    T1] RSP: 0018:ffff888101467c10 EFLAGS: 00210202
-[   14.113783][    T1] RAX: 0000000000000040 RBX: ffffffff83708880 RCX: 0000000000000001
-[   14.114217][    T1] RDX: 0000000000000001 RSI: ffffffff83708880 RDI: ffff88812a845f82
-[   14.114652][    T1] RBP: ffff888101467c20 R08: 0000000000000000 R09: 0000000000000000
-[   14.115087][    T1] R10: 0000000000000000 R11: 0000000000000000 R12: ffff88812a845f82
-[   14.115979][    T1] R13: ffff888105fdd3a8 R14: ffff888105fdd740 R15: ffff888101442000
-[   14.116421][    T1] FS:  0000000000000000(0000) GS:ffff88889bc98000(0063) knlGS:00000000f72f8840
-[   14.116911][    T1] CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
-[   14.117276][    T1] CR2: 0000000000000880 CR3: 000000012b816000 CR4: 00000000000406f0
-[   14.117713][    T1] Call Trace:
-[   14.117901][    T1]  <TASK>
-[   14.118070][    T1]  memcg_stat_mod (mm/memcontrol.c:804)
-[   14.118328][    T1]  __pagetable_ctor (include/linux/mm.h:3547)
-[   14.118595][    T1]  pgd_alloc (include/asm-generic/pgalloc.h:291 arch/x86/mm/pgtable.c:314 arch/x86/mm/pgtable.c:328)
-[   14.118863][    T1]  mm_init+0x210/0x390
-[   14.119129][    T1]  dup_mm+0x45/0xe0
-[   14.119401][    T1]  copy_process (kernel/fork.c:1587 (discriminator 1) kernel/fork.c:2228 (discriminator 1))
-[   14.119661][    T1]  ? free_filename (fs/namei.c:148)
-[   14.119930][    T1]  kernel_clone (include/linux/random.h:26 kernel/fork.c:2660)
-[   14.120200][    T1]  __do_compat_sys_ia32_clone (arch/x86/kernel/sys_ia32.c:255)
-[   14.120519][    T1]  __ia32_compat_sys_ia32_clone (arch/x86/kernel/sys_ia32.c:240)
-[   14.120837][    T1]  ia32_sys_call (kbuild/obj/consumer/x86_64-randconfig-r052-20250414/./arch/x86/include/generated/asm/syscalls_32.h:121)
-[   14.121105][    T1]  __do_fast_syscall_32 (arch/x86/entry/syscall_32.c:83 arch/x86/entry/syscall_32.c:307)
-[   14.121398][    T1]  do_fast_syscall_32 (arch/x86/entry/syscall_32.c:332 (discriminator 1))
-[   14.121671][    T1]  do_SYSENTER_32 (arch/x86/entry/syscall_32.c:371)
-[   14.121926][    T1]  entry_SYSENTER_compat_after_hwframe (arch/x86/entry/entry_64_compat.S:127)
-[   14.122298][    T1] RIP: 0023:0xf7f9c38c
-[   14.122527][    T1] Code: d2 74 05 c1 e8 0c 89 02 8b 5d fc 31 c0 c9 c3 cc 90 90 90 90 90 90 90 90 90 90 90 90 90 90 0f 1f 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 cc 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 58 b8
-All code
-========
-   0:	d2 74 05 c1          	shlb   %cl,-0x3f(%rbp,%rax,1)
-   4:	e8 0c 89 02 8b       	call   0xffffffff8b028915
-   9:	5d                   	pop    %rbp
-   a:	fc                   	cld
-   b:	31 c0                	xor    %eax,%eax
-   d:	c9                   	leave
-   e:	c3                   	ret
-   f:	cc                   	int3
-  10:	90                   	nop
-  11:	90                   	nop
-  12:	90                   	nop
-  13:	90                   	nop
-  14:	90                   	nop
-  15:	90                   	nop
-  16:	90                   	nop
-  17:	90                   	nop
-  18:	90                   	nop
-  19:	90                   	nop
-  1a:	90                   	nop
-  1b:	90                   	nop
-  1c:	90                   	nop
-  1d:	90                   	nop
-  1e:	0f 1f 00             	nopl   (%rax)
-  21:	51                   	push   %rcx
-  22:	52                   	push   %rdx
-  23:	55                   	push   %rbp
-  24:	89 e5                	mov    %esp,%ebp
-  26:	0f 34                	sysenter
-  28:	cd 80                	int    $0x80
-  2a:*	5d                   	pop    %rbp		<-- trapping instruction
-  2b:	5a                   	pop    %rdx
-  2c:	59                   	pop    %rcx
-  2d:	c3                   	ret
-  2e:	cc                   	int3
-  2f:	90                   	nop
-  30:	90                   	nop
-  31:	90                   	nop
-  32:	90                   	nop
-  33:	90                   	nop
-  34:	90                   	nop
-  35:	90                   	nop
-  36:	90                   	nop
-  37:	90                   	nop
-  38:	90                   	nop
-  39:	90                   	nop
-  3a:	90                   	nop
-  3b:	90                   	nop
-  3c:	90                   	nop
-  3d:	90                   	nop
-  3e:	58                   	pop    %rax
-  3f:	b8                   	.byte 0xb8
-
-Code starting with the faulting instruction
-===========================================
-   0:	5d                   	pop    %rbp
-   1:	5a                   	pop    %rdx
-   2:	59                   	pop    %rcx
-   3:	c3                   	ret
-   4:	cc                   	int3
-   5:	90                   	nop
-   6:	90                   	nop
-   7:	90                   	nop
-   8:	90                   	nop
-   9:	90                   	nop
-   a:	90                   	nop
-   b:	90                   	nop
-   c:	90                   	nop
-   d:	90                   	nop
-   e:	90                   	nop
-   f:	90                   	nop
-  10:	90                   	nop
-  11:	90                   	nop
-  12:	90                   	nop
-  13:	90                   	nop
-  14:	58                   	pop    %rax
-  15:	b8                   	.byte 0xb8
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20260305/202603051407.fde83fdb-lkp@intel.com
+> user  :notice: [  425.463971] [    T265] Execution time: 1.866s
 
 
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+> user  :notice: [  425.476018] [    T265] 	Suite:       temp_single_test
 
+> user  :notice: [  425.483786] [    T265] 	Total runs:  1
+
+> user  :notice: [  425.490690] [    T265] 	Runtime:     1.808s
+
+> user  :notice: [  425.497330] [    T265] 	Passed:      3
+
+> user  :notice: [  425.503518] [    T265] 	Failed:      1
+
+> user  :notice: [  425.509637] [    T265] 	Skipped:     0
+
+> user  :notice: [  425.515735] [    T265] 	Broken:      0
+
+> user  :notice: [  425.521820] [    T265] 	Warnings:    0
+
+> user  :notice: [  425.529960] [    T265] 	Kernel:      Linux 6.19.0-rc1-00006-g81d2e13a57c9 #1 SMP PREEMPT_DYNAMIC Sat Jan 31 20:49:54 CST 2026
+
+> user  :notice: [  425.543805] [    T265] 	Machine:     unknown
+
+> user  :notice: [  425.550576] [    T265] 	Arch:        x86_64
+
+> user  :notice: [  425.557336] [    T265] 	RAM:         6899604 kB
+
+> user  :notice: [  425.564451] [    T265] 	Swap:        0 kB
+
+> user  :notice: [  425.571112] [    T265] 	Distro:      debian 13
+
+
+
+> user  :notice: [  425.582858] [    T265] Disconnecting from SUT: default
+
+> user  :notice: [  425.590377] [    T265] Session stopped
