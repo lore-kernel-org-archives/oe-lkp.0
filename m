@@ -1,346 +1,221 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A5453D565D
-	for <oe-lkp@lists.linux.dev>; Tue, 10 Mar 2026 07:24:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.21
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773127458; cv=fail; b=BHrsHTKB0Dy0xEMbkV/+7AD8jSjsXd5/I7i+VHw9tFpuDN3xMR0WMrZch1L7x3oKCoyzoEv7tGj2b7/o8nMPxB7vM1IIwOpvhn8s5l4dzArosDgD1woA7F1vHbVJrmmECRMn6wm3RPv9rGPP7Ifii3vC3pT/0XLVSFHXh6CurPs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773127458; c=relaxed/simple;
-	bh=Q6gdGzBjkEr28FaFLHfyKH7rBfhdW+v63vzPu81yPXY=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=sH7yyxzRRFUvY0DbWJiKVDFYj24SFq/u0eihlVDoAe99M5WzqEv+0Ra8A0wLVJz5CoWc9gRYJY9B5cuSodDYo+Cc6xU9S/MM/MWvRYfYf3UiGp8w2kxvSDmxV/ujHwpMx8Ovdh1lJ5eBhqMGHzto6tSX7sLuHTkQoOr8CXpwYdA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TwjO0g5z; arc=fail smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F372536495B
+	for <oe-lkp@lists.linux.dev>; Tue, 10 Mar 2026 07:58:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773129517; cv=none; b=Ke6jFTWsFMM4YHukZ+Fa2HIjB1vwvbKggvRcEr8OojfZtwfNkl/CmEaiUUt9f14YuwjbIBFZ9TTVSdUoyF5SwYqz8LehxrXUKBR7t3dQaEf2NMEFdtTR4PMNcIEMUYR9IteBzsV06hBcbfIXafNPZkDBVdy42/PPZRuH59LNt9Q=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773129517; c=relaxed/simple;
+	bh=dJACL1xbOca8NL+RsOamc/5iSH56+g8ukHRHQpWpNKI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Xnr4w92GIbO5IIYpwFV0ohGug+z8nn0Iyhl6AUUlVOWvLue4D5o/xottZqn83uI98x2+7H7dGDPyOxdQi0AND5B4f0dUXtpwl/HnYy/4dL/22NmZoNZVV42AKNcEMV8hmdtXmdOrY+JrLo9Ir105wFM1n+qISiFIpZNwz6SHLL8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=ByRxBFSt; arc=none smtp.client-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TwjO0g5z"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773127457; x=1804663457;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   mime-version;
-  bh=Q6gdGzBjkEr28FaFLHfyKH7rBfhdW+v63vzPu81yPXY=;
-  b=TwjO0g5zdhcHZoSKu+wDu8Yxyw0yOBrIsp5JRt9nhzQMRkuTiisu7xaV
-   ZPYBmTSVcbIBzcwjJGXhhPMf0jXhkONNQ1GscxyfvefVme+pVduxzuAqF
-   s415b8kopb4nL/gvRdh/ZcACU/XJdtHHGvYAHMruXxBdOWogMUbCMqdal
-   rAMziK8Xa2PPAVEYCNhL3iUT6LTHjjguJreOIQNbK8LK4JdylpsxR0V2p
-   uJJmFTcqFa0ureDmJJhKcI1DmoTNUOxAGVk4GNoWQwQEmdsrvMA1VT4Mw
-   nV30VoTmSdTpLAYMQDksxqGJW0AVZ99eU3f+n3bWQap9UgGoImwO5aP0+
-   Q==;
-X-CSE-ConnectionGUID: LoreMQFRT2SQqzYPb2s2Cg==
-X-CSE-MsgGUID: 5QtfMXNfST2FS+bd6wz2hA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11724"; a="74042000"
-X-IronPort-AV: E=Sophos;i="6.23,111,1770624000"; 
-   d="scan'208";a="74042000"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2026 00:24:16 -0700
-X-CSE-ConnectionGUID: l4d7Z50lQVyzcJmCOD1/9A==
-X-CSE-MsgGUID: 2U84qiPiT2itrDl7s9eLmQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,111,1770624000"; 
-   d="scan'208";a="218015735"
-Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
-  by fmviesa008.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2026 00:24:15 -0700
-Received: from ORSMSX903.amr.corp.intel.com (10.22.229.25) by
- ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Tue, 10 Mar 2026 00:24:14 -0700
-Received: from ORSEDG903.ED.cps.intel.com (10.7.248.13) by
- ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Tue, 10 Mar 2026 00:24:14 -0700
-Received: from SN4PR2101CU001.outbound.protection.outlook.com (40.93.195.32)
- by edgegateway.intel.com (134.134.137.113) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Tue, 10 Mar 2026 00:24:13 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=HpKQHUl3jRnx0KcMNqPaFu4P+lyiYvaG65/O5MIhQcFozhaT5iJhTBrQ+j+alol5fFMLmttlcImUytShxfrvT7VSvalB5mrbFxUSPTRt05ISzsHMSKo7+oUpFPP7VCqVy2m6IqRjdNBuBiu2QyyoM9UyyaLEfNMWWlGeu+6b7TpmG2Z/1ZvmhH2a8HcblJT9VeQMuqnDlmVjOBjrALFiRxjojPe4JGZSu9MkK3+qk8tCshvD+NaZ0bA7gmPIsHXZdji8QY4F0hh/TkCperMhKzy+jMluHUHSeN6GpoGfEl4pWYCYRlr0bGMaOEr71WbhmSlXFY2/AK6BN6oDctMWBg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KpXmOQhJ3sL1UpmJly60whFZCDkostnJo92E4Hsv4QE=;
- b=jM6huFPll0yGt6hgPcH1ERlHCK49f5cDMal0/FaL8AiSxcEO+HmJPL6prHSvSK+Iru57aK5WnlBRjPf+rBPvj5iVtUxEmOXp4v4/+4b8ImtQBu7Rm65/d0BibeocTgoI67oKkn9CISV3UfFTDGGBH2DyjBwLBbx+pO2e10w0aJFk1LFsDz9WwPD1o+PThppdqs/6NZUeZ1TsEaK+lB2SGOjgWN34ymimBRZYwdJhtwrwilG4F+MulwOdo0kMLBim3tDW46Jro+tAOoJROCXGwS6iouj6v56q6B+TF2JPAnNiqsyfpsR6Db9iJuuN+iL/Yw2+SAJF2dDplyo+zSDRtw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from BN6PR11MB4033.namprd11.prod.outlook.com (2603:10b6:405:78::25)
- by SN7PR11MB7592.namprd11.prod.outlook.com (2603:10b6:806:343::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9700.11; Tue, 10 Mar
- 2026 07:24:11 +0000
-Received: from BN6PR11MB4033.namprd11.prod.outlook.com
- ([fe80::2c28:2983:2947:24b1]) by BN6PR11MB4033.namprd11.prod.outlook.com
- ([fe80::2c28:2983:2947:24b1%6]) with mapi id 15.20.9700.010; Tue, 10 Mar 2026
- 07:24:11 +0000
-Date: Tue, 10 Mar 2026 15:24:00 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Jan Kara <jack@suse.cz>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-mm@kvack.org>,
-	<ltp@lists.linux.it>, <linux-fsdevel@vger.kernel.org>, Christian Brauner
-	<brauner@kernel.org>, Al Viro <viro@zeniv.linux.org.uk>,
-	<linux-ext4@vger.kernel.org>, Ted Tso <tytso@mit.edu>, "Tigran A. Aivazian"
-	<aivazian.tigran@gmail.com>, David Sterba <dsterba@suse.com>, OGAWA Hirofumi
-	<hirofumi@mail.parknet.co.jp>, Muchun Song <muchun.song@linux.dev>, "Oscar
- Salvador" <osalvador@suse.de>, David Hildenbrand <david@kernel.org>,
-	<linux-aio@kvack.org>, Benjamin LaHaise <bcrl@kvack.org>, Jan Kara
-	<jack@suse.cz>, <oliver.sang@intel.com>
-Subject: Re: [PATCH 12/32] hugetlbfs: Stop using i_private_data
-Message-ID: <202603101532.fecbeae3-lkp@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20260303103406.4355-44-jack@suse.cz>
-X-ClientProxiedBy: TPYP295CA0055.TWNP295.PROD.OUTLOOK.COM
- (2603:1096:7d0:8::15) To BN6PR11MB4033.namprd11.prod.outlook.com
- (2603:10b6:405:78::25)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="ByRxBFSt"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-48538c5956bso20984785e9.0
+        for <oe-lkp@lists.linux.dev>; Tue, 10 Mar 2026 00:58:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1773129514; x=1773734314; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=ld4ELcIlsbp6AsYdibpY6RsTU9tdCfqscQU2GvVbvM8=;
+        b=ByRxBFStErvpaZewUUToYDv24WZxbGhh5R04Wl2GlMO5dddnD4ziGtaitEl5DmiK7K
+         4iMtkaiqySoP7pS/eoDdZAdOoQiHM3A/XSwy+90ymY8qiqs7jYoRqWGoxfRTIDMIPZmU
+         O570YhBsu1HSqEkboUpnJrqaqjGsl2h0e8oMZBWE3zJqJjTRmrelptZSfWLkWtBcqv44
+         czTITsqc3bSOH/Rnh/IxYYJxrBhTCFA/zVSVCGhXdzEC+V8mVcCMbJJHJEc5NWGL94P8
+         eYv237fJM46sJLuLxT9udAeyOv+LQsNUSBx2M5zySubL4iEx1Bzy5ujD8UTA58l88vi0
+         HdjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1773129514; x=1773734314;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ld4ELcIlsbp6AsYdibpY6RsTU9tdCfqscQU2GvVbvM8=;
+        b=VFkSF/jyj5Zz9EkqOMyLj2cxAZzdcerAKoNbulCK76OH3qZ9SZ56pGtG8r9D2/Bqmq
+         MsyVBCV7b1k3GHx1W16sPw0+uD3cJbAa/RoGLbszeBLUHt7qdVFX3kxfdsGdf8N5j3S4
+         HagedOIjtqqjBTER5ZQEq6H/cpgDf/4M6eCWVhEJOVE20TWjuVXtzM714psMYFz/5jfZ
+         /NxNBOu+wmAA/93tia2T1DNG0tm5CYGOXIX/PnQfEDw6eGC0iuOppKnJlJuqTfRKuLCW
+         V0VQlDUZo3O7l09CWFybsiJnKemeiCFlZX+XOXis0bX0WqTot4JA66UbbpCqTndp5rZ9
+         HcfQ==
+X-Gm-Message-State: AOJu0YxKQkYipo52jLH1TNxtv5hW9dD0fR5pTND6OFdEAdVEgqAyya7m
+	52olbFjEdHri7hjbHhREmZvUVJG4FRlVwubVqtekbK6UGnm9rUxE38EmPrnp32EYPhk=
+X-Gm-Gg: ATEYQzwiHQitzeNjTizJgxdzrJrawUtx3S2OuQdXvg6FdwPDdj1pOnlbpR7YHNEteiA
+	tiZZe+DwrBQSOL7Orx0UE5sj0pkA1PD85HoC80+H9Gg1DmdkBNu55tFfCi/JFiC1nDN8olyVTaB
+	6sBqrxv+uS1sb3xkT5WeqfU9loSGj9V9MHmW3RZLHj1tN98tV7AUHZzCzmlmqfMDKY+sdTR8uJz
+	XAHgpCe/o+6j1L9afbZCHJVZlDH6ihthlpZCCOe2kTTcc9TyBqw8wgMUt3RHT2XHXtTjcmjy2KS
+	/3+U0N7RbVK3367rnlv2/gUWPpNs5MSB63bF2gX0VgHO5pqfH6PsUq//Tlh/PKRIbFSBcb7hnRJ
+	fPpd0l6NymhCcq599/bnH82orCizhMLSOcubqBSmkSZkgVjZyUFSxegzjIbpit1YQ4/XjmapzyD
+	ddhV3XafutnZKCujpqJcYJ+pJDW8Hicmlg0l5E3cNho2GWtf7UVRaSwcN+3EFucw==
+X-Received: by 2002:a05:600c:c178:b0:485:343b:38d with SMTP id 5b1f17b1804b1-485419dabdcmr42533045e9.5.1773129514183;
+        Tue, 10 Mar 2026 00:58:34 -0700 (PDT)
+Received: from ?IPV6:2403:580d:fda1::299? (2403-580d-fda1--299.ip6.aussiebb.net. [2403:580d:fda1::299])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c739e16cebbsm10993260a12.16.2026.03.10.00.58.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Mar 2026 00:58:33 -0700 (PDT)
+Message-ID: <35bb4d50-012a-4bbe-ae4c-eb44b69d4cf3@suse.com>
+Date: Tue, 10 Mar 2026 18:28:28 +1030
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN6PR11MB4033:EE_|SN7PR11MB7592:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2102a4ff-4d67-4d66-509f-08de7e760685
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|7416014|376014|7053199007;
-X-Microsoft-Antispam-Message-Info: pmSeKy3XcbYFaItN5JCigQb7zp6pOwKzMnc6OjQKUR9S8/XqyHCgzp8PkpoDvW6GoSJnZ4VOxwcb3y/G0YJrVAcNqT43fTr39Re7o+A10GC4XTAeONWbenGo+/A/JQXRUYwadKVU9f6d1FeeqC5D43u8TUx68Y3e+xLIkpsr4VAxn43iTaMY5ajTlw6t5BsaBpQ5GM3xlTIlImwbiWnjXe9L1tBr4PIRhF/X83jXeR2/yPZyDJJt0B1S+y2omSKPiRSXuQO7kKNWehmtigJh9k7r2NhteGkKVDKFBoVWnJF8ejCmkbPSrXvEIkUZI+AxHfs/ep3egudYJvjOIYiiAhyWra9bo0GJHh/ogJGRAVjwfBmEKsl0LVkHElcGsR5iYxm6yt/GhFD3RiTW8M2gV0xOaB3qNeiVTX8J2+ndzQ9Q6I1XUGVKioQ41zWOGvDp/cC7y0TLaadCuJ3GAS8DqWgUB62zLA3VZVIqaGeu37u3t7RVX0AnWURgXsk20UOIEPwfp0ehuiI9BBUQ2BrlaSPkRAQqdyvFOcyh0Q8ZAyHRlnTSP0gF+qwzKKCFIw1TdOVOkOPt6CpJgnLUzVOPbXSjm7WTNmK7gJ6vPCM1qUyqDT90ejFhUpH6hTK+q9qo2PpvX1Xb0zadpGa66NWe13ln3THXJeDjudaNCm5iAR7NXpt58Tw5PR+scf7d1CU/
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR11MB4033.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Dj/lLYIDkg7cjqoGCMJmmujXBKv7+MvHnV/6pWJdxNJlv8KnNNHPNHlKD167?=
- =?us-ascii?Q?7TRpeWb+XQV3nMZB+MK/OcYR7KV7Z0SE0iW2YWQ4hH6aubAh6nV/ZeEeN2dM?=
- =?us-ascii?Q?ixiqSEhFHI8D3jbW79vzxwA7NJaCH41uaUtI2k1B5DCRhAXPZTQH/uGYALdH?=
- =?us-ascii?Q?7HFoUUb9/cW1lzFSpgI0YkytUL8xsHkndZ8JMlZ2jrmI1qlgunISbkD7DR7/?=
- =?us-ascii?Q?5sAC7I5ADXA71h6bAuxq3Xb6IIkuR4b16qqnKl0ZImigWQby2Sxbg3ultCAl?=
- =?us-ascii?Q?wmYbD+RW2dSMUsJj9TCPtk9Mk+W6aSZzyiIe7LLkq6KqQK/VHeR9b81A6B2+?=
- =?us-ascii?Q?Gruwpv4Z5WySNn2EGxzkLd4vmuY+rxy+r8KyO3qY33YBLssjIlir+VDE1v9w?=
- =?us-ascii?Q?VTbP3HZO0AZMHxKR5snXU4dUbctxJ6UjJeLxsDlozgta/EMz79G1RanmZSaR?=
- =?us-ascii?Q?9zR6o5npH+F3L7LBEHi6pmmm6cnTyGdPNnGOKZFK9sEfglYmphQHgAJWGFob?=
- =?us-ascii?Q?RDYPPLqKibkHRyX/3HjicGCy2j5zhoT4uvvdQATmNsrVmwFVTSK7RCvwNola?=
- =?us-ascii?Q?i/jIh2D8gKqVMWL78Dzad6LBjc15xW8Co/2vQ59i9fgDe9pxuXVeNrBVGRrX?=
- =?us-ascii?Q?8gDotLaaiM3BloSNzRyvkHi4apXIqSXDMzhf2H82n1XiMrQeoXvwKL6KCJSB?=
- =?us-ascii?Q?ErGH3oAl7uNSmcoLlxOVZT0bUWHQu3UgsHND/6tHRXB1IIUkSneoynI/3cp+?=
- =?us-ascii?Q?nUoJqS9LRSu9q1VZULeyjXh/EqDml2nHHOO13y7HBeuzqGv0A6R+571DmpIm?=
- =?us-ascii?Q?MIgTUzMKpW4oyzOY1kMHgMLTemXPqC7szAZZlHeMf+FaclS6ZkrPDqq7BCr/?=
- =?us-ascii?Q?33xkI6vyZ4PT0w8DmWRdj+O3YeKzE9MwYyb142GtiMXi+Cr2iPbswO3eUu1P?=
- =?us-ascii?Q?MXa5U58mHwXyKn+MPfgS+VhBRptwQxRHr7Mbw7nmEE78IJCm2AbBWTA9sR71?=
- =?us-ascii?Q?WZiNkuou4iztPBlT3DpQy4qSq7zOB8k7p1dbC1AGTDjTqiTB3ldmAB4XnNAM?=
- =?us-ascii?Q?yMzV6Dkvz9UKdAtn6BJgLcJuE7+5JXPinMM2RytqM4kKTuC8wicM4D2a7ZTs?=
- =?us-ascii?Q?U14XmkxEZeXl959JMFsEO77NpaTDs1/AqVKrcRNDFXfacxcB3MJv4E8TPQI0?=
- =?us-ascii?Q?SydlooHl2012uX84cYluB16hg1rSj72o49t1SwgurqryrnZNxE6A0TmB+X7l?=
- =?us-ascii?Q?KIUyKMs6Tlpz7SqN5ozGpZMd+JkXiH48l2yJr473sQzNYGSoqK7PcTXvAdsT?=
- =?us-ascii?Q?E8kyUB31RYOrStOC5nAwyP1klnpEBkQwqE49cCW6XGbpJmNqZVf1n9XlEexM?=
- =?us-ascii?Q?gHA8pxdj5jtUKVAOuuP6PmYZ6ZxmIzXlCJj/codXU4txLNkimroPImzjPTn2?=
- =?us-ascii?Q?GMLabPUCTMBfUSgCXOyKF3I2ug+atb4xsR6n+QXDLBtdf7TMMFYLIV9fygmN?=
- =?us-ascii?Q?b3mdtzADX4dT0gQlZlHdPiCTxHvkuExzKviiMKtJjF60kl2N3cysvtw8VIGM?=
- =?us-ascii?Q?c8nbHFmdF9Cq60ymcfzq9NVAxhqYLx1MAJ7yvG0xjaeXDgX4+Dy8WJ3VaxqQ?=
- =?us-ascii?Q?bLU1HeIn3BT2A9rLNPeu/bpucVfQbuPOCLyHSxJ8a78pyDJ5e4vagsEjnX3n?=
- =?us-ascii?Q?7+YWiwUatf3Qy6BgPOsLJm/tPNVAYAM4MFqJs5e19ZAyRbII2DN3EFPZQFKO?=
- =?us-ascii?Q?wFDMfsRcIA=3D=3D?=
-X-Exchange-RoutingPolicyChecked: rgieXA0dh7hiJvuHsJhf7dn6ii1cWymrxTrYcqyUBEI/gxZdcQ3o2sbPnTTJoIjDy6DnGKVdPqNrfbEK6gz6zAyMHCfPMM8LTEEqSVr/0izK5NS5N7qPRwkrVOqi7aisw2giyjbpjgQJvCTWiB96/PsenNOBcgB98DKEWjvxw+/fZiHEDtVfbLILYykTguKPctaX3Oo/m2JYGas3yCyuFyjHe0RpbX7SSk9RqrJQKQoYkou/jIoQIkDkYdJ+a9pWeGNPlcZN3QLZPNHvqbWSOlW2zR+mA2oRhGY+kLSDUrQI4gSvyjH/zaDOkR3qoRm8wD9vFoMuV44Y1ueH9GfaYg==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2102a4ff-4d67-4d66-509f-08de7e760685
-X-MS-Exchange-CrossTenant-AuthSource: BN6PR11MB4033.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2026 07:24:11.4909
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QOKwgk5PhpmWKPjZkj3XlI4NqzbYk5NlRjeFQRgSoTy4EP4iee/v2nBe0CZ0Gpwj23ty9dui7IHWCArM4Kg2XQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB7592
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 3/4] btrfs: move larger data folios out of experimental
+ features
+To: Oliver Sang <oliver.sang@intel.com>, Qu Wenruo <quwenruo.btrfs@gmx.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-btrfs@vger.kernel.org
+References: <202603101405.288f83f3-lkp@intel.com>
+ <933c12fd-0d10-4ef7-b10e-cb64497829eb@gmx.com>
+ <aa/Ga0S+ZtmpNWVl@xsang-OptiPlex-9020>
+Content-Language: en-US
+From: Qu Wenruo <wqu@suse.com>
+Autocrypt: addr=wqu@suse.com; keydata=
+ xsBNBFnVga8BCACyhFP3ExcTIuB73jDIBA/vSoYcTyysFQzPvez64TUSCv1SgXEByR7fju3o
+ 8RfaWuHCnkkea5luuTZMqfgTXrun2dqNVYDNOV6RIVrc4YuG20yhC1epnV55fJCThqij0MRL
+ 1NxPKXIlEdHvN0Kov3CtWA+R1iNN0RCeVun7rmOrrjBK573aWC5sgP7YsBOLK79H3tmUtz6b
+ 9Imuj0ZyEsa76Xg9PX9Hn2myKj1hfWGS+5og9Va4hrwQC8ipjXik6NKR5GDV+hOZkktU81G5
+ gkQtGB9jOAYRs86QG/b7PtIlbd3+pppT0gaS+wvwMs8cuNG+Pu6KO1oC4jgdseFLu7NpABEB
+ AAHNGFF1IFdlbnJ1byA8d3F1QHN1c2UuY29tPsLAlAQTAQgAPgIbAwULCQgHAgYVCAkKCwIE
+ FgIDAQIeAQIXgBYhBC3fcuWlpVuonapC4cI9kfOhJf6oBQJnEXVgBQkQ/lqxAAoJEMI9kfOh
+ Jf6o+jIH/2KhFmyOw4XWAYbnnijuYqb/obGae8HhcJO2KIGcxbsinK+KQFTSZnkFxnbsQ+VY
+ fvtWBHGt8WfHcNmfjdejmy9si2jyy8smQV2jiB60a8iqQXGmsrkuR+AM2V360oEbMF3gVvim
+ 2VSX2IiW9KERuhifjseNV1HLk0SHw5NnXiWh1THTqtvFFY+CwnLN2GqiMaSLF6gATW05/sEd
+ V17MdI1z4+WSk7D57FlLjp50F3ow2WJtXwG8yG8d6S40dytZpH9iFuk12Sbg7lrtQxPPOIEU
+ rpmZLfCNJJoZj603613w/M8EiZw6MohzikTWcFc55RLYJPBWQ+9puZtx1DopW2jOwE0EWdWB
+ rwEIAKpT62HgSzL9zwGe+WIUCMB+nOEjXAfvoUPUwk+YCEDcOdfkkM5FyBoJs8TCEuPXGXBO
+ Cl5P5B8OYYnkHkGWutAVlUTV8KESOIm/KJIA7jJA+Ss9VhMjtePfgWexw+P8itFRSRrrwyUf
+ E+0WcAevblUi45LjWWZgpg3A80tHP0iToOZ5MbdYk7YFBE29cDSleskfV80ZKxFv6koQocq0
+ vXzTfHvXNDELAuH7Ms/WJcdUzmPyBf3Oq6mKBBH8J6XZc9LjjNZwNbyvsHSrV5bgmu/THX2n
+ g/3be+iqf6OggCiy3I1NSMJ5KtR0q2H2Nx2Vqb1fYPOID8McMV9Ll6rh8S8AEQEAAcLAfAQY
+ AQgAJgIbDBYhBC3fcuWlpVuonapC4cI9kfOhJf6oBQJnEXWBBQkQ/lrSAAoJEMI9kfOhJf6o
+ cakH+QHwDszsoYvmrNq36MFGgvAHRjdlrHRBa4A1V1kzd4kOUokongcrOOgHY9yfglcvZqlJ
+ qfa4l+1oxs1BvCi29psteQTtw+memmcGruKi+YHD7793zNCMtAtYidDmQ2pWaLfqSaryjlzR
+ /3tBWMyvIeWZKURnZbBzWRREB7iWxEbZ014B3gICqZPDRwwitHpH8Om3eZr7ygZck6bBa4MU
+ o1XgbZcspyCGqu1xF/bMAY2iCDcq6ULKQceuKkbeQ8qxvt9hVxJC2W3lHq8dlK1pkHPDg9wO
+ JoAXek8MF37R8gpLoGWl41FIUb3hFiu3zhDDvslYM4BmzI18QgQTQnotJH8=
+In-Reply-To: <aa/Ga0S+ZtmpNWVl@xsang-OptiPlex-9020>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
 
 
-Hello,
+在 2026/3/10 17:51, Oliver Sang 写道:
+> hi, Qu,
+> 
+> On Tue, Mar 10, 2026 at 05:33:16PM +1030, Qu Wenruo wrote:
+>>
+>>
+>> 在 2026/3/10 17:13, kernel test robot 写道:
+>>>
+>>>
+>>> Hello,
+>>>
+>>> kernel test robot noticed "xfstests.btrfs.052.fail" on:
+>>>
+>>> commit: 50bb0fb60d1d55c7447535d17081ea009700cfd7 ("[PATCH v2 3/4] btrfs: move larger data folios out of experimental features")
+>>> url: https://github.com/intel-lab-lkp/linux/commits/Qu-Wenruo/btrfs-drop-2K-block-size-support/20260227-113649
+>>> base: https://git.kernel.org/cgit/linux/kernel/git/kdave/linux.git for-next
+>>> patch link: https://lore.kernel.org/all/0d8fe02f58ccbc0c53714ea45b0a4303f2ee8206.1772162871.git.wqu@suse.com/
+>>> patch subject: [PATCH v2 3/4] btrfs: move larger data folios out of experimental features
+>>>
+>>> in testcase: xfstests
+>>> version: xfstests-x86_64-63a29724-1_20260218
+>>> with following parameters:
+>>>
+>>> 	disk: 6HDD
+>>> 	fs: btrfs
+>>> 	test: btrfs-052
+>>>
+>>>
+>>>
+>>> config: x86_64-rhel-9.4-func
+>>> compiler: gcc-14
+>>> test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (Haswell) with 8G memory
+>>>
+>>> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>>>
+>>>
+>>>
+>>> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+>>> the same patch/commit), kindly add following tags
+>>> | Reported-by: kernel test robot <oliver.sang@intel.com>
+>>> | Closes: https://lore.kernel.org/oe-lkp/202603101405.288f83f3-lkp@intel.com
+>>>
+>>>
+>>> 2026-03-06 18:12:00 cd /lkp/benchmarks/xfstests
+>>> 2026-03-06 18:12:00 export TEST_DIR=/fs/sdb1
+>>> 2026-03-06 18:12:00 export TEST_DEV=/dev/sdb1
+>>> 2026-03-06 18:12:00 export FSTYP=btrfs
+>>> 2026-03-06 18:12:00 export SCRATCH_MNT=/fs/scratch
+>>> 2026-03-06 18:12:00 mkdir /fs/scratch -p
+>>> 2026-03-06 18:12:00 export SCRATCH_DEV_POOL="/dev/sdb2 /dev/sdb3 /dev/sdb4 /dev/sdb5 /dev/sdb6"
+>>> 2026-03-06 18:12:00 echo btrfs/052
+>>> 2026-03-06 18:12:00 ./check btrfs/052
+>>> FSTYP         -- btrfs
+>>> PLATFORM      -- Linux/x86_64 lkp-hsw-d01 7.0.0-rc1-00110-g50bb0fb60d1d #1 SMP PREEMPT_DYNAMIC Sat Mar  7 01:56:32 CST 2026
+>>> MKFS_OPTIONS  -- /dev/sdb2
+>>> MOUNT_OPTIONS -- /dev/sdb2 /fs/scratch
+>>>
+>>> btrfs/052          [failed, exit status 1]- output mismatch (see /lkp/benchmarks/xfstests/results//btrfs/052.out.bad)
+>>>       --- tests/btrfs/052.out	2026-02-18 09:47:02.000000000 +0000
+>>>       +++ /lkp/benchmarks/xfstests/results//btrfs/052.out.bad	2026-03-06 18:12:03.421371379 +0000
+>>>       @@ -91,553 +91,5 @@
+>>>        23 05 05 05 05 05 05 05 05 05 05 05 05 05 05 05 05
+>>>        *
+>>>        30
+>>>       -0 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>>>       -*
+>>>       -2 02 02 02 02 02 02 02 02 02 02 02 02 02 02 02 02
+>>>       -*
+>>>       ...
+>>>       (Run 'diff -u /lkp/benchmarks/xfstests/tests/btrfs/052.out /lkp/benchmarks/xfstests/results//btrfs/052.out.bad'  to see the entire diff)
+>>> Ran: btrfs/052
+>>> Failures: btrfs/052
+>>> Failed 1 of 1 tests
+>>
+>> Can you provide the full btrfs/052.full?
+> 
+> I attached tar.gz which contains all test results. thanks
 
-kernel test robot noticed "BUG:KASAN:wild-memory-access_in_raw_spin_lock" on:
+Thanks a lot!
 
-commit: 75576f3c4ced72ab572ee9275b464cd79763fd85 ("[PATCH 12/32] hugetlbfs: Stop using i_private_data")
-url: https://github.com/intel-lab-lkp/linux/commits/Jan-Kara/fat-Sync-and-invalidate-metadata-buffers-from-fat_evict_inode/20260303-183910
-base: https://git.kernel.org/cgit/linux/kernel/git/vfs/vfs.git vfs.all
-patch link: https://lore.kernel.org/all/20260303103406.4355-44-jack@suse.cz/
-patch subject: [PATCH 12/32] hugetlbfs: Stop using i_private_data
+It shows it's the defrag ioctl failed, and it's indeed a bug in that 
+patch, that I forgot to remove the experimental check from defrag.
 
-in testcase: ltp
-version: 
-with following parameters:
+Thus it won't cause bug for CONFIG_BTRFS_EXPERIMENTAL but will cause 
+problems for end users.
 
-	test: hugetlb
+Will get it fixed in the next update.
 
-
-
-config: x86_64-rhel-9.4-ltp
-compiler: gcc-14
-test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-7700 CPU @ 3.60GHz (Kaby Lake) with 32G memory
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202603101532.fecbeae3-lkp@intel.com
-
-
-
-[  270.445802][ T4529] BUG: KASAN: wild-memory-access in _raw_spin_lock (include/linux/instrumented.h:55 include/linux/atomic/atomic-instrumented.h:1301 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 include/linux/spinlock_api_smp.h:159 kernel/locking/spinlock.c:154)
-[  270.453010][ T4529] Write of size 4 at addr ccccccccccccccd0 by task hugefallocate01/4529
-[  270.461165][ T4529]
-[  270.463347][ T4529] CPU: 2 UID: 0 PID: 4529 Comm: hugefallocate01 Tainted: G S        I         7.0.0-rc1-00214-g75576f3c4ced #1 PREEMPT(lazy)
-[  270.463352][ T4529] Tainted: [S]=CPU_OUT_OF_SPEC, [I]=FIRMWARE_WORKAROUND
-[  270.463353][ T4529] Hardware name: Dell Inc. OptiPlex 7050/062KRH, BIOS 1.2.0 12/22/2016
-[  270.463355][ T4529] Call Trace:
-[  270.463356][ T4529]  <TASK>
-[  270.463358][ T4529]  dump_stack_lvl (lib/dump_stack.c:122)
-[  270.463362][ T4529]  ? _raw_spin_lock (include/linux/instrumented.h:55 include/linux/atomic/atomic-instrumented.h:1301 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 include/linux/spinlock_api_smp.h:159 kernel/locking/spinlock.c:154)
-[  270.463365][ T4529]  kasan_report (mm/kasan/report.c:597)
-[  270.463369][ T4529]  ? _raw_spin_lock (include/linux/instrumented.h:55 include/linux/atomic/atomic-instrumented.h:1301 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 include/linux/spinlock_api_smp.h:159 kernel/locking/spinlock.c:154)
-[  270.463372][ T4529]  kasan_check_range (mm/kasan/generic.c:186 (discriminator 1) mm/kasan/generic.c:200 (discriminator 1))
-[  270.463374][ T4529]  _raw_spin_lock (include/linux/instrumented.h:55 include/linux/atomic/atomic-instrumented.h:1301 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 include/linux/spinlock_api_smp.h:159 kernel/locking/spinlock.c:154)
-[  270.463377][ T4529]  ? __pfx__raw_spin_lock (kernel/locking/spinlock.c:153)
-[  270.463380][ T4529]  ? filemap_get_folios_tag (include/linux/pagevec.h:56 mm/filemap.c:2359)
-[  270.463384][ T4529]  region_del (mm/hugetlb.c:864)
-[  270.463387][ T4529]  hugetlb_unreserve_pages (mm/hugetlb.c:6757)
-[  270.463390][ T4529]  remove_inode_hugepages (fs/hugetlbfs/inode.c:616)
-[  270.463394][ T4529]  ? __pfx_remove_inode_hugepages (fs/hugetlbfs/inode.c:579)
-[  270.463398][ T4529]  ? stack_trace_save (kernel/stacktrace.c:123)
-[  270.463403][ T4529]  ? __pfx_stack_trace_save (kernel/stacktrace.c:114)
-[  270.463407][ T4529]  ? stack_depot_save_flags (lib/stackdepot.c:667)
-[  270.463411][ T4529]  ? kasan_save_stack (mm/kasan/common.c:59)
-[  270.463413][ T4529]  ? kasan_save_stack (mm/kasan/common.c:58)
-[  270.463415][ T4529]  ? kasan_record_aux_stack (mm/kasan/generic.c:556 (discriminator 1))
-[  270.463417][ T4529]  ? __call_rcu_common+0xc9/0x970
-[  270.463421][ T4529]  ? deactivate_locked_super (fs/super.c:476)
-[  270.463426][ T4529]  ? cleanup_mnt (fs/namespace.c:227 fs/namespace.c:1313)
-[  270.463430][ T4529]  ? inode_wait_for_writeback (arch/x86/include/asm/atomic.h:23 include/linux/atomic/atomic-arch-fallback.h:457 include/linux/atomic/atomic-instrumented.h:33 include/asm-generic/qspinlock.h:57 fs/fs-writeback.c:1598)
-[  270.463433][ T4529]  ? __pfx_inode_wait_for_writeback (fs/fs-writeback.c:1594)
-[  270.463455][ T4529]  ? __call_rcu_common+0xc9/0x970
-[  270.463458][ T4529]  ? task_work_run (kernel/task_work.c:235)
-[  270.463460][ T4529]  ? exit_to_user_mode_loop (include/linux/memcontrol.h:915 (discriminator 2) include/linux/resume_user_mode.h:59 (discriminator 2) kernel/entry/common.c:67 (discriminator 2) kernel/entry/common.c:98 (discriminator 2))
-[  270.463463][ T4529]  ? do_syscall_64 (include/linux/irq-entry-common.h:226 include/linux/irq-entry-common.h:256 include/linux/entry-common.h:325 arch/x86/entry/syscall_64.c:100)
-[  270.463465][ T4529]  ? entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130)
-[  270.463468][ T4529]  ? _raw_spin_lock (arch/x86/include/asm/atomic.h:107 (discriminator 4) include/linux/atomic/atomic-arch-fallback.h:2170 (discriminator 4) include/linux/atomic/atomic-instrumented.h:1302 (discriminator 4) include/asm-generic/qspinlock.h:111 (discriminator 4) include/linux/spinlock.h:187 (discriminator 4) include/linux/spinlock_api_smp.h:159 (discriminator 4) kernel/locking/spinlock.c:154 (discriminator 4))
-[  270.463483][ T4529]  ? __pfx__raw_spin_lock (kernel/locking/spinlock.c:153)
-[  270.463486][ T4529]  hugetlbfs_evict_inode (fs/hugetlbfs/inode.c:625 (discriminator 1))
-[  270.463489][ T4529]  evict (fs/inode.c:849)
-[  270.463507][ T4529]  ? __pfx_evict (fs/inode.c:822)
-[  270.463511][ T4529]  ? __pfx__raw_spin_lock (kernel/locking/spinlock.c:153)
-[  270.463514][ T4529]  ? _raw_spin_trylock (arch/x86/include/asm/atomic.h:107 (discriminator 4) include/linux/atomic/atomic-arch-fallback.h:2170 (discriminator 4) include/linux/atomic/atomic-instrumented.h:1302 (discriminator 4) include/asm-generic/qspinlock.h:97 (discriminator 4) include/linux/spinlock.h:193 (discriminator 4) include/linux/spinlock_api_smp.h:90 (discriminator 4) kernel/locking/spinlock.c:138 (discriminator 4))
-[  270.463517][ T4529]  ? iput (fs/inode.c:1963 fs/inode.c:2012 fs/inode.c:1975)
-[  270.463519][ T4529]  __dentry_kill (fs/dcache.c:673 (discriminator 51))
-[  270.463522][ T4529]  finish_dput (fs/dcache.c:879)
-[  270.463525][ T4529]  shrink_dcache_for_umount (fs/dcache.c:920 fs/dcache.c:1657 fs/dcache.c:1671)
-[  270.463528][ T4529]  ? __pfx___call_rcu_common+0x10/0x10
-[  270.463531][ T4529]  generic_shutdown_super (fs/super.c:625)
-[  270.463534][ T4529]  kill_anon_super (fs/super.c:437 fs/super.c:1293)
-[  270.463536][ T4529]  deactivate_locked_super (fs/super.c:437 fs/super.c:478)
-[  270.463538][ T4529]  cleanup_mnt (fs/namespace.c:227 fs/namespace.c:1313)
-[  270.463540][ T4529]  task_work_run (kernel/task_work.c:235)
-[  270.463543][ T4529]  ? __pfx_task_work_run (kernel/task_work.c:201)
-[  270.463545][ T4529]  ? __x64_sys_umount (fs/namespace.c:2065 fs/namespace.c:2070 fs/namespace.c:2068 fs/namespace.c:2068)
-[  270.463547][ T4529]  exit_to_user_mode_loop (include/linux/memcontrol.h:915 (discriminator 2) include/linux/resume_user_mode.h:59 (discriminator 2) kernel/entry/common.c:67 (discriminator 2) kernel/entry/common.c:98 (discriminator 2))
-[  270.463550][ T4529]  do_syscall_64 (include/linux/irq-entry-common.h:226 include/linux/irq-entry-common.h:256 include/linux/entry-common.h:325 arch/x86/entry/syscall_64.c:100)
-[  270.463552][ T4529]  ? __pfx_vfs_write (fs/read_write.c:669)
-[  270.463555][ T4529]  ? fdget_pos (include/linux/atomic/atomic-arch-fallback.h:479 (discriminator 2) include/linux/atomic/atomic-instrumented.h:50 (discriminator 2) fs/file.c:1196 (discriminator 2) fs/file.c:1210 (discriminator 2) fs/file.c:1256 (discriminator 2))
-[  270.463558][ T4529]  ? fdget_pos (include/linux/atomic/atomic-arch-fallback.h:479 (discriminator 2) include/linux/atomic/atomic-instrumented.h:50 (discriminator 2) fs/file.c:1196 (discriminator 2) fs/file.c:1210 (discriminator 2) fs/file.c:1256 (discriminator 2))
-[  270.463560][ T4529]  ? ksys_write (fs/read_write.c:740)
-[  270.463563][ T4529]  ? ksys_write (fs/read_write.c:740)
-[  270.463566][ T4529]  ? __pfx_ksys_write (fs/read_write.c:730)
-[  270.463571][ T4529]  ? do_syscall_64 (arch/x86/include/asm/atomic64_64.h:15 include/linux/atomic/atomic-arch-fallback.h:2583 include/linux/atomic/atomic-long.h:38 include/linux/atomic/atomic-instrumented.h:3189 include/linux/unwind_deferred.h:37 include/linux/irq-entry-common.h:296 include/linux/entry-common.h:327 arch/x86/entry/syscall_64.c:100)
-[  270.463574][ T4529]  ? do_syscall_64 (arch/x86/include/asm/atomic64_64.h:15 include/linux/atomic/atomic-arch-fallback.h:2583 include/linux/atomic/atomic-long.h:38 include/linux/atomic/atomic-instrumented.h:3189 include/linux/unwind_deferred.h:37 include/linux/irq-entry-common.h:296 include/linux/entry-common.h:327 arch/x86/entry/syscall_64.c:100)
-[  270.463578][ T4529]  ? irqentry_exit (arch/x86/include/asm/atomic64_64.h:15 include/linux/atomic/atomic-arch-fallback.h:2583 include/linux/atomic/atomic-long.h:38 include/linux/atomic/atomic-instrumented.h:3189 include/linux/unwind_deferred.h:37 include/linux/irq-entry-common.h:296 include/linux/irq-entry-common.h:341 kernel/entry/common.c:219)
-[  270.463581][ T4529]  entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130)
-[  270.463583][ T4529] RIP: 0033:0x7fc1ffd84217
-[  270.463586][ T4529] Code: 0d 00 f7 d8 64 89 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 31 f6 e9 09 00 00 00 66 0f 1f 84 00 00 00 00 00 b8 a6 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 01 c3 48 8b 15 c9 4b 0d 00 f7 d8 64 89 02 b8
-All code
-========
-   0:	0d 00 f7 d8 64       	or     $0x64d8f700,%eax
-   5:	89 02                	mov    %eax,(%rdx)
-   7:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
-   c:	c3                   	ret
-   d:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
-  13:	31 f6                	xor    %esi,%esi
-  15:	e9 09 00 00 00       	jmp    0x23
-  1a:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
-  21:	00 00 
-  23:	b8 a6 00 00 00       	mov    $0xa6,%eax
-  28:	0f 05                	syscall
-  2a:*	48 3d 00 f0 ff ff    	cmp    $0xfffffffffffff000,%rax		<-- trapping instruction
-  30:	77 01                	ja     0x33
-  32:	c3                   	ret
-  33:	48 8b 15 c9 4b 0d 00 	mov    0xd4bc9(%rip),%rdx        # 0xd4c03
-  3a:	f7 d8                	neg    %eax
-  3c:	64 89 02             	mov    %eax,%fs:(%rdx)
-  3f:	b8                   	.byte 0xb8
-
-Code starting with the faulting instruction
-===========================================
-   0:	48 3d 00 f0 ff ff    	cmp    $0xfffffffffffff000,%rax
-   6:	77 01                	ja     0x9
-   8:	c3                   	ret
-   9:	48 8b 15 c9 4b 0d 00 	mov    0xd4bc9(%rip),%rdx        # 0xd4bd9
-  10:	f7 d8                	neg    %eax
-  12:	64 89 02             	mov    %eax,%fs:(%rdx)
-  15:	b8                   	.byte 0xb8
-[  270.463588][ T4529] RSP: 002b:00007ffc300541e8 EFLAGS: 00000246 ORIG_RAX: 00000000000000a6
-[  270.463592][ T4529] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 00007fc1ffd84217
-[  270.463593][ T4529] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 000056024b59b06a
-[  270.463595][ T4529] RBP: 00007ffc30054470 R08: 0000000000000000 R09: 0000000000000000
-[  270.463596][ T4529] R10: 0000000000000003 R11: 0000000000000246 R12: 0000000000000000
-[  270.463598][ T4529] R13: 000056024b59b06a R14: 000056024b59b7d0 R15: 000056024b59f8b0
-[  270.463600][ T4529]  </TASK>
-[  270.463601][ T4529] ==================================================================
-[  270.864814][ T4529] Disabling lock debugging due to kernel taint
-[  270.870833][ T4529] Oops: general protection fault, probably for non-canonical address 0xccccccccccccccd0: 0000 [#1] SMP KASAN PTI
-[  270.882549][ T4529] CPU: 2 UID: 0 PID: 4529 Comm: hugefallocate01 Tainted: G S  B     I         7.0.0-rc1-00214-g75576f3c4ced #1 PREEMPT(lazy)
-[  270.895404][ T4529] Tainted: [S]=CPU_OUT_OF_SPEC, [B]=BAD_PAGE, [I]=FIRMWARE_WORKAROUND
-[  270.903398][ T4529] Hardware name: Dell Inc. OptiPlex 7050/062KRH, BIOS 1.2.0 12/22/2016
-[  270.911474][ T4529] RIP: 0010:_raw_spin_lock (arch/x86/include/asm/atomic.h:107 (discriminator 4) include/linux/atomic/atomic-arch-fallback.h:2170 (discriminator 4) include/linux/atomic/atomic-instrumented.h:1302 (discriminator 4) include/asm-generic/qspinlock.h:111 (discriminator 4) include/linux/spinlock.h:187 (discriminator 4) include/linux/spinlock_api_smp.h:159 (discriminator 4) kernel/locking/spinlock.c:154 (discriminator 4))
-[  270.916599][ T4529] Code: be 04 00 00 00 c7 44 24 20 00 00 00 00 e8 8f 19 e5 fd be 04 00 00 00 48 8d 7c 24 20 e8 80 19 e5 fd ba 01 00 00 00 8b 44 24 20 <f0> 0f b1 13 75 2d 48 b8 00 00 00 00 00 fc ff df 48 c7 44 05 00 00
-All code
-========
-   0:	be 04 00 00 00       	mov    $0x4,%esi
-   5:	c7 44 24 20 00 00 00 	movl   $0x0,0x20(%rsp)
-   c:	00 
-   d:	e8 8f 19 e5 fd       	call   0xfffffffffde519a1
-  12:	be 04 00 00 00       	mov    $0x4,%esi
-  17:	48 8d 7c 24 20       	lea    0x20(%rsp),%rdi
-  1c:	e8 80 19 e5 fd       	call   0xfffffffffde519a1
-  21:	ba 01 00 00 00       	mov    $0x1,%edx
-  26:	8b 44 24 20          	mov    0x20(%rsp),%eax
-  2a:*	f0 0f b1 13          	lock cmpxchg %edx,(%rbx)		<-- trapping instruction
-  2e:	75 2d                	jne    0x5d
-  30:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  37:	fc ff df 
-  3a:	48                   	rex.W
-  3b:	c7                   	.byte 0xc7
-  3c:	44                   	rex.R
-  3d:	05                   	.byte 0x5
-	...
-
-Code starting with the faulting instruction
-===========================================
-   0:	f0 0f b1 13          	lock cmpxchg %edx,(%rbx)
-   4:	75 2d                	jne    0x33
-   6:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-   d:	fc ff df 
-  10:	48                   	rex.W
-  11:	c7                   	.byte 0xc7
-  12:	44                   	rex.R
-  13:	05                   	.byte 0x5
+Thanks again for the consistent report!
+Qu
 
 
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20260310/202603101532.fecbeae3-lkp@intel.com
-
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+> 
+>>
+>> I checked my older logs (we have enabled larger folios for a while for
+>> experimental tests) and can not fild a similar failure.
+>>
+>> Thus I'm wondering what is causing the failure.
+>>
+>> Thanks,
+>> Qu
+>>
+>>>
+>>>
+>>>
+>>>
+>>> The kernel config and materials to reproduce are available at:
+>>> https://download.01.org/0day-ci/archive/20260310/202603101405.288f83f3-lkp@intel.com
+>>>
+>>>
+>>>
+>>
 
