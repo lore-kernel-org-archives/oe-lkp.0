@@ -1,94 +1,131 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 326E13CF02D;
-	Wed, 11 Mar 2026 09:40:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43B233BC67B
+	for <oe-lkp@lists.linux.dev>; Wed, 11 Mar 2026 10:33:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773222026; cv=none; b=giw8mhn6HqY2z1b7LeSoVfOYUMAcE+SKMjBG5mE7sZISzqvDMbol5gZfuhLUGO/YHzFNQJTyeKMCqSMz0U7gsyi+L2P8gYo9MWJ0tfjiU7sEuCzQfAb904TpwNrrKkzJj6Yovn6hCG4zJc060x6d2Qd/d4aO4PE7KjowTxoz3+s=
+	t=1773225191; cv=none; b=eFIpQOCez/3SVbVLa+tcnVY+eujyMT1fW+n53KC9blyRZq8FfEjSX3+kCUP2WgSpxjoriiPr45FcV17JmYvl+Qu4oeMYwtTP0y7Z/ExgH6IjHOV/DG4gc+vkIZJHb00BQ01KjUt1QtJvkHsHHnRR9TOn2nmddKrZGfGTWMLeZkM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773222026; c=relaxed/simple;
-	bh=PSUW4gzAgjFyplo5woHpBQ0pFb8BAKE1MI8G0sJ+V/k=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=YLdQsj0BwUsU0HBBJuajguRR17cDn9qRFLwZzFo/of0ppqc4WTajfw1MO5m5HhTz95UFhQhYRvqzjzcKz+KhVa3/cn4XzosXdgZimJfwqYsa6Y0hWfVok1QPe5HudPqvKrNMpv1JXYqDGsA69Rl4AgaUUC5gq3aV4BfMupBF5HQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gVmnKMxs; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1773225191; c=relaxed/simple;
+	bh=Ol7MOEzOme5ucrtf0GVgd1wTGv0R38aNhQMDyPPazcw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=mUVAnQgdE9fOBGOmd3SosOndZb3q6D1CY3WnccrTVlH3xoGWHCYyi4/a4k2sNiEgJhYUbr91e/lF8OTDt8f4vY3flC2W1ni+a01zOPLZ104DMw2eXsh6LE5DBePiu0Cgch0vxhAlWGB4BASdOG3l3m6ANSTMmCwd8vfGfq3F/D8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=IYfRbCnt; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=5ek4T3is; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=IYfRbCnt; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=5ek4T3is; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gVmnKMxs"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48697C4CEF7;
-	Wed, 11 Mar 2026 09:40:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773222025;
-	bh=PSUW4gzAgjFyplo5woHpBQ0pFb8BAKE1MI8G0sJ+V/k=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=gVmnKMxsQMgNcfbZjEfhPbMh2zsDpZ+Aj2r99eYOi4CDvPL4DMSKlX6cTlrNW0N85
-	 eSjYLyF0qGyw/9dLJHeytyrC6rCRmac2Q8KXlhwFA079dfLnS67xx6i7gK/w32f5qM
-	 OZ0pDkqwMuFaAjjFrO3Ntlvfjc0FWjlQNxpdlBNRyTzKZ8gShkHm1bT4wVYQJrsjyT
-	 nMLa82C3TTBswGVrw5MMOsZ+i7c5W2qXgj6Pz0WbQVTnLApQadqopqR5DDJ0GrWCE8
-	 xPSqnCcV/7LWlQTKWQAyj7lvclwtXkv65eAS3AcD5v3mRs3DliP7aT+TAMt44JuIF0
-	 cb0DK3+ND2poQ==
-From: Thomas Gleixner <tglx@kernel.org>
-To: Peter Zijlstra <peterz@infradead.org>, Joe Talbott <joetalbott@gmail.com>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
- lkp@intel.com, linux-kernel@vger.kernel.org, x86@kernel.org
-Subject: Re: [tip:sched/hrtick] [hrtimer] 2889243848:
- stress-ng.timermix.ops_per_sec 30.1% regression
-In-Reply-To: <20260310190221.GE652779@noisy.programming.kicks-ass.net>
-References: <202603102229.74b9dee4-lkp@intel.com>
- <20260310152350.GF606826@noisy.programming.kicks-ass.net>
- <CAL7gdfeGFgppkRH5=pWfx7KCx78xsUPG_-aRsP3zqw+yLKJQ_A@mail.gmail.com>
- <20260310181651.GH606826@noisy.programming.kicks-ass.net>
- <20260310185006.GD652779@noisy.programming.kicks-ass.net>
- <20260310190221.GE652779@noisy.programming.kicks-ass.net>
-Date: Wed, 11 Mar 2026 10:40:20 +0100
-Message-ID: <87cy1ar9ff.ffs@tglx>
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="IYfRbCnt";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="5ek4T3is";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="IYfRbCnt";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="5ek4T3is"
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 908CB5BDB5;
+	Wed, 11 Mar 2026 10:33:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1773225188; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=nn6jFZ03Edk4LxvnlwmnUE98fB0IuqELnmRZIWvIJ7A=;
+	b=IYfRbCntWayY6PgHvn/zY+jAGxqCykwEc3r1IGg+GysscEXYo/qejrkFLlIDmrvkkiAo4J
+	HwjBSn7FiXH0xsS6VHmDglGDjptOcj+XvHTw2+DmJSKQLWcEiREDum/ofgyRckyDA35YWV
+	UUDTstx0U704tRUsZ301OhGOiFVK7u4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1773225188;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=nn6jFZ03Edk4LxvnlwmnUE98fB0IuqELnmRZIWvIJ7A=;
+	b=5ek4T3iseEQPbbnIJbsVuKTo0xw3nMkjI7xxfaJKbuS1RxR9hZENn2PiKIElQdMHodc6Ge
+	/dGNLlfnKUFRj0DQ==
+Authentication-Results: smtp-out2.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1773225188; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=nn6jFZ03Edk4LxvnlwmnUE98fB0IuqELnmRZIWvIJ7A=;
+	b=IYfRbCntWayY6PgHvn/zY+jAGxqCykwEc3r1IGg+GysscEXYo/qejrkFLlIDmrvkkiAo4J
+	HwjBSn7FiXH0xsS6VHmDglGDjptOcj+XvHTw2+DmJSKQLWcEiREDum/ofgyRckyDA35YWV
+	UUDTstx0U704tRUsZ301OhGOiFVK7u4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1773225188;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=nn6jFZ03Edk4LxvnlwmnUE98fB0IuqELnmRZIWvIJ7A=;
+	b=5ek4T3iseEQPbbnIJbsVuKTo0xw3nMkjI7xxfaJKbuS1RxR9hZENn2PiKIElQdMHodc6Ge
+	/dGNLlfnKUFRj0DQ==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 786B03F988;
+	Wed, 11 Mar 2026 10:33:08 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id fekjHOREsWmrGgAAD6G6ig
+	(envelope-from <chrubis@suse.cz>); Wed, 11 Mar 2026 10:33:08 +0000
+Date: Wed, 11 Mar 2026 11:33:08 +0100
+From: Cyril Hrubis <chrubis@suse.cz>
+To: Eric Dumazet <edumazet@google.com>
+Cc: kernel test robot <oliver.sang@intel.com>,
+	Kuniyuki Iwashima <kuniyu@google.com>, lkp@intel.com,
+	netdev@vger.kernel.org, oe-lkp@lists.linux.dev,
+	Jakub Kicinski <kuba@kernel.org>, ltp@lists.linux.it
+Subject: Re: [LTP] [linux-next:master] [icmp] 64db5933c7:
+ ltp.cve-2020-25705.fail
+Message-ID: <abFE5PEtrkT5paKB@yuki.lan>
+References: <202603091409.866c520c-lkp@intel.com>
+ <CANn89iKUdtWw4ptM8ZreRP0a2FuvQOJ5FgE3o4q-zTRTmt1Umg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89iKUdtWw4ptM8ZreRP0a2FuvQOJ5FgE3o4q-zTRTmt1Umg@mail.gmail.com>
+X-Spam-Score: -4.30
+X-Spam-Level: 
+X-Spamd-Result: default: False [-4.30 / 50.00];
+	BAYES_HAM(-3.00)[99.99%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MIME_TRACE(0.00)[0:+];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	ARC_NA(0.00)[];
+	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	FUZZY_RATELIMITED(0.00)[rspamd.com];
+	RCVD_TLS_ALL(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	MISSING_XM_UA(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	TO_DN_SOME(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	RCPT_COUNT_SEVEN(0.00)[8];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,suse.cz:email]
+X-Spam-Flag: NO
 
-On Tue, Mar 10 2026 at 20:02, Peter Zijlstra wrote:
+Hi!
+> I do not want to know what this test is doing or expecting.
+> 
+> If it expects sysctls to have a precise value, it should set them ?
 
-> On Tue, Mar 10, 2026 at 07:50:06PM +0100, Peter Zijlstra wrote:
->> On Tue, Mar 10, 2026 at 07:16:51PM +0100, Peter Zijlstra wrote:
->> > On Tue, Mar 10, 2026 at 01:11:09PM -0400, Joe Talbott wrote:
->> > 
->> > > It looks like it can be found here:
->> > > https://download.01.org/0day-ci/archive/20260310/202603102229.74b9dee4-lkp@intel.com/repro-script
->> > > 
->> > > stress-ng --timeout 60 --times --verify --metrics --no-rand-seed --timermix 64
->> > 
->> > Thanks, that does indeed work and show the regression.
->> > 
->> > Lets see if I can spot the fail...
->> 
->> It looks like that benchmark manages to trip significant nr_hangs, and
->> yes, I made those more expensive because those were not expected to
->> actually happen at any sane rate.
->> 
->> Lets see if we can cure that without making a giant mess of things.
->
-> Ha! This seems to work just fine.
->
-> ---
-> diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
-> index b94bd56b739f..9872dd53f761 100644
-> --- a/kernel/time/hrtimer.c
-> +++ b/kernel/time/hrtimer.c
-> @@ -2031,7 +2031,8 @@ static void hrtimer_rearm(struct hrtimer_cpu_base *cpu_base, ktime_t expires_nex
->  		 * Give the system a chance to do something else than looping
->  		 * on hrtimer interrupts.
->  		 */
-> -		expires_next = ktime_add_ns(ktime_get(), 100 * NSEC_PER_MSEC);
-> +		expires_next = ktime_add_ns(ktime_get(),
-> +					    min(100 * NSEC_PER_MSEC, cpu_base->max_hang_time));
->  		cpu_base->hang_detected = false;
+The test is a CVE reproducer that checks if ICMP message ratelimiting is
+sufficiently randomized so that we do not leak information about the
+system.
 
-Hmm. The original code preserved hang_detected until the next timer
-interrupt to prevent rearming when a new timer is queued.
+See the test source code:
 
-Thanks,
+https://github.com/linux-test-project/ltp/blob/master/testcases/cve/icmp_rate_limit01.c
 
-        tglx
+-- 
+Cyril Hrubis
+chrubis@suse.cz
