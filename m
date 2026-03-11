@@ -1,123 +1,105 @@
-Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com [209.85.222.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 950F913DDAE
-	for <oe-lkp@lists.linux.dev>; Wed, 11 Mar 2026 10:45:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.222.179
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773225934; cv=pass; b=uRhT/TR+8nGTFPVQl3ueW53cw89CY3/W5GWIQjcx1EueBT+AzE4J9AXqdbbKnqK+7Jkb7UYmuHxWA6ErvavDP7s+7oFIJfXnUQOl42KrVsqnwAwQff+CdmBGLeGvnoz0q7PYY9iBS/xSmAqwhkW6TW6yHuaUErCNik8DIn0HDEI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773225934; c=relaxed/simple;
-	bh=7vsDk25zVBTfwb1axdr1KCfVVl/kd3eHhZd/r75+KnU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=VhB0Si3fEPcB/2BaUMz1xfqoh3mK+ocvBbyqaGwMEr/MGnuyzvTcsjh8Z/6UEsj/r1W9QQGzl44+4ZyXZFYjaycUr15qcvMpbVfjMdUYDw1+2GZbqmeUa0P0/SbVlSjxGlMdPNfdFrCkqTbJiKBE2WBLOUpyP26i/vAe8jkOk3I=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=nHaYHtID; arc=pass smtp.client-ip=209.85.222.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1EB53D47D9;
+	Wed, 11 Mar 2026 10:58:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773226705; cv=none; b=TxjMRdm1uMr3wnpXmTN0BZ7yhJUPgKXgDjksUxDYr/wy6MYl17MD1UpTfQN3c/YFAFkmwZW90Z+ofM3OXTZQA25OAw7fGadvjqmrUlawV0A2w17rYGWFH2jh7mI+/gC46Sdl/uMCWgDJX2qiGCWInvWwnQw2XEaPBktYNPjJL2I=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773226705; c=relaxed/simple;
+	bh=9FNY/zGi6Yxa6sHtVOGvKUUr+yBda3BSftfMOaM5eBo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WBldpsCFjb3Z2/J2EuHXv78FKhB6NJFMb/560azU5Ck74GqeB9/oYf8PrlL3fLR9mYvo/Et3iXD+3TV2K9ZoPiCnt1JI4W61j6WleLR7/9KmHTkr2fZo2TUry/CBz695qAZoYW6rs8cMLyK7w/MhMKOO6J2RPj3vLKed1DgKaGU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=RfVnPXNG; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="nHaYHtID"
-Received: by mail-qk1-f179.google.com with SMTP id af79cd13be357-8cd73c4a827so477715085a.3
-        for <oe-lkp@lists.linux.dev>; Wed, 11 Mar 2026 03:45:33 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1773225932; cv=none;
-        d=google.com; s=arc-20240605;
-        b=lXbMzAhWBi+nffDX2gp/W+Fg7I5QC82VXwGMQsWhNIOnkC16QtbW3mnjG0vSru8zKs
-         QNgV5AoNqnKmZnB1fWRanT+9wJxvO3nBfm0TTQZXpYbQ+DNXs3pFTTIB16tNwJuKtRqi
-         2JtKHsWUnT0YEMdbKTyvOI1nPXX1igJyVjrjrRJGvMhSueRfreGF2KbR4iEakQxcj1As
-         4jVIXF0ud/BAD+y3NIP8BdeGW1n+XveKu6UtJqNUse2KDJYui/xnP5JOQBkALaW4gnv4
-         E4mhn6TBVWvK1VOIMOCRH1GiWmbKZ0HeZqwBgjZjpSGPbzkaiEW1Fs03rYNeqLsjaEs2
-         r2Mg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=7vsDk25zVBTfwb1axdr1KCfVVl/kd3eHhZd/r75+KnU=;
-        fh=mqV5FbzvdmVPfhk/3Y0nA0W8rbfv5MwFuX4BJX9vJbI=;
-        b=UtUGNHWx6j/deMu1XuGmjpByHPleMETcLcv1B7oOuRvDS5VhSkIeU8vcSI55Vr9l6x
-         eCLwY2VzXbS4JS+KaGZxQKg78uAA5N4I8twDNe8xE9GtvcnMrliTb8CudTACOKYy3LbF
-         vfvn2iH4B7DiXh5BbK3tlWy9v5uXsdyA4NbHjpBkRQJfkFQVzkKYtTGOIFkh0LbkkGvr
-         AIWnrhGhofUhdKzCUfO5hcHs6h4CWqllTsyrr//srUOZbMKmLE/Mr9gcMIF4sMQ2TpNa
-         HwNcHIpPxMYVt3Iq0YfLxHQnWYWcxlfLhZs3i20mqaaNQcjnw4FKhSBUxelRktoSrUIC
-         qudQ==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1773225932; x=1773830732; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7vsDk25zVBTfwb1axdr1KCfVVl/kd3eHhZd/r75+KnU=;
-        b=nHaYHtID81yj5bdKU8BwFMrxw1Ok6RxyzUx9qbTA1LxprjTz4QOnj8Lyqhroq0Lvn2
-         yMVy7a6OHvzIoXo9y+b8GS1TTZEYyLZEWYnNfIeuzxHo5jiFE68acvrL3pMSfRps/pcQ
-         yNXkRRuha1fuFV4lpLOeFmHdJFSBPuwb/iDaIT5DCQlR9jvZRKaOpQVjr8EBzQLfcmLn
-         ZkUBo7sO3v3xD5p5hWk6WU+nBLzjeztCGoXAJ2rWPj27wrZlA21tku0JFKX1hZd82be5
-         tPz6Ilq2LdMqtO3ZLLkn0B9kPmpQFOXw8fo1Pm1EIXjNy+P2DzVzd5cZZ4QV0hGF+Y4a
-         B09Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773225932; x=1773830732;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=7vsDk25zVBTfwb1axdr1KCfVVl/kd3eHhZd/r75+KnU=;
-        b=gMwjfmuR8ZFS6YDa7o0Q14hThh3ytCiS5OJMpJiakKD+lcV0Yr6DG+bz+I2ibltJ5L
-         /xEYCXnXZb8uKiTpOIPTLbNz3Iui7OtKWiHRK+i8l7ABj51mBfvHokhHIfYoxqcxiDD1
-         3QzdRsC2Ozu600Em2ifW+44D101hirQ2LG+iDkLhL+i69ciebYFr7FayrONHrwbLI/nS
-         DTETGf8reDIo5aODvXdjCJQG+MN6zY5HvgHt/0CerIMSm0WZp2FoUcnJlkivA31w7njI
-         U/B8nhoy1N/3fFSDnnFtkFe+BCwwTBFPwh7PPlUKPilh7We/9EdISbV626kF4RtZ3gcF
-         SpiQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWPLxIOzdI/1mKNalkzDRp3ZbDdseFq8n2nBqKkOwoplM0JIA5loLzjzQjG0TZddjHIKl7Sg+c=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz9HcTAGO1z90WRSLUpK34/Rwz15hiqRfnss5F1FxiBFPGFbgaJ
-	TkGZOWKl7ciyFRjDjQpkeJ5cOgrvVZmZb8vHuWz8Kje2rXczyRMdKHbNuNYsN7zd4FA1HY9mq9F
-	+SdF1gluqr3nmC7Owd2PcJrsCy032ZzPNzLCk6BP3
-X-Gm-Gg: ATEYQzyKyuH1cy1jObp8oq8r3bRR/B7UV4AN8tP5Fl9VefrN7/aHhMMdtU9dyHxD3lJ
-	lV3ApQudZvsjoewYPnnI5nyREwb0rsaffUPiP8nBI390SJW6KgY/HWap7nMOLnKFhkvfRa95Tnr
-	WfQfEujkdsBPtNjjskWee7qK6XFanTgjCJTBBOJEOyYlyaWWX7JMPHjGO2Uvk1bFRro5QGC9T9u
-	l2EJxXLUTesFBqZx4pNWaF/rqQ7ICWyQi5vCTnfx0C7H81qFM1vz69xWu+vrvK6QUf5AKn/U8jl
-	iK1wgpst
-X-Received: by 2002:a05:620a:19a3:b0:8cd:8f18:d1d3 with SMTP id
- af79cd13be357-8cda1aa96fcmr238042885a.58.1773225932110; Wed, 11 Mar 2026
- 03:45:32 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="RfVnPXNG"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=R7cXg+/s8lCoXi+mEICd9B0NmewYw6aptysFk3wbROQ=; b=RfVnPXNGsJhyaHO3KMrNMfNWdx
+	IkauxIDyTG+NzD9FsJDXeXN9bDom5Ltl1oyXi+6GRYLkhObcIbJG3RsEBz2DnQQT0lLyMJagXtelA
+	Q27HU5X7ZUhlWZkH/ftqS8+2LeZ/oSM10ZaAt/MufdW4l6vlU7CZD7+NeI+fqS6opGqOBZLcCPvi4
+	zu1uQu8nrmEt/ngzm76kf3Z16Dkir+yVUH1Kp7DIiYGyUuLCLDvofWZiDbxu2keOI7HgDB7proj5v
+	RnGslETcl2FZZvWHLBsYVA+tNyXH4MXi6bOAQqV0mLDaqfO6bT9SR38E+ADkl3x1CnrkksmJSECdi
+	DPSqTfug==;
+Received: from 2001-1c00-8d85-5700-266e-96ff-fe07-7dcc.cable.dynamic.v6.ziggo.nl ([2001:1c00:8d85:5700:266e:96ff:fe07:7dcc] helo=noisy.programming.kicks-ass.net)
+	by casper.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1w0HGe-00000009UYZ-15ge;
+	Wed, 11 Mar 2026 10:58:20 +0000
+Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
+	id 89AA3300462; Wed, 11 Mar 2026 11:58:19 +0100 (CET)
+Date: Wed, 11 Mar 2026 11:58:19 +0100
+From: Peter Zijlstra <peterz@infradead.org>
+To: Thomas Gleixner <tglx@kernel.org>
+Cc: Joe Talbott <joetalbott@gmail.com>,
+	kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-kernel@vger.kernel.org, x86@kernel.org
+Subject: Re: [tip:sched/hrtick] [hrtimer] 2889243848:
+ stress-ng.timermix.ops_per_sec 30.1% regression
+Message-ID: <20260311105819.GL606826@noisy.programming.kicks-ass.net>
+References: <202603102229.74b9dee4-lkp@intel.com>
+ <20260310152350.GF606826@noisy.programming.kicks-ass.net>
+ <CAL7gdfeGFgppkRH5=pWfx7KCx78xsUPG_-aRsP3zqw+yLKJQ_A@mail.gmail.com>
+ <20260310181651.GH606826@noisy.programming.kicks-ass.net>
+ <20260310185006.GD652779@noisy.programming.kicks-ass.net>
+ <20260310190221.GE652779@noisy.programming.kicks-ass.net>
+ <87cy1ar9ff.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202603091409.866c520c-lkp@intel.com> <CANn89iKUdtWw4ptM8ZreRP0a2FuvQOJ5FgE3o4q-zTRTmt1Umg@mail.gmail.com>
- <abFE5PEtrkT5paKB@yuki.lan>
-In-Reply-To: <abFE5PEtrkT5paKB@yuki.lan>
-From: Eric Dumazet <edumazet@google.com>
-Date: Wed, 11 Mar 2026 11:45:21 +0100
-X-Gm-Features: AaiRm53pzyyhStKrLmQaAlgunggh_gChR9xqV-J3aHPcZ3AKfR6HTggnSd94pyY
-Message-ID: <CANn89iL8xwJxLMm+a-QqDUq_NeYSZBAMxvAAJ2_2X0tCd+J7kQ@mail.gmail.com>
-Subject: Re: [LTP] [linux-next:master] [icmp] 64db5933c7: ltp.cve-2020-25705.fail
-To: Cyril Hrubis <chrubis@suse.cz>
-Cc: kernel test robot <oliver.sang@intel.com>, Kuniyuki Iwashima <kuniyu@google.com>, lkp@intel.com, 
-	netdev@vger.kernel.org, oe-lkp@lists.linux.dev, 
-	Jakub Kicinski <kuba@kernel.org>, ltp@lists.linux.it
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87cy1ar9ff.ffs@tglx>
 
-On Wed, Mar 11, 2026 at 11:33=E2=80=AFAM Cyril Hrubis <chrubis@suse.cz> wro=
-te:
->
-> Hi!
-> > I do not want to know what this test is doing or expecting.
+On Wed, Mar 11, 2026 at 10:40:20AM +0100, Thomas Gleixner wrote:
+> On Tue, Mar 10 2026 at 20:02, Peter Zijlstra wrote:
+> 
+> > On Tue, Mar 10, 2026 at 07:50:06PM +0100, Peter Zijlstra wrote:
+> >> On Tue, Mar 10, 2026 at 07:16:51PM +0100, Peter Zijlstra wrote:
+> >> > On Tue, Mar 10, 2026 at 01:11:09PM -0400, Joe Talbott wrote:
+> >> > 
+> >> > > It looks like it can be found here:
+> >> > > https://download.01.org/0day-ci/archive/20260310/202603102229.74b9dee4-lkp@intel.com/repro-script
+> >> > > 
+> >> > > stress-ng --timeout 60 --times --verify --metrics --no-rand-seed --timermix 64
+> >> > 
+> >> > Thanks, that does indeed work and show the regression.
+> >> > 
+> >> > Lets see if I can spot the fail...
+> >> 
+> >> It looks like that benchmark manages to trip significant nr_hangs, and
+> >> yes, I made those more expensive because those were not expected to
+> >> actually happen at any sane rate.
+> >> 
+> >> Lets see if we can cure that without making a giant mess of things.
 > >
-> > If it expects sysctls to have a precise value, it should set them ?
->
-> The test is a CVE reproducer that checks if ICMP message ratelimiting is
-> sufficiently randomized so that we do not leak information about the
-> system.
->
-> See the test source code:
->
-> https://github.com/linux-test-project/ltp/blob/master/testcases/cve/icmp_=
-rate_limit01.c
->
+> > Ha! This seems to work just fine.
+> >
+> > ---
+> > diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
+> > index b94bd56b739f..9872dd53f761 100644
+> > --- a/kernel/time/hrtimer.c
+> > +++ b/kernel/time/hrtimer.c
+> > @@ -2031,7 +2031,8 @@ static void hrtimer_rearm(struct hrtimer_cpu_base *cpu_base, ktime_t expires_nex
+> >  		 * Give the system a chance to do something else than looping
+> >  		 * on hrtimer interrupts.
+> >  		 */
+> > -		expires_next = ktime_add_ns(ktime_get(), 100 * NSEC_PER_MSEC);
+> > +		expires_next = ktime_add_ns(ktime_get(),
+> > +					    min(100 * NSEC_PER_MSEC, cpu_base->max_hang_time));
+> >  		cpu_base->hang_detected = false;
+> 
+> Hmm. The original code preserved hang_detected until the next timer
+> interrupt to prevent rearming when a new timer is queued.
 
-This test needs to be tweaked/changed.
+Oh indeed. And that avoids __hrtimer_reprogram() from coming in and
+'destroying' the delay I suppose.
 
-It has been written with wrong assumption.
-
-(icmp_msgs_burst =3D=3D 50)
-
-Thanks.
+Let me poke at this a little more then.
