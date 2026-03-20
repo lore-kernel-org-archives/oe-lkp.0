@@ -1,99 +1,95 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E1C92D3739
-	for <oe-lkp@lists.linux.dev>; Fri, 20 Mar 2026 01:54:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D24635AC22
+	for <oe-lkp@lists.linux.dev>; Fri, 20 Mar 2026 07:51:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.11
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773971660; cv=fail; b=aUa/LozSc8a5LT8e03ZPpNQNmHBWew2e1EHs3ENIEW18CzY+nHDFIVjfY3II9yuS91P8UraLcq2II3Y9m3gYq8o1r5PU2UBHIifCPpzbo8de8qiKrNf+YcK09YWoOca22I6B2WubcRoUNavFQe1sUwaTPjABKHPaEdE0aC+hkCM=
+	t=1773993122; cv=fail; b=cnVEk7FhN0obTOca4NcW8uWx6tpln1CUEicfQKxziATAb6pDGvySBin2y98FFR+WEWyt7FmFPLeZPvcNolfeGz93JEoVxjW2KmL8JynEBhH7dbnUy1hm7eB6X9B5Z8eARVyl8Hdy4JaBmjtXtuTJqK2tCNa3lun8UWYugCAzhbQ=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773971660; c=relaxed/simple;
-	bh=vB7urt5jvRNAVSrY3PISPWbNQhBykRu6OgEG/U5fAqs=;
+	s=arc-20240116; t=1773993122; c=relaxed/simple;
+	bh=65XKVqJ+ZflzK6pGNmWxuvdt9/DcDfflhj6jCEzSlr0=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=aBt0FsT21dDXKE7yXJheWVCZdoTfgqUCW93AYUKnJ07BRQXJWpXfwz5pUAFJuSHjvxceQr8vILDA7LUZCqYwdgi9nbQO+ck8fyFqIN1CSmUicC8guSjfoYBh44U9Gs0vEEkk6iuWV1Y+ofZlgSftSW6tZBMOAmCRCe8r703nNBM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=F2xtsvn5; arc=fail smtp.client-ip=198.175.65.11
+	 Content-Disposition:In-Reply-To:MIME-Version; b=ivR2FfTnyPgHugleogbvy6EGTpg4vB6B5NJdTfjwMchFo13/GNHr76U4M/TAYn6QaJK/YlbiU2wAP09NEE6o7Rv1waIgPgO/O1I+kVyzO+j4A2dJ5qUVai+2poxmNI1nnGVl8H7CKYhfJGE1ebJ4FqeQ1fKxKvdvkosvFKGVwIU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AligDqcK; arc=fail smtp.client-ip=198.175.65.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="F2xtsvn5"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AligDqcK"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773971653; x=1805507653;
+  t=1773993119; x=1805529119;
   h=date:from:to:cc:subject:message-id:in-reply-to:
    mime-version;
-  bh=vB7urt5jvRNAVSrY3PISPWbNQhBykRu6OgEG/U5fAqs=;
-  b=F2xtsvn5sc8Hp3fc+iNLnVQCw942qoh4XpO3PpJ3YQVwQeHf1Pg+Mwb/
-   x3aFW9w2WnUeEymTdirEryiUp8pk8RtlIjPgObDXBlhpI8bRgN18KI+Q+
-   p4D1SWotE4vLJ72K2UU7/mpI6GCDeF4fm0ETivAzoG5sN1frfWkCJYyIE
-   GrzUqvD2s3P1ovWILQoemIOaoKIHK1JxWRJC3LuZT9nY3jOomYlxmPYRn
-   8yJ/3sLQveqHLK46SytyKFfsS56TGngptXZUCW5CY9p6dRDYWNf5jxOm3
-   TQiv5E17z9IjJ/7DDFUo0YFjq6tarKmyX+TtTNBdAF7KcFnHL/efS2ORr
+  bh=65XKVqJ+ZflzK6pGNmWxuvdt9/DcDfflhj6jCEzSlr0=;
+  b=AligDqcKr0Suiyhdy9Rs2hV2xzS0iHwfKGEO3QjL3jTDB63qKRUss/cM
+   Dv5C/kZWmkEQF7KM2P7jhwU4uhNolrnGHSlr4FetzxSvqxOypvmXzhX7I
+   XH+PGYp2iwxA5vzMYEocEpbNx4WLOBY/08K7PL04RVMjpfWS9UA3ev80s
+   U2TZPoVc21WG2cmEwbl4UruYrp8Ym5gOWwXgOsAzE8rd4XEnQHdoyax76
+   GfU7CWKIGRsnBxYXEUpyecjFmCxINIIF7dsBUPRYoxaNPEDT+90SflQp+
+   8pA7hZ9Lhi0jDRsNgRj+KPE1cCcyIx3F1vwXCVkuFXOW4EoYIvNfFWwxm
    A==;
-X-CSE-ConnectionGUID: hkCc8jzDQEGMsV9a6faW5g==
-X-CSE-MsgGUID: ZpZIKML/R/29fTqIoitWGg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11734"; a="85369676"
+X-CSE-ConnectionGUID: O+hMFPcISoCVo/OJJjntwQ==
+X-CSE-MsgGUID: RkC4nmKnT6a1Ix4ChkLP1Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11734"; a="85390625"
 X-IronPort-AV: E=Sophos;i="6.23,130,1770624000"; 
-   d="scan'208";a="85369676"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2026 18:54:12 -0700
-X-CSE-ConnectionGUID: KOh9vpJpTOmSbguVAlpVyg==
-X-CSE-MsgGUID: z3GOXH/zR4unTPC57egPiQ==
+   d="scan'208";a="85390625"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2026 00:51:59 -0700
+X-CSE-ConnectionGUID: 5idyVD+9QVW+Nv/jxHSwCw==
+X-CSE-MsgGUID: r4yffJUpTbGhcyIuRB/vIQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,130,1770624000"; 
-   d="scan'208";a="218998074"
-Received: from fmsmsx902.amr.corp.intel.com ([10.18.126.91])
-  by fmviesa010.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2026 18:54:12 -0700
+   d="scan'208";a="246241886"
+Received: from fmsmsx903.amr.corp.intel.com ([10.18.126.92])
+  by fmviesa002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2026 00:51:58 -0700
 Received: from FMSMSX902.amr.corp.intel.com (10.18.126.91) by
- fmsmsx902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ fmsmsx903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Thu, 19 Mar 2026 18:54:11 -0700
+ 15.2.2562.37; Fri, 20 Mar 2026 00:51:58 -0700
 Received: from fmsedg901.ED.cps.intel.com (10.1.192.143) by
  FMSMSX902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Thu, 19 Mar 2026 18:54:11 -0700
-Received: from SJ2PR03CU001.outbound.protection.outlook.com (52.101.43.27) by
+ 15.2.2562.37 via Frontend Transport; Fri, 20 Mar 2026 00:51:58 -0700
+Received: from MW6PR02CU001.outbound.protection.outlook.com (52.101.48.39) by
  edgegateway.intel.com (192.55.55.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Thu, 19 Mar 2026 18:54:11 -0700
+ 15.2.2562.37; Fri, 20 Mar 2026 00:51:57 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=B1+010lNBLLDT5gVEd+gbxeCdL5QbK5nGAGE6QJYuY333CHq/v+VcbofR0prn4ohnXz2eTjj7tnQunWaBs12og8SaevOuSescpNX3caPMoZzIB8IzDF06qMM5KHVgNzW29k9od7lAqjNlDi5tTiYISpTOL3VwP1+fECNLaoTHrjPnZpb2GNY1lnK4UPojoHEjxtp51Y1CSwBCfAwLUBVuaC3iWpUhuROReospRfNwcII+YgtORuwh1Z2oktX5ONvXQcpnTSYqJgVTnNfXqMzPik8Go/EHaZmVMB77nRWRA2M0XiHOzVaToIkh9C/NOmse5nNfBkQ54tt+T6zlOS0gg==
+ b=Y1/QfGORIniHMQNcCDoIxdBjPXpSwLeszaxEzUe6qzRvu/fO8bK6jRxA6z6F1as6L0ifkX5ZTAetK10FNddOek9QrlQr72P5bq8uUoJhODx3jC/hAql8vxgD4WVTN3lhnvW+/sys7C3famFxcNAhVgNGrUUgSxnfa4yMVTNZ97SokIsr1bxS7KNW5ia4QfddvVl4XRWhRggxMBnd/8YXEvHc168LSwiFeLvohodBjJSJxBZj/ck5KgJRxyM04LjQ8fdW5LQlr4uL7P2ct+bin9mxWZ4eBiYFj+ZCdMJso+XCr56yPm2tk0ZS6bLeq6wzQuF48i0ElSqk+aCgF5aLQQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=d0TBUAq4fHQ/8KdfP49DhXVcnhWzU5Ke/7zSwm1aje0=;
- b=HcaOgFYkhYD3zhJUNFe7z10mNN71HHJQ6dH8pJ5OP35yoflol9vhqG9Z65yYiJiDyYlCeMaf5SjP52yzQaIOfP9aii9IifdHbmrejMeu1DuFQPzB0Y1VjeyDeWkFqaj+994stDPMIZO/vKXt9ys1LbWQl2OQOW214UKh3NephSk03bavh/qPjvPqFUSRowW5WIdwlft+fHAQnoECV6hL/rYAYsh1l/Cf1/RDXG13DXMzDrUkBbUmuG4tAFkwFgrHpGUCWtOiwV2zLMFaxiXqlUExylermoJmJpYATYL0fM8htVZC0uHA5RmF5hcaktkaxufY7TznQo1nHAc2QzVMxA==
+ bh=6s+kT2LrTY5EyEWhMhKR9QzculBeDQIFUwY6n5mVQN0=;
+ b=ms7Tlf6u0NhFnZCNpuCFZapSGMjrMPI+eToQg6CP7xLmYwv9WzUPYzffnra7yN4FsBcQpmZYU+Gfp2qzGb98+Wl/Vj8AysstCgjEOFdx7/C4vWjVwfltKlu1ASuZ5pk4txuqrsXGuy3t5NuR3uIdNCRETjw6BSEBK3XO6lPX0OFCKrbF1u8eB+d6sbjcXtR5vITLI8rVIAkpy77pjIeJNO8+C0zoy7w1HhiIFBDPJe6JjKjkkO/zkb0xS/c+z0OiRcC8Fo7Q3TLYBCRdVY2oNhQvdz6dPef/+/3t59Uqg0fNPAyabFH2CVGZpstsR3qOkr+dtlQ+msvKl0Kb7nicmQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from PH0PR11MB5832.namprd11.prod.outlook.com (2603:10b6:510:141::7)
- by SN7PR11MB8041.namprd11.prod.outlook.com (2603:10b6:806:2ec::22) with
+ by PH7PR11MB6008.namprd11.prod.outlook.com (2603:10b6:510:1d0::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9745.9; Fri, 20 Mar
- 2026 01:54:08 +0000
+ 2026 07:51:50 +0000
 Received: from PH0PR11MB5832.namprd11.prod.outlook.com
  ([fe80::106e:78dd:4c96:d707]) by PH0PR11MB5832.namprd11.prod.outlook.com
  ([fe80::106e:78dd:4c96:d707%3]) with mapi id 15.20.9745.007; Fri, 20 Mar 2026
- 01:54:07 +0000
-Date: Fri, 20 Mar 2026 09:53:57 +0800
+ 07:51:50 +0000
+Date: Fri, 20 Mar 2026 15:51:43 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Thomas =?iso-8859-1?Q?Wei=DFschuh?= <thomas.weissschuh@linutronix.de>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>, Petr Mladek <pmladek@suse.com>,
-	Steven Rostedt <rostedt@goodmis.org>, Andy Shevchenko
-	<andriy.shevchenko@linux.intel.com>, Rasmus Villemoes
-	<linux@rasmusvillemoes.dk>, Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Thomas =?iso-8859-1?Q?Wei=DFschuh?= <thomas.weissschuh@linutronix.de>,
+To: Rosen Penev <rosenp@gmail.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <dmaengine@vger.kernel.org>,
+	Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>, Kees Cook
+	<kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>,
 	<oliver.sang@intel.com>
-Subject: Re: [PATCH] lib/vsprintf: Validate sleepable context during
- restrictred pointer formatting
-Message-ID: <202603191629.80fc4e2b-lkp@intel.com>
+Subject: Re: [PATCH] dmaengine: idma64: use kzalloc_flex
+Message-ID: <202603200800.38a86c8a-lkp@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20260317-restricted-pointers-final-v1-1-b4dca0ed6483@linutronix.de>
-X-ClientProxiedBy: SG2PR01CA0158.apcprd01.prod.exchangelabs.com
- (2603:1096:4:28::14) To PH0PR11MB5832.namprd11.prod.outlook.com
+In-Reply-To: <20260317003730.72379-1-rosenp@gmail.com>
+X-ClientProxiedBy: TPYP295CA0042.TWNP295.PROD.OUTLOOK.COM
+ (2603:1096:7d0:7::20) To PH0PR11MB5832.namprd11.prod.outlook.com
  (2603:10b6:510:141::7)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -102,176 +98,245 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR11MB5832:EE_|SN7PR11MB8041:EE_
-X-MS-Office365-Filtering-Correlation-Id: 10b5ca47-2112-4bf9-a2d4-08de8623919c
+X-MS-TrafficTypeDiagnostic: PH0PR11MB5832:EE_|PH7PR11MB6008:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4042c5b9-431b-4448-2a07-08de86558b9f
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016|56012099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info: amgNNaJ1O+hURcsEvgbd/YT0aNlrCii8EuSBV7LpyNMd8wpeDJj1zi0MLqjRqCPFA8h6BPjkJ85i/UsMam2ssQzqSxrA8gG5RJJjdpNp5d8UHsr554ff95fYIQxYr6R0zEV4rZwW0ZDGJ8s+jnNCEcCTzDv06ySHoJ4jE+Xg94ksLrEZzQryI1SjM28neTtoV9kUEStuLElvJOxXYZG0+dAHvVBAoFxXs4EYBlEHew/3LUtnKqKS/NC9C92nm2a/UKmXVqCzvfn8Zo8TJumJ7g2XlTNtl0o4oyYlmAOCYAlvb9GNrGraq//v/wJLLUPVzrbjoPW7hOTc9YoyZXJsKoLkega0FVpVSCrYlBo90J7FJuUpnAQolOWGF73ms6IaDaVrtKDwtYOYEXNLdLCs2JqIvkMw1u5I9rjRWiImUtlqlZWNG20Xdpi4irE+Nf2XI5KEPHvkczqmIOjverlg9kaC/axRSTT2kfHR7RZfQ5uAHmxseKt07M+uZo8ywzMxgPo5M5tucIyqyIJNyRh7GQThL57ljSZstIUQ2g9456atrNBjt8E4x7ENrTjzB2lb8O2Ok/d+PCsGzoRc7wawRcuokLBdCuc2yaroVZhfJU29Se9rB/F5eRfYBxAZazBn1OSEcNxyU6DJDuhFEjxDV/z5WSdMm+iNDZb7aqEUmGH0ENrSd48XCcprm0Exww2y+iu2XLaED0mLhopSObUM2w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5832.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016)(56012099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024|7053199007|56012099003|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info: /RCIKWQUbaxo8YGY+IKNELymoEmOMlRlJL+Q57egNwQoOXqUo5RrYFS1tmyZgyWL0Twi+pp4W/RJmpam8WZA8B234NLAmqKq/9pzTirGSuj7yOGbzGwjL0FqQ7W5QZbTC2A06pwBrMLx+jYe40FmWwZungdvMcKuswARhxliEQLIpE+l706YPucJhk2TCdgr10iRgFvQ0r6+VvOHcscEBBYGKfE+XuVKavO7iHwfY2d3GhQTe1gQ5EEbP/JjHgsydQVddht8+IRG57o6BTzHygiAKnb5XNsYeF3lJw9ij4simbge8AZIJPTK4BI+EhO++8boICsQLVv3FMEbDxqH4YM3i19UF2AXnjJcT42NllrhnCSJjuzSLKy80sO+PWa0CO3LcrEjiic1CIC+T2bzVYEPm4syrDAmnsNJ+g7MeLUvhSY0lB7DdAO68q6fmSLlM1YA1Y1UutcHXIydEE9Tn3wctGFiU2VjoT+2d2KZchOrXffYx+vJ7YD1ucPRPPqJK8i9aPl9qi74TKU2JC7H8Barn5h62XLo2fCbkppiwrNYCd9/wR+PvAynb7RJKwsSDoDl4rYXOcNKofoM7zFtBV7zIPcc7q20NoQJ8lh9iSJsc9nW2vFDsjaj0tPVHh+vwDJaWDFA2lJnL21Kp2FKAwq8vXlV7pw9A5vJDJqk7ihEt9OQbHv/PFtmvq5Uq75pF0+2f2kVMynr6TVkyHEF0A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5832.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(7053199007)(56012099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?opzO8tKZci2nq2dv476X6RSf/3CQaBoxwnPrnfZHVg1P+dE+QiO6lwiswq4i?=
- =?us-ascii?Q?nQ8ntJUsdyYuRmxPDKsFRM1YUHrtGPA+/bFE7ikle6brJEHZ4SpMJCxftaf3?=
- =?us-ascii?Q?pYJq0vyMyOAa2BUeSI4pdB/dE/I5mFY7EwDB2Yhg9HLmkEvSfDukHkFeAbUV?=
- =?us-ascii?Q?ldzJ+vJkMYPqf4ELrEDE43rz81GvN6cBoFNYCQB66nEKIsCnS6kM9c9MKAda?=
- =?us-ascii?Q?lPsAG8CsaWL05kembaVCJ8hcQmu/VZ+kX5w+vKBjHLhMUwiIcr6PJioUOeSQ?=
- =?us-ascii?Q?uGRuZyxyQdznkGaxkdoE/9nRKTI3YKUFDKEzeljsFWLru7m3WAIqk93yA466?=
- =?us-ascii?Q?0hyZbxPYgYmRU/qZn4CpocxLqaRFei5Lk/W8VexJ/vEIo/cFbHqW/3WATOxL?=
- =?us-ascii?Q?Kuxxcj+jlVSiwkpK7hjE+Knsoeyq35uR6cCazIpp3xC23B880FSxH1oeuV1I?=
- =?us-ascii?Q?miLNn56pFY9dJinqKH8vv5rqqdi+XDvDkUoEsQviPz9LUC29mtfaLa8nSVFh?=
- =?us-ascii?Q?fUVsoF7Uync49nCpjTBBNHvVIKaLQ3dkb+XNZbMSq6F8bi4JolSPAu2gBSLy?=
- =?us-ascii?Q?zoOefWtWwvhMtkWIWl9yZ+BBwGgiq+h2zksPObW5e37jlLTgJDP6a8iUg5Oo?=
- =?us-ascii?Q?C/0/DMEJTxqkCDcrvlm2JLqxxwouhAWeJDn7LpcyUGF3bpGAgpaZGGY8UGmM?=
- =?us-ascii?Q?4d2YvpeMpB9M6hIZVS62Z8je+XMFYX8/iQGlk150/4AAIARDTtCYfb9Jsblw?=
- =?us-ascii?Q?vyJZt2wfhCwa8ghvPnz0zKwyHvUNcOwvDqq2bGSn+3oFLfzFPns7Q9CfUsab?=
- =?us-ascii?Q?E1qAWhj4ClZNiU2j8iAQYFs/MKZMjuyLZBLmGPYOphJJHoDs2PlLk6ZnCnN8?=
- =?us-ascii?Q?pSrKteMMU91ctNlTO8kf7B6bkut1ZL2dQcjClJ6vPsu5X9Z9WJQTW0SDUsfd?=
- =?us-ascii?Q?FSGo1FrN/bzKqJEMP5RLSlUC4qPX3yroJWBevU5w3deG63H2YTmL81knTmgi?=
- =?us-ascii?Q?f0m4yQ+EmrMvBAgrUmKpfScajbuCfAgbIC4x8YoiVONPWB9qGHIclKb8+8pd?=
- =?us-ascii?Q?iK4tmUxlZKA6UahsrnttXZgcttKGp+2TeXqJQ+6c67DBkpr7E2Rr8mcp7IX9?=
- =?us-ascii?Q?vCpZYcdmFCGivMthMhv/itAHFRbNXJoyaSnLrVFvsV5cFkKjiQqeYY8qRHE2?=
- =?us-ascii?Q?my86KjboWEz9avMLSIZisYYswWpo0EjGTK3tOslInJtF1rXQBDmO70W1z4Y6?=
- =?us-ascii?Q?xsL9qsCFT1pKJP0Vh2/3ZtQ53fO7tS5Phsrxe5wfLUToSTfNecdiH+bWzqHu?=
- =?us-ascii?Q?OExOncPweO8cafkcDiW/Yw1vdOozzGLGspHZFyR+hzPkzddKlPNh6pohgjlQ?=
- =?us-ascii?Q?h9DTymBF6Cgt2BZ2De2AGdESUAVVrY8tTdPvODiMShOYk+wK426vhmMR3K5c?=
- =?us-ascii?Q?yil3OT7dB8SUgq4ZSTpE7SucqmO2S3WMv5KyDV0IsYl0HgDrYE0UOXa2a5Fo?=
- =?us-ascii?Q?9dqdEK2DVJSRZ7GzWZQz/ldV0xjN0uHAILr3T3NZBixsQMA5etx1V1Gpx9w/?=
- =?us-ascii?Q?Ie43JZUXmQ/E1r6UIZJG0hLZUq8JJO0ITAoFGrNJflYI0TNVfc3MWBM0L05T?=
- =?us-ascii?Q?kK4Z2kbfS5t8FIjoIHdQ1nLyFL1fglPODly7loZuU0nvJ1aq8AL5CFubdyhu?=
- =?us-ascii?Q?nBJUPhLMbeECswISFYuQyCJFOC56Pk+erGIjZi1EeWk1+xOGFTVlnRJnLevR?=
- =?us-ascii?Q?wJxbNt+DUA=3D=3D?=
-X-Exchange-RoutingPolicyChecked: QlRi5bt7UxrC7WtCHOvXcW0xouJznsnJM1f628Usc6eJA4uQFLwJievdiACPsUi1KpZg998YoETBsoFe7oQ03hWZ2WXtxuoZiJdC782yvOexf3Us0oR7twULKvA+oTrI1KYj9stODdfnol6FQ8RntGL6yBvt9xtNkcr78K7FFlBE2LgjRWjYbmKBr5LAfcMKifFPp7LDAI1Ht6ha4K9xpQhJgBEAIdLmZm6pVMxxrAMz+9ywuROfqpr0M7vismA8llbzR5HZuZ5LEZDQMT8QgTema0YgGruLfkBtra+8qI1NQY7OqOZvIN0UyP2Pi9XFNAphJfB6KVWUZj5wjiXQEA==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 10b5ca47-2112-4bf9-a2d4-08de8623919c
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6rKk7vk1gHydTFIO/BZCbTCjV8UoVfzRumRJxMCQ2VIPpOgHFerKTJRcrpqN?=
+ =?us-ascii?Q?qx/7OyF+HP+lRymxqrHAYK5e/s/icriSqr3E3/TTQYMy+RtplN8Bk/oh5C02?=
+ =?us-ascii?Q?An/QXbKiu5h1jVir6D15h/2quWsy6wtkKyb34Xfk7/RQRLuKWg30b9j5mTxd?=
+ =?us-ascii?Q?A/7WLIr7Uz6zYRwkIP7g3H/SGhWcnBGeqSEFI9eVgn6rXeVOi7XCHiMZKzw7?=
+ =?us-ascii?Q?IyW6UTYqPi6/jFPHCOpFrpM62uA6kqjrDWFaRwlYZCEdJvzGlLsyPpekx527?=
+ =?us-ascii?Q?azbyklvPR0um/JCoyx8qDSMtMRunpOAdyYcBrsKRNl4NQD2OC2Hf7UbX6KD9?=
+ =?us-ascii?Q?EPwvn43JnSoe8HuHlBpdi3jhw6we32rkyNO2ClY4tXE5YGmzKdX8ucRdUPCd?=
+ =?us-ascii?Q?lpgBR6TeiLSmebGLaE5MJWt+oSd17gnXADbms7xccZ9gVwaw0Cj6HUWtTYeA?=
+ =?us-ascii?Q?N9bCqvzx0KERQETEMS4yrwBnqFiuW8UnleQAONPiP83FPpS6fzoRLEWdlAhf?=
+ =?us-ascii?Q?dbBfPChNqKuHJ87emLDfEMVwx2GcM/5mCpWXhL4mihj0V2R2jTxNemf5AKEW?=
+ =?us-ascii?Q?PgWJMwVUU4X7Yh/9XjzVz90EEFRliL7Jk6u4N849HXlUxuZ7xrhdbxgFGKH5?=
+ =?us-ascii?Q?UwHgMGgI5QbQpKOXMjxSPL70hf4g9bU8SqED6G09kT6plnMBfwrxvIt6ksMw?=
+ =?us-ascii?Q?hpgcHqNBuEFqnxcGPW+nQHyQTIXU1RYKkMhI/85uct85JqBFxE3QB4lboRQR?=
+ =?us-ascii?Q?jFoJde8JZSboIgMu0+c9wHAuXoOVHvNv5zylH7z94uGGLW6lDvZXxXbPzIiu?=
+ =?us-ascii?Q?mffrgntcNDs9sV6JSzxHdwGCoJBWPC3NDN9VqJsM0TW0dBUP8v/iiBj5XIZS?=
+ =?us-ascii?Q?pv6BqFAtRXAwrauAkB1PuQp3kKmh2MoRgjTcxMnmTIPVm0Ks5mMox257H8rR?=
+ =?us-ascii?Q?UMJfQZFXITKLERz2izVOKSp8n6Gan0IT9AQcow1GMEV0lRcEaM3ZcTahVJ5d?=
+ =?us-ascii?Q?oMRF5KQWO13Dtp4NFWJ58MPhkL2ijMhyF3UzyxdiCqrJHjPxaC/IXoavtBT7?=
+ =?us-ascii?Q?wRWhLxeulyiJVWaqABzmZtiy3ozXnx8wNeZtk3uqX7dBTAo2ETbNTsI5b7qR?=
+ =?us-ascii?Q?mFh+5anYvOq8frnDEY2AjkKC0bRBIuirdL+UOXD61j+n45mSrWar59AoJTI7?=
+ =?us-ascii?Q?EAoXxF1jNmkZOAJBrW6ydWqlz0wcAai/DJkwpOnlIwSxWif4LD/xqKgA10t4?=
+ =?us-ascii?Q?ILL63bpsf4EXJySVsjPXKWsv+5n1NaIRmZiIdnttZYZd5tLsaNeTOsaWm+y/?=
+ =?us-ascii?Q?sy7VDcyYqXu5SnjgVsOZYiHiHg31brDnKbWuwL4HvzoaQuRhHnYrbumZe1tL?=
+ =?us-ascii?Q?uoOan6HryVXeE4NY3bArA2iQYPrNgu5AdixjluMST35tzWYuwYAGSmKfGAsP?=
+ =?us-ascii?Q?rugCyjpGW96M5k3uW9iiMBF9xMH8gmslOTDcS1NnPXDD9QgiHPsLG0AmrGpx?=
+ =?us-ascii?Q?QI/DEc77uiAY1mRJ4//6GaSLIzvFgF1llfdHFuiQMMjc/kl9WanWuot36UGe?=
+ =?us-ascii?Q?fdJjm5SqCOxg49WaP4hhHrTVWh75WEi8fTJTVY4GyOSTV64s6/4apCHXauJt?=
+ =?us-ascii?Q?/ClXL/oUPAHk2gbFMgwQLgWpvNaSNNBNbAoOJ/gWlPfSy7bYM4MFPBFuboV8?=
+ =?us-ascii?Q?ZLF16wadhtPGUDax7B07DrYsp0KVR6INin6KAEh/M2Bqbrw9Uv7MVCmGnZ7D?=
+ =?us-ascii?Q?sMXacRzyLA=3D=3D?=
+X-Exchange-RoutingPolicyChecked: nDAjv4ZAsfhTxGG5PsJRbR4l7l+jJrCwDneFrGG2rwuVBRkT8CPySe2b16iTi2Th7oOs2tYDR/kLE6+e1kndxM03GDe+IoqcVRWdNWUBkzYQ2aLurYTrNe2zDbOuElCgtLyJg4AWn98ROIyD31BwVxkF9tyRZI3uzndo4MLMVpQUtlsybW+HzPeDYQOBkMc2opU0QsCaAQAMZfIOEHnoMNmQxOvoABqVgNiVNLU9u2W89KSgqmeVzqogYVZ2bX/bR8DGdJ0383fJP70nV19xj7UZQPXZs0yi1fECTlgFROjuqQnscQaJq0zkjoiDJ4ZcY5D/Qc1IlSjU+jHfd4ukAQ==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4042c5b9-431b-4448-2a07-08de86558b9f
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5832.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Mar 2026 01:54:07.3245
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Mar 2026 07:51:50.8336
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iq+3+v+DIoZs2uLYU+NHKsWw+yfIAHLXHUkqT9hhT2fGcCb/BKWBLV88la82owp0SFyM6tJ8WOCnRRVs3rujFg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB8041
+X-MS-Exchange-CrossTenant-UserPrincipalName: zI8R4JsIH8Ri1nJ8itdb3Tk0m0O8Bv7skggKYWFPYG0CQcP4AAqhCv/0nGbY/UDjfJ+QZn+GPSMIQF7dH25UtA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB6008
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
-kernel test robot noticed "BUG:sleeping_function_called_from_invalid_context_at_lib/vsprintf.c" on:
+kernel test robot noticed "WARNING:HARDIRQ-safe->HARDIRQ-unsafe_lock_order_detected" on:
 
-commit: a3aa148a203538960cf380021ba5605a35dd573b ("[PATCH] lib/vsprintf: Validate sleepable context during restrictred pointer formatting")
-url: https://github.com/intel-lab-lkp/linux/commits/Thomas-Wei-schuh/lib-vsprintf-Validate-sleepable-context-during-restrictred-pointer-formatting/20260318-000650
-patch link: https://lore.kernel.org/all/20260317-restricted-pointers-final-v1-1-b4dca0ed6483@linutronix.de/
-patch subject: [PATCH] lib/vsprintf: Validate sleepable context during restrictred pointer formatting
+commit: 9aaf187d4b233d22a895a594836a02c32c413937 ("[PATCH] dmaengine: idma64: use kzalloc_flex")
+url: https://github.com/intel-lab-lkp/linux/commits/Rosen-Penev/dmaengine-idma64-use-kzalloc_flex/20260317-084750
+base: https://git.kernel.org/cgit/linux/kernel/git/vkoul/dmaengine.git next
+patch link: https://lore.kernel.org/all/20260317003730.72379-1-rosenp@gmail.com/
+patch subject: [PATCH] dmaengine: idma64: use kzalloc_flex
 
-in testcase: trinity
-version: 
+in testcase: perf-event-tests
+version: perf-event-tests-x86_64-54251c2-1_20251210
 with following parameters:
 
-	runtime: 300s
-	group: group-00
-	nr_groups: 5
+	paranoid: not_paranoid_at_all
 
 
-
-config: x86_64-kexec
-compiler: clang-20
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 32G
+config: x86_64-rhel-9.4-bpf
+compiler: gcc-14
+test machine: 16 threads Intel(R) Core(TM) i7-13620H (Raptor Lake) with 32G memory
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
 
 
-+---------------------------------------------------------------------+------------+------------+
-|                                                                     | 2d1373e424 | a3aa148a20 |
-+---------------------------------------------------------------------+------------+------------+
-| BUG:sleeping_function_called_from_invalid_context_at_lib/vsprintf.c | 0          | 12         |
-+---------------------------------------------------------------------+------------+------------+
-
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202603191629.80fc4e2b-lkp@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202603200800.38a86c8a-lkp@intel.com
 
 
 
-[  103.203896][ T6289] BUG: sleeping function called from invalid context at lib/vsprintf.c:866
-[  103.218966][ T6289] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 6289, name: trinity-c6
-[  103.270174][ T6289] preempt_count: 2, expected: 0
-[  103.288514][ T6289] RCU nest depth: 0, expected: 0
-[  103.310869][ T6289] CPU: 1 UID: 65534 PID: 6289 Comm: trinity-c6 Not tainted 7.0.0-rc4-00006-ga3aa148a2035 #1 PREEMPT(lazy)
-[  103.310904][ T6289] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[  103.310929][ T6289] Call Trace:
-[  103.311096][ T6289]  <TASK>
-[  103.311126][ T6289]  dump_stack_lvl (lib/dump_stack.c:123)
-[  103.311160][ T6289]  __might_resched (kernel/sched/core.c:8889)
-[  103.311196][ T6289]  restricted_pointer (include/linux/kernel.h:58 lib/vsprintf.c:866)
-[  103.311228][ T6289]  pointer (lib/vsprintf.c:2624)
-[  103.311261][ T6289]  ? vsnprintf (lib/vsprintf.c:?)
-[  103.311295][ T6289]  vsnprintf (lib/vsprintf.c:2955)
-[  103.311327][ T6289]  seq_vprintf (fs/seq_file.c:393)
-[  103.311359][ T6289]  seq_printf (fs/seq_file.c:409)
-[  103.311388][ T6289]  ? rep_movs_alternative (arch/x86/lib/copy_user_64.S:46)
-[  103.311423][ T6289]  unix_seq_show (net/unix/af_unix.c:3540)
-[  103.311458][ T6289]  seq_read_iter (fs/seq_file.c:273)
-[  103.311491][ T6289]  seq_read (fs/seq_file.c:164)
-[  103.311524][ T6289]  proc_reg_read (fs/proc/inode.c:308 fs/proc/inode.c:320)
-[  103.311580][ T6289]  vfs_read (fs/read_write.c:572)
-[  103.311611][ T6289]  ? do_setitimer (include/linux/spinlock.h:?)
-[  103.311643][ T6289]  ksys_read (fs/read_write.c:717)
-[  103.311674][ T6289]  do_syscall_64 (arch/x86/entry/syscall_64.c:?)
-[  103.311708][ T6289]  entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130)
-[  103.311739][ T6289] RIP: 0033:0x453b29
-[  103.311749][ T6289] Code: 00 f3 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 3b 84 00 00 c3 66 2e 0f 1f 84 00 00 00 00
-All code
-========
-   0:	00 f3                	add    %dh,%bl
-   2:	c3                   	ret
-   3:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
-   a:	00 00 00 
-   d:	0f 1f 40 00          	nopl   0x0(%rax)
-  11:	48 89 f8             	mov    %rdi,%rax
-  14:	48 89 f7             	mov    %rsi,%rdi
-  17:	48 89 d6             	mov    %rdx,%rsi
-  1a:	48 89 ca             	mov    %rcx,%rdx
-  1d:	4d 89 c2             	mov    %r8,%r10
-  20:	4d 89 c8             	mov    %r9,%r8
-  23:	4c 8b 4c 24 08       	mov    0x8(%rsp),%r9
-  28:	0f 05                	syscall
-  2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping instruction
-  30:	0f 83 3b 84 00 00    	jae    0x8471
-  36:	c3                   	ret
-  37:	66                   	data16
-  38:	2e                   	cs
-  39:	0f                   	.byte 0xf
-  3a:	1f                   	(bad)
-  3b:	84 00                	test   %al,(%rax)
-  3d:	00 00                	add    %al,(%rax)
-	...
+kern  :warn  : [   92.812882] [    T125] WARNING: HARDIRQ-safe -> HARDIRQ-unsafe lock order detected
+kern  :warn  : [   92.812886] [    T125] 7.0.0-rc1-00048-g9aaf187d4b23 #1 Tainted: G S
+kern  :warn  : [   92.812888] [    T125] -----------------------------------------------------
+kern  :warn  : [   92.812890] [    T125] kworker/u64:13/125 [HC0[0]:SC0[0]:HE0:SE1] is trying to acquire:
+kern  :info  : [   92.820021] [    T301] scsi host1: ahci
+kern  :warn  : [   92.824348] [    T125] ffffffff85238340 (fs_reclaim){+.+.}-{0:0}, at: __kmalloc_noprof (include/linux/sched/mm.h:318 mm/slub.c:4452 mm/slub.c:4807 mm/slub.c:5218 mm/slub.c:5231)
+kern  :info  : [   92.832922] [    T301] ata1: SATA max UDMA/133 abar m2048@0x50a02000 port 0x50a02100 irq 157 lpm-pol 0
+kern  :warn  : [   92.840680] [    T125]
+and this task is already holding:
+kern  :warn  : [   92.840681] [    T125] ffffffff87aa2698 (&port_lock_key){-.-.}-{3:3}, at: serial_port_runtime_resume (include/linux/serial_core.h:640 include/linux/serial_core.h:674 include/linux/serial_core.h:718 drivers/tty/serial/serial_port.c:42)
+kern  :info  : [   92.847517] [    T301] ata2: SATA max UDMA/133 abar m2048@0x50a02000 port 0x50a02180 irq 157 lpm-pol 0
+kern  :warn  : [   92.856658] [    T125] which would create a new lock dependency:
+kern  :warn  : [   92.856660] [    T125]  (&port_lock_key){-.-.}-{3:3} -> (fs_reclaim){+.+.}-{0:0}
+kern  :warn  : [   92.921503] [    T125]
+but this new dependency connects a HARDIRQ-irq-safe lock:
+kern  :warn  : [   92.921505] [    T125]  (&port_lock_key){-.-.}-{3:3}
+kern  :warn  : [   92.921509] [    T125]
+... which became HARDIRQ-irq-safe at:
+kern  :warn  : [   92.921510] [    T125]   __lock_acquire (kernel/locking/lockdep.c:5191 (discriminator 1))
+kern  :warn  : [   92.959014] [    T125]   lock_acquire (include/trace/events/lock.h:24 (discriminator 15) include/trace/events/lock.h:24 (discriminator 15) kernel/locking/lockdep.c:5831 (discriminator 15))
+kern  :warn  : [   92.959019] [    T125]   _raw_spin_lock_irqsave (include/linux/spinlock_api_smp.h:133 kernel/locking/spinlock.c:162)
+kern  :warn  : [   92.970359] [    T125]   serial8250_handle_irq (include/linux/serial_core.h:640 include/linux/serial_core.h:674 include/linux/serial_core.h:718 drivers/tty/serial/8250/8250_port.c:1798)
+kern  :warn  : [   92.976110] [    T125]   serial8250_default_handle_irq (drivers/tty/serial/8250/8250_port.c:1846)
+kern  :warn  : [   92.982547] [    T125]   serial8250_interrupt (drivers/tty/serial/8250/8250_core.c:86 (discriminator 1))
+kern  :warn  : [   92.988104] [    T125]   __handle_irq_event_percpu (kernel/irq/handle.c:209)
+kern  :warn  : [   92.994068] [    T125]   handle_irq_event (kernel/irq/handle.c:248 kernel/irq/handle.c:263)
+kern  :warn  : [   92.999068] [    T125]   handle_edge_irq (kernel/irq/chip.c:857)
+kern  :warn  : [   93.004157] [    T125]   __common_interrupt (include/asm-generic/irq_regs.h:29 (discriminator 5) arch/x86/kernel/irq.c:336 (discriminator 5))
+kern  :warn  : [   93.009323] [    T125]   common_interrupt (arch/x86/kernel/irq.c:326 (discriminator 35))
+kern  :warn  : [   93.014316] [    T125]   asm_common_interrupt (arch/x86/include/asm/idtentry.h:569)
+kern  :warn  : [   93.019650] [    T125]   finish_task_switch+0x10b/0x3b0
+kern  :warn  : [   93.025596] [    T125]   __schedule (kernel/sched/core.c:5298)
+kern  :warn  : [   93.030226] [    T125]   schedule (arch/x86/include/asm/preempt.h:27 kernel/sched/core.c:5780 kernel/sched/core.c:5800 kernel/sched/core.c:6990 kernel/sched/core.c:7004)
+kern  :warn  : [   93.034596] [    T125]   worker_thread (kernel/workqueue.c:3392)
+kern  :warn  : [   93.039471] [    T125]   kthread (kernel/kthread.c:467)
+kern  :warn  : [   93.043818] [    T125]   ret_from_fork (arch/x86/kernel/process.c:164)
+kern  :warn  : [   93.048676] [    T125]   ret_from_fork_asm (arch/x86/entry/entry_64.S:255)
+kern  :warn  : [   93.053710] [    T125]
+to a HARDIRQ-irq-unsafe lock:
+kern  :warn  : [   93.061189] [    T125]  (fs_reclaim){+.+.}-{0:0}
+kern  :warn  : [   93.061193] [    T125]
+... which became HARDIRQ-irq-unsafe at:
+kern  :warn  : [   93.074129] [    T125] ...
+kern  :warn  : [   93.074131] [    T125]   __lock_acquire (kernel/locking/lockdep.c:5191 (discriminator 1))
+kern  :warn  : [   93.081760] [    T125]   lock_acquire (include/trace/events/lock.h:24 (discriminator 15) include/trace/events/lock.h:24 (discriminator 15) kernel/locking/lockdep.c:5831 (discriminator 15))
+kern  :warn  : [   93.086999] [    T125]   fs_reclaim_acquire (mm/page_alloc.c:4349 mm/page_alloc.c:4362)
+kern  :warn  : [   93.092056] [    T125]   mem_cgroup_alloc (include/linux/sched/mm.h:318 include/linux/xarray.h:876 mm/memcontrol.c:3758)
+kern  :warn  : [   93.097030] [    T125]   mem_cgroup_css_alloc (mm/memcontrol.c:3830)
+kern  :warn  : [   93.102350] [    T125]   cgroup_init_subsys (kernel/cgroup/cgroup.c:6257)
+kern  :warn  : [   93.107583] [    T125]   cgroup_init (include/linux/list.h:191 kernel/cgroup/cgroup.c:6387)
+kern  :warn  : [   93.112204] [    T125]   start_kernel (init/main.c:1202)
+kern  :warn  : [   93.116907] [    T125]   __pfx_clear_bss (arch/x86/kernel/head64.c:310)
+kern  :warn  : [   93.121614] [    T125]   x86_64_start_kernel (??:?)
+kern  :warn  : [   93.126754] [    T125]   common_startup_64 (arch/x86/kernel/head_64.S:419)
+kern  :warn  : [   93.131895] [    T125]
+other info that might help us debug this:
 
-Code starting with the faulting instruction
-===========================================
-   0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
-   6:	0f 83 3b 84 00 00    	jae    0x8447
-   c:	c3                   	ret
-   d:	66                   	data16
-   e:	2e                   	cs
-   f:	0f                   	.byte 0xf
-  10:	1f                   	(bad)
-  11:	84 00                	test   %al,(%rax)
-  13:	00 00                	add    %al,(%rax)
-	...
-[  103.311777][ T6289] RSP: 002b:00007ffe20169d38 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-[  103.311807][ T6289] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000453b29
-[  103.311812][ T6289] RDX: 0000000000001000 RSI: 00007f14e38d0000 RDI: 00000000000000b6
-[  103.311837][ T6289] RBP: 00007ffe20169de0 R08: 000000000000ffff R09: 23c080ca08458805
-[  103.311842][ T6289] R10: fffffffffffffffd R11: 0000000000000246 R12: 0000000000000002
-[  103.311846][ T6289] R13: 00007f14e41df058 R14: 00000000010a2830 R15: 00007f14e41df000
-[  103.311877][ T6289]  </TASK>
+kern  :warn  : [   93.142675] [    T125]  Possible interrupt unsafe locking scenario:
 
+kern  :warn  : [   93.151346] [    T125]        CPU0                    CPU1
+kern  :warn  : [   93.156839] [    T125]        ----                    ----
+kern  :warn  : [   93.162328] [    T125]   lock(fs_reclaim);
+kern  :info  : [   93.166307] [    T391] ata1: SATA link down (SStatus 4 SControl 300)
+kern  :warn  : [   93.166424] [    T125]                                local_irq_disable();
+kern  :warn  : [   93.166425] [    T125]                                lock(&port_lock_key);
+kern  :info  : [   93.177705] [    T393] ata2: SATA link down (SStatus 4 SControl 300)
+kern  :warn  : [   93.179181] [    T125]                                lock(fs_reclaim);
+kern  :warn  : [   93.179183] [    T125]   <Interrupt>
+kern  :warn  : [   93.179184] [    T125]     lock(&port_lock_key);
+kern  :warn  : [   93.179186] [    T125]
+*** DEADLOCK ***
+
+kern  :warn  : [   93.179186] [    T125] 3 locks held by kworker/u64:13/125:
+kern  :warn  : [   93.222088] [    T125]  #0: ffff8881016d2948 ((wq_completion)pm){+.+.}-{0:0}, at: process_one_work (kernel/workqueue.c:3250)
+kern  :warn  : [   93.232332] [    T125]  #1: ffff888101b3fd40 ((work_completion)(&dev->power.work)){+.+.}-{0:0}, at: process_one_work (kernel/workqueue.c:3251)
+kern  :warn  : [   93.244208] [    T125]  #2: ffffffff87aa2698 (&port_lock_key){-.-.}-{3:3}, at: serial_port_runtime_resume (include/linux/serial_core.h:640 include/linux/serial_core.h:674 include/linux/serial_core.h:718 drivers/tty/serial/serial_port.c:42)
+kern  :warn  : [   93.255081] [    T125]
+the dependencies between HARDIRQ-irq-safe lock and the holding lock:
+kern  :warn  : [   93.265967] [    T125] -> (&port_lock_key){-.-.}-{3:3} {
+kern  :warn  : [   93.271368] [    T125]    IN-HARDIRQ-W at:
+kern  :warn  : [   93.275551] [    T125]                     __lock_acquire (kernel/locking/lockdep.c:5191 (discriminator 1))
+kern  :warn  : [   93.282082] [    T125]                     lock_acquire (include/trace/events/lock.h:24 (discriminator 15) include/trace/events/lock.h:24 (discriminator 15) kernel/locking/lockdep.c:5831 (discriminator 15))
+kern  :warn  : [   93.288963] [    T125]                     _raw_spin_lock_irqsave (include/linux/spinlock_api_smp.h:133 kernel/locking/spinlock.c:162)
+kern  :warn  : [   93.296016] [    T125]                     serial8250_handle_irq (include/linux/serial_core.h:640 include/linux/serial_core.h:674 include/linux/serial_core.h:718 drivers/tty/serial/8250/8250_port.c:1798)
+kern  :warn  : [   93.303060] [    T125]                     serial8250_default_handle_irq (drivers/tty/serial/8250/8250_port.c:1846)
+kern  :warn  : [   93.310805] [    T125]                     serial8250_interrupt (drivers/tty/serial/8250/8250_core.c:86 (discriminator 1))
+kern  :warn  : [   93.317680] [    T125]                     __handle_irq_event_percpu (kernel/irq/handle.c:209)
+kern  :warn  : [   93.325157] [    T125]                     handle_irq_event (kernel/irq/handle.c:248 kernel/irq/handle.c:263)
+kern  :warn  : [   93.331689] [    T125]                     handle_edge_irq (kernel/irq/chip.c:857)
+kern  :warn  : [   93.338301] [    T125]                     __common_interrupt (include/asm-generic/irq_regs.h:29 (discriminator 5) arch/x86/kernel/irq.c:336 (discriminator 5))
+kern  :warn  : [   93.345005] [    T125]                     common_interrupt (arch/x86/kernel/irq.c:326 (discriminator 35))
+kern  :warn  : [   93.351528] [    T125]                     asm_common_interrupt (arch/x86/include/asm/idtentry.h:569)
+kern  :warn  : [   93.358390] [    T125]                     finish_task_switch+0x10b/0x3b0
+kern  :warn  : [   93.365862] [    T125]                     __schedule (kernel/sched/core.c:5298)
+kern  :warn  : [   93.372039] [    T125]                     schedule (arch/x86/include/asm/preempt.h:27 kernel/sched/core.c:5780 kernel/sched/core.c:5800 kernel/sched/core.c:6990 kernel/sched/core.c:7004)
+kern  :warn  : [   93.377948] [    T125]                     worker_thread (kernel/workqueue.c:3392)
+kern  :warn  : [   93.384375] [    T125]                     kthread (kernel/kthread.c:467)
+kern  :warn  : [   93.390278] [    T125]                     ret_from_fork (arch/x86/kernel/process.c:164)
+kern  :warn  : [   93.396705] [    T125]                     ret_from_fork_asm (arch/x86/entry/entry_64.S:255)
+kern  :warn  : [   93.403303] [    T125]    IN-SOFTIRQ-W at:
+kern  :warn  : [   93.407480] [    T125]                     __lock_acquire (kernel/locking/lockdep.c:5191 (discriminator 1))
+kern  :warn  : [   93.413998] [    T125]                     lock_acquire (include/trace/events/lock.h:24 (discriminator 15) include/trace/events/lock.h:24 (discriminator 15) kernel/locking/lockdep.c:5831 (discriminator 15))
+kern  :warn  : [   93.420866] [    T125]                     _raw_spin_lock_irqsave (include/linux/spinlock_api_smp.h:133 kernel/locking/spinlock.c:162)
+kern  :warn  : [   93.427896] [    T125]                     serial8250_handle_irq (include/linux/serial_core.h:640 include/linux/serial_core.h:674 include/linux/serial_core.h:718 drivers/tty/serial/8250/8250_port.c:1798)
+kern  :warn  : [   93.434913] [    T125]                     serial8250_default_handle_irq (drivers/tty/serial/8250/8250_port.c:1846)
+kern  :warn  : [   93.442616] [    T125]                     serial8250_interrupt (drivers/tty/serial/8250/8250_core.c:86 (discriminator 1))
+kern  :warn  : [   93.449446] [    T125]                     __handle_irq_event_percpu (kernel/irq/handle.c:209)
+kern  :warn  : [   93.456868] [    T125]                     handle_irq_event (kernel/irq/handle.c:248 kernel/irq/handle.c:263)
+kern  :warn  : [   93.463342] [    T125]                     handle_edge_irq (kernel/irq/chip.c:857)
+kern  :warn  : [   93.469897] [    T125]                     __common_interrupt (include/asm-generic/irq_regs.h:29 (discriminator 5) arch/x86/kernel/irq.c:336 (discriminator 5))
+kern  :warn  : [   93.476528] [    T125]                     common_interrupt (arch/x86/kernel/irq.c:326 (discriminator 2))
+kern  :warn  : [   93.482981] [    T125]                     asm_common_interrupt (arch/x86/include/asm/idtentry.h:569)
+kern  :warn  : [   93.489779] [    T125]                     sched_balance_update_blocked_averages (kernel/sched/fair.c:9949)
+kern  :warn  : [   93.498233] [    T125]                     sched_balance_softirq (kernel/sched/fair.c:13021)
+kern  :warn  : [   93.505116] [    T125]                     handle_softirqs (arch/x86/include/asm/jump_label.h:37 include/trace/events/irq.h:142 kernel/softirq.c:623)
+kern  :warn  : [   93.511663] [    T125]                     __irq_exit_rcu (kernel/softirq.c:657 kernel/softirq.c:496 kernel/softirq.c:723)
+kern  :warn  : [   93.518123] [    T125]                     irq_exit_rcu (kernel/softirq.c:741 (discriminator 38))
+kern  :warn  : [   93.524134] [    T125]                     sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1056 (discriminator 35) arch/x86/kernel/apic/apic.c:1056 (discriminator 35))
+kern  :warn  : [   93.531547] [    T125]                     asm_sysvec_apic_timer_interrupt (arch/x86/include/asm/idtentry.h:569)
+kern  :warn  : [   93.539311] [    T125]                     cpuidle_enter_state (drivers/cpuidle/cpuidle.c:294)
+kern  :warn  : [   93.546121] [    T125]                     cpuidle_enter (drivers/cpuidle/cpuidle.c:403 (discriminator 2))
+kern  :warn  : [   93.552324] [    T125]                     cpuidle_idle_call (kernel/sched/idle.c:161 kernel/sched/idle.c:237)
+kern  :warn  : [   93.559039] [    T125]                     do_idle (kernel/sched/idle.c:332)
+kern  :warn  : [   93.564800] [    T125]                     cpu_startup_entry (kernel/sched/idle.c:429)
+kern  :warn  : [   93.571342] [    T125]                     start_secondary (arch/x86/kernel/smpboot.c:200 (discriminator 10) arch/x86/kernel/smpboot.c:280 (discriminator 10))
+kern  :warn  : [   93.577886] [    T125]                     common_startup_64 (arch/x86/kernel/head_64.S:419)
+kern  :warn  : [   93.584604] [    T125]    INITIAL USE at:
+kern  :warn  : [   93.588630] [    T125]                    __lock_acquire (kernel/locking/lockdep.c:5191 (discriminator 1))
+kern  :warn  : [   93.595007] [    T125]                    lock_acquire (include/trace/events/lock.h:24 (discriminator 15) include/trace/events/lock.h:24 (discriminator 15) kernel/locking/lockdep.c:5831 (discriminator 15))
+kern  :warn  : [   93.601736] [    T125]                    _raw_spin_lock_irqsave (include/linux/spinlock_api_smp.h:133 kernel/locking/spinlock.c:162)
+kern  :warn  : [   93.608635] [    T125]                    serial8250_do_set_termios (include/linux/serial_core.h:640 include/linux/serial_core.h:674 include/linux/serial_core.h:718 include/linux/serial_core.h:797 drivers/tty/serial/8250/8250_port.c:2760)
+kern  :warn  : [   93.615969] [    T125]                    uart_set_options (drivers/tty/serial/serial_core.c:2239)
+kern  :warn  : [   93.622513] [    T125]                    serial8250_console_setup (drivers/tty/serial/8250/8250_port.c:3405)
+kern  :warn  : [   93.629758] [    T125]                    univ8250_console_setup (drivers/tty/serial/8250/8250_core.c:430)
+kern  :warn  : [   93.636745] [    T125]                    try_enable_preferred_console (kernel/printk/printk.c:3882 kernel/printk/printk.c:3873 kernel/printk/printk.c:3926)
+kern  :warn  : [   93.644337] [    T125]                    register_console (kernel/printk/printk.c:4120)
+kern  :warn  : [   93.650898] [    T125]                    univ8250_console_init (drivers/tty/serial/8250/8250_core.c:516)
+kern  :warn  : [   93.657715] [    T125]                    console_init (kernel/printk/printk.c:4407)
+kern  :warn  : [   93.663915] [    T125]                    start_kernel (init/main.c:1148)
+kern  :warn  : [   93.670115] [    T125]                    __pfx_clear_bss (arch/x86/kernel/head64.c:310)
+kern  :warn  : [   93.676311] [    T125]                    x86_64_start_kernel (??:?)
+kern  :warn  : [   93.682946] [    T125]                    common_startup_64 (arch/x86/kernel/head_64.S:419)
+kern  :warn  : [   93.689577] [    T125]  }
+kern  :warn  : [   93.692212] [    T125]  ... key      at: port_lock_key+0x0/0x40
+kern  :warn  : [   93.699982] [    T125]
+the dependencies between the lock to be acquired
+kern  :warn  : [   93.699983] [    T125]  and HARDIRQ-irq-unsafe lock:
+kern  :warn  : [   93.714039] [    T125] -> (fs_reclaim){+.+.}-{0:0} {
+kern  :warn  : [   93.719030] [    T125]    HARDIRQ-ON-W at:
+kern  :warn  : [   93.723151] [    T125]                     __lock_acquire (kernel/locking/lockdep.c:5191 (discriminator 1))
+kern  :warn  : [   93.729625] [    T125]                     lock_acquire (include/trace/events/lock.h:24 (discriminator 15) include/trace/events/lock.h:24 (discriminator 15) kernel/locking/lockdep.c:5831 (discriminator 15))
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20260319/202603191629.80fc4e2b-lkp@intel.com
+https://download.01.org/0day-ci/archive/20260320/202603200800.38a86c8a-lkp@intel.com
 
 
 
