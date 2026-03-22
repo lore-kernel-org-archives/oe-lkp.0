@@ -1,93 +1,90 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45AC01E9919
-	for <oe-lkp@lists.linux.dev>; Sun, 22 Mar 2026 10:07:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE71C337BA1
+	for <oe-lkp@lists.linux.dev>; Sun, 22 Mar 2026 10:14:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.14
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774174049; cv=fail; b=ZzIu/wvGQQzWWS9h/uGnRRu12AI4s4863pofejZE22Q/9VSwKbRSqzpQBvvxTH09QgLAFssAQ1IjDuW8ipcEpi4OKBbclWJsn4dNGdxlFm76hAZm+WyBXXeD7+QSlUnPwAPuqUkC0nwJrxrH96tT09LowLz0S4ut5UDU9hUyHzA=
+	t=1774174484; cv=fail; b=d/5ndd261c0CNVZFVRXnyaROHaIb+Hso5oz2CEsGs0hgZWsC1NhuXyhqa/oIiiedlYmd4v6J/gLgtaXNEVSrDKbWjke3mGqhRLGWpK1zRRrxIothuCycbVfyEPnU0S8SOcEZsR5OjYAhngW/Oiauo/xFkzOg4jmb1Ugq6ArhCrs=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774174049; c=relaxed/simple;
-	bh=p+HxcyzP9Up3lQ8H7spS+y2JQH+ijMpxYC/zQKQEqQs=;
+	s=arc-20240116; t=1774174484; c=relaxed/simple;
+	bh=ugTUw25OYxtXiNrtc0hVYsg/6vOnxuXN/dlRrCtlxpg=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=ChRipbWPznm55YNY8VcYqRejjY0kXtwz0/hX3t+2ki2l3cwP4G0VOuzHYdTEKDhDdCqPAOWGInvrgLeCjJaVTj/DdF10M8+05/pYqNzncmGpycmv6jXIfbpD6VyYEx9n5w/KBqbI/v0TyHLFUya71v6e1afRMjWSLKCVytih4DY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Y6d4GE0l; arc=fail smtp.client-ip=192.198.163.12
+	 Content-Disposition:MIME-Version; b=Zq+nKULUA1fnUCxGbdgFa/z3tRzKVvClM87aNPAg0PWRpQjQrLUVT/lzkv8Z8z1mIQR2NyefaaS/Zyvp8Yt4YxM/ORogvfV7q2/accR247Um4JUS/Sb8dO8B9DBg3lSGmAGYN7ryufLLcfj0dSoJXAb109+1GsNZA413FaRg5D4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ne17OaJn; arc=fail smtp.client-ip=198.175.65.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Y6d4GE0l"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ne17OaJn"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1774174046; x=1805710046;
+  t=1774174482; x=1805710482;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=p+HxcyzP9Up3lQ8H7spS+y2JQH+ijMpxYC/zQKQEqQs=;
-  b=Y6d4GE0lQtdrL1+aAjfAa0XANXDXceQnGKQgsdiBcFeQ0vXacL9Nu1ch
-   ew43RKZTTWYDfvzTEFHrrFRKwZqYA+GnfcpU3dHcXsWwdtTA/Uh/XNzzl
-   GoxX8jrLRW+c/G680Qe+Ao+TT97U7GPPGtCBpoehYT0zdg4/axFogwlqN
-   l7mzxmC1xhwVK2Hd1xxuDeFV/GZbuOdmtIckOJ4nyjdaHxHsTcHy1HkSd
-   rpL7GS+2EGir/f0mcJ0iQR8y4Vx1Lem0It5IbOdZAvQe5Ne7Dxkg6yfa2
-   eGjpeLvqWo/VA93TAelqWhML10k/1SzSY88RL6hS05wgZM7BWy4ilc3eR
+  bh=ugTUw25OYxtXiNrtc0hVYsg/6vOnxuXN/dlRrCtlxpg=;
+  b=ne17OaJnkKAlA1ntRy6bJXV1k1Z00DWFt2LR+5AqoOqybeSOOWTIBZig
+   2jj/cBtOxgO3PaSCrRYBf1tQMvsm34xqSfoLrF9zUD3tRai3Peo3SFEwt
+   GBqm0AqMsrjL7oC6EzF+noSgPWunq/mQh09k3lgl4nSDn3zEc6gTJoQEM
+   fjONvZ8zfA3Un6lKfPMs1anb0y6wkoq0jDNpAxBqavoa+EEuoLMRv/htz
+   XgGr6zggSDWDa4dQx2RY6B/RWTTzDnLauZYIsGwv8trnFscpf7YqPJEux
+   l0owgrZ1SvgRDdFpLoXjX6O4sf8Rq/jP8rr+CWFvf5hlZ3wTJa29Edslf
    A==;
-X-CSE-ConnectionGUID: NTg47hgKQVaIjDPA009HRQ==
-X-CSE-MsgGUID: h4PUP0QtR1uyWQfuAu7IIA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11736"; a="79109442"
+X-CSE-ConnectionGUID: 3H84zbQBRwq7Tl8UwKYo1A==
+X-CSE-MsgGUID: Hb+LoD43QAWA+xOmCD+lbg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11736"; a="79062071"
 X-IronPort-AV: E=Sophos;i="6.23,135,1770624000"; 
-   d="scan'208";a="79109442"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2026 03:07:25 -0700
-X-CSE-ConnectionGUID: VQP977U6R2mK2Wn/eJ7j2A==
-X-CSE-MsgGUID: ObTqODwKRUe6l2buMFPrYA==
+   d="scan'208";a="79062071"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2026 03:14:42 -0700
+X-CSE-ConnectionGUID: c+4f4AO2QdmamqnH/Bf1Rg==
+X-CSE-MsgGUID: ElXQnZUjSvmpTOodQTApWg==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,135,1770624000"; 
-   d="scan'208";a="218990081"
-Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
-  by fmviesa006.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2026 03:07:25 -0700
-Received: from ORSMSX903.amr.corp.intel.com (10.22.229.25) by
- ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+Received: from fmsmsx903.amr.corp.intel.com ([10.18.126.92])
+  by fmviesa003.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2026 03:14:42 -0700
+Received: from FMSMSX901.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Sun, 22 Mar 2026 03:07:24 -0700
-Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
- ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ 15.2.2562.37; Sun, 22 Mar 2026 03:14:41 -0700
+Received: from fmsedg901.ED.cps.intel.com (10.1.192.143) by
+ FMSMSX901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Sun, 22 Mar 2026 03:07:24 -0700
-Received: from CH4PR04CU002.outbound.protection.outlook.com (40.107.201.5) by
- edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
+ 15.2.2562.37 via Frontend Transport; Sun, 22 Mar 2026 03:14:41 -0700
+Received: from BL0PR03CU003.outbound.protection.outlook.com (52.101.53.4) by
+ edgegateway.intel.com (192.55.55.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Sun, 22 Mar 2026 03:07:24 -0700
+ 15.2.2562.37; Sun, 22 Mar 2026 03:14:41 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=KqYl7jS+fX7yo9eBtq9ElbRK/zVv9jWOnElfkvGDtShLJnJ5z/v53QilnHynEtT7jcNfWB3otvF9pAZ9Dab4603a9Jg2qnTU6gTLrmY9fJ1PFYb+vzMs/Nr66YR+9/JWjvcbThzOdqwrDjIioNrAuOKHXtDuQQcIR0lcduVWp7/+SL0wE77BzyqXCKadIqDizfrE/jMMGI6bpwamUoA4H9R2dmAHzHz38eXSmj49EkT2HOCerfDnS+Z/1JuJ+by4B5rNvNxzHI5QBFtUQBxqITDsgWeXcslXsOR00t5Si27K3HGOrFC61KVElDnF2498D4O5tB22WseWp+Q2NJdHUQ==
+ b=lKi1sjdMSxHbtkzF818e9M5y6ZF0O00L6QB04uzgy9t6f7YPvW/N7HRuekWDfJWWKGGlkk5miBxk/JKUqCZ0k1ocjkAY7ydxIBlWMSxnXFakpuAlD0B2m0/V9LY/ZxcuCc5IgGEMZqTT2w5k4+J19sOVtv6Si4KibHjkmTylljo8zVr47WHcP6CZ+MzipV1n7XA0WBK7VpHGjB/bqlW0NVLImciX3urZO16tEUYkQYYUMjAIhlOKcUTJbeQFzfAG2il86t5xUz/hm4mI2+5glDXyzOGZSIUW7TfBokep9U3GHhN0hdAL01+2EObqAcNH9nVTpHHMqmF+ruVXh6PRzw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oE4gHegOiUMJUc7faVowirElK1xo7Y5B4gEqqYqb4Ho=;
- b=L8TBa/SeKTCC/SG4keaF0Hb1Jlz4um+Gv4esN+Gt4/m6mEdEeQHELV6AhBV42A5fapy00M57Qfy4gp/c2XjY0f72vuWL9v6oxyHsF95kXUbEXN1gcXaQwTgYQuARoRciOXDE+8v8bK/5nfaQz3VbxcIPgPU2GDy4pzj7PpsYzPNKEyog9DCDsJlKcLOWgeLdNon+tru5wWw2fp0lRaZnrdf+QXtqGiIEjsFxz60Kr75iYCarnlWbhbo6qEBdmiOvSAT2zExzDySBOYIINM5vMC7DJrvi5fpL71t30DCEL3GonMkJjTXSagdTwtTY+R654CZNxqaJRwpV84mvLlRo0Q==
+ bh=2Uswcj3ob++95NvrqyXM4vN+XlvW0gODSqIg+bZ4qkM=;
+ b=DefyvJXr7wO6lfL9AbaUQxNwFiPwzOocsupuRXVhWsKDQ+YMkWDi8GxgaGHNqeVfP33+++axvF84O1YJwSQuoSeR7uGvbApLMpk8/nlzHUNc1dVLB1PsFgTuH8oB8wCwucAUg+rAmrfly5v4yeBY7aai7TN+ScHKvBEZxA6bWs5mPxw9nsT1jQgb62A29WiF9AOruwxRWvl61og1E4H9IIgAvdZBoYNQOWXQCoNOrZiCx+YUmOfCDg1Ib699Sp8J9sqcrRg8tvTQ87F8FP98qz05Bi5C6RlwVABDB4nPcMYOWqgign7PkEdnQCQmcQem/Z4SEiE+4N2MiK9BGv8+6Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from PH0PR11MB5832.namprd11.prod.outlook.com (2603:10b6:510:141::7)
- by PH8PR11MB6927.namprd11.prod.outlook.com (2603:10b6:510:225::10) with
+ by SJ5PPF8622363CD.namprd11.prod.outlook.com (2603:10b6:a0f:fc02::83c) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9745.15; Sun, 22 Mar
- 2026 10:07:21 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9723.8; Sun, 22 Mar
+ 2026 10:14:32 +0000
 Received: from PH0PR11MB5832.namprd11.prod.outlook.com
  ([fe80::106e:78dd:4c96:d707]) by PH0PR11MB5832.namprd11.prod.outlook.com
  ([fe80::106e:78dd:4c96:d707%3]) with mapi id 15.20.9745.012; Sun, 22 Mar 2026
- 10:07:20 +0000
-Date: Sun, 22 Mar 2026 18:07:14 +0800
+ 10:14:32 +0000
+Date: Sun, 22 Mar 2026 18:14:26 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Christoph =?iso-8859-1?Q?B=F6hmwalder?= <christoph.boehmwalder@linbit.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <drbd-dev@lists.linbit.com>,
-	<oliver.sang@intel.com>
-Subject: [linux-next:master] [drbd]  945807e66a:
- Oops:general_protection_fault,probably_for_non-canonical_address#:#[##]KASAN_PTI
-Message-ID: <202603221745.8279cd80-lkp@intel.com>
+To: <linux+lkp@weissschuh.net>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <oliver.sang@intel.com>
+Subject: [thomas-weissschuh:b4/restricted-pointers-final] [lib/vsprintf]
+ 2fad68b9dd: WARNING:SOFTIRQ-safe->SOFTIRQ-unsafe_lock_order_detected
+Message-ID: <202603221100.e934e697-lkp@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
 User-Agent: s-nail v14.9.25
-X-ClientProxiedBy: TP0P295CA0012.TWNP295.PROD.OUTLOOK.COM
- (2603:1096:910:2::16) To PH0PR11MB5832.namprd11.prod.outlook.com
+X-ClientProxiedBy: TP0P295CA0023.TWNP295.PROD.OUTLOOK.COM
+ (2603:1096:910:5::19) To PH0PR11MB5832.namprd11.prod.outlook.com
  (2603:10b6:510:141::7)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -96,104 +93,79 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR11MB5832:EE_|PH8PR11MB6927:EE_
-X-MS-Office365-Filtering-Correlation-Id: cc5460ce-2cc4-4169-6e29-08de87face54
+X-MS-TrafficTypeDiagnostic: PH0PR11MB5832:EE_|SJ5PPF8622363CD:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6c581e7f-cea6-46a5-a2a8-08de87fbcf66
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024|56012099003|18002099003;
-X-Microsoft-Antispam-Message-Info: lf+rPgyB8b4rMpya7X4HGh+mJxUISIbE6kxcEn7EbAuHHw6w9lBWWIj9eJ8VGhUGzm9j0P8R2HfrIPwS4ycaVi58FyIDd4bw4U2vP+gwobOBrzBTVvD/Bl/3WGbRURdJWx+gA0Ad2ntv0vlvxlq5rFMtkR2TTqAjs3hn63HBplnAKJUj50dt6b8zY7X6XJ1cFd0DSS3CzsFFjnwBKftfguvH48rSUvdvni2yMpqqz/lbsNpwtNdPrO8Vg5NEgBdLwabxttb7u0KdA4+Y6eJ4L/yizxkvWMq63so/rwKTKprlmdjMg4lRMKG1dvQiJ9PTK5fSw+LP0JFYYit+7XYU9YHGkgi7rD5trTLp3Do65Y/798LbxdMXMd+zr55S3SfeIEIG6isKxq6NwR3V/YKa+rQa/fNSXS03naD/gohUKBU0fB8JDT7MsEkILnOE36iqYDrifKaFb9Q4c7ro6bzLA37DUpUUq8593TXCVdRNWglN9c843aFQmDd4a5+30IadTtpWSejO6tinRPj+JQgwKyW9Ef8T0+uaX78nJUjo9nQ48rZX0zkui+q3uhWMeTrww3yetkPsJsIwz8XfuGKED88LxOk/RSz87PDalWp7WqiHM3EyNRGylzyQ0yr9EP0SwRvv4J8Ojeu8oaWeKh1Mk1KIvTPfI+GzAPNRA6eVlekJF7KPoxdICXpefV6D75dDcsJ9mvf46mYPTtIfvoooLg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5832.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(56012099003)(18002099003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024|56012099003|18002099003;
+X-Microsoft-Antispam-Message-Info: mecEF8QFBU5qCgKNn8KLLfXeQtAElQ3ICD6JlkXRA10k/ZsAkCnhN6vYyCJQQoeXbQd/LqobQV73UvRY1FjJjRzGyOX3yQQ5otVGfyi4uDK52wYmytQahQ2gjg7iv5zEk4ChV1MVa1pJx6p5ZE6qmCi9IWNwpbmTh5Yu0/dgEVGxlBEoIxtV/dFvy7ex/6FHeviMHaMNoRQzkMdge4jhl/HFB0MPdfdsVSIRhxCb2fQC1t+THCUeSOj7xdgddPBOjZPTNqFfmghOnRDInIrFc/yQ4u3cwfC09aLk7RYGA+zTovW8YyulL2xQrm51b5U/3rGom2EK3uZR0kKz4SMukBtIQGDYoLB98C2knWvEKrubVrUDy26o7WB6hmeoHAsR9wruhBmwQMzgWidkNwiRkCAW0D8i8P1gcbfD9IbGSzp/Y+PdOG+jwYJLkFEGVP81WLeXrcQgu00AqJuniS4cHjz3fSvPej5RnsXjLVojRbq8imQjWRt3UlTcc3LI3JSxoOg/cbbLFlpLyEq5MeXYVMpisSonfXI9Re/yj9o8iwl6QnXXz6kmbrU/mTUw7Owh5chw21LMoTt0rJdwirQqyS3HYmUt01OWrXqhdT2gKh2+0osXW2I86eztOPuJ9vO7eQgM2hqHdQn5QWPXgbyC5CkoteTYldR+4VIQ0kL7VLK0DV9kHOnhzelpIjmqXHopBBC6bRQfynnk26br+OY7IQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5832.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(56012099003)(18002099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?heaKAw3rLNAJq/eKU4i1eMugEe3DsiID7bSUJoHa60B5gOdn03iLy5t/tS77?=
- =?us-ascii?Q?wc09POObON6IHmYc0AlFoYA+vMob2DwuWeU2+gISPfHEvkqX5RGUfbYkKcF9?=
- =?us-ascii?Q?p4a0ZE0bmzPkU5D4dQSuRUeiC0E3zGiUOeLbTsdi1ip/11J6O6zd2l/1xkon?=
- =?us-ascii?Q?NSddnKBSUe3wutMrmhVfXE6gOYCW9BEPQf787TkVENMOCFqmn2kwu/bS6Jtv?=
- =?us-ascii?Q?ZMTDag9jDiRK5qIDXszr6Ub3XMmTn54iq9h+zS79idwH5dcKSmdz2sTGuI/i?=
- =?us-ascii?Q?peRPghFwKbynKaH56yAa4vOpU3gcMTZvl9d8rEqnoWZWOhPCpMuJ4fMLxAfJ?=
- =?us-ascii?Q?xIeKYPK/mV6PXQ7OHJNPUjkh2KvmYf3RlZRI6mYOnVapNjfzW043AXin0m54?=
- =?us-ascii?Q?gLzntEEBTxq5DkaOtSw4gH0WEKwylZJdxabuwb5cSWz0KEJlH41Poti2FvDT?=
- =?us-ascii?Q?tRwixRG5JmcyLdqXvJzST77jrC9Tlqnjpg2me0IN/AfBxKG4XODT8xwiWd9a?=
- =?us-ascii?Q?/HjHdqyA4ue2/2vK6W/5+/rx2zwlj2BvFwXjzEH7hz9M6SvK05bm4oQS4AQm?=
- =?us-ascii?Q?QJDaoB6icLMrfhg0Kwxp74jROqWiwuRjPg+LKBdZkRbcsYwBynPYSLiQSI8I?=
- =?us-ascii?Q?3y9Z0YwwQrUUSl7CZd4SHXpGCzT5qQG+VaqVheU+olvsU69mnPWxpgN7A126?=
- =?us-ascii?Q?vzwhNx5d12xDO8tcEay5F+IB3Ii+E8AvrjbHLWWm0zM/cFVGj8YT5n0gdf1K?=
- =?us-ascii?Q?R0SfiuRmuoFX0z7nsdVdNH4KvFshKfIPhdfJW0g/5VuDRFxOCjR71pY9XxJO?=
- =?us-ascii?Q?YhnrYgFE54bckAOVzXGr2mrVXmvWYQg79Hb57PtYDPIEXpPlGNv4K/psRDrS?=
- =?us-ascii?Q?pjohpn+98mJjQCgKYd7U1vUuvwJvu1tay4htO7HFQO88Lb+OQcULaZrdDzr/?=
- =?us-ascii?Q?nv6ALiUqMvoZZ0DeXUqNZqHmWfMirMI+8TS9MKwTFyin3vHRKUVZgFBlxvsU?=
- =?us-ascii?Q?+Zjuc3RZeXnzvh7erOkvDMYSiyg3V+ontegz5dpI05jrOnyslemnZAtzt5Yc?=
- =?us-ascii?Q?sd6wU/4euN2UDN+x34LrfhQUJJk1JFnetu5sG/fdEhR0lAwYpKM0judfqmPM?=
- =?us-ascii?Q?Z0h/f74yGaoUTOMf6Rg4S3AT8EqEdJxyzJG7quvPXazi1zddnom6fiPGZXRx?=
- =?us-ascii?Q?h+vO1FRD1Yfg1ykmQQy3WLNdg52IjW4xRyNk+2hhyvNWB4Z+YvZk2dolBtqP?=
- =?us-ascii?Q?MLhx/dXEaRHuEVU6TD7vjwxHF6uKT7QcJI2TAHyLWCM+45fO/m8pBGDLb/Ce?=
- =?us-ascii?Q?9Bztb4imvsQS0KQwFoMGAbW4mmUUQOnjokwGN8J05HK+5G2JJWzWzovtCjX7?=
- =?us-ascii?Q?nuI1yErKuoukdgKMJrASqMzSXBKzIXnnInj5dWmqElMpbHV3lqKFIAea975/?=
- =?us-ascii?Q?rQv1e45PKSJnrvmWwcn2cBHnepCrA9viOjCkbORvN8MZ8bPNon7xf7TRTG4S?=
- =?us-ascii?Q?HIG/7sBgNdou8Nmes8nA5/cRtXxjlghYPkTXk5LMq5mEaYcuPq6Y+sgDzUp6?=
- =?us-ascii?Q?eQPKl8UEK+kqS4LMFro5lY6uLRTqTkmdt1xX0qgpKNDEsVMCnhrF03liWpdN?=
- =?us-ascii?Q?B4zywE2OZ8lcNAwOjH3uSqRnEZjTaPFZV5dSNEyG13ckxxt0xTLCV+PD28ga?=
- =?us-ascii?Q?Iwd7pJ1c0vNcqvfirbxmSBie4dZu5SwiYYaUFWwkk8co0msITo/dLFq4AEe4?=
- =?us-ascii?Q?RUQIY2t9vw=3D=3D?=
-X-Exchange-RoutingPolicyChecked: hdnjufqvPGrKeKVahiI/wgCIhdZLyFzkHCl47TQD0fif0krouX/hKpiFgRrj56qN52YMC8EmRtGSk4Vw9tYVqH6fOf2TMuMgRJ0iBov4zOqntFVzEY1BGU2Sj5nfZ/9YL5G34CwQqyT/jR25EFnG82p3UUZWR3tUuaeW5nuT4W4bCsS8TmGuHQZTpkbOQ1Y68H0+8S0jlQWKuAp54TLFDtSKu2xzxSdidgP3FD2HbEmPMJklxJs8iTQ58drHHLjRu7d/oKOKfofAP7dubTEV8V3cXKxV70SUK3S3rP59y34nlh294uTEc47GCir6cIXldy83VM38l6GCGo530nGmFg==
-X-MS-Exchange-CrossTenant-Network-Message-Id: cc5460ce-2cc4-4169-6e29-08de87face54
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cFfJg1C4vSEU+UahC22O2bGgjlPQfFLMTaPwRrxl64m60u90CWtWXrZxIdbj?=
+ =?us-ascii?Q?aqvkUEDeRmgLKyRoSncEImtTb71IDh98ox8JtoaXlDNqw6To3oOiOGNscSWg?=
+ =?us-ascii?Q?d7zjWZnFRLALDfJb1WMgkckc8SSxXdQ+XCT4t8PAG15SnyXmfnWv+WnMK8EH?=
+ =?us-ascii?Q?18tp+EBsZ1OYFvrS7vD33vGHN1jaxdZ2H+BY+yvHYHsephQ8yAPxaOpyIV2e?=
+ =?us-ascii?Q?2LPv7DboTr5Zfje2ypAset8Rnz9A/2fOuwgl81aM0KsRWXC3rxPqrU864VxO?=
+ =?us-ascii?Q?Z1nrslOfldtt7Ca3FWrU0yTXvssMmOTzmM5WsIVNWPixCZoVJ3hMzImeGman?=
+ =?us-ascii?Q?SD0bm2XO6hBEYHgN6Ps0Jv2zZ+yVt5Ke17D3divbdzdtR7LZL+DVi+v2fDDj?=
+ =?us-ascii?Q?aBIk08RwoW2+52QG9GfT9fOeMomJw0EalTUn5RovDBE7OLae2ZVYRRoxRRn3?=
+ =?us-ascii?Q?KQIUZE/laKfLPE7zcsFbKyfKlifMpmzAcJDv5oVIgxVUvi8Jc+CiAat2vkjM?=
+ =?us-ascii?Q?o1FMGV/Y/9Gvh067Hdi/YvXtZd87k5NRxZgMqJj8uM3D8Rym8LdGWNMsReGy?=
+ =?us-ascii?Q?h3++wzm16Y+OA11c/pFa6sHvu8mpv8oVGj6cj7ivC1ExF6kUW2DsS9dj6L9/?=
+ =?us-ascii?Q?aq0Q+/4LAYPVLnbJGM5xxBgl9JvAw+P5msDouQGWTkLvL4KXm/ojkXxD6AEd?=
+ =?us-ascii?Q?PxVqUcMZp+8elzloWYiIogTx0JevmdpskCPK84KhhPQl0GcloRntk3H3ZGOa?=
+ =?us-ascii?Q?JSJoUalhQN6WUScLyqBuy4WMuwUtVu3L9KSVeW/66D3cgkMzqpimWjKFejsv?=
+ =?us-ascii?Q?PBw7yC7olxGQDi3HyogQmKGBlgHaP9M4X9ueDdHe4iZDo2gvvMjvI98JqsV5?=
+ =?us-ascii?Q?vgquE5lf+jWQL6Qf+LMBgAd9FXmSHnallShBKHW3sqH/vfgxnhrO52mDf2ei?=
+ =?us-ascii?Q?QGZXbe4JDFZzWMUDsvVZo8fP+ut5tDTk7ThKKVgk5rU1/REzBEGz35PgOhvO?=
+ =?us-ascii?Q?IGzwB6su10QoBd4cOqozi34/SpWddpXu5O8lRHdRpOWr/VJNe53YyfqnhfY1?=
+ =?us-ascii?Q?g0TFEQ8A86Y9W7o++sM8ZyxtfLQEA5q0/9uLtIhDWlUNCyh01GZXS50qsx/M?=
+ =?us-ascii?Q?FGbnrHeTNLFvVSbTu/G+BshQx+0Ukpxe+p6Wkw5Bqo2U8Hgt5NMEhPVSCR4H?=
+ =?us-ascii?Q?vsbyBULppuRJzZtHaMZeTUFU6MH4zz03myQ/b6Ud3SeuLyScQQa6v85NVPtZ?=
+ =?us-ascii?Q?i0Tz5bYfQhRdyWWTpCABaMjjzlQtTCdayxPbflGZDmDUBmdLSGt+kR9SWWOC?=
+ =?us-ascii?Q?8VyE8QiURrD4WhFT3nyMnvQzK3ET0vvYy+ljKouADul5yFcG8SSvKQ/Li42D?=
+ =?us-ascii?Q?mgsXxJ2ITA1A3XhINySEMuNc7I1FljQ5DanpeLqS9ntFoA+5jmB9a7ZxVZ+2?=
+ =?us-ascii?Q?Ah2wHLZtK2bh0MuEZSTcbMStd97Qb/XSKDxUorcKlDZ/VsZaq/9kNZmCrXMV?=
+ =?us-ascii?Q?FzmGRAPsxbuv5ZbjUB2lWe4N1XyMzXQScfGmBrNHRXevMPvE9WC7U+2laGOD?=
+ =?us-ascii?Q?z7QkawBFTBjG1ib58JQIXDQ739KmvHkmDQsKA/o0ETnBR5R9R2B0Ahu5avtW?=
+ =?us-ascii?Q?8FI5Ne1PdXe43lT78qTH3F6Qy66nK8lScsQZlM4uW//yzlvjGNJ1uFjDitNW?=
+ =?us-ascii?Q?8+PTcmxdFx8GoU4M82KjIRZ1mceJ0fkmBKFlwoUJAmFuRHrnlcpoUsZt9Bef?=
+ =?us-ascii?Q?VJ1TlxyhdQ=3D=3D?=
+X-Exchange-RoutingPolicyChecked: HWnK35gnKydaDzBNPa16jespvt/FVkoCzTDrOBWfHCV2CqguugjvSrfJf6olIS0Cy1OGBaf0z5xskHL7+ALMiHYeUWo2QKqceDXFqmR9l0Ao9l7SSj9+GP37Octxbxqe9NLmkxnlz+jYmNroGBpjx4Myi8mzjUBiimiI8iOOd5Y4BeUII3h80jcYWJVqt+b4aumJedU85MInqhpKZFg6rSIGDpPGz2UhzUVEQxaZGSkOL1l63kWlbavx3DKvsyxHd2YwOYjCfi53tlO0G1adfgJrjdRDqMWhDox//jkgMRpoo7Ode6oPd1OKwHqksZe4JeHnHwQDMOUvxyWy/hmfqg==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6c581e7f-cea6-46a5-a2a8-08de87fbcf66
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5832.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2026 10:07:20.7943
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2026 10:14:32.1160
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2gJJ79Q3E8FW8ky37XHlBVeTlyydhizxopxNaRj+jntqPldMW024mLnS9fg/b7W7c35SyJCIAWYu7y5sG7P10A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB6927
+X-MS-Exchange-CrossTenant-UserPrincipalName: X7OkvgRxns+t10UBJZlmfmEUfF+ZIP43O52aBMVzQ1C+e0UCxsOATomF3FY8CRusvhbZl+WUw2GnOHo3aY8SaQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ5PPF8622363CD
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
-by this commit, we noticed below config diff comparing to parent:
+kernel test robot noticed "WARNING:SOFTIRQ-safe->SOFTIRQ-unsafe_lock_order_detected" on:
 
---- /pkg/linux/x86_64-randconfig-006-20260320/clang-20/0c897516a4856d55c75cfdb2b02489b0fc50bdf8/.config 2026-03-20 21:35:52.410943578 +0800
-+++ /pkg/linux/x86_64-randconfig-006-20260320/clang-20/945807e66a140e5ee0f919d04e15eadd4cc294be/.config 2026-03-20 16:40:42.155357399 +0800
-@@ -1738,6 +1738,12 @@ CONFIG_ZRAM_WRITEBACK=y
- # CONFIG_ZRAM_MEMORY_TRACKING is not set
- # CONFIG_ZRAM_MULTI_COMP is not set
- # CONFIG_BLK_DEV_LOOP is not set
-+CONFIG_BLK_DEV_DRBD=y
-+# CONFIG_DRBD_FAULT_INJECTION is not set
-+CONFIG_BLK_DEV_DRBD_TCP=y
-+# CONFIG_BLK_DEV_DRBD_LB_TCP is not set
-+# CONFIG_BLK_DEV_DRBD_RDMA is not set
-+CONFIG_DRBD_COMPAT_84=y
- # CONFIG_BLK_DEV_NBD is not set
- CONFIG_BLK_DEV_RAM=y
- CONFIG_BLK_DEV_RAM_COUNT=16
-@@ -5795,6 +5801,7 @@ CONFIG_IOMMU_HELPER=y
- CONFIG_FORCE_NR_CPUS=y
- CONFIG_GLOB=y
- CONFIG_NLATTR=y
-+CONFIG_LRU_CACHE=y
- CONFIG_CLZ_TAB=y
- CONFIG_IRQ_POLL=y
- CONFIG_MPILIB=y
+commit: 2fad68b9ddb336324b5890e94998ef7d050481ac ("lib/vsprintf: Validate spinlock context during restricted pointer formatting")
+https://git.kernel.org/cgit/linux/kernel/git/thomas.weissschuh/linux.git b4/restricted-pointers-final
+
+in testcase: trinity
+version: trinity-static-i386-x86_64-f93256fb_2019-08-28
+with following parameters:
+
+	runtime: 300s
+	group: group-02
+	nr_groups: 5
 
 
-as we understand, this commit reenabled drbd. this report is just FYI what we
-observed in our tests that there are drbd related issues after this enabling.
 
-
-kernel test robot noticed "Oops:general_protection_fault,probably_for_non-canonical_address#:#[##]KASAN_PTI" on:
-
-commit: 945807e66a140e5ee0f919d04e15eadd4cc294be ("drbd: remove BROKEN for DRBD")
-https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-
-[test failed on linux-next/master 785f0eb2f85decbe7c1ef9ae922931f0194ffc2e]
-
-in testcase: boot
-
-config: x86_64-randconfig-006-20260320
-compiler: clang-20
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 32G
+config: i386-randconfig-2006-20250804
+compiler: gcc-14
+test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m 4G
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
 
@@ -202,72 +174,165 @@ test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 32G
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202603221745.8279cd80-lkp@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202603221100.e934e697-lkp@intel.com
 
 
 
-[   24.381821][   T56] FDC 0 is a S82078B
-[   24.401375][    T1] brd: module loaded
-[   24.480448][    T1] drbd: initialized. Version: 9.3.0 (api:2/proto:118-123)
-[   24.481932][    T1] drbd: built-in
-[   24.482693][    T1] drbd: registered as block device major 147
-[   24.486081][    T1] Oops: general protection fault, probably for non-canonical address 0xdffffc0000000021: 0000 [#1] KASAN PTI
-[   24.487070][    T1] KASAN: null-ptr-deref in range [0x0000000000000108-0x000000000000010f]
-[   24.487070][    T1] CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Tainted: G                T   7.0.0-rc4-00020-g945807e66a14 #1 PREEMPT(full)  657bb35ca7e5e0c42c8110b4a9a3d43552818707
-[   24.487070][    T1] Tainted: [T]=RANDSTRUCT
-[   24.487070][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[   24.487070][    T1] RIP: 0010:drbd_register_transport_class (kbuild/src/consumer/drivers/block/drbd/drbd_transport.c:44 (discriminator 1027))
-[   24.487070][    T1] Code: c0 00 00 00 48 89 d8 48 c1 e8 03 42 80 3c 28 00 74 08 48 89 df e8 fa 8d 33 fd 41 bf 08 01 00 00 4c 03 3b 4c 89 f8 48 c1 e8 03 <42> 80 3c 28 00 74 08 4c 89 ff e8 db 8d 33 fd 49 8b 07 48 85 c0 48
-All code
-========
-   0:	c0 00 00             	rolb   $0x0,(%rax)
-   3:	00 48 89             	add    %cl,-0x77(%rax)
-   6:	d8 48 c1             	fmuls  -0x3f(%rax)
-   9:	e8 03 42 80 3c       	call   0x3c804211
-   e:	28 00                	sub    %al,(%rax)
-  10:	74 08                	je     0x1a
-  12:	48 89 df             	mov    %rbx,%rdi
-  15:	e8 fa 8d 33 fd       	call   0xfffffffffd338e14
-  1a:	41 bf 08 01 00 00    	mov    $0x108,%r15d
-  20:	4c 03 3b             	add    (%rbx),%r15
-  23:	4c 89 f8             	mov    %r15,%rax
-  26:	48 c1 e8 03          	shr    $0x3,%rax
-  2a:*	42 80 3c 28 00       	cmpb   $0x0,(%rax,%r13,1)		<-- trapping instruction
-  2f:	74 08                	je     0x39
-  31:	4c 89 ff             	mov    %r15,%rdi
-  34:	e8 db 8d 33 fd       	call   0xfffffffffd338e14
-  39:	49 8b 07             	mov    (%r15),%rax
-  3c:	48 85 c0             	test   %rax,%rax
-  3f:	48                   	rex.W
-
-Code starting with the faulting instruction
-===========================================
-   0:	42 80 3c 28 00       	cmpb   $0x0,(%rax,%r13,1)
-   5:	74 08                	je     0xf
-   7:	4c 89 ff             	mov    %r15,%rdi
-   a:	e8 db 8d 33 fd       	call   0xfffffffffd338dea
-   f:	49 8b 07             	mov    (%r15),%rax
-  12:	48 85 c0             	test   %rax,%rax
-  15:	48                   	rex.W
-[   24.487070][    T1] RSP: 0000:ffffc9000001fab0 EFLAGS: 00010206
-[   24.487070][    T1] RAX: 0000000000000021 RBX: ffffffff8a1514a0 RCX: 0000000000000000
-[   24.487070][    T1] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-[   24.487070][    T1] RBP: ffffc9000001fae8 R08: 0000000000000000 R09: 0000000000000000
-[   24.487070][    T1] R10: 0000000000000000 R11: 0000000000000000 R12: ffffffff8a1514b0
-[   24.487070][    T1] R13: dffffc0000000000 R14: ffffffff881d2a80 R15: 0000000000000108
-[   24.487070][    T1] FS:  0000000000000000(0000) GS:0000000000000000(0000) knlGS:0000000000000000
-[   24.487070][    T1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   24.487070][    T1] CR2: ffff88883ffff000 CR3: 0000000009438000 CR4: 00000000000406f0
-[   24.487070][    T1] Call Trace:
-[   24.487070][    T1]  <TASK>
-[   24.487070][    T1]  dtt_initialize (kbuild/src/consumer/drivers/block/drbd/drbd_transport_tcp.c:?)
-[   24.487070][    T1]  __initstub__kmod_drbd_transport_tcp__1030_1667_dtt_initialize6 (kbuild/src/consumer/drivers/block/drbd/drbd_transport_tcp.c:1667)
-[   24.487070][    T1]  do_one_initcall (kbuild/src/consumer/init/main.c:1382)
-[   24.487070][    T1]  ? __cfi___initstub__kmod_drbd_transport_tcp__1030_1667_dtt_initialize6 (kbuild/src/consumer/drivers/block/drbd/drbd_transport_tcp.c:1667)
+[   31.792070][  T860] WARNING: SOFTIRQ-safe -> SOFTIRQ-unsafe lock order detected
+[   31.792841][  T860] 7.0.0-rc4-00004-g2fad68b9ddb3 #1 Not tainted
+[   31.793462][  T860] -----------------------------------------------------
+[   31.794192][  T860] rsync/860 [HC0[0]:SC0[4]:HE1:SE0] is trying to acquire:
+[   31.794909][  T860] b4048e20 (&tcp_hashinfo.bhash[i].lock){+...}-{3:3}, at: inet_twsk_hashdance_schedule (include/linux/spinlock.h:341 net/ipv4/inet_timewait_sock.c:123)
+[   31.795980][  T860]
+[   31.795980][  T860] and this task is already holding:
+[   31.796736][  T860] f2501440 (slock-AF_INET){+.-.}-{3:3}, at: __release_sock (include/linux/spinlock.h:348 net/core/sock.c:3223)
+[   31.797544][  T860] which would create a new lock dependency:
+[   31.798132][  T860]  (slock-AF_INET){+.-.}-{3:3} -> (&tcp_hashinfo.bhash[i].lock){+...}-{3:3}
+[   31.798985][  T860]
+[   31.798985][  T860] but this new dependency connects a SOFTIRQ-irq-safe lock:
+[   31.799890][  T860]  (slock-AF_INET){+.-.}-{3:3}
+[   31.799893][  T860]
+[   31.799893][  T860] ... which became SOFTIRQ-irq-safe at:
+[   31.808686][  T860]   mark_usage (kernel/locking/lockdep.c:4642 (discriminator 1))
+[   31.809160][  T860]   __lock_acquire (kernel/locking/lockdep.c:5191)
+[   31.809657][  T860]   lock_acquire (kernel/locking/lockdep.c:470 (discriminator 4) kernel/locking/lockdep.c:5870 (discriminator 4) kernel/locking/lockdep.c:5825 (discriminator 4))
+[   31.810127][  T860]   _raw_spin_lock (include/linux/spinlock_api_smp.h:159 kernel/locking/spinlock.c:154)
+[   31.810622][  T860]   tcp_tsq_handler (include/net/sock.h:1809 net/ipv4/tcp_output.c:1279)
+[   31.811121][  T860]   tcp_tsq_workfn (net/ipv4/tcp_output.c:1313)
+[   31.817716][  T860]   process_one_work (include/trace/events/workqueue.h:110 (discriminator 4) include/trace/events/workqueue.h:110 (discriminator 4) kernel/workqueue.c:3281 (discriminator 4))
+[   31.818306][  T860]   process_scheduled_works (kernel/workqueue.c:3359)
+[   31.818856][  T860]   bh_worker (include/linux/list.h:381 (discriminator 2) kernel/workqueue.c:949 (discriminator 2) kernel/workqueue.c:3663 (discriminator 2))
+[   31.819308][  T860]   workqueue_softirq_action (kernel/workqueue.c:3691)
+[   31.819877][  T860]   tasklet_action (kernel/softirq.c:953)
+[   31.820373][  T860]   handle_softirqs (include/trace/events/irq.h:142 (discriminator 4) include/trace/events/irq.h:142 (discriminator 4) kernel/softirq.c:623 (discriminator 4))
+[   31.820878][  T860]   run_ksoftirqd (kernel/softirq.c:479 kernel/softirq.c:1064 kernel/softirq.c:1055)
+[   31.821359][  T860]   smpboot_thread_fn (kernel/smpboot.c:160)
+[   31.821894][  T860]   kthread (kernel/kthread.c:438)
+[   31.822333][  T860]   ret_from_fork (arch/x86/kernel/process.c:164)
+[   31.822818][  T860]   ret_from_fork_asm (arch/x86/entry/entry_32.S:737)
+[   31.823320][  T860]   restore_all_switch_stack (arch/x86/entry/entry_32.S:945)
+[   31.823866][  T860]
+[   31.823866][  T860] to a SOFTIRQ-irq-unsafe lock:
+[   31.824605][  T860]  (vsprintf_restricted_pointer_map-wait-type-assert){+.+.}-{3:3}
+[   31.824609][  T860]
+[   31.824609][  T860] ... which became SOFTIRQ-irq-unsafe at:
+[   31.826170][  T860] ...
+[   31.826172][  T860]   mark_usage (kernel/locking/lockdep.c:4666 (discriminator 1))
+[   31.826946][  T860]   __lock_acquire (kernel/locking/lockdep.c:5191)
+[   31.827433][  T860]   lock_acquire (kernel/locking/lockdep.c:470 (discriminator 4) kernel/locking/lockdep.c:5870 (discriminator 4) kernel/locking/lockdep.c:5825 (discriminator 4))
+[   31.827909][  T860]   restricted_pointer (lib/vsprintf.c:874)
+[   31.828426][  T860]   pointer (lib/vsprintf.c:2580)
+[   31.828862][  T860]   vsnprintf (lib/vsprintf.c:2961 (discriminator 1))
+[   31.829310][  T860]   seq_vprintf (fs/seq_file.c:393)
+[   31.829777][  T860]   seq_printf (fs/seq_file.c:409)
+[   31.830225][  T860]   get_tcp4_sock (net/ipv4/tcp_ipv4.c:2908)
+[   31.830709][  T860]   tcp4_seq_show (net/ipv4/tcp_ipv4.c:2952)
+[   31.831190][  T860]   seq_read_iter (fs/seq_file.c:273)
+[   31.831675][  T860]   seq_read (fs/seq_file.c:164)
+[   31.832240][  T860]   pde_read (fs/proc/inode.c:308)
+[   31.832686][  T860]   proc_reg_read (fs/proc/inode.c:320)
+[   31.833153][  T860]   vfs_read (fs/read_write.c:572)
+[   31.833596][  T860]   ksys_read (fs/read_write.c:718)
+[   31.834037][  T860]   __ia32_sys_read (fs/read_write.c:724)
+[   31.834518][  T860]   ia32_sys_call (kbuild/obj/consumer/i386-randconfig-2006-20250804/./arch/x86/include/generated/asm/syscalls_32.h:4)
+[   31.835001][  T860]   do_int80_syscall_32 (arch/x86/entry/syscall_32.c:83 arch/x86/entry/syscall_32.c:259)
+[   31.835530][  T860]   restore_all_switch_stack (arch/x86/entry/entry_32.S:945)
+[   31.836089][  T860]
+[   31.836089][  T860] other info that might help us debug this:
+[   31.836089][  T860]
+[   31.837114][  T860] Chain exists of:
+[   31.837114][  T860]   slock-AF_INET --> &tcp_hashinfo.bhash[i].lock --> vsprintf_restricted_pointer_map-wait-type-assert
+[   31.837114][  T860]
+[   31.838810][  T860]  Possible interrupt unsafe locking scenario:
+[   31.838810][  T860]
+[   31.839620][  T860]        CPU0                    CPU1
+[   31.840171][  T860]        ----                    ----
+[   31.840716][  T860]   lock(vsprintf_restricted_pointer_map-wait-type-assert);
+[   31.841423][  T860]                                local_irq_disable();
+[   31.842075][  T860]                                lock(slock-AF_INET);
+[   31.842729][  T860]                                lock(&tcp_hashinfo.bhash[i].lock);
+[   31.843514][  T860]   <Interrupt>
+[   31.843897][  T860]     lock(slock-AF_INET);
+[   31.844443][  T860]
+[   31.844443][  T860]  *** DEADLOCK ***
+[   31.844443][  T860]
+[   31.845278][  T860] 3 locks held by rsync/860:
+[   31.845751][  T860]  #0: b533ce40 (&sb->s_type->i_mutex_key#6){+.+.}-{4:4}, at: __sock_release (net/socket.c:662)
+[   31.846692][  T860]  #1: f2501494 (sk_lock-AF_INET){+.+.}-{0:0}, at: lock_sock (include/net/sock.h:1710)
+[   31.847502][  T860]  #2: f2501440 (slock-AF_INET){+.-.}-{3:3}, at: __release_sock (include/linux/spinlock.h:348 net/core/sock.c:3223)
+[   31.848362][  T860]
+[   31.848362][  T860] the dependencies between SOFTIRQ-irq-safe lock and the holding lock:
+[   31.849409][  T860] -> (slock-AF_INET){+.-.}-{3:3} {
+[   31.849930][  T860]    HARDIRQ-ON-W at:
+[   31.850364][  T860]                     mark_usage (kernel/locking/lockdep.c:4662 (discriminator 1))
+[   31.850948][  T860]                     __lock_acquire (kernel/locking/lockdep.c:5191)
+[   31.851566][  T860]                     lock_acquire (kernel/locking/lockdep.c:470 (discriminator 4) kernel/locking/lockdep.c:5870 (discriminator 4) kernel/locking/lockdep.c:5825 (discriminator 4))
+[   31.852193][  T860]                     _raw_spin_lock_bh (include/linux/spinlock_api_smp.h:151 kernel/locking/spinlock.c:178)
+[   31.852820][  T860]                     __lock_sock_fast (net/core/sock.c:3829)
+[   31.853437][  T860]                     udp_destroy_sock (include/net/sock.h:1743 net/ipv4/udp.c:2942)
+[   31.854055][  T860]                     sk_common_release (net/core/sock.c:3990)
+[   31.854677][  T860]                     udp_lib_close (include/net/udp.h:325)
+[   31.855272][  T860]                     inet_release (net/ipv4/af_inet.c:444)
+[   31.855864][  T860]                     __sock_release (net/socket.c:663)
+[   31.856511][  T860]                     sock_close (net/socket.c:1457)
+[   31.857081][  T860]                     __fput (fs/file_table.c:470 (discriminator 1))
+[   31.857641][  T860]                     fput_close_sync (fs/file_table.c:574)
+[   31.858264][  T860]                     __ia32_sys_close (fs/open.c:1511 (discriminator 1) fs/open.c:1494 (discriminator 1) fs/open.c:1494 (discriminator 1))
+[   31.858881][  T860]                     ia32_sys_call (kbuild/obj/consumer/i386-randconfig-2006-20250804/./arch/x86/include/generated/asm/syscalls_32.h:7)
+[   31.859496][  T860]                     do_int80_syscall_32 (arch/x86/entry/syscall_32.c:83 arch/x86/entry/syscall_32.c:259)
+[   31.860295][  T860]                     restore_all_switch_stack (arch/x86/entry/entry_32.S:945)
+[   31.861002][  T860]    IN-SOFTIRQ-W at:
+[   31.861430][  T860]                     mark_usage (kernel/locking/lockdep.c:4642 (discriminator 1))
+[   31.862013][  T860]                     __lock_acquire (kernel/locking/lockdep.c:5191)
+[   31.862631][  T860]                     lock_acquire (kernel/locking/lockdep.c:470 (discriminator 4) kernel/locking/lockdep.c:5870 (discriminator 4) kernel/locking/lockdep.c:5825 (discriminator 4))
+[   31.863226][  T860]                     _raw_spin_lock (include/linux/spinlock_api_smp.h:159 kernel/locking/spinlock.c:154)
+[   31.863831][  T860]                     tcp_tsq_handler (include/net/sock.h:1809 net/ipv4/tcp_output.c:1279)
+[   31.864477][  T860]                     tcp_tsq_workfn (net/ipv4/tcp_output.c:1313)
+[   31.865087][  T860]                     process_one_work (include/trace/events/workqueue.h:110 (discriminator 4) include/trace/events/workqueue.h:110 (discriminator 4) kernel/workqueue.c:3281 (discriminator 4))
+[   31.865720][  T860]                     process_scheduled_works (kernel/workqueue.c:3359)
+[   31.866388][  T860]                     bh_worker (include/linux/list.h:381 (discriminator 2) kernel/workqueue.c:949 (discriminator 2) kernel/workqueue.c:3663 (discriminator 2))
+[   31.866957][  T860]                     workqueue_softirq_action (kernel/workqueue.c:3691)
+[   31.867632][  T860]                     tasklet_action (kernel/softirq.c:953)
+[   31.868239][  T860]                     handle_softirqs (include/trace/events/irq.h:142 (discriminator 4) include/trace/events/irq.h:142 (discriminator 4) kernel/softirq.c:623 (discriminator 4))
+[   31.868886][  T860]                     run_ksoftirqd (kernel/softirq.c:479 kernel/softirq.c:1064 kernel/softirq.c:1055)
+[   31.869488][  T860]                     smpboot_thread_fn (kernel/smpboot.c:160)
+[   31.870133][  T860]                     kthread (kernel/kthread.c:438)
+[   31.870698][  T860]                     ret_from_fork (arch/x86/kernel/process.c:164)
+[   31.871307][  T860]                     ret_from_fork_asm (arch/x86/entry/entry_32.S:737)
+[   31.871931][  T860]                     restore_all_switch_stack (arch/x86/entry/entry_32.S:945)
+[   31.872643][  T860]    INITIAL USE at:
+[   31.873062][  T860]                    mark_usage (kernel/locking/lockdep.c:4674 (discriminator 1))
+[   31.873640][  T860]                    __lock_acquire (kernel/locking/lockdep.c:5191)
+[   31.874256][  T860]                    lock_acquire (kernel/locking/lockdep.c:470 (discriminator 4) kernel/locking/lockdep.c:5870 (discriminator 4) kernel/locking/lockdep.c:5825 (discriminator 4))
+[   31.874909][  T860]                    _raw_spin_lock_bh (include/linux/spinlock_api_smp.h:151 kernel/locking/spinlock.c:178)
+[   31.875527][  T860]                    __lock_sock_fast (net/core/sock.c:3829)
+[   31.876148][  T860]                    udp_destroy_sock (include/net/sock.h:1743 net/ipv4/udp.c:2942)
+[   31.876762][  T860]                    sk_common_release (net/core/sock.c:3990)
+[   31.877383][  T860]                    udp_lib_close (include/net/udp.h:325)
+[   31.877971][  T860]                    inet_release (net/ipv4/af_inet.c:444)
+[   31.878562][  T860]                    __sock_release (net/socket.c:663)
+[   31.879159][  T860]                    sock_close (net/socket.c:1457)
+[   31.879718][  T860]                    __fput (fs/file_table.c:470 (discriminator 1))
+[   31.880295][  T860]                    fput_close_sync (fs/file_table.c:574)
+[   31.880901][  T860]                    __ia32_sys_close (fs/open.c:1511 (discriminator 1) fs/open.c:1494 (discriminator 1) fs/open.c:1494 (discriminator 1))
+[   31.881520][  T860]                    ia32_sys_call (kbuild/obj/consumer/i386-randconfig-2006-20250804/./arch/x86/include/generated/asm/syscalls_32.h:7)
+[   31.882127][  T860]                    do_int80_syscall_32 (arch/x86/entry/syscall_32.c:83 arch/x86/entry/syscall_32.c:259)
+[   31.882777][  T860]                    restore_all_switch_stack (arch/x86/entry/entry_32.S:945)
+[   31.883436][  T860]  }
+[   31.883736][  T860]  ... key      at: af_family_slock_keys+0x10/0x180
+[   31.884527][  T860]
+[   31.884527][  T860] the dependencies between the lock to be acquired
+[   31.884529][  T860]  and SOFTIRQ-irq-unsafe lock:
+[   31.885887][  T860]    -> (vsprintf_restricted_pointer_map-wait-type-assert){+.+.}-{3:3} {
+[   31.886729][  T860]       HARDIRQ-ON-W at:
+[   31.887185][  T860]                           mark_usage (kernel/locking/lockdep.c:4662 (discriminator 1))
+[   31.887813][  T860]                           __lock_acquire (kernel/locking/lockdep.c:5191)
+[   31.888488][  T860]                           lock_acquire (kernel/locking/lockdep.c:470 (discriminator 4) kernel/locking/lockdep.c:5870 (discriminator 4) kernel/locking/lockdep.c:5825 (discriminator 4))
+[   31.889132][  T860]                           restricted_pointer (lib/vsprintf.c:874)
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20260322/202603221745.8279cd80-lkp@intel.com
+https://download.01.org/0day-ci/archive/20260322/202603221100.e934e697-lkp@intel.com
 
 
 
