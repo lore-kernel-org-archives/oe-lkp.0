@@ -1,93 +1,96 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A48F340273
-	for <oe-lkp@lists.linux.dev>; Tue, 14 Apr 2026 06:52:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF19219D8BC
+	for <oe-lkp@lists.linux.dev>; Wed, 15 Apr 2026 06:42:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.20
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776149564; cv=fail; b=ro5crXTNP5Avg1OzN3HLJaYnrkbkgemPIwQWduFw7jOmbjP3r6bmFWwmgfd7YmAKaQGS5L5AJv8gREQJfANDxpeCUpgIFItazcSEmqTcNOSmFYjJJByictOf4j+ucrN0hu0+mjgSY2Jd2oyK3VEQyKDtfiTpQ0f4E5tCqQHyIgs=
+	t=1776235339; cv=fail; b=bl3hMkxbqW5pillX96V3f2OQTzjX7y7Q3mGS+XZqOsyiy0ueWiABBDLZeb4TJvrW7Pz20IAt6p624xbYkGo5pDyaIAzQeZiJOzgLxlwvqArZQ/qMsDMfOVBrd678c2sl1XZdnL16zZl8c06H1+QKsAyYhjp0lnEztipiM3aj2Eg=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776149564; c=relaxed/simple;
-	bh=ccZRekypZMMkSb4+h5Qu4vnvAX6eXI+QsdeLLpjihNY=;
+	s=arc-20240116; t=1776235339; c=relaxed/simple;
+	bh=l/g3f+8AwZu7vPnu+liQkPMgKGbgnSi/j7Q56uvrDRo=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=EnbOeMgQ/WW7eOMrdqGt2SORTbaeM3xzFcHZiOMX6dFIG78HArNZKu8FIm0kf/rv7Ij+Axf+4UxYsslh3+QZq1suWVWfEZYPZnXiLye9gOAOCrqq6buwcBCOTOQpBYGLovKO4OUNpklE1uSyfi1hmP2+dluK22Qux5mB0IXZ8PY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LWobKXAf; arc=fail smtp.client-ip=192.198.163.17
+	 Content-Disposition:In-Reply-To:MIME-Version; b=NNPuMAVF1wljtU3sMe/8Idsg2DpEwA8B59cdg+lh8B7Cxzrmzp7y3rLl4HrIL2ZZNGqDf93PuHX56Bzo6WWbF8svjDBEK2eZk24gojxHckGBxMI9GhGWtG+T2g+CRddKMX4+rvACO22hY1UCOX1WevLCBti16XXUG8dsroQZhas=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GLNau7sQ; arc=fail smtp.client-ip=198.175.65.20
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LWobKXAf"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GLNau7sQ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776149561; x=1807685561;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ccZRekypZMMkSb4+h5Qu4vnvAX6eXI+QsdeLLpjihNY=;
-  b=LWobKXAfKCKKcgFhx1ZfHkgRMdkDeRJUp/tTgWWwR7dfMhNmXYb58TRX
-   fr8GV+cOi46P4dNUnRO9kfNpVSQazzyorLv3fseSf6nYUFgfY1tJhQXTR
-   b+FMS1JD6zACq5HKBsBpK2HRZEd5XW6vM1bNQj7i7AqslkS/r3l5RU7II
-   P+L0cTBcQds+skddwM/DQueStjQz8PceDNta2BlnacQrSrYN5VYUxeKx8
-   AD91YVjZGVw87laLcgfrR4blbepe7XeUfUabCPOFCOomLANsrH75nNb4P
-   7x4wwUbzHVm1LYPSrpUT/+gde4XjUkTWuL8axxFKE5P7sdQwAZnA4shNK
+  t=1776235336; x=1807771336;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   mime-version;
+  bh=l/g3f+8AwZu7vPnu+liQkPMgKGbgnSi/j7Q56uvrDRo=;
+  b=GLNau7sQTAdWA9AdAXChrjt39hWS6PvxgifsAOL3VlbgR2N9Vh1EfeFb
+   BldheCYXJtpgly1u+C50McYZyXsYYiSuhomSsqMu3MOc+VWqrSS5kbIwP
+   hGNk64vClK+EHpXlWp/tnOsV8UIGIJlvP+/jD3r3hLp6WhtdhcPpNtr0X
+   9mrLFDnttqTQBR91deL+u6vrHKpMqxkEGPAMUh60hJVRZQjtkSIQ5v5Jq
+   tMNYGsE/kbLrwCqn4L6S8FtsouAqpuYaN4JjZLKRqZMRtLCPR1cLiGECN
+   QMnZZ3aKCAnivWr8GmU/scwwh5ykR2F4rXfel2Y83v7x+ydY+TsUjeIB5
    Q==;
-X-CSE-ConnectionGUID: wMG2dOdvRdeKIV/MMdE/Qw==
-X-CSE-MsgGUID: l4/tYC4RTZuF6L+0ehIgrg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11758"; a="76979143"
+X-CSE-ConnectionGUID: fUpBnSwfQXOz7f9OnJhLKA==
+X-CSE-MsgGUID: 48+AcvFFT/W/KkUkQgsBow==
+X-IronPort-AV: E=McAfee;i="6800,10657,11759"; a="76907214"
 X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
-   d="scan'208";a="76979143"
+   d="scan'208";a="76907214"
 Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2026 23:52:41 -0700
-X-CSE-ConnectionGUID: PKv4AtfOSN22cVhdZTsvyQ==
-X-CSE-MsgGUID: 6o7BQt1KSCqQFVfTpET5rw==
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 23:42:15 -0700
+X-CSE-ConnectionGUID: AvR5NlXaQ1aPF7bpl8LaTQ==
+X-CSE-MsgGUID: t5n+RoMURsyaVcu0E80kVA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,179,1770624000"; 
-   d="scan'208";a="228969966"
-Received: from fmsmsx901.amr.corp.intel.com ([10.18.126.90])
-  by orviesa006.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2026 23:52:41 -0700
-Received: from FMSMSX902.amr.corp.intel.com (10.18.126.91) by
- fmsmsx901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+   d="scan'208";a="229289220"
+Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
+  by orviesa006.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2026 23:42:15 -0700
+Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Mon, 13 Apr 2026 23:52:39 -0700
-Received: from fmsedg902.ED.cps.intel.com (10.1.192.144) by
- FMSMSX902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ 15.2.2562.37; Tue, 14 Apr 2026 23:42:14 -0700
+Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Mon, 13 Apr 2026 23:52:39 -0700
-Received: from CY7PR03CU001.outbound.protection.outlook.com (40.93.198.36) by
- edgegateway.intel.com (192.55.55.82) with Microsoft SMTP Server
+ 15.2.2562.37 via Frontend Transport; Tue, 14 Apr 2026 23:42:14 -0700
+Received: from SN4PR0501CU005.outbound.protection.outlook.com (40.93.194.42)
+ by edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Mon, 13 Apr 2026 23:52:39 -0700
+ 15.2.2562.37; Tue, 14 Apr 2026 23:42:14 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=dmcuo0fQocvHjxWBYTxle2ekSwxBEydl8EmTmYQ5IceD50pzJVFX7r/LAZJkrjamhrtkE0W+/JFC1LwiLs3j31irxzUiqkIHPMagRSa2MOTDT91Znb6GvyfQmVk9v2Cx4F1I47IKT5zbXLv3ykTzUCK1+wayh/o/ULs81Muri5U+Ad4+f4U79yk1vZKEy3DNbPZ+gLOX68/7SNX9zE/DO/Tn5NKn8QydZMtRnBLDA0SgitzwbeJoQ7PWW1ipnfdiEH9simxsKWEx9w+k3Yr2OLBTATwP45sY3FJVqp1G1Gn8kErKfSfkNTqfY0QhzS2iwK4EcuDzS1SAGM+RME5rIQ==
+ b=SGA75juwufSEVl11u1Ee2feKQfepsCfs6cz4VLb14awqLJlo76N85sU2WPf/KcJy8tDSRpHxm9v3WhMbZIiGzGFaxabUX1m3wbrAn0DdCWsENTLzfLxmxeXcqXVivHY8CGYBQHh80OULtw7+Pav+HPoyBRfQNNMfSMIgOUstMcWCdHHIBF9D+2pzaLjSdI4fS2Epevlxg3WmpPNChrWmvIWmdPMi0wsmoggnM12JGjam6PUL/OaE7f63nKdM0p3OvfLFH/AZH3jfQWFS2hIipPkH886wXBv43+0tb1ENVxxTDfWXkP7i0eSyAKgjVyh2PiMhZJ/2J4T/5GXTqMyxpg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+lMAUfuZhTY0iEfodn1Sxz4EJtXDFsKigM5S6Rbtido=;
- b=INXU7WxmKTUuBG+szvSgQwNNaMxf84dI2GOs/P8YiSNbDvjEoG1FjxUAA59uf37M7pq02ySebtzYl4pwaVEQIoqMQtZjPC22tSQXYroHTFk8WGvF0TAmPHLnqJZnJzbDPv+oMwal93A4VR966oHocTOioOPqJWaf586a10cHhyjjKMB/wYLRJRtSoN5b1CUxVYNu5KZU5szO1cBQ1wDXp5tbZiE6wTo1kGcKV+eggzJlRolg3S+sIC/baMBrCDBqo0HOLTzpA28T3160O+KFQEaBVV6eLGRndl3PSbwgQRLPo6eVoW1S2eahA+SmezjXNd5V6twNtHAXZ0Ao3Ytpww==
+ bh=5d/0Lxai3WZqLbKGvJe/jVyMekHQyd7Vh/q83/3X3N8=;
+ b=XqlnojDrvrzkkZyMCeaLzWSArXbCOB5Hq2vuZ4WK61tv7BrOUAFtv/ierHtE2HHaNVfL84CYjk+6G+F1tu/NAbte7f5UqaSk1e0YMsFLQty6kruL0uifQFkIqQb40gX89Hl6EpkKrVXHTdc1FGlcz/sgner/Q55fa9Jgs733b50Ne+Y0NZAQoilkIQFav09oBPSGZyhX8ecmdN+ujd2K/g1ZFq0M99MsoADMXNa2u1aDT1LX1OU5DQFDnQm2bABeYjKB1vp0cnNd4kkvisjsYRnPpqGSdQ0b443GZRcc7HScXKG5DrT3ltrmaRGI+wH2fytjNvrpwl3lgJUDZsesug==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from PH0PR11MB5832.namprd11.prod.outlook.com (2603:10b6:510:141::7)
- by IA4PR11MB9249.namprd11.prod.outlook.com (2603:10b6:208:55f::13) with
+ by SJ0PR11MB5166.namprd11.prod.outlook.com (2603:10b6:a03:2d8::5) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9745.41; Tue, 14 Apr
- 2026 06:52:31 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9818.21; Wed, 15 Apr
+ 2026 06:42:10 +0000
 Received: from PH0PR11MB5832.namprd11.prod.outlook.com
  ([fe80::106e:78dd:4c96:d707]) by PH0PR11MB5832.namprd11.prod.outlook.com
- ([fe80::106e:78dd:4c96:d707%3]) with mapi id 15.20.9818.017; Tue, 14 Apr 2026
- 06:52:31 +0000
-Date: Tue, 14 Apr 2026 14:52:25 +0800
+ ([fe80::106e:78dd:4c96:d707%3]) with mapi id 15.20.9818.017; Wed, 15 Apr 2026
+ 06:42:10 +0000
+Date: Wed, 15 Apr 2026 14:42:04 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Leon Romanovsky <leon@kernel.org>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <oliver.sang@intel.com>
-Subject: [leon-rdma:fix-dmac-race-v1] [RDMA/core]  74e2711bb2:
- BUG:KASAN:invalid-free_in_gid_table_release_one
-Message-ID: <202604140828.9866ad14-lkp@intel.com>
+To: =?utf-8?Q?Micha=C5=82?= Grzelak <michal.grzelak@intel.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>,
+	<intel-gfx@lists.freedesktop.org>, <intel-xe@lists.freedesktop.org>,
+	<ltp@lists.linux.it>, Jani Nikula <jani.nikula@linux.intel.com>,
+	=?utf-8?Q?Micha=C5=82?= Grzelak <michal.grzelak@intel.com>,
+	<oliver.sang@intel.com>
+Subject: Re: [PATCH v1 15/16] drm/i915/bios: search for VBT #57 by default
+Message-ID: <202604150702.d409a2b6-lkp@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-User-Agent: s-nail v14.9.25
-X-ClientProxiedBy: TP0P295CA0019.TWNP295.PROD.OUTLOOK.COM
- (2603:1096:910:5::13) To PH0PR11MB5832.namprd11.prod.outlook.com
- (2603:10b6:510:141::7)
+In-Reply-To: <20260331183332.1773886-16-michal.grzelak@intel.com>
+X-ClientProxiedBy: TP0P295CA0041.TWNP295.PROD.OUTLOOK.COM (2603:1096:910:4::7)
+ To PH0PR11MB5832.namprd11.prod.outlook.com (2603:10b6:510:141::7)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -95,80 +98,80 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR11MB5832:EE_|IA4PR11MB9249:EE_
-X-MS-Office365-Filtering-Correlation-Id: da40adc9-bc99-4f95-d86d-08de99f2666b
+X-MS-TrafficTypeDiagnostic: PH0PR11MB5832:EE_|SJ0PR11MB5166:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8bb0c1b5-8086-4676-1fb8-08de9aba1ed7
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016|56012099003|18002099003;
-X-Microsoft-Antispam-Message-Info: tDwYCqNeOZAmO6cMBUDo0ycPBMt5bdWF9fkPXSWdCE1Y+c32h5icTBm8WmqreZ/DZe6pJO1fsRygBAeq+omF4jtvzlqxjzvtapkX9RdffGTD0fsu8CHF3kERCP2WRRMp7O8EjqUCSU/KHnCUc/LVE6Hj8IW/cr0ULQie4txk5XDluTY4OSBmHKJs2GZONyk23m4RHO4nI8OWAn/4Fzh3/kmv6NatCmZj3yRnlnc5IHHwHREyfxzJZb+4eeLTAGPYL+OWwJUQwnumEbvFm6hhmZLJW9wAS0e/Wmum38tgGjUz08nsLMmbtK+zs0FHL81hFgtLSUhzSUayqOSMwfFk27zhSyQIT474CFjLthjs8IT6ITvP7pSZDKJkDdw3LOkM+uvxZvxEP7n02O5gHntunaUKZORYuU1g0Xi+Qw8seow3jwsFnGDsqtB/zf/UhZ/yOGdre+CHeY0C2clZ37BrZAN+8MB3Cm98mKJg9EmZ3yUQiKKbX+GzILXBMqUnX/rw5zlIwDDEoaTOpMuWXbDN3C1PmGJcogcMwZsT2jQSSUSiId/zb3qqw/WAJUN5GNcJIZ4WI28P6OxGs5R2w+raVgDyjFPYwBTG3iRm6v6dH54kFok2MY8do0kuztTU3bDWPozITXKAwrlCuEAPxYevItidnSJOEOB6apmfMWu8cvp0jPea/h+oLU/XZykTbTLa
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5832.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(56012099003)(18002099003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024|18002099003|56012099003|22082099003;
+X-Microsoft-Antispam-Message-Info: ZRWnJyxItPBK8uXN+xScjQ3V+5U3gegJ5FXwsyDHHmgZiGlCEA/G44uRbxKj/ZjtWOXVMzP+bMCs+B9eqfgoHSE8VfHys2sMwIJuiR65Mq+o6d3TUPIbs7lqHcIDXEffKsBIETkJksJk+uOWiBkRvmznlzMng0N0gc5nws/g5tE2NVdanJhCXg1lPzA8D1n9P6ZgAZxNmG/cMSda2jHMjt/jXOSyLM74WPlcH/jfdz99YNQmBJiLan+lHNV8gKRMXzamdPZN54hTCkCZ52PR2cF4zqJs4/JRHqz6xyj7ZolqaXZEj52Z3fFPay7ocOteVYY5Cnm4dsEVzJEDjluBl4I6cMv2m8JY79WLqU8fDPznMfabU3KklRGFbojkVp9loJZxiRfflHVDgD8KHbqY6fVur6Bi4wrFIFMgfGbAvRmIDTDEXmo3hJHblnmrghaH5PIl8mYnpC5E8fy8QuP9tztVjZZ50mEpwc40QplsCFBM46HFXAbj9ApAORQSJtQYl9konjc3rk/D2RLeVa+E7Z7Fxfk1rSfi6MwX46DNyzAKChZqiCMnFy4FHO1L1Rt83BfZ2/takxJfDIm27MNt2BDeNdXiqVTKI+wwGhR/VLxdbLnLL7pJSi+oHOJrx5nST6a2TpoJjLIaZDs40xHGOCNWkRTV4WAUq65rfQKmecSy7D9qA1w1LZdLehLvUEGI
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5832.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(18002099003)(56012099003)(22082099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NM4SnGR2GBxKZdXTqS8/WSWQ7CLbNH9xSF19SDj3qn8RfrldMzOI02RlEFqf?=
- =?us-ascii?Q?9NildrAODx8z9uWCErptY1qyHHd9AYlYqS31/W368H4TMZ7rJcdmvkZovSwa?=
- =?us-ascii?Q?W8vcgABLL/HXwM1+jOCUOFe6h5awh0iBvORpsAqQluJ64UDV1jONjJSR4NZk?=
- =?us-ascii?Q?YZpK7bM1b8yO5encXk8Z3SfwXaxOOGgwhAAmmV0d3MchebTfHn4SpeVW9GrG?=
- =?us-ascii?Q?okjocv1cJ3mpsLsn9UKSkOJ28IeqXDljt+FAKm77sdCg6I3qonQM9VLH3Mpi?=
- =?us-ascii?Q?8mGauNAIZ/AJ5GTaiAZfTmOtbfQc8te/KQn0Md4HAB50rxNkPqEYFu/yNazj?=
- =?us-ascii?Q?lej267aZp7I1+tbKLzObVQWiaAOAatr6d+BLHBL+CbnnrogySHUZ4O4A2zgF?=
- =?us-ascii?Q?K8FGqL1vVu2VnB+7WMxUtb7tim9oRAXpnq7MhKNWMLYHBdE+CNp3os5DM66K?=
- =?us-ascii?Q?nba6hsEFjaKaAOmkidZPsyJP2C96bqb4VU1a8sZBjRGsfFLMRsnxw1kaz9WL?=
- =?us-ascii?Q?m6CyiLpZvgGx8TjpBix3xEJx8CkM7GIcAFbI14UWQp23Rr9GbFLrUSc72YVp?=
- =?us-ascii?Q?VfRKZkA0dTLuEtNeI5/BAoNkWSTSyZ7p6ZwV75sWM+0Kxq/sc6UkBqZdhcEk?=
- =?us-ascii?Q?oDECIiQ0vFhz1j1dWiLXriH4QtSG5NP6OYNQO68S/+ngIt8jXCrC50fpf5dq?=
- =?us-ascii?Q?H3L5C425YjWeGgZe/kFXYvMewahZBI6Qx8AYOi+4CxOIPB3FA9BD+AnoMq41?=
- =?us-ascii?Q?gYRsJN3O4gqwVsHv8ZwejW3R6BWZjdfrHMWEzIRFy88rS4k/cXevF2KbipCj?=
- =?us-ascii?Q?unRbPnTV/Dkxtt/nRdmluBSzYiOikOveOe/eL2+3KQm2sXIuW8Oq0wENZ+AW?=
- =?us-ascii?Q?84AEkIG03Yrnjoy30iHwY5gHBkzSWWTknfj0Z1K/3wY/HdlokGXtA+t9gUq3?=
- =?us-ascii?Q?y8WbBNzMygS69OHXIi/Qldr4vh5GaaXQdWz4QNYgLHjmvYeIuY7VaOoC1Dqw?=
- =?us-ascii?Q?62nPyy7n84PqoKWG6tR3dpd6Bm95IcnSbFfUIgSVx7ih0/S1qymi+g+BxgwT?=
- =?us-ascii?Q?DJunNL69pBckiYVPgXauhcp8+BQpihUNf2R01TfRdYQH0RLZx+f2xbLPIcW9?=
- =?us-ascii?Q?5s4/Iy+Xa7cV6oXMBiJHsYUNmzFTo0+1bwronwZ8BNG4U4z+qg/1gCWdFwx/?=
- =?us-ascii?Q?B2WBGu/Q6fetrY+lziAT+J25q9E1SeUQuH3r0jvaMjAtewhb1JVuFn4HrGJ0?=
- =?us-ascii?Q?mRc84NvjzEMJJm9kBcIOkDJnryMAsPA9zcFZwEOGQcYB/H1cJN3kdC7RbbCo?=
- =?us-ascii?Q?mevILg/UjSUp5xzv8peHvLcJu3ZOGf6zI87R9owM4+frt+tMBJU2a4xCT6f+?=
- =?us-ascii?Q?RoFtXomh1X7PKDVGPaO0h4c5+MHxc3I/BXuedWSPNJjMufZSJ3huRjrofi6l?=
- =?us-ascii?Q?Wyp+1ks9JX4rfePUMmk4h8KEevKLsLY0W2yZ8aImHEUrLCFkFzZfoFvXLAEQ?=
- =?us-ascii?Q?zv0GkLYXlvkLT/+ocpgu1RyQHZhGhpqRQeyXW0c+PsDHs4QW705N28mpqjBP?=
- =?us-ascii?Q?bYHLoTcMlzrKoogk7xPbHA/mEL7dlnqQB2mIT9TRPGsdMbHmSIm/Pm5N2Kb+?=
- =?us-ascii?Q?Bcy9hqE3tsEfRBehfkMfXDMJSNZWyTOr1eYQwr96h8ybiOBjO3kZn3uURlj6?=
- =?us-ascii?Q?PvXc+j9+BYLaVdzPX0y4J1BSujsq03XDlKlaZzDZ0r2iFxItuVbVWbTQs5FX?=
- =?us-ascii?Q?LKs45YJSUw=3D=3D?=
-X-Exchange-RoutingPolicyChecked: nIH6skteKB4Vuw/pbVU5f3DZFcGjMVzpmGJ8kXwVbkM84Fonu/WEPBy2eGAO6b84iN6TJ4mb2rVA+FY6cvFQ1fZpoSiZY/syzLiyUlXbSPYzHOWaR1/dzavj6KUM6vyiBZ9BhVh85wyuAG1QLv/57elPgPU569B7/PnHg15d/jMwfVZBXY4DjxEOvxduuvzvczK9YzICC8ccuiW8kKlVESLPyQ/TbGnXihK2K5FxrNgNjxQIBeFhw7dP/wu4SbxIiz3sqM1errngR7EIFbyLx6ljnJNSOpeekeZxkFUxIxVtMnz8o15kivbxvFCxvLp4gewp0n8+a8EkOPri/Ju8KQ==
-X-MS-Exchange-CrossTenant-Network-Message-Id: da40adc9-bc99-4f95-d86d-08de99f2666b
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?XFulDB0IwnWruKK3jY2uz6LQrpOOL5Y33MR5UPec8KdGd8N2sFMn1Zf32N+N?=
+ =?us-ascii?Q?M19E7z+32fxPEsX7DLoqtfSvs8vpp6RLvFOZdPZbCbpD9xXKHZM4CeS+ZFZ6?=
+ =?us-ascii?Q?1c8KtoKR6d6gV5ixdoxtQ4oHC0mMQ8iyuAdtIV4Z6p1FUyG52y9MGAb94CDJ?=
+ =?us-ascii?Q?SGzeys2Wh86IQbynuCENCfEa8QcAK7fLHOjWIsfa+utOGz0tZV2QW3ls3UXc?=
+ =?us-ascii?Q?364pMEmQmDaTcfO1WMXanKFZirilne/PWHrNFebUNuQRUD52w9AyzepM5cR9?=
+ =?us-ascii?Q?A/OqNWTPUrs5FOZqeb/G0vtMRw0ojSGHDEy67cDMa3yyXLAaBMCxBaW6teXl?=
+ =?us-ascii?Q?f3ajbO9SSpZZElFL9FxDC/Hrnzi8T8HkhSFFdp+82a8RT/AjMo6V1yvrABHm?=
+ =?us-ascii?Q?5ppJHSrAyqA1eNeA6E/INJmeoyuw87tzasbIA/3920Asj6nDJQ1apCOfw6Dm?=
+ =?us-ascii?Q?9R6/udYekUrUKlmXZk2562Tu1qn2/t+O2bNBQ/x6/IYN3LM3CA8kGvgIixnu?=
+ =?us-ascii?Q?chzgN7ZQXmGmlNEaeMECHL8na4pcU2qbPWmJCUelyZZtg1fRFAGSw4bbk9fV?=
+ =?us-ascii?Q?jSiPSnfEAzuK0lS7YoBTHrnDZDbbbK2vLjL59TuJxFPGK8y9WcRZBOU/8Dhd?=
+ =?us-ascii?Q?5Xb5KjlcbXEitldR1V/5zoviKJg/jC67SC/sLvaQz7p3KXiGg0VDxr28qO+A?=
+ =?us-ascii?Q?GpHEPISdcTgo73pDzDBOxcQ8G5fnDPGDjFrRFgtmEoI4OMbQP9oRyTkim8Qd?=
+ =?us-ascii?Q?61RElOU8RR4wksJmjSOXdYx1KwnYSqdaSMWmu+Y8cO9elGLVwaVtomuUrd6E?=
+ =?us-ascii?Q?6HLtMILl66OBzPOzUpNbKdMqezH5QBbDmMIY/kHvTrx+nD+1ECHFzvtw0B6B?=
+ =?us-ascii?Q?bBYJNInfuA1xAfNVoFvkC4mrPi/rBGd6/sUcGBNxFEUd14vChiq5pRKrImcr?=
+ =?us-ascii?Q?HgaDY78q1GveMZ1Xb6G7ZSiWS3cHfxUNed8jwKcVxpuIWVl2a1s/6Jd+bbmX?=
+ =?us-ascii?Q?CdOvE+wt3Jbj5nJyyzcEWyixf50yoxQRC4tqXnQNor9DfgUlGfjKfLwkNcZw?=
+ =?us-ascii?Q?LArNECDW3l62d49QFdgXTXD9uE7wG8Ok1Z1pAoj1Kna1DrWoGbGOY8d2Dqin?=
+ =?us-ascii?Q?mWiyaFdTm36JLSdk/0zYvo88eiXTiM5+LyQV0TgsjbVs0k2OwMNbksx9rg6E?=
+ =?us-ascii?Q?yRO5Bvo3esDJ82uofAirRGDkIt2sEmW4XoYzDYaSmpHW10J06hNCw1S5vExU?=
+ =?us-ascii?Q?py8Omg+mOV2v3UnQT+6587Q8v+hrNGoZRAtwAdoH4uUXr0fO0LCF0K9dA+UE?=
+ =?us-ascii?Q?N7gKQaLsfjaz5FKAlyY0/j32X3YtkJhfYz/0qIrBt/M11NW+NgWv5AXW0h5y?=
+ =?us-ascii?Q?RNLZ7pbt8o+N19RlfecjP8LncK0RyxggZyQaf9ycfa2HVsSUN6RlXcT5wWDh?=
+ =?us-ascii?Q?RrOFL85adupcNtu9lVZRwgfcctQZWk5+NW/MBe1qNNHtcw7/Jic5cFtSg2y0?=
+ =?us-ascii?Q?SVviyXIpqJyyAj0TcxvmfCrG6nAvWsClOiLoR3UU3YIRF2FB4BCVqUb6+YOS?=
+ =?us-ascii?Q?56RstJ6c0zUM2KQtltWXvk9NamqS3k6L1hJDKmI7Z87kfpe+yN9Hc+fir3Oc?=
+ =?us-ascii?Q?whV54/RNIA3emhhtRSWNLVJ7jfeLnpQj3ZSUjJIDFuZZAJ9KqUHaiQfZwPnr?=
+ =?us-ascii?Q?qJxDIuD2ZrpOFoLozizJowEHwaG0GoHF9cMTbwH8eh4XKij0maoO1hPT8r6l?=
+ =?us-ascii?Q?kQ/kCq9giQ=3D=3D?=
+X-Exchange-RoutingPolicyChecked: rcGyQTPATrZPg7V/4TGTmDaizjB8e/+ulVdOEsJhkB2YYgPamAaRNqc8wo8Zk5LnIj8XS6dW8R+NqmROm0yjIOlfKt3wetreW42LaSgoxO3oT2zhxUCUPVQfsMrblGL14UMjiZmbtTHR4pdTegbfmm2ETqSMUTM0G4YPjtQPe/dDP8PuhuctLD0uQpkaTgUm825Pv6hUqehUhSVNmpJu9D3QidLjKuCwuG50C4pfqR0p/udLXLELmV2GijtnownFQoMJj0P6/dGS+ZR+Jowc5BE4eznRZXV4naDvCCn2r2ij1MENAyDwA236PEV87n9H8WHaG3DMXSIsoJVWf5a1CA==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8bb0c1b5-8086-4676-1fb8-08de9aba1ed7
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5832.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2026 06:52:31.3842
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Apr 2026 06:42:10.6759
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dwqacjhOeoxt09O8xehHnj+6HV/DwvJYHzXayppqaW7bxDnvdr9Q9bSwciSiID3Z+i22zrOSY+neZY5ltn6OBA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA4PR11MB9249
+X-MS-Exchange-CrossTenant-UserPrincipalName: C07mp/M2iNCeRnVHS4kOv1T+yJt79mAhBmcMazyp17ZG3jjFqGHZT5Frk1Y6qjKgN4FpkkWMpR+WkOZra9gtkQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5166
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
-kernel test robot noticed "BUG:KASAN:invalid-free_in_gid_table_release_one" on:
+kernel test robot noticed "BUG:KASAN:slab-out-of-bounds_in_parse_vswing_preemph_snps" on:
 
-commit: 74e2711bb2afbc0ac79c375b239f6b95730ff8bd ("RDMA/core: Use kzalloc_flex for GID table")
-https://git.kernel.org/cgit/linux/kernel/git/leon/linux-rdma.git fix-dmac-race-v1
+commit: 07d1ee54da4966c1457602dc088a8a43b29254cb ("[PATCH v1 15/16] drm/i915/bios: search for VBT #57 by default")
+url: https://github.com/intel-lab-lkp/linux/commits/Micha-Grzelak/drm-i915-lt-align-xe3plpd-with-VS-PE-Override-layout/20260401-092928
+base: https://gitlab.freedesktop.org/drm/i915/kernel.git for-linux-next
+patch link: https://lore.kernel.org/all/20260331183332.1773886-16-michal.grzelak@intel.com/
+patch subject: [PATCH v1 15/16] drm/i915/bios: search for VBT #57 by default
 
-
-in testcase: blktests
-version: blktests-x86_64-dd55eba-1_20260402
+in testcase: ltp
+version: 
 with following parameters:
 
-	disk: 1SSD
-	test: nvme-group-01
-	nvme_trtype: rdma
+	test: ima
 
 
 
-config: x86_64-rhel-9.4-func
+config: x86_64-rhel-9.4-ltp
 compiler: gcc-14
-test machine: 16 threads Intel(R) Core(TM) i7-13620H (Raptor Lake) with 32G memory
+test machine: 22 threads 1 sockets Intel(R) Core(TM) Ultra 9 185H @ 4.5GHz (Meteor Lake) with 32G memory
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
 
@@ -177,165 +180,178 @@ test machine: 16 threads Intel(R) Core(TM) i7-13620H (Raptor Lake) with 32G memo
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202604140828.9866ad14-lkp@intel.com
-
-
-
-kern  :err   : [   42.474510] [   T1376] BUG: KASAN: invalid-free in gid_table_release_one (drivers/infiniband/core/cache.c:805 drivers/infiniband/core/cache.c:877)
-kern  :err   : [   42.487078] [   T1143] x86/PAT: bmc-watchdog:1143 map pfn expected mapping type uncached-minus for [mem 0x3f7ad000-0x3f7adfff], got write-back
-kern  :err   : [   42.494556] [   T1376] Free of addr ffff8881d3e24ab8 by task rdma/1376
-
-kern  :err   : [   42.494561] [   T1376] CPU: 2 UID: 0 PID: 1376 Comm: rdma Tainted: G S      W           7.0.0-rc6-00097-g74e2711bb2af #1 PREEMPT(lazy)
-kern  :err   : [   42.494564] [   T1376] Tainted: [S]=CPU_OUT_OF_SPEC, [W]=WARN
-kern  :err   : [   42.494565] [   T1376] Hardware name: LENOVO 90XW004HPL/336B, BIOS M5LKT1CA 01/06/2025
-kern  :err   : [   42.494567] [   T1376] Call Trace:
-kern  :err   : [   42.494568] [   T1376]  <TASK>
-kern  :err   : [   42.494569] [   T1376]  dump_stack_lvl (lib/dump_stack.c:122)
-kern  :err   : [   42.494573] [   T1376]  print_address_description+0x88/0x320
-kern  :err   : [   42.494577] [   T1376]  ? gid_table_release_one (drivers/infiniband/core/cache.c:805 drivers/infiniband/core/cache.c:877)
-kern  :err   : [   42.494579] [   T1376]  print_report (mm/kasan/report.c:483)
-kern  :err   : [   42.494581] [   T1376]  ? __virt_addr_valid (include/linux/mmzone.h:2114 (discriminator 1) include/linux/mmzone.h:2196 (discriminator 1) arch/x86/mm/physaddr.c:54 (discriminator 1))
-kern  :err   : [   42.494583] [   T1376]  ? gid_table_release_one (drivers/infiniband/core/cache.c:805 drivers/infiniband/core/cache.c:877)
-kern  :err   : [   42.494585] [   T1376]  ? gid_table_release_one (drivers/infiniband/core/cache.c:805 drivers/infiniband/core/cache.c:877)
-kern  :err   : [   42.494587] [   T1376]  kasan_report_invalid_free (mm/kasan/report.c:563)
-kern  :err   : [   42.494591] [   T1376]  ? gid_table_release_one (drivers/infiniband/core/cache.c:805 drivers/infiniband/core/cache.c:877)
-kern  :err   : [   42.494593] [   T1376]  ? gid_table_release_one (drivers/infiniband/core/cache.c:805 drivers/infiniband/core/cache.c:877)
-kern  :err   : [   42.494595] [   T1376]  check_slab_allocation (mm/kasan/common.c:231)
-kern  :err   : [   42.494597] [   T1376]  kfree (mm/slub.c:2608 (discriminator 4) mm/slub.c:6165 (discriminator 4) mm/slub.c:6483 (discriminator 4))
-kern  :err   : [   42.494600] [   T1376]  gid_table_release_one (drivers/infiniband/core/cache.c:805 drivers/infiniband/core/cache.c:877)
-kern  :err   : [   42.494602] [   T1376]  ib_device_release (drivers/infiniband/core/device.c:483)
-kern  :err   : [   42.494604] [   T1376]  device_release (drivers/base/core.c:2571)
-kern  :err   : [   42.494607] [   T1376]  kobject_cleanup (lib/kobject.c:693)
-kern  :err   : [   42.494611] [   T1376]  nldev_dellink (drivers/infiniband/core/nldev.c:1821)
-kern  :err   : [   42.494613] [   T1376]  ? __pfx_nldev_dellink (drivers/infiniband/core/nldev.c:1821)
-kern  :err   : [   42.494619] [   T1376]  ? down_read (arch/x86/include/asm/atomic64_64.h:20 include/linux/atomic/atomic-arch-fallback.h:2629 include/linux/atomic/atomic-long.h:79 include/linux/atomic/atomic-instrumented.h:3224 kernel/locking/rwsem.c:177 kernel/locking/rwsem.c:182 kernel/locking/rwsem.c:257 kernel/locking/rwsem.c:1260 kernel/locking/rwsem.c:1274 kernel/locking/rwsem.c:1539)
-kern  :err   : [   42.494621] [   T1376]  ? __pfx_down_read (kernel/locking/rwsem.c:1535)
-kern  :err   : [   42.494623] [   T1376]  ? security_capable (security/security.c:635 (discriminator 1))
-kern  :err   : [   42.494626] [   T1376]  rdma_nl_rcv_msg (drivers/infiniband/core/netlink.c:195)
-kern  :err   : [   42.494628] [   T1376]  ? __pfx_rdma_nl_rcv_msg (drivers/infiniband/core/netlink.c:154)
-kern  :err   : [   42.494630] [   T1376]  ? netlink_recvmsg (net/netlink/af_netlink.c:1974 (discriminator 2))
-kern  :err   : [   42.494632] [   T1376]  rdma_nl_rcv_skb+0x226/0x3b0
-kern  :err   : [   42.494634] [   T1376]  ? __pfx_rdma_nl_rcv_skb+0x10/0x10
-kern  :err   : [   42.494637] [   T1376]  netlink_unicast (net/netlink/af_netlink.c:1319 net/netlink/af_netlink.c:1344)
-kern  :err   : [   42.494639] [   T1376]  ? __pfx_netlink_unicast (net/netlink/af_netlink.c:1329)
-kern  :err   : [   42.494640] [   T1376]  ? __virt_addr_valid (include/linux/mmzone.h:2114 (discriminator 1) include/linux/mmzone.h:2196 (discriminator 1) arch/x86/mm/physaddr.c:54 (discriminator 1))
-kern  :err   : [   42.494642] [   T1376]  ? check_heap_object (mm/usercopy.c:190 (discriminator 1))
-kern  :err   : [   42.494644] [   T1376]  netlink_sendmsg (net/netlink/af_netlink.c:1894)
-kern  :err   : [   42.494646] [   T1376]  ? __pfx_netlink_sendmsg (net/netlink/af_netlink.c:1813)
-kern  :err   : [   42.494648] [   T1376]  ? _inline_copy_from_user (arch/x86/include/asm/uaccess_64.h:121 arch/x86/include/asm/uaccess_64.h:121 arch/x86/include/asm/uaccess_64.h:141 include/linux/uaccess.h:185)
-kern  :err   : [   42.494652] [   T1376]  __sys_sendto (net/socket.c:727 (discriminator 1) net/socket.c:742 (discriminator 1) net/socket.c:2206 (discriminator 1))
-kern  :err   : [   42.494654] [   T1376]  ? __pfx___sys_sendto (net/socket.c:2173)
-kern  :err   : [   42.494656] [   T1376]  ? do_sock_setsockopt (net/socket.c:2291)
-kern  :err   : [   42.494659] [   T1376]  ? __pfx_netlink_setsockopt (net/netlink/af_netlink.c:1644)
-kern  :err   : [   42.494661] [   T1376]  ? entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130)
-kern  :err   : [   42.494663] [   T1376]  ? __asan_memset (mm/kasan/shadow.c:84 (discriminator 2))
-kern  :err   : [   42.494664] [   T1376]  ? _raw_spin_lock_irqsave (arch/x86/include/asm/atomic.h:107 (discriminator 4) include/linux/atomic/atomic-arch-fallback.h:2170 (discriminator 4) include/linux/atomic/atomic-instrumented.h:1302 (discriminator 4) include/asm-generic/qspinlock.h:111 (discriminator 4) include/linux/spinlock.h:187 (discriminator 4) include/linux/spinlock_api_smp.h:133 (discriminator 4) kernel/locking/spinlock.c:162 (discriminator 4))
-kern  :err   : [   42.494666] [   T1376]  ? __pfx__raw_spin_lock_irqsave (kernel/locking/spinlock.c:161)
-kern  :err   : [   42.494669] [   T1376]  __x64_sys_sendto (net/socket.c:2209)
-kern  :err   : [   42.494670] [   T1376]  ? _copy_to_user (arch/x86/include/asm/uaccess_64.h:121 arch/x86/include/asm/uaccess_64.h:121 arch/x86/include/asm/uaccess_64.h:147 include/linux/uaccess.h:206 lib/usercopy.c:26)
-kern  :err   : [   42.494673] [   T1376]  do_syscall_64 (arch/x86/entry/syscall_64.c:63 (discriminator 1) arch/x86/entry/syscall_64.c:94 (discriminator 1))
-kern  :err   : [   42.494674] [   T1376]  ? move_addr_to_user (net/socket.c:306 (discriminator 1))
-kern  :err   : [   42.494677] [   T1376]  ? do_getsockname (net/socket.c:532 net/socket.c:2148)
-kern  :err   : [   42.494679] [   T1376]  ? _raw_spin_lock_irqsave (arch/x86/include/asm/atomic.h:107 (discriminator 4) include/linux/atomic/atomic-arch-fallback.h:2170 (discriminator 4) include/linux/atomic/atomic-instrumented.h:1302 (discriminator 4) include/asm-generic/qspinlock.h:111 (discriminator 4) include/linux/spinlock.h:187 (discriminator 4) include/linux/spinlock_api_smp.h:133 (discriminator 4) kernel/locking/spinlock.c:162 (discriminator 4))
-kern  :err   : [   42.494681] [   T1376]  ? __pfx_do_getsockname (net/socket.c:2119)
-kern  :err   : [   42.494683] [   T1376]  ? netlink_insert (net/netlink/af_netlink.c:591)
-kern  :err   : [   42.494685] [   T1376]  ? __wake_up (kernel/sched/wait.c:129 kernel/sched/wait.c:146)
-kern  :err   : [   42.494687] [   T1376]  ? fdget (include/linux/atomic/atomic-arch-fallback.h:479 (discriminator 2) include/linux/atomic/atomic-instrumented.h:50 (discriminator 2) fs/file.c:1196 (discriminator 2) fs/file.c:1210 (discriminator 2))
-kern  :err   : [   42.494690] [   T1376]  ? __sys_getsockname (include/linux/file.h:62 (discriminator 1) include/linux/file.h:83 (discriminator 1) net/socket.c:2144 (discriminator 1))
-kern  :err   : [   42.494692] [   T1376]  ? __x64_sys_getsockname (net/socket.c:2154)
-kern  :err   : [   42.494694] [   T1376]  ? do_syscall_64 (arch/x86/include/asm/atomic64_64.h:15 include/linux/atomic/atomic-arch-fallback.h:2583 include/linux/atomic/atomic-long.h:38 include/linux/atomic/atomic-instrumented.h:3189 include/linux/unwind_deferred.h:37 include/linux/irq-entry-common.h:296 include/linux/entry-common.h:327 arch/x86/entry/syscall_64.c:100)
-kern  :err   : [   42.494695] [   T1376]  ? __pfx___sys_bind (net/socket.c:1889)
-kern  :err   : [   42.494697] [   T1376]  ? sock_alloc_file (include/linux/fs.h:2832 net/socket.c:499)
-kern  :err   : [   42.494699] [   T1376]  ? __sys_socket (net/socket.c:516 net/socket.c:1756)
-kern  :err   : [   42.494700] [   T1376]  ? __pfx___sys_socket (net/socket.c:1743)
-kern  :err   : [   42.494702] [   T1376]  ? __x64_sys_bind (net/socket.c:1908)
-kern  :err   : [   42.494704] [   T1376]  ? do_syscall_64 (arch/x86/include/asm/atomic64_64.h:15 include/linux/atomic/atomic-arch-fallback.h:2583 include/linux/atomic/atomic-long.h:38 include/linux/atomic/atomic-instrumented.h:3189 include/linux/unwind_deferred.h:37 include/linux/irq-entry-common.h:296 include/linux/entry-common.h:327 arch/x86/entry/syscall_64.c:100)
-kern  :err   : [   42.494705] [   T1376]  ? do_syscall_64 (arch/x86/include/asm/atomic64_64.h:15 include/linux/atomic/atomic-arch-fallback.h:2583 include/linux/atomic/atomic-long.h:38 include/linux/atomic/atomic-instrumented.h:3189 include/linux/unwind_deferred.h:37 include/linux/irq-entry-common.h:296 include/linux/entry-common.h:327 arch/x86/entry/syscall_64.c:100)
-kern  :err   : [   42.494706] [   T1376]  ? do_syscall_64 (arch/x86/include/asm/atomic64_64.h:15 include/linux/atomic/atomic-arch-fallback.h:2583 include/linux/atomic/atomic-long.h:38 include/linux/atomic/atomic-instrumented.h:3189 include/linux/unwind_deferred.h:37 include/linux/irq-entry-common.h:296 include/linux/entry-common.h:327 arch/x86/entry/syscall_64.c:100)
-kern  :err   : [   42.494708] [   T1376]  ? do_user_addr_fault (arch/x86/include/asm/atomic.h:93 (discriminator 4) include/linux/atomic/atomic-arch-fallback.h:949 (discriminator 4) include/linux/atomic/atomic-instrumented.h:401 (discriminator 4) include/linux/refcount.h:389 (discriminator 4) include/linux/refcount.h:432 (discriminator 4) include/linux/mmap_lock.h:196 (discriminator 4) include/linux/mmap_lock.h:217 (discriminator 4) include/linux/mmap_lock.h:264 (discriminator 4) arch/x86/mm/fault.c:1336 (discriminator 4))
-kern  :err   : [   42.494712] [   T1376]  ? irqentry_exit (arch/x86/include/asm/atomic64_64.h:15 include/linux/atomic/atomic-arch-fallback.h:2583 include/linux/atomic/atomic-long.h:38 include/linux/atomic/atomic-instrumented.h:3189 include/linux/unwind_deferred.h:37 include/linux/irq-entry-common.h:296 include/linux/irq-entry-common.h:341 kernel/entry/common.c:219)
-kern  :err   : [   42.494713] [   T1376]  entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130)
-kern  :err   : [   42.494715] [   T1376] RIP: 0033:0x7ff472790687
-kern  :err   : [   42.494717] [   T1376] Code: 48 89 fa 4c 89 df e8 58 b3 00 00 8b 93 08 03 00 00 59 5e 48 83 f8 fc 74 1a 5b c3 0f 1f 84 00 00 00 00 00 48 8b 44 24 10 0f 05 <5b> c3 0f 1f 80 00 00 00 00 83 e2 39 83 fa 08 75 de e8 23 ff ff ff
-All code
-========
-   0:	48 89 fa             	mov    %rdi,%rdx
-   3:	4c 89 df             	mov    %r11,%rdi
-   6:	e8 58 b3 00 00       	call   0xb363
-   b:	8b 93 08 03 00 00    	mov    0x308(%rbx),%edx
-  11:	59                   	pop    %rcx
-  12:	5e                   	pop    %rsi
-  13:	48 83 f8 fc          	cmp    $0xfffffffffffffffc,%rax
-  17:	74 1a                	je     0x33
-  19:	5b                   	pop    %rbx
-  1a:	c3                   	ret
-  1b:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
-  22:	00 
-  23:	48 8b 44 24 10       	mov    0x10(%rsp),%rax
-  28:	0f 05                	syscall
-  2a:*	5b                   	pop    %rbx		<-- trapping instruction
-  2b:	c3                   	ret
-  2c:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
-  33:	83 e2 39             	and    $0x39,%edx
-  36:	83 fa 08             	cmp    $0x8,%edx
-  39:	75 de                	jne    0x19
-  3b:	e8 23 ff ff ff       	call   0xffffffffffffff63
-
-Code starting with the faulting instruction
-===========================================
-   0:	5b                   	pop    %rbx
-   1:	c3                   	ret
-   2:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
-   9:	83 e2 39             	and    $0x39,%edx
-   c:	83 fa 08             	cmp    $0x8,%edx
-   f:	75 de                	jne    0xffffffffffffffef
-  11:	e8 23 ff ff ff       	call   0xffffffffffffff39
-kern  :err   : [   42.494719] [   T1376] RSP: 002b:00007ffc34e27fe0 EFLAGS: 00000202 ORIG_RAX: 000000000000002c
-kern  :err   : [   42.494722] [   T1376] RAX: ffffffffffffffda RBX: 00007ff4727000c0 RCX: 00007ff472790687
-kern  :err   : [   42.494724] [   T1376] RDX: 0000000000000018 RSI: 00005556f9bdc2a0 RDI: 0000000000000005
-kern  :err   : [   42.494725] [   T1376] RBP: 0000000069cf668e R08: 00007ff472905000 R09: 000000000000000c
-kern  :err   : [   42.494726] [   T1376] R10: 0000000000000000 R11: 0000000000000202 R12: 00007ffc34e28240
-kern  :err   : [   42.494727] [   T1376] R13: 00005556e3446750 R14: 00005556e3468de0 R15: 00007ffc34e28240
-kern  :err   : [   42.494729] [   T1376]  </TASK>
-
-kern  :err   : [   42.507109] [   T1143] x86/PAT: bmc-watchdog:1143 map pfn expected mapping type uncached-minus for [mem 0x3f8e5000-0x3f8e5fff], got write-back
-kern  :err   : [   42.513375] [   T1376] Allocated by task 1303:
-kern  :warn  : [   42.513376] [   T1376]  kasan_save_stack (mm/kasan/common.c:58)
-kern  :err   : [   42.515615] [   T1143] x86/PAT: bmc-watchdog:1143 map pfn expected mapping type uncached-minus for [mem 0x3f7ac000-0x3f7acfff], got write-back
-kern  :warn  : [   42.527517] [   T1376]  kasan_save_track (mm/kasan/common.c:70 (discriminator 1) mm/kasan/common.c:79 (discriminator 1))
-kern  :warn  : [   42.527519] [   T1376]  __kasan_kmalloc (mm/kasan/common.c:398 mm/kasan/common.c:415)
-kern  :err   : [   42.533046] [   T1143] x86/PAT: bmc-watchdog:1143 map pfn expected mapping type uncached-minus for [mem 0x3f7ab000-0x3f7abfff], got write-back
-kern  :warn  : [   42.540707] [   T1376]  __kmalloc_noprof (include/linux/kasan.h:263 mm/slub.c:5260 mm/slub.c:5272)
-kern  :warn  : [   42.540709] [   T1376]  _gid_table_setup_one (drivers/infiniband/core/cache.c:773 (discriminator 4) drivers/infiniband/core/cache.c:888 (discriminator 4))
-kern  :err   : [   42.547832] [   T1143] x86/PAT: bmc-watchdog:1143 map pfn expected mapping type uncached-minus for [mem 0x3f880000-0x3f880fff], got write-back
-kern  :warn  : [   42.548182] [   T1376]  ib_cache_setup_one (drivers/infiniband/core/cache.c:918 drivers/infiniband/core/cache.c:1606)
-kern  :err   : [   42.552581] [   T1143] x86/PAT: bmc-watchdog:1143 map pfn expected mapping type uncached-minus for [mem 0x3f881000-0x3f881fff], got write-back
-kern  :warn  : [   42.559034] [   T1376]  ib_register_device (drivers/infiniband/core/device.c:1426 drivers/infiniband/core/device.c:1405)
-kern  :warn  : [   42.559036] [   T1376] siw_newlink (drivers/infiniband/sw/siw/siw_main.c:71 drivers/infiniband/sw/siw/siw_main.c:430) siw
-kern  :err   : [   42.564390] [   T1143] x86/PAT: bmc-watchdog:1143 map pfn expected mapping type uncached-minus for [mem 0x3f7d8000-0x3f7d8fff], got write-back
-kern  :warn  : [   42.568756] [   T1376]  nldev_newlink (drivers/infiniband/core/nldev.c:1812 (discriminator 1))
-kern  :warn  : [   42.568758] [   T1376]  rdma_nl_rcv_msg (drivers/infiniband/core/netlink.c:195)
-kern  :err   : [   42.573677] [   T1143] x86/PAT: bmc-watchdog:1143 map pfn expected mapping type uncached-minus for [mem 0x3f7d7000-0x3f7d7fff], got write-back
-kern  :warn  : [   42.578997] [   T1376]  rdma_nl_rcv_skb+0x226/0x3b0
-kern  :warn  : [   42.578998] [   T1376]  netlink_unicast (net/netlink/af_netlink.c:1319 net/netlink/af_netlink.c:1344)
-kern  :err   : [   42.584348] [   T1143] x86/PAT: bmc-watchdog:1143 map pfn expected mapping type uncached-minus for [mem 0x3f7d1000-0x3f7d1fff], got write-back
-kern  :warn  : [   42.589665] [   T1376]  netlink_sendmsg (net/netlink/af_netlink.c:1894)
-kern  :warn  : [   42.589667] [   T1376]  __sys_sendto (net/socket.c:727 (discriminator 1) net/socket.c:742 (discriminator 1) net/socket.c:2206 (discriminator 1))
-kern  :err   : [   42.595020] [   T1143] x86/PAT: bmc-watchdog:1143 map pfn expected mapping type uncached-minus for [mem 0x3f7ce000-0x3f7cefff], got write-back
-kern  :warn  : [   42.600338] [   T1376]  __x64_sys_sendto (net/socket.c:2209)
-kern  :warn  : [   42.600339] [   T1376]  do_syscall_64 (arch/x86/entry/syscall_64.c:63 (discriminator 1) arch/x86/entry/syscall_64.c:94 (discriminator 1))
-kern  :err   : [   42.605436] [   T1143] x86/PAT: bmc-watchdog:1143 map pfn expected mapping type uncached-minus for [mem 0x3f7ca000-0x3f7cafff], got write-back
-kern  :warn  : [   42.609194] [   T1376]  entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130)
-
-kern  :err   : [   42.609196] [   T1376] The buggy address belongs to the object at ffff8881d3e24a80
-which belongs to the cache kmalloc-64 of size 64
-kern  :err   : [   42.614375] [   T1143] x86/PAT: bmc-watchdog:1143 map pfn expected mapping type uncached-minus for [mem 0x3f7bc000-0x3f7bcfff], got write-back
-kern  :err   : [   42.619087] [   T1376] The buggy address is located 56 bytes inside of
-64-byte region [ffff8881d3e24a80, ffff8881d3e24ac0)
+| Closes: https://lore.kernel.org/oe-lkp/202604150702.d409a2b6-lkp@intel.com
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20260414/202604140828.9866ad14-lkp@intel.com
+https://download.01.org/0day-ci/archive/20260415/202604150702.d409a2b6-lkp@intel.com
+
+
+kern  :err   : [   27.966990] [    T399] ==================================================================
+kern  :err   : [   27.968126] [    T399] BUG: KASAN: slab-out-of-bounds in parse_vswing_preemph_snps+0x2dd/0x430 [i915]
+kern  :err   : [   27.969712] [    T399] Read of size 4 at addr ffff8881eba2c49d by task (udev-worker)/399
+
+kern  :err   : [   27.971135] [    T399] CPU: 4 UID: 0 PID: 399 Comm: (udev-worker) Tainted: G S                  7.0.0-rc4-01496-g07d1ee54da49 #1 PREEMPT(lazy) 
+kern  :err   : [   27.971139] [    T399] Tainted: [S]=CPU_OUT_OF_SPEC
+kern  :err   : [   27.971140] [    T399] Hardware name: ASUSTeK COMPUTER INC. NUC14RVS-B/NUC14RVSU9, BIOS RVMTL357.0047.2025.0108.1408 01/08/2025
+kern  :err   : [   27.971142] [    T399] Call Trace:
+kern  :err   : [   27.971144] [    T399]  <TASK>
+kern  :err   : [   27.971145] [    T399]  dump_stack_lvl+0x47/0x70
+kern  :err   : [   27.971152] [    T399]  print_address_description+0x88/0x320
+kern  :err   : [   27.971156] [    T399]  ? parse_vswing_preemph_snps+0x2dd/0x430 [i915]
+kern  :err   : [   27.971355] [    T399]  print_report+0x106/0x1f4
+kern  :err   : [   27.971357] [    T399]  ? __virt_addr_valid+0xc4/0x230
+kern  :err   : [   27.971360] [    T399]  ? parse_vswing_preemph_snps+0x2dd/0x430 [i915]
+kern  :err   : [   27.971533] [    T399]  kasan_report+0xb5/0xf0
+kern  :err   : [   27.971537] [    T399]  ? parse_vswing_preemph_snps+0x2dd/0x430 [i915]
+kern  :err   : [   27.971704] [    T399]  parse_vswing_preemph_snps+0x2dd/0x430 [i915]
+kern  :err   : [   27.971868] [    T399]  intel_bios_init+0xcc1/0x14b0 [i915]
+kern  :err   : [   27.972042] [    T399]  ? drm_vblank_init+0x147/0x330 [drm]
+kern  :err   : [   27.972105] [    T399]  intel_display_driver_probe_noirq+0x8d/0x870 [i915]
+kern  :err   : [   27.972295] [    T399]  i915_driver_probe+0x209/0x9f0 [i915]
+kern  :err   : [   27.972445] [    T399]  ? __pfx_mutex_lock+0x10/0x10
+kern  :err   : [   27.972450] [    T399]  ? mutex_lock+0x91/0xf0
+kern  :err   : [   27.972451] [    T399]  ? __pfx_i915_driver_probe+0x10/0x10 [i915]
+kern  :err   : [   27.972597] [    T399]  ? drm_privacy_screen_get+0x2bf/0x370 [drm]
+kern  :err   : [   27.972628] [    T399]  ? intel_display_driver_probe_defer+0x41/0x70 [i915]
+kern  :err   : [   27.972814] [    T399]  ? i915_pci_probe+0x2ab/0x3b0 [i915]
+kern  :err   : [   27.972963] [    T399]  ? __pfx_i915_pci_probe+0x10/0x10 [i915]
+kern  :err   : [   27.973110] [    T399]  local_pci_probe+0xdb/0x1b0
+kern  :err   : [   27.973114] [    T399]  pci_call_probe+0x153/0x4f0
+kern  :err   : [   27.973116] [    T399]  ? __pfx_pci_call_probe+0x10/0x10
+kern  :err   : [   27.973117] [    T399]  ? __pfx__raw_spin_lock+0x10/0x10
+kern  :err   : [   27.973119] [    T399]  ? pci_assign_irq+0x80/0x2f0
+kern  :err   : [   27.973121] [    T399]  ? pci_match_device+0x38d/0x6b0
+kern  :err   : [   27.973123] [    T399]  ? kernfs_create_link+0x164/0x230
+kern  :err   : [   27.973127] [    T399]  pci_device_probe+0x173/0x2f0
+kern  :err   : [   27.973128] [    T399]  call_driver_probe+0x62/0x1f0
+kern  :err   : [   27.973132] [    T399]  really_probe+0x197/0x770
+kern  :err   : [   27.973134] [    T399]  __driver_probe_device+0x18c/0x3b0
+kern  :err   : [   27.973137] [    T399]  driver_probe_device+0x4a/0x130
+kern  :err   : [   27.973139] [    T399]  __driver_attach+0x18c/0x4f0
+kern  :err   : [   27.973141] [    T399]  ? __pfx___driver_attach+0x10/0x10
+kern  :err   : [   27.973143] [    T399]  bus_for_each_dev+0xef/0x170
+kern  :err   : [   27.973145] [    T399]  ? kasan_unpoison+0x40/0x70
+kern  :err   : [   27.973147] [    T399]  ? __pfx_bus_for_each_dev+0x10/0x10
+kern  :err   : [   27.973149] [    T399]  ? __kasan_slab_alloc+0x2f/0x70
+kern  :err   : [   27.973152] [    T399]  ? klist_add_tail+0x132/0x270
+kern  :err   : [   27.973154] [    T399]  bus_add_driver+0x2a7/0x4f0
+kern  :err   : [   27.973156] [    T399]  driver_register+0x1a1/0x370
+kern  :err   : [   27.973158] [    T399]  i915_init+0x57/0x160 [i915]
+kern  :err   : [   27.973307] [    T399]  ? __pfx_i915_init+0x10/0x10 [i915]
+kern  :err   : [   27.973453] [    T399]  do_one_initcall+0x8d/0x3f0
+kern  :err   : [   27.973455] [    T399]  ? __pfx_do_one_initcall+0x10/0x10
+kern  :err   : [   27.973457] [    T399]  ? kasan_unpoison+0x3b/0x70
+kern  :err   : [   27.973458] [    T399]  ? kasan_unpoison+0x40/0x70
+kern  :err   : [   27.973460] [    T399]  do_init_module+0x281/0x830
+kern  :err   : [   27.973463] [    T399]  ? __pfx_do_init_module+0x10/0x10
+kern  :err   : [   27.973464] [    T399]  ? kfree+0x195/0x430
+kern  :err   : [   27.973467] [    T399]  load_module+0x173d/0x2070
+kern  :err   : [   27.973469] [    T399]  ? ima_post_read_file+0x18f/0x230
+kern  :err   : [   27.973474] [    T399]  ? __pfx_load_module+0x10/0x10
+kern  :err   : [   27.973476] [    T399]  ? security_kernel_post_read_file+0x35/0xf0
+kern  :err   : [   27.973479] [    T399]  ? __pfx_kernel_read_file+0x10/0x10
+kern  :err   : [   27.973483] [    T399]  ? __pfx_current_time+0x10/0x10
+kern  :err   : [   27.973486] [    T399]  ? init_module_from_file+0x157/0x1b0
+kern  :err   : [   27.973487] [    T399]  init_module_from_file+0x157/0x1b0
+kern  :err   : [   27.973489] [    T399]  ? __pfx_init_module_from_file+0x10/0x10
+kern  :err   : [   27.973491] [    T399]  ? touch_atime+0x1bc/0x4f0
+kern  :err   : [   27.973493] [    T399]  ? _raw_spin_lock+0x80/0xf0
+kern  :err   : [   27.973494] [    T399]  ? __pfx__raw_spin_lock+0x10/0x10
+kern  :err   : [   27.973496] [    T399]  ? __pfx_filemap_read+0x10/0x10
+kern  :err   : [   27.973498] [    T399]  ? do_sys_openat2+0xeb/0x170
+kern  :err   : [   27.973501] [    T399]  idempotent_init_module+0x21c/0x770
+kern  :err   : [   27.973503] [    T399]  ? __pfx_idempotent_init_module+0x10/0x10
+kern  :err   : [   27.973505] [    T399]  ? fdget+0x54/0x3b0
+kern  :err   : [   27.973506] [    T399]  ? security_capable+0x35/0xf0
+kern  :err   : [   27.973509] [    T399]  __x64_sys_finit_module+0xca/0x170
+kern  :err   : [   27.973511] [    T399]  do_syscall_64+0x108/0x5b0
+kern  :err   : [   27.973513] [    T399]  ? vfs_read+0x3be/0x9b0
+kern  :err   : [   27.973514] [    T399]  ? vfs_read+0x3be/0x9b0
+kern  :err   : [   27.973516] [    T399]  ? __pfx_vfs_read+0x10/0x10
+kern  :err   : [   27.973517] [    T399]  ? __pfx__raw_spin_lock+0x10/0x10
+kern  :err   : [   27.973519] [    T399]  ? fdget+0x54/0x3b0
+kern  :err   : [   27.973520] [    T399]  ? __pfx___seccomp_filter+0x10/0x10
+kern  :err   : [   27.973523] [    T399]  ? __x64_sys_pread64+0x18d/0x1f0
+kern  :err   : [   27.973525] [    T399]  ? __pfx___x64_sys_pread64+0x10/0x10
+kern  :err   : [   27.973526] [    T399]  ? fdget+0x54/0x3b0
+kern  :err   : [   27.973528] [    T399]  ? security_capable+0x35/0xf0
+kern  :err   : [   27.973530] [    T399]  ? do_syscall_64+0x140/0x5b0
+kern  :err   : [   27.973531] [    T399]  ? arch_exit_to_user_mode_prepare+0x9e/0xf0
+kern  :err   : [   27.973533] [    T399]  ? do_syscall_64+0x140/0x5b0
+kern  :err   : [   27.973534] [    T399]  ? __x64_sys_openat+0x104/0x1f0
+kern  :err   : [   27.973536] [    T399]  ? __pfx___x64_sys_openat+0x10/0x10
+kern  :err   : [   27.973538] [    T399]  ? do_syscall_64+0x140/0x5b0
+kern  :err   : [   27.973540] [    T399]  ? do_syscall_64+0x140/0x5b0
+kern  :err   : [   27.973541] [    T399]  ? irqentry_exit+0x76/0x4f0
+kern  :err   : [   27.973544] [    T399]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
+kern  :err   : [   27.973546] [    T399] RIP: 0033:0x7f3689aa8779
+kern  :err   : [   27.973549] [    T399] Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 67 76 0d 00 f7 d8 64 89 01 48
+kern  :err   : [   27.973551] [    T399] RSP: 002b:00007ffca3326338 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
+kern  :err   : [   27.973555] [    T399] RAX: ffffffffffffffda RBX: 000055c94afdd3e0 RCX: 00007f3689aa8779
+kern  :err   : [   27.973556] [    T399] RDX: 0000000000000000 RSI: 00007f36882ae44d RDI: 0000000000000053
+kern  :err   : [   27.973557] [    T399] RBP: 0000000000000000 R08: 0000000000000000 R09: 000055c94af65b30
+kern  :err   : [   27.973558] [    T399] R10: 0000000000000000 R11: 0000000000000246 R12: 00007f36882ae44d
+kern  :err   : [   27.973559] [    T399] R13: 0000000000020000 R14: 000055c94afb65f0 R15: 0000000000000000
+kern  :err   : [   27.973561] [    T399]  </TASK>
+
+kern  :err   : [   28.051757] [    T399] Allocated by task 399:
+kern  :warn  : [   28.052350] [    T399]  kasan_save_stack+0x1e/0x70
+kern  :warn  : [   28.053001] [    T399]  kasan_save_track+0x10/0x30
+kern  :warn  : [   28.053646] [    T399]  __kasan_kmalloc+0x8b/0xb0
+kern  :warn  : [   28.054278] [    T399]  __kmalloc_noprof+0x1d8/0x5f0
+kern  :warn  : [   28.054944] [    T399]  init_bdb_block+0x128/0xc30 [i915]
+kern  :warn  : [   28.055915] [    T399]  intel_bios_init+0x4de/0x14b0 [i915]
+kern  :warn  : [   28.056854] [    T399]  intel_display_driver_probe_noirq+0x8d/0x870 [i915]
+kern  :warn  : [   28.057984] [    T399]  i915_driver_probe+0x209/0x9f0 [i915]
+kern  :warn  : [   28.058917] [    T399]  local_pci_probe+0xdb/0x1b0
+kern  :warn  : [   28.059565] [    T399]  pci_call_probe+0x153/0x4f0
+kern  :warn  : [   28.060210] [    T399]  pci_device_probe+0x173/0x2f0
+kern  :warn  : [   28.060878] [    T399]  call_driver_probe+0x62/0x1f0
+kern  :warn  : [   28.061547] [    T399]  really_probe+0x197/0x770
+kern  :warn  : [   28.062168] [    T399]  __driver_probe_device+0x18c/0x3b0
+kern  :warn  : [   28.062894] [    T399]  driver_probe_device+0x4a/0x130
+kern  :warn  : [   28.063587] [    T399]  __driver_attach+0x18c/0x4f0
+kern  :warn  : [   28.064243] [    T399]  bus_for_each_dev+0xef/0x170
+kern  :warn  : [   28.064898] [    T399]  bus_add_driver+0x2a7/0x4f0
+kern  :warn  : [   28.065543] [    T399]  driver_register+0x1a1/0x370
+kern  :warn  : [   28.066202] [    T399]  i915_init+0x57/0x160 [i915]
+kern  :warn  : [   28.067030] [    T399]  do_one_initcall+0x8d/0x3f0
+kern  :warn  : [   28.067677] [    T399]  do_init_module+0x281/0x830
+kern  :warn  : [   28.068320] [    T399]  load_module+0x173d/0x2070
+kern  :warn  : [   28.068951] [    T399]  init_module_from_file+0x157/0x1b0
+kern  :warn  : [   28.069678] [    T399]  idempotent_init_module+0x21c/0x770
+kern  :warn  : [   28.070417] [    T399]  __x64_sys_finit_module+0xca/0x170
+kern  :warn  : [   28.071143] [    T399]  do_syscall_64+0x108/0x5b0
+kern  :warn  : [   28.071777] [    T399]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
+
+kern  :err   : [   28.072915] [    T399] The buggy address belongs to the object at ffff8881eba2c000
+                                          which belongs to the cache kmalloc-2k of size 2048
+kern  :err   : [   28.074832] [    T399] The buggy address is located 0 bytes to the right of
+                                          allocated 1181-byte region [ffff8881eba2c000, ffff8881eba2c49d)
+
+kern  :err   : [   28.077135] [    T399] The buggy address belongs to the physical page:
+kern  :warn  : [   28.078017] [    T399] page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1eba28
+kern  :warn  : [   28.079226] [    T399] head: order:3 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+kern  :warn  : [   28.080389] [    T399] flags: 0x17ffffc0000040(head|node=0|zone=2|lastcpupid=0x1fffff)
+kern  :warn  : [   28.081460] [    T399] page_type: f5(slab)
+kern  :warn  : [   28.082008] [    T399] raw: 0017ffffc0000040 ffff888100042f00 dead000000000100 dead000000000122
+kern  :warn  : [   28.083180] [    T399] raw: 0000000000000000 0000000800080008 00000000f5000000 0000000000000000
+kern  :warn  : [   28.084355] [    T399] head: 0017ffffc0000040 ffff888100042f00 dead000000000100 dead000000000122
+kern  :warn  : [   28.085541] [    T399] head: 0000000000000000 0000000800080008 00000000f5000000 0000000000000000
+kern  :warn  : [   28.086725] [    T399] head: 0017ffffc0000003 ffffea0007ae8a01 00000000ffffffff 00000000ffffffff
+kern  :warn  : [   28.087909] [    T399] head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000008
+kern  :warn  : [   28.089093] [    T399] page dumped because: kasan: bad access detected
+
+kern  :err   : [   28.090297] [    T399] Memory state around the buggy address:
+kern  :err   : [   28.091073] [    T399]  ffff8881eba2c380: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+kern  :err   : [   28.092175] [    T399]  ffff8881eba2c400: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+kern  :err   : [   28.093276] [    T399] >ffff8881eba2c480: 00 00 00 05 fc fc fc fc fc fc fc fc fc fc fc fc
+kern  :err   : [   28.094376] [    T399]                             ^
+kern  :err   : [   28.095041] [    T399]  ffff8881eba2c500: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+kern  :err   : [   28.096145] [    T399]  ffff8881eba2c580: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+kern  :err   : [   28.097247] [    T399] ==================================================================
+kern  :warn  : [   28.098668] [    T399] Disabling lock debugging due to kernel taint
 
 
 
