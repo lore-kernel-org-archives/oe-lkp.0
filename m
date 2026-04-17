@@ -1,283 +1,181 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD3EC2765D4
-	for <oe-lkp@lists.linux.dev>; Fri, 17 Apr 2026 09:07:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.15
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776416873; cv=fail; b=SnPIQhl9cL/xOjQawWOTY4L0wDWREQWqaOHiX7emB0WutNupwHuewbPh07FuVTQIQ5BfAUfFnAr5e7vLHsRPW5zv+j2MNS4rd+r4Fxzd1n7BDSvmDllkjoUK6ifHj2TUOQ2kDE/AQLiP8HdwxO5gMMoz5khLUGZsB3Ni02MSlGI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776416873; c=relaxed/simple;
-	bh=YxnB/IU0HUGchLP9KR2r16B2Ju/gxmTYphdfObWGEqk=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=YBl++IaY7Mh2AuOdP3/T1AFNEZxfkzyhY6g08K5vdYt4J58QgfZ8/WZFuDDWs9rnW6o1XZzlPChv0JTgdi4OqOBjkMkVv3DJknrO+eFhdnp+Sd+mHaT2NasGu3jc19RVFuxMBn13G51iSy+Uqe2lp5T5MIL804K/0KZZwG7RuEU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=d3gQ2Eav; arc=fail smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59D5B39B498
+	for <oe-lkp@lists.linux.dev>; Fri, 17 Apr 2026 17:11:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776445874; cv=none; b=J06cokDUYbX3EBw6G/913lPdnKbGu8ph5qBaCbXjzst07Ie6hXn1QNVm5EwB20od5xQJX5i1qa6v14wK8nksFCTcPAgjKBD64JGI9jJiogcI0bFcW+dcDqGBFp6JDKzT6KDAQiziKKL6dxfZe6nsdYus92riBzauvfc20gzZ7SE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776445874; c=relaxed/simple;
+	bh=ZyMhTsWwE7IZG+Kam+18WESVlcVVKY9Ew0nT3qa71Iw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OzfQBKThYmNtK9U/gwwWB8eXRaqmojZetsKxjtZd3ffYcs+C1Yvg4JJke6Exl1YkGl4VmHnZgPSdeoSzZ+EG+jD2NmuycEmhty3/QCTFD5GT7x/rbxsjExgRHI7z2kp0fIzH9aniHIRlen/nAXy4hUpyTBjJ8SSkzriqMmfn+nE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=p8f9HgC8; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=xpC/kqsu; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=p8f9HgC8; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=xpC/kqsu; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="d3gQ2Eav"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776416872; x=1807952872;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=YxnB/IU0HUGchLP9KR2r16B2Ju/gxmTYphdfObWGEqk=;
-  b=d3gQ2EavBkWF4wEC40WqOY5k11z3NBQCk/YpLJa7q2tqXV1eocelGLB1
-   uSRCrjvKY74E6nEh6x9FeBfFOWGgBI8qZNIa9SS6l4SJx6QgIZHFM+zOF
-   72nlW8EqFjJm637hrIFVP+I1LHYg7QgvQ0yVKIWtVLTMymli7jx5sHZfJ
-   Ptsf17U+40ZFLiGLmu8BOE0Iv0n758uspbu7ncmqXCfFinHxQX5Vnxffl
-   sgUXNBerXXn+uYT8li+tdYFmtZDgtCtrGPoF4IBsJhcXYQWRltoCyQSIP
-   SibR/FiyYfkaFMRtnlvVIC6qDoeEDJ5EMo8gEgeJeF1GpTdPPzK0SW96g
-   A==;
-X-CSE-ConnectionGUID: h18OvIJhQde/vFs2Ry2F3A==
-X-CSE-MsgGUID: jXX3Esq/T4uRMb52hVEZHQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11761"; a="81027827"
-X-IronPort-AV: E=Sophos;i="6.23,184,1770624000"; 
-   d="scan'208";a="81027827"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2026 02:07:52 -0700
-X-CSE-ConnectionGUID: W0HlhNbiTz67Tis97SbEig==
-X-CSE-MsgGUID: NyWS5tmNTiup4dmWQGCwSw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,184,1770624000"; 
-   d="scan'208";a="229974010"
-Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
-  by orviesa006.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2026 02:07:51 -0700
-Received: from ORSMSX903.amr.corp.intel.com (10.22.229.25) by
- ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Fri, 17 Apr 2026 02:07:50 -0700
-Received: from ORSEDG902.ED.cps.intel.com (10.7.248.12) by
- ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Fri, 17 Apr 2026 02:07:50 -0700
-Received: from BL2PR02CU003.outbound.protection.outlook.com (52.101.52.51) by
- edgegateway.intel.com (134.134.137.112) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Fri, 17 Apr 2026 02:07:48 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=R4aUONX7NVnK4oGQn+m392lGrZcwB/9BHTdHYlNh9N2A91llNCH7aa0hOB4mRonqrA+7/KmskGLqv8IkBDRXSkQ85TgZvUFt3FRpmhbWAC61iKSXNt45y4GrgBI2ljXN0zAg/52An9CI0evxeKfaYOjKech+expWsDVR/bNSfLm+usZ8PJ8aN/eWhxjFYH23VhalmTjwCAWYzQsGlw7dHpkFVKpce0Po1kQmAJPuVvibwlBPgLB8Yf3Wy/DVYd2s8M0Zx+ZRVoDsnXYn+Z3UpOjhCF3i+GkZlfNykMAMutZLcPPHgnAjdnAkoiLOOynb6OZjqIU/kz2aXqnN0B2+Bw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XeftmVsMctPx+oomXT1oolN/X3PP/QmoBTB0prWmryI=;
- b=EzC6WLtGig36/c0NF2ahyjpAMUf0hlt06qESwqDoI8ZoaQkD6VuPE7/VaCrSV6E76xNDiRZECpM05mlYQShJkBlfxKJjnhcFPelaC9NODPmbO6jYYFpSr2qqoTE2q4X+CeuL4nLp6ecpxGFvhWcpLsaBs0qcgrEGbGC2XZ938G2t46RYZlovTPWsQAyizha2QH3iMkEYK1XM13JaxvvIiJa0j0qap596/DdL4M4/4ENIvC3h2KLztohnLx6YzXQQNTr+JTo+7gVqWs6OAW/88pCEalMQ0qhq6dEZ4x9H49aktbHN7qepMDKe66TVozBAvQ7CnOHgwxmtW2unX/pU9g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH0PR11MB5832.namprd11.prod.outlook.com (2603:10b6:510:141::7)
- by SA1PR11MB8593.namprd11.prod.outlook.com (2603:10b6:806:3ab::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9818.20; Fri, 17 Apr
- 2026 09:07:42 +0000
-Received: from PH0PR11MB5832.namprd11.prod.outlook.com
- ([fe80::106e:78dd:4c96:d707]) by PH0PR11MB5832.namprd11.prod.outlook.com
- ([fe80::106e:78dd:4c96:d707%3]) with mapi id 15.20.9818.017; Fri, 17 Apr 2026
- 09:07:42 +0000
-Date: Fri, 17 Apr 2026 17:07:33 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Keita Morisaki <kmta1236@gmail.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	Jakub Kicinski <kuba@kernel.org>, Jakub Sitnicki <jakub@cloudflare.com>,
-	Kuniyuki Iwashima <kuniyu@google.com>, Eric Dumazet <edumazet@google.com>,
-	<netdev@vger.kernel.org>, <oliver.sang@intel.com>
-Subject: [linus:master] [tcp]  8ca8eb0576:
- kernel-selftests-bpf.net/mptcp.mptcp_join.sh.mptcp_join_userspace_pm_send_RM_ADDR_for_ID_0.fail
-Message-ID: <202604171618.f261a864-lkp@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-User-Agent: s-nail v14.9.25
-X-ClientProxiedBy: SI1PR02CA0040.apcprd02.prod.outlook.com
- (2603:1096:4:1f6::7) To PH0PR11MB5832.namprd11.prod.outlook.com
- (2603:10b6:510:141::7)
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="p8f9HgC8";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="xpC/kqsu";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="p8f9HgC8";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="xpC/kqsu"
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 3B0596A9CD;
+	Fri, 17 Apr 2026 17:11:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1776445866;
+	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+	 cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=ZoNpbTJG3FA+Y6/ojdio+/PmnI+Bl2TOJlXEMWDNRPc=;
+	b=p8f9HgC81RqnGM4durgZx3xfS4BOkcEkxseOTwAdLLv3T5iUFg+alC5QLwazifO2qYMvyZ
+	9NMDXV3nZW4dz2svQgotp1+E3heJ8pENfVcs+XYKpxZIiKX7ftYWqAKG/MagbhGWIvTb3S
+	9xSw9wniFDqH5J5SWrwuNjpPAq15+DY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1776445866;
+	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+	 cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=ZoNpbTJG3FA+Y6/ojdio+/PmnI+Bl2TOJlXEMWDNRPc=;
+	b=xpC/kqsu09Mh0R9uSJUz2I83Sy/6JwlEUoGqu5nmmrOkJp0YpXCkeQagMjbGw54q+Fjid/
+	YcD+YEMHDw6JvXCw==
+Authentication-Results: smtp-out1.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1776445866;
+	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+	 cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=ZoNpbTJG3FA+Y6/ojdio+/PmnI+Bl2TOJlXEMWDNRPc=;
+	b=p8f9HgC81RqnGM4durgZx3xfS4BOkcEkxseOTwAdLLv3T5iUFg+alC5QLwazifO2qYMvyZ
+	9NMDXV3nZW4dz2svQgotp1+E3heJ8pENfVcs+XYKpxZIiKX7ftYWqAKG/MagbhGWIvTb3S
+	9xSw9wniFDqH5J5SWrwuNjpPAq15+DY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1776445866;
+	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+	 cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=ZoNpbTJG3FA+Y6/ojdio+/PmnI+Bl2TOJlXEMWDNRPc=;
+	b=xpC/kqsu09Mh0R9uSJUz2I83Sy/6JwlEUoGqu5nmmrOkJp0YpXCkeQagMjbGw54q+Fjid/
+	YcD+YEMHDw6JvXCw==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id BF5EC593AE;
+	Fri, 17 Apr 2026 17:11:05 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id 0EDgLKlp4mn4RAAAD6G6ig
+	(envelope-from <pvorel@suse.cz>); Fri, 17 Apr 2026 17:11:05 +0000
+Date: Fri, 17 Apr 2026 19:11:04 +0200
+From: Petr Vorel <pvorel@suse.cz>
+To: =?iso-8859-2?Q?Micha=B3?= Grzelak <michal.grzelak@intel.com>
+Cc: Oliver Sang <oliver.sang@intel.com>, lkp@intel.com,
+	intel-gfx@lists.freedesktop.org,
+	Jani Nikula <jani.nikula@linux.intel.com>, oe-lkp@lists.linux.dev,
+	intel-xe@lists.freedesktop.org, ltp@lists.linux.it,
+	linux-integrity@vger.kernel.org, Mimi Zohar <zohar@linux.ibm.com>
+Subject: Re: [LTP] [PATCH v1 15/16] drm/i915/bios: search for VBT #57 by
+ default
+Message-ID: <20260417171104.GB426937@pevik>
+Reply-To: Petr Vorel <pvorel@suse.cz>
+References: <20260331183332.1773886-16-michal.grzelak@intel.com>
+ <202604150702.d409a2b6-lkp@intel.com>
+ <20260416064051.GA281695@pevik>
+ <aeCShTeoW+lmHjHF@xsang-OptiPlex-9020>
+ <2df6f595-da57-0668-951c-657c5c876333@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR11MB5832:EE_|SA1PR11MB8593:EE_
-X-MS-Office365-Filtering-Correlation-Id: 486ebade-8ed9-405e-0e6a-08de9c60c81a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024|13003099007|18002099003|56012099003;
-X-Microsoft-Antispam-Message-Info: VFgmG7URBa1z/7EwsvwWUkbQ0Zbq4ta7hrvkWj6Hy2Zvhw0cbtm6AK9122l3E58xz4KXLChnhr7bOD88rTS8XO9hnnPhKxkMn45PfwNyVpDPblFZ5z6b7VZkCRQPlZINDFY1cDvJ4Q2imvE/vRev8EdGbksiKNOATzT5nQ1CDIcgWDJYt+4DMhq/tMdvuD9ngBsEyLbwg1KgRkXvR8KGQ1dZFIiWGE3JH773Ep6jtpaTF3gZC03+j/Jzl//FuHVyORyJZ0lK22PsK64NSHYBUrGG2uXl4ZB18FYGPUCTJfV98ILKDTHWkYduzh1Rh7yFZ+pJBRckx9b/U47rr8CJOMhUBBHJW36BQLYDmSyJtWV2Cv1aX4krU1wj8bM8pu0At1xD+hOBuVNpBxZAjSvTIlPdsCsWn6y3pS/U8Na4FZd0UUeNvUJz7MhqAbLsJDchthjO4sxgM4Hvq4iFvj8gcYm1WpNTezPQVvRVKJ/HC3/mAN0Wod4Gf8hoSjsEBhqM6lbwuqnGjtueOx86tss5x1soYJcVV/OQqUSpQtzuh7oev2LQfGfGIJiINQ5otlAfdFiSqHWrRCvMWS3zlggor1oo4tPY/GPzI4otFbvGMGHXiEFYNpMXs3Iz3/B4d2IgPu1jzSYBZoREftfrxtt38f7do72/en3cRDr8KkLKS4xGjCi+6oVqEFD+wLinlJBZ
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5832.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(13003099007)(18002099003)(56012099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?lqojk9bIeZczhZAyUavjC0zuj/nx2xrklT3+AdlToNsE/1ugIYWGowwdV7af?=
- =?us-ascii?Q?CB4d6hAYF0/RmEVeklc7f0HcBiT2RPf7eRsxHskDNmZs5LNVQC/GiCaPlfu9?=
- =?us-ascii?Q?n+xTUEB608FiacqoWBpOq/BJ1nCMUPqH1CIZTMa1y2yLmrPjiMVzO+WzyGzP?=
- =?us-ascii?Q?MEhOoJxKYKDeF3t09a01RMfkvdUDq3ZFOG1WKeuuYUzNhH6Bl8jA7MF6HVKV?=
- =?us-ascii?Q?jBw6UkNOTqLNVNaxfnrhWrIm4iDL5FstIL3ilSMAmn0xJ1CKMR3zNBnTjbfU?=
- =?us-ascii?Q?48pSYMPJE0S9099n6Tbbo7FG3rOj4JYMtAyzHNo0eiRVUdLTr9Dktax3jc51?=
- =?us-ascii?Q?SKlWFDsBFfnax2DL/ALgpUwNC/pUByeF97LMYQ6MINHXKayOF6w8jO7aNmHn?=
- =?us-ascii?Q?9KOdbx7ZbZev7rt3c4KGR0lwkfQe0DeJHcgcNC/bUijuxqIcw1qlzFI+Ni46?=
- =?us-ascii?Q?HlvoKc8CiuL763jeTqoLfUsyiL+GDFF46/HUdyusJ/cMxQXBoI+9cDEvvrf4?=
- =?us-ascii?Q?L5Ke9RMEr/PZsbHoq8kF3r9QcTjAs04Ze3SGQvOjLyelqQLYHyEJSxfFwCl7?=
- =?us-ascii?Q?LFF4iebYCIs580LS4wZiSZNbeurS6WlJ7HRvHy88bph/fpb3StmQkuxpsEi8?=
- =?us-ascii?Q?L0IdVSwW7OZpdx/BldPCsDB1oosl2ZYANRJSn10k2X60Uv/L0KTi8yCo9y8+?=
- =?us-ascii?Q?Ovgrko/2yhHWiZPQxJEhGudXcahMpfaX0PqMLxiALIUkQ876oGoJkTX2vfw7?=
- =?us-ascii?Q?+KblCtm3ayzrGTGfbQ+2rch6lDoQ0HPFuw198HDKny+dgSXr/dBelQ4PWA8J?=
- =?us-ascii?Q?ejEzZ2vV39McLfIrjW33lP77pEO3uDLzoSHEnC98WjeudKhghPH/zzsfg3yj?=
- =?us-ascii?Q?K6weFH86Rxmf7zUWp2BHu6Gy0JCCSwv4iRNMwNM0+empVLARhpAIQpsRsgIN?=
- =?us-ascii?Q?D/DuSUBnMhQtfmebgDRfyd+d2z2tguK5Z4y225VnlfaeKzJXEX0P8LIoB4T/?=
- =?us-ascii?Q?g2vq3c8hewVc+HkOflSbkwKQvlePxa3FGrXKVExT5/INk0EqdW1SkAQpi0GY?=
- =?us-ascii?Q?sTJa30MZCfnER5sUIR2nE3BeFtgaX5hPJhI8AeDSTANMMlxkJlJ03bCqUXkl?=
- =?us-ascii?Q?cfNn5sIZ70/LM76AnRDJfPlq/JyywBOQA9daGb1kKh9lqbTwvhz/HKFGxGQB?=
- =?us-ascii?Q?CaPiKReYwuWNia5ENFRkUVV2um2PbP5YcDAwEu1JZpQUyBOhkm0smUJSOsei?=
- =?us-ascii?Q?f/L04/k6+JeUn5xiFsk+EXlSj2p/LulcdJBvawh6QPr5ch/3VxC8aKkBdi8R?=
- =?us-ascii?Q?e23zTHuSjUJl1/I/ChJQcDc9ODIXt10yHHloPbMFxCGM9ruYkDUjs2yDIMKe?=
- =?us-ascii?Q?DSOdYvhBswgAwgYFGgKPkS+HRnY32ZiM5jtM6mwjUn2XrzqlUOvVvMDx0Lq7?=
- =?us-ascii?Q?PUQ0n16VkPgUwq0c64dBEYJqpduxhd2121Nl4kByMA2OfGdO5WLdj9M3YBRH?=
- =?us-ascii?Q?GnJCu+592gAEIDDfwzPPq5ZvJrXNsAfYyG8WDgZFmaYCoJH5kiyt3dloPrqF?=
- =?us-ascii?Q?+uMLSUEzcT7GgobxyNBOhIYCJ6nvod3p0L1G1hCn4yR4OyUUVOFsZT8mgX4d?=
- =?us-ascii?Q?hazKUsoNqXjQheNYQyZkwxzVtg1WeqQPYhUqT9e/3RYuyH2mksi3bewas6Qj?=
- =?us-ascii?Q?jHhyihkYUV0V95Wy2+5638Wi8hoKReA+B7tW9JcxlANF2ZJ9cz7hZrn7Qm8F?=
- =?us-ascii?Q?R2Ju4hk67w=3D=3D?=
-X-Exchange-RoutingPolicyChecked: LqIKA9bwihRfI9R5SiizOVWS+amBpQ9VOqsbEcrbe6bjtWIMTAUWWgzH1dF3vIGDJXs0Opbrg2FCwTXLpNH9YqAyS4sUsMRJufjGznh8aAct0upsCxfk7wkBx9bb1DwLV09xxlsbG8Zh2oQ94SUTok/EbbZ1wZIJAIv3veyJbECqG9NIsR5+2+4F1PUPu0ymBXnh5gYwLktW6geNovpxT1CB6d8JJIGQv8d0U5OldwpvGMmAN9h8DynfMpCBPWuToLaTDwviS50jRIputUIaRpal8V8tWynEnVtmuBR14xyNEDSSoiFCaxGnwAgV0sFiDoOQUdtwtKvlAKqqw09qnw==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 486ebade-8ed9-405e-0e6a-08de9c60c81a
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5832.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Apr 2026 09:07:42.4665
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Z1RkndgcsSUiFYwKLwVixRDB2TAGW2aDqripby/6sFHya8Elje9xvyIg4MInAIVGwUoTk/MCZMgRhIGJNNuKPQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB8593
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=iso-8859-2
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <2df6f595-da57-0668-951c-657c5c876333@intel.com>
+X-Spam-Score: -3.50
+X-Spam-Level: 
+X-Spamd-Result: default: False [-3.50 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	MID_RHS_NOT_FQDN(0.50)[];
+	HAS_REPLYTO(0.30)[pvorel@suse.cz];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MISSING_XM_UA(0.00)[];
+	TO_DN_SOME(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	ARC_NA(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	FUZZY_RATELIMITED(0.00)[rspamd.com];
+	RCVD_TLS_ALL(0.00)[];
+	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	FROM_HAS_DN(0.00)[];
+	RCPT_COUNT_SEVEN(0.00)[10];
+	FROM_EQ_ENVFROM(0.00)[];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	REPLYTO_EQ_FROM(0.00)[]
+X-Spam-Flag: NO
 
+Hi Micha³, all,
 
+> Hi Petr & Oliver,
 
-Hello,
+> > in our tests, it's quite persistent and clean on parent:
 
-kernel test robot noticed "kernel-selftests-bpf.net/mptcp.mptcp_join.sh.mptcp_join_userspace_pm_send_RM_ADDR_for_ID_0.fail" on:
+> I haven't reproduced it myself, but this issue seems somewhat related
+> with issue observed earlier by CI [1]. I would expect it to not be a
+> random glitch but a true bug related to the series.
 
-commit: 8ca8eb05767395cd2fd0db12e052ca0bc5d1597c ("tcp: remove unused hash_size from struct tcp_out_options")
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> In previous versions of the series, during parsing there was a
+> unfortunate snippet of:
 
-in testcase: kernel-selftests-bpf
-version: 
-with following parameters:
+> +	const u32 *tables = block->tables;
+> +	size_t offset = 0;
+> +	size_t row_width;
+> +	const u32 *vals;
+> +
+> +	row_width = block->num_columns * sizeof(*tables);
+> +
+> +	for (int idx = 0; idx < block->num_tables; idx++) {
+> +		for (int row = 0; row < num_rows; row++) {
+> +			vals = &tables[offset];
+> [...]
+> +			offset += row_width;
+> +		}
+> +	}
 
-	group: net/mptcp
+> Which caused hopping by 4 times more bytes than it should, because the
+> sizeof() wasn't meant to be there. Since parsing takes place at module
+> load, looks like it could be the issue. This seems especially convincing
+> given that report is from parse_vswing_preemph_snps(). I have to also
+> admit that it would be consistent with review comment from Sashiko [2].
 
+> Lastly, sadly due to poorly split commits, 15th patch from v1 turned on
+> whole VBT #57 searching. This probably caused bisect to point at 15th
+> patch instead of pointing at patch adding parsing code, which would
+> clearly show that patch/es introduce/s the bug.
 
+> Anyways, now the bug should be fixed in v2 [3].
 
-config: x86_64-rhel-9.4-bpf
-compiler: gcc-14
-test machine: 36 threads 1 sockets Intel(R) Core(TM) i9-9980XE CPU @ 3.00GHz (Skylake) with 32G memory
+Micha³, thanks a lot for pointing pointing this out.
 
-(please refer to attached dmesg/kmsg for entire log/backtrace)
+Kind regards,
+Petr
 
+> [1] https://intel-gfx-ci.01.org/tree/drm-tip/Patchwork_164196v1/fi-hsw-4770/dmesg0.txt
+> [2] https://sashiko.dev/#/patchset/20260331183332.1773886-1-michal.grzelak%40intel.com?part=5
+> [3] https://lore.kernel.org/intel-gfx/20260415234639.3577774-21-michal.grzelak@intel.com/
 
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202604171618.f261a864-lkp@intel.com
-
-
-# 132 userspace pm send RM_ADDR for ID 0
-#       Info: Test file (size 128 KB) for client
-#       Info: Test file (size 128 KB) for server
-#       syn rx                              [FAIL] got 0 JOIN[s] syn rx expected 1
-# Server ns stats (ns2-mQDnh0)
-# TcpPassiveOpens                 1                  0.0
-# TcpInSegs                       120                0.0
-# TcpOutSegs                      100                0.0
-# TcpExtDelayedACKs               24                 0.0
-# TcpExtTCPPureAcks               56                 0.0
-# TcpExtTCPOrigDataSent           63                 0.0
-# TcpExtTCPDelivered              63                 0.0
-# MPTcpExtMPCapableSYNRX          1                  0.0
-# MPTcpExtMPCapableACKRX          1                  0.0
-# MPTcpExtAddAddrTx               1                  0.0
-# MPTcpExtMPCurrEstab             1                  0.0
-# MPTcpExtDssFallback             1                  0.0
-# 
-# Client ns stats (ns2-mQDnh0)
-# TcpActiveOpens                  1                  0.0
-# TcpInSegs                       100                0.0
-# TcpOutSegs                      120                0.0
-# TcpExtDelayedACKs               41                 0.0
-# TcpExtTCPPureAcks               36                 0.0
-# TcpExtTCPOrigDataSent           63                 0.0
-# TcpExtTCPDelivered              64                 0.0
-# MPTcpExtMPCapableSYNTX          1                  0.0
-# MPTcpExtMPCapableSYNACKRX       1                  0.0
-# MPTcpExtMPCurrEstab             1                  0.0
-# MPTcpExtMPCapableDataFallback   1                  0.0
-# 
-#       synack rx                           [FAIL] got 0 JOIN[s] synack rx expected 1
-#       ack rx                              [FAIL] got 0 JOIN[s] ack rx expected 1
-#       join Rx                             [FAIL] see above
-#       syn tx                              [FAIL] got 0 JOIN[s] syn tx expected 1
-#       join Tx                             [FAIL] see above
-#       ns1 dss fallback                    [FAIL] got 1 dss fallback[s] in ns1 expected 0
-#       ns2 mpc data fallback               [FAIL] got 1 mpc data fallback[s] in ns2 expected 0
-#       fallback                            [FAIL] see above
-#       add addr rx                         [FAIL] got 0 ADD_ADDR[s] expected 1
-#       add addr echo rx                    [FAIL] got 0 ADD_ADDR echo[s] expected 1
-#       mptcp_info subflows=1:1             [FAIL] got 0:0 subflows:subflows expected 1:1
-# ESTAB 0      0      [::ffff:10.0.1.1]:10131 [::ffff:10.0.1.2]:44220
-# 	 skmem:(r0,rb131072,t0,tb20480,f2014,w0,o56,bl0,d0) add_addr_signal:1 fallback remote_key token:16a2fd8b write_seq:17048891511713788648 snd_una:17048891511713788648 rcv_nxt:787573327139392450 local_addr_used:1 bytes_sent:350 bytes_received:350 bytes_acked:350 subflows_total:1 last_data_sent:71 last_data_recv:71 last_ack_recv:13893
-# ESTAB 965    0      10.0.1.2:44220 10.0.1.1:10131
-# 	 skmem:(r965,rb131072,t0,tb91136,f1049,w0,o0,bl0,d0) subflows_max:1 add_addr_accepted_max:1 fallback remote_key token:412ba7d write_seq:787573327139392450 snd_una:787573327139392450 rcv_nxt:17048891511713788648 bytes_sent:350 bytes_received:350 bytes_acked:350 subflows_total:1 last_data_sent:97 last_data_recv:97 last_ack_recv:13921
-#       mptcp_info subflows_total=2:2       [FAIL] got 1:1 subflows_total:subflows_total expected 2:2
-# ESTAB 0      0      [::ffff:10.0.1.1]:10131 [::ffff:10.0.1.2]:44220
-# 	 skmem:(r0,rb131072,t0,tb20480,f2979,w0,o56,bl0,d0) add_addr_signal:1 fallback remote_key token:16a2fd8b write_seq:17048891511713788653 snd_una:17048891511713788653 rcv_nxt:787573327139392455 local_addr_used:1 bytes_sent:355 bytes_received:355 bytes_acked:355 subflows_total:1 last_data_sent:42 last_data_recv:43 last_ack_recv:14065
-# ESTAB 965    0      10.0.1.2:44220 10.0.1.1:10131
-# 	 skmem:(r965,rb131072,t0,tb91136,f2014,w0,o0,bl0,d0) subflows_max:1 add_addr_accepted_max:1 fallback remote_key token:412ba7d write_seq:787573327139392455 snd_una:787573327139392455 rcv_nxt:17048891511713788653 bytes_sent:355 bytes_received:355 bytes_acked:355 subflows_total:1 last_data_sent:70 last_data_recv:69 last_ack_recv:14094
-#       mptcp_info add_addr_signal=1:1      [FAIL] got 1:0 add_addr_signal:add_addr_accepted expected 1:1
-# ESTAB 0      0      [::ffff:10.0.1.1]:10131 [::ffff:10.0.1.2]:44220
-# 	 skmem:(r0,rb131072,t0,tb20480,f2979,w0,o56,bl0,d0) add_addr_signal:1 fallback remote_key token:16a2fd8b write_seq:17048891511713788653 snd_una:17048891511713788653 rcv_nxt:787573327139392455 local_addr_used:1 bytes_sent:355 bytes_received:355 bytes_acked:355 subflows_total:1 last_data_sent:181 last_data_recv:182 last_ack_recv:14204
-# ESTAB 965    0      10.0.1.2:44220 10.0.1.1:10131
-# 	 skmem:(r965,rb131072,t0,tb91136,f2979,w0,o0,bl0,d0) subflows_max:1 add_addr_accepted_max:1 fallback remote_key token:412ba7d write_seq:787573327139392460 snd_una:787573327139392460 rcv_nxt:17048891511713788658 bytes_sent:360 bytes_received:360 bytes_acked:360 subflows_total:1 last_data_sent:7 last_data_recv:7 last_ack_recv:14232
-#       rm addr rx client                   [FAIL] got 0 RM_ADDR[s] expected 1
-#       rm subflow server                   [ OK ]
-#       reset tx client                     [ OK ]
-#       reset rx server                     [ OK ]
-#       mptcp_info subflows=1:1             [FAIL] got 0:0 subflows:subflows expected 1:1
-# ESTAB 0      0      [::ffff:10.0.1.1]:10131 [::ffff:10.0.1.2]:44220
-# 	 skmem:(r0,rb131072,t0,tb20480,f341,w0,o56,bl0,d0) add_addr_signal:1 fallback remote_key token:16a2fd8b write_seq:17048891511713788703 snd_una:17048891511713788703 rcv_nxt:787573327139392505 local_addr_used:1 bytes_sent:405 bytes_received:405 bytes_acked:405 subflows_total:1 last_data_sent:131 last_data_recv:132 last_ack_recv:16157
-# ESTAB 965    0      10.0.1.2:44220 10.0.1.1:10131
-# 	 skmem:(r965,rb131072,t0,tb91136,f3472,w0,o0,bl0,d0) subflows_max:1 add_addr_accepted_max:1 fallback remote_key token:412ba7d write_seq:787573327139392505 snd_una:787573327139392505 rcv_nxt:17048891511713788703 bytes_sent:405 bytes_received:405 bytes_acked:405 subflows_total:1 last_data_sent:154 last_data_recv:153 last_ack_recv:16181
-#       mptcp_info subflows_total=1:1       [ OK ]
-
-.....
-
-# 66 failure(s) has(ve) been detected:
-
-...
-
-# 	- 132: userspace pm send RM_ADDR for ID 0
-
-...
-
-
-# 
-# TAP version 13
-# 1..137
-
-...
-
-# not ok 132 - mptcp_join: userspace pm send RM_ADDR for ID 0 # time=18457ms
-
-...
-
-not ok 7 selftests: net/mptcp: mptcp_join.sh # exit=1
-
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20260417/202604171618.f261a864-lkp@intel.com
-
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+> BR,
+> Micha³
