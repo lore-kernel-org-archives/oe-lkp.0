@@ -1,66 +1,66 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 199503090D9
-	for <oe-lkp@lists.linux.dev>; Thu, 30 Apr 2026 06:09:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B666372B4F
+	for <oe-lkp@lists.linux.dev>; Thu, 30 Apr 2026 06:16:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.18
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777529398; cv=fail; b=QL8kbfkn1vEnOYHNLQwJhEArVuT38OvehATfK+LER18sxzov43J007iQcqgLDKhnjpD3xIbCc/CIBuOffQRMkX0+c4ivGDOKxufxtItW1wyofAZSu5tY2C2lEHyPro81aQ+ohloGTRHupmG7UOsM6OPTuwKRKki7R+dCkjx/744=
+	t=1777529812; cv=fail; b=Jwe6KwsGS7rPzhiHMKizrlhgDROAgvpmi4bULZR51dPw7fyjtQtAqRH03Cj1tWA6I8Alo0XPSPO0PlpEwkx49NwJUJDhp8H0oJg0vgB+NNGfIXwLMLS6pF6s6Ks1jRJup6AD9AKGRRiiI8UQYEGUMFmr+C+dfI5Cp8F1J1f1ro8=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777529398; c=relaxed/simple;
-	bh=3VKVcwx42K5nr+hvK5a/ZjgktBeNcxwHdSrC3NFfHiU=;
+	s=arc-20240116; t=1777529812; c=relaxed/simple;
+	bh=jGIIDJaCLmho0A0E6Dq/H4Mz4G1Fb600u91LXdMWaGU=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=M3Wb33wXXzgjlHjdXeN/j3W1UCo4sJJoXjD+ZpVl+eGft7/LEI3T/i4Oi+aCHIbRQhoCRAgl9seYYpUgDOVv7w71sG1714G1QUY/jeWdxcRFyOgBSYBVGsaKNd5kwipo7s79SlWXiAtg33Q2H5FktNI0aJULX+zQQTKKdQr/QXU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eddZDYwi; arc=fail smtp.client-ip=198.175.65.15
+	 Content-Disposition:MIME-Version; b=C4n1/IiztjfBJAEQyTwE7cOnUWYRCWQ8/gEbCg9QWGAg8+vlMc542uqG7YanOh0dVev6ZsyM89vCy/My4CcO1Ps3n09CKuM+aIZGju+W0wKkFDzRX4BQuy3E5+tbNvgUTOLy66Ml+DHUmfGxx8UoM+j2wuoAcEsqQas1mgKOCE4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=X7mJi5mH; arc=fail smtp.client-ip=192.198.163.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eddZDYwi"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="X7mJi5mH"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777529396; x=1809065396;
+  t=1777529811; x=1809065811;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=3VKVcwx42K5nr+hvK5a/ZjgktBeNcxwHdSrC3NFfHiU=;
-  b=eddZDYwiO0qMvaDq9k3vYSmciEV+ublv8DIDo1XCxBlOAi5pyfqt9nRu
-   eTYpD7CvcOBFHZoJYiEUz9z4klpLrwmyggOt4EArGwngSmCYsbn3u9hIY
-   rx0ya36n3TYWrJiU0KG68MMs3vPrIHLfY/qXr2hAv0QH8/5m/JfWVjpPT
-   wTTsefVQ/K5KWfSAiIWTLfIJ+vvc0zjmbH/cYu3ZruvFXf6tlss3yrkob
-   EoY8L7l0pn3ab0c/Fe59iRyIvFSrxpZrSfGS/SkXr61J9v4EDKcyF0j4U
-   ibzj9mIJAyyC3eI4fBJpUeSAHzjYdZYVnaRtkU0YIPC01yFqGQHTTQosR
-   Q==;
-X-CSE-ConnectionGUID: /qycWv1MTq6AM1LVb8NQNA==
-X-CSE-MsgGUID: bFaSVIClQq+rw6JOxhARtA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11771"; a="82077476"
+  bh=jGIIDJaCLmho0A0E6Dq/H4Mz4G1Fb600u91LXdMWaGU=;
+  b=X7mJi5mHM8/2vzmJgLYKtuaYqHkFUKLPs1QD0gRBfggssKKxiWeKIfi/
+   vfU+hu67QR4Mxx3icWbopkrJjUueW5imq3LnWd6GJJ3zOO1M7UlXmEk1J
+   kYdAWM/IEOF/3b1zLFjiIR/TfBJxbU3OYJ6ZZ6s0yR8HfkAfCEQSO2/Xh
+   dnr6e4A6JaFj+ZRTUo3JRcqw3xnkukV37cODJXBEqZBTPvHL2dvpH+YPb
+   GFkfAFlEWFlu9dxIQeRL4nzazW1ER8hb6UyJAUylS6wtULb05Skfp+JL5
+   iJhAe5hFkT0iWZzBLQfopLcBImxtOVDpTewQ4uDPsAJfmsDgDSNyJlRiR
+   g==;
+X-CSE-ConnectionGUID: 7MvxUvTqQaGmJo2a73uUNA==
+X-CSE-MsgGUID: JBE6W9oxTH+tYe9faLThRA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11771"; a="77636110"
 X-IronPort-AV: E=Sophos;i="6.23,207,1770624000"; 
-   d="scan'208";a="82077476"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2026 23:09:53 -0700
-X-CSE-ConnectionGUID: IAYdI4M5RZSNC7DdVFu1Lg==
-X-CSE-MsgGUID: 15/0xSFYQn+2odlVnI3BkQ==
+   d="scan'208";a="77636110"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2026 23:16:50 -0700
+X-CSE-ConnectionGUID: lLEZ69uKQO+IyVjPnrBhoQ==
+X-CSE-MsgGUID: tEL+lIdfQmCqyJu2eSjHiQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,207,1770624000"; 
-   d="scan'208";a="234372947"
-Received: from fmsmsx902.amr.corp.intel.com ([10.18.126.91])
-  by orviesa008.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2026 23:09:53 -0700
+   d="scan'208";a="239470505"
+Received: from fmsmsx901.amr.corp.intel.com ([10.18.126.90])
+  by fmviesa005.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2026 23:16:49 -0700
 Received: from FMSMSX902.amr.corp.intel.com (10.18.126.91) by
- fmsmsx902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ fmsmsx901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Wed, 29 Apr 2026 23:09:52 -0700
+ 15.2.2562.37; Wed, 29 Apr 2026 23:16:49 -0700
 Received: from fmsedg901.ED.cps.intel.com (10.1.192.143) by
  FMSMSX902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Wed, 29 Apr 2026 23:09:52 -0700
-Received: from CO1PR03CU002.outbound.protection.outlook.com (52.101.46.14) by
+ 15.2.2562.37 via Frontend Transport; Wed, 29 Apr 2026 23:16:49 -0700
+Received: from SA9PR02CU001.outbound.protection.outlook.com (40.93.196.0) by
  edgegateway.intel.com (192.55.55.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Wed, 29 Apr 2026 23:09:51 -0700
+ 15.2.2562.37; Wed, 29 Apr 2026 23:16:47 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=OeTRv4e6CSIuAOPEs1Woh438LKO9sGshhosDHTD4RU/tcYz9SIohQHtW+a5W2OKDBpN5Dbn38YnqWZqT1LSORmCpKHBDW3orpfPcogg3UIsRLCBDfz38DQcdahyKlQJOMH4EhMr5+DblwXAj+S6PNJSVpbTciZUhKDaOuNmzmyBcOlU2A/MBTgl0OllSNiyGnpBxDVYZhSDigXdLTu6/iET4u8sJjALCPPaleKpd5XKbPnae7wXYv/uu4i8dmE40utThqMZSNebUc9rvPmCks/kFhS1NX4w1HmFO5ladK/fy2z6hkSaEDW/3+gqHVtjc3rzlhPiIzrSXz/+qx9vdSg==
+ b=S6pXI3I8FsmOwwint5aHNliPex37BHRauyAKcPPtMXGcpPEaSsdjWEd0765MBxnRpKrjMmza56k/5uF3J3O35xoi8+qCYXrASUFcDCdWxHX90iJ9PK5ArlS96lYEV1nqVgOg77ht6JvcqieWyexrWOLHW3hoGFJYv0uJkreuiQZ5hpoi79fbJhd1rWxiNZMV7yx9JCWiK2pntIIL1aRMrNpCoY6YI7yz/tbzdTfETw+DIPW6zO+jRqBx/a2wVVNUMVmma3GiCiOE86Hct5FW53nYFu44KUf3qXSkIZNVBbEjDGnAPsMWbQM0Sl3w6gg8jvcNESOwUABBF3heU/94jw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WQR/Xzyp2n2yPaBSlZk7EUQa/wLII1+m1YLlrZdGkQQ=;
- b=bkjmwxt4KVdg52Po1m8HiRnkfnnFHZl9wyFiarC0ZXk2aAgmhT2vwKr+v2kosk5bQ+2csMb4KdtuijuepaeowWw8/qXZ46xGJ35HO/QUORnN6GN/6zoXZNxU8N+lklA3aStWVRYmbQAbR2kNRZ/KuYU+my1PZCi6wRnTs61lyp81l2tB5yhLv48UvYN5VbyBkCedPU1CAUkHuKlNQvZ5PJtzKTAuOp4sVkksg05o54mn5OTSzMkHxAdhuxDyMffHYJXJhFSV6uMaGsFPCp6lqUl6DburlGgvN6g8x/T+GReuAbG4Dt2eZqJENqLUAuZmP2QhW3um2uyI0s1u0myaPw==
+ bh=nunu3Zghgq6rOjOjUR862Nm67qacyq7uMyqoLzMswQY=;
+ b=isZ+rDBIkTsfcWE3FfCN16J2r5p7wQA+GjxXw3h2NfZtPsJ7MB/dibr6g/kite8kXE6L9rOXCGvTBkiFIcIGk5oK4kKZ7NUtYGpCEAEdx5piiZMZd9FXNC43sUOtgFi26AD/YKUF4nABmBa35ml2ybrqcJ0WItAkaCAjJnWta7p2kmuXBJsczkoGAGYCaoNdlTQKfNP4+OfrULE5mPJ8m/dcUAhfqKtENTdA54rkcpE8b6hhue74c2xR+1siLSC4dtIZQrZU3VyiIgr1NEinzJu1mYM9tVjprucgA3GPykr2KloWlKqE7cdgcVDpQt4lE1DNMRDyz6XplLt4DGJRLQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
@@ -70,25 +70,25 @@ Received: from PH0PR11MB5832.namprd11.prod.outlook.com (2603:10b6:510:141::7)
  by DS4PPFC60125F65.namprd11.prod.outlook.com (2603:10b6:f:fc02::4b) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9870.20; Thu, 30 Apr
- 2026 06:09:50 +0000
+ 2026 06:16:45 +0000
 Received: from PH0PR11MB5832.namprd11.prod.outlook.com
  ([fe80::106e:78dd:4c96:d707]) by PH0PR11MB5832.namprd11.prod.outlook.com
  ([fe80::106e:78dd:4c96:d707%3]) with mapi id 15.20.9870.020; Thu, 30 Apr 2026
- 06:09:49 +0000
-Date: Thu, 30 Apr 2026 14:09:43 +0800
+ 06:16:45 +0000
+Date: Thu, 30 Apr 2026 14:16:37 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Jeremy Kerr <jk@codeconstruct.com.au>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-	<oliver.sang@intel.com>
-Subject: [linus:master] [net]  0d8647bc74:
- kunit.mctp_test_bind_lookup.mctp-route.fail
-Message-ID: <202604301303.9de94634-lkp@intel.com>
+To: Shengming Hu <hu.shengming@zte.com.cn>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Vlastimil Babka
+	<vbabka@kernel.org>, Harry Yoo <harry@kernel.org>, Hao Li <hao.li@linux.dev>,
+	<linux-mm@kvack.org>, <oliver.sang@intel.com>
+Subject: [linux-next:master] [mm/slub]  8952728641:
+ BUG_kmem_cache:Freepointer_corrupt
+Message-ID: <202604301428.e2b8d3dd-lkp@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
 User-Agent: s-nail v14.9.25
-X-ClientProxiedBy: TP0P295CA0045.TWNP295.PROD.OUTLOOK.COM
- (2603:1096:910:4::16) To PH0PR11MB5832.namprd11.prod.outlook.com
+X-ClientProxiedBy: SI2PR01CA0016.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:191::20) To PH0PR11MB5832.namprd11.prod.outlook.com
  (2603:10b6:510:141::7)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -98,80 +98,72 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PH0PR11MB5832:EE_|DS4PPFC60125F65:EE_
-X-MS-Office365-Filtering-Correlation-Id: 15927447-eceb-4b18-2393-08dea67f15f8
+X-MS-Office365-Filtering-Correlation-Id: 71c9c452-6da0-4c50-5638-08dea6800dd3
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014|18002099003|56012099003;
-X-Microsoft-Antispam-Message-Info: Ctnh7f/o+v2uE7cMXBIdy1i7lUofMO8byIkzG0ZD0vluqqxdxG4tsOhcx5RJ+PBQDKF1/pR1YJaNuIaaox9iT7Lz2/54p8rpgXv5TBqsIOAAE9TAy0NZa3CYE5W5oKZMmqoWDWi7AHHvPyLXUMVdIhAeuPg1KJ0tDlA1LYZzNK0FKTiqgmcjtcJ6VHwnoZDjkAu78xdujtcXvCI6gPPXGnEAiwAkPdh9pgEptUbWa1LHkzWI5QWxhtJ2vSrAP5jg3S45FHDp0chGLiOoo/pz/sKabWZFwLLsCTTQx2REkswt59YTzHfMUkR1cJxqeKI928bGiiaaYRg9wFcTAcEr8N8BfLV1pTFRr89DfSFitwP3Yz+MfPHFzR32/qaaFeQU6mYWpX0x9avDkWXiYhlCUkl07jtw52Gbu9GFAGK1OrChzuHX7tKBZEnRQv5bXPd72CFZMMt+O7nJ5aionGX/ViLYvILmttsLlL2Qj8fH3u4yIza2IVHx5W5IXMihx6SmC6Idtg+oXC3G0cosh9D3OoWGhtWArnQdn1yItd4hfYPuDPNhEqMYXPoWBZ9sLaB6xT0taxNb1ZZMfQrNg7vQ8PmqPrm8Snlc9FKldpLLTGq69NU5G/1BHk7wlKPDqMZybeNuephzv9oshUt91c8ba5Aj1axxPoU57xgNaptrC/MeZ5yjLfanwJ06zq3Xx0XB
+X-Microsoft-Antispam-Message-Info: J42xMF3VAx+KLFTfuyEZQmC2haUQ5OBgA4Wa5eGHXtHAyELE8UPqZWPum2Wz+r0cw74zdZ6GC6fGl8zMh+x/mo/aH+AmRBYWJS56rxmU4Qy80HdHeLs7a9GRoXpp3OaV8gdg1cgf/ek7IilIH4SFu06vxNBMAOHIbXmJWsd1EV0/dZp99wfVU4blUtzq6/Uch5eQjSFNxalJyyBjMz1xP5Feh7qwhX0aPV8XhehxRExDvFp1lGJFtM6zXpGVpBlHGiniyt4gogYMb0xrMD5E9Y8cQUkxD6cWih0+qlGREJtt3FkhqvYrDOI/WYD5aVsHkxmBTWHWnLHhNhpnE3lt/XK2OLDQLOeMrq2ig+y9z3xKmsoXbUXcMdz7r2FuUNSnnQ071KeQcJjr2pKZ6Gt77i/wACDxvpDsbBUcBkDXrP65TrDGANLxrgAmaJD9kRSlywoU4nWsXm+j4ln9NH3+pxmxWnDzbG9LQgfujNi/hBYrcZUbItcwzIuBtCN58G8qu44BjDoOVy8xLr4xk1UYGRGwvlfg56n5UtCi1PCiTNvVTD2s/rQCkXeeRTxcGVHgvBWJJwyjlrSo8QpBfvN/YtHD9jsSI1m7VtudSDsfy5fO0Vz6lN16rDZY++G+fnjiUtLBZQk6LcizXBMqopvwakAIco0ZegteFl2ZU5PlLuvrbl8DIxFLgbYtvwaOv4d1
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5832.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(18002099003)(56012099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?uoulvlWe9+TgCc6qXYNrQjiepyL9ilGD4KLiwylkN4qJ4GE9q3iTO+XeWJuq?=
- =?us-ascii?Q?zym9BNyw/gfhuaGiIOcrSJvKecKnr/jll9adivku3sTioP0bFtIU3aOznFAS?=
- =?us-ascii?Q?Qs9n+nUto6Hgp0awmyW0RqeaBrb/UXm/gD/Z7UMOBXDDdBLYWmY5KF9S2w28?=
- =?us-ascii?Q?teXvLTaja04JT73DuwhbDgHt1tQGX2VS4hCD+9Gc25wU+h/V8TJVf1HUJIIo?=
- =?us-ascii?Q?EU0ctNgry6acbatRfVhQjHfQ4hIMdbYFeX1V9gE33rsRsNeLPwJD6SeFtPzo?=
- =?us-ascii?Q?H592rbj3rieNkOTZLcDUB1ZpouDvxr6kIWPHNyC1/2KhLTWL+SfsTUN7+Cjx?=
- =?us-ascii?Q?/kDeMaIjtgtFGtBtNt0L3JUGuxn/FN30gn+uIGLCLh+zDpHKck9asiG6AVLG?=
- =?us-ascii?Q?Yq8AisC1DiI6QxIgUJG0wX8T9byl8wtsOoW+LxlpxYD+Aa2EkdW0SvrUZYoA?=
- =?us-ascii?Q?QrxdYMLd7IUGmDnvwQY1PZInp6DwKeI+NMHdiykMOAGAVpOs+7Vdhl70ku5u?=
- =?us-ascii?Q?e3UINwlOYuUDvLxP7zqdVZ0xunsFdy1y7w/jnp1JszbRM9PrZGolYwtDnO7m?=
- =?us-ascii?Q?zx3co7hoPkKXhazm702a1qoEEdh5JXhh3LOwXais0iXEz52RkxSjOJtRyikh?=
- =?us-ascii?Q?qKbxqs1gpVYre2Pl7HNAC/FFAsLGKAWuFH6awjA4ML5PLJf8Emj69VWUEdm1?=
- =?us-ascii?Q?SHyhCpkRHM5YXV3UiIKYBjdEacTkVBlVQSXk0B+Zbx2U0VQhHCIACQ2w7gv6?=
- =?us-ascii?Q?25tW4mQb/Dx2WWVH+48N7vTdtal3+S0RfV3W0PaKmCcT2jpN/3L37d2jVBcY?=
- =?us-ascii?Q?WDkjO1FGAAu3jonvOZ37yY/EbNKByxuz5ne53wlyaBBRJXPDKYbdr2ajgpWx?=
- =?us-ascii?Q?wEwvb/8ydJu0qByedyyXUAKxEBXwgBxbKfR/n1fQhDUGkDeHw14gj1did8T1?=
- =?us-ascii?Q?ySheBUBI9MUIcPgDp9YxbavmvZN/hZ0Y0QeWfMb4Lh2aXhQbGqdFjDmItW8a?=
- =?us-ascii?Q?swmACw8PYcL/DA9yVxN80IhidtYFp0VsH57kTpvYjR0lMdqjJvYHekeVzj5H?=
- =?us-ascii?Q?3xGoYxaERouPbFKLVa2d92WExrTv6IIk99rm6E6FhmVUZRB6U3vAWnsfjrJ2?=
- =?us-ascii?Q?EPPEVhgvQe3GVYcFdxrMPpMbp0KlSYSDPABh6GKs/QqJdyUr48Eprb39fEsP?=
- =?us-ascii?Q?QUGcbyU9tpNyQ+zietgGsXoiSrBD3RvgzEont+NwoSou201nIXCPZC6OYEUa?=
- =?us-ascii?Q?zGqWnNJ+dGHhjoKvKpIQMX/FDGCXUnRwVQONZCNFVvnIZ6AWPFvdSyHoBKJk?=
- =?us-ascii?Q?zpegv68KdD2YQaz+hKbt0Mt1AqFZy/Fky9xG8mwmO4CnFsIcnKLHFBK00sZf?=
- =?us-ascii?Q?zIN6X0fh57RdK2xkzTBMqB8X1qPnENY+TW1rE97Ky5eXnbfZ+TnlFwuq9mte?=
- =?us-ascii?Q?ZHuUzmPp012bARu3FfuPexglmtb91QyReYjgFnFljhyIPp22/6JRbOXjni5j?=
- =?us-ascii?Q?FYMPcRklT2ljoMMqmmY5SwEmQZUVS9pHq5/Y5HhLq/UIPnpei0ojalUwuNSG?=
- =?us-ascii?Q?voiVo0Y9e5HSm+PFut9vlwNZFPyscZOMItRA5jye30rrxjZKVeu8iBUqttBm?=
- =?us-ascii?Q?Ln9vNPb042f/k7mnAsWwlnuSCZ4/yXDhEar1eKw05iORQHhc8qNYDK87IGXZ?=
- =?us-ascii?Q?S5DvAvUBjZBKFfWH/oBORAYPsxqPZoRVYZliZcgR9H2Pq0q154z1kk8i0cmY?=
- =?us-ascii?Q?yipdpHQm4A=3D=3D?=
-X-Exchange-RoutingPolicyChecked: sQg8nEXFvUUnRPm23MBn5SO+/OtVoL2D7a3XLEBIbIqEj/bODISvI6NcUvajeUcg39zTVrnUFF7aZuT2HS2iKRcCgwNSpOK+RuJyhYE9pIJ+1T2nq4RnxohU3/Uwp8yv7ZcCTobf4jINNjR41rPHp9Ej0+rH30VR7ghAp/jQn/x4bdhl7pjQxUHrUhm7O7606NjVNaAeXFAKIX6LZRIqZpXvhWAkvWSOIeyiceHdAHnipfyj2CUUoD7Tg/bV2OBFjcMyDtDLA0Xso+ps7KPLCF6RW1huoB7RNflmsulHAQR+qDD9wRGTmgusHxN2WJ6IPoeSe2HRBoc1fC28jynf8A==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 15927447-eceb-4b18-2393-08dea67f15f8
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?La/MGTSsN2SidrMQWysV8L9JLG5OhL0MWigRUW0BJPfpIjS6yifG6lf26BTa?=
+ =?us-ascii?Q?s3DtZ+fbqIzLIJ0/CURjWmVQgTXvAnFllfqiMIxFQb8NialzCbsfo0XOJb1a?=
+ =?us-ascii?Q?/hY7T2Ly06JGkMtx292yuRtXh4H9fjWJzTb86GUAyF2RD/FsmXSKYdBhw3ZO?=
+ =?us-ascii?Q?PqaFi2eIF1rt/MkWpR29I2lY1MUh06U17k9HWqxBlOYbqFJqc+Sw2KrqpA4s?=
+ =?us-ascii?Q?AZBDjAisYhbJiKC3g4xZfqJe04m5J1ksbkCp96kSxk6BTzCL1QOjIfWI/6dg?=
+ =?us-ascii?Q?UtnZU4dloHLR52bGXZ3na4a6EDpo5vIsfe6jtGfoFOMKLs9QaaiKcW5Qu8oP?=
+ =?us-ascii?Q?xnzmZfcCO8+ros9CXiTUYdPMzdue+4krTsjXlhbSnRTcmflYskUdc/zGW49R?=
+ =?us-ascii?Q?Cao3Uftyo7ztIuyNU9euP/LBmjoq5tBEMRMrEciSscH7Tq56hkHPRvRE5L0u?=
+ =?us-ascii?Q?+oID1PLkK6rljTZviJUow989CIvRFeYPHOG/7UDnG3ZlzddPpPUy+PTE+5Vp?=
+ =?us-ascii?Q?QowfvQkI3Nh8jBks1Cv2hnU6sWcVgZ6OoyNlS9+a2aYhmalV+bfAMPE0cBVK?=
+ =?us-ascii?Q?xOY6/G6X5nLMKFnrocOy0sJEgDQg0R2VBQC2UkzlwMZ8BMhh84QQe6/lcgNX?=
+ =?us-ascii?Q?nergqjnJb6btHnLfM/LKxAYC21wGZAo6jxncVTT6EVXkktIBiv98NB1pfhpY?=
+ =?us-ascii?Q?n0bEmUFywEFBsmKnh2s5kMnztn8jQej/cxv1qQxtrxcDhOs1EbcEkZIrAhkU?=
+ =?us-ascii?Q?PT5iB+bfS4kGZvyDZSc15X77K0Jk51QH7vleR/Fzomigot392fGZVbEtwIae?=
+ =?us-ascii?Q?iNKFLR/qhu7BDqvzbhLauS5x401zNsoe/itl98MLwe60lNVYmXvvYYazlwab?=
+ =?us-ascii?Q?MxQQNOueuFQXpyJkpwAIcP009Aw4vQHWLkw4cWqHy/N3WQZaaGDmc7N3d+Wy?=
+ =?us-ascii?Q?4m5ylUyi9WcbyizAj0GORrhP177d8IR38ihvbHoOOdg5hG3SQOEKUU67iXLm?=
+ =?us-ascii?Q?pjt0lmax0a077l6KvLipR4zIHSevw5SBeVSQ2zP0fmZImlI1mrEUfoRXkZrI?=
+ =?us-ascii?Q?+UcKCSg43lgh1HfLpTzXSfmBkaP3GtBXEzAuB7KS3CcOAxR4ISNMh7FSOhLi?=
+ =?us-ascii?Q?vwrW4w6lvkgDHVEqFPUGA9hHc2bH8GyCfVE2AbqldCkQm4dS7D0xRCfoSz6E?=
+ =?us-ascii?Q?hTTwMt1q7A9CEJD4q8SW92G/gqmr3TzkFzYIBN1Rra4C2pdeeqMoPPEihUTU?=
+ =?us-ascii?Q?NBGeoC3ZtuFJKuGwPw2zZMOO6a7i+6DN0qAvyz3pOqp0woDDJYQqWvqn38V6?=
+ =?us-ascii?Q?wIg89W9sDOP8XE5sBWtbuaxOOxAbhCEwleYqKsXM3lob5bwGi8+N2eqI8Yl+?=
+ =?us-ascii?Q?8/BotI89vmNd307i2P63xu0OGiP0HkCz0DIVG5D0spkp9dLTCsb/o8bQgRuf?=
+ =?us-ascii?Q?umQdmhpbk31VIJXHTbicAsSWJ0Yo1pvetWN+F38MCye1C1yBjugstbCTX1ZJ?=
+ =?us-ascii?Q?5tO9vNZMxu8QP9xrwcA95lqThpUtIJy/35svy9eG57uUAdMxvph4Wkc52BCc?=
+ =?us-ascii?Q?dmuZlJnj7ErmPg58n5e1q2YhAJuZYU83dzuEKLzyEf0xpcpdSmDtEMxoOMI3?=
+ =?us-ascii?Q?VgD7SY1RDJEW86LShST9PmXeuEAV7tRTAV84vyfOV8nH5wSpiQ/rpqP9ToWU?=
+ =?us-ascii?Q?JXUQ5ap/B6AjmZr91Wu03PEj7ju/8m39n9nFJx78Kels7c32D7Ay/wCDq73M?=
+ =?us-ascii?Q?oxh/n/rAgw=3D=3D?=
+X-Exchange-RoutingPolicyChecked: jlHoL+gz+2HjTCaRkniqGlrSynw8KINKXjS+dwgKWNf0MhdcaUIFNLjZSsASsIsq8pxyZCSAeBifdFBSKXenm0AfCF+4s3+L9oIHGaX4vZaUz7OhTil6i4n7ZC2NLMceuV1V9s6MEzQAFNY37YKzMfUzr97q//s+K6wxH3YPAGfYvvDhsD/nZ/ytPj/Po203Vm7xhtQfce/p4a90/8W4nyU2nMDlLTmdbNishH9aMLRpkAWQ8zxcG1dBmJmqzBTPQvWEk++FDebe5iZIZZn4FtucdViNWAd0f0a5hvqDluzp4Mxvss3oaM9WrgKygp/4LNeSXBhDoCHdNB8DcCKlJA==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 71c9c452-6da0-4c50-5638-08dea6800dd3
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5832.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2026 06:09:49.5283
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2026 06:16:45.4139
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tXCyB475QlBa6jXVaEbb7V7MfRTYfjmNo/TTwbtU66sCfJbhBEPWMctHRTYKcMrhAk5YR+sNTcKN+RA5jq5qHw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: O9ijk37V+eQJm/yVWt27v8OZsqNa1eIT23SZFtYhPXZrVac/MYZ8r6Ebbpq85CfH2KEd589rfDjnrygR9HaCJg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS4PPFC60125F65
 X-OriginatorOrg: intel.com
 
 
 
-
 Hello,
 
-kernel test robot noticed "kunit.mctp_test_bind_lookup.mctp-route.fail" on:
+kernel test robot noticed "BUG_kmem_cache:Freepointer_corrupt" on:
 
-commit: 0d8647bc74cb50edf02e8c88977657596f20fb17 ("net: mctp: don't require a route for null-EID ingress")
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+commit: 8952728641305ebcd03e80f79b8d31bb41d6d95f ("mm/slub: defer freelist construction until after bulk allocation from a new slab")
+https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 
-[test failed on linus/master      254f49634ee16a731174d2ae34bc50bd5f45e731]
-[test failed on linux-next/master 7080e32d3f09d8688c4a87d81bdcc71f7f606b16]
+[test failed on linux-next/master 9974969c14031a097d6b45bcb7a06bb4aa525c40]
 
-in testcase: kunit
-version: 
-with following parameters:
+in testcase: boot
 
-	group: group-00
-
-
-
-config: x86_64-rhel-9.4-kunit
+config: x86_64-randconfig-001-20251114
 compiler: gcc-14
-test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (Haswell) with 16G memory
+test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 32G
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
 
@@ -180,177 +172,186 @@ test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (Haswe
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202604301303.9de94634-lkp@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202604301428.e2b8d3dd-lkp@intel.com
 
 
-[  111.971253] [      T1]     KTAP version 1
-[  111.975040] [      T1]     # Subtest: mctp-route
-[  111.979434] [      T1]     # module: mctp
-[  111.979441] [      T1]     1..23
-[  111.986231] [      T1]         KTAP version 1
-[  111.990365] [      T1]         # Subtest: mctp_test_fragment
-[  112.001306] [      T1]         ok 1 mtu 63 len 68 -> 1 frags
-[  112.021312] [      T1]         ok 2 mtu 64 len 68 -> 1 frags
-[  112.041319] [      T1]         ok 3 mtu 65 len 68 -> 2 frags
-[  112.060310] [      T1]         ok 4 mtu 66 len 68 -> 2 frags
-[  112.076305] [      T1]         ok 5 mtu 127 len 68 -> 2 frags
-[  112.092311] [      T1]         ok 6 mtu 128 len 68 -> 2 frags
-[  112.108317] [      T1]         ok 7 mtu 129 len 68 -> 3 frags
-[  112.124313] [      T1]         ok 8 mtu 130 len 68 -> 3 frags
-[  112.129866] [      T1]     # mctp_test_fragment: pass:8 fail:0 skip:0 total:8
-[  112.135390] [      T1]     ok 1 mctp_test_fragment
-[  112.142787] [      T1]         KTAP version 1
-[  112.151486] [      T1]         # Subtest: mctp_test_rx_input
-[  112.164341] [      T1]         ok 1 {1,a,8,0}
-[  112.180323] [      T1]         ok 2 {1,a,9,0}
-[  112.197294] [      T1]         ok 3 {2,a,8,0}
-[  112.201460] [      T1]     # mctp_test_rx_input: pass:3 fail:0 skip:0 total:3
-[  112.205605] [      T1]     ok 2 mctp_test_rx_input
-[  112.212515] [      T1]         KTAP version 1
-[  112.221218] [      T1]         # Subtest: mctp_test_route_input_sk
-[  112.233266] [      T1]         ok 1 {1,a,8,c8} type 0
-[  112.249295] [      T1]         ok 2 {1,a,8,c8} type 1
-[  112.265296] [      T1]         ok 3 {1,a,8,c0} type 0
-[  112.281324] [      T1]         ok 4 {1,a,8,48} type 0
-[  112.298312] [      T1]         ok 5 {1,a,8,8} type 0
-[  112.313294] [      T1]         ok 6 {1,a,8,0} type 0
-[  112.318064] [      T1]     # mctp_test_route_input_sk: pass:6 fail:0 skip:0 total:6
-[  112.322819] [      T1]     ok 3 mctp_test_route_input_sk
-[  112.330262] [      T1]         KTAP version 1
-[  112.339484] [      T1]         # Subtest: mctp_test_route_input_sk_reasm
-[  112.350322] [      T1]         ok 1 single packet
-[  112.370288] [      T1]         ok 2 single packet, offset seq
-[  112.386294] [      T1]         ok 3 start & end packets
-[  112.402301] [      T1]         ok 4 start & end packets, offset seq
-[  112.422380] [      T1]         ok 5 start & end packets, out of order
-[  112.438273] [      T1]         ok 6 start, middle & end packets
-[  112.454354] [      T1]         ok 7 missing seq
-[  112.470298] [      T1]         ok 8 seq wrap
-[  112.474634] [      T1]     # mctp_test_route_input_sk_reasm: pass:8 fail:0 skip:0 total:8
-[  112.478689] [      T1]     ok 4 mctp_test_route_input_sk_reasm
-[  112.486650] [      T1]         KTAP version 1
-[  112.496387] [      T1]         # Subtest: mctp_test_route_input_sk_keys
-[  112.507335] [      T1]         ok 1 direct match
-[  112.527297] [      T1]         ok 2 flipped src/dest
-[  112.543285] [      T1]         ok 3 peer addr mismatch
-[  112.559275] [      T1]         ok 4 tag value mismatch
-[  112.575282] [      T1]         ok 5 TO mismatch
-[  112.591293] [      T1]         ok 6 broadcast response
-[  112.607239] [      T1]         ok 7 any local match
-[  112.612212] [      T1]     # mctp_test_route_input_sk_keys: pass:7 fail:0 skip:0 total:7
-[  112.616869] [      T1]     ok 5 mctp_test_route_input_sk_keys
-[  112.636288] [      T1]     ok 6 mctp_test_route_input_sk_fail_single
-[  112.655293] [      T1]     ok 7 mctp_test_route_input_sk_fail_frag
-[  112.679282] [      T1]     ok 8 mctp_test_route_input_multiple_nets_bind
-[  112.706162] [      T1]     ok 9 mctp_test_route_input_multiple_nets_key
-[  112.713544] [   T3382]     # mctp_test_route_input_null_eid: ASSERTION FAILED at net/mctp/test/route-test.c:941
-                              Expected rc == 0, but
-                                  rc == -22 (0xffffffffffffffea)
-[  112.739887] [      T1]     not ok 10 mctp_test_route_input_null_eid
-[  112.749280] [      T1]     ok 11 mctp_test_packet_flow
-[  112.765293] [      T1]     ok 12 mctp_test_fragment_flow
-[  112.781257] [      T1]     ok 13 mctp_test_route_output_key_create
-[  112.787153] [   T3390] pkt1 skb len=7 data_len=0 headroom=0 headlen=7 tailroom=377
-                          end-tail=377 mac=(-1,-1) mac_len=0 net=(0,-1) trans=-1
-                          shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
-                          csum(0x0 start=0 offset=0 ip_summed=0 complete_sw=0 valid=0 level=0)
-                          hash(0x0 sw=0 l4=0) proto=0x0000 pkttype=0 iif=0
-                          priority=0x0 mark=0x0 alloc_cpu=4 vlan_all=0x0
-                          encapsulation=0 inner(proto=0x0000, mac=0, net=0, trans=0)
-[  112.841984] [   T3390] pkt1 dev name=mctptest1 feat=0x0000000000004000
-[  112.848291] [   T3390] pkt1 skb linear:   00000000: 01 08 0a 88 00 00 00
-[  112.854765] [   T3390] pkt2 skb len=7 data_len=0 headroom=7 headlen=7 tailroom=370
-                          end-tail=370 mac=(-1,-1) mac_len=0 net=(7,-1) trans=-1
-                          shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
-                          csum(0x0 start=0 offset=0 ip_summed=0 complete_sw=0 valid=0 level=0)
-                          hash(0x0 sw=0 l4=0) proto=0x0000 pkttype=0 iif=0
-                          priority=0x0 mark=0x0 alloc_cpu=4 vlan_all=0x0
-                          encapsulation=0 inner(proto=0x0000, mac=0, net=0, trans=0)
-[  112.903591] [   T3390] pkt2 dev name=mctptest1 feat=0x0000000000004000
-[  112.909890] [   T3390] pkt2 skb linear:   00000000: 01 08 0a 18 11 11 11
-[  112.916365] [   T3390] pkt3 skb len=7 data_len=0 headroom=14 headlen=7 tailroom=363
-                          end-tail=363 mac=(-1,-1) mac_len=0 net=(14,-1) trans=-1
-                          shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
-                          csum(0x0 start=0 offset=0 ip_summed=0 complete_sw=0 valid=0 level=0)
-                          hash(0x0 sw=0 l4=0) proto=0x0000 pkttype=0 iif=0
-                          priority=0x0 mark=0x0 alloc_cpu=4 vlan_all=0x0
-                          encapsulation=0 inner(proto=0x0000, mac=0, net=0, trans=0)
-[  112.965431] [   T3390] pkt3 dev name=mctptest1 feat=0x0000000000004000
-[  112.971758] [   T3390] pkt3 skb linear:   00000000: 01 08 0a 68 22 22 22
-[  112.978231] [   T3390] pkt4 skb len=7 data_len=0 headroom=21 headlen=7 tailroom=356
-                          end-tail=356 mac=(-1,-1) mac_len=0 net=(21,-1) trans=-1
-                          shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
-                          csum(0x0 start=0 offset=0 ip_summed=0 complete_sw=0 valid=0 level=0)
-                          hash(0x0 sw=0 l4=0) proto=0x0000 pkttype=0 iif=0
-                          priority=0x0 mark=0x0 alloc_cpu=4 vlan_all=0x0
-                          encapsulation=0 inner(proto=0x0000, mac=0, net=0, trans=0)
-[  113.027235] [   T3390] pkt4 dev name=mctptest1 feat=0x0000000000004000
-[  113.033537] [   T3390] pkt4 skb linear:   00000000: 01 08 0a 88 00 33 33
-[  113.040008] [   T3390] pkt5 skb len=7 data_len=0 headroom=28 headlen=7 tailroom=349
-                          end-tail=349 mac=(-1,-1) mac_len=0 net=(28,-1) trans=-1
-                          shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
-                          csum(0x0 start=0 offset=0 ip_summed=0 complete_sw=0 valid=0 level=0)
-                          hash(0x0 sw=0 l4=0) proto=0x0000 pkttype=0 iif=0
-                          priority=0x0 mark=0x0 alloc_cpu=4 vlan_all=0x0
-                          encapsulation=0 inner(proto=0x0000, mac=0, net=0, trans=0)
-[  113.089005] [   T3390] pkt5 dev name=mctptest1 feat=0x0000000000004000
-[  113.095305] [   T3390] pkt5 skb linear:   00000000: 01 08 0a 58 44 44 44
-[  113.108303] [      T1]     ok 14 mctp_test_route_input_cloned_frag
-[  113.116271] [      T1]     ok 15 mctp_test_route_extaddr_input
-[  113.134273] [      T1]     ok 16 mctp_test_route_gw_lookup
-[  113.154284] [      T1]     ok 17 mctp_test_route_gw_loop
-[  113.159574] [      T1]         KTAP version 1
-[  113.168807] [      T1]         # Subtest: mctp_test_route_gw_mtu
-[  113.178270] [      T1]         ok 1 dev 68, neigh 0, gw 0, dst 0 -> 68
-[  113.197261] [      T1]         ok 2 dev 100, neigh 0, gw 0, dst 0 -> 100
-[  113.214153] [      T1]         ok 3 dev 100, neigh 68, gw 0, dst 0 -> 68
-[  113.230283] [      T1]         ok 4 dev 100, neigh 0, gw 68, dst 0 -> 68
-[  113.250280] [      T1]         ok 5 dev 100, neigh 0, gw 0, dst 68 -> 68
-[  113.270351] [      T1]         ok 6 dev 100, neigh 99, gw 98, dst 68 -> 68
-[  113.291295] [      T1]         ok 7 dev 99, neigh 100, gw 98, dst 68 -> 68
-[  113.311265] [      T1]         ok 8 dev 98, neigh 99, gw 100, dst 68 -> 68
-[  113.330322] [      T1]         ok 9 dev 68, neigh 98, gw 99, dst 100 -> 68
-[  113.336994] [      T1]     # mctp_test_route_gw_mtu: pass:9 fail:0 skip:0 total:9
-[  113.343643] [      T1]     ok 18 mctp_test_route_gw_mtu
-[  113.351941] [      T1]     ok 19 mctp_test_route_gw_output
-[  113.356955] [      T1]         KTAP version 1
-[  113.366346] [      T1]         # Subtest: mctp_test_bind_lookup
-[  113.379141] [      T1]         ok 1 {src 20 dst 10 ty 1 net 1 expect remote20}
-[  113.395361] [      T1]         ok 2 {src 20 dst 255 ty 1 net 1 expect remote20}
-[  113.415345] [      T1]         ok 3 {src 20 dst 0 ty 1 net 1 expect remote20}
-[  113.435368] [      T1]         ok 4 {src 0 dst 255 ty 1 net 1 expect any}
-[  113.455357] [      T1]         ok 5 {src 0 dst 11 ty 1 net 1 expect any}
-[  113.475358] [      T1]         ok 6 {src 0 dst 0 ty 1 net 1 expect any}
-[  113.495354] [      T1]         ok 7 {src 0 dst 10 ty 1 net 1 expect local10}
-[  113.515425] [      T1]         ok 8 {src 21 dst 10 ty 1 net 1 expect local10}
-[  113.536355] [      T1]         ok 9 {src 21 dst 11 ty 1 net 1 expect remote21local11}
-[  113.555361] [      T1]         ok 10 {src 99 dst 99 ty 1 net 1 expect any}
-[  113.575453] [      T1]         ok 11 {src 20 dst 10 ty 3 net 1 expect (null)}
-[  113.595375] [      T1]         ok 12 {src 0 dst 0 ty 1 net 7 expect any}
-[  113.615359] [      T1]         ok 13 {src 21 dst 10 ty 1 net 2 expect any}
-[  113.635457] [      T1]         ok 14 {src 20 dst 10 ty 1 net 3 expect any}
-[  113.655356] [      T1]         ok 15 {src 21 dst 10 ty 1 net 3 expect remote21net3}
-[  113.675376] [      T1]         ok 16 {src 21 dst 10 ty 1 net 4 expect remote21net4}
-[  113.695360] [      T1]         ok 17 {src 21 dst 10 ty 1 net 5 expect remote21net5}
-[  113.715368] [      T1]         ok 18 {src 21 dst 10 ty 1 net 5 expect remote21net5}
-[  113.735359] [      T1]         ok 19 {src 99 dst 10 ty 1 net 8 expect local10net8}
-[  113.755368] [      T1]         ok 20 {src 99 dst 10 ty 1 net 9 expect anynet9}
-[  113.775338] [      T1]         ok 21 {src 0 dst 0 ty 1 net 9 expect anynet9}
-[  113.795363] [      T1]         ok 22 {src 99 dst 99 ty 1 net 9 expect anynet9}
-[  113.815392] [      T1]         ok 23 {src 20 dst 10 ty 1 net 9 expect anynet9}
-[  113.822410] [      T1]     # mctp_test_bind_lookup: pass:23 fail:0 skip:0 total:23
-[  113.829409] [      T1]     ok 20 mctp_test_bind_lookup
-[  113.847289] [      T1]     ok 21 mctp_test_route_output_direct_no_eids
-[  113.863359] [      T1]     ok 22 mctp_test_route_output_gw_no_eids
-[  113.879334] [      T1]     ok 23 mctp_test_route_output_extaddr_no_eids
-[  113.885312] [      T1] # mctp-route: pass:22 fail:1 skip:0 total:23
-[  113.891701] [      T1] # Totals: pass:79 fail:1 skip:0 total:80
-[  113.897752] [      T1] not ok 34 mctp-route
 
+[   53.929047][    T0] =============================================================================
+[   53.931786][    T0] BUG kmem_cache (Tainted: G                T  ): Freepointer corrupt
+[   53.934858][    T0] -----------------------------------------------------------------------------
+[   53.934858][    T0] 
+[   53.934858][    T0] -----------------------------------------------------------------------------
+[   53.934858][    T0] 
+[   53.939608][    T0] Slab 0xffffea0004001040 objects=9 used=1 fp=0xffff888100041200 flags=0x4000000000000000(zone=2)
+[   53.944008][    T0] Object 0xffff888100041040 @offset=64 fp=0x64ae22a70baa83ae
+[   53.944008][    T0] 
+[   53.944008][    T0] Object 0xffff888100041040 @offset=64 fp=0x64ae22a70baa83ae
+[   53.944008][    T0] 
+[   53.950913][    T0] Redzone  ffff888100041000: bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
+[   53.954703][    T0] Redzone  ffff888100041010: bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
+[   53.957662][    T0] Redzone  ffff888100041020: bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
+[   53.960527][    T0] Redzone  ffff888100041030: bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
+[   53.963607][    T0] Object   ffff888100041040: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   53.966785][    T0] Object   ffff888100041050: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   53.969753][    T0] Object   ffff888100041060: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   53.972621][    T0] Object   ffff888100041070: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   53.975559][    T0] Object   ffff888100041080: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   53.978756][    T0] Object   ffff888100041090: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   53.981898][    T0] Object   ffff8881000410a0: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   53.985140][    T0] Object   ffff8881000410b0: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   53.988289][    T0] Object   ffff8881000410c0: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   53.991279][    T0] Object   ffff8881000410d0: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   53.993987][    T0] Object   ffff8881000410e0: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   53.996539][    T0] Object   ffff8881000410f0: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   53.999493][    T0] Object   ffff888100041100: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   54.002253][    T0] Object   ffff888100041110: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b a5  kkkkkkkkkkkkkkk.
+[   54.005170][    T0] Redzone  ffff888100041120: bb bb bb bb bb bb bb bb                          ........
+[   54.007879][    T0] Padding  ffff888100041180: 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a  ZZZZZZZZZZZZZZZZ
+[   54.010661][    T0] Padding  ffff888100041190: 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a  ZZZZZZZZZZZZZZZZ
+[   54.013403][    T0] Padding  ffff8881000411a0: 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a  ZZZZZZZZZZZZZZZZ
+[   54.016151][    T0] Padding  ffff8881000411b0: 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a  ZZZZZZZZZZZZZZZZ
+[   54.019282][    T0] Disabling lock debugging due to kernel taint
+[   54.021208][    T0] ------------[ cut here ]------------
+[   54.022797][    T0] WARNING: mm/slub.c:1231 at object_err+0x6c/0x7f, CPU#0: swapper/0
+[   54.025237][    T0] Modules linked in:
+[   54.026745][    T0] CPU: 0 UID: 0 PID: 0 Comm: swapper Tainted: G    B           T   7.1.0-rc1-00001-g895272864130 #1 PREEMPT(undef) 
+[   54.030461][    T0] Tainted: [B]=BAD_PAGE, [T]=RANDSTRUCT
+[   54.032017][    T0] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+[   54.036374][    T0] RIP: 0010:object_err+0x6c/0x7f
+[   54.039295][    T0] Code: c7 c7 1f 95 42 85 e8 b3 1a fe ff eb 0e 48 89 da 4c 89 ee 4c 89 e7 e8 13 fe ff ff be 01 00 00 00 bf 05 00 00 00 e8 c4 f7 2f 00 <0f> 0b 5b 41 5c 41 5d 5d 31 c0 31 d2 31 c9 31 f6 31 ff c3 be 00 10
+[   54.049629][    T0] RSP: 0000:ffffffff85607c40 EFLAGS: 00010046
+[   54.051811][    T0] RAX: 0000000000000000 RBX: ffff888100041040 RCX: 0000000000000000
+[   54.054369][    T0] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+[   54.056862][    T0] RBP: ffffffff85607c58 R08: 0000000000000000 R09: 0000000000000000
+[   54.059766][    T0] R10: 0000000000000000 R11: 0000000000000000 R12: ffffffff86ad8f20
+[   54.062963][    T0] R13: ffffea0004001040 R14: 00000000000000bb R15: 0000000000000001
+[   54.066945][    T0] FS:  0000000000000000(0000) GS:0000000000000000(0000) knlGS:0000000000000000
+[   54.070095][    T0] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   54.072475][    T0] CR2: ffff88883ffff000 CR3: 00000000056ba000 CR4: 00000000000000b0
+[   54.076829][    T0] Call Trace:
+[   54.077963][    T0]  <TASK>
+[   54.079139][    T0]  check_object.cold+0x4b/0x50
+[   54.080583][    T0]  alloc_debug_processing+0x9b/0x180
+[   54.082495][    T0]  alloc_single_from_new_slab+0x82/0x200
+[   54.084323][    T0]  ? alloc_slab_obj_exts_early+0x5/0x2c0
+[   54.086455][    T0]  ? allocate_slab+0x11b/0x380
+[   54.087892][    T0]  ___slab_alloc+0x1ad/0x340
+[   54.089129][    T0]  ? bootstrap+0x20/0xb0
+[   54.090520][    T0]  kmem_cache_alloc_noprof+0x30b/0x540
+[   54.092010][    T0]  ? bootstrap+0x20/0xb0
+[   54.093328][    T0]  bootstrap+0x20/0xb0
+[   54.094484][    T0]  kmem_cache_init+0xbb/0x330
+[   54.095786][    T0]  ? preallocate_vmalloc_pages+0x1a4/0x2b0
+[   54.097485][    T0]  mm_core_init+0x12b/0x170
+[   54.098935][    T0]  start_kernel+0x173/0x370
+[   54.100291][    T0]  x86_64_start_reservations+0x28/0x30
+[   54.101912][    T0]  x86_64_start_kernel+0x131/0x140
+[   54.103325][    T0]  common_startup_64+0xbd/0xc8
+[   54.104692][    T0] RIP: 2e66:0x841f0f
+[   54.105837][    T0] Code: Unable to access opcode bytes at 0x841ee5.
+[   54.107636][    T0] RSP: 0084:1f0f2e6600000000 EFLAGS: 841f0f2e660000 ORIG_RAX: 2e66000000000084
+[   54.110294][    T0] RAX: 2e66000000000084 RBX: 2e66000000000084 RCX: 0000000000841f0f
+[   54.112621][    T0] RDX: 000000841f0f2e66 RSI: 00841f0f2e660000 RDI: 1f0f2e6600000000
+[   54.114700][    T0] RBP: 1f0f2e6600000000 R08: 1f0f2e6600000000 R09: 00841f0f2e660000
+[   54.117100][    T0] R10: 000000841f0f2e66 R11: 0000000000841f0f R12: 00841f0f2e660000
+[   54.119233][    T0] R13: 000000841f0f2e66 R14: 0000000000841f0f R15: 2e66000000000084
+[   54.121210][    T0]  </TASK>
+[   54.122004][    T0] irq event stamp: 0
+[   54.122967][    T0] hardirqs last  enabled at (0): [<0000000000000000>] 0x0
+[   54.124748][    T0] hardirqs last disabled at (0): [<0000000000000000>] 0x0
+[   54.126760][    T0] softirqs last  enabled at (0): [<0000000000000000>] 0x0
+[   54.128589][    T0] softirqs last disabled at (0): [<0000000000000000>] 0x0
+[   54.130515][    T0] ---[ end trace 0000000000000000 ]---
+[   54.131853][    T0] FIX kmem_cache: Marking all objects used
+[   54.137998][    T0] =============================================================================
+[   54.164966][    T0] BUG kmem_cache (Tainted: G    B   W       T  ): Freepointer corrupt
+[   54.168591][    T0] -----------------------------------------------------------------------------
+[   54.168591][    T0] 
+[   54.168591][    T0] -----------------------------------------------------------------------------
+[   54.168591][    T0] 
+[   54.172896][    T0] Slab 0xffffea0004001080 objects=9 used=1 fp=0xffff888100042200 flags=0x4000000000000000(zone=2)
+[   54.176176][    T0] Object 0xffff888100042040 @offset=64 fp=0x649e22a70baa83ae
+[   54.176176][    T0] 
+[   54.176176][    T0] Object 0xffff888100042040 @offset=64 fp=0x649e22a70baa83ae
+[   54.176176][    T0] 
+[   54.179185][    T0] Redzone  ffff888100042000: bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
+[   54.182194][    T0] Redzone  ffff888100042010: bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
+[   54.185079][    T0] Redzone  ffff888100042020: bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
+[   54.188065][    T0] Redzone  ffff888100042030: bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
+[   54.191066][    T0] Object   ffff888100042040: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   54.194179][    T0] Object   ffff888100042050: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   54.197272][    T0] Object   ffff888100042060: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   54.200275][    T0] Object   ffff888100042070: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   54.203121][    T0] Object   ffff888100042080: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   54.206273][    T0] Object   ffff888100042090: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   54.209183][    T0] Object   ffff8881000420a0: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   54.211956][    T0] Object   ffff8881000420b0: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   54.215170][    T0] Object   ffff8881000420c0: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   54.218051][    T0] Object   ffff8881000420d0: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   54.220882][    T0] Object   ffff8881000420e0: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   54.223739][    T0] Object   ffff8881000420f0: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   54.226475][    T0] Object   ffff888100042100: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b  kkkkkkkkkkkkkkkk
+[   54.229268][    T0] Object   ffff888100042110: 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b a5  kkkkkkkkkkkkkkk.
+[   54.232081][    T0] Redzone  ffff888100042120: bb bb bb bb bb bb bb bb                          ........
+[   54.240289][    T0] Padding  ffff888100042180: 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a  ZZZZZZZZZZZZZZZZ
+[   54.244580][    T0] Padding  ffff888100042190: 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a  ZZZZZZZZZZZZZZZZ
+[   54.248946][    T0] Padding  ffff8881000421a0: 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a  ZZZZZZZZZZZZZZZZ
+[   54.252300][    T0] Padding  ffff8881000421b0: 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a 5a  ZZZZZZZZZZZZZZZZ
+[   54.255423][    T0] ------------[ cut here ]------------
+[   54.256910][    T0] WARNING: mm/slub.c:1231 at object_err+0x6c/0x7f, CPU#0: swapper/0
+[   54.259466][    T0] Modules linked in:
+[   54.260739][    T0] CPU: 0 UID: 0 PID: 0 Comm: swapper Tainted: G    B   W       T   7.1.0-rc1-00001-g895272864130 #1 PREEMPT(undef) 
+[   54.264411][    T0] Tainted: [B]=BAD_PAGE, [W]=WARN, [T]=RANDSTRUCT
+[   54.266719][    T0] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+[   54.271041][    T0] RIP: 0010:object_err+0x6c/0x7f
+[   54.272617][    T0] Code: c7 c7 1f 95 42 85 e8 b3 1a fe ff eb 0e 48 89 da 4c 89 ee 4c 89 e7 e8 13 fe ff ff be 01 00 00 00 bf 05 00 00 00 e8 c4 f7 2f 00 <0f> 0b 5b 41 5c 41 5d 5d 31 c0 31 d2 31 c9 31 f6 31 ff c3 be 00 10
+[   54.278858][    T0] RSP: 0000:ffffffff85607c40 EFLAGS: 00010046
+[   54.280701][    T0] RAX: 0000000000000000 RBX: ffff888100042040 RCX: 0000000000000000
+[   54.282917][    T0] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+[   54.285854][    T0] RBP: ffffffff85607c58 R08: 0000000000000000 R09: 0000000000000000
+[   54.288711][    T0] R10: 0000000000000000 R11: 0000000000000000 R12: ffffffff86ad8f20
+[   54.291194][    T0] R13: ffffea0004001080 R14: 00000000000000bb R15: 0000000000000001
+[   54.293497][    T0] FS:  0000000000000000(0000) GS:0000000000000000(0000) knlGS:0000000000000000
+[   54.296100][    T0] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   54.298178][    T0] CR2: ffff88883ffff000 CR3: 00000000056ba000 CR4: 00000000000000b0
+[   54.300578][    T0] Call Trace:
+[   54.301701][    T0]  <TASK>
+[   54.302556][    T0]  check_object.cold+0x4b/0x50
+[   54.304075][    T0]  alloc_debug_processing+0x9b/0x180
+[   54.305771][    T0]  alloc_single_from_new_slab+0x82/0x200
+[   54.307575][    T0]  ? alloc_slab_obj_exts_early+0x5/0x2c0
+[   54.309885][    T0]  ? allocate_slab+0x11b/0x380
+[   54.311397][    T0]  ___slab_alloc+0x1ad/0x340
+[   54.312978][    T0]  ? bootstrap+0x20/0xb0
+[   54.314381][    T0]  kmem_cache_alloc_noprof+0x30b/0x540
+[   54.316375][    T0]  ? bootstrap+0x20/0xb0
+[   54.317924][    T0]  bootstrap+0x20/0xb0
+[   54.319165][    T0]  kmem_cache_init+0xbb/0x330
+[   54.320577][    T0]  ? preallocate_vmalloc_pages+0x1a4/0x2b0
+[   54.322318][    T0]  mm_core_init+0x12b/0x170
+[   54.323813][    T0]  start_kernel+0x173/0x370
+[   54.325087][    T0]  x86_64_start_reservations+0x28/0x30
+[   54.326828][    T0]  x86_64_start_kernel+0x131/0x140
+[   54.328433][    T0]  common_startup_64+0xbd/0xc8
+[   54.329884][    T0] RIP: 2e66:0x841f0f
+[   54.331003][    T0] Code: Unable to access opcode bytes at 0x841ee5.
+[   54.333204][    T0] RSP: 0084:1f0f2e6600000000 EFLAGS: 841f0f2e660000 ORIG_RAX: 2e66000000000084
+[   54.341141][    T0] RAX: 2e66000000000084 RBX: 2e66000000000084 RCX: 0000000000841f0f
+[   54.344540][    T0] RDX: 000000841f0f2e66 RSI: 00841f0f2e660000 RDI: 1f0f2e6600000000
+[   54.348106][    T0] RBP: 1f0f2e6600000000 R08: 1f0f2e6600000000 R09: 00841f0f2e660000
+[   54.350959][    T0] R10: 000000841f0f2e66 R11: 0000000000841f0f R12: 00841f0f2e660000
+[   54.353348][    T0] R13: 000000841f0f2e66 R14: 0000000000841f0f R15: 2e66000000000084
+[   54.355758][    T0]  </TASK>
+[   54.356638][    T0] irq event stamp: 0
+[   54.357904][    T0] hardirqs last  enabled at (0): [<0000000000000000>] 0x0
+[   54.360403][    T0] hardirqs last disabled at (0): [<0000000000000000>] 0x0
+[   54.362935][    T0] softirqs last  enabled at (0): [<0000000000000000>] 0x0
+[   54.365496][    T0] softirqs last disabled at (0): [<0000000000000000>] 0x0
+[   54.367816][    T0] ---[ end trace 0000000000000000 ]---
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20260430/202604301303.9de94634-lkp@intel.com
+https://download.01.org/0day-ci/archive/20260430/202604301428.e2b8d3dd-lkp@intel.com
 
 
 
