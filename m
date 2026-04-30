@@ -1,95 +1,95 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 033641C28E
-	for <oe-lkp@lists.linux.dev>; Thu, 30 Apr 2026 05:38:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 199503090D9
+	for <oe-lkp@lists.linux.dev>; Thu, 30 Apr 2026 06:09:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.15
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777527531; cv=fail; b=gkgMsZIc2QazZB2zAmcf9Ad43s+MjdcittyCrFGbf5ui9m0W8ZNB4gKfU5OZJ6jUh/NzzPA3kgDm2Gy4Gx92SoRZPtjAfnUy7NSxNxsiDCF9zc+q9cMuKDGWVwp7FTKYDe5TNqICgmHdB73jhq3p83CrxWOohOwImVMO4YytON0=
+	t=1777529398; cv=fail; b=QL8kbfkn1vEnOYHNLQwJhEArVuT38OvehATfK+LER18sxzov43J007iQcqgLDKhnjpD3xIbCc/CIBuOffQRMkX0+c4ivGDOKxufxtItW1wyofAZSu5tY2C2lEHyPro81aQ+ohloGTRHupmG7UOsM6OPTuwKRKki7R+dCkjx/744=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777527531; c=relaxed/simple;
-	bh=XcaF82MbZzsWMSeLLANDRFWmLft6dhplf2H2S2wIzNk=;
+	s=arc-20240116; t=1777529398; c=relaxed/simple;
+	bh=3VKVcwx42K5nr+hvK5a/ZjgktBeNcxwHdSrC3NFfHiU=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=ZQ/g9+gTCpt/YRALOAj9u7OPmt/+4tDBfrx99du/M5RiGeg6RlEqMhZjUjgb3tDdt1FS4r+JGql9xz7tlaFFGzK3zojrpFBngrq5BiPr/h8oyrtGsjit10nh9+CJ3hHQ8D5c4wHzAipZNi4eaAi4wcIsXE0JTwkwRnHocn0vouA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=P0UnbVGf; arc=fail smtp.client-ip=192.198.163.13
+	 Content-Disposition:MIME-Version; b=M3Wb33wXXzgjlHjdXeN/j3W1UCo4sJJoXjD+ZpVl+eGft7/LEI3T/i4Oi+aCHIbRQhoCRAgl9seYYpUgDOVv7w71sG1714G1QUY/jeWdxcRFyOgBSYBVGsaKNd5kwipo7s79SlWXiAtg33Q2H5FktNI0aJULX+zQQTKKdQr/QXU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eddZDYwi; arc=fail smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="P0UnbVGf"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eddZDYwi"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1777527529; x=1809063529;
-  h=date:from:to:cc:subject:message-id:
-   content-transfer-encoding:mime-version;
-  bh=XcaF82MbZzsWMSeLLANDRFWmLft6dhplf2H2S2wIzNk=;
-  b=P0UnbVGfH/8OYDVe4UpfUkYsr5ww9/m4ekmzwbj8tg9hDf7ezSnU7Zlp
-   5IiRxi41Poj9Vd6aCyaomuhd9NRJrUo4FWIWt/BuUM1WFU72YQ51vWXMd
-   SskkDT7S6baJGCdRSf9loQKmvn1fZsI7wnYGOu2JKLSoPzrE2waEzLbWj
-   8cko3qoIVl+aY3BCcxuARB/PagqaMDI6mwH3FjKy9kL2KS1ddWaPWfM7D
-   3frw420RcXI1/+xrVfEUp7OVh6y1St/UcZo7CK5fFwxGppACftDlhwLc+
-   41+XolHiCSZysu9OMbv4xRpERHMtagXtCGIQzT07DoKK414dcsAAi0Nkn
-   w==;
-X-CSE-ConnectionGUID: o3Y+IY9uSp2cbcGdAjOoaw==
-X-CSE-MsgGUID: LD48Q/FqTHCUvRNyQMknPw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11771"; a="81042785"
+  t=1777529396; x=1809065396;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=3VKVcwx42K5nr+hvK5a/ZjgktBeNcxwHdSrC3NFfHiU=;
+  b=eddZDYwiO0qMvaDq9k3vYSmciEV+ublv8DIDo1XCxBlOAi5pyfqt9nRu
+   eTYpD7CvcOBFHZoJYiEUz9z4klpLrwmyggOt4EArGwngSmCYsbn3u9hIY
+   rx0ya36n3TYWrJiU0KG68MMs3vPrIHLfY/qXr2hAv0QH8/5m/JfWVjpPT
+   wTTsefVQ/K5KWfSAiIWTLfIJ+vvc0zjmbH/cYu3ZruvFXf6tlss3yrkob
+   EoY8L7l0pn3ab0c/Fe59iRyIvFSrxpZrSfGS/SkXr61J9v4EDKcyF0j4U
+   ibzj9mIJAyyC3eI4fBJpUeSAHzjYdZYVnaRtkU0YIPC01yFqGQHTTQosR
+   Q==;
+X-CSE-ConnectionGUID: /qycWv1MTq6AM1LVb8NQNA==
+X-CSE-MsgGUID: bFaSVIClQq+rw6JOxhARtA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11771"; a="82077476"
 X-IronPort-AV: E=Sophos;i="6.23,207,1770624000"; 
-   d="scan'208";a="81042785"
+   d="scan'208";a="82077476"
 Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2026 22:38:48 -0700
-X-CSE-ConnectionGUID: hmMFlE0lRKemvGpxny8g+g==
-X-CSE-MsgGUID: MOpM96MhT6mFMvodLazjGA==
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2026 23:09:53 -0700
+X-CSE-ConnectionGUID: IAYdI4M5RZSNC7DdVFu1Lg==
+X-CSE-MsgGUID: 15/0xSFYQn+2odlVnI3BkQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,207,1770624000"; 
-   d="scan'208";a="234367071"
-Received: from fmsmsx901.amr.corp.intel.com ([10.18.126.90])
-  by orviesa008.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2026 22:38:48 -0700
-Received: from FMSMSX901.amr.corp.intel.com (10.18.126.90) by
- fmsmsx901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+   d="scan'208";a="234372947"
+Received: from fmsmsx902.amr.corp.intel.com ([10.18.126.91])
+  by orviesa008.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2026 23:09:53 -0700
+Received: from FMSMSX902.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Wed, 29 Apr 2026 22:38:47 -0700
-Received: from fmsedg903.ED.cps.intel.com (10.1.192.145) by
- FMSMSX901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ 15.2.2562.37; Wed, 29 Apr 2026 23:09:52 -0700
+Received: from fmsedg901.ED.cps.intel.com (10.1.192.143) by
+ FMSMSX902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Wed, 29 Apr 2026 22:38:47 -0700
-Received: from BN1PR04CU002.outbound.protection.outlook.com (52.101.56.51) by
- edgegateway.intel.com (192.55.55.83) with Microsoft SMTP Server
+ 15.2.2562.37 via Frontend Transport; Wed, 29 Apr 2026 23:09:52 -0700
+Received: from CO1PR03CU002.outbound.protection.outlook.com (52.101.46.14) by
+ edgegateway.intel.com (192.55.55.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Wed, 29 Apr 2026 22:38:46 -0700
+ 15.2.2562.37; Wed, 29 Apr 2026 23:09:51 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=NbRFAGL2U0pQOl6ji7+icEO61HiMQBGPjj2C+rGrb/DztroP99j9FdDycaLAfaq1mcpmkfhnBagPY+lNniu//PjVn7eUqo+uftyRvGVgmTm9ttpGahqphatcx+bPoDIOsg3B5V3RduaHYrX0WG04TSn/s+m3eJnPi85rME4RXCGx4KCKeCxd3KiN0tmuajN0B0nsrL3bPxke4iMztH6xTUylV8M/6JLpqB1VxfeA6cfunn6BQykt2dORBx7/aKWYkau/nxSL/4ibk+u93dh9bMD1Mu4/EnvPbZYhEzRpblaxBOgHjJx2wKLK7MU+RDx2yTeO984Wn/dmcTbLWOYZOA==
+ b=OeTRv4e6CSIuAOPEs1Woh438LKO9sGshhosDHTD4RU/tcYz9SIohQHtW+a5W2OKDBpN5Dbn38YnqWZqT1LSORmCpKHBDW3orpfPcogg3UIsRLCBDfz38DQcdahyKlQJOMH4EhMr5+DblwXAj+S6PNJSVpbTciZUhKDaOuNmzmyBcOlU2A/MBTgl0OllSNiyGnpBxDVYZhSDigXdLTu6/iET4u8sJjALCPPaleKpd5XKbPnae7wXYv/uu4i8dmE40utThqMZSNebUc9rvPmCks/kFhS1NX4w1HmFO5ladK/fy2z6hkSaEDW/3+gqHVtjc3rzlhPiIzrSXz/+qx9vdSg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kONYo65t9q22LArswjrrxLvcbgeiN3Ax+H8XGEvbPgw=;
- b=N2xnG7VWFAFhfkJkMxnL8CrVAjp0KzHLfllCORkWkeaPUThkd2nHUFJFeedGZlejsCS6u4LQt/e77P7iZygMRJ1JanbF4bftyRzZOmJEGuUdSQJnL9R1XRMtz8gr6jRHyiFtcxk8eoeErNK3/M7AyYZz7Uz8pAyj12PBiJa2ltiHR5TeMD952criNxA+Z3aVwSgXFMGPaWtNdmWV8Movg8kKcsudPHvyQnzIZLp0VwS/6N73VUtZqZFvCmc4jyfxHtRkZ7LTDNeJEVd59PuEAKdu0ve/vKFa8Ajo+q6Mz5N98ceDvJwst0lIXBgRoiv8ku5J70WB4tnWV0Wjvd8KOg==
+ bh=WQR/Xzyp2n2yPaBSlZk7EUQa/wLII1+m1YLlrZdGkQQ=;
+ b=bkjmwxt4KVdg52Po1m8HiRnkfnnFHZl9wyFiarC0ZXk2aAgmhT2vwKr+v2kosk5bQ+2csMb4KdtuijuepaeowWw8/qXZ46xGJ35HO/QUORnN6GN/6zoXZNxU8N+lklA3aStWVRYmbQAbR2kNRZ/KuYU+my1PZCi6wRnTs61lyp81l2tB5yhLv48UvYN5VbyBkCedPU1CAUkHuKlNQvZ5PJtzKTAuOp4sVkksg05o54mn5OTSzMkHxAdhuxDyMffHYJXJhFSV6uMaGsFPCp6lqUl6DburlGgvN6g8x/T+GReuAbG4Dt2eZqJENqLUAuZmP2QhW3um2uyI0s1u0myaPw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from PH0PR11MB5832.namprd11.prod.outlook.com (2603:10b6:510:141::7)
- by DM6PR11MB4609.namprd11.prod.outlook.com (2603:10b6:5:28f::15) with
+ by DS4PPFC60125F65.namprd11.prod.outlook.com (2603:10b6:f:fc02::4b) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9870.21; Thu, 30 Apr
- 2026 05:38:44 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9870.20; Thu, 30 Apr
+ 2026 06:09:50 +0000
 Received: from PH0PR11MB5832.namprd11.prod.outlook.com
  ([fe80::106e:78dd:4c96:d707]) by PH0PR11MB5832.namprd11.prod.outlook.com
  ([fe80::106e:78dd:4c96:d707%3]) with mapi id 15.20.9870.020; Thu, 30 Apr 2026
- 05:38:42 +0000
-Date: Thu, 30 Apr 2026 13:38:34 +0800
+ 06:09:49 +0000
+Date: Thu, 30 Apr 2026 14:09:43 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Zhang Yi <yi.zhang@huawei.com>
+To: Jeremy Kerr <jk@codeconstruct.com.au>
 CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	Theodore Ts'o <tytso@mit.edu>, Jan Kara <jack@suse.cz>,
-	<linux-ext4@vger.kernel.org>, <oliver.sang@intel.com>
-Subject: [linus:master] [ext4]  1ad0f42823:  fio.write_iops 23.8% improvement
-Message-ID: <202604301021.faab1f8a-lkp@intel.com>
-Content-Type: text/plain; charset="iso-8859-1"
+	Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+	<oliver.sang@intel.com>
+Subject: [linus:master] [net]  0d8647bc74:
+ kunit.mctp_test_bind_lookup.mctp-route.fail
+Message-ID: <202604301303.9de94634-lkp@intel.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
 User-Agent: s-nail v14.9.25
-X-ClientProxiedBy: SG2P153CA0013.APCP153.PROD.OUTLOOK.COM (2603:1096::23) To
- PH0PR11MB5832.namprd11.prod.outlook.com (2603:10b6:510:141::7)
+X-ClientProxiedBy: TP0P295CA0045.TWNP295.PROD.OUTLOOK.COM
+ (2603:1096:910:4::16) To PH0PR11MB5832.namprd11.prod.outlook.com
+ (2603:10b6:510:141::7)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -97,184 +97,261 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR11MB5832:EE_|DM6PR11MB4609:EE_
-X-MS-Office365-Filtering-Correlation-Id: fb776e85-2829-4094-bb4e-08dea67abd23
+X-MS-TrafficTypeDiagnostic: PH0PR11MB5832:EE_|DS4PPFC60125F65:EE_
+X-MS-Office365-Filtering-Correlation-Id: 15927447-eceb-4b18-2393-08dea67f15f8
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024|18002099003|56012099003;
-X-Microsoft-Antispam-Message-Info: 0lsu6VwqEtr8IwhqmT+pi8UBTrUMBd7vqGBEJMQCN4X/b1ef4BT3GoC0XdsIRU9x8O3pRYxSJ7KfvkTG02Rz6Zj29UUT4CBqBVlrNadcvvIftTh/jSBQqxzV1cGf5QggHQ2Odml1/2EBJr9q+ZhfZE/jvlPG2TyhCO22zppqu2O0+mI6NUWI+KfRS2B1TnWyAIBzzkhw13zVRlHImB56KtAvjz9YN5/hu7jADpsFryHVc7xNPk/MFf/19xN8QER6idGvDv6C6ERNfeUwVzXFZ/o8+d4SHi8C7HCk3Dy9GRwgALlAg+42nFhbkmtxi0JwOK5qerYmHowcgkTUdifBDPX9t6bMnAAuB5ecY2pFi2KUYIJQl3u5/Ssnx5fftKgkLj0Spxutp/QCFMPoxL92C1uRINiqbFER/B/yITW3kdK7q7KXOqFmg7oKe+RtaPegEQIFO6nrZ6f3wYZIWp3Cx0CHsJERBRbQ+QFDDc5WlthZVPOtLao4qGGSpACbslwoKuweYA4c+sXuEg1uLErjuISUHiUvomom9ci+IcdsLr538dolSiVwTX5TDFSlvr4m2/NrKnSsJC+mfqEVhKiAtKinOkkGmiOESsgwHBznyi/LbA9lskqibMGJ62qDrQvkloFpel4DqRZ6dzXqHaY1GjjVvjucqn6BQHb0VreIGSIn3uqeIuX4LdNz1P4cOGq8
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5832.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(18002099003)(56012099003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014|18002099003|56012099003;
+X-Microsoft-Antispam-Message-Info: Ctnh7f/o+v2uE7cMXBIdy1i7lUofMO8byIkzG0ZD0vluqqxdxG4tsOhcx5RJ+PBQDKF1/pR1YJaNuIaaox9iT7Lz2/54p8rpgXv5TBqsIOAAE9TAy0NZa3CYE5W5oKZMmqoWDWi7AHHvPyLXUMVdIhAeuPg1KJ0tDlA1LYZzNK0FKTiqgmcjtcJ6VHwnoZDjkAu78xdujtcXvCI6gPPXGnEAiwAkPdh9pgEptUbWa1LHkzWI5QWxhtJ2vSrAP5jg3S45FHDp0chGLiOoo/pz/sKabWZFwLLsCTTQx2REkswt59YTzHfMUkR1cJxqeKI928bGiiaaYRg9wFcTAcEr8N8BfLV1pTFRr89DfSFitwP3Yz+MfPHFzR32/qaaFeQU6mYWpX0x9avDkWXiYhlCUkl07jtw52Gbu9GFAGK1OrChzuHX7tKBZEnRQv5bXPd72CFZMMt+O7nJ5aionGX/ViLYvILmttsLlL2Qj8fH3u4yIza2IVHx5W5IXMihx6SmC6Idtg+oXC3G0cosh9D3OoWGhtWArnQdn1yItd4hfYPuDPNhEqMYXPoWBZ9sLaB6xT0taxNb1ZZMfQrNg7vQ8PmqPrm8Snlc9FKldpLLTGq69NU5G/1BHk7wlKPDqMZybeNuephzv9oshUt91c8ba5Aj1axxPoU57xgNaptrC/MeZ5yjLfanwJ06zq3Xx0XB
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5832.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(18002099003)(56012099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?Zsfc+D09Ppwh/3ol7MUBKqN2cKrmNyC6l45I5RNFsaUwA3b4K4vu/YaaJz?=
- =?iso-8859-1?Q?iIlR9Cjq06a1+dtgdcl6CGem/+7W9Jslz6YALbFCuQIKBhTV47ts7M+z8W?=
- =?iso-8859-1?Q?ybpa4LR68L/yyKk66im9CxMh+P0r3bu/CnN+8u3i3MZTV2E/yBX5AFTnmg?=
- =?iso-8859-1?Q?0xaVvQUkBfcJPU1SRcclomOxEdrEyZajVgcEsoxfdBUwCFESiPFIfCTW2b?=
- =?iso-8859-1?Q?yBLT26zuoNwStjFePTQDg55hOBb6eq9WX+GfSpHvTdBgXkbUB7UsNbWl61?=
- =?iso-8859-1?Q?FnqQ3uGEJ7yW8yFfSjH3sgJTr8H7rLgromR8MR0+J/7N0ylB+kpSlVlLaM?=
- =?iso-8859-1?Q?0qmQyPNC6qgb8tCeIcn7lWhlQTUgHKaJDCUyx5RDUDFD3b5Xlf2mhR/Y8V?=
- =?iso-8859-1?Q?vJvvenZR3/VMYCRtq8HGemASrSX200TXQgUfc7tM2KSj+99hmJ2Jg0KpcZ?=
- =?iso-8859-1?Q?qsSfwiKUQWwd0TUssF5mWrq18aqBk3h2knnCYjZvA2YBgo7CkCqieLp7Fz?=
- =?iso-8859-1?Q?rAd862DxOjDfuXYYI3UpIX0lVjLPPfQ5pDgrFjWpOWhd4yTA7pVO3bwXn5?=
- =?iso-8859-1?Q?wGC8eOKzTjkhRXMQXpEvFwr3ASn8rhwiYHSPKBugmBBODTMhNh9dDFq333?=
- =?iso-8859-1?Q?nB2HNxS1UkHRz9lb+U33fmIGcfCjHviTtKqjrEDfDVQ2QOSSs5lZMRquwQ?=
- =?iso-8859-1?Q?6E7wciEW9I93qtn9NKQd0IcWundGQyHVT3BPPhEpLBBmJ1T7SVEZ6/TAoK?=
- =?iso-8859-1?Q?Kx+RUJWrvma0L+Xokaado2hUSLJToz3bh9R5Zt160v7HbG2FGXV0BY2ReR?=
- =?iso-8859-1?Q?hrJR3Hiw2jxyUVWtvBdNVxwzfAr5As9Hg9aL9xi5aq8SRkkTCscT2TCg/B?=
- =?iso-8859-1?Q?o1b9CggRF1wprMNO8ziLSkz7mGIhkvcA/YfnBepWQ5N0IDbFwra/KoeiKF?=
- =?iso-8859-1?Q?QxGq//5gXNo7d6P9cP9vHNCPYmx6N160aq3eq4KgfyOxXBCZdZ/B2nyW/D?=
- =?iso-8859-1?Q?ECyo5Sl8c9Zyr9S4biWOlN3tZaEnLoMETMV+cJc7RsmFYe6ZCizJWQI742?=
- =?iso-8859-1?Q?wuYAuOu+1oq2ILrPbKsTgAAPDxxOuj6khmX5Q1JSQGOc9UOnH3G0EsSuJ2?=
- =?iso-8859-1?Q?A+RjcFAlc+3ZXRaDmGJuOmvxvNUftEeAt0buOvGFpY9Mhp2ulvpWIRTr0B?=
- =?iso-8859-1?Q?tzuAqUzIS3403YOSprL9dQl7uXLfMnoy//aUhygC03fwfwvm3Y8Nu+mYst?=
- =?iso-8859-1?Q?9z+EHDkKi5XtefLGuKjvH1suk5jgHxsG5TOx/VZSt/zr+dsylxiS/Fc6g8?=
- =?iso-8859-1?Q?RvVfRTR0GcFrQLya5+tnCu0/xMGl7nn7vtheOmbbEhvIDzpMQMkJTeh++G?=
- =?iso-8859-1?Q?4EHlL2BQE/vChEyLU1tszfSR4QBeiA49INurUfNIRe2oqHusGWPh2J6OBE?=
- =?iso-8859-1?Q?YoSX7yP6cz6hs3Vp1Dddn2qC2ZQRcubPmDpcNfD/T6GsSdxac8h4NiVY8X?=
- =?iso-8859-1?Q?VWQ8faNq9bdbhN0mQq5opOhg1jy3t4FBj7t9LgE7CxANBFGDoHEEudbukH?=
- =?iso-8859-1?Q?5sbPizzvW5o6EDlUji6+ns3bZtrJKqyM08RBwVUTBozS7lD+5m4LaUNgU1?=
- =?iso-8859-1?Q?ST4K04i8URT1H8uRS5/TWCCS0wQ0ogO0M3PyxG6GGZ9kqymvyq/GgrQAGt?=
- =?iso-8859-1?Q?PfxWIvgvvpY6bkEDrrVcFfahklz66smYjW+QPIdmKdY5WfjWqw35Rw8Hem?=
- =?iso-8859-1?Q?ZRlrKOS4GLHw9L9Izu4FDMVW7XvZcMX5XYDKLckPkhvtkgFSeceh0JnvCq?=
- =?iso-8859-1?Q?8gATYdLiQA=3D=3D?=
-X-Exchange-RoutingPolicyChecked: jgRPmnvfvHGpSJ1yfCDMPtR8jn5MaKOF+3rYQJfjvGXXXweu9JxBPFM9yBD5UuYb9CRiA1xBoIgpdAm6Ejlwmlufxo4hBZq4It2tFdx945NebuEJdZC1VnAPgKsEVIdDvI0Efsg4wowX0nX+hmBAUwONlm5HoRXSuBJi+4jdh4m6wizMywEvaGq3MTPktmBt+iC/S+L7RMYXqJM+MrTZYJ0ZOBltHh70tvry9NqRgYvg4XyoEuliKHtoDjpFhUmYxQu2zbBBCcZnzXB4zS3ug5AS60a69+MQKCf4wTb4h3c4m4NOtkE4+9qRpU0+gtbF+XUJIuolAkBBy9jRKScvyQ==
-X-MS-Exchange-CrossTenant-Network-Message-Id: fb776e85-2829-4094-bb4e-08dea67abd23
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?uoulvlWe9+TgCc6qXYNrQjiepyL9ilGD4KLiwylkN4qJ4GE9q3iTO+XeWJuq?=
+ =?us-ascii?Q?zym9BNyw/gfhuaGiIOcrSJvKecKnr/jll9adivku3sTioP0bFtIU3aOznFAS?=
+ =?us-ascii?Q?Qs9n+nUto6Hgp0awmyW0RqeaBrb/UXm/gD/Z7UMOBXDDdBLYWmY5KF9S2w28?=
+ =?us-ascii?Q?teXvLTaja04JT73DuwhbDgHt1tQGX2VS4hCD+9Gc25wU+h/V8TJVf1HUJIIo?=
+ =?us-ascii?Q?EU0ctNgry6acbatRfVhQjHfQ4hIMdbYFeX1V9gE33rsRsNeLPwJD6SeFtPzo?=
+ =?us-ascii?Q?H592rbj3rieNkOTZLcDUB1ZpouDvxr6kIWPHNyC1/2KhLTWL+SfsTUN7+Cjx?=
+ =?us-ascii?Q?/kDeMaIjtgtFGtBtNt0L3JUGuxn/FN30gn+uIGLCLh+zDpHKck9asiG6AVLG?=
+ =?us-ascii?Q?Yq8AisC1DiI6QxIgUJG0wX8T9byl8wtsOoW+LxlpxYD+Aa2EkdW0SvrUZYoA?=
+ =?us-ascii?Q?QrxdYMLd7IUGmDnvwQY1PZInp6DwKeI+NMHdiykMOAGAVpOs+7Vdhl70ku5u?=
+ =?us-ascii?Q?e3UINwlOYuUDvLxP7zqdVZ0xunsFdy1y7w/jnp1JszbRM9PrZGolYwtDnO7m?=
+ =?us-ascii?Q?zx3co7hoPkKXhazm702a1qoEEdh5JXhh3LOwXais0iXEz52RkxSjOJtRyikh?=
+ =?us-ascii?Q?qKbxqs1gpVYre2Pl7HNAC/FFAsLGKAWuFH6awjA4ML5PLJf8Emj69VWUEdm1?=
+ =?us-ascii?Q?SHyhCpkRHM5YXV3UiIKYBjdEacTkVBlVQSXk0B+Zbx2U0VQhHCIACQ2w7gv6?=
+ =?us-ascii?Q?25tW4mQb/Dx2WWVH+48N7vTdtal3+S0RfV3W0PaKmCcT2jpN/3L37d2jVBcY?=
+ =?us-ascii?Q?WDkjO1FGAAu3jonvOZ37yY/EbNKByxuz5ne53wlyaBBRJXPDKYbdr2ajgpWx?=
+ =?us-ascii?Q?wEwvb/8ydJu0qByedyyXUAKxEBXwgBxbKfR/n1fQhDUGkDeHw14gj1did8T1?=
+ =?us-ascii?Q?ySheBUBI9MUIcPgDp9YxbavmvZN/hZ0Y0QeWfMb4Lh2aXhQbGqdFjDmItW8a?=
+ =?us-ascii?Q?swmACw8PYcL/DA9yVxN80IhidtYFp0VsH57kTpvYjR0lMdqjJvYHekeVzj5H?=
+ =?us-ascii?Q?3xGoYxaERouPbFKLVa2d92WExrTv6IIk99rm6E6FhmVUZRB6U3vAWnsfjrJ2?=
+ =?us-ascii?Q?EPPEVhgvQe3GVYcFdxrMPpMbp0KlSYSDPABh6GKs/QqJdyUr48Eprb39fEsP?=
+ =?us-ascii?Q?QUGcbyU9tpNyQ+zietgGsXoiSrBD3RvgzEont+NwoSou201nIXCPZC6OYEUa?=
+ =?us-ascii?Q?zGqWnNJ+dGHhjoKvKpIQMX/FDGCXUnRwVQONZCNFVvnIZ6AWPFvdSyHoBKJk?=
+ =?us-ascii?Q?zpegv68KdD2YQaz+hKbt0Mt1AqFZy/Fky9xG8mwmO4CnFsIcnKLHFBK00sZf?=
+ =?us-ascii?Q?zIN6X0fh57RdK2xkzTBMqB8X1qPnENY+TW1rE97Ky5eXnbfZ+TnlFwuq9mte?=
+ =?us-ascii?Q?ZHuUzmPp012bARu3FfuPexglmtb91QyReYjgFnFljhyIPp22/6JRbOXjni5j?=
+ =?us-ascii?Q?FYMPcRklT2ljoMMqmmY5SwEmQZUVS9pHq5/Y5HhLq/UIPnpei0ojalUwuNSG?=
+ =?us-ascii?Q?voiVo0Y9e5HSm+PFut9vlwNZFPyscZOMItRA5jye30rrxjZKVeu8iBUqttBm?=
+ =?us-ascii?Q?Ln9vNPb042f/k7mnAsWwlnuSCZ4/yXDhEar1eKw05iORQHhc8qNYDK87IGXZ?=
+ =?us-ascii?Q?S5DvAvUBjZBKFfWH/oBORAYPsxqPZoRVYZliZcgR9H2Pq0q154z1kk8i0cmY?=
+ =?us-ascii?Q?yipdpHQm4A=3D=3D?=
+X-Exchange-RoutingPolicyChecked: sQg8nEXFvUUnRPm23MBn5SO+/OtVoL2D7a3XLEBIbIqEj/bODISvI6NcUvajeUcg39zTVrnUFF7aZuT2HS2iKRcCgwNSpOK+RuJyhYE9pIJ+1T2nq4RnxohU3/Uwp8yv7ZcCTobf4jINNjR41rPHp9Ej0+rH30VR7ghAp/jQn/x4bdhl7pjQxUHrUhm7O7606NjVNaAeXFAKIX6LZRIqZpXvhWAkvWSOIeyiceHdAHnipfyj2CUUoD7Tg/bV2OBFjcMyDtDLA0Xso+ps7KPLCF6RW1huoB7RNflmsulHAQR+qDD9wRGTmgusHxN2WJ6IPoeSe2HRBoc1fC28jynf8A==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 15927447-eceb-4b18-2393-08dea67f15f8
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5832.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2026 05:38:42.3939
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2026 06:09:49.5283
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: aFSeZcHHeK+5c7qt8dhIWmXT2SjyvCrPMrf2Bo9fGtiMvX7AIY/8Sz3AGEl2Naht4+SfO1IhIRUh/iYEfiHnNQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4609
+X-MS-Exchange-CrossTenant-UserPrincipalName: tXCyB475QlBa6jXVaEbb7V7MfRTYfjmNo/TTwbtU66sCfJbhBEPWMctHRTYKcMrhAk5YR+sNTcKN+RA5jq5qHw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS4PPFC60125F65
 X-OriginatorOrg: intel.com
+
 
 
 
 Hello,
 
-kernel test robot noticed a 23.8% improvement of fio.write_iops on:
+kernel test robot noticed "kunit.mctp_test_bind_lookup.mctp-route.fail" on:
 
-
-commit: 1ad0f42823291bcac371dafd37533f5e8d92acc3 ("ext4: move pagecache_isize_extended() out of active handle")
+commit: 0d8647bc74cb50edf02e8c88977657596f20fb17 ("net: mctp: don't require a route for null-EID ingress")
 https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
+[test failed on linus/master      254f49634ee16a731174d2ae34bc50bd5f45e731]
+[test failed on linux-next/master 7080e32d3f09d8688c4a87d81bdcc71f7f606b16]
 
-testcase: fio-basic
-config: x86_64-rhel-9.4
+in testcase: kunit
+version: 
+with following parameters:
+
+	group: group-00
+
+
+
+config: x86_64-rhel-9.4-kunit
 compiler: gcc-14
-test machine: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory
-parameters:
+test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (Haswell) with 16G memory
 
-	runtime: 300s
-	disk: 1HDD
-	fs: ext4
-	nr_task: 1
-	test_size: 128G
-	rw: write
-	bs: 4k
-	ioengine: falloc
-	cpufreq_governor: performance
+(please refer to attached dmesg/kmsg for entire log/backtrace)
 
 
 
-Details are as below:
--------------------------------------------------------------------------------------------------->
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202604301303.9de94634-lkp@intel.com
+
+
+[  111.971253] [      T1]     KTAP version 1
+[  111.975040] [      T1]     # Subtest: mctp-route
+[  111.979434] [      T1]     # module: mctp
+[  111.979441] [      T1]     1..23
+[  111.986231] [      T1]         KTAP version 1
+[  111.990365] [      T1]         # Subtest: mctp_test_fragment
+[  112.001306] [      T1]         ok 1 mtu 63 len 68 -> 1 frags
+[  112.021312] [      T1]         ok 2 mtu 64 len 68 -> 1 frags
+[  112.041319] [      T1]         ok 3 mtu 65 len 68 -> 2 frags
+[  112.060310] [      T1]         ok 4 mtu 66 len 68 -> 2 frags
+[  112.076305] [      T1]         ok 5 mtu 127 len 68 -> 2 frags
+[  112.092311] [      T1]         ok 6 mtu 128 len 68 -> 2 frags
+[  112.108317] [      T1]         ok 7 mtu 129 len 68 -> 3 frags
+[  112.124313] [      T1]         ok 8 mtu 130 len 68 -> 3 frags
+[  112.129866] [      T1]     # mctp_test_fragment: pass:8 fail:0 skip:0 total:8
+[  112.135390] [      T1]     ok 1 mctp_test_fragment
+[  112.142787] [      T1]         KTAP version 1
+[  112.151486] [      T1]         # Subtest: mctp_test_rx_input
+[  112.164341] [      T1]         ok 1 {1,a,8,0}
+[  112.180323] [      T1]         ok 2 {1,a,9,0}
+[  112.197294] [      T1]         ok 3 {2,a,8,0}
+[  112.201460] [      T1]     # mctp_test_rx_input: pass:3 fail:0 skip:0 total:3
+[  112.205605] [      T1]     ok 2 mctp_test_rx_input
+[  112.212515] [      T1]         KTAP version 1
+[  112.221218] [      T1]         # Subtest: mctp_test_route_input_sk
+[  112.233266] [      T1]         ok 1 {1,a,8,c8} type 0
+[  112.249295] [      T1]         ok 2 {1,a,8,c8} type 1
+[  112.265296] [      T1]         ok 3 {1,a,8,c0} type 0
+[  112.281324] [      T1]         ok 4 {1,a,8,48} type 0
+[  112.298312] [      T1]         ok 5 {1,a,8,8} type 0
+[  112.313294] [      T1]         ok 6 {1,a,8,0} type 0
+[  112.318064] [      T1]     # mctp_test_route_input_sk: pass:6 fail:0 skip:0 total:6
+[  112.322819] [      T1]     ok 3 mctp_test_route_input_sk
+[  112.330262] [      T1]         KTAP version 1
+[  112.339484] [      T1]         # Subtest: mctp_test_route_input_sk_reasm
+[  112.350322] [      T1]         ok 1 single packet
+[  112.370288] [      T1]         ok 2 single packet, offset seq
+[  112.386294] [      T1]         ok 3 start & end packets
+[  112.402301] [      T1]         ok 4 start & end packets, offset seq
+[  112.422380] [      T1]         ok 5 start & end packets, out of order
+[  112.438273] [      T1]         ok 6 start, middle & end packets
+[  112.454354] [      T1]         ok 7 missing seq
+[  112.470298] [      T1]         ok 8 seq wrap
+[  112.474634] [      T1]     # mctp_test_route_input_sk_reasm: pass:8 fail:0 skip:0 total:8
+[  112.478689] [      T1]     ok 4 mctp_test_route_input_sk_reasm
+[  112.486650] [      T1]         KTAP version 1
+[  112.496387] [      T1]         # Subtest: mctp_test_route_input_sk_keys
+[  112.507335] [      T1]         ok 1 direct match
+[  112.527297] [      T1]         ok 2 flipped src/dest
+[  112.543285] [      T1]         ok 3 peer addr mismatch
+[  112.559275] [      T1]         ok 4 tag value mismatch
+[  112.575282] [      T1]         ok 5 TO mismatch
+[  112.591293] [      T1]         ok 6 broadcast response
+[  112.607239] [      T1]         ok 7 any local match
+[  112.612212] [      T1]     # mctp_test_route_input_sk_keys: pass:7 fail:0 skip:0 total:7
+[  112.616869] [      T1]     ok 5 mctp_test_route_input_sk_keys
+[  112.636288] [      T1]     ok 6 mctp_test_route_input_sk_fail_single
+[  112.655293] [      T1]     ok 7 mctp_test_route_input_sk_fail_frag
+[  112.679282] [      T1]     ok 8 mctp_test_route_input_multiple_nets_bind
+[  112.706162] [      T1]     ok 9 mctp_test_route_input_multiple_nets_key
+[  112.713544] [   T3382]     # mctp_test_route_input_null_eid: ASSERTION FAILED at net/mctp/test/route-test.c:941
+                              Expected rc == 0, but
+                                  rc == -22 (0xffffffffffffffea)
+[  112.739887] [      T1]     not ok 10 mctp_test_route_input_null_eid
+[  112.749280] [      T1]     ok 11 mctp_test_packet_flow
+[  112.765293] [      T1]     ok 12 mctp_test_fragment_flow
+[  112.781257] [      T1]     ok 13 mctp_test_route_output_key_create
+[  112.787153] [   T3390] pkt1 skb len=7 data_len=0 headroom=0 headlen=7 tailroom=377
+                          end-tail=377 mac=(-1,-1) mac_len=0 net=(0,-1) trans=-1
+                          shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
+                          csum(0x0 start=0 offset=0 ip_summed=0 complete_sw=0 valid=0 level=0)
+                          hash(0x0 sw=0 l4=0) proto=0x0000 pkttype=0 iif=0
+                          priority=0x0 mark=0x0 alloc_cpu=4 vlan_all=0x0
+                          encapsulation=0 inner(proto=0x0000, mac=0, net=0, trans=0)
+[  112.841984] [   T3390] pkt1 dev name=mctptest1 feat=0x0000000000004000
+[  112.848291] [   T3390] pkt1 skb linear:   00000000: 01 08 0a 88 00 00 00
+[  112.854765] [   T3390] pkt2 skb len=7 data_len=0 headroom=7 headlen=7 tailroom=370
+                          end-tail=370 mac=(-1,-1) mac_len=0 net=(7,-1) trans=-1
+                          shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
+                          csum(0x0 start=0 offset=0 ip_summed=0 complete_sw=0 valid=0 level=0)
+                          hash(0x0 sw=0 l4=0) proto=0x0000 pkttype=0 iif=0
+                          priority=0x0 mark=0x0 alloc_cpu=4 vlan_all=0x0
+                          encapsulation=0 inner(proto=0x0000, mac=0, net=0, trans=0)
+[  112.903591] [   T3390] pkt2 dev name=mctptest1 feat=0x0000000000004000
+[  112.909890] [   T3390] pkt2 skb linear:   00000000: 01 08 0a 18 11 11 11
+[  112.916365] [   T3390] pkt3 skb len=7 data_len=0 headroom=14 headlen=7 tailroom=363
+                          end-tail=363 mac=(-1,-1) mac_len=0 net=(14,-1) trans=-1
+                          shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
+                          csum(0x0 start=0 offset=0 ip_summed=0 complete_sw=0 valid=0 level=0)
+                          hash(0x0 sw=0 l4=0) proto=0x0000 pkttype=0 iif=0
+                          priority=0x0 mark=0x0 alloc_cpu=4 vlan_all=0x0
+                          encapsulation=0 inner(proto=0x0000, mac=0, net=0, trans=0)
+[  112.965431] [   T3390] pkt3 dev name=mctptest1 feat=0x0000000000004000
+[  112.971758] [   T3390] pkt3 skb linear:   00000000: 01 08 0a 68 22 22 22
+[  112.978231] [   T3390] pkt4 skb len=7 data_len=0 headroom=21 headlen=7 tailroom=356
+                          end-tail=356 mac=(-1,-1) mac_len=0 net=(21,-1) trans=-1
+                          shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
+                          csum(0x0 start=0 offset=0 ip_summed=0 complete_sw=0 valid=0 level=0)
+                          hash(0x0 sw=0 l4=0) proto=0x0000 pkttype=0 iif=0
+                          priority=0x0 mark=0x0 alloc_cpu=4 vlan_all=0x0
+                          encapsulation=0 inner(proto=0x0000, mac=0, net=0, trans=0)
+[  113.027235] [   T3390] pkt4 dev name=mctptest1 feat=0x0000000000004000
+[  113.033537] [   T3390] pkt4 skb linear:   00000000: 01 08 0a 88 00 33 33
+[  113.040008] [   T3390] pkt5 skb len=7 data_len=0 headroom=28 headlen=7 tailroom=349
+                          end-tail=349 mac=(-1,-1) mac_len=0 net=(28,-1) trans=-1
+                          shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
+                          csum(0x0 start=0 offset=0 ip_summed=0 complete_sw=0 valid=0 level=0)
+                          hash(0x0 sw=0 l4=0) proto=0x0000 pkttype=0 iif=0
+                          priority=0x0 mark=0x0 alloc_cpu=4 vlan_all=0x0
+                          encapsulation=0 inner(proto=0x0000, mac=0, net=0, trans=0)
+[  113.089005] [   T3390] pkt5 dev name=mctptest1 feat=0x0000000000004000
+[  113.095305] [   T3390] pkt5 skb linear:   00000000: 01 08 0a 58 44 44 44
+[  113.108303] [      T1]     ok 14 mctp_test_route_input_cloned_frag
+[  113.116271] [      T1]     ok 15 mctp_test_route_extaddr_input
+[  113.134273] [      T1]     ok 16 mctp_test_route_gw_lookup
+[  113.154284] [      T1]     ok 17 mctp_test_route_gw_loop
+[  113.159574] [      T1]         KTAP version 1
+[  113.168807] [      T1]         # Subtest: mctp_test_route_gw_mtu
+[  113.178270] [      T1]         ok 1 dev 68, neigh 0, gw 0, dst 0 -> 68
+[  113.197261] [      T1]         ok 2 dev 100, neigh 0, gw 0, dst 0 -> 100
+[  113.214153] [      T1]         ok 3 dev 100, neigh 68, gw 0, dst 0 -> 68
+[  113.230283] [      T1]         ok 4 dev 100, neigh 0, gw 68, dst 0 -> 68
+[  113.250280] [      T1]         ok 5 dev 100, neigh 0, gw 0, dst 68 -> 68
+[  113.270351] [      T1]         ok 6 dev 100, neigh 99, gw 98, dst 68 -> 68
+[  113.291295] [      T1]         ok 7 dev 99, neigh 100, gw 98, dst 68 -> 68
+[  113.311265] [      T1]         ok 8 dev 98, neigh 99, gw 100, dst 68 -> 68
+[  113.330322] [      T1]         ok 9 dev 68, neigh 98, gw 99, dst 100 -> 68
+[  113.336994] [      T1]     # mctp_test_route_gw_mtu: pass:9 fail:0 skip:0 total:9
+[  113.343643] [      T1]     ok 18 mctp_test_route_gw_mtu
+[  113.351941] [      T1]     ok 19 mctp_test_route_gw_output
+[  113.356955] [      T1]         KTAP version 1
+[  113.366346] [      T1]         # Subtest: mctp_test_bind_lookup
+[  113.379141] [      T1]         ok 1 {src 20 dst 10 ty 1 net 1 expect remote20}
+[  113.395361] [      T1]         ok 2 {src 20 dst 255 ty 1 net 1 expect remote20}
+[  113.415345] [      T1]         ok 3 {src 20 dst 0 ty 1 net 1 expect remote20}
+[  113.435368] [      T1]         ok 4 {src 0 dst 255 ty 1 net 1 expect any}
+[  113.455357] [      T1]         ok 5 {src 0 dst 11 ty 1 net 1 expect any}
+[  113.475358] [      T1]         ok 6 {src 0 dst 0 ty 1 net 1 expect any}
+[  113.495354] [      T1]         ok 7 {src 0 dst 10 ty 1 net 1 expect local10}
+[  113.515425] [      T1]         ok 8 {src 21 dst 10 ty 1 net 1 expect local10}
+[  113.536355] [      T1]         ok 9 {src 21 dst 11 ty 1 net 1 expect remote21local11}
+[  113.555361] [      T1]         ok 10 {src 99 dst 99 ty 1 net 1 expect any}
+[  113.575453] [      T1]         ok 11 {src 20 dst 10 ty 3 net 1 expect (null)}
+[  113.595375] [      T1]         ok 12 {src 0 dst 0 ty 1 net 7 expect any}
+[  113.615359] [      T1]         ok 13 {src 21 dst 10 ty 1 net 2 expect any}
+[  113.635457] [      T1]         ok 14 {src 20 dst 10 ty 1 net 3 expect any}
+[  113.655356] [      T1]         ok 15 {src 21 dst 10 ty 1 net 3 expect remote21net3}
+[  113.675376] [      T1]         ok 16 {src 21 dst 10 ty 1 net 4 expect remote21net4}
+[  113.695360] [      T1]         ok 17 {src 21 dst 10 ty 1 net 5 expect remote21net5}
+[  113.715368] [      T1]         ok 18 {src 21 dst 10 ty 1 net 5 expect remote21net5}
+[  113.735359] [      T1]         ok 19 {src 99 dst 10 ty 1 net 8 expect local10net8}
+[  113.755368] [      T1]         ok 20 {src 99 dst 10 ty 1 net 9 expect anynet9}
+[  113.775338] [      T1]         ok 21 {src 0 dst 0 ty 1 net 9 expect anynet9}
+[  113.795363] [      T1]         ok 22 {src 99 dst 99 ty 1 net 9 expect anynet9}
+[  113.815392] [      T1]         ok 23 {src 20 dst 10 ty 1 net 9 expect anynet9}
+[  113.822410] [      T1]     # mctp_test_bind_lookup: pass:23 fail:0 skip:0 total:23
+[  113.829409] [      T1]     ok 20 mctp_test_bind_lookup
+[  113.847289] [      T1]     ok 21 mctp_test_route_output_direct_no_eids
+[  113.863359] [      T1]     ok 22 mctp_test_route_output_gw_no_eids
+[  113.879334] [      T1]     ok 23 mctp_test_route_output_extaddr_no_eids
+[  113.885312] [      T1] # mctp-route: pass:22 fail:1 skip:0 total:23
+[  113.891701] [      T1] # Totals: pass:79 fail:1 skip:0 total:80
+[  113.897752] [      T1] not ok 34 mctp-route
+
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20260430/202604301021.faab1f8a-lkp@intel.com
+https://download.01.org/0day-ci/archive/20260430/202604301303.9de94634-lkp@intel.com
 
-=========================================================================================
-bs/compiler/cpufreq_governor/disk/fs/ioengine/kconfig/nr_task/rootfs/runtime/rw/tbox_group/test_size/testcase:
-  4k/gcc-14/performance/1HDD/ext4/falloc/x86_64-rhel-9.4/1/debian-13-x86_64-20250902.cgz/300s/write/lkp-icl-2sp9/128G/fio-basic
-
-commit: 
-  116c0bdac2 ("ext4: remove ctime/mtime update from ext4_alloc_file_blocks()")
-  1ad0f42823 ("ext4: move pagecache_isize_extended() out of active handle")
-
-116c0bdac2ec059d 1ad0f42823291bcac371dafd375 
----------------- --------------------------- 
-         %stddev     %change         %stddev
-             \          |                \  
-      0.11 ±  5%      -0.0        0.08 ±  7%  fio.latency_2us%
-      0.07 ±  3%      -0.0        0.05 ±  6%  fio.latency_4us%
-     34.79           -19.1%      28.14        fio.time.elapsed_time
-     34.79           -19.1%      28.14        fio.time.elapsed_time.max
-     24.17           -26.0%      17.90        fio.time.system_time
-      3736           -18.7%       3037        fio.time.voluntary_context_switches
-      3812           +23.8%       4720        fio.write_bw_MBps
-    850.67           -22.7%     657.33        fio.write_clat_90%_ns
-    857.33           -22.4%     665.33        fio.write_clat_95%_ns
-    872.00           -22.5%     676.00        fio.write_clat_99%_ns
-    835.45           -22.7%     645.60        fio.write_clat_mean_ns
-    192.67 ± 28%    +122.3%     428.28 ± 20%  fio.write_clat_stddev
-    975889           +23.8%    1208502        fio.write_iops
-      1.13            -7.7%       1.05        iostat.cpu.system
-    146867           -17.0%     121930        turbostat.IRQ
- 2.317e+09           -17.6%  1.908e+09        cpuidle..time
-    121665 ±  9%     -11.5%     107660 ±  5%  cpuidle..usage
-      1.13            -0.1        1.04        mpstat.cpu.all.sys%
-      0.54 ±  2%      +0.1        0.62 ±  2%  mpstat.cpu.all.usr%
-    124.09 ±  2%      -6.1%     116.50        uptime.boot
-      7577 ±  2%      -6.3%       7099        uptime.idle
-      1507 ±  4%     +13.8%       1714        vmstat.io.bo
-      1.58 ±  3%      +9.7%       1.73 ±  2%  vmstat.procs.r
-    256506            -3.5%     247467        proc-vmstat.numa_hit
-    281823            -4.4%     269466        proc-vmstat.pgalloc_normal
-    166349            -7.9%     153190        proc-vmstat.pgfault
-    159495            -7.7%     147154        proc-vmstat.pgfree
-      7811 ± 20%     -45.1%       4288        proc-vmstat.pgpgout
-      7649            -8.2%       7019 ±  2%  proc-vmstat.pgreuse
-      4.74 ± 63%      -4.7        0.00        perf-profile.calltrace.cycles-pp.do_mprotect_pkey.__x64_sys_mprotect.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      3.64 ±104%      -3.1        0.56 ±223%  perf-profile.calltrace.cycles-pp.acpi_idle_do_entry.acpi_idle_enter.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call
-      3.64 ±104%      -3.1        0.56 ±223%  perf-profile.calltrace.cycles-pp.acpi_idle_enter.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call.do_idle
-      3.64 ±104%      -3.1        0.56 ±223%  perf-profile.calltrace.cycles-pp.acpi_safe_halt.acpi_idle_do_entry.acpi_idle_enter.cpuidle_enter_state.cpuidle_enter
-      3.64 ±104%      -3.1        0.56 ±223%  perf-profile.calltrace.cycles-pp.cpuidle_enter.cpuidle_idle_call.do_idle.cpu_startup_entry.start_secondary
-      3.64 ±104%      -3.1        0.56 ±223%  perf-profile.calltrace.cycles-pp.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call.do_idle.cpu_startup_entry
-      3.64 ±104%      -3.1        0.56 ±223%  perf-profile.calltrace.cycles-pp.cpuidle_idle_call.do_idle.cpu_startup_entry.start_secondary.common_startup_64
-      4.95 ± 81%      -3.4        1.54 ±149%  perf-profile.children.cycles-pp.__split_vma
-      3.64 ±104%      -3.1        0.56 ±223%  perf-profile.children.cycles-pp.acpi_idle_do_entry
-      3.64 ±104%      -3.1        0.56 ±223%  perf-profile.children.cycles-pp.acpi_idle_enter
-      3.64 ±104%      -3.1        0.56 ±223%  perf-profile.children.cycles-pp.acpi_safe_halt
-      3.64 ±104%      -3.1        0.56 ±223%  perf-profile.children.cycles-pp.cpuidle_enter
-      3.64 ±104%      -3.1        0.56 ±223%  perf-profile.children.cycles-pp.cpuidle_enter_state
-      3.64 ±104%      -3.1        0.56 ±223%  perf-profile.children.cycles-pp.cpuidle_idle_call
-      3.64 ±104%      -3.1        0.56 ±223%  perf-profile.children.cycles-pp.pv_native_safe_halt
-      1.82 ±148%      +5.8        7.59 ± 39%  perf-profile.children.cycles-pp.__mmap_region
-      1.82 ±148%      +6.5        8.34 ± 44%  perf-profile.children.cycles-pp.do_mmap
-      1.82 ±148%      +6.5        8.34 ± 44%  perf-profile.children.cycles-pp.vm_mmap_pgoff
-      0.03 ±  7%     +21.8%       0.04 ±  4%  perf-stat.i.MPKI
-      0.26            +0.1        0.32        perf-stat.i.branch-miss-rate%
-   4548711           +21.7%    5537175        perf-stat.i.branch-misses
-    274432 ±  6%     +20.4%     330549 ±  4%  perf-stat.i.cache-misses
-   1860596            +8.1%    2011597        perf-stat.i.cache-references
-      0.47            +2.1%       0.48        perf-stat.i.cpi
-      2398            +3.0%       2470        perf-stat.i.minor-faults
-      2398            +3.0%       2470        perf-stat.i.page-faults
-      0.03 ±  6%     +22.3%       0.04 ±  4%  perf-stat.overall.MPKI
-      0.26            +0.1        0.32        perf-stat.overall.branch-miss-rate%
-     14.77 ±  6%      +1.7       16.46 ±  4%  perf-stat.overall.cache-miss-rate%
-      0.47            +1.8%       0.48        perf-stat.overall.cpi
-     14177 ±  6%     -16.9%      11783 ±  5%  perf-stat.overall.cycles-between-cache-misses
-      2.12            -1.8%       2.08        perf-stat.overall.ipc
-      8603           -19.7%       6911        perf-stat.overall.path-length
-  1.69e+09            -1.7%  1.662e+09        perf-stat.ps.branch-instructions
-   4424559           +21.0%    5353882        perf-stat.ps.branch-misses
-    267376 ±  6%     +19.9%     320480 ±  4%  perf-stat.ps.cache-misses
-   1810896            +7.5%    1947007        perf-stat.ps.cache-references
- 7.998e+09            -2.0%  7.838e+09        perf-stat.ps.instructions
-      2334            +2.5%       2393        perf-stat.ps.minor-faults
-      2334            +2.5%       2393        perf-stat.ps.page-faults
- 2.887e+11           -19.7%  2.319e+11        perf-stat.total.instructions
-
-
-
-
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provided
-for informational purposes only. Any difference in system hardware or software
-design or configuration may affect actual performance.
 
 
 -- 
