@@ -1,136 +1,111 @@
-Received: from smtp-8fac.mail.infomaniak.ch (smtp-8fac.mail.infomaniak.ch [83.166.143.172])
+Received: from out-180.mta0.migadu.com (out-180.mta0.migadu.com [91.218.175.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE9F036495F
-	for <oe-lkp@lists.linux.dev>; Wed, 13 May 2026 10:52:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=83.166.143.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5ACC11F5821
+	for <oe-lkp@lists.linux.dev>; Wed, 13 May 2026 13:49:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778669562; cv=none; b=FbU8mmkXwZUu+3CiPKhjbNRbwIq3tG13nOxk6Ye1YEBpxwfSpX65MjaEYZyvlOtiIdAf68O7UtqyhU6h4EZEnwUg87lr2CCdw9OXSpM0/vjb0vwCa7HqJcFdOHrsFAmb3hFKjw/nLhZ7zPsEWVjaJi5htHvb2Vv7zDIiPyEzvdw=
+	t=1778680201; cv=none; b=g50UXGuytEgavM4bUQGfqq/g5f5WUi/u7jOAdMhlqzHBnMFhA5x+4NPqPdjYfbj9Z+4Cc2dQDZk5/5Ls7TeAubS8n7optICL8TekTCGuwz/4nL0flkKqond+O/YjFHPvgTheofpqSNHba5tJGhN3NQq1WZx5JtRPHuwox4mNz58=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778669562; c=relaxed/simple;
-	bh=0MYAnE8ltPGjcQoQ6tYxrN2xPXGdXnSbRlYHQJYnz6o=;
+	s=arc-20240116; t=1778680201; c=relaxed/simple;
+	bh=ZUlh9sdk7b7Xm5NVsZCzjPstKTSj9Q48shE7IXi2cU0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LAdrbFkT68+hBNqDJrMEht1BHFE+At1xh7iOcYzuDqIB6BcDc+367kORQkhXvZ4TVYD1cVZY3fmdjuT+24qLXe5mVt6j0l+Q+Fe22ExWJN+Yee/91rK0wFh0nHn/nEq4HkFnqAMDpXMak5kLmRDmkJ1Hl3U0vhNrCO61g0nm9Hg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=digikod.net; spf=pass smtp.mailfrom=digikod.net; dkim=pass (1024-bit key) header.d=digikod.net header.i=@digikod.net header.b=z4gq/Bri; arc=none smtp.client-ip=83.166.143.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=digikod.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=digikod.net
+	 Content-Type:Content-Disposition:In-Reply-To; b=kIWL1XeRFnUZPmFaVa5fRUSu4C0OnPcN2SjeD1HD8riJn+giAd97b8bXquNl2uekghM5muWxw9Ry9aozoJ7FFM10pfh2W0ucDkACxSkngiVGWpDZFGMVJ572ZifqwAfdVyXnDnkjrz89eQK7kS7zjlVLMTkftiGJbH4Pagyb5RQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=n2uai5Ix; arc=none smtp.client-ip=91.218.175.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=digikod.net header.i=@digikod.net header.b="z4gq/Bri"
-Received: from smtp-3-0001.mail.infomaniak.ch (unknown [IPv6:2001:1600:4:17::246c])
-	by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4gFqzn70zrzd69;
-	Wed, 13 May 2026 12:52:37 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=digikod.net;
-	s=20191114; t=1778669557;
-	bh=hT3FL8hNRoTv2wd/TyaHSDPl2qpHaafarg8T+VkCxCY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=z4gq/Bri5PY20oWAl5CPpmsrY0g7ZAicr9kWtoFC5zjwqxwVNIwKwFKPI/nre43PR
-	 1W64XVWc/SFkdB6dqGu+5y8DJpkCj7Yr4gN6HairAVmBmwQiVaAV3zeOZiG0f8bl5i
-	 OGGmFky8I9y1NuyuyCrecWCFjb+qSgmElV5MPKg0=
-Received: from unknown by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4gFqzn0x4pzjY2;
-	Wed, 13 May 2026 12:52:37 +0200 (CEST)
-Date: Wed, 13 May 2026 12:52:35 +0200
-From: =?utf-8?Q?Micka=C3=ABl_Sala=C3=BCn?= <mic@digikod.net>
-To: Thomas =?utf-8?Q?Wei=C3=9Fschuh?= <thomas.weissschuh@linutronix.de>
-Cc: =?utf-8?Q?G=C3=BCnther?= Noack <gnoack@google.com>, 
-	kernel test robot <oliver.sang@intel.com>, linux-security-module@vger.kernel.org, oe-lkp@lists.linux.dev, 
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="n2uai5Ix"
+Date: Wed, 13 May 2026 06:49:45 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1778680195;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=/Tp+YGNU/YWh4+mnxkJ6DD+LKecTb+noZ/uA14eabz0=;
+	b=n2uai5IxdJAShmUa+j/JoWwab5GJNy3E6yWqDJCvqLjWm3jHAKlVgCZErANW15rfgwTodd
+	NtXRhFrNHsQMPvq46vHzvy8Ev9BQtvpXhqkVwYoXO3l0t/H3dxEgDfLFkLjjHboVLDP3f/
+	SPrO/lYuYclHVrdAv/qnWRFAs9+uPjc=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Shakeel Butt <shakeel.butt@linux.dev>
+To: Qi Zheng <qi.zheng@linux.dev>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, 
 	lkp@intel.com, linux-kernel@vger.kernel.org, 
-	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, linux-kselftest@vger.kernel.org
-Subject: Re: [linus:master] [selftests]  465b05bae5:
- kernel-selftests.landlock.audit_test.audit.tsync_override_log_subdomains_off.fail
-Message-ID: <20260513.eeboh9zooQuu@digikod.net>
-References: <202605111649.a8b30a62-lkp@intel.com>
- <20260512112054-0a5c7cad-c8c6-4745-a765-0780a3bd2dab@linutronix.de>
+	Andrew Morton <akpm@linux-foundation.org>, David Carlier <devnexen@gmail.com>, 
+	Allen Pais <apais@linux.microsoft.com>, Axel Rasmussen <axelrasmussen@google.com>, 
+	Baoquan He <bhe@redhat.com>, Chengming Zhou <chengming.zhou@linux.dev>, 
+	Chen Ridong <chenridong@huawei.com>, David Hildenbrand <david@kernel.org>, 
+	Hamza Mahfooz <hamzamahfooz@linux.microsoft.com>, Harry Yoo <harry.yoo@oracle.com>, 
+	Hugh Dickins <hughd@google.com>, Imran Khan <imran.f.khan@oracle.com>, 
+	Johannes Weiner <hannes@cmpxchg.org>, Kamalesh Babulal <kamalesh.babulal@oracle.com>, 
+	Lance Yang <lance.yang@linux.dev>, Liam Howlett <Liam.Howlett@oracle.com>, 
+	Lorenzo Stoakes <ljs@kernel.org>, Michal Hocko <mhocko@suse.com>, 
+	Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>, Mike Rapoport <rppt@kernel.org>, 
+	Muchun Song <muchun.song@linux.dev>, Muchun Song <songmuchun@bytedance.com>, 
+	Nhat Pham <nphamcs@gmail.com>, Roman Gushchin <roman.gushchin@linux.dev>, 
+	Suren Baghdasaryan <surenb@google.com>, Usama Arif <usamaarif642@gmail.com>, 
+	Vlastimil Babka <vbabka@kernel.org>, Wei Xu <weixugc@google.com>, Yosry Ahmed <yosry@kernel.org>, 
+	Yuanchu Xie <yuanchu@google.com>, Zi Yan <ziy@nvidia.com>, Usama Arif <usama.arif@linux.dev>, 
+	cgroups@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [linus:master] [mm] 01b9da291c: stress-ng.switch.ops_per_sec
+ 67.7% regression
+Message-ID: <agSAT4ldp3dzKWPl@linux.dev>
+References: <202605121641.b6a60cb0-lkp@intel.com>
+ <agNO8G8tPnPuVrGq@linux.dev>
+ <0e1b8994-944d-4dda-8966-3cd43661796d@linux.dev>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260512112054-0a5c7cad-c8c6-4745-a765-0780a3bd2dab@linutronix.de>
-X-Infomaniak-Routing: alpha
+In-Reply-To: <0e1b8994-944d-4dda-8966-3cd43661796d@linux.dev>
+X-Migadu-Flow: FLOW_OUT
 
-Hi Thomas,
-
-Thanks for the report.
-
-On Tue, May 12, 2026 at 11:27:42AM +0200, Thomas Weißschuh wrote:
-> Hi Mickaël and Günther,
+On Wed, May 13, 2026 at 10:10:34AM +0800, Qi Zheng wrote:
 > 
-> I received the following report about a failing landlock selftest from
-> the 0day bot.
 > 
-> On Mon, May 11, 2026 at 10:15:00PM +0800, kernel test robot wrote:
-> > kernel test robot noticed "kernel-selftests.landlock.audit_test.audit.tsync_override_log_subdomains_off.fail" on:
+> On 5/13/26 12:03 AM, Shakeel Butt wrote:
+> > On Tue, May 12, 2026 at 08:56:52PM +0800, kernel test robot wrote:
+> > > 
+> > > 
+> > > Hello,
+> > > 
+> > > kernel test robot noticed a 67.7% regression of stress-ng.switch.ops_per_sec on:
+> > > 
+> > > 
+> > > commit: 01b9da291c4969354807b52956f4aae1f41b4924 ("mm: memcontrol: convert objcg to be per-memcg per-node type")
+> > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 > > 
-> > commit: 465b05bae5ac553c13315681c1490dc565337771 ("selftests: harness: Restore order of test functions")
-> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> > 
-> > 
-> > in testcase: kernel-selftests
-> > version: kernel-selftests-x86_64-9f2693489ef8-1_20260201
-> > with following parameters:
-> > 
-> > 	group: landlock
-
-This group is correct but I'm wondering why the maintainer (me) and the
-reviewer (Günther) weren't in Cc.
-
-What do we need to do to subscribe to such report?  Why isn't
-automatically inferred from the MAINTAINER file?
-
-> > 
-> > config: x86_64-rhel-9.4-kselftests
-> > compiler: gcc-14
-> > test machine: 16 threads Intel(R) Core(TM) i7-13620H (Raptor Lake) with 32G memory
-> > 
-> > (please refer to attached dmesg/kmsg for entire log/backtrace)
-> > 
-> > If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> > the same patch/commit), kindly add following tags
-> > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> > | Closes: https://lore.kernel.org/oe-lkp/202605111649.a8b30a62-lkp@intel.com
+> > This is most probably due to shuffling of struct mem_cgroup and struct
+> > mem_cgroup_per_node members.
 > 
-> I was unable to run the landlock selftests myself, on my machines they are
-> failing at runtime with all kinds of colorful errors. Are the requirements
-> explained somewhere?
-
-I'm curious about the errors you get.  They are standard kselftests that
-should work following this workflow:
-
-  make TARGETS=landlock O=build kselftest-gen_tar
-
-and then running ./build/kselftests/kselftest_install/run_kselftest.sh
-as root in a VM.  The required kernel configuration is listed in
-tools/testing/selftests/landlock/config
-
-To make it easier, we wrote a wrapper to test everything with UML:
-https://github.com/landlock-lsm/landlock-test-tools (see check-linux.sh)
-
+> Another possibility is that after objcg was split into per-node, the
+> slab accounting fast path is still designed assuming only one current
+> objcg per CPU:
 > 
-> > # #  RUN           audit.tsync_override_log_subdomains_off ...
-> > # # audit_test.c:591:tsync_override_log_subdomains_off:Expected 0 (0) == matches_log_signal(_metadata, self->audit_fd, child_data.parent_pid, NULL) (-11)
+> struct obj_stock_pcp {
+>     struct obj_cgroup *cached_objcg;
+> };
 > 
-> This error number means "EAGAIN 11 Resource temporarily unavailable",
-> so it could be a temporary error.
+> So it's may cause the following thrashing:
+> 
+>  CPU stock cached = memcg/node0 objcg
+>  free object tagged = memcg/node1 objcg
+>  => __refill_obj_stock --> objcg mismatch
+>      => drain_obj_stock()
+>      => cache switches to node1 objcg
+> 
+>  next local allocation tagged = node0 objcg
+>  => mismatch again
+>      => drain_obj_stock()
 
-Yes, the test is flaky under pressure.
+Actually I think this is the issue, we have ping pong threads running on
+different nodes where though theu are in same cgroup but their current->obcg is
+for local node and thus this ping pong is thrashing the per-cpu objcg stock.
 
-> 
-> Can you reproduce this issue? Is it really dependent on my patch as
-> blamed above? If so, does the selftest rely on the previous, incorrect order?
-
-I don't think it directly depends on your patch but it might be a side
-effect.  Anyway, I've been working on fixing this kind of issue and just
-sent a fix:
-https://lore.kernel.org/r/20260513105112.140137-2-mic@digikod.net
-
-> 
-> > # # tsync_override_log_subdomains_off: Test failed
-> > # #          FAIL  audit.tsync_override_log_subdomains_off
-> > # not ok 5 audit.tsync_override_log_subdomains_off
-> 
-> 
-> Thomas
+The easier fix would be to compare objcg->memcg instead of just objcg during
+draining and caching. In addition we can add support for multiple objcg per-cpu
+stock caching.
