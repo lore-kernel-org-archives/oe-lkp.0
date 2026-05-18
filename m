@@ -1,159 +1,96 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from out-183.mta0.migadu.com (out-183.mta0.migadu.com [91.218.175.183])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 936AB3264E4
-	for <oe-lkp@lists.linux.dev>; Mon, 18 May 2026 10:01:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89C7740584E
+	for <oe-lkp@lists.linux.dev>; Mon, 18 May 2026 16:39:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.183
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779098516; cv=none; b=s37XI5cvIlCr7BeCBy5toNBs7dQ1FjQUfU0r/4A0jGoCijUX0J0N5RcCLIkq0anrBcONNYYk7m0ZYL1Tu8SAQAczqH44qFErNUIKNYY4Uh1p/i91/4/dkPRPqlBbPpnK7OSP0F83QjX8csHZHaTKEWl1g2ia+PgVos3/wQz6FKE=
+	t=1779122368; cv=none; b=sVvIP9U8IMOIA7QtnYVG+obgXmrRgnudZ77qZ5YHPSLDPpvxaZYElhjk+8pgRc8FO0/II0a1bdppoW2sYzruZBqQPXaSbIpH01Avm7AGc0IjvuyntaFZ2fal31dCQVw2DSPbRbIMold72hoLlQeFUkALMBGa+8TpgZXo6bAt5uo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779098516; c=relaxed/simple;
-	bh=L3f1Vp/n/cdeEMDV5sI+sXWwZyj64HpcGqTJbxUOe/c=;
+	s=arc-20240116; t=1779122368; c=relaxed/simple;
+	bh=Z5w9VXbDHWwaa8GVmJp3zwsvqS01hbJy9WgyvIuVziI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WIj66h3xkxXanHOAg+kyTy3ZVbYSiXbE9M7L3fHWZtdKlEpDnXGXoJaXTthA/3bwSGUqzJk0kCH0RC7LnpyRrTlyI6PSAa6ZJ5ewtpYbvTe6GEMAwSN5lyU3A425/DNCvO9EyWsS8fIZ599TVwB9bHwlbpzgu3I+59BSjEDTF/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=ONuaZYUV; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=TtYKiEHJ; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	 Content-Type:Content-Disposition:In-Reply-To; b=Dd9Rba2FwVM/QOD4ppNM6oZm6vIoxig9XoR5cm0yoGaBP/nrYnNH213a08mVi2jbWXxPo7nMzEEK3fcthYgFF2Ld5VtTtsb9C8zsgdR5cbZJD0RNcAobKtiOyw/WmDt0gw2mlhVpSaGXseLAKC1YZVN7fxdTC15a7IV3xGiXNnM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=DNddHhbv; arc=none smtp.client-ip=91.218.175.183
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="ONuaZYUV";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="TtYKiEHJ"
-Date: Mon, 18 May 2026 12:01:52 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1779098512;
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="DNddHhbv"
+Date: Mon, 18 May 2026 09:39:00 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1779122354;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=9R7iXz/vKaTcboM4y0DO/8RfZsBrVr/cAx9OLOYE8Gc=;
-	b=ONuaZYUVIkb276hiZPlFFmhvaLFa/bK+n7SlrA5ctGJPIA5YkCVGuYwzhz2ZW/SyAyv5oo
-	aaUJqL12sz8f5Nwa91tIg2eX/9BhWYN3X0ksKJnyXz76C4pIHu1KM45RsMDgE5lMNhAiP8
-	yz5PLSjdOOIbWnbRLxY7FNjpdYhyVmDwNgW/dTlmV0HjH4HL7QZ417qq2sXRKJ6pr0qdjR
-	pHnUolSLoBGcRYo9b3mbBW4/8dAVL7ZqBdV9njAa/McuvhkKFDhTFZ4MzT1Mw/wjig4bzC
-	aZXvYcaZBZc1xoYB2XES6X5L0nVL/vHsLAiPmXD5JMCdX5adCLodYpmBoNKJJA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1779098512;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=9R7iXz/vKaTcboM4y0DO/8RfZsBrVr/cAx9OLOYE8Gc=;
-	b=TtYKiEHJSRwK6P/AZOSUveWrHARGDTNzttlc+E8rKl+7jbMwXJb/u8f73ElG68742EWq4e
-	pJnWpBb7w23P94Aw==
-From: Thomas =?utf-8?Q?Wei=C3=9Fschuh?= <thomas.weissschuh@linutronix.de>
-To: =?utf-8?Q?Micka=C3=ABl_Sala=C3=BCn?= <mic@digikod.net>
-Cc: =?utf-8?Q?G=C3=BCnther?= Noack <gnoack@google.com>, 
-	kernel test robot <oliver.sang@intel.com>, linux-security-module@vger.kernel.org, oe-lkp@lists.linux.dev, 
-	lkp@intel.com, linux-kernel@vger.kernel.org, 
-	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, linux-kselftest@vger.kernel.org
-Subject: Re: [linus:master] [selftests]  465b05bae5:
- kernel-selftests.landlock.audit_test.audit.tsync_override_log_subdomains_off.fail
-Message-ID: <20260518115330-2156280f-0a6e-4d82-bbf5-13ad7052bafc@linutronix.de>
-References: <202605111649.a8b30a62-lkp@intel.com>
- <20260512112054-0a5c7cad-c8c6-4745-a765-0780a3bd2dab@linutronix.de>
- <20260513.eeboh9zooQuu@digikod.net>
- <20260518100602-5b161e99-83fa-4170-bb7b-1642df6b5a3d@linutronix.de>
- <20260518.ohn9DahGhui6@digikod.net>
+	bh=0nZ63ixZmpqUJEA5mKwrCc5eEpjyHEZj+MQ/sAMlFNc=;
+	b=DNddHhbvcHQnPyEBvcPR9NtOSklLhywR8EirOQ96GAmA+rzZiYis8KgdOh8x1VAI9yoEy2
+	dQjevyx1qO5hKUKowEGy0TSwsu5TQUnrM/+/41zgvP6qWIj1gn7+I6f+JyVifHW5vBhTsP
+	SDEfwZbGPAPLwQR2n6ulKWf1Jwj9/5k=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Shakeel Butt <shakeel.butt@linux.dev>
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: Qi Zheng <qi.zheng@linux.dev>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, 
+	David Carlier <devnexen@gmail.com>, Allen Pais <apais@linux.microsoft.com>, 
+	Axel Rasmussen <axelrasmussen@google.com>, Baoquan He <bhe@redhat.com>, 
+	Chengming Zhou <chengming.zhou@linux.dev>, Chen Ridong <chenridong@huawei.com>, 
+	David Hildenbrand <david@kernel.org>, Hamza Mahfooz <hamzamahfooz@linux.microsoft.com>, 
+	Harry Yoo <harry.yoo@oracle.com>, Hugh Dickins <hughd@google.com>, 
+	Imran Khan <imran.f.khan@oracle.com>, Johannes Weiner <hannes@cmpxchg.org>, 
+	Kamalesh Babulal <kamalesh.babulal@oracle.com>, Lance Yang <lance.yang@linux.dev>, 
+	Liam Howlett <Liam.Howlett@oracle.com>, Lorenzo Stoakes <ljs@kernel.org>, Michal Hocko <mhocko@suse.com>, 
+	Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>, Mike Rapoport <rppt@kernel.org>, 
+	Muchun Song <muchun.song@linux.dev>, Muchun Song <songmuchun@bytedance.com>, 
+	Nhat Pham <nphamcs@gmail.com>, Roman Gushchin <roman.gushchin@linux.dev>, 
+	Suren Baghdasaryan <surenb@google.com>, Usama Arif <usamaarif642@gmail.com>, 
+	Vlastimil Babka <vbabka@kernel.org>, Wei Xu <weixugc@google.com>, Yosry Ahmed <yosry@kernel.org>, 
+	Yuanchu Xie <yuanchu@google.com>, Zi Yan <ziy@nvidia.com>, Usama Arif <usama.arif@linux.dev>, 
+	cgroups@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [linus:master] [mm] 01b9da291c: stress-ng.switch.ops_per_sec
+ 67.7% regression
+Message-ID: <agtATZG9mIlYzMUl@linux.dev>
+References: <agNO8G8tPnPuVrGq@linux.dev>
+ <0e1b8994-944d-4dda-8966-3cd43661796d@linux.dev>
+ <agSAT4ldp3dzKWPl@linux.dev>
+ <agSJ4ulNDZ17ah8H@linux.dev>
+ <46e9f5cf-34cb-466d-a53a-5778768af4d9@linux.dev>
+ <93b7c3f206f158e7387cbb5f0bf5845b59b93053@linux.dev>
+ <19693be6-7132-446e-b3fc-b7e9f56e5949@linux.dev>
+ <agdS5rIhcjIBVSog@linux.dev>
+ <agm61hMv08XnV8sI@xsang-OptiPlex-9020>
+ <agoYp1zW9afZ6uQz@linux.dev>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260518.ohn9DahGhui6@digikod.net>
+In-Reply-To: <agoYp1zW9afZ6uQz@linux.dev>
+X-Migadu-Flow: FLOW_OUT
 
-On Mon, May 18, 2026 at 11:30:42AM +0200, Mickaël Salaün wrote:
-> On Mon, May 18, 2026 at 10:48:27AM +0200, Thomas Weißschuh wrote:
-> > On Wed, May 13, 2026 at 12:52:35PM +0200, Mickaël Salaün wrote:
-> > (...)
+On Sun, May 17, 2026 at 12:38:48PM -0700, Shakeel Butt wrote:
+> On Sun, May 17, 2026 at 08:55:50PM +0800, Oliver Sang wrote:
+> > hi, Shakeel, hi, Qi,
 > > 
-> > > > > config: x86_64-rhel-9.4-kselftests
-> > > > > compiler: gcc-14
-> > > > > test machine: 16 threads Intel(R) Core(TM) i7-13620H (Raptor Lake) with 32G memory
-> > > > > 
-> > > > > (please refer to attached dmesg/kmsg for entire log/backtrace)
-> > > > > 
-> > > > > If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> > > > > the same patch/commit), kindly add following tags
-> > > > > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> > > > > | Closes: https://lore.kernel.org/oe-lkp/202605111649.a8b30a62-lkp@intel.com
-> > > > 
-> > > > I was unable to run the landlock selftests myself, on my machines they are
-> > > > failing at runtime with all kinds of colorful errors. Are the requirements
-> > > > explained somewhere?
-> > > 
-> > > I'm curious about the errors you get.  They are standard kselftests that
-> > > should work following this workflow:
-> > > 
-> > >   make TARGETS=landlock O=build kselftest-gen_tar
-> > > 
-> > > and then running ./build/kselftests/kselftest_install/run_kselftest.sh
-> > > as root in a VM.  The required kernel configuration is listed in
-> > > tools/testing/selftests/landlock/config
+> > #2: when we test above patch, we found the server easy to crash while running
+> > tests. we try to run up to 20 times, only 2 of them run successfully (above
+> > 37739220 is just the average data from these 2 runs, since the data is stable,
+> > we think maybe it's ok to report to you with this data).
+> > we also noticed for [1] there is a [syzbot ci] report in [2]. since we don't
+> > have serial output for our test server in this report which is for performance
+> > tests, we cannot say if other 18 runs failed due to similar reason. just FYI.
 > > 
-> > So there are two root issues I ran into:
-> > 
-> > 1) The tests can not be executed from virtiofs (as set up by virtme-ng):
 > 
-> Most filesystem tests initially set up tmpfs and then use it.
+> The syzbot report is simply a rcu warning which will be fixed in v2. Do you
+> have more details on the crash you are seeing? Is it page counter underflow
+> warning?
 > 
-> I'm using virtme-ng too, see the
-> https://github.com/landlock-lsm/landlock-test-tools
-> 
->  ARCH=x86_64 .../check-linux.sh build_light kselftest
-> 
-> > 
-> >  #  RUN           audit.layers ...
-> > # audit_test.c:52:layers:Expected 0 (0) <= self->audit_fd (-13)
-> > # audit_test.c:61:layers:Failed to initialize audit: Permission denied
-> > # layers: Test failed
-> > #          FAIL  audit.layers
-> > not ok 1 audit.layers
-> > 
-> > (The same for all other testcases)
-> 
-> It looks like the tests are not run with enough privileges.  Do you run
-> them as root?  Does the kernel has the required config set?
+> Thanks again for the help.
 
-Yes. The exact same setup works when executed from a tmpfs.
+Hi Oliver, it seems like sashiko found another issue with v2, so, if you have
+not yet started the test, you can skip it.
 
-> > 2) $PWD needs to be the test binary directory for "./wait-pipe-sandbox" to work.
-> 
-> Yes.  run_kselftest.sh should handle that.
-
-Fair enough. The selftests I used so far worked just fine when executed directly.
-Maybe only I am using them this way. Some better diagnostics would have saved
-me some time. Consider it a suggestion.
-
-> > > To make it easier, we wrote a wrapper to test everything with UML:
-> > > https://github.com/landlock-lsm/landlock-test-tools (see check-linux.sh)
-> > > 
-> > > > 
-> > > > > # #  RUN           audit.tsync_override_log_subdomains_off ...
-> > > > > # # audit_test.c:591:tsync_override_log_subdomains_off:Expected 0 (0) == matches_log_signal(_metadata, self->audit_fd, child_data.parent_pid, NULL) (-11)
-> > > > 
-> > > > This error number means "EAGAIN 11 Resource temporarily unavailable",
-> > > > so it could be a temporary error.
-> > > 
-> > > Yes, the test is flaky under pressure.
-> > > 
-> > > > 
-> > > > Can you reproduce this issue? Is it really dependent on my patch as
-> > > > blamed above? If so, does the selftest rely on the previous, incorrect order?
-> > > 
-> > > I don't think it directly depends on your patch but it might be a side
-> > > effect.  Anyway, I've been working on fixing this kind of issue and just
-> > > sent a fix:
-> > > https://lore.kernel.org/r/20260513105112.140137-2-mic@digikod.net
-> > 
-> > Thanks, unfortunately I can't validate that it will fix the issue at hand.
-> 
-> I pushed it to -next, we'll see but I'm pretty sure this is the issue.
-
-Nice. I justed wanted to make clear that I won't be able to provide a Tested-by.
-
-
-Thanks again,
-Thomas
+Also I am rethinking the approach, so I will send a prototype in response on
+this email for which I will need your help in testing.
