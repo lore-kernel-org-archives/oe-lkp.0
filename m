@@ -1,952 +1,183 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 947C9368D46;
-	Thu, 21 May 2026 15:45:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE9912DE702;
+	Thu, 21 May 2026 15:55:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779378314; cv=none; b=l9E1rhUIC9AchP3S7OcNxP3+JHQEJbfAMebAIjJ8Fq4QO/Ybmi2qjJvFEhqUTtJp3nHq70MmNvaJvK9A2qpEGC15OMJZKnliDYyYlr7cEruDBXi35SMGU23Ct84aale/eZhp3D9EbYfnS8F2CDzTwDKljR1fsq1/0MZB1S3bHrY=
+	t=1779378955; cv=none; b=VuTgFjz5sTK8SoLHFGKQWk7yJWlyDVFcVUhuvB3mgt0l8xih2rCfXwutgYuoSthLc+JkQ4wjbCKdJ6eoSxa6jLqwGt+cdzND/tD5Xhz0/NtH6XZfyOYLqylYy3IsVN59zRuhzRUbIUeMW/WEIHyWsXF2nh5096X0pAgxlPEi6wY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779378314; c=relaxed/simple;
-	bh=EJHmzBZOB94iL6UMlRXqeil2UutFnpXUJ3OjWiwFPSo=;
+	s=arc-20240116; t=1779378955; c=relaxed/simple;
+	bh=DT2cMQLbqZnP+y/+V2o8pDsRGPd2OaltHDFJ4Q8XS0M=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Q6QdlH8a916xzluoORX05Rpf/zeo1hnvzou8Otd3p1pXWje82y6arI+KMnxLomuLJx+OUlkdscLt23aio7SBCcrOsqi0CfKjcUnD2zo/D9EYM2qXc/9hr03pdf/Dz8jog6IMvkR4LVRRO0L67Rr2RNgreeYXchtKLUKq8i8+SSo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=2aVNG5UL; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=QoN6inhef4q0j7Fr8tO0s3hfTFghIiMgx9OVUF/59GCygjIWf/uxi5YwUzN1QlGQ8PMdeku4nYZr0UpJJVYo3MtVewme7L4wLrJhiDCtjBN+nfH+JvYKl4G3VnHxNfE4Rb1tPLBtPIgLC45vBTF5Dbzbe4mTDvWAjCSUbhzO+3E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dz0xa4cn; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="2aVNG5UL"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=0FtW46vKlNNALD/zxQOtmBrPRqKcpyx0kda6fguvIyA=; b=2aVNG5UL7YSPCk/rQnyjP3GT75
-	BaIVwIh+J2+nuv8yNOlwOE1ld7cV8JFGpDCbkQ7ID75IR33tk/7h8QFXwAPv9semyyS9XxM8YccU/
-	thScC7XDPHSG3Xv2SulMaEwtDeH4ERPXKSSzmwcdw3jHeTOEyCNrLPqJUUo47heea62ujhXUDOsbY
-	c3fhvR6HSozzwywZ4jAzg7hjoB0ZhdyyvqImDyyDWrS7mWFh026wvJjEG0LkSnBHJ7qWSNY8oa4Db
-	vs5C7K0DjAyXMF6FXkbYzPiGSS8LEwo1tfrH3/R+BgBZ+Q7n0lhBYYhdKy4OAYn0Jzq0/sldxypar
-	N8n+uebA==;
-Received: from [38.23.173.23] (helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
-	id 1wQ5a8-00000008NhO-2g5I;
-	Thu, 21 May 2026 15:45:08 +0000
-Date: Thu, 21 May 2026 11:45:05 -0400
-From: "Liam R. Howlett" <liam@infradead.org>
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, 
-	Andrew Morton <akpm@linux-foundation.org>, Alice Ryhl <aliceryhl@google.com>, 
-	Andrew Ballance <andrewjballance@gmail.com>, Arnd Bergmann <arnd@arndb.de>, 
-	Christian Kujau <lists@nerdbynature.de>, Geert Uytterhoeven <geert@linux-m68k.org>, 
-	Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>, Matthew Wilcox <willy@infradead.org>, 
-	SeongJae Park <sj@kernel.org>, Sidhartha Kumar <sidhartha.kumar@oracle.com>, 
-	Suren Baghdasaryan <surenb@google.com>, Vlastimil Babka <vbabka@suse.cz>, maple-tree@lists.infradead.org, 
-	linux-mm@kvack.org
-Subject: Re: [linus:master] [maple_tree]  280b792cac:
- will-it-scale.per_process_ops 6.0% regression
-Message-ID: <g7pvhqnuloifqhbvjgtgydbitcrvmxibferexj7cunsmagttps@oxjvs3aa3l3s>
-References: <202605131554.92e7df6b-lkp@intel.com>
- <22y6gvr7yzwdocwpd3wxrxfykmpvhbxytiiuht32db3dh7w522@pglkrpqognjk>
- <agV3Q2fBlQrB5v9w@xsang-OptiPlex-9020>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dz0xa4cn"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A32781F000E9;
+	Thu, 21 May 2026 15:55:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779378953;
+	bh=MhFLi3KY2zX8f39vBXoxDAx8zoa4537z/UcgyuKa1fw=;
+	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To;
+	b=dz0xa4cnCmuoQ13H3QF3wd37NJfWb3FVnPKz3GwyjzX3DL4OOTcgdO2vk+ifZWWRM
+	 BeeCjXgZuysO7inN0BjitAH8cVh8YcuyrFNpfDsP6P+2Cykrcz2vHTTynuk2SMWKfq
+	 5JQGrFFK6LI8qtAyt6dlTI+Sj06dLgfBAwrh1LFMnagX5mznd7jOgi8lqFEB2PARpw
+	 cDX8xTFVoLYJYUS3KgKnxYo3gNyL3LcVsm3YZdUn2AlTvJzs7f+PQ1Jx1cjO65scoU
+	 HLTX8CdMfEjOccB6/AZXERB7c0YSgBGkbRjJgA6MbwY6/GKlPgN0OAs6STEs/35PlZ
+	 AnuvKT3aUFqTQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+	id 611ABCE0874; Thu, 21 May 2026 08:55:53 -0700 (PDT)
+Date: Thu, 21 May 2026 08:55:53 -0700
+From: "Paul E. McKenney" <paulmck@kernel.org>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	ltp@lists.linux.it
+Subject: Re: [paulmckrcu:dev.2026.05.07a] [rcutorture]  c2e6a63ac1:
+ RIP:rcu_torture_irq[rcutorture]
+Message-ID: <e43a6e6a-da4b-4b69-add1-2bcb33cbb0d7@paulmck-laptop>
+Reply-To: paulmck@kernel.org
+References: <202605211529.6ba1b4ff-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="nbgco3lueasalhqb"
-Content-Disposition: inline
-In-Reply-To: <agV3Q2fBlQrB5v9w@xsang-OptiPlex-9020>
-
-
---nbgco3lueasalhqb
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <202605211529.6ba1b4ff-lkp@intel.com>
 
-On 26/05/14 03:18PM, Oliver Sang wrote:
-> hi, Liam,
+On Thu, May 21, 2026 at 03:54:05PM +0800, kernel test robot wrote:
 > 
-> On Wed, May 13, 2026 at 08:16:42PM -0400, Liam R. Howlett wrote:
-> > On 26/05/13 03:40PM, kernel test robot wrote:
-> > > 
-> > > 
-> > > Hello,
-> > > 
-> > > kernel test robot noticed a 6.0% regression of will-it-scale.per_process_ops on:
-> > > 
-> > > 
-> > > commit: 280b792cac62ddadca2935766ca870b438c86323 ("maple_tree: use maple copy node for mas_wr_split()")
-> > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> > > 
-> > > [still regression on linus/master      5d6919055dec134de3c40167a490f33c74c12581]
-> > > [still regression on linux-next/master e98d21c170b01ddef366f023bbfcf6b31509fa83]
-> > > 
-> > > testcase: will-it-scale
-> > > config: x86_64-rhel-9.4
-> > > compiler: gcc-14
-> > > test machine: 48 threads 2 sockets Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz (Ivy Bridge-EP) with 64G memory
-> > > parameters:
-> > > 
-> > > 	nr_task: 100%
-> > > 	mode: process
-> > > 	test: mmap2
-> > > 	cpufreq_governor: performance
-> > > 
-> > > 
-> > 
-> > Thank you for the report.
-> > 
-> > 48 threads on a 2 socket E5-2697 v2 looks to be 12 cores (24 threads)
-> > per cpu (so x2), or exactly one mmap2 process per hyperthread.
+> hi, Paul,
 > 
-> this is the cpu information:
-> 
-> Architecture:        x86_64
-> CPU op-mode(s):      32-bit, 64-bit
-> Byte Order:          Little Endian
-> Address sizes:       46 bits physical, 48 bits virtual
-> CPU(s):              48
-> On-line CPU(s) list: 0-47
-> Thread(s) per core:  2
-> Core(s) per socket:  12
-> Socket(s):           2
-> NUMA node(s):        2
-> Vendor ID:           GenuineIntel
-> CPU family:          6
-> Model:               62
-> Model name:          Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz
-> Stepping:            4
-> 
-> > 
-> > Is this across all process counts and peaks at 48, or just 48?
-> 
-> just 48. the run script is in
-> https://download.01.org/0day-ci/archive/20260513/202605131554.92e7df6b-lkp@intel.com/repro-script
-> 
-> cd /lkp/benchmarks/will-it-scale
-> python3 ./runtest.py mmap2 295 process 0 0 48
-> 
-> > Is this across many runs?
-> 
-> we run 6 times for both parent and this commit, the data looks stable
-> 
-> 11e7f22f5e85058b09ca90e74002a3b82f50e940/matrix.json:  "will-it-scale.per_process_ops": [
-> 11e7f22f5e85058b09ca90e74002a3b82f50e940/matrix.json-    143595,
-> 11e7f22f5e85058b09ca90e74002a3b82f50e940/matrix.json-    143474,
-> 11e7f22f5e85058b09ca90e74002a3b82f50e940/matrix.json-    144104,
-> 11e7f22f5e85058b09ca90e74002a3b82f50e940/matrix.json-    142796,
-> 11e7f22f5e85058b09ca90e74002a3b82f50e940/matrix.json-    143081,
-> 11e7f22f5e85058b09ca90e74002a3b82f50e940/matrix.json-    143623
-> 11e7f22f5e85058b09ca90e74002a3b82f50e940/matrix.json-  ],
+> below report is just FYI. if the issue is soloved on newer branched, please just
+> ignore. thanks
 > 
 > 
-> 280b792cac62ddadca2935766ca870b438c86323/matrix.json:  "will-it-scale.per_process_ops": [
-> 280b792cac62ddadca2935766ca870b438c86323/matrix.json-    134451,
-> 280b792cac62ddadca2935766ca870b438c86323/matrix.json-    135089,
-> 280b792cac62ddadca2935766ca870b438c86323/matrix.json-    135080,
-> 280b792cac62ddadca2935766ca870b438c86323/matrix.json-    135039,
-> 280b792cac62ddadca2935766ca870b438c86323/matrix.json-    134082,
-> 280b792cac62ddadca2935766ca870b438c86323/matrix.json-    135301
-> 280b792cac62ddadca2935766ca870b438c86323/matrix.json-  ],
+> Hello,
 > 
 > 
-> > 
-> > My testing didn't produce anything like this.  I'll have a look into
-> > this when I can, but there isn't anything obvious that sticks out as a
-> > likely cause.
+> kernel test robot noticed "RIP:rcu_torture_irq[rcutorture]" on:
 > 
-> if you want us to test any debug patch, it will be our great pleasure. thanks!
+> commit: c2e6a63ac168107454d5fe595c1213e5760d642f ("rcutorture: Test RCU readers from hardware interrupt handlers")
+> https://github.com/paulmckrcu/linux dev.2026.05.07a
+> 
+> in testcase: ltp
+> version: 
+> with following parameters:
+> 
+> 	test: kernel_misc
+> 
+> 
+> 
+> config: x86_64-rhel-9.4-ltp
+> compiler: gcc-14
+> test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4790T CPU @ 2.70GHz (Haswell) with 16G memory
+> 
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+> 
+> 
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202605211529.6ba1b4ff-lkp@intel.com
 
-It looks like the result of the shape of the tree changing.  Can you try
-the attached patch against Linus' tree?
+This should be fixed in branch dev.2026.05.19a.  The problem was that
+I forgot that smp_call_function_single() handlers can be invoked from
+the idle loop instead of from an actual hardware interrupt handler.
 
-Let me know if it'd be better to provide a copy based off 280b792cac62d
-instead.
+The devil truly is in the details!  ;-)
 
-Thanks,
-Liam
+							Thanx, Paul
 
---nbgco3lueasalhqb
-Content-Type: text/x-diff; charset=us-ascii
-Content-Disposition: attachment;
-	filename="0001-maple_tree-Restore-old-tree-layout-using-new-scatter.patch"
-
-From 98e443b159a75a6cc34af839c122a9e5eea2fe19 Mon Sep 17 00:00:00 2001
-From: "Liam R. Howlett" <liam@infradead.org>
-Date: Fri, 15 May 2026 17:37:06 -0400
-Subject: [PATCH] maple_tree: Restore old tree layout using new scatter-gather
- node copy
-
-The prior bignode rebalance and split operations were greedy in getting
-data to the lower range nodes (often referred to as the left side of the
-tree).  The new scatter-gather node copy was more fair on splitting
-data, but this lead to a regression with mmap2_processes.
-
-Restoring the greedy nature of getting data further left in the tree,
-when possible, turns out to perform better.  Note that it's not entirely
-greedy and tries to leave some room for modifications to both nodes
-later, if possible.
-
-The decision of where to push the majority of the data is relayed as a
-'hint' on which side to favour.  Passing around a hint turns out to
-simplify a lot of logic that was otherwise derived from the siblings max
-or size.
-
-Signed-off-by: Liam R. Howlett (Oracle) <liam@infradead.org>
----
- include/linux/maple_tree.h |   1 +
- lib/maple_tree.c           | 427 ++++++++++++++++++++++++++-----------
- lib/test_maple_tree.c      |   5 +-
- 3 files changed, 305 insertions(+), 128 deletions(-)
-
-diff --git a/include/linux/maple_tree.h b/include/linux/maple_tree.h
-index 4a5631906aff..c4c3b31614b0 100644
---- a/include/linux/maple_tree.h
-+++ b/include/linux/maple_tree.h
-@@ -192,6 +192,7 @@ struct maple_copy {
- 	unsigned char d_count;
- 	unsigned char split;
- 	unsigned char data;
-+	unsigned char write_start;
- 	unsigned char height;
- };
- 
-diff --git a/lib/maple_tree.c b/lib/maple_tree.c
-index 60ae5e6fc1ee..b83a5b902e56 100644
---- a/lib/maple_tree.c
-+++ b/lib/maple_tree.c
-@@ -89,6 +89,10 @@
-  */
- #define MA_STATE_PREALLOC	1
- 
-+#define MAPLE_DST_NEUTRAL	0
-+#define MAPLE_DST_FAVOUR_LEFT	1
-+#define MAPLE_DST_FAVOUR_RIGHT	2
-+
- #define ma_parent_ptr(x) ((struct maple_pnode *)(x))
- #define mas_tree_parent(x) ((unsigned long)(x->tree) | MA_ROOT_PARENT)
- #define ma_mnode_ptr(x) ((struct maple_node *)(x))
-@@ -1720,21 +1724,26 @@ static inline void mas_wr_node_walk(struct ma_wr_state *wr_mas)
- 	wr_mas->offset_end = mas->offset = offset;
- }
- 
--static inline void rebalance_sib(struct ma_state *parent, struct ma_state *sib)
-+static inline unsigned char rebalance_sib(struct ma_state *parent,
-+		struct ma_state *sib)
- {
- 	*sib = *parent;
- 	/* Prioritize move right to pull data left */
--	if (sib->offset < sib->end)
-+	if (sib->offset < sib->end) {
- 		sib->offset++;
--	else
--		sib->offset--;
-+		mas_descend(sib);
-+		sib->end = mas_data_end(sib);
-+		return MAPLE_DST_FAVOUR_RIGHT;
-+	}
- 
-+	sib->offset--;
- 	mas_descend(sib);
- 	sib->end = mas_data_end(sib);
-+	return MAPLE_DST_FAVOUR_LEFT;
- }
- 
- static inline
--void spanning_sib(struct ma_wr_state *l_wr_mas,
-+unsigned char spanning_sib(struct ma_wr_state *l_wr_mas,
- 		struct ma_wr_state *r_wr_mas, struct ma_state *nneighbour)
- {
- 	struct ma_state l_tmp = *l_wr_mas->mas;
-@@ -1754,7 +1763,7 @@ void spanning_sib(struct ma_wr_state *l_wr_mas,
- 
- 			r_tmp.end = mas_data_end(&r_tmp);
- 			*nneighbour = r_tmp;
--			return;
-+			return MAPLE_DST_FAVOUR_RIGHT;
- 		} else if (l_tmp.offset) {
- 			l_tmp.offset--;
- 			do {
-@@ -1764,11 +1773,13 @@ void spanning_sib(struct ma_wr_state *l_wr_mas,
- 
- 			l_tmp.end = l_tmp.offset;
- 			*nneighbour = l_tmp;
--			return;
-+			return MAPLE_DST_FAVOUR_LEFT;
- 		}
- 	} while (!mte_is_root(r_tmp.node));
- 
- 	WARN_ON_ONCE(1);
-+	nneighbour->end = 0;
-+	return MAPLE_DST_NEUTRAL;
- }
- 
- /*
-@@ -2151,74 +2162,147 @@ static inline void cp_data_calc(struct maple_copy *cp,
- 	cp->data += r_wr_mas->mas->end - r_wr_mas->offset_end;
- }
- 
--static bool data_fits(struct ma_state *sib, struct ma_state *mas,
-+#define MAPLE_TEST_ALT_SIB 3
-+#define MAPLE_NO_SPACE (-1)
-+#define MAPLE_MIN_SPARE_SLOTS 2
-+
-+static int data_fits(unsigned char end, struct ma_state *mas,
- 		struct maple_copy *cp)
- {
- 	unsigned char new_data;
- 	enum maple_type type;
- 	unsigned char space;
--	unsigned char end;
-+	int spare_slots;
- 
-+	/*
-+	 * end is an index while cp->data/space are sizes, so a strict fit would
-+	 * allow new_data <= space.  One spare slot (new_data < space) avoids full
-+	 * pack.  Keep one more spare slot here to reduce split/rebalance churn.
-+	 */
- 	type = mte_node_type(mas->node);
- 	space = 2 * mt_slots[type];
--	end = sib->end;
--
- 	new_data = end + 1 + cp->data;
--	if (new_data > space)
--		return false;
--
--	/*
--	 * This is off by one by design.  The extra space is left to reduce
--	 * jitter in operations that add then remove two entries.
--	 *
--	 * end is an index while new space and data are both sizes.  Adding one
--	 * to end to convert the index to a size means that the below
--	 * calculation should be <=, but we want to keep an extra space in nodes
--	 * to reduce jitter.
--	 *
--	 * Note that it is still possible to get a full node on the left by the
--	 * NULL landing exactly on the split.  The NULL ending of a node happens
--	 * in the dst_setup() function, where we will either increase the split
--	 * by one or decrease it by one, if possible.  In the case of split
--	 * (this case), it is always possible to shift the spilt by one - again
--	 * because there is at least one slot free by the below checking.
--	 */
--	if (new_data < space)
--		return true;
-+	spare_slots = space - new_data;
-+	if (spare_slots < MAPLE_MIN_SPARE_SLOTS)
-+		return MAPLE_NO_SPACE;
- 
--	return false;
-+	return spare_slots;
- }
- 
--static inline void push_data_sib(struct maple_copy *cp, struct ma_state *mas,
--		struct ma_state *sib, struct ma_state *parent)
-+static inline int push_data_sib_left(struct maple_copy *cp,
-+		struct ma_state *mas, struct ma_state *sib,
-+		struct ma_state *parent)
- {
--
--	if (mte_is_root(mas->node))
--		goto no_push;
--
-+	if (!parent->offset)
-+		return MAPLE_NO_SPACE;
- 
- 	*sib = *parent;
--	if (sib->offset) {
--		sib->offset--;
--		mas_descend(sib);
--		sib->end = mas_data_end(sib);
--		if (data_fits(sib, mas, cp))	/* Push left */
--			return;
-+	sib->offset--;
-+	mas_descend(sib);
-+	sib->end = mas_data_end(sib);
- 
--		*sib = *parent;
--	}
-+	return data_fits(sib->end, mas, cp);
-+}
- 
--	if (sib->offset >= sib->end)
--		goto no_push;
-+static inline int push_data_sib_right(struct maple_copy *cp,
-+		struct ma_state *mas, struct ma_state *sib,
-+		struct ma_state *parent)
-+{
-+	if (parent->offset >= parent->end)
-+		return MAPLE_NO_SPACE;
- 
-+	*sib = *parent;
- 	sib->offset++;
- 	mas_descend(sib);
- 	sib->end = mas_data_end(sib);
--	if (data_fits(sib, mas, cp))		/* Push right*/
--		return;
- 
--no_push:
-+	return data_fits(sib->end, mas, cp);
-+}
-+
-+static inline unsigned char push_data_sib_split(struct maple_copy *cp,
-+		struct ma_state *mas, struct ma_state *sib,
-+		struct ma_state *parent)
-+{
-+	struct ma_state left;
-+	struct ma_state right;
-+	int left_spare = MAPLE_NO_SPACE;
-+	int right_spare = MAPLE_NO_SPACE;
-+
-+	if (!mte_is_root(mas->node)) {
-+		left_spare = push_data_sib_left(cp, mas, &left, parent);
-+		if (left_spare >= MAPLE_TEST_ALT_SIB) {
-+			*sib = left;
-+			return MAPLE_DST_FAVOUR_LEFT;
-+		}
-+
-+		right_spare = push_data_sib_right(cp, mas, &right, parent);
-+
-+		if ((left_spare >= 0) && (right_spare >= 0)) {
-+			if (left.end <= right.end) {
-+				*sib = left;
-+				return MAPLE_DST_FAVOUR_LEFT;
-+			}
-+
-+			*sib = right;
-+			return MAPLE_DST_FAVOUR_RIGHT;
-+		}
-+
-+		if (left_spare >= 0) {
-+			*sib = left;
-+			return MAPLE_DST_FAVOUR_LEFT;
-+		}
-+
-+		if (right_spare >= 0) {
-+			*sib = right;
-+			return MAPLE_DST_FAVOUR_RIGHT;
-+		}
-+	}
-+
- 	sib->end = 0;
-+	return MAPLE_DST_NEUTRAL;
-+}
-+
-+static inline unsigned char push_data_sib_rebalance(struct maple_copy *cp,
-+		struct ma_state *mas, struct ma_state *sib,
-+		struct ma_state *parent)
-+{
-+	struct ma_state left;
-+	struct ma_state right;
-+	int left_spare = MAPLE_NO_SPACE;
-+	int right_spare = MAPLE_NO_SPACE;
-+
-+	if (!mte_is_root(mas->node)) {
-+		right_spare = push_data_sib_right(cp, mas, &right, parent);
-+		if (right_spare >= MAPLE_TEST_ALT_SIB) {
-+			*sib = right;
-+			return MAPLE_DST_FAVOUR_RIGHT;
-+		}
-+
-+		left_spare = push_data_sib_left(cp, mas, &left, parent);
-+
-+		if ((left_spare >= 0) && (right_spare >= 0)) {
-+			if (left.end < right.end) {
-+				*sib = left;
-+				return MAPLE_DST_FAVOUR_LEFT;
-+			}
-+
-+			*sib = right;
-+			return MAPLE_DST_FAVOUR_RIGHT;
-+		}
-+
-+		if (right_spare >= 0) {
-+			*sib = right;
-+			return MAPLE_DST_FAVOUR_RIGHT;
-+		}
-+
-+		if (left_spare >= 0) {
-+			*sib = left;
-+			return MAPLE_DST_FAVOUR_LEFT;
-+		}
-+	}
-+
-+	sib->end = 0;
-+	return MAPLE_DST_NEUTRAL;
- }
- 
- /*
-@@ -2232,29 +2316,27 @@ static inline void push_data_sib(struct maple_copy *cp, struct ma_state *mas,
-  * indicate it will not be used.
-  *
-  */
--static inline void rebalance_data(struct maple_copy *cp,
-+static inline unsigned char rebalance_data(struct maple_copy *cp,
- 		struct ma_wr_state *wr_mas, struct ma_state *sib,
- 		struct ma_state *parent)
- {
-+	unsigned char hint = MAPLE_DST_NEUTRAL;
-+
- 	cp_data_calc(cp, wr_mas, wr_mas);
- 	sib->end = 0;
-+
- 	if (cp->data > mt_slots[wr_mas->type]) {
--		push_data_sib(cp, wr_mas->mas, sib, parent);
--		if (sib->end)
--			goto use_sib;
-+		hint = push_data_sib_rebalance(cp, wr_mas->mas, sib, parent);
- 	} else if (cp->data <= mt_min_slots[wr_mas->type]) {
- 		if ((wr_mas->mas->min != 0) ||
--		    (wr_mas->mas->max != ULONG_MAX)) {
--			rebalance_sib(parent, sib);
--			goto use_sib;
--		}
-+		    (wr_mas->mas->max != ULONG_MAX))
-+			hint = rebalance_sib(parent, sib);
- 	}
- 
--	return;
--
--use_sib:
-+	if (hint != MAPLE_DST_NEUTRAL)
-+		cp->data += sib->end + 1;
- 
--	cp->data += sib->end + 1;
-+	return hint;
- }
- 
- /*
-@@ -2267,18 +2349,64 @@ static inline void rebalance_data(struct maple_copy *cp,
-  * Note: @cp->data is a size and not indexed by 0. @sib->end may be set to 0 to
-  * indicate it will not be used.
-  */
--static inline void spanning_data(struct maple_copy *cp,
-+static inline unsigned char spanning_data(struct maple_copy *cp,
- 		struct ma_wr_state *l_wr_mas, struct ma_wr_state *r_wr_mas,
- 		struct ma_state *sib)
- {
-+	unsigned char hint = MAPLE_DST_NEUTRAL;
-+
- 	cp_data_calc(cp, l_wr_mas, r_wr_mas);
- 	if (((l_wr_mas->mas->min != 0) || (r_wr_mas->mas->max != ULONG_MAX)) &&
- 	    (cp->data <= mt_min_slots[l_wr_mas->type])) {
--		spanning_sib(l_wr_mas, r_wr_mas, sib);
--		cp->data += sib->end + 1;
-+		hint = spanning_sib(l_wr_mas, r_wr_mas, sib);
-+		if (hint != MAPLE_DST_NEUTRAL)
-+			cp->data += sib->end + 1;
- 	} else {
- 		sib->end = 0;
- 	}
-+
-+	return hint;
-+}
-+
-+static inline unsigned char cp_hint_split(struct maple_copy *cp,
-+		enum maple_type mt, unsigned char hint)
-+{
-+	unsigned char min_split;
-+	unsigned char max_split;
-+	unsigned int target = cp->split;
-+
-+	/*
-+	 * Keep the original split bounds: these preserve minimum occupancy and
-+	 * leave the one-slot margin used by the NULL-end adjustment in
-+	 * cp_data_write().
-+	 */
-+	max_split = mt_slots[mt] - 1;
-+	if (cp->data - mt_min_slots[mt] - 2 < max_split)
-+		max_split = cp->data - mt_min_slots[mt] - 2;
-+
-+	min_split = mt_min_slots[mt];
-+	if (cp->data - mt_slots[mt] > min_split)
-+		min_split = cp->data - mt_slots[mt];
-+
-+	switch (hint) {
-+	case MAPLE_DST_FAVOUR_LEFT:
-+		target = mt_slots[mt] - 2;
-+		break;
-+	case MAPLE_DST_FAVOUR_RIGHT:
-+		target = min_split;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	if (target < min_split)
-+		target = min_split;
-+	if (target > max_split)
-+		target = max_split;
-+
-+	cp->split = target;
-+
-+	return cp->split;
- }
- 
- /*
-@@ -2286,9 +2414,11 @@ static inline void spanning_data(struct maple_copy *cp,
-  * @cp: The maple copy node
-  * @mas: The maple state
-  * @mt: The source node type
-+ * @hint: Split preference from write placement and sibling side
-  */
- static inline
--void dst_setup(struct maple_copy *cp, struct ma_state *mas, enum maple_type mt)
-+void dst_setup(struct maple_copy *cp, struct ma_state *mas, enum maple_type mt,
-+	      unsigned char hint)
- {
- 	/* Data is 1 indexed, every src has +1 added.  */
- 
-@@ -2300,8 +2430,10 @@ void dst_setup(struct maple_copy *cp, struct ma_state *mas, enum maple_type mt)
- 
- 	cp->split = (cp->data - 1) / 2;
- 	cp->d_count = 2;
--	if (cp->data < mt_slots[mt] * 2)
-+	if (cp->data < mt_slots[mt] * 2) {
-+		cp_hint_split(cp, mt, hint);
- 		goto node_setup;
-+	}
- 
- 	if (cp->data == mt_slots[mt] * 2) {
- 		unsigned char off;
-@@ -2407,16 +2539,23 @@ static inline void init_cp_src(struct maple_copy *cp)
-  * @l_wr_mas: The left write maple state
-  * @r_wr_mas: The right write maple state
-  * @sib: The sibling maple state
-+ * @hint: The sibling direction hint
-  *
-- * Note: @sib->end == 0 indicates no sibling will be used.
-+ * Note: @hint == MAPLE_DST_NEUTRAL indicates no sibling will be used.
-  */
- static inline
- void multi_src_setup(struct maple_copy *cp, struct ma_wr_state *l_wr_mas,
--		struct ma_wr_state *r_wr_mas, struct ma_state *sib)
-+		struct ma_wr_state *r_wr_mas, struct ma_state *sib,
-+		unsigned char hint)
- {
-+	unsigned char offset = 0;
-+
- 	cp->s_count = 0;
--	if (sib->end && sib->max < l_wr_mas->mas->min)
-+
-+	if (hint == MAPLE_DST_FAVOUR_LEFT) {
- 		append_mas_cp(cp, sib, 0, sib->end);
-+		offset += cp->src[cp->s_count - 1].end + 1;
-+	}
- 
- 	/* Copy left 0 - offset */
- 	if (l_wr_mas->mas->offset) {
-@@ -2424,8 +2563,10 @@ void multi_src_setup(struct maple_copy *cp, struct ma_wr_state *l_wr_mas,
- 
- 		append_wr_mas_cp(cp, l_wr_mas, 0, off);
- 		cp->src[cp->s_count - 1].max = cp->min - 1;
-+		offset += off + 1;
- 	}
- 
-+	cp->write_start = offset;
- 	init_cp_src(cp);
- 
- 	/* Copy right either from offset or offset + 1 pending on r_max */
-@@ -2433,7 +2574,7 @@ void multi_src_setup(struct maple_copy *cp, struct ma_wr_state *l_wr_mas,
- 		append_wr_mas_cp(cp, r_wr_mas, r_wr_mas->offset_end + 1,
- 			       r_wr_mas->mas->end);
- 
--	if (sib->end && sib->min > r_wr_mas->mas->max)
-+	if (hint == MAPLE_DST_FAVOUR_RIGHT)
- 		append_mas_cp(cp, sib, 0, sib->end);
- }
- 
-@@ -2506,21 +2647,51 @@ void cp_data_write(struct maple_copy *cp, struct ma_state *mas)
- 		/* Handle null entries */
- 		if (cp->dst[d].max != ULONG_MAX &&
- 		    !ma_slots(dst, d_mt)[dst_offset - 1]) {
--			if (s_offset == cp->src[s].start) {
--				s--;
--				src = cp->src[s].node;
--				src_end = cp->src[s].end;
--				s_max = cp->src[s].max;
--				s_mt = cp->src[s].mt;
--				s_offset = src_end;
-+			if ((dst_offset < mt_slots[d_mt]) &&
-+			    (cp->data - data_offset > mt_min_slots[d_mt] + 1)) {
-+				d_max = node_copy(mas, src, s_offset, 1, s_max, s_mt,
-+						  dst, dst_offset, d_mt);
-+				dst_offset++;
-+				data_offset++;
-+				s_offset++;
-+				if (s_offset > src_end) {
-+					s++;
-+					if (s >= cp->s_count) {
-+						cp->dst[d].max = d_max;
-+						node_finalise(dst, d_mt,
-+							     dst_offset);
-+						return;
-+					}
-+
-+					src = cp->src[s].node;
-+					s_offset = cp->src[s].start;
-+					src_end = cp->src[s].end;
-+					s_max = cp->src[s].max;
-+					s_mt = cp->src[s].mt;
-+				}
-+
-+				cp->dst[d].max = d_max;
-+				if (WARN_ON_ONCE(!split))
-+					split = 0;
-+				else
-+					split--;
- 			} else {
--				s_offset--;
-+				if (s_offset == cp->src[s].start) {
-+					s--;
-+					src = cp->src[s].node;
-+					src_end = cp->src[s].end;
-+					s_max = cp->src[s].max;
-+					s_mt = cp->src[s].mt;
-+					s_offset = src_end;
-+				} else {
-+					s_offset--;
-+				}
-+				/* Set dst max and clear pivot */
-+				split++;
-+				data_offset--;
-+				dst_offset--;
-+				cp->dst[d].max = ma_pivots(dst, d_mt)[dst_offset - 1];
- 			}
--			/* Set dst max and clear pivot */
--			split++;
--			data_offset--;
--			dst_offset--;
--			cp->dst[d].max = ma_pivots(dst, d_mt)[dst_offset - 1];
- 		}
- 
- 		node_finalise(dst, d_mt, dst_offset);
-@@ -2600,7 +2771,7 @@ static inline bool cp_is_new_root(struct maple_copy *cp, struct ma_state *mas)
- 
- 		cp->data = cp->d_count;
- 		cp->s_count = 0;
--		dst_setup(cp, mas, mt);
-+		dst_setup(cp, mas, mt, MAPLE_DST_NEUTRAL);
- 		init_cp_src(cp);
- 		node_copy(mas, cp->src[0].node, 0, cp->data, cp->max, maple_copy,
- 			  cp->dst[0].node, 0, mt);
-@@ -2625,9 +2796,9 @@ static inline bool cp_is_new_root(struct maple_copy *cp, struct ma_state *mas)
- }
- 
- static inline bool cp_converged(struct maple_copy *cp, struct ma_state *mas,
--				struct ma_state *sib)
-+				unsigned char hint)
- {
--	if (cp->d_count != 1 || sib->end)
-+	if (cp->d_count != 1 || hint != MAPLE_DST_NEUTRAL)
- 		return false;
- 
- 	cp->dst[0].node->parent = ma_parent_ptr(mas_mn(mas)->parent);
-@@ -2646,14 +2817,12 @@ static inline bool cp_converged(struct maple_copy *cp, struct ma_state *mas,
-  */
- static bool spanning_ascend(struct maple_copy *cp, struct ma_state *mas,
- 			    struct ma_wr_state *l_wr_mas, struct ma_wr_state *r_wr_mas,
--			    struct ma_state *sib)
-+			    struct ma_state *sib, unsigned char hint)
- {
--	if (sib->end) {
--		if (sib->max < l_wr_mas->mas->min)
--			*l_wr_mas->mas = *sib;
--		else
--			*r_wr_mas->mas = *sib;
--	}
-+	if (hint == MAPLE_DST_FAVOUR_LEFT)
-+		*l_wr_mas->mas = *sib;
-+	else if (hint == MAPLE_DST_FAVOUR_RIGHT)
-+		*r_wr_mas->mas = *sib;
- 
- 	cp_dst_to_slots(cp, l_wr_mas->mas->min, r_wr_mas->mas->max, mas);
- 	if (cp_is_new_root(cp, mas))
-@@ -2692,16 +2861,16 @@ void copy_tree_location(const struct ma_state *src, struct ma_state *dst)
-  */
- static inline bool rebalance_ascend(struct maple_copy *cp,
- 		struct ma_wr_state *wr_mas, struct ma_state *sib,
--		struct ma_state *parent)
-+		struct ma_state *parent, unsigned char hint)
- {
- 	struct ma_state *mas;
- 	unsigned long min, max;
- 
- 	mas = wr_mas->mas;
--	if (!sib->end) {
-+	if (hint == MAPLE_DST_NEUTRAL) {
- 		min = mas->min;
- 		max = mas->max;
--	} else if (sib->min > mas->max) { /* Move right succeeded */
-+	} else if (hint == MAPLE_DST_FAVOUR_RIGHT) {
- 		min = mas->min;
- 		max = sib->max;
- 		wr_mas->offset_end = parent->offset + 1;
-@@ -2716,7 +2885,7 @@ static inline bool rebalance_ascend(struct maple_copy *cp,
- 	if (cp_is_new_root(cp, mas))
- 		return false;
- 
--	if (cp_converged(cp, mas, sib))
-+	if (cp_converged(cp, mas, hint))
- 		return false;
- 
- 	cp->height++;
-@@ -3049,6 +3218,7 @@ static void mas_wr_spanning_store(struct ma_wr_state *wr_mas)
- 	struct maple_copy cp;
- 	struct ma_state *mas;
- 	struct ma_state sib;
-+	unsigned char hint;
- 
- 	/* Left and Right side of spanning store */
- 	MA_STATE(r_mas, NULL, 0, 0);
-@@ -3107,11 +3277,11 @@ static void mas_wr_spanning_store(struct ma_wr_state *wr_mas)
- 
- 	cp_leaf_init(&cp, mas, wr_mas, &r_wr_mas);
- 	do {
--		spanning_data(&cp, wr_mas, &r_wr_mas, &sib);
--		multi_src_setup(&cp, wr_mas, &r_wr_mas, &sib);
--		dst_setup(&cp, mas, wr_mas->type);
-+		hint = spanning_data(&cp, wr_mas, &r_wr_mas, &sib);
-+		multi_src_setup(&cp, wr_mas, &r_wr_mas, &sib, hint);
-+		dst_setup(&cp, mas, wr_mas->type, hint);
- 		cp_data_write(&cp, mas);
--	} while (spanning_ascend(&cp, mas, wr_mas, &r_wr_mas, &sib));
-+	} while (spanning_ascend(&cp, mas, wr_mas, &r_wr_mas, &sib, hint));
- 
- 	mas_wmb_replace(mas, &cp);
- }
-@@ -3377,7 +3547,7 @@ static inline void mas_wr_append(struct ma_wr_state *wr_mas)
-  */
- static inline bool split_ascend(struct maple_copy *cp,
- 		struct ma_wr_state *wr_mas, struct ma_state *sib,
--		struct ma_state *parent)
-+		struct ma_state *parent, unsigned char hint)
- {
- 	struct ma_state *mas;
- 	unsigned long min, max;
-@@ -3386,21 +3556,19 @@ static inline bool split_ascend(struct maple_copy *cp,
- 	min = mas->min; /* push right, or normal split */
- 	max = mas->max;
- 	wr_mas->offset_end = parent->offset;
--	if (sib->end) {
--		if (sib->max < mas->min) {
--			min = sib->min; /* push left */
--			parent->offset--;
--		} else {
--			max = sib->max; /* push right */
--			wr_mas->offset_end++;
--		}
-+	if (hint == MAPLE_DST_FAVOUR_LEFT) {
-+		min = sib->min; /* push left */
-+		parent->offset--;
-+	} else if (hint == MAPLE_DST_FAVOUR_RIGHT) {
-+		max = sib->max; /* push right */
-+		wr_mas->offset_end++;
- 	}
- 
- 	cp_dst_to_slots(cp, min, max, mas);
- 	if (cp_is_new_root(cp, mas))
- 		return false;
- 
--	if (cp_converged(cp, mas, sib))
-+	if (cp_converged(cp, mas, hint))
- 		return false;
- 
- 	cp->height++;
-@@ -3420,19 +3588,24 @@ static inline bool split_ascend(struct maple_copy *cp,
-  * indicate it will not be used.
-  *
-  */
--static inline void split_data(struct maple_copy *cp,
-+static inline unsigned char split_data(struct maple_copy *cp,
- 		struct ma_wr_state *wr_mas, struct ma_state *sib,
- 		struct ma_state *parent)
- {
-+	unsigned char hint = MAPLE_DST_NEUTRAL;
-+
- 	cp_data_calc(cp, wr_mas, wr_mas);
-+
- 	if (cp->data <= mt_slots[wr_mas->type]) {
- 		sib->end = 0;
--		return;
-+		return hint;
- 	}
- 
--	push_data_sib(cp, wr_mas->mas, sib, parent);
--	if (sib->end)
-+	hint = push_data_sib_split(cp, wr_mas->mas, sib, parent);
-+	if (hint != MAPLE_DST_NEUTRAL)
- 		cp->data += sib->end + 1;
-+
-+	return hint;
- }
- 
- /*
-@@ -3445,6 +3618,7 @@ static void mas_wr_split(struct ma_wr_state *wr_mas)
- 	struct ma_state *mas;
- 	struct maple_copy cp;
- 	struct ma_state sib;
-+	unsigned char hint;
- 
- 	mas = wr_mas->mas;
- 	trace_ma_write(TP_FCT, wr_mas->mas, 0, wr_mas->entry);
-@@ -3455,11 +3629,11 @@ static void mas_wr_split(struct ma_wr_state *wr_mas)
- 			mas_ascend(&parent);
- 			parent.end = mas_data_end(&parent);
- 		}
--		split_data(&cp, wr_mas, &sib, &parent);
--		multi_src_setup(&cp, wr_mas, wr_mas, &sib);
--		dst_setup(&cp, mas, wr_mas->type);
-+		hint = split_data(&cp, wr_mas, &sib, &parent);
-+		multi_src_setup(&cp, wr_mas, wr_mas, &sib, hint);
-+		dst_setup(&cp, mas, wr_mas->type, hint);
- 		cp_data_write(&cp, mas);
--	} while (split_ascend(&cp, wr_mas, &sib, &parent));
-+	} while (split_ascend(&cp, wr_mas, &sib, &parent, hint));
- 
- 	mas_wmb_replace(mas, &cp);
- }
-@@ -3478,6 +3652,7 @@ static void mas_wr_rebalance(struct ma_wr_state *wr_mas)
- 	struct ma_state *mas;
- 	struct maple_copy cp;
- 	struct ma_state sib;
-+	unsigned char hint;
- 
- 	/*
- 	 * Rebalancing occurs if a node is insufficient.  Data is rebalanced
-@@ -3498,11 +3673,11 @@ static void mas_wr_rebalance(struct ma_wr_state *wr_mas)
- 			mas_ascend(&parent);
- 			parent.end = mas_data_end(&parent);
- 		}
--		rebalance_data(&cp, wr_mas, &sib, &parent);
--		multi_src_setup(&cp, wr_mas, wr_mas, &sib);
--		dst_setup(&cp, mas, wr_mas->type);
-+		hint = rebalance_data(&cp, wr_mas, &sib, &parent);
-+		multi_src_setup(&cp, wr_mas, wr_mas, &sib, hint);
-+		dst_setup(&cp, mas, wr_mas->type, hint);
- 		cp_data_write(&cp, mas);
--	} while (rebalance_ascend(&cp, wr_mas, &sib, &parent));
-+	} while (rebalance_ascend(&cp, wr_mas, &sib, &parent, hint));
- 
- 	mas_wmb_replace(mas, &cp);
- }
-diff --git a/lib/test_maple_tree.c b/lib/test_maple_tree.c
-index b9367c61e8b5..4033d1b85fee 100644
---- a/lib/test_maple_tree.c
-+++ b/lib/test_maple_tree.c
-@@ -1723,9 +1723,10 @@ static noinline void __init check_gap_combining(struct maple_tree *mt)
- 	mn1 = mas.node;
- 	entry = mas_next(&mas, ULONG_MAX);
- 	MT_BUG_ON(mt, entry != xa_mk_value(index + 4));
--	mas_next(&mas, ULONG_MAX); /* go to the next entry. */
- 	mn2 = mas.node;
--	MT_BUG_ON(mt, mn1 == mn2); /* test the next entry is in the next node. */
-+	MT_BUG_ON(mt, mn1 == mn2);
-+	entry = mas_next(&mas, ULONG_MAX); /* go to the next entry. */
-+	MT_BUG_ON(mt, entry != xa_mk_value(index + 5));
- 
- 	/*
- 	 * At this point, there is a gap of 3 at seq100[6].  Find it by
--- 
-2.47.3
-
-
---nbgco3lueasalhqb--
+> kern  :warn  : [  434.509085] [   T5907] ------------[ cut here ]------------
+> kern  :warn  : [  434.509089] [   T5907] WARNING: kernel/rcu/rcutorture.c:2653 at rcu_torture_irq+0x119/0x170 [rcutorture], CPU#2: rcu_torture_rea/5907
+> kern  :warn  : [  434.509137] [   T5907] Modules linked in: rcutorture(+) torture netconsole binfmt_misc snd_hda_codec_intelhdmi snd_hda_codec_hdmi btrfs libblake2b zstd_compress raid6_pq intel_rapl_msr intel_rapl_common xor snd_hda_codec_alc882 x86_pkg_temp_thermal snd_hda_codec_realtek_lib i915 snd_hda_codec_generic intel_powerclamp sd_mod coretemp snd_hda_intel intel_gtt drm_buddy sg snd_hda_codec ttm kvm_intel snd_soc_rt5640 drm_display_helper snd_soc_rl6231 snd_hda_core regmap_i2c kvm snd_intel_dspcfg cec snd_soc_core snd_intel_sdw_acpi drm_client_lib snd_hwdep snd_compress irqbypass drm_kms_helper rapl mxm_wmi ahci snd_pcm libahci alx video intel_cstate intel_uncore pcspkr mei_me i2c_i801 libata mdio snd_timer mei i2c_smbus lpc_ich snd wmi soundcore acpi_pad joydev drm fuse nfnetlink [last unloaded: ltp_uaccess(OE)]
+> kern  :warn  : [  434.509249] [   T5907] CPU: 2 UID: 0 PID: 5907 Comm: rcu_torture_rea Tainted: G S      W  OE       7.1.0-rc1+ #1 PREEMPT(lazy)
+> kern  :warn  : [  434.509265] [   T5907] Tainted: [S]=CPU_OUT_OF_SPEC, [W]=WARN, [O]=OOT_MODULE, [E]=UNSIGNED_MODULE
+> kern  :warn  : [  434.509267] [   T5907] Hardware name: Gigabyte Technology Co., Ltd. Z97X-UD5H/Z97X-UD5H, BIOS F9 04/21/2015
+> kern  :warn  : [  434.509270] [   T5907] RIP: 0010:rcu_torture_irq (rcu/rcutorture.c:2654 (discriminator 1)) rcutorture
+> kern  :warn  : [  434.509287] [   T5907] Code: 93 20 01 00 00 48 83 c4 08 48 c7 c6 10 bb 19 c1 48 89 c7 5b e9 68 14 f7 c2 48 83 c4 08 5b c3 cc cc cc cc 0f 0b e9 0e ff ff ff <0f> 0b e9 fc fe ff ff e8 5b 00 da c0 e9 5a ff ff ff 48 89 04 24 e8
+> All code
+> ========
+>    0:	93                   	xchg   %eax,%ebx
+>    1:	20 01                	and    %al,(%rcx)
+>    3:	00 00                	add    %al,(%rax)
+>    5:	48 83 c4 08          	add    $0x8,%rsp
+>    9:	48 c7 c6 10 bb 19 c1 	mov    $0xffffffffc119bb10,%rsi
+>   10:	48 89 c7             	mov    %rax,%rdi
+>   13:	5b                   	pop    %rbx
+>   14:	e9 68 14 f7 c2       	jmp    0xffffffffc2f71481
+>   19:	48 83 c4 08          	add    $0x8,%rsp
+>   1d:	5b                   	pop    %rbx
+>   1e:	c3                   	ret
+>   1f:	cc                   	int3
+>   20:	cc                   	int3
+>   21:	cc                   	int3
+>   22:	cc                   	int3
+>   23:	0f 0b                	ud2
+>   25:	e9 0e ff ff ff       	jmp    0xffffffffffffff38
+>   2a:*	0f 0b                	ud2		<-- trapping instruction
+>   2c:	e9 fc fe ff ff       	jmp    0xffffffffffffff2d
+>   31:	e8 5b 00 da c0       	call   0xffffffffc0da0091
+>   36:	e9 5a ff ff ff       	jmp    0xffffffffffffff95
+>   3b:	48 89 04 24          	mov    %rax,(%rsp)
+>   3f:	e8                   	.byte 0xe8
+> 
+> Code starting with the faulting instruction
+> ===========================================
+>    0:	0f 0b                	ud2
+>    2:	e9 fc fe ff ff       	jmp    0xffffffffffffff03
+>    7:	e8 5b 00 da c0       	call   0xffffffffc0da0067
+>    c:	e9 5a ff ff ff       	jmp    0xffffffffffffff6b
+>   11:	48 89 04 24          	mov    %rax,(%rsp)
+>   15:	e8                   	.byte 0xe8
+> kern  :warn  : [  434.509290] [   T5907] RSP: 0018:ffffc9000261fc10 EFLAGS: 00010046
+> kern  :warn  : [  434.509294] [   T5907] RAX: 0000000080000002 RBX: ffff888396343248 RCX: ffffffff81828b23
+> kern  :warn  : [  434.509297] [   T5907] RDX: 0000000000000000 RSI: ffff888396343240 RDI: 0000000000000000
+> kern  :warn  : [  434.509299] [   T5907] RBP: 0000000000000246 R08: 0000000000000000 R09: fffffbfff0c72894
+> kern  :warn  : [  434.509301] [   T5907] R10: ffffffff863944a7 R11: 0000000000000000 R12: ffffffffc11a3f10
+> kern  :warn  : [  434.509303] [   T5907] R13: 0000000000000000 R14: ffffffffc11a3f10 R15: 0000000000000000
+> kern  :warn  : [  434.509316] [   T5907] FS:  0000000000000000(0000) GS:ffff88840ef63000(0000) knlGS:0000000000000000
+> kern  :warn  : [  434.509318] [   T5907] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> kern  :warn  : [  434.509320] [   T5907] CR2: 000056053f590492 CR3: 000000041c870005 CR4: 00000000001726f0
+> kern  :warn  : [  434.509323] [   T5907] Call Trace:
+> kern  :warn  : [  434.509325] [   T5907]  <TASK>
+> kern  :warn  : [  434.509327] [   T5907]  generic_exec_single (smp.c:136 smp.c:453)
+> kern  :warn  : [  434.509332] [   T5907]  ? __pfx_rcu_torture_irq (rcu/rcutorture.c:2607) rcutorture
+> kern  :warn  : [  434.509360] [   T5907]  smp_call_function_single (smp.c:699)
+> kern  :warn  : [  434.509364] [   T5907]  ? __pfx_smp_call_function_single (smp.c:375 (discriminator 4))
+> kern  :warn  : [  434.509367] [   T5907]  ? local_clock_noinstr (sched/clock.c:307)
+> kern  :warn  : [  434.509371] [   T5907] rcu_torture_reader (rcu/rcutorture.c:2700) rcutorture
+> kern  :warn  : [  434.509398] [   T5907]  ? __pfx_rcu_torture_reader (rcu/rcutorture.c:4041) rcutorture
+> kern  :warn  : [  434.509412] [   T5907]  ? _raw_spin_lock_irqsave (linux/instrumented.h:55 linux/atomic/atomic-instrumented.h:1301 asm-generic/qspinlock.h:111 linux/spinlock.h:187 linux/spinlock_api_smp.h:133 locking/spinlock.c:166)
+> kern  :warn  : [  434.509417] [   T5907]  ? __pfx_rcu_torture_timer (linux/slab.h:950) rcutorture
+> kern  :warn  : [  434.509443] [   T5907]  ? __kthread_parkme (linux/instrumented.h:82 asm-generic/bitops/instrumented-non-atomic.h:141 kthread.c:272)
+> kern  :warn  : [  434.509448] [   T5907]  ? __pfx_rcu_torture_reader (rcu/rcutorture.c:4041) rcutorture
+> kern  :warn  : [  434.509465] [   T5907]  ? __pfx_rcu_torture_reader (rcu/rcutorture.c:4041) rcutorture
+> kern  :warn  : [  434.509490] [   T5907]  kthread (kthread.c:436)
+> kern  :warn  : [  434.509493] [   T5907]  ? recalc_sigpending (linux/instrumented.h:97 asm-generic/bitops/instrumented-atomic.h:41 linux/thread_info.h:109 signal.c:181)
+> kern  :warn  : [  434.509495] [   T5907]  ? __pfx_kthread (linux/list.h:381 (discriminator 2))
+> kern  :warn  : [  434.509498] [   T5907]  ret_from_fork (x86/kernel/process.c:158)
+> kern  :warn  : [  434.509502] [   T5907]  ? __pfx_ret_from_fork (x86/include/asm/entry-common.h:54)
+> kern  :warn  : [  434.509504] [   T5907]  ? switch_fpu (linux/instrumented.h:82 asm-generic/bitops/instrumented-non-atomic.h:141 linux/thread_info.h:133 linux/sched.h:2067 x86/include/asm/fpu/sched.h:34)
+> kern  :warn  : [  434.509508] [   T5907]  ? __switch_to (x86/kernel/process_64.c:403 x86/kernel/process_64.c:663)
+> kern  :warn  : [  434.509511] [   T5907]  ? __switch_to_asm (x86/entry/entry_64.S:206)
+> kern  :warn  : [  434.509515] [   T5907]  ? __pfx_kthread (linux/list.h:381 (discriminator 2))
+> kern  :warn  : [  434.509517] [   T5907]  ret_from_fork_asm (x86/entry/entry_64.S:245)
+> kern  :warn  : [  434.509522] [   T5907]  </TASK>
+> kern  :warn  : [  434.509523] [   T5907] ---[ end trace 0000000000000000 ]---
+> 
+> 
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20260521/202605211529.6ba1b4ff-lkp@intel.com
+> 
+> 
+> 
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+> 
