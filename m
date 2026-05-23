@@ -1,252 +1,456 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3C5C2F3C07
-	for <oe-lkp@lists.linux.dev>; Sat, 23 May 2026 14:44:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.9
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779547477; cv=fail; b=St535xFqhlSuVF0ie4v4PMrZoMarc9T1tFCLnypZOTk8S+DVhMOrH9Qa5ERhwrAm9EBqZ+Ei1qohmgPrtBf7mNFtXoLjN1RexUsveNYee9yVBSmfr9nfAcfd6ut7T5azFtlCExCc88t6nA2E6AXCtxFvOUN2A97jYCwstw/PNko=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779547477; c=relaxed/simple;
-	bh=1Dnf5WEgUEjGcjYqa6maIP24winOnoPPQ11F7nwe17s=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=oOcitAR9Uq3qziWOJUJSeguc5zwd3ZWkmwY+WPVo7lTyTTxVtOP/9crWyyxi/0yRrGEvbGo3Uaf7vzJugoE6vjhlLDWt6w0+1TxD942elO2EeOcvUpa1nc44/nQYc0f9HeQOs3+qlpMMyr18qxmF6RpFu+x2PMbk6VnaYbGYJRI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gzSIWANO; arc=fail smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88F5E2D7D2E;
+	Sat, 23 May 2026 15:12:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779549162; cv=none; b=mmPh36U9AemxFu2kJA/uQCyFHEE44rNjBjznZ9Ia9Ns6Fcnn4VY+fhwiUFxZlk1Rf8Dh31MZxaAKCdtA4w3DwnM0k6ijTkapqcWK9Jt/1teperFbYn9MaPFdaWpofsN09qwBPwOnuBuwahiNrGSUPqnvYVUYFN2Sem+HbEMfymo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779549162; c=relaxed/simple;
+	bh=PJQLLK4zauSzFSgLP9Nqb9JUqme66UlBasf66Nouaqw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OELLGPXtWCIDwesXA5vQpSSPX0N+mvHNZB11AYPJDbGaZWC8C18wC7mTuGW2/fcQwGvwOg9/InBxxAmWx4C3T4EZOi7jomdznmv5euFKourpYXXNdYIx2yyrvWCBvuJUPhuxhzjBmyd1MTOb++Cubq8mDaVgV9iM2ZUymjw1Ysk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=2FJ4aZDG; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gzSIWANO"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1779547476; x=1811083476;
-  h=date:from:to:cc:subject:message-id:
-   content-transfer-encoding:in-reply-to:mime-version;
-  bh=1Dnf5WEgUEjGcjYqa6maIP24winOnoPPQ11F7nwe17s=;
-  b=gzSIWANOg12efEx5V4w3Uf/L0ARwDaOe9YAugUgCfAnHtE3k1wbS9ypR
-   ghKulNhMpJRaIwC7HnxNj5fzijDa6jv0eWF/uXBGomzXyjxpF6QVKA72i
-   8253S0eHrvaHeLQTbl1KLUJCGTVRNaJzBeJFh/KEkaCn6YaDiDSv0zYyr
-   E17vYfdWUGVR1tmxIt5sZHDVGJ0kwo6oiyKuug99dUTwEeCfqQ+xuCk+q
-   tCfRkPfDzGi2YPsz7xz70PGlKK5IkxMgffJplUQB37Rx7o8P/YE2WR5kN
-   Fe6hB2BiDa0V8qRuuVSm9026HeGgeYCHJQMD4+JvXhEFw+KK+JlNJHyw7
-   g==;
-X-CSE-ConnectionGUID: r7s+kpdoS52oPoTuWbeknQ==
-X-CSE-MsgGUID: HHIHhnxrRfG81UKihL852g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11795"; a="103123826"
-X-IronPort-AV: E=Sophos;i="6.24,164,1774335600"; 
-   d="scan'208";a="103123826"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2026 07:44:35 -0700
-X-CSE-ConnectionGUID: tVSY4uQJSd2TeUFtmevgSA==
-X-CSE-MsgGUID: rNcCAO7CQI+AO3/MHkG0mA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,164,1774335600"; 
-   d="scan'208";a="241238449"
-Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
-  by orviesa009.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2026 07:44:34 -0700
-Received: from ORSMSX903.amr.corp.intel.com (10.22.229.25) by
- ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Sat, 23 May 2026 07:44:34 -0700
-Received: from ORSEDG902.ED.cps.intel.com (10.7.248.12) by
- ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Sat, 23 May 2026 07:44:34 -0700
-Received: from CO1PR03CU002.outbound.protection.outlook.com (52.101.46.28) by
- edgegateway.intel.com (134.134.137.112) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Sat, 23 May 2026 07:44:34 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Qn4EjqS/0hleJe2i8KzCaCD/RFu4+kTijYvgK4OxlIWPPsgNK1r7hdaJ6IYX6OMhPzCa1MxAjdIrq9TM1bbuXUYiNf5YvRDwbkKjv8m954FUpPfEA+lkZ5e1VLVfUHgdSzkWxc2D2OVSB7PeBzsqQIEIFvjlCJBQYpEV4OhFdALieqf8XXTLnFDXi1BiPRmYXJUSuYm7EdcF/q5OT5RRg0CuGNkaqtMbZXLixiZlGkTIc7n7ibTqqiwEU4/bNvZ/t57PxXU7WtlX9mz7EeQZr494DsWv0TZX9Zvrd79MkNUWiM/vKwllImknTrXgAZPanpvgW7TGmhqBNg6OhwnvDg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6BmOb/z5ris3OxACuN4zB/2eUCODwkhB/m6hm3wzw5Q=;
- b=UbJZciHzDgJzFAligUVOKGid50TbMbgo8Lxr1klwfrw6At0sQKjMEvbKftA0t83U2+LzPmVqpIN/pt11nXR0ZRq87Pyky1sw0bGNLnO6V+7JZeTvF49dGWV4R2CTMEt86mjAi0A7zttpYmgKTbGrU2uSHaMui3rs/i3TV+QBquBPcb99888tBtGSpTTYGs8oNz84y+QmykwZT6xMbKcHfSLD09cKxwNQG/6Oi9KhZrAl3l2PKmdFWqfsbrRabXMAZP5qf2axg+KeBBdLGXGYbcetCfOV+T1/Z+dHpSID5nb21PhV0+1G2DiZrdL2QHlyrE3qX/AzifcwDg9dimPewQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH0PR11MB5832.namprd11.prod.outlook.com (2603:10b6:510:141::7)
- by CO1PR11MB5026.namprd11.prod.outlook.com (2603:10b6:303:9c::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.48.18; Sat, 23 May
- 2026 14:44:31 +0000
-Received: from PH0PR11MB5832.namprd11.prod.outlook.com
- ([fe80::106e:78dd:4c96:d707]) by PH0PR11MB5832.namprd11.prod.outlook.com
- ([fe80::106e:78dd:4c96:d707%3]) with mapi id 15.21.0048.016; Sat, 23 May 2026
- 14:44:31 +0000
-Date: Sat, 23 May 2026 22:44:20 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Ian Rogers <irogers@google.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Gabriel Marin <gmx@google.com>,
-	<linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<irogers@google.com>, <acme@kernel.org>, <james.clark@linaro.org>,
-	<namhyung@kernel.org>, <adrian.hunter@intel.com>, <jolsa@kernel.org>,
-	<mingo@redhat.com>, <peterz@infradead.org>, <oliver.sang@intel.com>
-Subject: Re: [PATCH v8 2/4] perf inject/aslr: Add aslr tool to
- remap/obfuscate virtual addresses
-Message-ID: <202605231644.ac628f76-lkp@intel.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260520063050.3917261-3-irogers@google.com>
-X-ClientProxiedBy: SI2PR01CA0051.apcprd01.prod.exchangelabs.com
- (2603:1096:4:193::6) To PH0PR11MB5832.namprd11.prod.outlook.com
- (2603:10b6:510:141::7)
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="2FJ4aZDG"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Transfer-Encoding
+	:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+	Sender:Reply-To:Content-ID:Content-Description;
+	bh=Myg1tl30/7kM6tmk+zneEJGFOpU3f3rcS+xKvSTU4wY=; b=2FJ4aZDGqoLFj0pCF2d5vMtriM
+	in9yk9l3JAtJc8EfLPSb80n2uq8irr4eEmLjQKwRX45XyPrLjLcXVnNMYZZh/besOlZUeOkbFqIdq
+	1ybdW+Y6kaqf3vVySDy2ZBuQ1F0XiLfa5ovjYYSMr+pkkfONftlurtqbklWQNC7xDA+QpG3vxFKPl
+	x6BbESfmNpfEnB+g45B4ZVx3WAZN68Wh779ueObwI61GWzJX9iSpNTJjsDZWkbnrzi3aETU5pZne+
+	Y7aZxcE0E3lEveAXEGo7c3tQQcDqvlG5pyghNgd/0bWpm9MTx++ahoHBNYBmsfHyD25Tmm8aEKFfJ
+	JjwppYqA==;
+Received: from [38.23.173.23] (helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
+	id 1wQo1b-0000000DTXy-1QrC;
+	Sat, 23 May 2026 15:12:27 +0000
+Date: Sat, 23 May 2026 11:12:24 -0400
+From: "Liam R. Howlett" <liam@infradead.org>
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, 
+	Andrew Morton <akpm@linux-foundation.org>, Alice Ryhl <aliceryhl@google.com>, 
+	Andrew Ballance <andrewjballance@gmail.com>, Arnd Bergmann <arnd@arndb.de>, 
+	Christian Kujau <lists@nerdbynature.de>, Geert Uytterhoeven <geert@linux-m68k.org>, 
+	Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>, Matthew Wilcox <willy@infradead.org>, 
+	SeongJae Park <sj@kernel.org>, Sidhartha Kumar <sidhartha.kumar@oracle.com>, 
+	Suren Baghdasaryan <surenb@google.com>, Vlastimil Babka <vbabka@suse.cz>, maple-tree@lists.infradead.org, 
+	linux-mm@kvack.org
+Subject: Re: [linus:master] [maple_tree]  280b792cac:
+ will-it-scale.per_process_ops 6.0% regression
+Message-ID: <wbgsjfbbiwmx2glp72ifomyb6fb7uc4lwffwg5z2inv4tzskbf@ufgets7hbskz>
+References: <202605131554.92e7df6b-lkp@intel.com>
+ <22y6gvr7yzwdocwpd3wxrxfykmpvhbxytiiuht32db3dh7w522@pglkrpqognjk>
+ <agV3Q2fBlQrB5v9w@xsang-OptiPlex-9020>
+ <g7pvhqnuloifqhbvjgtgydbitcrvmxibferexj7cunsmagttps@oxjvs3aa3l3s>
+ <ahFciGk6LfkOU2en@xsang-OptiPlex-9020>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR11MB5832:EE_|CO1PR11MB5026:EE_
-X-MS-Office365-Filtering-Correlation-Id: 734af306-c773-49ef-c1bc-08deb8d9cc8b
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|1800799024|366016|11063799006|6133799003|3023799007|18002099003|56012099003|22082099003;
-X-Microsoft-Antispam-Message-Info: 60aqPU1QQuykJ+a7PQ+Q6lqiVc41VGzef9inM/Q/WZ34UMScLJktQloKD7AA1S0wDmxXzUL8l5TYc/cR6HTa03BTJx+AnP0JHSfK95QR4TFTPmP+pSoE/l3/J7+kkDRf/vt6xhytAeVpqtzqxF9E1rsr02GDIxskncO6j8n0t70XkGdcsXiSP9jKobOXhSlEn9r7ADnFdEwn3QeVQKdMRRTx2QnxqNzGfPAgKEOw65tOSXrna7D/z7XPYKcTvfBSaSAvI77iMmT4DaupHFHm4GH4pbr7uof1wQNP4TRqGnfHHsssfapFLgzvc1LSYOQ8N2IdbffD2DIOKrDBFn2EA5IhlexQlmcDbjLg6hOlr6FS07Tmiew20EZCWM557rO+l4WTy/6QHSRC1L6KPWV+ZsRVnQoJkyvcGYROfmF7WHOliyHgZJR/OZ1R/HDIHSkiRJ1A316APpZYiAHizwNS2+PE9MK2b99OVapQF8xp7Fhr415SiHjheqSWIUEJ8aFq/tEUdPu2uREVtYEyq3gpE670dgeEjb3QW8C/ci8e362BPmwuqJCxg8FwlaeYVjzMr8D+IGwP/XzL1tfr6qBFgj8DbSD49fLYs0ECntTinswz6PM1AEcqCEBGD8+r+RtHyEXnOPxZzwiYPyuZ8/jDlw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5832.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(366016)(11063799006)(6133799003)(3023799007)(18002099003)(56012099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?aG5EYjd0OG1veERoTCtWcjlCVlg4dkNnVlVSdTZmVGdVMC8vVHVJYk1iNUVX?=
- =?utf-8?B?Skpib29NNzUvNndVMWIycDJ6bFV1M0ppYlp0MDI0WDU5Ny9TakdXSjdIVXBt?=
- =?utf-8?B?c3VZbDlTMHBjTUVyMzh4eGJJa3dMRjZMMGtIOSswNGEvSy9sTVp5YXZkaElQ?=
- =?utf-8?B?UGNMbk1zV0J4NUg5QkNWTkVmSTFVY3VBam01dlc1TlF6d2FlbXp3QW0rTHZN?=
- =?utf-8?B?dFJUbm1XM3paZGFlZGFEUkxVYVU2enBxZVhEdFVnZi9VOXh0Y2lzZ0V2bHV0?=
- =?utf-8?B?M2VBdENOV0E3R25Hcldka3hrcXNLd2pLVWptbWtxTTBwdUxVQ2JhRjFGbnEv?=
- =?utf-8?B?T3d2dldwVGc3OWtOSWhOQURDWGhrY0s3emt6MTVsZFVyS0tJd0NjRTVJMDVz?=
- =?utf-8?B?R0ZlaFFtcmF6b0lKVk5BQlVESGYrZkNzZlZCVVNSSlIrUFNVTEVCN1hUNkdK?=
- =?utf-8?B?Q0dLSTN0MnlwclIxWFlZazVEYmxHRzlTdENWYTY0alZybUgyeXlaREc2NnVO?=
- =?utf-8?B?cW5xSFFBRVptSWp0L3RsRUpGa0xSL3VtTWdSRlFkRlArY0RKRHJYbFZEeHVJ?=
- =?utf-8?B?UGlXM0J1a0YyY3NheGpSN0tjNDQvLzZiZkJOZDJSbjRNVmpBN21tbDdDNEZs?=
- =?utf-8?B?QXI3MmdPa2JCUTBPdHdqQWVFZnR1eDQrYm5aMkxEWlRsak1zYy9FbW5leC94?=
- =?utf-8?B?VDdJeWJlOUZ0c3FVOGtodTgyVFN4K3ZUV1FPUkdxNHJSRHJKWDFpOW9QQy9N?=
- =?utf-8?B?ZTZVTGdRSWNtd2ZDSVJmb202ZjVjNXBJeHJkS2Ryc2xaNGp3K2pLazQrY3V2?=
- =?utf-8?B?emFXWnV0NC83Rk5aMkNWYXFDNXdhazBaQTd0NGpONUFsd2ZXVmpGQmdrYTRO?=
- =?utf-8?B?empZelFwb0piRFUrVVVZVkE2ZTBtcTBITWUvanZ2bFNTWS9wKzNBUmM0ODhh?=
- =?utf-8?B?QXB3VENLZDExWkJscGFaTFdaWUlmcVIvSXFlUnVpZWs4VlhJL3pJU3Y4a0dq?=
- =?utf-8?B?SnZCcEk4ZWlTZWdFdDByc0ltOFgyUVhDYndIRDBEalQ4c1A2bkQ0YWVkYkpZ?=
- =?utf-8?B?YUpIS0FYUnM2b3dLRkx3emw1cGR3U25qK0tvWk1tRlFiWWMzUktZOXJWNm4r?=
- =?utf-8?B?VjFZMTJQQ3ZwUVZzS1czekRqNko3cUNBUldob0krOUdNa25SNXk2VWU3VUpQ?=
- =?utf-8?B?dldoeGFNSVo1bVAzZFlETEY2Tms0MzArbGdOMTdNU0RJM2pZQnd4TlVyVVFi?=
- =?utf-8?B?cjhURzl0UGtqYVAvanZzK0tXV0Z1Ri9PRkt3ZXQ4ZEYzVENIOExKT2NiNE1o?=
- =?utf-8?B?ckdRSXIrS0xTdEN1RjFXbkowOFczQUZPWldqSG5TWms2cVhkNkVlVGtNNndK?=
- =?utf-8?B?eVZZcEphbUVwOHg2WDBvZ2dTb0tDdkdWc2NQVmZ6RnY5ZzlaenFReDRRZFVR?=
- =?utf-8?B?VHFURXpkRHJQTjNOZG01am1WOTNqMEVBUkFPY2FDWEllS3RUSjg4dyt1eE4z?=
- =?utf-8?B?S1lhMjFkT3NyUXBxcDJ0Z3pTUElJMDZPZkpycngvb2ZmNWJlcWhxNkg4QnRo?=
- =?utf-8?B?WTd5VEloNU9ibUlHYWVnOFhyMGJOSDBha0NOUCtCUFhZRmtQRlpGK1Myb2RD?=
- =?utf-8?B?UUNsWU4zblViR3VLQTFGRS9ITHYvZVk5dHRka2hGSWFsT05hd3VUUzM4ZDBC?=
- =?utf-8?B?eS9WY1ExdzVzQ0dZMWMvaTNrRnB1bldvU0NlRGpkbnd4c2RGeGhoWVZuaExR?=
- =?utf-8?B?SmZSYWNOVkw5ZXF3bmhDcXVJV0NxS2NGa3VUZXkzMXZMbmsxaUZTL3VnK011?=
- =?utf-8?B?SXZrbDR2RjJyMXZJQkhPcTd4UGFMNTZ0REpESHFHZmk0OTVybTRzUUNiZTll?=
- =?utf-8?B?Z1QvTFZKMDM3WlFMTUJ6ZGZNVUtFcTBGeWNOVHVkSkVxVEJpN25tTzB1M2hj?=
- =?utf-8?B?WUVrNy9NQTZGL1REZCtucDJkZmY3bm9jUm1xeGtRMGFSQjU3YmEvTWhhYkdP?=
- =?utf-8?B?bjBRcjlmNFNLOXpxTzBVU0g3ZzRUTmNBWHpxTXBLTjA1R3dFZW1aUnJFbjh1?=
- =?utf-8?B?Wm9OT2NHSlB5Slcrb2kwb0Z0UlIzaGU0RTQ1M0Iwc0xmemdzUkxsc2MyWFZt?=
- =?utf-8?B?WFVYeFhRTk4wTlMra2hwbGhvaEZiV01URHI1dmxTY2NyTFhsM2xYcWp1dUEx?=
- =?utf-8?B?aTJENDA4VnF5VnNCMGh6blB4ZlM0WERyczh0UWVoQVJxOUxQNGcrTmFZb0Fl?=
- =?utf-8?B?c1QxUUlNeXlPK25HZjUwTXpHOTFlYlJGWDFjRjg5Z3Jnc0xJS1F3d29nbXRP?=
- =?utf-8?B?anZMVFUzc1Z0L3UyMFN0dlkyanBTZGZCd0ZBa1kvWGMrR1UxbnREQT09?=
-X-Exchange-RoutingPolicyChecked: soxPwlnbZZ/qGjADXAm9OPxTGUUDssAZR2T5w/eufmslOOjRZnz/LHappw7YbRSW1zntnL+6WWUgdgknbmYsTpcEb5OmsBZicV0le5cNqjZQ3STY5ENeFMWr3CrIOAbnEli3BF594RF+AjbXF92ln6B+4EB4Lh1w/XxgafhQh7ToKjKrH+fGGpZIV7yHvjCFC+BNs049MN1C52f9GXxnjYr81051DGtIs2q4Q6mGIuzQT3v5KIaw9Yu0kekN/jOzO7sume2xFphpIBTNLnemBOCkvr8wi7Nk7kK2Bo18qlqf04nifLgIOAoiv/qCj0RARH6hiMS/rTMyVtK8H3A4+Q==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 734af306-c773-49ef-c1bc-08deb8d9cc8b
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5832.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2026 14:44:31.3652
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vKS57Sue20JZa25wPdoYPzj/1OX8MOtZxYXWruMTXSPhqX/Rvhk50OD9PcXlxi9+POG4GEdklDVe2VRjzw9bgQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB5026
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ahFciGk6LfkOU2en@xsang-OptiPlex-9020>
+
+On 26/05/23 03:51PM, Oliver Sang wrote:
+> hi, Liam,
+> 
+> On Thu, May 21, 2026 at 11:45:05AM -0400, Liam R. Howlett wrote:
+> > On 26/05/14 03:18PM, Oliver Sang wrote:
+> > > hi, Liam,
+> > > 
+> > > On Wed, May 13, 2026 at 08:16:42PM -0400, Liam R. Howlett wrote:
+> > > > On 26/05/13 03:40PM, kernel test robot wrote:
+> > > > > 
+> > > > > 
+> > > > > Hello,
+> > > > > 
+> > > > > kernel test robot noticed a 6.0% regression of will-it-scale.per_process_ops on:
+> > > > > 
+> > > > > 
+> > > > > commit: 280b792cac62ddadca2935766ca870b438c86323 ("maple_tree: use maple copy node for mas_wr_split()")
+> > > > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> > > > > 
+> > > > > [still regression on linus/master      5d6919055dec134de3c40167a490f33c74c12581]
+> > > > > [still regression on linux-next/master e98d21c170b01ddef366f023bbfcf6b31509fa83]
+> > > > > 
+> > > > > testcase: will-it-scale
+> > > > > config: x86_64-rhel-9.4
+> > > > > compiler: gcc-14
+> > > > > test machine: 48 threads 2 sockets Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz (Ivy Bridge-EP) with 64G memory
+> > > > > parameters:
+> > > > > 
+> > > > > 	nr_task: 100%
+> > > > > 	mode: process
+> > > > > 	test: mmap2
+> > > > > 	cpufreq_governor: performance
+> > > > > 
+> > > > > 
+> > > > 
+> > > > Thank you for the report.
+> > > > 
+> > > > 48 threads on a 2 socket E5-2697 v2 looks to be 12 cores (24 threads)
+> > > > per cpu (so x2), or exactly one mmap2 process per hyperthread.
+> > > 
+> > > this is the cpu information:
+> > > 
+> > > Architecture:        x86_64
+> > > CPU op-mode(s):      32-bit, 64-bit
+> > > Byte Order:          Little Endian
+> > > Address sizes:       46 bits physical, 48 bits virtual
+> > > CPU(s):              48
+> > > On-line CPU(s) list: 0-47
+> > > Thread(s) per core:  2
+> > > Core(s) per socket:  12
+> > > Socket(s):           2
+> > > NUMA node(s):        2
+> > > Vendor ID:           GenuineIntel
+> > > CPU family:          6
+> > > Model:               62
+> > > Model name:          Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz
+> > > Stepping:            4
+> > > 
+> > > > 
+> > > > Is this across all process counts and peaks at 48, or just 48?
+> > > 
+> > > just 48. the run script is in
+> > > https://download.01.org/0day-ci/archive/20260513/202605131554.92e7df6b-lkp@intel.com/repro-script
+> > > 
+> > > cd /lkp/benchmarks/will-it-scale
+> > > python3 ./runtest.py mmap2 295 process 0 0 48
+> > > 
+> > > > Is this across many runs?
+> > > 
+> > > we run 6 times for both parent and this commit, the data looks stable
+> > > 
+> > > 11e7f22f5e85058b09ca90e74002a3b82f50e940/matrix.json:  "will-it-scale.per_process_ops": [
+> > > 11e7f22f5e85058b09ca90e74002a3b82f50e940/matrix.json-    143595,
+> > > 11e7f22f5e85058b09ca90e74002a3b82f50e940/matrix.json-    143474,
+> > > 11e7f22f5e85058b09ca90e74002a3b82f50e940/matrix.json-    144104,
+> > > 11e7f22f5e85058b09ca90e74002a3b82f50e940/matrix.json-    142796,
+> > > 11e7f22f5e85058b09ca90e74002a3b82f50e940/matrix.json-    143081,
+> > > 11e7f22f5e85058b09ca90e74002a3b82f50e940/matrix.json-    143623
+> > > 11e7f22f5e85058b09ca90e74002a3b82f50e940/matrix.json-  ],
+> > > 
+> > > 
+> > > 280b792cac62ddadca2935766ca870b438c86323/matrix.json:  "will-it-scale.per_process_ops": [
+> > > 280b792cac62ddadca2935766ca870b438c86323/matrix.json-    134451,
+> > > 280b792cac62ddadca2935766ca870b438c86323/matrix.json-    135089,
+> > > 280b792cac62ddadca2935766ca870b438c86323/matrix.json-    135080,
+> > > 280b792cac62ddadca2935766ca870b438c86323/matrix.json-    135039,
+> > > 280b792cac62ddadca2935766ca870b438c86323/matrix.json-    134082,
+> > > 280b792cac62ddadca2935766ca870b438c86323/matrix.json-    135301
+> > > 280b792cac62ddadca2935766ca870b438c86323/matrix.json-  ],
+> > > 
+> > > 
+> > > > 
+> > > > My testing didn't produce anything like this.  I'll have a look into
+> > > > this when I can, but there isn't anything obvious that sticks out as a
+> > > > likely cause.
+> > > 
+> > > if you want us to test any debug patch, it will be our great pleasure. thanks!
+> > 
+> > It looks like the result of the shape of the tree changing.  Can you try
+> > the attached patch against Linus' tree?
+> 
+> I appled your patch upon below mainline tip commit when I checked.
+> 6779b50faa562 ("Merge tag 'pci-v7.1-fixes-2' of git://git.kernel.org/pub/scm/linux/kernel/git/pci/pci")
+> 
+> then build kernels with attached config.
+> 
+> but found a big regression introduced by your patch.
+> 
+> =========================================================================================
+> compiler/cpufreq_governor/kconfig/mode/nr_task/rootfs/tbox_group/test/testcase:
+>   gcc-14/performance/x86_64-rhel-9.4/process/100%/debian-13-x86_64-20250902.cgz/lkp-ivb-2ep2/mmap2/will-it-scale
+> 
+> commit:
+>   6779b50faa562 ("Merge tag 'pci-v7.1-fixes-2' of git://git.kernel.org/pub/scm/linux/kernel/git/pci/pci")
+>   942596e1c1037 ("maple_tree: Restore old tree layout using new scatter-gather node copy")
+> 
+> 6779b50faa562e6c 942596e1c1037f014638541bce4
+> ---------------- ---------------------------
+>          %stddev     %change         %stddev
+>              \          |                \
+>    7023559           -42.9%    4007886        will-it-scale.48.processes
+>     146323           -42.9%      83497        will-it-scale.per_process_ops
+>    7023559           -42.9%    4007886        will-it-scale.workload
 
 
-Hello,
+How many runs did you do?  The same 6 runs with 48 processes on a 48
+thread machine?  My results vary from this dramatically (+13% increase,
+minus the 6% regression so 7% gain over what existed before).
 
-kernel test robot noticed "perf-sanity-tests.perf.make.fail" on:
+> 
+> 
+> full comparison is as below [1]
+> 
+> however, it seems the performance regression is really recovered at commit
+> 6779b50faa562, though the configs are not same.
 
-commit: ac4569348731804907b1e2e53b53583534fc0f5b ("[PATCH v8 2/4] perf inject/aslr: Add aslr tool to remap/obfuscate virtual addresses")
-url: https://github.com/intel-lab-lkp/linux/commits/Ian-Rogers/perf-maps-Add-maps__mutate_mapping/20260520-143636
-patch link: https://lore.kernel.org/all/20260520063050.3917261-3-irogers@google.com/
-patch subject: [PATCH v8 2/4] perf inject/aslr: Add aslr tool to remap/obfuscate virtual addresses
+I do not understand your statement here.
 
-in testcase: perf-sanity-tests
-version: 
-with following parameters:
+Are you saying that the current code isn't producing the regression
+after 6779b50faa562?  Because 6779b50faa562 has nothing to do with my
+code, so I don't understand why that affects the results at all.
 
-	perf_compiler: gcc
-	group: group-01
+> list the regression we reported
+> for refererence.
 
+Are you listing the regression in the applied patch for reference, or
+was the initial report for reference?
 
+This also means that I don't need to work on this now, right?  Because
+there is no regression?  I'd like to clarify that before I spend more
+time trying to fix this, especially since I saw nether of these
+regressions in my testing - that is, I cannot reproduce your findings in
+either code base.
 
-config: x86_64-rhel-9.4-bpf
-compiler: gcc-14
-test machine: 16 threads Intel(R) Core(TM) i7-13620H (Raptor Lake) with 32G memory
+> 
+> =========================================================================================
+> compiler/cpufreq_governor/kconfig/mode/nr_task/rootfs/tbox_group/test/testcase:
+>   gcc-14/performance/x86_64-rhel-9.4/process/100%/debian-13-x86_64-20250902.cgz/lkp-ivb-2ep2/mmap2/will-it-scale
+> 
+> commit: 
+>   11e7f22f5e ("maple_tree: add cp_converged() helper")
+>   280b792cac ("maple_tree: use maple copy node for mas_wr_split()")
+> 
+> 11e7f22f5e85058b 280b792cac62ddadca2935766ca 
+> ---------------- --------------------------- 
+>          %stddev     %change         %stddev
+>              \          |                \  
+>    6885401            -6.0%    6472359        will-it-scale.48.processes
+>     143445            -6.0%     134840        will-it-scale.per_process_ops
+>    6885401            -6.0%    6472359        will-it-scale.workload
+> 
+> 
+> 
+> [1]
+> =========================================================================================
+> compiler/cpufreq_governor/kconfig/mode/nr_task/rootfs/tbox_group/test/testcase:
+>   gcc-14/performance/x86_64-rhel-9.4/process/100%/debian-13-x86_64-20250902.cgz/lkp-ivb-2ep2/mmap2/will-it-scale
+> 
+> commit:
+>   6779b50faa562 ("Merge tag 'pci-v7.1-fixes-2' of git://git.kernel.org/pub/scm/linux/kernel/git/pci/pci")
+>   942596e1c1037 ("maple_tree: Restore old tree layout using new scatter-gather node copy")
+> 
+> 6779b50faa562e6c 942596e1c1037f014638541bce4
+> ---------------- ---------------------------
+>          %stddev     %change         %stddev
+>              \          |                \
+>    7023559           -42.9%    4007886        will-it-scale.48.processes
+>     146323           -42.9%      83497        will-it-scale.per_process_ops
+>    7023559           -42.9%    4007886        will-it-scale.workload
+>       0.66           -12.7%       0.58        turbostat.IPC
+>      18.34            +5.3%      19.31        turbostat.RAMWatt
+>       0.42            +0.0        0.45        mpstat.cpu.all.irq%
+>       2.66            +3.3        5.93        mpstat.cpu.all.soft%
+>      14.68            -5.9        8.81        mpstat.cpu.all.usr%
+>      14.62           -40.2%       8.75        vmstat.cpu.us
+>    6222969           -10.4%    5575283        vmstat.memory.cache
+>       7082           +38.9%       9835        vmstat.system.cs
+>    2474044 ±  6%    +298.0%    9845581 ±  6%  numa-numastat.node0.local_node
+>    2496926 ±  6%    +295.0%    9862610 ±  6%  numa-numastat.node0.numa_hit
+>    2770972 ±  3%    +255.1%    9840248 ±  5%  numa-numastat.node1.local_node
+>    2797815 ±  3%    +252.9%    9872775 ±  5%  numa-numastat.node1.numa_hit
+>     224.50 ±  7%     +79.4%     402.75 ±  2%  perf-c2c.DRAM.local
+>     130.88 ± 10%    +104.5%     267.62 ±  5%  perf-c2c.DRAM.remote
+>     477.25 ±  8%    +306.6%       1940 ±  5%  perf-c2c.HITM.local
+>      86.75 ± 17%    +190.5%     252.00 ±  5%  perf-c2c.HITM.remote
+>       7083           +39.2%       9857        perf-stat.i.context-switches
+>     243.71           -17.4%     201.31        perf-stat.i.cpu-migrations
+>       7059           +39.2%       9824        perf-stat.ps.context-switches
+>     242.83           -17.4%     200.61        perf-stat.ps.cpu-migrations
+>    2432336 ±  3%     -30.0%    1703846 ± 12%  numa-meminfo.node1.Active
+>    2432227 ±  3%     -30.0%    1703734 ± 12%  numa-meminfo.node1.Active(anon)
+>     456558 ±  7%     -60.7%     179634 ± 20%  numa-meminfo.node1.Mapped
+>       5874 ±  5%     -10.6%       5254 ±  6%  numa-meminfo.node1.PageTables
+>     111108 ±  6%      +9.8%     121989 ±  6%  numa-meminfo.node1.SUnreclaim
+>    2014977 ±  2%     -34.3%    1324406 ± 12%  numa-meminfo.node1.Shmem
+>       0.26 ±  4%     -16.5%       0.22 ±  2%  perf-sched.sch_delay.avg.ms.[unknown].[unknown].[unknown].[unknown].[unknown]
+>       0.26 ±  4%     -16.5%       0.22 ±  2%  perf-sched.total_sch_delay.average.ms
+>      33.78 ±  5%     -41.3%      19.83 ±  2%  perf-sched.total_wait_and_delay.average.ms
+>      25847 ±  5%     +73.3%      44801 ±  2%  perf-sched.total_wait_and_delay.count.ms
+>      33.51 ±  5%     -41.5%      19.61 ±  2%  perf-sched.total_wait_time.average.ms
+>      33.78 ±  5%     -41.3%      19.83 ±  2%  perf-sched.wait_and_delay.avg.ms.[unknown].[unknown].[unknown].[unknown].[unknown]
+>      25847 ±  5%     +73.3%      44801 ±  2%  perf-sched.wait_and_delay.count.[unknown].[unknown].[unknown].[unknown].[unknown]
+>      33.51 ±  5%     -41.5%      19.61 ±  2%  perf-sched.wait_time.avg.ms.[unknown].[unknown].[unknown].[unknown].[unknown]
+>    2718564           -24.0%    2067012        meminfo.Active
+>    2718343           -24.0%    2066792        meminfo.Active(anon)
+>    6132342           -10.5%    5486698        meminfo.Cached
+>     504163 ±  2%     -55.1%     226137 ±  2%  meminfo.Mapped
+>    7551345            -8.6%    6901581        meminfo.Memused
+>      11026            -5.9%      10375        meminfo.PageTables
+>     232673           +11.1%     258411        meminfo.SUnreclaim
+>    2036572           -31.7%    1390925        meminfo.Shmem
+>     321293            +7.5%     345548        meminfo.Slab
+>    7698968            -8.1%    7076107        meminfo.max_used_kB
+>    2496631 ±  6%    +295.0%    9862492 ±  6%  numa-vmstat.node0.numa_hit
+>    2473748 ±  6%    +298.0%    9845463 ±  6%  numa-vmstat.node0.numa_local
+>     608040 ±  3%     -30.0%     425868 ± 12%  numa-vmstat.node1.nr_active_anon
+>     113181 ±  7%     -60.5%      44658 ± 20%  numa-vmstat.node1.nr_mapped
+>       1466 ±  5%     -10.5%       1313 ±  6%  numa-vmstat.node1.nr_page_table_pages
+>     503740 ±  2%     -34.3%     331036 ± 12%  numa-vmstat.node1.nr_shmem
+>      27840 ±  6%      +9.9%      30585 ±  6%  numa-vmstat.node1.nr_slab_unreclaimable
+>     608040 ±  3%     -30.0%     425868 ± 12%  numa-vmstat.node1.nr_zone_active_anon
+>    2797544 ±  3%    +252.9%    9872464 ±  5%  numa-vmstat.node1.numa_hit
+>    2770701 ±  3%    +255.1%    9839937 ±  5%  numa-vmstat.node1.numa_local
+>      98407 ±  8%     -16.6%      82034 ± 12%  sched_debug.cfs_rq:/.avg_vruntime.stddev
+>     584720 ± 55%     +82.9%    1069238 ± 20%  sched_debug.cfs_rq:/.left_deadline.stddev
+>     584716 ± 55%     +82.9%    1069230 ± 20%  sched_debug.cfs_rq:/.left_vruntime.stddev
+>     584717 ± 55%     +82.9%    1069231 ± 20%  sched_debug.cfs_rq:/.right_vruntime.stddev
+>      98406 ±  8%     -16.6%      82034 ± 12%  sched_debug.cfs_rq:/.zero_vruntime.stddev
+>       3696 ± 22%     -53.0%       1736 ± 28%  sched_debug.cpu.curr->pid.min
+>       1080 ±  8%     +22.1%       1320 ±  7%  sched_debug.cpu.curr->pid.stddev
+>      24404           +36.7%      33355        sched_debug.cpu.nr_switches.avg
+>      35594 ±  5%     +26.6%      45073 ±  6%  sched_debug.cpu.nr_switches.max
+>      19226           +47.9%      28429        sched_debug.cpu.nr_switches.min
+>     679722           -24.0%     516709        proc-vmstat.nr_active_anon
+>    1446664            +1.1%    1462897        proc-vmstat.nr_dirty_background_threshold
+>    2896867            +1.1%    2929372        proc-vmstat.nr_dirty_threshold
+>    1533216           -10.5%    1371700        proc-vmstat.nr_file_pages
+>   14575614            +1.1%   14738179        proc-vmstat.nr_free_pages
+>     126756 ±  2%     -55.4%      56505 ±  2%  proc-vmstat.nr_mapped
+>       2757            -6.0%       2592        proc-vmstat.nr_page_table_pages
+>     509273           -31.7%     347755        proc-vmstat.nr_shmem
+>      22155            -1.7%      21783        proc-vmstat.nr_slab_reclaimable
+>      58291           +10.7%      64524        proc-vmstat.nr_slab_unreclaimable
+>     679722           -24.0%     516709        proc-vmstat.nr_zone_active_anon
+>    5296571          +272.6%   19736811        proc-vmstat.numa_hit
+>    5246846          +275.2%   19687252        proc-vmstat.numa_local
+>    9465911          +307.2%   38547209        proc-vmstat.pgalloc_normal
+>    8803386 ±  2%    +332.6%   38087100        proc-vmstat.pgfree
+>      19.27            -5.7       13.54        perf-profile.calltrace.cycles-pp.vms_complete_munmap_vmas.do_vmi_align_munmap.do_vmi_munmap.__vm_munmap.__x64_sys_munmap
+>      15.16            -5.1       10.07        perf-profile.calltrace.cycles-pp.unmap_region.vms_complete_munmap_vmas.do_vmi_align_munmap.do_vmi_munmap.__vm_munmap
+>      54.50            -4.2       50.33        perf-profile.calltrace.cycles-pp.__mmap
+>       8.54            -2.9        5.66        perf-profile.calltrace.cycles-pp.unmap_vmas.unmap_region.vms_complete_munmap_vmas.do_vmi_align_munmap.do_vmi_munmap
+>       8.04            -2.8        5.22        perf-profile.calltrace.cycles-pp.__zap_vma_range.unmap_vmas.unmap_region.vms_complete_munmap_vmas.do_vmi_align_munmap
+>       9.39            -2.6        6.83        perf-profile.calltrace.cycles-pp.__mmap_complete.__mmap_region.do_mmap.vm_mmap_pgoff.ksys_mmap_pgoff
+>       6.62            -2.5        4.12        perf-profile.calltrace.cycles-pp.zap_pmd_range.__zap_vma_range.unmap_vmas.unmap_region.vms_complete_munmap_vmas
+>       8.69            -2.3        6.34        perf-profile.calltrace.cycles-pp.perf_event_mmap.__mmap_complete.__mmap_region.do_mmap.vm_mmap_pgoff
+>       8.36            -2.3        6.10        perf-profile.calltrace.cycles-pp.perf_event_mmap_event.perf_event_mmap.__mmap_complete.__mmap_region.do_mmap
+>       5.66            -1.9        3.72        perf-profile.calltrace.cycles-pp.free_pgtables.unmap_region.vms_complete_munmap_vmas.do_vmi_align_munmap.do_vmi_munmap
+>       3.90            -1.7        2.20        perf-profile.calltrace.cycles-pp.entry_SYSRETQ_unsafe_stack.__mmap
+>       3.76            -1.6        2.13        perf-profile.calltrace.cycles-pp.entry_SYSRETQ_unsafe_stack.__munmap
+>       2.99 ±  3%      -1.6        1.39        perf-profile.calltrace.cycles-pp.mas_preallocate.__mmap_new_vma.__mmap_region.do_mmap.vm_mmap_pgoff
+>       3.68            -1.3        2.39        perf-profile.calltrace.cycles-pp.free_pgd_range.free_pgtables.unmap_region.vms_complete_munmap_vmas.do_vmi_align_munmap
+>       3.38            -1.2        2.18        perf-profile.calltrace.cycles-pp.free_p4d_range.free_pgd_range.free_pgtables.unmap_region.vms_complete_munmap_vmas
+>       2.86            -1.0        1.81        perf-profile.calltrace.cycles-pp.free_pud_range.free_p4d_range.free_pgd_range.free_pgtables.unmap_region
+>       6.25            -1.0        5.24        perf-profile.calltrace.cycles-pp.__get_unmapped_area.do_mmap.vm_mmap_pgoff.ksys_mmap_pgoff.do_syscall_64
+>       5.95            -1.0        4.95        perf-profile.calltrace.cycles-pp.shmem_get_unmapped_area.__get_unmapped_area.do_mmap.vm_mmap_pgoff.ksys_mmap_pgoff
+>       2.77 ±  2%      -0.9        1.85 ±  2%  perf-profile.calltrace.cycles-pp.d_path.perf_event_mmap_event.perf_event_mmap.__mmap_complete.__mmap_region
+>       2.41            -0.8        1.65        perf-profile.calltrace.cycles-pp.zap_pte_range.zap_pmd_range.__zap_vma_range.unmap_vmas.unmap_region
+>       1.53            -0.7        0.85        perf-profile.calltrace.cycles-pp.syscall_return_via_sysret.__munmap
+>       1.50            -0.6        0.85        perf-profile.calltrace.cycles-pp.syscall_return_via_sysret.__mmap
+>       4.86            -0.6        4.23        perf-profile.calltrace.cycles-pp.arch_get_unmapped_area_topdown.shmem_get_unmapped_area.__get_unmapped_area.do_mmap.vm_mmap_pgoff
+>       1.67 ±  4%      -0.6        1.05 ±  4%  perf-profile.calltrace.cycles-pp.prepend_path.d_path.perf_event_mmap_event.perf_event_mmap.__mmap_complete
+>       1.37            -0.6        0.75        perf-profile.calltrace.cycles-pp.entry_SYSCALL_64.__munmap
+>       1.36            -0.6        0.76        perf-profile.calltrace.cycles-pp.entry_SYSCALL_64.__mmap
+>       1.78            -0.6        1.22        perf-profile.calltrace.cycles-pp.perf_iterate_sb.perf_event_mmap_event.perf_event_mmap.__mmap_complete.__mmap_region
+>       1.69            -0.6        1.13        perf-profile.calltrace.cycles-pp.shmem_mmap_prepare.__mmap_region.do_mmap.vm_mmap_pgoff.ksys_mmap_pgoff
+>       4.11            -0.5        3.60        perf-profile.calltrace.cycles-pp.vm_unmapped_area.arch_get_unmapped_area_topdown.shmem_get_unmapped_area.__get_unmapped_area.do_mmap
+>       1.23            -0.5        0.72        perf-profile.calltrace.cycles-pp.mas_walk.mas_find.do_vmi_munmap.__vm_munmap.__x64_sys_munmap
+>       1.38            -0.5        0.89        perf-profile.calltrace.cycles-pp.touch_atime.shmem_mmap_prepare.__mmap_region.do_mmap.vm_mmap_pgoff
+>       1.37            -0.5        0.89        perf-profile.calltrace.cycles-pp.mas_find.do_vmi_munmap.__vm_munmap.__x64_sys_munmap.do_syscall_64
+>       3.96            -0.5        3.49        perf-profile.calltrace.cycles-pp.unmapped_area_topdown.vm_unmapped_area.arch_get_unmapped_area_topdown.shmem_get_unmapped_area.__get_unmapped_area
+>       1.46            -0.5        1.01        perf-profile.calltrace.cycles-pp.mas_find.__mmap_region.do_mmap.vm_mmap_pgoff.ksys_mmap_pgoff
+>       1.10            -0.4        0.67        perf-profile.calltrace.cycles-pp.security_vm_enough_memory_mm.__mmap_region.do_mmap.vm_mmap_pgoff.ksys_mmap_pgoff
+>       1.11            -0.4        0.73        perf-profile.calltrace.cycles-pp.unlink_file_vma_batch_process.free_pgtables.unmap_region.vms_complete_munmap_vmas.do_vmi_align_munmap
+>       0.97            -0.4        0.60        perf-profile.calltrace.cycles-pp.atime_needs_update.touch_atime.shmem_mmap_prepare.__mmap_region.do_mmap
+>       0.95            -0.4        0.58        perf-profile.calltrace.cycles-pp.vma_merge_new_range.__mmap_region.do_mmap.vm_mmap_pgoff.ksys_mmap_pgoff
+>       2.41            -0.3        2.07        perf-profile.calltrace.cycles-pp.vm_area_alloc.__mmap_new_vma.__mmap_region.do_mmap.vm_mmap_pgoff
+>       1.71            -0.3        1.40        perf-profile.calltrace.cycles-pp.__build_id_parse.perf_event_mmap_event.perf_event_mmap.__mmap_complete.__mmap_region
+>       0.80            -0.3        0.55        perf-profile.calltrace.cycles-pp.pte_offset_map_lock.zap_pte_range.zap_pmd_range.__zap_vma_range.unmap_vmas
+>       1.20            -0.2        1.00        perf-profile.calltrace.cycles-pp.mas_store_gfp.vms_gather_munmap_vmas.do_vmi_align_munmap.do_vmi_munmap.__vm_munmap
+>       0.81            -0.2        0.63        perf-profile.calltrace.cycles-pp.mas_wr_store_type.mas_preallocate.__mmap_new_vma.__mmap_region.do_mmap
+>       1.97            -0.2        1.79        perf-profile.calltrace.cycles-pp.kmem_cache_alloc_noprof.vm_area_alloc.__mmap_new_vma.__mmap_region.do_mmap
+>       0.76            -0.2        0.60        perf-profile.calltrace.cycles-pp.mas_walk.mas_find.__mmap_region.do_mmap.vm_mmap_pgoff
+>       1.15            -0.1        1.01        perf-profile.calltrace.cycles-pp.freader_fetch.__build_id_parse.perf_event_mmap_event.perf_event_mmap.__mmap_complete
+>       1.48            -0.1        1.36        perf-profile.calltrace.cycles-pp.mas_rev_awalk.mas_empty_area_rev.unmapped_area_topdown.vm_unmapped_area.arch_get_unmapped_area_topdown
+>       0.90            -0.1        0.78        perf-profile.calltrace.cycles-pp.freader_get_folio.freader_fetch.__build_id_parse.perf_event_mmap_event.perf_event_mmap
+>       0.77            -0.1        0.66        perf-profile.calltrace.cycles-pp.khugepaged_enter_vma.__mmap_new_vma.__mmap_region.do_mmap.vm_mmap_pgoff
+>       1.93 ±  2%      -0.1        1.82        perf-profile.calltrace.cycles-pp.kmem_cache_free.vms_complete_munmap_vmas.do_vmi_align_munmap.do_vmi_munmap.__vm_munmap
+>       2.20            -0.1        2.11        perf-profile.calltrace.cycles-pp.mas_empty_area_rev.unmapped_area_topdown.vm_unmapped_area.arch_get_unmapped_area_topdown.shmem_get_unmapped_area
+>       0.66            -0.1        0.58 ±  2%  perf-profile.calltrace.cycles-pp.__filemap_get_folio_mpol.freader_get_folio.freader_fetch.__build_id_parse.perf_event_mmap_event
+>       1.17 ±  3%      -0.1        1.10        perf-profile.calltrace.cycles-pp.perf_session__process_events.record__finish_output.cmd_record
+>       1.17 ±  3%      -0.1        1.10        perf-profile.calltrace.cycles-pp.cmd_record
+>       1.17 ±  3%      -0.1        1.10        perf-profile.calltrace.cycles-pp.record__finish_output.cmd_record
+>       5.13            +0.1        5.20        perf-profile.calltrace.cycles-pp.vms_gather_munmap_vmas.do_vmi_align_munmap.do_vmi_munmap.__vm_munmap.__x64_sys_munmap
+>      44.84            +0.2       45.05        perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.__mmap
+>       0.70            +0.4        1.07        perf-profile.calltrace.cycles-pp.mas_prev_slot.vms_gather_munmap_vmas.do_vmi_align_munmap.do_vmi_munmap.__vm_munmap
+>       0.20 ±129%      +0.4        0.60 ±  2%  perf-profile.calltrace.cycles-pp.ordered_events__deliver_event.__ordered_events__flush.perf_session__process_user_event.perf_session__process_events.record__finish_output
+>       0.22 ±129%      +0.4        0.64 ±  2%  perf-profile.calltrace.cycles-pp.__ordered_events__flush.perf_session__process_user_event.perf_session__process_events.record__finish_output.cmd_record
+>       0.22 ±129%      +0.4        0.64 ±  2%  perf-profile.calltrace.cycles-pp.perf_session__process_user_event.perf_session__process_events.record__finish_output.cmd_record
+>       0.13 ±173%      +0.5        0.59 ±  2%  perf-profile.calltrace.cycles-pp.perf_session__deliver_event.ordered_events__deliver_event.__ordered_events__flush.perf_session__process_user_event.perf_session__process_events
+>      43.80            +0.5       44.30        perf-profile.calltrace.cycles-pp.ksys_mmap_pgoff.do_syscall_64.entry_SYSCALL_64_after_hwframe.__mmap
+>       0.00            +0.5        0.52 ±  2%  perf-profile.calltrace.cycles-pp.node_finalise.mas_wr_spanning_store.mas_store_gfp.do_vmi_align_munmap.do_vmi_munmap
+>       0.00            +0.6        0.56        perf-profile.calltrace.cycles-pp.memcpy_orig.node_copy.cp_data_write.mas_wr_spanning_store.mas_store_gfp
+>       0.00            +0.6        0.58        perf-profile.calltrace.cycles-pp.memcpy_orig.node_copy.cp_data_write.mas_wr_split.mas_store_prealloc
+>       0.89            +0.6        1.47        perf-profile.calltrace.cycles-pp.mas_find.vms_gather_munmap_vmas.do_vmi_align_munmap.do_vmi_munmap.__vm_munmap
+>       0.00            +0.7        0.66        perf-profile.calltrace.cycles-pp.mas_next_node.mas_next_slot.mas_find.vms_gather_munmap_vmas.do_vmi_align_munmap
+>       0.65            +0.7        1.31        perf-profile.calltrace.cycles-pp.mas_next_slot.mas_find.vms_gather_munmap_vmas.do_vmi_align_munmap.do_vmi_munmap
+>       0.00            +0.7        0.67 ±  2%  perf-profile.calltrace.cycles-pp.__kfree_rcu_sheaf.kvfree_call_rcu.mas_topiary_replace.mas_wr_spanning_store.mas_store_gfp
+>       0.00            +0.8        0.78        perf-profile.calltrace.cycles-pp.node_finalise.mas_wr_split.mas_store_prealloc.__mmap_new_vma.__mmap_region
+>       0.00            +0.8        0.82 ±  2%  perf-profile.calltrace.cycles-pp.__slab_free.__kmem_cache_free_bulk.rcu_free_sheaf.rcu_do_batch.rcu_core
+>      42.40            +1.0       43.37        perf-profile.calltrace.cycles-pp.vm_mmap_pgoff.ksys_mmap_pgoff.do_syscall_64.entry_SYSCALL_64_after_hwframe.__mmap
+>       0.00            +1.0        1.00 ±  2%  perf-profile.calltrace.cycles-pp.kvfree_call_rcu.mas_topiary_replace.mas_wr_split.mas_store_prealloc.__mmap_new_vma
+>       0.00            +1.3        1.25        perf-profile.calltrace.cycles-pp.kvfree_call_rcu.mas_topiary_replace.mas_wr_spanning_store.mas_store_gfp.do_vmi_align_munmap
+>      41.16            +1.3       42.42        perf-profile.calltrace.cycles-pp.do_mmap.vm_mmap_pgoff.ksys_mmap_pgoff.do_syscall_64.entry_SYSCALL_64_after_hwframe
+>       0.00            +1.3        1.26 ±  2%  perf-profile.calltrace.cycles-pp.__kmem_cache_free_bulk.rcu_free_sheaf.rcu_do_batch.rcu_core.handle_softirqs
+>       0.00            +1.3        1.31        perf-profile.calltrace.cycles-pp.native_queued_spin_lock_slowpath._raw_spin_lock_irqsave.__refill_objects_node.refill_objects.__prefill_sheaf_pfmemalloc
+>       0.00            +1.4        1.40        perf-profile.calltrace.cycles-pp.rcu_free_sheaf.rcu_do_batch.rcu_core.handle_softirqs.run_ksoftirqd
+>       0.00            +1.4        1.44        perf-profile.calltrace.cycles-pp._raw_spin_lock_irqsave.__refill_objects_node.refill_objects.__prefill_sheaf_pfmemalloc.kmem_cache_prefill_sheaf
+>       0.00            +1.5        1.45 ±  2%  perf-profile.calltrace.cycles-pp.rcu_do_batch.rcu_core.handle_softirqs.run_ksoftirqd.smpboot_thread_fn
+>       0.00            +1.5        1.46 ±  2%  perf-profile.calltrace.cycles-pp.rcu_core.handle_softirqs.run_ksoftirqd.smpboot_thread_fn.kthread
+>       0.00            +1.5        1.47        perf-profile.calltrace.cycles-pp.handle_softirqs.run_ksoftirqd.smpboot_thread_fn.kthread.ret_from_fork
+>       0.00            +1.5        1.47        perf-profile.calltrace.cycles-pp.run_ksoftirqd.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
+>      45.00            +1.5       46.50        perf-profile.calltrace.cycles-pp.__munmap
+>       0.00            +1.5        1.50 ±  2%  perf-profile.calltrace.cycles-pp.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
+>       0.00            +1.7        1.73        perf-profile.calltrace.cycles-pp.node_copy.cp_data_write.mas_wr_spanning_store.mas_store_gfp.do_vmi_align_munmap
+>       0.00            +1.7        1.73        perf-profile.calltrace.cycles-pp.kthread.ret_from_fork.ret_from_fork_asm
+>       0.00            +1.7        1.73        perf-profile.calltrace.cycles-pp.ret_from_fork.ret_from_fork_asm
+>       0.00            +1.7        1.73        perf-profile.calltrace.cycles-pp.ret_from_fork_asm
+>       0.00            +1.8        1.82        perf-profile.calltrace.cycles-pp.node_copy.cp_data_write.mas_wr_split.mas_store_prealloc.__mmap_new_vma
+>       0.00            +2.0        1.95        perf-profile.calltrace.cycles-pp.dst_setup.mas_wr_spanning_store.mas_store_gfp.do_vmi_align_munmap.do_vmi_munmap
+>      33.18            +2.6       35.81        perf-profile.calltrace.cycles-pp.__mmap_region.do_mmap.vm_mmap_pgoff.ksys_mmap_pgoff.do_syscall_64
+>       0.00            +2.9        2.88        perf-profile.calltrace.cycles-pp.cp_data_write.mas_wr_spanning_store.mas_store_gfp.do_vmi_align_munmap.do_vmi_munmap
+>       0.00            +3.0        3.03        perf-profile.calltrace.cycles-pp.dst_setup.mas_wr_split.mas_store_prealloc.__mmap_new_vma.__mmap_region
+>       0.00            +3.3        3.31        perf-profile.calltrace.cycles-pp.mas_topiary_replace.mas_wr_split.mas_store_prealloc.__mmap_new_vma.__mmap_region
+>       0.00            +3.6        3.59        perf-profile.calltrace.cycles-pp.mas_topiary_replace.mas_wr_spanning_store.mas_store_gfp.do_vmi_align_munmap.do_vmi_munmap
+>       0.00            +3.9        3.87        perf-profile.calltrace.cycles-pp.__refill_objects_node.refill_objects.__prefill_sheaf_pfmemalloc.kmem_cache_prefill_sheaf.mas_store_gfp
+>       0.00            +3.9        3.91        perf-profile.calltrace.cycles-pp.cp_data_write.mas_wr_split.mas_store_prealloc.__mmap_new_vma.__mmap_region
+>       0.00            +4.6        4.64        perf-profile.calltrace.cycles-pp.refill_objects.__prefill_sheaf_pfmemalloc.kmem_cache_prefill_sheaf.mas_store_gfp.do_vmi_align_munmap
+>       0.00            +4.7        4.71        perf-profile.calltrace.cycles-pp.__prefill_sheaf_pfmemalloc.kmem_cache_prefill_sheaf.mas_store_gfp.do_vmi_align_munmap.do_vmi_munmap
+>       0.00            +5.1        5.10        perf-profile.calltrace.cycles-pp.kmem_cache_prefill_sheaf.mas_store_gfp.do_vmi_align_munmap.do_vmi_munmap.__vm_munmap
+>      36.19            +5.6       41.79        perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.__munmap
+>      36.00            +5.7       41.69        perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.__munmap
+>      35.15            +6.0       41.13        perf-profile.calltrace.cycles-pp.__x64_sys_munmap.do_syscall_64.entry_SYSCALL_64_after_hwframe.__munmap
+>      35.01            +6.0       41.03        perf-profile.calltrace.cycles-pp.__vm_munmap.__x64_sys_munmap.do_syscall_64.entry_SYSCALL_64_after_hwframe.__munmap
+>      34.08            +6.3       40.39        perf-profile.calltrace.cycles-pp.do_vmi_munmap.__vm_munmap.__x64_sys_munmap.do_syscall_64.entry_SYSCALL_64_after_hwframe
+>      32.43            +6.8       39.26        perf-profile.calltrace.cycles-pp.do_vmi_align_munmap.do_vmi_munmap.__vm_munmap.__x64_sys_munmap.do_syscall_64
+>      12.68            +8.9       21.54        perf-profile.calltrace.cycles-pp.__mmap_new_vma.__mmap_region.do_mmap.vm_mmap_pgoff.ksys_mmap_pgoff
+>       4.77           +11.2       16.00        perf-profile.calltrace.cycles-pp.mas_store_prealloc.__mmap_new_vma.__mmap_region.do_mmap.vm_mmap_pgoff
+>       7.25           +12.6       19.89        perf-profile.calltrace.cycles-pp.mas_store_gfp.do_vmi_align_munmap.do_vmi_munmap.__vm_munmap.__x64_sys_munmap
+>       0.00           +13.7       13.69        perf-profile.calltrace.cycles-pp.mas_wr_spanning_store.mas_store_gfp.do_vmi_align_munmap.do_vmi_munmap.__vm_munmap
+>       0.00           +14.8       14.81        perf-profile.calltrace.cycles-pp.mas_wr_split.mas_store_prealloc.__mmap_new_vma.__mmap_region.do_mmap
+>       8.17            -8.2        0.00        perf-profile.children.cycles-pp.mas_wr_node_store
 
-(please refer to attached dmesg/kmsg for entire log/backtrace)
+It looks like the slow path is taken 100% of the time in your run, for
+all processes, always.
 
+I understand why that is happening and I can work to avoid it (nudging
+the write deeper into a split node), but I'd like clarification of my
+questions above before I keep going here.
 
+...
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202605231644.ac628f76-lkp@intel.com
-
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20260523/202605231644.ac628f76-lkp@intel.com
-
-
-user  :err   : [  174.437942] [    T434] util/aslr.c: In function ‘aslr_tool__remap_address’:
-
-user  :err   : [  175.421882] [    T434] util/aslr.c:143:48: error: ‘struct thread’ has no member named ‘maps’
-
-user  :err   : [  175.439227] [    T434]   143 |         key.machine = maps__machine(aslr_thread->maps);
-
-user  :err   : [  175.455264] [    T434]       |                                                ^~
-
-user  :err   : [  175.480862] [    T434] util/aslr.c:148:43: error: ‘struct thread’ has no member named ‘pid_’
-
-user  :err   : [  175.498459] [    T434]   148 |                   kernel_pid : aslr_thread->pid_;
-
-user  :err   : [  175.513973] [    T434]       |                                           ^~
-
-user  :err   : [  175.775147] [    T434] util/aslr.c: In function ‘aslr_tool__findnew_mapping’:
-
-user  :err   : [  175.800930] [    T434] util/aslr.c:242:54: error: ‘struct thread’ has no member named ‘maps’
-
-user  :err   : [  175.818508] [    T434]   242 |         remap_key.machine = maps__machine(aslr_thread->maps);
-
-user  :err   : [  175.835226] [    T434]       |                                                      ^~
-
-user  :err   : [  175.861033] [    T434] util/aslr.c:245:49: error: ‘struct thread’ has no member named ‘pid_’
-
-user  :err   : [  175.878595] [    T434]   245 |                         kernel_pid : aslr_thread->pid_;
-
-user  :err   : [  175.894692] [    T434]       |                                                 ^~
-
-user  :err   : [  181.727159] [    T434] make[4]: *** [/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-ac4569348731804907b1e2e53b53583534fc0f5b/tools/build/Makefile.build:96: util/aslr.o] Error 1
-
-user  :err   : [  181.748550] [    T434] make[4]: *** Waiting for unfinished jobs....
-
-user  :err   : [  181.761820] [    T434] make[3]: *** [/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-ac4569348731804907b1e2e53b53583534fc0f5b/tools/build/Makefile.build:158: util] Error 2
-
-user  :err   : [  181.783098] [    T434] make[2]: *** [Makefile.perf:797: perf-util-in.o] Error 2
-
-user  :err   : [  181.796142] [    T434] make[2]: *** Waiting for unfinished jobs....
-
-user  :err   : [  183.966859] [    T434] make[1]: *** [Makefile.perf:289: sub-make] Error 2
-
-user  :notice: [  183.977452] [    T432] make PERF failed
-user  :err   : [  183.978411] [    T434] make: *** [Makefile:76: all] Error 2
-
-
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+Thanks,
+Liam
