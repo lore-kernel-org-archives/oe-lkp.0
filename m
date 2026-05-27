@@ -1,317 +1,1081 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21F83150997
-	for <oe-lkp@lists.linux.dev>; Wed, 27 May 2026 05:03:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.9
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779858219; cv=fail; b=gUmOh13m/aInMZYJSz5P2zxOpfsGBZmwKV3AQ1LP8CqUCdpb2RjgSaVnWAgxdsDAevzf2DWuPXrvhXADW8VgZKWJjvDAdPl0Roy/LLiSqIc1YnThYpJV21FJkvRoEBw1jQmzdgUgV5+aEh1f7RSQV2bN4NoGcdJVAqe60DPQK+s=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779858219; c=relaxed/simple;
-	bh=hYVOk3wAswENDMbOHMEePKli8395Kj2Ja41fUNwtMFw=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=JFDRbunPeukdpxJv/4Kj8Pe/i7NxyAQwuAkB5a1buqgBu8JFldLcmzXZnJ2S8v2SGOJcpwPIiL4fg9GgO6rRth6pHNtJ01k8GHH2hs4A8mh2c6msJZ3Yg8QsL0DdCl13sOXx2pBuMM1TsMxwBedeyoN/uuaM+ezks32YGZoY8e8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hN95uyeF; arc=fail smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8479F42EEDE;
+	Wed, 27 May 2026 16:31:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779899504; cv=none; b=JMPYnp2eCIMRNBiaFD8lM3OYmUqT7LE4NTV4ogS3wpElJ+7+6cTr5VcJAxSKnEa+Yy1co7MjFow00ww/ovzG4lIwE4xkEEDrH/xex6Ljf/whbcKO3POji6alAb8WgjP0BIxAVmw11QHtR6wENAu1/X1kqzIE/K/+72pGY37769I=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779899504; c=relaxed/simple;
+	bh=PAdARsbgkGCDKP+ZvozbtZhjZPnSni54y2mXS8SXpuQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ljqsdXUh9gqpdHlYmCFL20f7k/GEjSoDUjgFiJUIrxv5rTFzeAxda+7d2FHZuVBgGSXeaYUW43Cb0ohorsd1iIA0WmV/EQLjOO0dX/lLgx26oqTdvGx0ZsjBuZrqMMG+t8Ieu899aWsDtQw2XSq3wYYeL7himlIMBABISiGDBw8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=495d2NPw; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hN95uyeF"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1779858218; x=1811394218;
-  h=date:from:to:cc:subject:message-id:
-   content-transfer-encoding:mime-version;
-  bh=hYVOk3wAswENDMbOHMEePKli8395Kj2Ja41fUNwtMFw=;
-  b=hN95uyeFa7YnDzIw+uZ5FCuydhhbpiLBN6g3VKjkbqHDxyV+BrN4kKZB
-   GGIs4+Z8eCC+F2moCzUAzGm1t1p0YisRsQkuXQwrqxiiYAotqryyi0uRH
-   02jnbUNO0Ut44x4ra52QUhMJtxKIkPOCKD3sMpLpKjgXjMogjgzS1/qjL
-   r1qRaXnakS55JQoT46XTGva4u+vKt4FSi0j9wXaFdGUIsvEHHT1R++H7q
-   N7CHTAi1iSp3qkP3jptkpju7OC2JLKXhlVVMiX/Hlgt4XYJqupJTkRgsU
-   nMy9nmQi+GqDCL55zDfWXOvcJEmZazFcgGCUcF+1BWryMs0m+ZGkd32x0
-   Q==;
-X-CSE-ConnectionGUID: Rr7Z/8hjQvCVIOfn0gB49w==
-X-CSE-MsgGUID: KJGBVIc5SLqTrz08mp+hzg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11798"; a="103354799"
-X-IronPort-AV: E=Sophos;i="6.24,170,1774335600"; 
-   d="scan'208";a="103354799"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2026 22:03:37 -0700
-X-CSE-ConnectionGUID: +n+5vYv2RFqUdNT1YocArw==
-X-CSE-MsgGUID: D9Dmn1GESAm6E4iY9JPx0w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,170,1774335600"; 
-   d="scan'208";a="241079085"
-Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
-  by orviesa006.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2026 22:03:37 -0700
-Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
- ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Tue, 26 May 2026 22:03:36 -0700
-Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
- ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Tue, 26 May 2026 22:03:36 -0700
-Received: from DM5PR21CU001.outbound.protection.outlook.com (52.101.62.37) by
- edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Tue, 26 May 2026 22:03:35 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=W3Xes4PxgCDVLyrQf5+NYlVw61oG1RnHNs2WbMZxmJHfKzZag7VfP+aIFdfB5THOCqmKTihe1dODraoYxqUzBGTGJy7DZoHi0w4vM+QsHLwI5GQSzZjTL9Jeb1DjxhOM4YWDsjFRdSQ8wg14H4ILtDEM2Yw1FdWSgdi6M1Kz9FLJNCoelWb6tOyZL/ooQDiYkveNsYZEXu7yRYZmApV8rzGcAsPWVbaXbflUpnLgA9DEdyQ/0lx7HytdtNA1DsjcuvvcOa6ff111svCp9wuH3ltzW5PmIEc0iAk4I/+OnmVl5D+GNOEsKkYkFiQmMfXWO+69qkwOpYwDjp51/L7t5A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rKl70yg6I4jM75hPD58aymms3djhg/6Cqd/YjPScBNw=;
- b=KxRLCEKeky/WkLptAP0bRIvDLZeejhNBEG3HT1b+pVJCGVUAXHI6Hhln/wJ3VfdiRd+eBErbvWvigtF7sLJTVvuHeh0lJLZOa2WsZDgO8tpzyP93dvSboAV6VGU/im35PnaQKzPPYBcwGeNP9Oo6lx/w0plporje87yoNRCnEeRXezbqRpfHhJLVZaQkKx0sN2fYFEbNqUTM7xtOK3jTfBjlhJPW1a7FS3KLrafz14PLUJvz1fnjIsHUl8HzVRQkYhoeLKzJDsau72PxDSqbQxVXqAays23JthxJ9gmLDJKokYHy/ob8wGHjOyI7X7//t+qgzo4egDyP2YSa5c1dQg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH0PR11MB5832.namprd11.prod.outlook.com (2603:10b6:510:141::7)
- by PH7PR11MB7001.namprd11.prod.outlook.com (2603:10b6:510:208::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.48.20; Wed, 27 May
- 2026 05:03:31 +0000
-Received: from PH0PR11MB5832.namprd11.prod.outlook.com
- ([fe80::106e:78dd:4c96:d707]) by PH0PR11MB5832.namprd11.prod.outlook.com
- ([fe80::106e:78dd:4c96:d707%3]) with mapi id 15.21.0048.019; Wed, 27 May 2026
- 05:03:31 +0000
-Date: Wed, 27 May 2026 13:03:24 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Thomas Gleixner <tglx@linutronix.de>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <oliver.sang@intel.com>
-Subject: [tglx-devel:locking/futex] [x86/vdso]  698a86a85c:
- stress-ng.priv-instr.ops_per_sec 5.8% improvement
-Message-ID: <202605271217.16dfca4d-lkp@intel.com>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-User-Agent: s-nail v14.9.25
-X-ClientProxiedBy: SI2P153CA0014.APCP153.PROD.OUTLOOK.COM (2603:1096:4:140::6)
- To PH0PR11MB5832.namprd11.prod.outlook.com (2603:10b6:510:141::7)
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="495d2NPw"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=dOGUXSAwLuzuMj+IPA83VAkWmjHs2kySdjAhLXS4foM=; b=495d2NPwcZ58y+DMXqQJYidKGc
+	IQOwGs6ZhOhDGd7mltripiHveOc7BcU7Xk3XovtCXIuV2CQuageX0lQfPQkKcsMNRky7s1Sfzj2Jv
+	E2+frzDc7T4hXkapNSHsW9A0ZGdankmFAWlSjHK82omo3TzKMR+u6hXlcUYjy/aPSn70TA8hp4+ck
+	0zreigr9TN7L1m9AFzUb+++1bq9QQ7HWJrMwdjx49mxHTHIDDK3S9WhRWACvR/KBnSG4dGMw65Dps
+	Rhc8F614MWvW98cQU8X5cgJVlf6Hz0/JXdyNz66YSDb60xKmFYFBct77i5RvC7ruwSZRQ9jpX1GZC
+	8SWb9vXw==;
+Received: from [38.23.173.23] (helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
+	id 1wSHAQ-00000004Vmk-18xC;
+	Wed, 27 May 2026 16:31:38 +0000
+Date: Wed, 27 May 2026 12:31:35 -0400
+From: "Liam R. Howlett" <liam@infradead.org>
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, 
+	Andrew Morton <akpm@linux-foundation.org>, Alice Ryhl <aliceryhl@google.com>, 
+	Andrew Ballance <andrewjballance@gmail.com>, Arnd Bergmann <arnd@arndb.de>, 
+	Christian Kujau <lists@nerdbynature.de>, Geert Uytterhoeven <geert@linux-m68k.org>, 
+	Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>, Matthew Wilcox <willy@infradead.org>, 
+	SeongJae Park <sj@kernel.org>, Sidhartha Kumar <sidhartha.kumar@oracle.com>, 
+	Suren Baghdasaryan <surenb@google.com>, Vlastimil Babka <vbabka@suse.cz>, maple-tree@lists.infradead.org, 
+	linux-mm@kvack.org
+Subject: Re: [linus:master] [maple_tree]  280b792cac:
+ will-it-scale.per_process_ops 6.0% regression
+Message-ID: <fqfpxtjzisway7arouksnis7wfjvwe6h4ingrauuqzadz2n2zg@rnxxz5kh4bcx>
+References: <202605131554.92e7df6b-lkp@intel.com>
+ <22y6gvr7yzwdocwpd3wxrxfykmpvhbxytiiuht32db3dh7w522@pglkrpqognjk>
+ <agV3Q2fBlQrB5v9w@xsang-OptiPlex-9020>
+ <g7pvhqnuloifqhbvjgtgydbitcrvmxibferexj7cunsmagttps@oxjvs3aa3l3s>
+ <ahFciGk6LfkOU2en@xsang-OptiPlex-9020>
+ <wbgsjfbbiwmx2glp72ifomyb6fb7uc4lwffwg5z2inv4tzskbf@ufgets7hbskz>
+ <ahP49NBb15KfCHhZ@xsang-OptiPlex-9020>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR11MB5832:EE_|PH7PR11MB7001:EE_
-X-MS-Office365-Filtering-Correlation-Id: 78e9d607-ff7c-4b41-6a2c-08debbad4bd0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016|56012099006|18002099003|6133799003|3023799007|11063799006;
-X-Microsoft-Antispam-Message-Info: h6VYJRLWvgRAVlOedA+yN78tZSqOYilfsEkq3XFlvqwmf+jtCZqMyXqfw0nRvU59sDqTljfQATSDHaAC2L+uCxb9r78vS22f8mkbys1Knxphm8HznzMjJmkE7XTNkdtjZam7j1vVaQRijB2pwczQClxbgE12HM+vtXristDkwNrOX/SqMytw4P+4i9QVdtfchJqa7Bs71x5Iuac279aUKzGgZtWJlkHN3m6GQ5cOf+M3r7N8ZMunz9m4Reh7xM5XXqm+jG9rdo4KhMVsqOLGJprE4PPftQnoPSLvoSxvyEcRt323jCU72T02P+jXEK4AfauYGBAXd97njbeyICnepn24W7DwIxmz22jxUIw/0e5iL4Sx9CLAIL3hCnhGthR7SepYL5Drbm40Pst6tPHa/Xp9RIq9euAVmobQpql4bNXZeRL2/IUrfF+r2jlUcOvcFrqJV86jWutgo9nbJUXQyOvlDQylh5VV3PXNo0IBnbiwCzruc4D4qNg+Es38opiSAoG9C4YPatfueXRLy4mOI6kuZRq44rctRW9A55mYKnXuj7YLzcwkSpcX8MQdE7jos0hPgaVOkMFNbt/rCVtgK+/skQg0xJFqlZBDiIGZwT815JzdQwahBLH2+wpjxjGYjzulwKVDu3qTcJl4eYr1OQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5832.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016)(56012099006)(18002099003)(6133799003)(3023799007)(11063799006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?5d4ekoGuDBgfvh1H3zDnYpR8TZ89AmseugjtZJi8bLb9iyYJY/RSteTWc8?=
- =?iso-8859-1?Q?MXNXv/RChImOuLPylgE/xrVvW4j2XOy5wN4FHyFkOKeEnuHQKlgtwxtLJL?=
- =?iso-8859-1?Q?C4QcpesEBRJEjqOusGH0xfrObmARQsbx2lcDGMk0iHzsLp1vAeQL0/Cfvj?=
- =?iso-8859-1?Q?SzG4WX6DKTSB6fQ33aZiVjt58P3hWNXfHeMV/diDQaSY0Ol6ZgpwyQPdtf?=
- =?iso-8859-1?Q?NKpTW6KJSeSpYgZE7o9x8ZXqB4TDiSfQirmPu6RgE0vsMwI+SYY+gU49A2?=
- =?iso-8859-1?Q?pcQNzi+lqiifYSSQms417iwS+yfXUU1HlGwf2Fk/VWDMW2PITDBnWG1cPu?=
- =?iso-8859-1?Q?MF9Zjohmoh3Kv3JvFC+e7AYuHbWBhPFxiwnx5CYz8NrY6lzZNlMio1srYE?=
- =?iso-8859-1?Q?D010fwfhiVtZvcu+8KRI/sjCPBbcQye/b3fDx6g6XgEKykQS5UITRkm7kV?=
- =?iso-8859-1?Q?yhaabXGwl7U+TDPegU0Kpp3XNEmr5a/z4sEDeWnzS5FjbHfcDZXvZJ+zIW?=
- =?iso-8859-1?Q?wzVpCqpscPmYpO8IFIIIK/8BAo93aqiSGRSxQ8qZWIcu6fd6MS7L2Dp0Ot?=
- =?iso-8859-1?Q?xSupsM6H9DA/DZV7eKdCTczj5BWUkCnV68tqoAPZEHEz8uhZbln6cVtJfZ?=
- =?iso-8859-1?Q?ga3177qfigzmwqKmNcUnD0ZBbhvoHLMNDlHarOUnpq5lJQS5un66TpvWTw?=
- =?iso-8859-1?Q?Gw9wn5JREbvl9pesBn5tO6Bbt02MLQyJumTHZrqz12ustGAGME2S5ovkBJ?=
- =?iso-8859-1?Q?nNmFHEMcVTgAGh1o+p/lpGMfzC0NWgGKQCEnlb+5c4EsEKdTPhvv1S2n3b?=
- =?iso-8859-1?Q?BVDwYwCH+Ew3VeuRWqBMpaZDVSnJRXUY+J69neg4uBkyYmCNwO38OoUb3v?=
- =?iso-8859-1?Q?IJGP6QA3NufxazLcESIJb6OuF7Z5jxw21Xpl2coLomJJiMwJOXDz4R6cPc?=
- =?iso-8859-1?Q?pLYB0oVx6DzSFXzzH0u81xN4VgcajUIzvd530TKDEil9qrt90gDL2lo43c?=
- =?iso-8859-1?Q?nIy6sXhQlctiGfq5KgiCqcQkLbnsEOEt40A9MkmUXNl6MSV8NvFur5oTFP?=
- =?iso-8859-1?Q?oSia8jV+z48LhdLwOh98m6uM+ztnMZj4vwI91OYUcxQ2gFsq7Ezm1+MWm4?=
- =?iso-8859-1?Q?BpkcvWVYIFytTsZa2GTOq07KdHJQeyPqYEish1h4by1/EAi42Uw4xAAGEB?=
- =?iso-8859-1?Q?XBed5S8bYlHmJ0DMiFLB0vKu7rUT1e+Fwj3DYRg8n/d9HZAvwtoxUdIiew?=
- =?iso-8859-1?Q?1S3Jh5rYDQnwD/wLNSBCtY/mImHK57flaBKpqchcam22cBpU/AfmHwzdCO?=
- =?iso-8859-1?Q?JeOAGSKPIqO1OmJ502QMRzFsJdSvKkdNsbM6xxogA8eDzE/YM7muPONJXf?=
- =?iso-8859-1?Q?dwj0TJVB3kSwBL+EA/FpYOcVEQH4ubmFkNuie4K5V3gtbC9ygFUG8viPq+?=
- =?iso-8859-1?Q?eLpoc05zAgSXhHPkkeKUNQWjR+OdzAGMXOlNAQLcVJXVbql26zfi4PdNSL?=
- =?iso-8859-1?Q?V5jG9NVF6oXDet0Qi6XjubdX/kePsGV+8SdU3c1/9kx/f6skCe23tU/e+e?=
- =?iso-8859-1?Q?DLoKws20GldrkB/o8wBD9KQE0ZsniCewgF02XJkLbgMwkQO5xkkZkOfVqk?=
- =?iso-8859-1?Q?+iJ8AhjsfnxTkcnRr7WnXJLA2pTQj2hjw4VUJTMFgnSxNMNPl4RNzOPqSR?=
- =?iso-8859-1?Q?WDJxEZmfuv6LgZcaBfwOWamDvaxqQ7xYQ7mqxpLhCiRu34pA697A81sArJ?=
- =?iso-8859-1?Q?ykbtuqFmaK8NR6d491KWeGb6aQT745azWQru+QU9xswCqb3GBZ7vltD0eh?=
- =?iso-8859-1?Q?N/Seq/xB/w=3D=3D?=
-X-Exchange-RoutingPolicyChecked: MgLHNpaLNBNvA1T7H+lA6cSkDEZZboJdWWkkDe/xNlAhWEwmVhlyMYDBPDmUHfvanWGmGFR+IorYtaK9ovBzdWqF9ywkgZMC6hFAPsL6zMyQ5LRFlnJhVy5ymMdYzkW7uDVTzyu9n5Pu2LAr1/KoT5qrvZVd1Cc1gQRsrpspSVDRZjqtOOPnNzcDj8M11cjFPi2XJ/iOQUwKJtkxdi49I+Jr4d8lMmP1wGkYlQCCFRmF4OZHvnDvwzyI39NgN2uOpxO/SUuVpdXXl576kSCfr/zO6+VTB0h1qU5qWAH7cZRk7OZhtlriFPPb0AQsfXU4tMFBzIwoLidU4F0LCjtySA==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 78e9d607-ff7c-4b41-6a2c-08debbad4bd0
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5832.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2026 05:03:31.4087
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fhlKM5sySFCsrTwohmehY0m7QZajG4tkv0Ziw/tCr0LKCRWrotMFk8BngZ1qi5QCNmgCewf0UWgZc88Px9nTtg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB7001
-X-OriginatorOrg: intel.com
+Content-Type: multipart/mixed; boundary="6odnmqt5iezagvak"
+Content-Disposition: inline
+In-Reply-To: <ahP49NBb15KfCHhZ@xsang-OptiPlex-9020>
 
 
+--6odnmqt5iezagvak
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Hello,
+On 26/05/25 03:23PM, Oliver Sang wrote:
+> hi, Liam,
+> 
+> On Sat, May 23, 2026 at 11:12:24AM -0400, Liam R. Howlett wrote:
+> 
+> [...]
+> 
+> > > 
+> > > I appled your patch upon below mainline tip commit when I checked.
+> > > 6779b50faa562 ("Merge tag 'pci-v7.1-fixes-2' of git://git.kernel.org/pub/scm/linux/kernel/git/pci/pci")
+> > > 
+> > > then build kernels with attached config.
+> > > 
+> > > but found a big regression introduced by your patch.
+> > > 
+> > > =========================================================================================
+> > > compiler/cpufreq_governor/kconfig/mode/nr_task/rootfs/tbox_group/test/testcase:
+> > >   gcc-14/performance/x86_64-rhel-9.4/process/100%/debian-13-x86_64-20250902.cgz/lkp-ivb-2ep2/mmap2/will-it-scale
+> > > 
+> > > commit:
+> > >   6779b50faa562 ("Merge tag 'pci-v7.1-fixes-2' of git://git.kernel.org/pub/scm/linux/kernel/git/pci/pci")
+> > >   942596e1c1037 ("maple_tree: Restore old tree layout using new scatter-gather node copy")
+> > > 
+> > > 6779b50faa562e6c 942596e1c1037f014638541bce4
+> > > ---------------- ---------------------------
+> > >          %stddev     %change         %stddev
+> > >              \          |                \
+> > >    7023559           -42.9%    4007886        will-it-scale.48.processes
+> > >     146323           -42.9%      83497        will-it-scale.per_process_ops
+> > >    7023559           -42.9%    4007886        will-it-scale.workload
 
-kernel test robot noticed a 5.8% improvement of stress-ng.priv-instr.ops_per_sec on:
+...
 
+> 
+> > 
+> > >       0.00           +14.8       14.81        perf-profile.calltrace.cycles-pp.mas_wr_split.mas_store_prealloc.__mmap_new_vma.__mmap_region.do_mmap
+> > >       8.17            -8.2        0.00        perf-profile.children.cycles-pp.mas_wr_node_store
+> > 
+> > It looks like the slow path is taken 100% of the time in your run, for
+> > all processes, always.
+> > 
+> > I understand why that is happening and I can work to avoid it (nudging
+> > the write deeper into a split node), but I'd like clarification of my
+> > questions above before I keep going here.
+> 
+> sorry that we cannot supply deep enough technical analysis such like why
+> mainline tip (at least 6779b50faa562) has no regression already.
+> 
+> but in case you want to dig this deep, you could request us to test any
+> fix/debug patch, whatever upon your last patch, current mainline tip, or
+> 280b792cac. we just want to be able to supply any assistant to improve
+> linux kernel code quality. thanks
 
-commit: 698a86a85c4db4b800faa8a2890810ff9cec2f79 ("x86/vdso: Implement __vdso_futex_robust_try_unlock()")
-https://git.kernel.org/cgit/linux/kernel/git/tglx/devel.git locking/futex
+Thanks!
 
-testcase: stress-ng
-config: x86_64-rhel-9.4
-compiler: gcc-14
-test machine: 192 threads 2 sockets Intel(R) Xeon(R) 6740E  CPU @ 2.4GHz (Sierra Forest) with 256G memory
-parameters:
+Are you able to test this patch instead of the previous please?  I had
+already started this when you responded so I'd like to see if I'm
+correct in what is going on, at least.
 
-	nr_threads: 100%
-	testtime: 60s
-	test: priv-instr
-	cpufreq_governor: performance
+Regards,
+Liam
 
+--6odnmqt5iezagvak
+Content-Type: text/x-diff; charset=us-ascii
+Content-Disposition: attachment;
+	filename="0001-maple_tree-Restore-old-tree-layout-using-new-scatter.patch"
 
-we notice the config diff which seems reasonable:
+From 0e7cf76a2d3fb864b06336fa854b088b6e0bc39f Mon Sep 17 00:00:00 2001
+From: "Liam R. Howlett" <liam@infradead.org>
+Date: Fri, 15 May 2026 17:37:06 -0400
+Subject: [PATCH] maple_tree: Restore old tree layout using new scatter-gather
+ node copy
 
---- /pkg/linux/x86_64-rhel-9.4/gcc-14/35b728574c5b70b8223b53787bdbc40e55ca8ac4/.config  2026-05-25 13:01:14.615107724 +0800
-+++ /pkg/linux/x86_64-rhel-9.4/gcc-14/698a86a85c4db4b800faa8a2890810ff9cec2f79/.config  2026-05-25 11:39:09.283994568 +0800
-@@ -281,6 +281,8 @@ CONFIG_FUTEX=y
- CONFIG_FUTEX_PI=y
- CONFIG_FUTEX_PRIVATE_HASH=y
- CONFIG_FUTEX_MPOL=y
-+CONFIG_HAVE_FUTEX_ROBUST_UNLOCK=y
-+CONFIG_FUTEX_ROBUST_UNLOCK=y
- CONFIG_EPOLL=y
- CONFIG_SIGNALFD=y
- CONFIG_TIMERFD=y
+The prior bignode rebalance and split operations were greedy in getting
+data to the lower range nodes (often referred to as the left side of the
+tree).  The new scatter-gather node copy was more fair on splitting
+data, but this lead to a regression with mmap2_processes.
 
+Restoring the greedy nature of getting data further left in the tree,
+when possible, turns out to perform better.  Note that it's not entirely
+greedy and tries to leave some room for modifications to both nodes
+later, if possible.
 
+The decision of where to push the majority of the data is relayed as a
+'hint' on which side to favour.  Passing around a hint turns out to
+simplify a lot of logic that was otherwise derived from the siblings max
+or size.
 
-Details are as below:
--------------------------------------------------------------------------------------------------->
+When writes cause a node split or rebalance, try to place the writes further into
+a node.  This is useful to avoid worst-case scenarios caused by writes happening
+around or at the same range in a repetitive area.  This can be seen happening
+by mmaping libraries and creating protected areas within the new mapping.
 
+Signed-off-by: Liam R. Howlett <liam@infradead.org>
+---
+ include/linux/maple_tree.h       |   1 +
+ lib/maple_tree.c                 | 458 ++++++++++++++++++++++---------
+ lib/test_maple_tree.c            |   5 +-
+ tools/testing/radix-tree/maple.c | 111 ++++++++
+ 4 files changed, 447 insertions(+), 128 deletions(-)
 
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20260527/202605271217.16dfca4d-lkp@intel.com
-
-=========================================================================================
-compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
-  gcc-14/performance/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/lkp-srf-2sp3/priv-instr/stress-ng/60s
-
-commit: 
-  35b728574c ("x86/vdso: Prepare for robust futex unlock support")
-  698a86a85c ("x86/vdso: Implement __vdso_futex_robust_try_unlock()")
-
-35b728574c5b70b8 698a86a85c4db4b800faa8a2890 
----------------- --------------------------- 
-         %stddev     %change         %stddev
-             \          |                \  
-     28468            -5.6%      26878        stress-ng.priv-instr.nanosecs_per_privileged_op_trap
- 3.983e+08            +5.8%  4.214e+08        stress-ng.priv-instr.ops
-   6643685            +5.8%    7028732        stress-ng.priv-instr.ops_per_sec
-     60.10            +0.0%      60.10        stress-ng.time.elapsed_time
-     60.10            +0.0%      60.10        stress-ng.time.elapsed_time.max
-     47894            -0.0%      47889        stress-ng.time.involuntary_context_switches
-      7847            +0.0%       7848        stress-ng.time.maximum_resident_set_size
-     18927 ±  2%      +0.7%      19061 ±  2%  stress-ng.time.minor_page_faults
-      4096            +0.0%       4096        stress-ng.time.page_size
-     19086            +0.0%      19087        stress-ng.time.percent_of_cpu_this_job_got
-     11320            -0.1%      11312        stress-ng.time.system_time
-    150.74            +5.9%     159.68        stress-ng.time.user_time
-    671.60            +1.0%     678.17 ±  3%  stress-ng.time.voluntary_context_switches
-      0.00         +3e+102%       3.00 ±107%  perf-c2c.DRAM.local
-      0.00       +8.5e+103%      85.33 ±111%  perf-c2c.DRAM.remote
-      0.00       +6.6e+104%     660.17 ±100%  perf-c2c.HITM.local
-      0.00       +8.2e+103%      81.83 ±110%  perf-c2c.HITM.remote
-      0.00       +7.4e+104%     742.00 ±101%  perf-c2c.HITM.total
-    247011 ± 28%      -8.9%     225103 ± 35%  numa-numastat.node0.local_node
-    373383 ± 15%      -1.0%     369611 ± 13%  numa-numastat.node0.numa_hit
-    126371 ± 47%     +14.4%     144508 ± 30%  numa-numastat.node0.other_node
-    367783 ± 18%      +5.5%     387890 ± 20%  numa-numastat.node1.local_node
-    440260 ± 12%      +0.5%     442288 ± 11%  numa-numastat.node1.numa_hit
-     72476 ± 81%     -24.9%      54397 ± 80%  numa-numastat.node1.other_node
-      3.27            -0.0        3.26        mpstat.cpu.all.idle%
-      0.09            +0.0        0.09 ±  3%  mpstat.cpu.all.irq%
-      0.00 ± 52%      +0.0        0.00 ± 31%  mpstat.cpu.all.soft%
-     95.15            -0.1       95.08        mpstat.cpu.all.sys%
-      1.49            +0.1        1.56        mpstat.cpu.all.usr%
-      3.00            +0.0%       3.00        mpstat.max_utilization.seconds
-    100.00            +0.0%     100.00        mpstat.max_utilization_pct
-     60.10            +0.0%      60.10        time.elapsed_time
-     60.10            +0.0%      60.10        time.elapsed_time.max
-     47894            -0.0%      47889        time.involuntary_context_switches
-      7847            +0.0%       7848        time.maximum_resident_set_size
-     18927 ±  2%      +0.7%      19061 ±  2%  time.minor_page_faults
-      4096            +0.0%       4096        time.page_size
-     19086            +0.0%      19087        time.percent_of_cpu_this_job_got
-     11320            -0.1%      11312        time.system_time
-    150.74            +5.9%     159.68        time.user_time
-    671.60            +1.0%     678.17 ±  3%  time.voluntary_context_switches
-      6.08 ±  9%      -7.8%       5.61 ± 13%  vmstat.cpu.id
-     92.50            +0.5%      92.93        vmstat.cpu.sy
-      1.42            +2.0%       1.45 ±  2%  vmstat.cpu.us
-      0.33            +0.5%       0.33        vmstat.io.bi
-      4.00            +0.0%       4.00        vmstat.memory.buff
-   4549331            -0.0%    4547648        vmstat.memory.cache
- 2.514e+08            -0.0%  2.514e+08        vmstat.memory.free
-    181.12            +0.9%     182.71        vmstat.procs.r
-      2505 ±  2%      -3.0%       2430 ±  2%  vmstat.system.cs
-    443254            +0.4%     445179        vmstat.system.in
-      0.07 ±  5%      -3.7%       0.07 ±  4%  perf-sched.sch_delay.avg.ms.[unknown].[unknown].[unknown].[unknown].[unknown]
-     10.80 ± 42%      -6.8%      10.06 ± 38%  perf-sched.sch_delay.max.ms.[unknown].[unknown].[unknown].[unknown].[unknown]
-      0.07 ±  5%      -3.7%       0.07 ±  4%  perf-sched.total_sch_delay.average.ms
-     10.80 ± 42%      -6.8%      10.06 ± 38%  perf-sched.total_sch_delay.max.ms
-    176.52 ±  2%      -0.6%     175.50 ±  5%  perf-sched.total_wait_and_delay.average.ms
-      7255 ±  2%      +1.9%       7392 ±  6%  perf-sched.total_wait_and_delay.count.ms
-      4979            +0.0%       4981        perf-sched.total_wait_and_delay.max.ms
-    176.45 ±  2%      -0.6%     175.43 ±  5%  perf-sched.total_wait_time.average.ms
-      4979            +0.0%       4981        perf-sched.total_wait_time.max.ms
-    176.52 ±  2%      -0.6%     175.50 ±  5%  perf-sched.wait_and_delay.avg.ms.[unknown].[unknown].[unknown].[unknown].[unknown]
-      7255 ±  2%      +1.9%       7392 ±  6%  perf-sched.wait_and_delay.count.[unknown].[unknown].[unknown].[unknown].[unknown]
-      4979            +0.0%       4981        perf-sched.wait_and_delay.max.ms.[unknown].[unknown].[unknown].[unknown].[unknown]
-    176.45 ±  2%      -0.6%     175.43 ±  5%  perf-sched.wait_time.avg.ms.[unknown].[unknown].[unknown].[unknown].[unknown]
-      4979            +0.0%       4981        perf-sched.wait_time.max.ms.[unknown].[unknown].[unknown].[unknown].[unknown]
-      2004            -0.3%       1999        perf-stat.i.context-switches
-    192058            -0.0%     192055        perf-stat.i.cpu-clock
-    311.00            -0.7%     308.78        perf-stat.i.cpu-migrations
-      0.02 ± 99%     +23.7%       0.02 ± 93%  perf-stat.i.major-faults
-      3937 ±  3%      +2.8%       4049 ±  4%  perf-stat.i.minor-faults
-      3937 ±  3%      +2.8%       4049 ±  4%  perf-stat.i.page-faults
-    192058            -0.0%     192055        perf-stat.i.task-clock
-      1972            -0.2%       1968        perf-stat.ps.context-switches
-    188859            -0.0%     188847        perf-stat.ps.cpu-clock
-    305.80            -0.7%     303.61        perf-stat.ps.cpu-migrations
-      0.02 ± 96%     +25.7%       0.02 ± 92%  perf-stat.ps.major-faults
-      3872 ±  3%      +2.8%       3979 ±  4%  perf-stat.ps.minor-faults
-      3872 ±  3%      +2.8%       3979 ±  4%  perf-stat.ps.page-faults
-    188859            -0.0%     188847        perf-stat.ps.task-clock
-      1852 ± 81%     +66.9%       3093        turbostat.Avg_MHz
-     57.87 ± 81%     +38.8       96.62        turbostat.Busy%
-      1920 ± 81%     +66.7%       3201        turbostat.Bzy_MHz
-      1.99 ± 82%      +1.2        3.15 ±  5%  turbostat.C1%
-      1.99 ± 82%     +58.0%       3.14 ±  5%  turbostat.CPU%c1
-     30.20 ± 81%     +68.3%      50.83        turbostat.CoreTmp
-      0.03 ± 81%     +66.7%       0.05        turbostat.IPC
-  16893263 ± 81%     +66.7%   28163412        turbostat.IRQ
-   4937639 ± 81%     +66.8%    8234664        turbostat.NMI
-     30.60 ± 81%     +66.1%      50.83        turbostat.PkgTmp
-    171.65 ± 81%     +67.0%     286.58        turbostat.PkgWatt
-      9.03 ± 81%     +66.6%      15.05        turbostat.RAMWatt
-      0.01 ± 81%     +66.7%       0.02        turbostat.SysWatt
-      1440 ± 81%     +66.7%       2400        turbostat.TSC_MHz
-      1584 ±  6%      -8.7%       1447        sched_debug.cfs_rq:/.runnable_avg.max
-    162.28 ±  5%      -8.7%     148.14 ±  4%  sched_debug.cfs_rq:/.runnable_avg.stddev
-      1025 ±  4%      +7.6%       1103 ±  4%  sched_debug.cfs_rq:/.util_avg.max
-
-
-
-
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provided
-for informational purposes only. Any difference in system hardware or software
-design or configuration may affect actual performance.
-
-
+diff --git a/include/linux/maple_tree.h b/include/linux/maple_tree.h
+index 4a5631906aff..c4c3b31614b0 100644
+--- a/include/linux/maple_tree.h
++++ b/include/linux/maple_tree.h
+@@ -192,6 +192,7 @@ struct maple_copy {
+ 	unsigned char d_count;
+ 	unsigned char split;
+ 	unsigned char data;
++	unsigned char write_start;
+ 	unsigned char height;
+ };
+ 
+diff --git a/lib/maple_tree.c b/lib/maple_tree.c
+index 60ae5e6fc1ee..09c3dbeed10c 100644
+--- a/lib/maple_tree.c
++++ b/lib/maple_tree.c
+@@ -89,6 +89,10 @@
+  */
+ #define MA_STATE_PREALLOC	1
+ 
++#define MAPLE_DST_NEUTRAL	0
++#define MAPLE_DST_FAVOUR_LEFT	1
++#define MAPLE_DST_FAVOUR_RIGHT	2
++
+ #define ma_parent_ptr(x) ((struct maple_pnode *)(x))
+ #define mas_tree_parent(x) ((unsigned long)(x->tree) | MA_ROOT_PARENT)
+ #define ma_mnode_ptr(x) ((struct maple_node *)(x))
+@@ -1720,21 +1724,26 @@ static inline void mas_wr_node_walk(struct ma_wr_state *wr_mas)
+ 	wr_mas->offset_end = mas->offset = offset;
+ }
+ 
+-static inline void rebalance_sib(struct ma_state *parent, struct ma_state *sib)
++static inline unsigned char rebalance_sib(struct ma_state *parent,
++		struct ma_state *sib)
+ {
+ 	*sib = *parent;
+ 	/* Prioritize move right to pull data left */
+-	if (sib->offset < sib->end)
++	if (sib->offset < sib->end) {
+ 		sib->offset++;
+-	else
+-		sib->offset--;
++		mas_descend(sib);
++		sib->end = mas_data_end(sib);
++		return MAPLE_DST_FAVOUR_RIGHT;
++	}
+ 
++	sib->offset--;
+ 	mas_descend(sib);
+ 	sib->end = mas_data_end(sib);
++	return MAPLE_DST_FAVOUR_LEFT;
+ }
+ 
+ static inline
+-void spanning_sib(struct ma_wr_state *l_wr_mas,
++unsigned char spanning_sib(struct ma_wr_state *l_wr_mas,
+ 		struct ma_wr_state *r_wr_mas, struct ma_state *nneighbour)
+ {
+ 	struct ma_state l_tmp = *l_wr_mas->mas;
+@@ -1754,7 +1763,7 @@ void spanning_sib(struct ma_wr_state *l_wr_mas,
+ 
+ 			r_tmp.end = mas_data_end(&r_tmp);
+ 			*nneighbour = r_tmp;
+-			return;
++			return MAPLE_DST_FAVOUR_RIGHT;
+ 		} else if (l_tmp.offset) {
+ 			l_tmp.offset--;
+ 			do {
+@@ -1764,11 +1773,13 @@ void spanning_sib(struct ma_wr_state *l_wr_mas,
+ 
+ 			l_tmp.end = l_tmp.offset;
+ 			*nneighbour = l_tmp;
+-			return;
++			return MAPLE_DST_FAVOUR_LEFT;
+ 		}
+ 	} while (!mte_is_root(r_tmp.node));
+ 
+ 	WARN_ON_ONCE(1);
++	nneighbour->end = 0;
++	return MAPLE_DST_NEUTRAL;
+ }
+ 
+ /*
+@@ -2151,74 +2162,147 @@ static inline void cp_data_calc(struct maple_copy *cp,
+ 	cp->data += r_wr_mas->mas->end - r_wr_mas->offset_end;
+ }
+ 
+-static bool data_fits(struct ma_state *sib, struct ma_state *mas,
++#define MAPLE_TEST_ALT_SIB 3
++#define MAPLE_NO_SPACE (-1)
++#define MAPLE_MIN_SPARE_SLOTS 2
++
++static int data_fits(unsigned char end, struct ma_state *mas,
+ 		struct maple_copy *cp)
+ {
+ 	unsigned char new_data;
+ 	enum maple_type type;
+ 	unsigned char space;
+-	unsigned char end;
++	int spare_slots;
+ 
++	/*
++	 * end is an index while cp->data/space are sizes, so a strict fit would
++	 * allow new_data <= space.  One spare slot (new_data < space) avoids full
++	 * pack.  Keep one more spare slot here to reduce split/rebalance churn.
++	 */
+ 	type = mte_node_type(mas->node);
+ 	space = 2 * mt_slots[type];
+-	end = sib->end;
+-
+ 	new_data = end + 1 + cp->data;
+-	if (new_data > space)
+-		return false;
++	spare_slots = space - new_data;
++	if (spare_slots < MAPLE_MIN_SPARE_SLOTS)
++		return MAPLE_NO_SPACE;
+ 
+-	/*
+-	 * This is off by one by design.  The extra space is left to reduce
+-	 * jitter in operations that add then remove two entries.
+-	 *
+-	 * end is an index while new space and data are both sizes.  Adding one
+-	 * to end to convert the index to a size means that the below
+-	 * calculation should be <=, but we want to keep an extra space in nodes
+-	 * to reduce jitter.
+-	 *
+-	 * Note that it is still possible to get a full node on the left by the
+-	 * NULL landing exactly on the split.  The NULL ending of a node happens
+-	 * in the dst_setup() function, where we will either increase the split
+-	 * by one or decrease it by one, if possible.  In the case of split
+-	 * (this case), it is always possible to shift the spilt by one - again
+-	 * because there is at least one slot free by the below checking.
+-	 */
+-	if (new_data < space)
+-		return true;
+-
+-	return false;
++	return spare_slots;
+ }
+ 
+-static inline void push_data_sib(struct maple_copy *cp, struct ma_state *mas,
+-		struct ma_state *sib, struct ma_state *parent)
++static inline int push_data_sib_left(struct maple_copy *cp,
++		struct ma_state *mas, struct ma_state *sib,
++		struct ma_state *parent)
+ {
+-
+-	if (mte_is_root(mas->node))
+-		goto no_push;
+-
++	if (!parent->offset)
++		return MAPLE_NO_SPACE;
+ 
+ 	*sib = *parent;
+-	if (sib->offset) {
+-		sib->offset--;
+-		mas_descend(sib);
+-		sib->end = mas_data_end(sib);
+-		if (data_fits(sib, mas, cp))	/* Push left */
+-			return;
++	sib->offset--;
++	mas_descend(sib);
++	sib->end = mas_data_end(sib);
+ 
+-		*sib = *parent;
+-	}
++	return data_fits(sib->end, mas, cp);
++}
+ 
+-	if (sib->offset >= sib->end)
+-		goto no_push;
++static inline int push_data_sib_right(struct maple_copy *cp,
++		struct ma_state *mas, struct ma_state *sib,
++		struct ma_state *parent)
++{
++	if (parent->offset >= parent->end)
++		return MAPLE_NO_SPACE;
+ 
++	*sib = *parent;
+ 	sib->offset++;
+ 	mas_descend(sib);
+ 	sib->end = mas_data_end(sib);
+-	if (data_fits(sib, mas, cp))		/* Push right*/
+-		return;
+ 
+-no_push:
++	return data_fits(sib->end, mas, cp);
++}
++
++static inline unsigned char push_data_sib_split(struct maple_copy *cp,
++		struct ma_state *mas, struct ma_state *sib,
++		struct ma_state *parent)
++{
++	struct ma_state left;
++	struct ma_state right;
++	int left_spare = MAPLE_NO_SPACE;
++	int right_spare = MAPLE_NO_SPACE;
++
++	if (!mte_is_root(mas->node)) {
++		left_spare = push_data_sib_left(cp, mas, &left, parent);
++		if (left_spare >= MAPLE_TEST_ALT_SIB) {
++			*sib = left;
++			return MAPLE_DST_FAVOUR_LEFT;
++		}
++
++		right_spare = push_data_sib_right(cp, mas, &right, parent);
++
++		if ((left_spare >= 0) && (right_spare >= 0)) {
++			if (left.end <= right.end) {
++				*sib = left;
++				return MAPLE_DST_FAVOUR_LEFT;
++			}
++
++			*sib = right;
++			return MAPLE_DST_FAVOUR_RIGHT;
++		}
++
++		if (left_spare >= 0) {
++			*sib = left;
++			return MAPLE_DST_FAVOUR_LEFT;
++		}
++
++		if (right_spare >= 0) {
++			*sib = right;
++			return MAPLE_DST_FAVOUR_RIGHT;
++		}
++	}
++
++	sib->end = 0;
++	return MAPLE_DST_NEUTRAL;
++}
++
++static inline unsigned char push_data_sib_rebalance(struct maple_copy *cp,
++		struct ma_state *mas, struct ma_state *sib,
++		struct ma_state *parent)
++{
++	struct ma_state left;
++	struct ma_state right;
++	int left_spare = MAPLE_NO_SPACE;
++	int right_spare = MAPLE_NO_SPACE;
++
++	if (!mte_is_root(mas->node)) {
++		right_spare = push_data_sib_right(cp, mas, &right, parent);
++		if (right_spare >= MAPLE_TEST_ALT_SIB) {
++			*sib = right;
++			return MAPLE_DST_FAVOUR_RIGHT;
++		}
++
++		left_spare = push_data_sib_left(cp, mas, &left, parent);
++
++		if ((left_spare >= 0) && (right_spare >= 0)) {
++			if (left.end < right.end) {
++				*sib = left;
++				return MAPLE_DST_FAVOUR_LEFT;
++			}
++
++			*sib = right;
++			return MAPLE_DST_FAVOUR_RIGHT;
++		}
++
++		if (right_spare >= 0) {
++			*sib = right;
++			return MAPLE_DST_FAVOUR_RIGHT;
++		}
++
++		if (left_spare >= 0) {
++			*sib = left;
++			return MAPLE_DST_FAVOUR_LEFT;
++		}
++	}
++
+ 	sib->end = 0;
++	return MAPLE_DST_NEUTRAL;
+ }
+ 
+ /*
+@@ -2232,29 +2316,27 @@ static inline void push_data_sib(struct maple_copy *cp, struct ma_state *mas,
+  * indicate it will not be used.
+  *
+  */
+-static inline void rebalance_data(struct maple_copy *cp,
++static inline unsigned char rebalance_data(struct maple_copy *cp,
+ 		struct ma_wr_state *wr_mas, struct ma_state *sib,
+ 		struct ma_state *parent)
+ {
++	unsigned char hint = MAPLE_DST_NEUTRAL;
++
+ 	cp_data_calc(cp, wr_mas, wr_mas);
+ 	sib->end = 0;
++
+ 	if (cp->data > mt_slots[wr_mas->type]) {
+-		push_data_sib(cp, wr_mas->mas, sib, parent);
+-		if (sib->end)
+-			goto use_sib;
++		hint = push_data_sib_rebalance(cp, wr_mas->mas, sib, parent);
+ 	} else if (cp->data <= mt_min_slots[wr_mas->type]) {
+ 		if ((wr_mas->mas->min != 0) ||
+-		    (wr_mas->mas->max != ULONG_MAX)) {
+-			rebalance_sib(parent, sib);
+-			goto use_sib;
+-		}
++		    (wr_mas->mas->max != ULONG_MAX))
++			hint = rebalance_sib(parent, sib);
+ 	}
+ 
+-	return;
+-
+-use_sib:
++	if (hint != MAPLE_DST_NEUTRAL)
++		cp->data += sib->end + 1;
+ 
+-	cp->data += sib->end + 1;
++	return hint;
+ }
+ 
+ /*
+@@ -2267,18 +2349,95 @@ static inline void rebalance_data(struct maple_copy *cp,
+  * Note: @cp->data is a size and not indexed by 0. @sib->end may be set to 0 to
+  * indicate it will not be used.
+  */
+-static inline void spanning_data(struct maple_copy *cp,
++static inline unsigned char spanning_data(struct maple_copy *cp,
+ 		struct ma_wr_state *l_wr_mas, struct ma_wr_state *r_wr_mas,
+ 		struct ma_state *sib)
+ {
++	unsigned char hint = MAPLE_DST_NEUTRAL;
++
+ 	cp_data_calc(cp, l_wr_mas, r_wr_mas);
+ 	if (((l_wr_mas->mas->min != 0) || (r_wr_mas->mas->max != ULONG_MAX)) &&
+ 	    (cp->data <= mt_min_slots[l_wr_mas->type])) {
+-		spanning_sib(l_wr_mas, r_wr_mas, sib);
+-		cp->data += sib->end + 1;
++		hint = spanning_sib(l_wr_mas, r_wr_mas, sib);
++		if (hint != MAPLE_DST_NEUTRAL)
++			cp->data += sib->end + 1;
+ 	} else {
+ 		sib->end = 0;
+ 	}
++
++	return hint;
++}
++
++static inline unsigned char cp_hint_split(struct maple_copy *cp,
++		enum maple_type mt, unsigned char hint)
++{
++	unsigned char min_split;
++	unsigned char max_split;
++	unsigned int target = cp->split;
++	unsigned int slot;
++	int preferred;
++	int fallback;
++
++	/*
++	 * Keep the original split bounds: these preserve minimum occupancy and
++	 * leave the one-slot margin used by the NULL-end adjustment in
++	 * cp_data_write().
++	 */
++	max_split = mt_slots[mt] - 1;
++	if (cp->data - mt_min_slots[mt] - 2 < max_split)
++		max_split = cp->data - mt_min_slots[mt] - 2;
++
++	min_split = mt_min_slots[mt];
++	if (cp->data - mt_slots[mt] > min_split)
++		min_split = cp->data - mt_slots[mt];
++
++	switch (hint) {
++	case MAPLE_DST_FAVOUR_LEFT:
++		target = mt_slots[mt] - 2;
++		break;
++	case MAPLE_DST_FAVOUR_RIGHT:
++		target = min_split;
++		break;
++	default:
++		break;
++	}
++
++	if (target < min_split)
++		target = min_split;
++	if (target > max_split)
++		target = max_split;
++
++	/*
++	 * A NULL write that lands exactly on split creates left-node edge churn in
++	 * cp_data_write(): the forward adjustment cannot run and the rewind path
++	 * is forced.  If this split lands on the NULL write entry, nudge one slot
++	 * away.
++	 *
++	 * Prefer keeping data on the hinted side.  For neutral, prefer pushing
++	 * data left when both directions are possible.
++	 */
++	if (target >= cp->write_start) {
++		slot = target - cp->write_start;
++		if ((slot <= cp->end) && !cp->slot[slot]) {
++			if (hint == MAPLE_DST_FAVOUR_RIGHT) {
++				preferred = (int)target - 1;
++				fallback = (int)target + 1;
++			} else {
++				preferred = (int)target + 1;
++				fallback = (int)target - 1;
++			}
++
++			if ((preferred >= min_split) && (preferred <= max_split))
++				target = preferred;
++			else if ((fallback >= min_split) &&
++				 (fallback <= max_split))
++				target = fallback;
++		}
++	}
++
++	cp->split = target;
++
++	return cp->split;
+ }
+ 
+ /*
+@@ -2286,9 +2445,11 @@ static inline void spanning_data(struct maple_copy *cp,
+  * @cp: The maple copy node
+  * @mas: The maple state
+  * @mt: The source node type
++ * @hint: Split preference from write placement and sibling side
+  */
+ static inline
+-void dst_setup(struct maple_copy *cp, struct ma_state *mas, enum maple_type mt)
++void dst_setup(struct maple_copy *cp, struct ma_state *mas, enum maple_type mt,
++	      unsigned char hint)
+ {
+ 	/* Data is 1 indexed, every src has +1 added.  */
+ 
+@@ -2300,8 +2461,10 @@ void dst_setup(struct maple_copy *cp, struct ma_state *mas, enum maple_type mt)
+ 
+ 	cp->split = (cp->data - 1) / 2;
+ 	cp->d_count = 2;
+-	if (cp->data < mt_slots[mt] * 2)
++	if (cp->data < mt_slots[mt] * 2) {
++		cp_hint_split(cp, mt, hint);
+ 		goto node_setup;
++	}
+ 
+ 	if (cp->data == mt_slots[mt] * 2) {
+ 		unsigned char off;
+@@ -2407,16 +2570,23 @@ static inline void init_cp_src(struct maple_copy *cp)
+  * @l_wr_mas: The left write maple state
+  * @r_wr_mas: The right write maple state
+  * @sib: The sibling maple state
++ * @hint: The sibling direction hint
+  *
+- * Note: @sib->end == 0 indicates no sibling will be used.
++ * Note: @hint == MAPLE_DST_NEUTRAL indicates no sibling will be used.
+  */
+ static inline
+ void multi_src_setup(struct maple_copy *cp, struct ma_wr_state *l_wr_mas,
+-		struct ma_wr_state *r_wr_mas, struct ma_state *sib)
++		struct ma_wr_state *r_wr_mas, struct ma_state *sib,
++		unsigned char hint)
+ {
++	unsigned char offset = 0;
++
+ 	cp->s_count = 0;
+-	if (sib->end && sib->max < l_wr_mas->mas->min)
++
++	if (hint == MAPLE_DST_FAVOUR_LEFT) {
+ 		append_mas_cp(cp, sib, 0, sib->end);
++		offset += cp->src[cp->s_count - 1].end + 1;
++	}
+ 
+ 	/* Copy left 0 - offset */
+ 	if (l_wr_mas->mas->offset) {
+@@ -2424,8 +2594,10 @@ void multi_src_setup(struct maple_copy *cp, struct ma_wr_state *l_wr_mas,
+ 
+ 		append_wr_mas_cp(cp, l_wr_mas, 0, off);
+ 		cp->src[cp->s_count - 1].max = cp->min - 1;
++		offset += off + 1;
+ 	}
+ 
++	cp->write_start = offset;
+ 	init_cp_src(cp);
+ 
+ 	/* Copy right either from offset or offset + 1 pending on r_max */
+@@ -2433,7 +2605,7 @@ void multi_src_setup(struct maple_copy *cp, struct ma_wr_state *l_wr_mas,
+ 		append_wr_mas_cp(cp, r_wr_mas, r_wr_mas->offset_end + 1,
+ 			       r_wr_mas->mas->end);
+ 
+-	if (sib->end && sib->min > r_wr_mas->mas->max)
++	if (hint == MAPLE_DST_FAVOUR_RIGHT)
+ 		append_mas_cp(cp, sib, 0, sib->end);
+ }
+ 
+@@ -2506,21 +2678,51 @@ void cp_data_write(struct maple_copy *cp, struct ma_state *mas)
+ 		/* Handle null entries */
+ 		if (cp->dst[d].max != ULONG_MAX &&
+ 		    !ma_slots(dst, d_mt)[dst_offset - 1]) {
+-			if (s_offset == cp->src[s].start) {
+-				s--;
+-				src = cp->src[s].node;
+-				src_end = cp->src[s].end;
+-				s_max = cp->src[s].max;
+-				s_mt = cp->src[s].mt;
+-				s_offset = src_end;
++			if ((dst_offset < mt_slots[d_mt]) &&
++			    (cp->data - data_offset > mt_min_slots[d_mt] + 1)) {
++				d_max = node_copy(mas, src, s_offset, 1, s_max, s_mt,
++						  dst, dst_offset, d_mt);
++				dst_offset++;
++				data_offset++;
++				s_offset++;
++				if (s_offset > src_end) {
++					s++;
++					if (s >= cp->s_count) {
++						cp->dst[d].max = d_max;
++						node_finalise(dst, d_mt,
++							     dst_offset);
++						return;
++					}
++
++					src = cp->src[s].node;
++					s_offset = cp->src[s].start;
++					src_end = cp->src[s].end;
++					s_max = cp->src[s].max;
++					s_mt = cp->src[s].mt;
++				}
++
++				cp->dst[d].max = d_max;
++				if (WARN_ON_ONCE(!split))
++					split = 0;
++				else
++					split--;
+ 			} else {
+-				s_offset--;
++				if (s_offset == cp->src[s].start) {
++					s--;
++					src = cp->src[s].node;
++					src_end = cp->src[s].end;
++					s_max = cp->src[s].max;
++					s_mt = cp->src[s].mt;
++					s_offset = src_end;
++				} else {
++					s_offset--;
++				}
++				/* Set dst max and clear pivot */
++				split++;
++				data_offset--;
++				dst_offset--;
++				cp->dst[d].max = ma_pivots(dst, d_mt)[dst_offset - 1];
+ 			}
+-			/* Set dst max and clear pivot */
+-			split++;
+-			data_offset--;
+-			dst_offset--;
+-			cp->dst[d].max = ma_pivots(dst, d_mt)[dst_offset - 1];
+ 		}
+ 
+ 		node_finalise(dst, d_mt, dst_offset);
+@@ -2600,7 +2802,7 @@ static inline bool cp_is_new_root(struct maple_copy *cp, struct ma_state *mas)
+ 
+ 		cp->data = cp->d_count;
+ 		cp->s_count = 0;
+-		dst_setup(cp, mas, mt);
++		dst_setup(cp, mas, mt, MAPLE_DST_NEUTRAL);
+ 		init_cp_src(cp);
+ 		node_copy(mas, cp->src[0].node, 0, cp->data, cp->max, maple_copy,
+ 			  cp->dst[0].node, 0, mt);
+@@ -2625,9 +2827,9 @@ static inline bool cp_is_new_root(struct maple_copy *cp, struct ma_state *mas)
+ }
+ 
+ static inline bool cp_converged(struct maple_copy *cp, struct ma_state *mas,
+-				struct ma_state *sib)
++				unsigned char hint)
+ {
+-	if (cp->d_count != 1 || sib->end)
++	if (cp->d_count != 1 || hint != MAPLE_DST_NEUTRAL)
+ 		return false;
+ 
+ 	cp->dst[0].node->parent = ma_parent_ptr(mas_mn(mas)->parent);
+@@ -2646,14 +2848,12 @@ static inline bool cp_converged(struct maple_copy *cp, struct ma_state *mas,
+  */
+ static bool spanning_ascend(struct maple_copy *cp, struct ma_state *mas,
+ 			    struct ma_wr_state *l_wr_mas, struct ma_wr_state *r_wr_mas,
+-			    struct ma_state *sib)
++			    struct ma_state *sib, unsigned char hint)
+ {
+-	if (sib->end) {
+-		if (sib->max < l_wr_mas->mas->min)
+-			*l_wr_mas->mas = *sib;
+-		else
+-			*r_wr_mas->mas = *sib;
+-	}
++	if (hint == MAPLE_DST_FAVOUR_LEFT)
++		*l_wr_mas->mas = *sib;
++	else if (hint == MAPLE_DST_FAVOUR_RIGHT)
++		*r_wr_mas->mas = *sib;
+ 
+ 	cp_dst_to_slots(cp, l_wr_mas->mas->min, r_wr_mas->mas->max, mas);
+ 	if (cp_is_new_root(cp, mas))
+@@ -2692,16 +2892,16 @@ void copy_tree_location(const struct ma_state *src, struct ma_state *dst)
+  */
+ static inline bool rebalance_ascend(struct maple_copy *cp,
+ 		struct ma_wr_state *wr_mas, struct ma_state *sib,
+-		struct ma_state *parent)
++		struct ma_state *parent, unsigned char hint)
+ {
+ 	struct ma_state *mas;
+ 	unsigned long min, max;
+ 
+ 	mas = wr_mas->mas;
+-	if (!sib->end) {
++	if (hint == MAPLE_DST_NEUTRAL) {
+ 		min = mas->min;
+ 		max = mas->max;
+-	} else if (sib->min > mas->max) { /* Move right succeeded */
++	} else if (hint == MAPLE_DST_FAVOUR_RIGHT) {
+ 		min = mas->min;
+ 		max = sib->max;
+ 		wr_mas->offset_end = parent->offset + 1;
+@@ -2716,7 +2916,7 @@ static inline bool rebalance_ascend(struct maple_copy *cp,
+ 	if (cp_is_new_root(cp, mas))
+ 		return false;
+ 
+-	if (cp_converged(cp, mas, sib))
++	if (cp_converged(cp, mas, hint))
+ 		return false;
+ 
+ 	cp->height++;
+@@ -3049,6 +3249,7 @@ static void mas_wr_spanning_store(struct ma_wr_state *wr_mas)
+ 	struct maple_copy cp;
+ 	struct ma_state *mas;
+ 	struct ma_state sib;
++	unsigned char hint;
+ 
+ 	/* Left and Right side of spanning store */
+ 	MA_STATE(r_mas, NULL, 0, 0);
+@@ -3107,11 +3308,11 @@ static void mas_wr_spanning_store(struct ma_wr_state *wr_mas)
+ 
+ 	cp_leaf_init(&cp, mas, wr_mas, &r_wr_mas);
+ 	do {
+-		spanning_data(&cp, wr_mas, &r_wr_mas, &sib);
+-		multi_src_setup(&cp, wr_mas, &r_wr_mas, &sib);
+-		dst_setup(&cp, mas, wr_mas->type);
++		hint = spanning_data(&cp, wr_mas, &r_wr_mas, &sib);
++		multi_src_setup(&cp, wr_mas, &r_wr_mas, &sib, hint);
++		dst_setup(&cp, mas, wr_mas->type, hint);
+ 		cp_data_write(&cp, mas);
+-	} while (spanning_ascend(&cp, mas, wr_mas, &r_wr_mas, &sib));
++	} while (spanning_ascend(&cp, mas, wr_mas, &r_wr_mas, &sib, hint));
+ 
+ 	mas_wmb_replace(mas, &cp);
+ }
+@@ -3377,7 +3578,7 @@ static inline void mas_wr_append(struct ma_wr_state *wr_mas)
+  */
+ static inline bool split_ascend(struct maple_copy *cp,
+ 		struct ma_wr_state *wr_mas, struct ma_state *sib,
+-		struct ma_state *parent)
++		struct ma_state *parent, unsigned char hint)
+ {
+ 	struct ma_state *mas;
+ 	unsigned long min, max;
+@@ -3386,21 +3587,19 @@ static inline bool split_ascend(struct maple_copy *cp,
+ 	min = mas->min; /* push right, or normal split */
+ 	max = mas->max;
+ 	wr_mas->offset_end = parent->offset;
+-	if (sib->end) {
+-		if (sib->max < mas->min) {
+-			min = sib->min; /* push left */
+-			parent->offset--;
+-		} else {
+-			max = sib->max; /* push right */
+-			wr_mas->offset_end++;
+-		}
++	if (hint == MAPLE_DST_FAVOUR_LEFT) {
++		min = sib->min; /* push left */
++		parent->offset--;
++	} else if (hint == MAPLE_DST_FAVOUR_RIGHT) {
++		max = sib->max; /* push right */
++		wr_mas->offset_end++;
+ 	}
+ 
+ 	cp_dst_to_slots(cp, min, max, mas);
+ 	if (cp_is_new_root(cp, mas))
+ 		return false;
+ 
+-	if (cp_converged(cp, mas, sib))
++	if (cp_converged(cp, mas, hint))
+ 		return false;
+ 
+ 	cp->height++;
+@@ -3420,19 +3619,24 @@ static inline bool split_ascend(struct maple_copy *cp,
+  * indicate it will not be used.
+  *
+  */
+-static inline void split_data(struct maple_copy *cp,
++static inline unsigned char split_data(struct maple_copy *cp,
+ 		struct ma_wr_state *wr_mas, struct ma_state *sib,
+ 		struct ma_state *parent)
+ {
++	unsigned char hint = MAPLE_DST_NEUTRAL;
++
+ 	cp_data_calc(cp, wr_mas, wr_mas);
++
+ 	if (cp->data <= mt_slots[wr_mas->type]) {
+ 		sib->end = 0;
+-		return;
++		return hint;
+ 	}
+ 
+-	push_data_sib(cp, wr_mas->mas, sib, parent);
+-	if (sib->end)
++	hint = push_data_sib_split(cp, wr_mas->mas, sib, parent);
++	if (hint != MAPLE_DST_NEUTRAL)
+ 		cp->data += sib->end + 1;
++
++	return hint;
+ }
+ 
+ /*
+@@ -3445,6 +3649,7 @@ static void mas_wr_split(struct ma_wr_state *wr_mas)
+ 	struct ma_state *mas;
+ 	struct maple_copy cp;
+ 	struct ma_state sib;
++	unsigned char hint;
+ 
+ 	mas = wr_mas->mas;
+ 	trace_ma_write(TP_FCT, wr_mas->mas, 0, wr_mas->entry);
+@@ -3455,11 +3660,11 @@ static void mas_wr_split(struct ma_wr_state *wr_mas)
+ 			mas_ascend(&parent);
+ 			parent.end = mas_data_end(&parent);
+ 		}
+-		split_data(&cp, wr_mas, &sib, &parent);
+-		multi_src_setup(&cp, wr_mas, wr_mas, &sib);
+-		dst_setup(&cp, mas, wr_mas->type);
++		hint = split_data(&cp, wr_mas, &sib, &parent);
++		multi_src_setup(&cp, wr_mas, wr_mas, &sib, hint);
++		dst_setup(&cp, mas, wr_mas->type, hint);
+ 		cp_data_write(&cp, mas);
+-	} while (split_ascend(&cp, wr_mas, &sib, &parent));
++	} while (split_ascend(&cp, wr_mas, &sib, &parent, hint));
+ 
+ 	mas_wmb_replace(mas, &cp);
+ }
+@@ -3478,6 +3683,7 @@ static void mas_wr_rebalance(struct ma_wr_state *wr_mas)
+ 	struct ma_state *mas;
+ 	struct maple_copy cp;
+ 	struct ma_state sib;
++	unsigned char hint;
+ 
+ 	/*
+ 	 * Rebalancing occurs if a node is insufficient.  Data is rebalanced
+@@ -3498,11 +3704,11 @@ static void mas_wr_rebalance(struct ma_wr_state *wr_mas)
+ 			mas_ascend(&parent);
+ 			parent.end = mas_data_end(&parent);
+ 		}
+-		rebalance_data(&cp, wr_mas, &sib, &parent);
+-		multi_src_setup(&cp, wr_mas, wr_mas, &sib);
+-		dst_setup(&cp, mas, wr_mas->type);
++		hint = rebalance_data(&cp, wr_mas, &sib, &parent);
++		multi_src_setup(&cp, wr_mas, wr_mas, &sib, hint);
++		dst_setup(&cp, mas, wr_mas->type, hint);
+ 		cp_data_write(&cp, mas);
+-	} while (rebalance_ascend(&cp, wr_mas, &sib, &parent));
++	} while (rebalance_ascend(&cp, wr_mas, &sib, &parent, hint));
+ 
+ 	mas_wmb_replace(mas, &cp);
+ }
+diff --git a/lib/test_maple_tree.c b/lib/test_maple_tree.c
+index b9367c61e8b5..4033d1b85fee 100644
+--- a/lib/test_maple_tree.c
++++ b/lib/test_maple_tree.c
+@@ -1723,9 +1723,10 @@ static noinline void __init check_gap_combining(struct maple_tree *mt)
+ 	mn1 = mas.node;
+ 	entry = mas_next(&mas, ULONG_MAX);
+ 	MT_BUG_ON(mt, entry != xa_mk_value(index + 4));
+-	mas_next(&mas, ULONG_MAX); /* go to the next entry. */
+ 	mn2 = mas.node;
+-	MT_BUG_ON(mt, mn1 == mn2); /* test the next entry is in the next node. */
++	MT_BUG_ON(mt, mn1 == mn2);
++	entry = mas_next(&mas, ULONG_MAX); /* go to the next entry. */
++	MT_BUG_ON(mt, entry != xa_mk_value(index + 5));
+ 
+ 	/*
+ 	 * At this point, there is a gap of 3 at seq100[6].  Find it by
+diff --git a/tools/testing/radix-tree/maple.c b/tools/testing/radix-tree/maple.c
+index 0607913a3022..6d684327a8ca 100644
+--- a/tools/testing/radix-tree/maple.c
++++ b/tools/testing/radix-tree/maple.c
+@@ -36316,6 +36316,116 @@ static inline int check_vma_modification(struct maple_tree *mt)
+ 	return 0;
+ }
+ 
++/*
++ * Assert we avoid split-edge jitter when a NULL write lands on split.
++ */
++static unsigned int count_tree_nodes(struct maple_tree *mt)
++{
++	MA_STATE(scan, mt, 0, 0);
++	unsigned int nodes = 0;
++
++	if (!xa_is_node(mt->ma_root))
++		return mtree_empty(mt) ? 0 : 1;
++
++	mas_dfs_preorder(&scan);
++	while (!mas_is_none(&scan)) {
++		nodes++;
++		mas_dfs_preorder(&scan);
++	}
++
++	return nodes;
++}
++
++static void check_split_jitter(void)
++{
++	DEFINE_MTREE(tree);
++	MA_STATE(mas, &tree, 0, 0);
++	struct maple_enode *left_node;
++	struct maple_node *root_node;
++	enum maple_type root_type;
++	unsigned long *root_pivots;
++	unsigned long fill = 0;
++	unsigned long left_max;
++	unsigned long right_min;
++	unsigned long gap;
++	unsigned long span_last;
++	unsigned long stable_split = 0;
++	unsigned int stable_nodes = 0;
++	unsigned int i;
++
++	/* Fill one leaf until the first split creates a root with two leaves. */
++	mt_init_flags(&tree, MT_FLAGS_ALLOC_RANGE);
++	mas_lock(&mas);
++	while (mt_height(&tree) < 2) {
++		mas_set(&mas, fill);
++		mas_store_gfp(&mas, xa_mk_value(fill + 1), GFP_KERNEL);
++		fill++;
++	}
++
++	MT_BUG_ON(&tree, mt_height(&tree) != 2);
++	MT_BUG_ON(&tree, mte_is_leaf(tree.ma_root));
++	root_type = mte_node_type(tree.ma_root);
++	root_node = mte_to_node(tree.ma_root);
++	root_pivots = ma_pivots(root_node, root_type);
++	left_max = root_pivots[0];
++	MT_BUG_ON(&tree, left_max < 3);
++
++	/* Capture the first left/right leaf boundary. */
++	mas_set(&mas, 0);
++	MT_BUG_ON(&tree, mas_walk(&mas) == NULL);
++	left_node = mas.node;
++
++	right_min = left_max + 1;
++	mas_set(&mas, right_min);
++	MT_BUG_ON(&tree, mas_walk(&mas) == NULL);
++	MT_BUG_ON(&tree, mas.node == left_node);
++
++	/* Create a gap in the left leaf near the split boundary. */
++	gap = left_max - 1;
++	mas_set_range(&mas, gap, gap);
++	mas_store_gfp(&mas, NULL, GFP_KERNEL);
++	mas_set(&mas, gap);
++	MT_BUG_ON(&tree, mas_walk(&mas) != NULL);
++	MT_BUG_ON(&tree, mas.index != gap);
++
++	/* Span the gap into the right leaf, forcing spanning-store rebalance. */
++	span_last = right_min + 2;
++	mas_set(&mas, span_last);
++	MT_BUG_ON(&tree, mas_walk(&mas) == NULL);
++
++	/*
++	 * Repeated mmap/munmap-style updates over the same spanning range must
++	 * settle into a stable layout instead of split-edge jitter.
++	 */
++	for (i = 0; i < 128; i++) {
++		mas_set_range(&mas, gap, span_last);
++		mas_store_gfp(&mas, xa_mk_value(0x1000 + i), GFP_KERNEL);
++		mt_validate(&tree);
++
++		mas_set_range(&mas, gap, span_last);
++		mas_store_gfp(&mas, NULL, GFP_KERNEL);
++		mt_validate(&tree);
++
++		mas_set(&mas, gap);
++		MT_BUG_ON(&tree, mas_walk(&mas) != NULL);
++		MT_BUG_ON(&tree, mas.index > gap);
++		MT_BUG_ON(&tree, mas.last < span_last);
++
++		mas_set(&mas, 0);
++		MT_BUG_ON(&tree, mas_walk(&mas) == NULL);
++		if (!i) {
++			stable_split = mas.max;
++			stable_nodes = count_tree_nodes(&tree);
++		} else {
++			MT_BUG_ON(&tree, mas.max != stable_split);
++			MT_BUG_ON(&tree, count_tree_nodes(&tree) != stable_nodes);
++		}
++	}
++
++	mas_unlock(&mas);
++	mtree_destroy(&tree);
++}
++
+ void farmer_tests(void)
+ {
+ 	struct maple_node *node;
+@@ -36411,6 +36521,7 @@ void farmer_tests(void)
+ 
+ 	/* No memory handling */
+ 	check_nomem(&tree);
++	check_split_jitter();
+ }
+ 
+ static unsigned long get_last_index(struct ma_state *mas)
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.47.3
 
+
+--6odnmqt5iezagvak--
