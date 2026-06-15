@@ -1,327 +1,295 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F19F63DB63F
-	for <oe-lkp@lists.linux.dev>; Mon, 15 Jun 2026 09:51:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781517117; cv=none; b=MXcXiu/MuP2wJJjUftVGOVF0jaBORlvlzKerRBWBUNFObo9pFZl52WDllDd2gS+BYkJYGKCtSBnnUOb/1z7z9Bv37yjuF7gQfWlYzLyUK9TrGxINhrKPWTezv6L5VnHj05m1gIy5Cbaud2Y2HNOe/0stB00LsKTHauXWuFEbJsw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781517117; c=relaxed/simple;
-	bh=HYXebXdKjDTNEbMCxVKBHEJ7a6iNwBF9Jex41GnLWm8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Traf+OgDcSPvasm85ShI9t6OEHMyOGoCaAP2og9WZ8E+9rD+7IVwmAsUXNod7evhHg/54DNLgAtX5FDGf2t/jbREdVKkQOKEpNK6Y2LmB7e1TgCg6CAllZjzjv/AoLjjytqXWnAU0945uxA7f6wbiXB9XcGDUE/s3Yf4XCQHapk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=TGcTVpd7; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5352D2D63E5
+	for <oe-lkp@lists.linux.dev>; Mon, 15 Jun 2026 13:02:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.11
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781528581; cv=fail; b=t3Hvl6d67amNvUHixryiZdCfKgRzswUO9AVaUaOqaGrA9B1eyd/U2ODWYXX0SfvtsdaRmoHTFeBuC7Vo4qMACm+d8iVPH2G3Unl6q4PIX8HR+42jdMmxANtDBWCg/G/EMynd/A/Zed0TrHjMaGOGSXw/qS2mNAD++4QG5R7ccOA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781528581; c=relaxed/simple;
+	bh=haPtqvrLNGo0RnxWyOToJAhoFxBpYehYYBm61680ioY=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=Xn/ckhyUREqGlsJHxf61+4ZKe7iOFNr+3xBQdGKquTI6S03QXJoUoTbREseucxWCAgo/IMvLO2F4lcj5/edPr5oY5LJxtT/tO0MvBdOZdNzjq6ysyZu+fI3QbAH/eSQpHUikn3Pik9+b+QLwjNFxsTy6iGnfCAuuJCCHqW7QO08=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BSHiGLuR; arc=fail smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="TGcTVpd7"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7233E1BF3;
-	Mon, 15 Jun 2026 02:51:49 -0700 (PDT)
-Received: from e129823.arm.com (e129823.arm.com [10.2.213.3])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D0DDB3F915;
-	Mon, 15 Jun 2026 02:51:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1781517114; bh=HYXebXdKjDTNEbMCxVKBHEJ7a6iNwBF9Jex41GnLWm8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=TGcTVpd740LxgmO2SukgwG5lf1Zqy1MrIRxZvdyYoMWupVUugl1I4IHwo0MMe6DEL
-	 b0B1M699xMRsJAD1v6cMx2Cj91sre5Q9jIjrcE99rnjciCAD5LzSonN81/1DqILhSB
-	 8XMtKS6F3HOniPN2l5sGzi6FRUUBzcZ/lmVVE6sg=
-Date: Mon, 15 Jun 2026 10:51:48 +0100
-From: Yeoreum Yun <yeoreum.yun@arm.com>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: Ryan Roberts <ryan.roberts@arm.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, Andrew Morton <akpm@linux-foundation.org>,
-	Muhammad Usama Anjum <usama.anjum@arm.com>,
-	Vlastimil Babka <vbabka@kernel.org>, Zi Yan <ziy@nvidia.com>,
-	David Hildenbrand <david@kernel.org>,
-	Uladzislau Rezki <urezki@gmail.com>,
-	Brendan Jackman <jackmanb@google.com>,
-	David Sterba <dsterba@suse.com>,
-	Johannes Weiner <hannes@cmpxchg.org>,
-	Liam Howlett <liam@infradead.org>, Lorenzo Stoakes <ljs@kernel.org>,
-	Michal Hocko <mhocko@suse.com>, Mike Rapoport <rppt@kernel.org>,
-	Nick Terrell <terrelln@fb.com>,
-	Suren Baghdasaryan <surenb@google.com>,
-	Vishal Moola <vishal.moola@gmail.com>, linux-mm@kvack.org
-Subject: Re: [linux-next:master] [vmalloc]  60ced5818f:
- stress-ng.shm.ops_per_sec 7.2% regression
-Message-ID: <ai/LNIg42JYckH2B@e129823.arm.com>
-References: <202606022131.112319f2-lkp@intel.com>
- <aifCQbaAZLkH2GJY@e129823.arm.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BSHiGLuR"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1781528580; x=1813064580;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=haPtqvrLNGo0RnxWyOToJAhoFxBpYehYYBm61680ioY=;
+  b=BSHiGLuRpdTdUoMApjaPCN1uGKrT6Y8IgcV+0FrChqMgxy+fD08fTUTV
+   RAiTEKET6Me4V/hiyxZvZx5VHQO8ojEW5T4MuZSsLANFOsRJUzFIybi3V
+   i5l2XrLhNeH/x0HsTw9fDLHQZZO2bJVUrjdWeq0tdxQbPAN2UA2MwB/DB
+   QbaB3c98VNx1Hs+HcBXVpi36Miex2SiRxogTTgL10F2NzzCJFN+/73sXz
+   qGH8VKDXt3zxi5WGR57GsxBOy6+3inVkPYNXI0f/tGo/GEg5EKTHx7++p
+   l1VVr2X69ld1Q3yoNiAAywjlxbN3M8Vc8DrEMurZKmmjh35sKXRzcR9d1
+   g==;
+X-CSE-ConnectionGUID: 19creSIRQ5Wfj/xiXlqKYA==
+X-CSE-MsgGUID: KYtrY1FzQYy2RmQUBm/trw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11818"; a="92585271"
+X-IronPort-AV: E=Sophos;i="6.24,206,1774335600"; 
+   d="scan'208";a="92585271"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2026 06:02:59 -0700
+X-CSE-ConnectionGUID: M6W9AFL7RPiVyOC8dnmm8g==
+X-CSE-MsgGUID: ClYL/UUoQoiw+Pbt67lBOQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,206,1774335600"; 
+   d="scan'208";a="251390164"
+Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
+  by orviesa003.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2026 06:02:59 -0700
+Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Mon, 15 Jun 2026 06:02:58 -0700
+Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37 via Frontend Transport; Mon, 15 Jun 2026 06:02:58 -0700
+Received: from PH7PR06CU001.outbound.protection.outlook.com (52.101.201.13) by
+ edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Mon, 15 Jun 2026 06:02:58 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=wmdMa3WVv+6//WGLXZeQ2k4+tkjjQp748j+KHAqNTEz7bL1gAGRdWj32/8AS2Fi0OIUTu0NTEZ8L8j6Qiemu+3mvWKPxZ65N9hju1yutEMbJt085RY2yWojrYfrb5ou5vMUejNJrreyfKGKiH1N4JEx7ynf2Uy+fXFtyPbFFO/3ldBnpY6l37Y6taSfxvFz2BjRmYk0L53vAFAnXVRUmRX7Iw1dzxOoE5DPpUB9GEpTj5ZqRXc7lxUGy/BpjO8vwIXZ47+brbOnhW73BhOPT7ZLWy+ZDaYl6bV7/rHoYWy2yZ2ZYnky1hDwLqUzAhiFqjmV49iIhNtn65Q9wMECevw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6t5bju9vWhp9zl9hPSDqMqBC4N80LT/nWUnFT85mQJw=;
+ b=OjNqjytkjt88QI3C+KGDd5agpNmXFfMjbuSGOUfIgVdVUA8ExQzAfY/RtA9zZVivQVkc9pSzZNvk2yu5WvgiZagkBwyLBvQTa20vKk8p8NqrdrwcvYAFKsp4iRIQW22XNPhCPp5vwSQIs1Iy7BbsbL1hc206KcTWPI+R2S1e4lmgIuXuVtv2kTxST076FItW4hhbs6kL0HwggbNXKRwgfQkqbKfZ2Ig3vDbkaTsUTZuYOTB+pVoMryexAyfg8JfnJxcRbQKFkmuq2kTpIH0UlpnuCUi40bLQFP3v+3WLMCFzKojG3UnehDvZVTdogwG2bgifFW3bhRoIv8EkksotxA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from PH0PR11MB5832.namprd11.prod.outlook.com (2603:10b6:510:141::7)
+ by DM3PPFC89313B1C.namprd11.prod.outlook.com (2603:10b6:f:fc00::f4b) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.113.18; Mon, 15 Jun
+ 2026 13:02:55 +0000
+Received: from PH0PR11MB5832.namprd11.prod.outlook.com
+ ([fe80::106e:78dd:4c96:d707]) by PH0PR11MB5832.namprd11.prod.outlook.com
+ ([fe80::106e:78dd:4c96:d707%5]) with mapi id 15.21.0113.015; Mon, 15 Jun 2026
+ 13:02:55 +0000
+Date: Mon, 15 Jun 2026 21:02:49 +0800
+From: Oliver Sang <oliver.sang@intel.com>
+To: Danielle Ratson <danieller@nvidia.com>
+CC: "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>, "lkp@intel.com"
+	<lkp@intel.com>, Jakub Kicinski <kuba@kernel.org>, Nikolay Aleksandrov
+	<razor@blackwall.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	<oliver.sang@intel.com>
+Subject: Re: [linux-next:master] [selftests]  a3f88d89f6:
+ kernel-selftests-bpf.net.test_bridge_neigh_suppress.sh.arping.fail
+Message-ID: <ai/3+f7LJp6pyLJi@xsang-OptiPlex-9020>
+References: <202606110955.8f29025d-lkp@intel.com>
+ <MN2PR12MB4517EDE21D4DA962A55CF1ECD81B2@MN2PR12MB4517.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <MN2PR12MB4517EDE21D4DA962A55CF1ECD81B2@MN2PR12MB4517.namprd12.prod.outlook.com>
+X-ClientProxiedBy: TPYP295CA0042.TWNP295.PROD.OUTLOOK.COM
+ (2603:1096:7d0:7::20) To PH0PR11MB5832.namprd11.prod.outlook.com
+ (2603:10b6:510:141::7)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <aifCQbaAZLkH2GJY@e129823.arm.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR11MB5832:EE_|DM3PPFC89313B1C:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8ecc9aee-03c5-43bb-ac9b-08decade6a4d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024|23010399003|56012099006|11063799006|3023799007|4143699003|22082099003|18002099003;
+X-Microsoft-Antispam-Message-Info: McSwVeI0nHdUmE+q7QCHgrQimE/4boDT8eXyz72eGxw+fXOcJUKr1hVUEh5KvTwk3Yg3NXTPlFU6xvHN97Iz0PT4bXGcRdU5VXE3yrM7nYgWuuAkyaX0Z3c0dJJFDbKQFAfUB/5D7n2xyoFZT39y0z21NhaKXOr3IU1Qrxku6X6GH84Glc9t0Kv42//Wnk2GQDv8ddYRz9oWVzlLjQGqtl/4VbWJwaCfSEuwfivEeS+YYaWS5SEVG6e5ZJJUmPw3KKlIIlNxr0GObKAXIIXC1KgEx4ogx4xDKfYP+s8ROsPbe6252EPq02PY5w1Yk86mIemtLS+g9Drco484h7Wvt4Vw5Fb3t9DkUwJVGeiZRFyoHGv2QMCOZKBd9gVX9ifqssPKg8Wrao7UO6ytbt0ZNRgKIyqHQDiHUZQ6s7EIN7DCtIzfrNRm7XPcJLEOkAEGL9ta1GdbQ4CBGK8Dante2biYOjALTMo9iQOWorcSISuGbTRDoHL96v7YvJ3RPic4uSne70pdoOMf9wOKdHIwZ1DCmqay30ofIiLv2KcTddtS2E74M76xATC0fj5jM7iqZfogMthRjD7CQT22bM1EnpUF1oxph+HIT+F97V3bvPtMu+sWtZZNwpRD7yUNYJpDrKpO9N4jerIchgKhDM2zGFf3jeDL0zOm4RXA8NhHDPbQqLElkTFlAhb/PlQ2q6kEclwxVxFPySshVVktaeWHCw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5832.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(23010399003)(56012099006)(11063799006)(3023799007)(4143699003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3zFnwlBKw+yBSjhIlMXNN0qLSaxs5HQbw2M6wCGhm2ZE1YzBF3cUFBqzkbhO?=
+ =?us-ascii?Q?YSdn85D4NkEH7loArR4XW57P8Xma5oMWzqp0qsviSu+Ga9pr2C+ZcvgZWUuY?=
+ =?us-ascii?Q?HUJy2J2yj7Vf9QIbAVDlhwMDZsGeOgxVoykiwQlWZXQgmxQEAyRHzQVPGBxq?=
+ =?us-ascii?Q?DtyG2uTDZ8am8WGEYMhj4nKvMEr7aJxE9LoLO0uSOhEqPsTKU54YwbWRoDBC?=
+ =?us-ascii?Q?W1hBTHS399kHbCLOuMV60uCsCZ/lhMleRcbMuiQsQg/hnX8a5/zCVHznEX1w?=
+ =?us-ascii?Q?o07g363m2cCKnbneM5rqQVux4awbXSc2iHiN1st71610Lq418e645EAVJFW4?=
+ =?us-ascii?Q?xew5OpTyEUqmMiehpMKX+kNHKpLC9J/bbzPZCggwP0vEPx4K9jYmYoUaL9V8?=
+ =?us-ascii?Q?k2239UatcTxRE7Mnur7XqhrCkteoT2mWY3VB3vCxMzoi+/AS27gyUKXqwklB?=
+ =?us-ascii?Q?4n99B7iN5jo6Gm+/Y3jLM8AXOqP5GGipqTi6zXTw3uLVDZdtQIn5v9pW/aNz?=
+ =?us-ascii?Q?Ps5ePTmPJsFs9Xkdy3NFv2ubbP9E9DQjGNrK//mufqjFIFQst3qHjkn23Hci?=
+ =?us-ascii?Q?XwD0nqf1oq4iUM10MgC80jY8swduJvULsGOiPPNEqI0Rq+ETv3kfSrPF5zEc?=
+ =?us-ascii?Q?usl8jbOJ7zVrydMQcmaeDVYCrvlcMTv5MqxWdj88tpqaJ5kAzpluhMcGq9r0?=
+ =?us-ascii?Q?ScZvN53ozy1xzwOixQno3CjXOcnmCBjen+6+Yxh++fRsi6aE1v0KDie0CHsK?=
+ =?us-ascii?Q?S0rtpcJRgUqtFEc+IovzK80qFZNL35TV/kc9uOq6Gm+2NBqqFf0Cy/5b83pF?=
+ =?us-ascii?Q?b9dConJdHcKwnwI18HtaQ70NmXhe0VX27uASVJB/SwBZXACoZv2jLB/aDtRx?=
+ =?us-ascii?Q?2cGpjjN3GcchhhCkZtEHK48wCGlI+C0+W++DD6820myq0/LEwgk9qDC6VxJ1?=
+ =?us-ascii?Q?Z6JUIVQc7upcVRdQvUt0FUp4026RtKC7kD1d/MsXjf2Yb2+vx02QEaN/XaTP?=
+ =?us-ascii?Q?y0r6rZHP93lqLHWftQJDuF5gkycEKHIUw6pwEpNVm1WaCoKPPz5efxUImHxd?=
+ =?us-ascii?Q?4j9VmwARRbiPkBS89cNjfwFglTdG9hTXO8xWJIu7gJJvavKK3CqTO7/CF0Yo?=
+ =?us-ascii?Q?b72dVNxn5By286KmZRanQXb8CCIbEqnx6uTT6esI1JNvBQjUp5NGm/cAfqyE?=
+ =?us-ascii?Q?+qrQVMPXTL3kJ8Ih2342mfEd6dq4PI6p6cCoYgmNUZI1ge9nYGTQlgyOOO6R?=
+ =?us-ascii?Q?Hx00JzrWLodIoYFph/1O3SNMGvtPUaqbLI4s+q8/AhP36o21zigfzJX/mnYl?=
+ =?us-ascii?Q?9jrzHRX2g/4kvhq/Owgog1lIXdVyCeBa84ikU8V0vpA/bFNANcOsQ9slhnU7?=
+ =?us-ascii?Q?8Q+QhNj7Cn1GNOhgvDWV/ybOL5fvK5JVlB+BUY8GYbB25NTxRyFvT0Iv2hVA?=
+ =?us-ascii?Q?ii3VgqutfDmAyAkQ66oKc2ecraGJOkV++af1yQe+F/J32QrrLcS1txfG8RQV?=
+ =?us-ascii?Q?0ENlXxkZdK+N6l1+ZYqjpgosoFdMNQgGy2i8Ip5YjTDQPlRsAtuxOkzxPyum?=
+ =?us-ascii?Q?BiEuZPlCDlYG4FpvVZFlpnNIeeTOrq/eHRxDjiUjydQARk5eHTccqNceEfbn?=
+ =?us-ascii?Q?qGGdLvbUwk8oIO2lyvUpCgYn32rHxoKJS5rnaXGR+yXlc8JpxgWAR8T1lyOs?=
+ =?us-ascii?Q?5APZSp9r6TiJ0HIzxBn9UJfQz/oSWiZm3vlh0Ti0RbTyfdOZnv6MlBLczHRJ?=
+ =?us-ascii?Q?5Bx5j86Ldw=3D=3D?=
+X-Exchange-RoutingPolicyChecked: a5jE5Tn7j10h679vSs+aniuBDvUBSHIqu7RyGmblGHjXqeu0jLui6Uf7TVPqFdTCxcKEedwlibIaYxpDDa4QZKqqOpwlSaeUNyoMmRAFXSGs3VzP/dMxncwtVC5VGLSds2Y5TXkEC8e7fotcLi2RsHVAR+p2iWCjZGI+GXcGnywDTP6G0upM1z2CfhEoJfgIWpZW2nQkd+dyQPZtk51lHkEF3DljazvFLZkFa5BkxjtQF1bcmPQbz9nTWFDD0OXGSxsy03IqrmXams/9Zyq80l5+9gE1o+yeYhSjAoHPZgIEBumZvCcxtHcT8nd1pcsUfJv/zm5cIj24dx6caCpKuw==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8ecc9aee-03c5-43bb-ac9b-08decade6a4d
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5832.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2026 13:02:54.9794
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9S061rYL+G2dJufbMWpwiKnE3Xdgegf37jl067GjV9cDM1Awv7ZR4GsOPGmM508ZHeOc0Ym/4sFrOST74zl2iA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM3PPFC89313B1C
+X-OriginatorOrg: intel.com
 
+hi, Danielle,
+
+On Thu, Jun 11, 2026 at 11:44:39AM +0000, Danielle Ratson wrote:
+> Hi Oliver,
+> 
+> Thank you for the report.
+> 
+> The failures appear to be caused by an arping tool version mismatch.
+> The test was written assuming iputils arping semantics, but not all distributions ship that version. Different arping implementations have incompatible behavior for the flags used throughout test_bridge_neigh_suppress.sh.
+> 
+> Looking at the added log, the 56 failures are not limited to the neigh_suppress_arp_probe section.
+> The other arping-based test cases in the file are also affected, which is consistent with a tool version issue rather than a kernel regression.
+> 
+> To confirm the root cause on your end, please share the results for running the below:
+> $ arping -V
+> $ ./test_bridge_neigh_suppress.sh -t neigh_suppress_arp -v
+
+sorry for late.
+
+our tests run in a auto framework, I had to add some code to print above
+information, but so far, it just generates below output.
+before we try further, want to seek your advice if these information are
+enough?
+
+KERNEL SELFTESTS: linux_headers_dir is /usr/src/linux-headers-x86_64-rhel-9.4-bpf-a3f88d89f698743a8cd91fb43f997e2d292a168d
+### arping -V
+arping: option requires an argument -- 'V'
+ARPing 2.25, by Thomas Habets <thomas@habets.se>
+usage: arping [ -0aAbdDeFpPqrRuUvzZ ] [ -w <sec> ] [ -W <sec> ] [ -S <host/ip> ]
+              [ -T <host/ip ] [ -s <MAC> ] [ -t <MAC> ] [ -c <count> ]
+              [ -C <count> ] [ -i <interface> ] [ -m <type> ] [ -g <group> ]
+              [ -V <vlan> ] [ -Q <priority> ] <host/ip/MAC | -B>
+For complete usage info, use --help or check the manpage.
+### ./test_bridge_neigh_suppress.sh -t neigh_suppress_arp -v
+                                                <-------- seems there is no output here
+Per-port ARP suppression - VLAN 10              <-------- seems already start the tests
+----------------------------------
+COMMAND: tc -n sw1-U1mYwE qdisc replace dev vx0 clsact
+
+
+> 
+> Thanks,
+> Danielle
+> 
+> > -----Original Message-----
+> > From: kernel test robot <oliver.sang@intel.com>
+> > Sent: Thursday, 11 June 2026 10:23
+> > To: Danielle Ratson <danieller@nvidia.com>
+> > Cc: oe-lkp@lists.linux.dev; lkp@intel.com; Jakub Kicinski <kuba@kernel.org>;
+> > Nikolay Aleksandrov <razor@blackwall.org>; netdev@vger.kernel.org;
+> > oliver.sang@intel.com
+> > Subject: [linux-next:master] [selftests] a3f88d89f6: kernel-selftests-
+> > bpf.net.test_bridge_neigh_suppress.sh.arping.fail
+> > 
+> > 
+> > hi, Danielle Ratson,
+> > 
+> > for new added tests, we still found some failures in our tests, not sure if any
+> > dependencies we missed? thanks
 > > 
 > > 
 > > Hello,
 > > 
-> > kernel test robot noticed a 7.2% regression of stress-ng.shm.ops_per_sec on:
+> > kernel test robot noticed "kernel-selftests-
+> > bpf.net.test_bridge_neigh_suppress.sh.arping.fail" on:
 > > 
-> > 
-> > commit: 60ced5818f64ac356620d1ad3e0d473c457dbf5b ("vmalloc: optimize vfree with free_pages_bulk()")
+> > commit: a3f88d89f698743a8cd91fb43f997e2d292a168d ("selftests: net:
+> > Add tests for ARP probe and DAD NS handling")
 > > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 > > 
-> > [still regression on linux-next/master 7da7f07112610a520567421dd2ffcb51beaefbcc]
+> > in testcase: kernel-selftests-bpf
+> > version:
+> > with following parameters:
 > > 
-> > testcase: stress-ng
-> > config: x86_64-rhel-9.4
+> > 	group: net
+> > 
+> > 
+> > config: x86_64-rhel-9.4-bpf
 > > compiler: gcc-14
-> > test machine: 192 threads 2 sockets Intel(R) Xeon(R) 6740E  CPU @ 2.4GHz (Sierra Forest) with 256G memory
-> > parameters:
+> > test machine: 16 threads Intel(R) Core(TM) i7-13620H (Raptor Lake) with 32G
+> > memory
 > > 
-> > 	nr_threads: 100%
-> > 	testtime: 60s
-> > 	test: shm
-> > 	cpufreq_governor: performance
+> > (please refer to attached dmesg/kmsg for entire log/backtrace)
 > > 
 > > 
 > > 
 > > If you fix the issue in a separate patch/commit (i.e. not just a new version of
 > > the same patch/commit), kindly add following tags
 > > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> > | Closes: https://lore.kernel.org/oe-lkp/202606022131.112319f2-lkp@intel.com
+> > | Closes:
+> > | https://lore.kernel.org/oe-lkp/202606110955.8f29025d-lkp@intel.com
 > > 
 > > 
-> > Details are as below:
-> > -------------------------------------------------------------------------------------------------->
+> > # timeout set to 3600
+> > # selftests: net: test_bridge_neigh_suppress.sh #
+> > 
+> > [...]
+> > 
+> > #
+> > # Per-port ARP probe suppression
+> > # ------------------------------
+> > # TEST: ARP probe suppression                                         [FAIL]
+> > # TEST: "neigh_suppress" is on                                        [ OK ]
+> > # TEST: ARP probe suppression                                         [FAIL]
+> > # TEST: FDB and neighbor entry installation                           [ OK ]
+> > # TEST: arping                                                        [FAIL]
+> > # TEST: ARP probe suppression                                         [FAIL]
+> > # TEST: neighbor removal                                              [ OK ]
+> > # TEST: ARP probe suppression                                         [FAIL]
+> > # TEST: "neigh_suppress" is off                                       [ OK ]
+> > # TEST: ARP probe suppression                                         [FAIL]
+> > #
+> > # Per-port DAD NS suppression
+> > # ---------------------------
+> > # TEST: DAD NS suppression                                            [ OK ]
+> > # TEST: "neigh_suppress" is on                                        [ OK ]
+> > # TEST: DAD NS suppression                                            [ OK ]
+> > # TEST: FDB and neighbor entry installation                           [ OK ]
+> > # TEST: DAD NS suppression                                            [ OK ]
+> > # TEST: DAD NS proxy NA reply                                         [ OK ]
+> > # TEST: neighbor removal                                              [ OK ]
+> > # TEST: DAD NS suppression                                            [ OK ]
+> > # TEST: "neigh_suppress" is off                                       [ OK ]
+> > # TEST: DAD NS suppression                                            [ OK ]
+> > #
+> > # Tests passed: 124
+> > # Tests failed:  56
+> > not ok 110 selftests: net: test_bridge_neigh_suppress.sh # exit=1
+> > 
 > > 
 > > 
 > > The kernel config and materials to reproduce are available at:
-> > https://download.01.org/0day-ci/archive/20260602/202606022131.112319f2-lkp@intel.com
-> > 
-> > =========================================================================================
-> > compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
-> >   gcc-14/performance/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/lkp-srf-2sp3/shm/stress-ng/60s
-> > 
-> > commit: 
-> >   4aa4abf1f1 ("mm/page_alloc: optimize free_contig_range()")
-> >   60ced5818f ("vmalloc: optimize vfree with free_pages_bulk()")
-> > 
-> > 4aa4abf1f14bd6d0 60ced5818f64ac356620d1ad3e0 
-> > ---------------- --------------------------- 
-> >          %stddev     %change         %stddev
-> >              \          |                \  
-> >    1103082            -7.2%    1024016        stress-ng.shm.ops
-> >      18394            -7.2%      17072        stress-ng.shm.ops_per_sec
-> >    2084775           -23.1%    1602693 ±  3%  stress-ng.time.involuntary_context_switches
-> >  3.076e+08            -7.3%  2.852e+08        stress-ng.time.minor_page_faults
-> >      14759           -21.1%      11646        stress-ng.time.percent_of_cpu_this_job_got
-> >       8806           -21.1%       6946        stress-ng.time.system_time
-> >      86.08            -7.5%      79.66        stress-ng.time.user_time
-> >    2799689            -1.3%    2762252        stress-ng.time.voluntary_context_switches
-> >  1.125e+09 ±  6%     +42.3%  1.601e+09 ± 13%  cpuidle..time
-> >    2089564 ±  3%     +25.6%    2624591 ±  2%  cpuidle..usage
-> >     360.33           -22.5%     279.35 ± 44%  turbostat.PkgWatt
-> >      36.35           -22.6%      28.12 ± 44%  turbostat.RAMWatt
-> >     198.28 ±  2%      +9.2%     216.55        vmstat.procs.r
-> >     131962            -6.3%     123686        vmstat.system.cs
-> >   14039730 ±  2%     -18.1%   11503879 ± 18%  numa-meminfo.node0.MemUsed
-> >     175943 ± 13%    +114.1%     376780 ±  2%  numa-meminfo.node0.PageTables
-> >     184811 ± 13%    +105.7%     380127 ±  4%  numa-meminfo.node1.PageTables
-> >       9.32 ±  5%      +3.2       12.57 ± 11%  mpstat.cpu.all.idle%
-> >       3.69 ±  9%      +5.6        9.29 ±  4%  mpstat.cpu.all.soft%
-> >      85.37            -8.6       76.73        mpstat.cpu.all.sys%
-> >       1.38            -0.2        1.19 ±  3%  mpstat.cpu.all.usr%
-> >  4.555e+08            -7.4%  4.216e+08        numa-numastat.node0.local_node
-> >  4.557e+08            -7.5%  4.217e+08        numa-numastat.node0.numa_hit
-> >  4.493e+08            -6.8%  4.187e+08        numa-numastat.node1.local_node
-> >  4.494e+08            -6.8%  4.189e+08        numa-numastat.node1.numa_hit
-> >     193547            +7.4%     207908 ±  3%  perf-stat.i.cpu-clock
-> >     193547            +7.4%     207908 ±  3%  perf-stat.i.task-clock
-> >     135837            -8.5%     124266 ±  2%  perf-stat.ps.context-switches
-> >    5141774           -11.4%    4555341 ±  2%  perf-stat.ps.minor-faults
-> >    5141776           -11.4%    4555343 ±  2%  perf-stat.ps.page-faults
-> >     194174           +12.8%     219047        meminfo.KReclaimable
-> >   24232028            -8.6%   22159275        meminfo.Memused
-> >     354997 ± 14%    +111.6%     751255 ±  4%  meminfo.PageTables
-> >     194174           +12.8%     219047        meminfo.SReclaimable
-> >     563220           +16.5%     656030        meminfo.SUnreclaim
-> >     757395           +15.5%     875078        meminfo.Slab
-> >     350188           +11.4%     390033        meminfo.VmallocUsed
-> >   26142507            -9.8%   23588567        meminfo.max_used_kB
-> >      43483 ± 14%    +119.0%      95246 ±  2%  numa-vmstat.node0.nr_page_table_pages
-> >      43257 ±  3%     +12.4%      48605        numa-vmstat.node0.nr_vmalloc
-> >  4.557e+08            -7.5%  4.217e+08        numa-vmstat.node0.numa_hit
-> >  4.555e+08            -7.4%  4.216e+08        numa-vmstat.node0.numa_local
-> >      45890 ± 13%    +109.3%      96035 ±  4%  numa-vmstat.node1.nr_page_table_pages
-> >      44555 ±  4%      +9.3%      48699        numa-vmstat.node1.nr_vmalloc
-> >  4.494e+08            -6.8%  4.189e+08        numa-vmstat.node1.numa_hit
-> >  4.493e+08            -6.8%  4.187e+08        numa-vmstat.node1.numa_local
-> >       0.16 ± 16%    +707.7%       1.30 ± 44%  perf-sched.sch_delay.avg.ms.[unknown].[unknown].[unknown].[unknown].[unknown]
-> >     346.29 ± 85%   +1061.2%       4021 ± 38%  perf-sched.sch_delay.max.ms.[unknown].[unknown].[unknown].[unknown].[unknown]
-> >       0.16 ± 16%    +707.7%       1.30 ± 44%  perf-sched.total_sch_delay.average.ms
-> >     346.29 ± 85%   +1061.2%       4021 ± 38%  perf-sched.total_sch_delay.max.ms
-> >       7.34           +58.2%      11.61 ± 13%  perf-sched.total_wait_and_delay.average.ms
-> >       4478 ±  6%     +49.6%       6697 ± 20%  perf-sched.total_wait_and_delay.max.ms
-> >       7.18           +43.6%      10.31 ± 10%  perf-sched.total_wait_time.average.ms
-> >       4477 ±  5%     +29.7%       5809 ± 17%  perf-sched.total_wait_time.max.ms
-> >       7.34           +58.2%      11.61 ± 13%  perf-sched.wait_and_delay.avg.ms.[unknown].[unknown].[unknown].[unknown].[unknown]
-> >       4478 ±  6%     +49.6%       6697 ± 20%  perf-sched.wait_and_delay.max.ms.[unknown].[unknown].[unknown].[unknown].[unknown]
-> >       7.18           +43.6%      10.31 ± 10%  perf-sched.wait_time.avg.ms.[unknown].[unknown].[unknown].[unknown].[unknown]
-> >       4477 ±  5%     +29.7%       5809 ± 17%  perf-sched.wait_time.max.ms.[unknown].[unknown].[unknown].[unknown].[unknown]
-> >    1975577            -4.0%    1896474        proc-vmstat.nr_active_anon
-> >     973349            -2.6%     947803        proc-vmstat.nr_anon_pages
-> >      46138            +3.1%      47546        proc-vmstat.nr_kernel_stack
-> >      90193 ± 14%    +110.0%     189399 ±  4%  proc-vmstat.nr_page_table_pages
-> >      48563           +12.8%      54769        proc-vmstat.nr_slab_reclaimable
-> >     140817           +16.5%     164023        proc-vmstat.nr_slab_unreclaimable
-> >      87646           +11.2%      97438        proc-vmstat.nr_vmalloc
-> >    1975576            -4.0%    1896478        proc-vmstat.nr_zone_active_anon
-> >  9.051e+08            -7.1%  8.406e+08        proc-vmstat.numa_hit
-> >  9.048e+08            -7.1%  8.403e+08        proc-vmstat.numa_local
-> >  9.069e+08            -7.1%  8.421e+08        proc-vmstat.pgalloc_normal
-> >  3.538e+08            -7.5%  3.273e+08        proc-vmstat.pgfault
-> >  9.061e+08            -7.1%  8.414e+08        proc-vmstat.pgfree
-> >      29261           -10.3%      26241        sched_debug.cfs_rq:/.avg_vruntime.avg
-> >       0.58 ±  5%     +13.8%       0.66 ±  4%  sched_debug.cfs_rq:/.h_nr_queued.avg
-> >       0.58 ±  5%     +13.4%       0.66 ±  4%  sched_debug.cfs_rq:/.h_nr_runnable.avg
-> >       4034 ± 33%     +53.7%       6200 ± 13%  sched_debug.cfs_rq:/.left_deadline.avg
-> >       4034 ± 33%     +53.7%       6200 ± 13%  sched_debug.cfs_rq:/.left_vruntime.avg
-> >     583523 ±  4%     +13.7%     663177 ±  4%  sched_debug.cfs_rq:/.load.avg
-> >       0.58 ±  5%     +13.7%       0.66 ±  4%  sched_debug.cfs_rq:/.nr_queued.avg
-> >      14.14 ± 22%     +45.5%      20.57 ± 15%  sched_debug.cfs_rq:/.removed.runnable_avg.avg
-> >      67.99 ± 17%     +33.5%      90.77 ± 13%  sched_debug.cfs_rq:/.removed.runnable_avg.stddev
-> >      13.66 ± 23%     +43.0%      19.54 ± 14%  sched_debug.cfs_rq:/.removed.util_avg.avg
-> >      66.93 ± 17%     +31.0%      87.71 ± 14%  sched_debug.cfs_rq:/.removed.util_avg.stddev
-> >       4034 ± 33%     +53.7%       6200 ± 13%  sched_debug.cfs_rq:/.right_vruntime.avg
-> >     554.59 ±  2%      +8.7%     602.90 ±  3%  sched_debug.cfs_rq:/.runnable_avg.avg
-> >       1553 ±  7%     +26.1%       1959 ± 17%  sched_debug.cfs_rq:/.runnable_avg.max
-> >     266.15 ±  7%     +25.4%     333.85 ±  6%  sched_debug.cfs_rq:/.runnable_avg.stddev
-> >       0.03 ± 76%    +526.1%       0.19 ± 31%  sched_debug.cfs_rq:/.spread.avg
-> >       2.81 ± 88%    +377.6%      13.40 ± 48%  sched_debug.cfs_rq:/.spread.max
-> >       0.24 ± 77%    +426.2%       1.26 ± 34%  sched_debug.cfs_rq:/.spread.stddev
-> > -6.962e+10          -329.4%  1.597e+11 ± 20%  sched_debug.cfs_rq:/.sum_w_vruntime.avg
-> >  1.654e+12 ±112%    +407.7%  8.398e+12 ± 18%  sched_debug.cfs_rq:/.sum_w_vruntime.max
-> >     106852 ± 31%     +74.1%     185984 ± 11%  sched_debug.cfs_rq:/.sum_weight.avg
-> >      29261           -10.3%      26241        sched_debug.cfs_rq:/.zero_vruntime.avg
-> >     516.36 ±  3%     +85.2%     956.40 ±  3%  sched_debug.cpu.clock_task.stddev
-> >     551602            -7.0%     513143        sched_debug.cpu.curr->pid.max
-> >       0.59 ±  4%     +12.6%       0.67 ±  4%  sched_debug.cpu.nr_running.avg
-> >      74120 ± 14%     -29.8%      52067 ± 25%  sched_debug.cpu.nr_switches.max
-> >       4844 ± 18%     -36.8%       3062 ± 31%  sched_debug.cpu.nr_switches.stddev
-> >       0.08 ± 47%     +83.8%       0.15 ± 20%  sched_debug.cpu.nr_uninterruptible.avg
+> > https://download.01.org/0day-
+> > ci/archive/20260611/202606110955.8f29025d-lkp@intel.com
 > > 
 > > 
 > > 
-> > 
-> > Disclaimer:
-> > Results have been estimated based on internal Intel analysis and are provided
-> > for informational purposes only. Any difference in system hardware or software
-> > design or configuration may affect actual performance.
-> > 
-> > 
-> > -- 
+> > --
 > > 0-DAY CI Kernel Test Service
 > > https://github.com/intel/lkp-tests/wiki
 > 
-> Thanks. I'll check it.
-
-Looking at the patch [1], the regression reported by lkp [2] appears to
-be caused by a lack of order-0 pages in the PCP lists,
-which increases zone-locked allocations (mm_page_alloc_zone_locked).
-
-On my reproduced setup (an x86_64 workstation), most pages freed through
-free_pages_bulk() were order-2 pages (nr_pages == 4), including
-vmalloc-backed stacks. With patch [1], these order-2 pages are returned to
-the order-2 PCP lists, unlike commit 4aa4abf1f1 (“mm/page_alloc: optimize free_contig_range()”),
-which effectively populated the order-0 PCP lists.
-
-Since the shmem workload appears to fault memory at PAGE_SIZE granularity,
-the reduced availability of order-0 pages in PCP lists seems to increase
-zone-locked order-0 allocations, which may explain the regression observed by lkp.
-
-Performance comparison (5 runs):
-  - perf stat -e 'kmem:mm_page_alloc_extfrag' --filter 'alloc_order == 0' \
-              -e 'kmem:mm_page_alloc_zone_locked' --filter 'order == 0' \
-              -e 'kmem:mm_page_alloc' --filter 'order == 0' -- ./repro-script
-
-Metric                               4aa4abf1f1           60ced5818f        Difference
-
-------------------------------------------------------------------------------------------
-
-Zone-locked Allocation Ratio (%)     46.39 ± 0.17%       48.31 ± 0.37%       +1.92 pp
-
-  - Ratio = (mm_page_alloc_extfrag + mm_page_alloc_zone_locked) / mm_page_alloc × 100
-  - Values are reported as median ± relative half-range across three runs.
-
-The shmem test appears to handle page faults at PAGE_SIZE granularity, which seems to amplify the impact of the reduced availability of order-0 pages.
-
-
-As an experiment, I modified free_pages_bulk() to free pages individually
-as order-0 pages when nr_contig <= (1 << PAGE_ALLOC_COSTLY_ORDER).
-This restores behavior closer to 4aa4abf1f1 and results in almost
-no difference compared to that commit.
-
-Performance comparison (5 runs)
-  - ./repro-script
-
-Metric                     4aa4abf1f1            change             Difference
-----------------------------------------------------------------------------------
-bogo_ops                   656,513 ± 0.34%      656,488 ± 0.23%          -25
-
-bogo_ops/s (realtime)      10,935.95 ± 0.34%    10,935.86 ± 0.23%      -0.09
-
-bogo_ops/s (usr+sys time)     220.31 ± 0.40%       219.30 ± 0.21%      -1.01
-
-The differences are negligible and essentially restore the performance
-observed with 4aa4abf1f1.
-
-Given that the regression appears to be driven by a synthetic workload that
-combines frequent shmem page faults with repeated stack allocation/free operations,
-I do not think this is a significant concern for typical real-world workloads.
-
-Thanks!
-
-[1] https://lore.kernel.org/all/20260401101634.2868165-2-usama.anjum@arm.com/
-[2] https://lore.kernel.org/r/202606022131.112319f2-lkp@intel.com
-[3] https://download.01.org/0day-ci/archive/20260602/202606022131.112319f2-lkp@intel.com/repro-script
-
------------------&<------------------
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 91bef811a771..48d9eaa1a2f3 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -5206,13 +5206,24 @@ EXPORT_SYMBOL_GPL(alloc_pages_bulk_noprof);
-  */
- void free_pages_bulk(struct page **page_array, unsigned long nr_pages)
- {
-+       const unsigned long nr_costly = 1UL << PAGE_ALLOC_COSTLY_ORDER;
-+
-        while (nr_pages) {
-                unsigned long nr_contig = num_pages_contiguous(page_array, nr_pages);
-
--               __free_contig_range(page_to_pfn(*page_array), nr_contig);
-+               if (nr_contig <= nr_costly) {
-+                       while (nr_contig--) {
-+                               __free_page(*page_array);
-+                               nr_pages--;
-+                               page_array++;
-+                       }
-+               } else {
-+                       __free_contig_range(page_to_pfn(*page_array), nr_contig);
-+
-+                       nr_pages -= nr_contig;
-+                       page_array += nr_contig;
-+               }
-
--               nr_pages -= nr_contig;
--               page_array += nr_contig;
-                cond_resched();
-        }
- }
-
-> -- 
-> Sincerely,
-> Yeoreum Yun
-
--- 
-Sincerely,
-Yeoreum Yun
