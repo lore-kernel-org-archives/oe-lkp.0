@@ -1,100 +1,94 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37A1935898
-	for <oe-lkp@lists.linux.dev>; Thu, 18 Jun 2026 05:44:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEE95257854
+	for <oe-lkp@lists.linux.dev>; Thu, 18 Jun 2026 06:36:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.10
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781761445; cv=fail; b=iO3Uzdr9aUsn0vlG6GX2mGu/jhfNCUDPL2y6nyfK1hVYbZmjtbw/pkFZODkvdxW706l9jrVw/HQpX4lnLx1tDjY/6lCcNKJQyiglZL/FWu93gNKKNH641tgNd9d2oAnZWcg7Opw5AV44yv4ldR2y5jmZixOqD1xXsGoqE9bT2DY=
+	t=1781764620; cv=fail; b=YE6iZVJv9d9Vr5dOg100UW0EdW0A3V62xlqGddJvHCh1YbFXH1SE4CYwoS/1kVShBy/Ex9kVR5rbpgym/cPO7dc7Y4xhHZ6dRug86UEj72DK0demCYBjux8HIdYF0ZcoXXT92oMlooslY3UmQ4tn6ErsfKT/AMYRYy0giKLqEHc=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781761445; c=relaxed/simple;
-	bh=e0U+qplhfW7x99BNgAvrH7W7sMJ/pgnEYJffax58QGQ=;
-	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=X6k9TKubCCgBCj+CmCDHCXLAIWvYoG8PN1xyvXyY70i7QT+29syojP1EPMT6xWE269LOh4r4leMPrxeiEr4erGlkIBihK7KRszXKo6zn3utRKPF4XNNm4HfxYJWOtAOdvGzO0Fal1U1HsFpaE88prbegdoRkvbcPVd7aAfyoL3c=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Se2LDCcr; arc=fail smtp.client-ip=192.198.163.16
+	s=arc-20240116; t=1781764620; c=relaxed/simple;
+	bh=bAdgEBbJJMn5x/oYYUFdX0/dByCNqwFKQoh6qEPU3uQ=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:MIME-Version; b=BBD5/tQLAUiOMDRyR3hDSxunVtlX7Y+Eor9c/qBF91V1yjtleL2UtBPpT1jsKtPdkIzHW/L0QhV9jkWJqiCD8m6i3P1FrRm8nup4MvDekcpXPYuNl2UtwZyxUlFrfRR2v+lXgcixpSBYuqme+hLfv+ktz1Ku60Roe1YF5qefn48=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JThFIOiq; arc=fail smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Se2LDCcr"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JThFIOiq"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1781761443; x=1813297443;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=e0U+qplhfW7x99BNgAvrH7W7sMJ/pgnEYJffax58QGQ=;
-  b=Se2LDCcrm8OcFc0b0+Q+yTLIJ3hpmfoKzpY2qJ1BTJr+AeHG+BvZ/GWh
-   YFbOObDOGFgpynYEk0lAKSGbq8pFlHcf8Mymy8xhBLz3ZBsVMgpfReax3
-   zbBeoTwvLQFcDS0GNHZyptrNpR4wRj8vDaeOgPRMQ2vg9enrSUzZqNKqz
-   R6PDpbmBAJKA3YJm6fnmfj4vnSDHGpBX5WG+DStCMvz6Fs8vrmBnYKKOl
-   +uhCeq0uo3FH2JdaRzUm6NKlEUXJW7P9OcGJNLq4RGBNKLLhMwj4e2Jkz
-   n5HVfjhO8f9kNJ+PLai7FkutTVzxwf/Lt+93uTK4yh8BycIu4vOoJkLmD
-   g==;
-X-CSE-ConnectionGUID: NfMAWAdFSzOAyNWWxl/o3g==
-X-CSE-MsgGUID: omQSxQ2oT7Gff7De1MbweA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11820"; a="70103523"
-X-IronPort-AV: E=Sophos;i="6.24,210,1774335600"; 
-   d="scan'208";a="70103523"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2026 22:44:03 -0700
-X-CSE-ConnectionGUID: xXSIWMUWQwWchvBTQJTv6w==
-X-CSE-MsgGUID: Eqx+bwuITTqBd9Jdf2bP6w==
+  t=1781764618; x=1813300618;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=bAdgEBbJJMn5x/oYYUFdX0/dByCNqwFKQoh6qEPU3uQ=;
+  b=JThFIOiq3SRxEo1odnktguajnnI2zy3gdgvNgXamztavF4MdPTypbnQn
+   fKOIMWSZ7BWHLpOaAuqWrfHsFmpP/hni/gAbl8LOV3hePM5ik6fL0cwaG
+   Ks+jgYnnRBwZBNIG7lINwnVGmB0PAEZWxOywnNElKnMSyUanCHxLaq1BJ
+   exH+9penXuEK6E105vww49bI9C7TwgVqLlGu6/suRR7kXEZgKL2+oaPOo
+   8PUBmzwotXTB+dMebsXIh13dq/4j0mbMQ8L6bjUVYib9ApDBqNuS4Qabl
+   Ev9K4fnDVw0CV3PZLEKEL5LXIjyhNoBkjgHCJMe+ITy3mnDTEwtoQG/5t
+   A==;
+X-CSE-ConnectionGUID: z2bZs6C3R2mmw77LJWzMlg==
+X-CSE-MsgGUID: goxyi76ZTFyGFnF8xS7gZQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11820"; a="93964598"
+X-IronPort-AV: E=Sophos;i="6.24,211,1774335600"; 
+   d="scan'208";a="93964598"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2026 23:36:57 -0700
+X-CSE-ConnectionGUID: UTcKUc4yT2yn17HIQS0pXw==
+X-CSE-MsgGUID: +blSKouhSb2YduPs6aWxHQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,210,1774335600"; 
-   d="scan'208";a="247381047"
-Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
-  by orviesa010.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2026 22:43:51 -0700
-Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
- ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+X-IronPort-AV: E=Sophos;i="6.24,211,1774335600"; 
+   d="scan'208";a="252594221"
+Received: from fmsmsx903.amr.corp.intel.com ([10.18.126.92])
+  by orviesa004.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2026 23:36:57 -0700
+Received: from FMSMSX903.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Wed, 17 Jun 2026 22:43:37 -0700
-Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
- ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ 15.2.2562.37; Wed, 17 Jun 2026 23:36:56 -0700
+Received: from fmsedg901.ED.cps.intel.com (10.1.192.143) by
+ FMSMSX903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Wed, 17 Jun 2026 22:43:37 -0700
-Received: from PH0PR06CU001.outbound.protection.outlook.com (40.107.208.69) by
- edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
+ 15.2.2562.37 via Frontend Transport; Wed, 17 Jun 2026 23:36:56 -0700
+Received: from CH4PR04CU002.outbound.protection.outlook.com (40.107.201.23) by
+ edgegateway.intel.com (192.55.55.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Wed, 17 Jun 2026 22:43:37 -0700
+ 15.2.2562.37; Wed, 17 Jun 2026 23:36:56 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=W9lQiB9SsW/K3iwRspB7wy6jXQFpRJr9wD0mwzd3pf3MwuzHXxZMsrTw/Y6ONBtfjvq4o8bwalv5fcnTwqEICNC4jmtHLIjNTA0dfZIud1f9zrLObJMIJn7vQNJPnvAlXYbUJECvpVKnfmGWN6bNvTNTv8Yma00hlbPSEqFO564Eo+WqijMjf4CcWGZgfU1cyUqi3MvstFWZS/H7KKHfs58s5yJTfoE0fRr2ChZk8NYh/GMCGD+o51UexaQnRRAWUrux7lUE+Aav5cOMQP0gtNGAlz9XWlpfxKLN04VJ4m009cmzhY/yapXy+nxV13kOd9iUAg3MDc26HwPfTN6T7w==
+ b=DTfVLukW2jnU52ECvdLJz39IwkqRG7grEg7m77YJXUEAo8ZFf7Jyv0jix4X7pKnLWPTghhZbKR9Z7xVp2b5QGqBcwy9C6ioFGiwVGa0T55YFDf7O76GX/VxrTAFHC1n/PERvqXhSVG7GcMURXBHPlvoRzSMVKQjAmJcLAZ//f+K4ry4gFPO05jWUZJSBJmccsHmRScrc9DaCWltmy50U2i+TAZX1bHVavtaKctt/0E3J8zNORuYl1Vxto+ica3w+LxggxcnsOlFl00aSuYdQHmmiuSJ3foe03904s6BN35mb+S/IwkZ2ddDplTX+EXD+GcssBLHHR2+OI8pK4ur1eA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gRnV9+vZMhQ4PEpatE6EPBqX/3Atpnl3dK4/X1I87cM=;
- b=N1gvkTNIVypPHbC9z4Do9QprLxlzmxpDJasBNNhZ7Vj+clVd5IkKC6Dvsfgf7XV32sg3CqZyL/WpDTQUKNGKs82D9xGj7Kq6wVEifiL4cldEnTlxj3QDdTFg2vLonsYjJHoAXiJrjxAGsaoYWM47Sg4mYY/tosJC8aorGhn/m5BE1NYP0B8yLdl4Os7lXxWWUGFJggmMFysIPB4rumVwz76MFx8RS+i90xQQQVvq8SfqIapFHNvYgQIrcTQiHShzxmnOnG4QR85DdQm5p3gC59erwtQ1Ec0wB6LerVrDK7TxvkdR9w2NEaEJiGUJ3i+T/YCjUBqvZyU7WOaOL4PBrg==
+ bh=amyLUSTG/Oil4H8eD+Sk9DMTk8IHvuAet3ILUq4B7eE=;
+ b=oej/0PEPvV0D+FNlxB5LTeVL3UkpTju9euf/6GUjhyBQK8E4hvUx5eLduQqxv50Rs1yDp4KtRmlc/EkBiniospKn0D3FYZMxnN8HlwN7Q8mry4D/vE4ImUUB5UBTjQE6v6PHqM82h+dwGnLEgFgkp/eoe8JXe/oXewFAfoh6EILLKU3A4tpbT4QyVpYxbAbDaKklT9DP8MXWZpge0jch3LZuYCvJmD05QM1sRp33j6YHX2MRoSCEByd7i+p8E3g59Gn82fjsw8OejnY1efYWD91WGIvY+05jPYOyWIqG+Tc5iINVOYg/X7TWpo47wJbkwkC18fc9A32NFqgIe+NdGw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from PH0PR11MB5832.namprd11.prod.outlook.com (2603:10b6:510:141::7)
- by CH0PR11MB5233.namprd11.prod.outlook.com (2603:10b6:610:e0::14) with
+ by PH0PR11MB5831.namprd11.prod.outlook.com (2603:10b6:510:14b::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.113.18; Thu, 18 Jun
- 2026 05:43:35 +0000
+ 2026 06:36:52 +0000
 Received: from PH0PR11MB5832.namprd11.prod.outlook.com
  ([fe80::106e:78dd:4c96:d707]) by PH0PR11MB5832.namprd11.prod.outlook.com
  ([fe80::106e:78dd:4c96:d707%5]) with mapi id 15.21.0113.015; Thu, 18 Jun 2026
- 05:43:35 +0000
-Date: Thu, 18 Jun 2026 13:43:29 +0800
-From: Oliver Sang <oliver.sang@intel.com>
-To: Danielle Ratson <danieller@nvidia.com>
-CC: "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>, "lkp@intel.com"
-	<lkp@intel.com>, Jakub Kicinski <kuba@kernel.org>, Nikolay Aleksandrov
-	<razor@blackwall.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	<oliver.sang@intel.com>
-Subject: Re: [linux-next:master] [selftests]  a3f88d89f6:
- kernel-selftests-bpf.net.test_bridge_neigh_suppress.sh.arping.fail
-Message-ID: <ajOFgSdzLFqNwdCl@xsang-OptiPlex-9020>
-References: <202606110955.8f29025d-lkp@intel.com>
- <MN2PR12MB4517EDE21D4DA962A55CF1ECD81B2@MN2PR12MB4517.namprd12.prod.outlook.com>
- <ai/3+f7LJp6pyLJi@xsang-OptiPlex-9020>
- <SJ2PR12MB9008502979A1D3566074A273D8E42@SJ2PR12MB9008.namprd12.prod.outlook.com>
+ 06:36:52 +0000
+Date: Thu, 18 Jun 2026 14:36:43 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: "A. Sterling" <adam.sterling@gmail.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>,
+	<linux-fsdevel@vger.kernel.org>, Christian Brauner <brauner@kernel.org>,
+	Alexander Viro <viro@zeniv.linux.org.uk>, Jan Kara <jack@suse.cz>,
+	<linux-kernel@vger.kernel.org>, <oliver.sang@intel.com>
+Subject: Re: [PATCH] pidfs: pin stashed dentry for pid lifetime to fix
+ repeat-open regression
+Message-ID: <202606180805.1b2fdd03-lkp@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <SJ2PR12MB9008502979A1D3566074A273D8E42@SJ2PR12MB9008.namprd12.prod.outlook.com>
-X-ClientProxiedBy: TP0P295CA0020.TWNP295.PROD.OUTLOOK.COM
- (2603:1096:910:5::10) To PH0PR11MB5832.namprd11.prod.outlook.com
+X-ClientProxiedBy: KU0P306CA0061.MYSP306.PROD.OUTLOOK.COM
+ (2603:1096:d10:23::14) To PH0PR11MB5832.namprd11.prod.outlook.com
  (2603:10b6:510:141::7)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -103,256 +97,245 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR11MB5832:EE_|CH0PR11MB5233:EE_
-X-MS-Office365-Filtering-Correlation-Id: fa0530d8-1935-4438-60ee-08deccfc89fc
+X-MS-TrafficTypeDiagnostic: PH0PR11MB5832:EE_|PH0PR11MB5831:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7ca7278c-b96a-4724-1d5d-08decd03fbc0
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|23010399003|376014|1800799024|56012099006|4143699003|11063799006|22082099003|18002099003|3023799007;
-X-Microsoft-Antispam-Message-Info: tEKnf9gsU3JV6hDhNJLTDrrYkmiZBuQpRRi8jWCDsxuJ7kEs6Akct5qBCqEVsnd/m9sXoK8iBrK3AmBUrn3VMqUr2RJfJWNqA0ik3DSoehTn2ElrqVLnaPrUWByQRe9evwfP8i6UB0wPisufCsvEJfJb8DUWENrd5FXBbRekb3HCKTgmIopLK1B0wJo4n7vEjwVNFYRWNMFEl/jOeKz4XxLbQ67ZelqKQgYoLlOGex2AYV1ZkeJ4endjrI5dBr6+mD/SXRGn0klcaOdicwda2QBhoEaSpY0c25lmEwapsqgJTktosOnqySWmmU3A0iQR+kighLQ6mN2pet1sP8ZwryjwvFaf6Za729nWFXnxgvdR1QEqNPdyLB+3BptKJHnd5g51NLJTDb1WfOUtjXfDy4Iel1Z3co0doX5TDjSdzcogogWiKvJOiKSyz35E4ZtsCusaazErApx+KBc6H5zzx4p+whU/VsctVwQ4RoQdPNYSCTTiz6u1M5mxa8EHaJzIBJOnX4muVK0S37Xj89k1WdENJ53y8e0a5hGpuBq+Rh3rlc9uBDpvKvrA+7ACBi5gqlfREslYYFjphoKR1PKYLNfPDsy7yU/kJQJcxKsliSE9LtrikCMXAyZMkPIN8Q7Z/y3VyKGQ+uQyUNfQwYRbC6skLCniGJisSYkfTiFJBZwXAKBU/ucHAMJwpG2YVmdz4nw9CCwG7y51jP020XorSg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5832.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(376014)(1800799024)(56012099006)(4143699003)(11063799006)(22082099003)(18002099003)(3023799007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|23010399003|376014|1800799024|366016|56012099006|11063799006|18002099003;
+X-Microsoft-Antispam-Message-Info: Kygh7d1cFi6Hbyp7PCwoqqlnaIblD34GEmLPBhkjx35gxWr2srF5vu2H9I+sT/QwdO8dlQK1leZIAVJ5N6Qlhqbxtn1Jl/K43bW6QyWrAlWeVnhobochuq2wVAf2CFLsXhdb48+gTTbw/QzGnpcIBPuxMa9sS/B+IPNjtm5GAu5eVTJtrqlFQbSDYJTSou9pwdAPt+4iel1r5k5U129c6X250dPN1aezsgfv5cU+jBduqPfkxFXz0QD0/o4iJ9zX6fe1/3dwdez3NLAy+4drfsU5TJayN1j4eMYMmJ2N6rfyp5i4LxZ7ED91H3/MjSIk+jtxLGWzeKNZttTHwtYw4YF5Yncpk+1funhN47wNgveDvnEobVNK2i+W7VMzlU3T6gbbECorh01ax1C39vfBqwgy67+jCj+s2xedIDemTcXVYCnK4L48BVqS9e0NXRh02CBCf0kOd6vdE74O+LJ8ur61x3Li9eFvsKm0hE8dBbyqIGki5mo7AZjtPMdxIqtWVKtLlqcsR+/KPeHQYnOjSS9BkLOjPMri3sQbbaQgbvVMCi9RIP2nl8B8mqyMclCAD4cTcwUQYcGXOwoK9QNlQdazNmC/CuKztJxzxl8gh1ityZ320Y2xVQQF3WUmx5l2N6BI93/1lEYR2F4AyyEQw1mhqKiofK189LA0bh7crnqEAZ3tb4IWjRGio+j0VucS
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5832.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(1800799024)(366016)(56012099006)(11063799006)(18002099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/XS2uSQDum7lx2vR4ZKL7YiNSCIXsH4RPf68TTyw/kYxlNy7dxPfroJjSbgV?=
- =?us-ascii?Q?jx+DAP+idXo5CwTepvXrM50Z6mwH+XUr1MlE+HaiLHsfXpGII1S/H6lRv1c2?=
- =?us-ascii?Q?LArB23jw1YNGiLvYs1Oiolr3CVLIkQfG13lfe30YMpORxIkjlkQwFEnAmwdp?=
- =?us-ascii?Q?wLLT+KiGugIE1msotaq0v0C9oVRmv2DXBqqoB0V/gRab4+/5EEXU97iUytgh?=
- =?us-ascii?Q?j3sUoBWv7fncMEQ4lTTCxQIoQkJpEKN2UUNC3BHvlKNHRXXUD10yLd9rmMYr?=
- =?us-ascii?Q?eLogigQ4zAGtpqOiUBEJyMM/ti38VXYbgy5pnWf/e+Dp7DaySZd5Ul0TVG5z?=
- =?us-ascii?Q?Et4jKIZpxoWL/pcEE6JgkhXTDKbYbXN2e8jIqrMC1AKEYHvZnG1e6uOWh8ud?=
- =?us-ascii?Q?9hj3SbqzIKZNkEJY/OgGIxMBFNXN1wX/3mOiyO3NBiQUF3rajrLpKVfoLzt7?=
- =?us-ascii?Q?9fUUkCsWYf0oDd1qDTyoUPHJRZaP0oLP3bKjhNObF3WdhMJU3WTxxKjMnbih?=
- =?us-ascii?Q?YMXJt2isJhOU+eyoLySyNDcu1pRUO/LbF5bF/lV6yy1yw9kztLaxPgiqbhAX?=
- =?us-ascii?Q?PX6n0KA3qQFGLdtro/WTtMn6PLDtJJIzo/qDvFU2aIabKYsv2u1FaGpi+S3j?=
- =?us-ascii?Q?4jmlrxBwu5a2kzL50LD8lhGgTF9hnGMwFAb+iojHfmQntN6luGJMPm79+25f?=
- =?us-ascii?Q?XF8hIsvW3AzWfRxDp3lJ3r2xf/Wa1iMtnUGt9T+V6o0rQUTDAdMZ54R6Maf4?=
- =?us-ascii?Q?Epjfp6ZZloDlNFTS2OwOo+BGgCdrKpmvqUYwmmwIfAgh0U1WaCwuFzGUIMIZ?=
- =?us-ascii?Q?xLHwmp55H6eNQpnI4//V29/8D/giEKj2/xeVO86pVpqtDQ0AXjjJGAKMGbGw?=
- =?us-ascii?Q?0eH/ETEaeYoxYiRAAfBkzQZpEvP58gGjyku3Wb5+GTJTwgceDkbXuGP2tUTK?=
- =?us-ascii?Q?kSPHAYVziKKKIOGXtnvHD/qPIlc2wvcW8rNauCWIxzKgnllFzLsEftuThmf5?=
- =?us-ascii?Q?P3BFYIH7cM2kx+1MtxP197Y1Tj9BxS9OsxnH9Id6jOChzwSyrVOn1FPn9MKc?=
- =?us-ascii?Q?0U72zMtShISuXMFvz1jViZenAhxOmgcSQFv08l9rYA6Am1Oc5L9ZEe5Pbo9U?=
- =?us-ascii?Q?inSFPSrRImD6ls3xx+IWhkjjCxFo390OTxPf9nCym9dpg66xitZYB6NvI6eH?=
- =?us-ascii?Q?dH5iyqTyGZpu3Rwl6RUBNodBjn4p9l5khNIK8QxpamtxhNXVQ0HWsV6f3Vd/?=
- =?us-ascii?Q?ACYrNDZv1pGA/lC0/D7OT2jEnUV+lVXHqwjTyxEZhDSmHRQIVWFhJfiByhSW?=
- =?us-ascii?Q?mTcWEm+fv98yPUsiWky0P6+d6cIp9Lf78aYM7JAT2cKf8CqTDGNw/gi/82mX?=
- =?us-ascii?Q?BVBAe5kWMNIlTVe+hH8iDyLk4kS/7rSGTF3Nql6fndlTSGhP+Su/Wz9QvjN9?=
- =?us-ascii?Q?32WP1WgS92++DglTKa5TsjTF46tA5fU/iwjvU2BWvyxjBkzOjlGQR7a6dWB5?=
- =?us-ascii?Q?pObd+EhL/rXGdVo0jYS70vJTney3bSpoRkfO4ZodLpmqFsK/+SpFcV/1ONSf?=
- =?us-ascii?Q?QeVgugYQtTr2eQRNBorDrWCYACaqxvsEJGZtcCVcKt0Ekm4del8GSvwPn3kR?=
- =?us-ascii?Q?qDduYA5PsJxFJoaH2botSoF+5trAfzbWMWfaGSm6FveOEiD7PyatsNPUbzHv?=
- =?us-ascii?Q?gnBGqs/BhfgAEyfNtaKqKx1O5PpQy8ObrPBPMNQk9SGXZvy+JdvrC/dJwDxY?=
- =?us-ascii?Q?iUggQ7A8Jw=3D=3D?=
-X-Exchange-RoutingPolicyChecked: DDOK/I5WpcA+qcQ1Z4fkcGWsikE173sO0nNPZVta77f52Kh8Y4RannS5IGy6NasVib0/Yy0RCEYGHr5zagoueXQa7tVuWc+sIa1D3iCj4AWHJEaOHFieOZGFqlhnCWoZukTx/tOVpWcXcPh/2a7pAKSljSY/2FzWatDJ+6ghRbjysdHd6PgqIOV2kR5MQsqyYAPXDj6NieTOBB5nmKksC+Nbto7saarb8pszCeMN2/TX3toJRGVVqGnw2fx55L3IbROSosRh5GE66f01PEXDP6qLW4tFkJ22w9BkH87TLV2XQRSSGMXLpqtVf6E3Q7KLxqnG4Kh3BY9U7J5Nb1RcGw==
-X-MS-Exchange-CrossTenant-Network-Message-Id: fa0530d8-1935-4438-60ee-08deccfc89fc
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hqJ3CJbuafn/UQKRZt0oCXdn+MyxQwXCt+mjcVH/hXOzbN5j6XwuAWWtzTIK?=
+ =?us-ascii?Q?r9OX7aAvxdBlBSm5vpMltacRiv5uXp/C4XmyHjQdYyqUh0zW+u6Iwh2YVf7r?=
+ =?us-ascii?Q?N+o7iL8dHZdJNlvWbjg3qSXBV7tlOD73ro7GbVOezWmWscxekB3f15W3D2w2?=
+ =?us-ascii?Q?/+GvYPB6D907/KD9ya3043lXtf65fRJeAXWHdEHKLIhOC0gPt4i9EkHt1tp/?=
+ =?us-ascii?Q?gMA37zbZkHz1yrMmLUT+ukYMPQoNUwpUNYSAzQDfw1HDpsz5W5gBJQeMYOSo?=
+ =?us-ascii?Q?WbMVbe5wAjYu0eeH6EMlZYvtSfnRH7z0J98faK5BBO9HZCd9BpbY6YPbPOtf?=
+ =?us-ascii?Q?yRgXVLkp31Fmqy2oxqZhhIXPzS0b3zDqUXm2YUyg7hbzu1IN1q+V61KlUL3u?=
+ =?us-ascii?Q?/D7foZF5+Bflh0wwbsKUhMrrEd/XgUaNrPJHb+NZDQYjpn/xcjwb5KE45Z2d?=
+ =?us-ascii?Q?ex1FSyOrcG0tV0Af0k2f43yS0ZCYA4fu+25MKT8xaFV0QwKa+8kLPaq01my4?=
+ =?us-ascii?Q?XcBROjn8UykWSHg0hZ1v9oUXmCvnkUMzaPv1hQcjHgtn1XP1pGIy86IMxkiW?=
+ =?us-ascii?Q?rzA/lp9iCci0ExFW/xN4sFz7gJNw1+ePlAH7nnv6CtZOOZWNKho1ey9YxINH?=
+ =?us-ascii?Q?LXfeXxVr1tiJXJv6HTh4Bz6C3wM7ie2I8VDEBQ5pEbCXU2mD5pqF6D2H8l1F?=
+ =?us-ascii?Q?xmrVHpvtggxXQJpFGuXtWHJUYAsDgoZpUQ+EGtNfWB/xg37eoPdzqstW+/Ua?=
+ =?us-ascii?Q?JcaL4EnK4w5jGT6vmMc6TIYd1jRQEOHPCcgtKxo44i77CkiOSKvWUk/ItlaV?=
+ =?us-ascii?Q?PJqayAVWC7+Ata68rx5GllNpN8Y7ffyNF80r6xT2kUBWzqpQB1anVx43ggEE?=
+ =?us-ascii?Q?UMSE8AhGG0mNOC8skLDDOCASUtvwW+/oXni8AyByvwG/6tp57erP8JNlpSK0?=
+ =?us-ascii?Q?luP9/43KHX5RIy8RSdc7+vzFbWZvOg5rtMhl9aIp0cdYbyjkur5H6EzLDsqv?=
+ =?us-ascii?Q?S915LEDGUXUMYc2LOykIQAQFIVTC5PWFjUfyT4KpAns9oZxoTGNiE4ZRS23/?=
+ =?us-ascii?Q?i/W1Y6X7kvQbsepRauY1d7JKC3VGQOwjpcKuuNwj95/V+YtWUEZq9eDP0kTg?=
+ =?us-ascii?Q?Ajisd3Bjf1SqAx0j7132dJnnMj60DAuu0fMBf3lKUCv8jBQo+aGFl+6IZV2W?=
+ =?us-ascii?Q?tahJc+cOGtUNZOB8I2U3uegeyT3/5fqj25plAMBEeRB5F2ZKjtf5tJqYU7TW?=
+ =?us-ascii?Q?JgaU/PKQY0kLpFXASepZjJeYOEVS7Q+PZvWH3kEl3RDE8f64ShnR9MDugNS2?=
+ =?us-ascii?Q?ysrCbDH6g38Eajg/pIrSGIymxmmXlkIWhEwdn2JJlEjA3m8uWuncdGavHtqS?=
+ =?us-ascii?Q?MKUM07JtT44U/4Upr8QMw1Svpx1pviALNgS6AtzjYcDvICqDnu92lwHLjn8V?=
+ =?us-ascii?Q?g95g6l5NQgcgdwnnN+2sUKIySLEUcBLm4GvJx2B6q3qsrjPGxtPk2JOtUhhl?=
+ =?us-ascii?Q?wM3Zs+5170ygEk2RanjJXoKApSIT2BvnPTAmHg+YQwySDriQOI+2NnfdDUlF?=
+ =?us-ascii?Q?ALzh7Yi0jc+aBCz4gLKg3SR1dDt2D5sAGXkWiwp8+XMQpm39kp4mQD0BqN3v?=
+ =?us-ascii?Q?sC2Eg2sTAalnYnWdhWV6vaROYFLyjmrE8Zi+TIfOwy61s+CmFHFSPR4Khcvn?=
+ =?us-ascii?Q?sVSCHVNIVc6KAfXMmAi08sh1woXiCltrV0zBgNMFmlL0R3DMPUaGlnKxEy8I?=
+ =?us-ascii?Q?ZfSCYDGPyQ=3D=3D?=
+X-Exchange-RoutingPolicyChecked: r5y2f79LnTkDWiXGslqy2dZbx9kdX7PtiFANCx8KRekM2aQc8IB2A7OFnt3TXMY/bXwDeTXXZruIy9aFbqDSEDpETs28CJintU09fuyJO2HYIV7ORonsML6bmBt4nTh2ztfx8XOtez3FY+Oy8NYnZkT0W7PA8gkBjaO+wslaqxvRlCCSBxkU+k2VqalnaoWxQ3eFf2YxtTD9yQx4FYGJcZ5drJIcTQCXUwqbdYeD+h4HEQHVVVQ+dYFoON56Drj+k2g4MlUCtWOVMNSJLjEbyk2ZRSD9nRNX+44799/LQ4bz7ZT+ZNdX77zjch331ZIvunzv+miyBVUNoovwUYbZvA==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7ca7278c-b96a-4724-1d5d-08decd03fbc0
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5832.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jun 2026 05:43:35.3359
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jun 2026 06:36:52.8207
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Cju+TLqvq/qolO81UfUQztF39vx4VMdE8qHudkpIi3TDJh2huYvHnPT4Lealy+YV8scIXxLwwhaQwfjWfxeJNg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR11MB5233
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1+PRJNokg34qfstRdZZL7x/TGFhDGuMO+gmPyoOm9/vdEcFjnDHr9PIf5/QGgXyTaOFbObLfijZMmsSmb9LHlw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5831
 X-OriginatorOrg: intel.com
 
-hi, Danielle,
-
-On Wed, Jun 17, 2026 at 07:29:48AM +0000, Danielle Ratson wrote:
-> Hi Oliver,
-> 
-> Thank you for confirming the arping version. ARPing 2.25 by Thomas Habets has incompatible semantics for several flags that the test relies on (-D, b, -U, -A). 
-> So, the failures are a tool version issue rather than a kernel regression.
-> 
-> This is not limited to the new commit- looking at the 56 failures in the added log, the other arping-based test cases that existed before commit a3f88d89f698 are also failing, which confirms the root cause.
-> 
-> The same assumption (iputils arping) is made by other net selftests as well:
-> test_vxlan_nh.sh, forwarding/vxlan_asymmetric.sh, and arp_ndisc_untracked_subnets.sh all use iputils-specific flags.
-> 
-> There are two options to address this on your end:
-> 
-> 1. Install iputils-arping and ensure it takes precedence over ARPing 2.25 in PATH. Running "arping -V" should then show "iputils".
-
-thanks a lot for information and guildance! we will defintely to install
-iputils-arping.
-
-> 2. If that is not feasible, I can send a fix that adds an iputils version check to test_bridge_neigh_suppress.sh, causing it to SKIP cleanly when iputils arping is not present:
-> 
-> if ! arping -V 2>&1 | grep -q "iputils"; then
->      echo "SKIP: Test requires iputils arping"
->      exit $ksft_skip
-> fi
-> 
-> This will result in a SKIP rather than a FAIL for your environment.
-
-no need to do fix for our env IMHO. this kernel test robot's purpose is to
-bisect the regression and report the fbc to linux kernel community to help
-developers to improve kernel code quality. we need to enable as many test
-cases as possible for this purpose. so we will try above #1 option :)
-
-thanks a lot!
 
 
-> 
-> Thanks,
-> Danielle
-> 
-> > -----Original Message-----
-> > From: Oliver Sang <oliver.sang@intel.com>
-> > Sent: Monday, 15 June 2026 16:03
-> > To: Danielle Ratson <danieller@nvidia.com>
-> > Cc: oe-lkp@lists.linux.dev; lkp@intel.com; Jakub Kicinski <kuba@kernel.org>;
-> > Nikolay Aleksandrov <razor@blackwall.org>; netdev@vger.kernel.org;
-> > oliver.sang@intel.com
-> > Subject: Re: [linux-next:master] [selftests] a3f88d89f6: kernel-selftests-
-> > bpf.net.test_bridge_neigh_suppress.sh.arping.fail
-> > 
-> > hi, Danielle,
-> > 
-> > On Thu, Jun 11, 2026 at 11:44:39AM +0000, Danielle Ratson wrote:
-> > > Hi Oliver,
-> > >
-> > > Thank you for the report.
-> > >
-> > > The failures appear to be caused by an arping tool version mismatch.
-> > > The test was written assuming iputils arping semantics, but not all
-> > distributions ship that version. Different arping implementations have
-> > incompatible behavior for the flags used throughout
-> > test_bridge_neigh_suppress.sh.
-> > >
-> > > Looking at the added log, the 56 failures are not limited to the
-> > neigh_suppress_arp_probe section.
-> > > The other arping-based test cases in the file are also affected, which is
-> > consistent with a tool version issue rather than a kernel regression.
-> > >
-> > > To confirm the root cause on your end, please share the results for running
-> > the below:
-> > > $ arping -V
-> > > $ ./test_bridge_neigh_suppress.sh -t neigh_suppress_arp -v
-> > 
-> > sorry for late.
-> > 
-> > our tests run in a auto framework, I had to add some code to print above
-> > information, but so far, it just generates below output.
-> > before we try further, want to seek your advice if these information are
-> > enough?
-> > 
-> > KERNEL SELFTESTS: linux_headers_dir is /usr/src/linux-headers-x86_64-rhel-
-> > 9.4-bpf-a3f88d89f698743a8cd91fb43f997e2d292a168d
-> > ### arping -V
-> > arping: option requires an argument -- 'V'
-> > ARPing 2.25, by Thomas Habets <thomas@habets.se>
-> > usage: arping [ -0aAbdDeFpPqrRuUvzZ ] [ -w <sec> ] [ -W <sec> ] [ -S <host/ip>
-> > ]
-> >               [ -T <host/ip ] [ -s <MAC> ] [ -t <MAC> ] [ -c <count> ]
-> >               [ -C <count> ] [ -i <interface> ] [ -m <type> ] [ -g <group> ]
-> >               [ -V <vlan> ] [ -Q <priority> ] <host/ip/MAC | -B> For complete usage
-> > info, use --help or check the manpage.
-> > ### ./test_bridge_neigh_suppress.sh -t neigh_suppress_arp -v
-> >                                                 <-------- seems there is no output here
-> > Per-port ARP suppression - VLAN 10              <-------- seems already start the
-> > tests
-> > ----------------------------------
-> > COMMAND: tc -n sw1-U1mYwE qdisc replace dev vx0 clsact
-> > 
-> > 
-> > >
-> > > Thanks,
-> > > Danielle
-> > >
-> > > > -----Original Message-----
-> > > > From: kernel test robot <oliver.sang@intel.com>
-> > > > Sent: Thursday, 11 June 2026 10:23
-> > > > To: Danielle Ratson <danieller@nvidia.com>
-> > > > Cc: oe-lkp@lists.linux.dev; lkp@intel.com; Jakub Kicinski
-> > > > <kuba@kernel.org>; Nikolay Aleksandrov <razor@blackwall.org>;
-> > > > netdev@vger.kernel.org; oliver.sang@intel.com
-> > > > Subject: [linux-next:master] [selftests] a3f88d89f6:
-> > > > kernel-selftests- bpf.net.test_bridge_neigh_suppress.sh.arping.fail
-> > > >
-> > > >
-> > > > hi, Danielle Ratson,
-> > > >
-> > > > for new added tests, we still found some failures in our tests, not
-> > > > sure if any dependencies we missed? thanks
-> > > >
-> > > >
-> > > > Hello,
-> > > >
-> > > > kernel test robot noticed "kernel-selftests-
-> > > > bpf.net.test_bridge_neigh_suppress.sh.arping.fail" on:
-> > > >
-> > > > commit: a3f88d89f698743a8cd91fb43f997e2d292a168d ("selftests: net:
-> > > > Add tests for ARP probe and DAD NS handling")
-> > > > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git
-> > > > master
-> > > >
-> > > > in testcase: kernel-selftests-bpf
-> > > > version:
-> > > > with following parameters:
-> > > >
-> > > > 	group: net
-> > > >
-> > > >
-> > > > config: x86_64-rhel-9.4-bpf
-> > > > compiler: gcc-14
-> > > > test machine: 16 threads Intel(R) Core(TM) i7-13620H (Raptor Lake)
-> > > > with 32G memory
-> > > >
-> > > > (please refer to attached dmesg/kmsg for entire log/backtrace)
-> > > >
-> > > >
-> > > >
-> > > > If you fix the issue in a separate patch/commit (i.e. not just a new
-> > > > version of the same patch/commit), kindly add following tags
-> > > > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> > > > | Closes:
-> > > > | https://lore.kernel.org/oe-lkp/202606110955.8f29025d-lkp@intel.com
-> > > >
-> > > >
-> > > > # timeout set to 3600
-> > > > # selftests: net: test_bridge_neigh_suppress.sh #
-> > > >
-> > > > [...]
-> > > >
-> > > > #
-> > > > # Per-port ARP probe suppression
-> > > > # ------------------------------
-> > > > # TEST: ARP probe suppression                                         [FAIL]
-> > > > # TEST: "neigh_suppress" is on                                        [ OK ]
-> > > > # TEST: ARP probe suppression                                         [FAIL]
-> > > > # TEST: FDB and neighbor entry installation                           [ OK ]
-> > > > # TEST: arping                                                        [FAIL]
-> > > > # TEST: ARP probe suppression                                         [FAIL]
-> > > > # TEST: neighbor removal                                              [ OK ]
-> > > > # TEST: ARP probe suppression                                         [FAIL]
-> > > > # TEST: "neigh_suppress" is off                                       [ OK ]
-> > > > # TEST: ARP probe suppression                                         [FAIL]
-> > > > #
-> > > > # Per-port DAD NS suppression
-> > > > # ---------------------------
-> > > > # TEST: DAD NS suppression                                            [ OK ]
-> > > > # TEST: "neigh_suppress" is on                                        [ OK ]
-> > > > # TEST: DAD NS suppression                                            [ OK ]
-> > > > # TEST: FDB and neighbor entry installation                           [ OK ]
-> > > > # TEST: DAD NS suppression                                            [ OK ]
-> > > > # TEST: DAD NS proxy NA reply                                         [ OK ]
-> > > > # TEST: neighbor removal                                              [ OK ]
-> > > > # TEST: DAD NS suppression                                            [ OK ]
-> > > > # TEST: "neigh_suppress" is off                                       [ OK ]
-> > > > # TEST: DAD NS suppression                                            [ OK ]
-> > > > #
-> > > > # Tests passed: 124
-> > > > # Tests failed:  56
-> > > > not ok 110 selftests: net: test_bridge_neigh_suppress.sh # exit=1
-> > > >
-> > > >
-> > > >
-> > > > The kernel config and materials to reproduce are available at:
-> > > > https://download.01.org/0day-
-> > > > ci/archive/20260611/202606110955.8f29025d-lkp@intel.com
-> > > >
-> > > >
-> > > >
-> > > > --
-> > > > 0-DAY CI Kernel Test Service
-> > > > https://github.com/intel/lkp-tests/wiki
-> > >
+Hello,
+
+kernel test robot noticed "WARNING:possible_irq_lock_inversion_dependency_detected" on:
+
+commit: 028b94b023efe53f26decb0497e3ffe5b9e16ee9 ("[PATCH] pidfs: pin stashed dentry for pid lifetime to fix repeat-open regression")
+url: https://github.com/intel-lab-lkp/linux/commits/A-Sterling/pidfs-pin-stashed-dentry-for-pid-lifetime-to-fix-repeat-open-regression/20260612-190630
+base: https://git.kernel.org/cgit/linux/kernel/git/vfs/vfs.git vfs.all
+patch link: https://lore.kernel.org/all/20260612110529.80055-1-adam.sterling@gmail.com/
+patch subject: [PATCH] pidfs: pin stashed dentry for pid lifetime to fix repeat-open regression
+
+in testcase: boot
+
+config: x86_64-rhel-9.4-bpf
+compiler: gcc-14
+test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 32G
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202606180805.1b2fdd03-lkp@intel.com
+
+
+
+[   92.416502][    C0] WARNING: possible irq lock inversion dependency detected
+[   92.417060][    C0] 7.1.0-rc4+ #1 Not tainted
+[   92.417436][    C0] --------------------------------------------------------
+[   92.418046][    C0] sed/219 just changed the state of lock:
+[   92.418527][    C0] ffff8881bbb865d8 (&sighand->siglock){-...}-{3:3}, at: lock_task_sighand (signal.c:1379 (discriminator 1))
+[   92.420518][    C0] but this lock took another, HARDIRQ-unsafe lock in the past:
+[   92.421115][    C0]  (&lockref->lock){+.+.}-{3:3}
+[   92.421123][    C0]
+[   92.421123][    C0] and interrupts could create inverse lock ordering between them.
+[   92.421123][    C0]
+[   92.426274][    C0]
+[   92.426274][    C0] other info that might help us debug this:
+[   92.430176][    C0] Chain exists of:
+[   92.430176][    C0]   &sighand->siglock --> &(&sig->stats_lock)->lock --> &lockref->lock
+[   92.430176][    C0]
+[   92.435925][    C0]  Possible interrupt unsafe locking scenario:
+[   92.435925][    C0]
+[   92.439638][    C0]        CPU0                    CPU1
+[   92.441400][    C0]        ----                    ----
+[   92.443137][    C0]   lock(&lockref->lock);
+[   92.444756][    C0]                                local_irq_disable();
+[   92.446587][    C0]                                lock(&sighand->siglock);
+[   92.448366][    C0]                                lock(&(&sig->stats_lock)->lock);
+[   92.450174][    C0]   <Interrupt>
+[   92.451642][    C0]     lock(&sighand->siglock);
+[   92.453200][    C0]
+[   92.453200][    C0]  *** DEADLOCK ***
+[   92.453200][    C0]
+[   92.457265][    C0] 2 locks held by sed/219:
+[   92.458724][    C0]  #0: ffffffffb322ad60 (rcu_read_lock){....}-{1:3}, at: kill_pid_info_type (linux/rcupdate.h:300 linux/rcupdate.h:838 signal.c:1455)
+[   92.460612][    C0]  #1: ffffffffb322ad60 (rcu_read_lock){....}-{1:3}, at: lock_task_sighand (linux/rcupdate.h:300 linux/rcupdate.h:838 signal.c:1362)
+[   92.462494][    C0]
+[   92.462494][    C0] the shortest dependencies between 2nd lock and 1st lock:
+[   92.465475][    C0]     -> (&lockref->lock){+.+.}-{3:3} {
+[   92.467032][    C0]        HARDIRQ-ON-W at:
+[   92.468491][    C0]                             __lock_acquire (locking/lockdep.c:5191)
+[   92.470147][    C0]                             lock_acquire (trace/events/lock.h:24 (discriminator 15) trace/events/lock.h:24 (discriminator 15) locking/lockdep.c:5831 (discriminator 15))
+[   92.471793][    C0]                             _raw_spin_lock (linux/spinlock_api_smp.h:158 (discriminator 1) locking/spinlock.c:158 (discriminator 1))
+[   92.473420][    C0]                             d_instantiate (linux/spinlock.h:342 dcache.c:2084 dcache.c:2078)
+[   92.475015][    C0]                             d_make_root (dcache.c:2126)
+[   92.476597][    C0]                             shmem_fill_super (shmem.c:5103)
+[   92.478192][    C0]                             get_tree_nodev (super.c:1266 super.c:1285)
+[   92.479724][    C0]                             vfs_get_tree (super.c:1693)
+[   92.481253][    C0]                             fc_mount (namespace.c:1198)
+[   92.482730][    C0]                             vfs_kern_mount (namespace.c:6298)
+[   92.484296][    C0]                             kern_mount (namespace.c:6289 namespace.c:6289)
+[   92.485750][    C0]                             shmem_init (shmem.c:5420)
+[   92.487245][    C0]                             mnt_init (namespace.c:6271)
+[   92.488676][    C0]                             vfs_caches_init (dcache.c:3418)
+[   92.490238][    C0]                             start_kernel (main.c:1202)
+[   92.491707][    C0]                             __pfx_clear_bss (x86/kernel/head64.c:310)
+[   92.493159][    C0]                             x86_64_start_kernel (x86/kernel/head64.c:291)
+[   92.494609][    C0]                             common_startup_64 (x86/kernel/head_64.S:418)
+[   92.496025][    C0]        SOFTIRQ-ON-W at:
+[   92.497295][    C0]                             __lock_acquire (locking/lockdep.c:5191)
+[   92.498764][    C0]                             lock_acquire (trace/events/lock.h:24 (discriminator 15) trace/events/lock.h:24 (discriminator 15) locking/lockdep.c:5831 (discriminator 15))
+[   92.500198][    C0]                             _raw_spin_lock (linux/spinlock_api_smp.h:158 (discriminator 1) locking/spinlock.c:158 (discriminator 1))
+[   92.501576][    C0]                             d_instantiate (linux/spinlock.h:342 dcache.c:2084 dcache.c:2078)
+[   92.502953][    C0]                             d_make_root (dcache.c:2126)
+[   92.504319][    C0]                             shmem_fill_super (shmem.c:5103)
+[   92.505708][    C0]                             get_tree_nodev (super.c:1266 super.c:1285)
+[   92.507160][    C0]                             vfs_get_tree (super.c:1693)
+[   92.508507][    C0]                             fc_mount (namespace.c:1198)
+[   92.509809][    C0]                             vfs_kern_mount (namespace.c:6298)
+[   92.511231][    C0]                             kern_mount (namespace.c:6289 namespace.c:6289)
+[   92.512525][    C0]                             shmem_init (shmem.c:5420)
+[   92.513817][    C0]                             mnt_init (namespace.c:6271)
+[   92.516019][    C0]                             vfs_caches_init (dcache.c:3418)
+[   92.517541][    C0]                             start_kernel (main.c:1202)
+[   92.519055][    C0]                             __pfx_clear_bss (x86/kernel/head64.c:310)
+[   92.520442][    C0]                             x86_64_start_kernel (x86/kernel/head64.c:291)
+[   92.521878][    C0]                             common_startup_64 (x86/kernel/head_64.S:418)
+[   92.523342][    C0]        INITIAL USE at:
+[   92.524518][    C0]                            __lock_acquire (locking/lockdep.c:5191)
+[   92.525930][    C0]                            lock_acquire (trace/events/lock.h:24 (discriminator 15) trace/events/lock.h:24 (discriminator 15) locking/lockdep.c:5831 (discriminator 15))
+[   92.527403][    C0]                            _raw_spin_lock (linux/spinlock_api_smp.h:158 (discriminator 1) locking/spinlock.c:158 (discriminator 1))
+[   92.528797][    C0]                            d_instantiate (linux/spinlock.h:342 dcache.c:2084 dcache.c:2078)
+[   92.530252][    C0]                            d_make_root (dcache.c:2126)
+[   92.531629][    C0]                            shmem_fill_super (shmem.c:5103)
+[   92.533035][    C0]                            get_tree_nodev (super.c:1266 super.c:1285)
+[   92.534518][    C0]                            vfs_get_tree (super.c:1693)
+[   92.535844][    C0]                            fc_mount (namespace.c:1198)
+[   92.537152][    C0]                            vfs_kern_mount (namespace.c:6298)
+[   92.538524][    C0]                            kern_mount (namespace.c:6289 namespace.c:6289)
+[   92.539835][    C0]                            shmem_init (shmem.c:5420)
+[   92.541165][    C0]                            mnt_init (namespace.c:6271)
+[   92.542506][    C0]                            vfs_caches_init (dcache.c:3418)
+[   92.543881][    C0]                            start_kernel (main.c:1202)
+[   92.545279][    C0]                            __pfx_clear_bss (x86/kernel/head64.c:310)
+[   92.546706][    C0]                            x86_64_start_kernel (x86/kernel/head64.c:291)
+[   92.548218][    C0]                            common_startup_64 (x86/kernel/head_64.S:418)
+[   92.549692][    C0]      }
+[   92.550763][    C0]      ... key      at: __key.4+0x0/0x40
+[   92.552113][    C0]      ... acquired at:
+[   92.553212][    C0]    __lock_acquire (locking/lockdep.c:5237)
+[   92.554371][    C0]    lock_acquire (trace/events/lock.h:24 (discriminator 15) trace/events/lock.h:24 (discriminator 15) locking/lockdep.c:5831 (discriminator 15))
+[   92.555540][    C0]    _raw_spin_lock (linux/spinlock_api_smp.h:158 (discriminator 1) locking/spinlock.c:158 (discriminator 1))
+[   92.556673][    C0]    lockref_get (linux/spinlock.h:342 lockref.c:50)
+[   92.557781][    C0]    pidfs_alloc_file (linux/dcache.h:365 pidfs.c:1168)
+[   92.558971][    C0]    pidfd_prepare (fork.c:1918)
+[   92.560119][    C0]    __x64_sys_pidfd_open (pid.c:674 pid.c:710 pid.c:695 pid.c:695)
+[   92.561296][    C0]    do_syscall_64 (x86/entry/syscall_64.c:63 x86/entry/syscall_64.c:94)
+[   92.562456][    C0]    entry_SYSCALL_64_after_hwframe (x86/entry/entry_64.S:121)
+[   92.563689][    C0]
+[   92.564649][    C0]    -> (&pid->wait_pidfd){....}-{3:3} {
+[   92.565868][    C0]       INITIAL USE at:
+[   92.566983][    C0]                          __lock_acquire (locking/lockdep.c:5191)
+[   92.568286][    C0]                          lock_acquire (trace/events/lock.h:24 (discriminator 15) trace/events/lock.h:24 (discriminator 15) locking/lockdep.c:5831 (discriminator 15))
+[   92.569603][    C0]                          _raw_spin_lock_irqsave (linux/spinlock_api_smp.h:132 (discriminator 1) locking/spinlock.c:166 (discriminator 1))
+[   92.570965][    C0]                          __wake_up (sched/wait.c:124 (discriminator 1) sched/wait.c:146 (discriminator 1))
+[   92.572231][    C0]                          do_notify_parent (signal.c:2156 signal.c:2184)
+[   92.573541][    C0]                          exit_notify (exit.c:757)
+[   92.574834][    C0]                          do_exit (exit.c:987)
+[   92.576106][    C0]                          kthread (kthread.c:438)
+[   92.577494][    C0]                          ret_from_fork (x86/kernel/process.c:158)
+[   92.578795][    C0]                          ret_from_fork_asm (x86/entry/entry_64.S:245)
+[   92.580104][    C0]     }
+[   92.581115][    C0]     ... key      at: __key.3+0x0/0x40
+[   92.582473][    C0]     ... acquired at:
+[   92.583582][    C0]    __lock_acquire (locking/lockdep.c:5237)
+[   92.584748][    C0]    lock_acquire (trace/events/lock.h:24 (discriminator 15) trace/events/lock.h:24 (discriminator 15) locking/lockdep.c:5831 (discriminator 15))
+[   92.585949][    C0]    _raw_spin_lock_irqsave (linux/spinlock_api_smp.h:132 (discriminator 1) locking/spinlock.c:166 (discriminator 1))
+[   92.587170][    C0]    __wake_up (sched/wait.c:124 (discriminator 1) sched/wait.c:146 (discriminator 1))
+[   92.588284][    C0]    __exit_signal (exit.c:142 exit.c:212)
+[   92.589434][    C0]    release_task (exit.c:265)
+[   92.590586][    C0]    exit_notify (exit.c:776)
+[   92.591725][    C0]    do_exit (exit.c:987)
+[   92.592834][    C0]    kthread (kthread.c:438)
+[   92.593966][    C0]    ret_from_fork (x86/kernel/process.c:158)
+[   92.595127][    C0]    ret_from_fork_asm (x86/entry/entry_64.S:245)
+[   92.596277][    C0]
+[   92.597241][    C0]   -> (&____s->seqcount#3){....}-{0:0} {
+[   92.598469][    C0]      INITIAL USE at:
+[   92.599564][    C0]                        __lock_acquire (locking/lockdep.c:5191)
+[   92.600850][    C0]                        lock_acquire (trace/events/lock.h:24 (discriminator 15) trace/events/lock.h:24 (discriminator 15) locking/lockdep.c:5831 (discriminator 15))
+[   92.602201][    C0]                        __exit_signal (linux/seqlock.h:478 (discriminator 1) linux/seqlock.h:504 (discriminator 1) linux/seqlock.h:881 (discriminator 1) exit.c:199 (discriminator 1))
+[   92.603491][    C0]                        release_task (exit.c:265)
+[   92.604770][    C0]                        exit_notify (exit.c:776)
+[   92.606066][    C0]                        do_exit (exit.c:987)
+[   92.607334][    C0]                        kthread (kthread.c:438)
+[   92.608581][    C0]                        ret_from_fork (x86/kernel/process.c:158)
+[   92.609873][    C0]                        ret_from_fork_asm (x86/entry/entry_64.S:245)
+[   92.611166][    C0]      INITIAL READ USE at:
+[   92.612286][    C0]                             __lock_acquire (locking/lockdep.c:5191)
+[   92.613596][    C0]                             lock_acquire (trace/events/lock.h:24 (discriminator 15) trace/events/lock.h:24 (discriminator 15) locking/lockdep.c:5831 (discriminator 15))
+[   92.615780][    C0]                             thread_group_cputime (linux/seqlock.h:73 (discriminator 1) linux/seqlock.h:838 (discriminator 1) sched/cputime.c:345 (discriminator 1))
+[   92.617425][    C0]                             thread_group_cputime_adjusted (sched/cputime.c:644)
+[   92.619121][    C0]                             wait_task_zombie (exit.c:1234)
+[   92.620533][    C0]                             __do_wait (exit.c:1646 exit.c:1681)
+[   92.621885][    C0]                             do_wait (exit.c:1722)
+[   92.623341][    C0]                             kernel_wait (exit.c:1898)
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20260618/202606180805.1b2fdd03-lkp@intel.com
+
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
