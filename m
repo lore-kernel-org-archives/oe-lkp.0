@@ -1,93 +1,100 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79BBD3B38A2
-	for <oe-lkp@lists.linux.dev>; Wed, 17 Jun 2026 14:56:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37A1935898
+	for <oe-lkp@lists.linux.dev>; Thu, 18 Jun 2026 05:44:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.16
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781708217; cv=fail; b=YdbfaJBecDGl6BcDIPqYUBM3F9QRwtBSo9aRy4O+BPapHKIw6OX5V6zoBNqxa+scH6ufDkqB3W7c5uV4jlWH7Euxj3/FpAMFiutp4ANsmxGbsA4ztc6eLgDBz3JKqycnCJVJyv4zghDlHjp6crCLjoGRZXY+4OF4MElO0VFwRyQ=
+	t=1781761445; cv=fail; b=iO3Uzdr9aUsn0vlG6GX2mGu/jhfNCUDPL2y6nyfK1hVYbZmjtbw/pkFZODkvdxW706l9jrVw/HQpX4lnLx1tDjY/6lCcNKJQyiglZL/FWu93gNKKNH641tgNd9d2oAnZWcg7Opw5AV44yv4ldR2y5jmZixOqD1xXsGoqE9bT2DY=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781708217; c=relaxed/simple;
-	bh=Zvul4j2t2kRBWbJg/9M6KHwNH7ZAa2x1Tux3qzQ4fks=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=mBwOHbUIZ5sdlANIgjnkXfYEqYDmLOFORvIV2YB3Cm7btz+WEvkUhbWrkMADLtV3uN+tefSX8ARkqtjxSL5UrcFiwiORrBnEpLXZhhli6ikWe3n7uAEDGGfPZbC6ls0bZRlTy31QIZx3PJ8JtOVeO3sOh7smehYPfeAeN1NELJo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fEdKh46f; arc=fail smtp.client-ip=192.198.163.10
+	s=arc-20240116; t=1781761445; c=relaxed/simple;
+	bh=e0U+qplhfW7x99BNgAvrH7W7sMJ/pgnEYJffax58QGQ=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=X6k9TKubCCgBCj+CmCDHCXLAIWvYoG8PN1xyvXyY70i7QT+29syojP1EPMT6xWE269LOh4r4leMPrxeiEr4erGlkIBihK7KRszXKo6zn3utRKPF4XNNm4HfxYJWOtAOdvGzO0Fal1U1HsFpaE88prbegdoRkvbcPVd7aAfyoL3c=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Se2LDCcr; arc=fail smtp.client-ip=192.198.163.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fEdKh46f"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Se2LDCcr"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1781708215; x=1813244215;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Zvul4j2t2kRBWbJg/9M6KHwNH7ZAa2x1Tux3qzQ4fks=;
-  b=fEdKh46fbv4a12FNZ/PKUxTloICYatZDCKQWRjOBTduk7x/4O95UjGvg
-   n+ZYpLQKrdRgwqt4IYZm7aFk9tbRoQC/DqS+91kiZU5OXOR9vDIkQR5qb
-   QcyzXKIgSMMrLSbLXo2fwCbNko5e15UjPUi8biSsnpufCbNsjBj/0e+z7
-   wZ6L04JFlxnejrM+uhOi9K6/YdOD8nrhER3xulUa11ChvoLesFR3LzoNu
-   0+/PlHmsKAmaccqSJd2z5RsRMReJ60ALgQjbj7w77wWVDF7gQmnhPuvkE
-   sBFF9owyvzjVg/gP3RgKfjpDa8yVXfYsQt6+5PLXLhq5V+JJR/WI5tcN1
+  t=1781761443; x=1813297443;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=e0U+qplhfW7x99BNgAvrH7W7sMJ/pgnEYJffax58QGQ=;
+  b=Se2LDCcrm8OcFc0b0+Q+yTLIJ3hpmfoKzpY2qJ1BTJr+AeHG+BvZ/GWh
+   YFbOObDOGFgpynYEk0lAKSGbq8pFlHcf8Mymy8xhBLz3ZBsVMgpfReax3
+   zbBeoTwvLQFcDS0GNHZyptrNpR4wRj8vDaeOgPRMQ2vg9enrSUzZqNKqz
+   R6PDpbmBAJKA3YJm6fnmfj4vnSDHGpBX5WG+DStCMvz6Fs8vrmBnYKKOl
+   +uhCeq0uo3FH2JdaRzUm6NKlEUXJW7P9OcGJNLq4RGBNKLLhMwj4e2Jkz
+   n5HVfjhO8f9kNJ+PLai7FkutTVzxwf/Lt+93uTK4yh8BycIu4vOoJkLmD
    g==;
-X-CSE-ConnectionGUID: oVjP3wsASf2xIhs0hhRSrQ==
-X-CSE-MsgGUID: /1CPE+QtSL+bDU4YJZMSmA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11819"; a="93877780"
-X-IronPort-AV: E=Sophos;i="6.24,209,1774335600"; 
-   d="scan'208";a="93877780"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2026 07:56:54 -0700
-X-CSE-ConnectionGUID: QTgIfSV+TRqeg/y+BGgl1w==
-X-CSE-MsgGUID: hAOvEOTZQDmNykH/+W2bSg==
+X-CSE-ConnectionGUID: NfMAWAdFSzOAyNWWxl/o3g==
+X-CSE-MsgGUID: omQSxQ2oT7Gff7De1MbweA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11820"; a="70103523"
+X-IronPort-AV: E=Sophos;i="6.24,210,1774335600"; 
+   d="scan'208";a="70103523"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2026 22:44:03 -0700
+X-CSE-ConnectionGUID: xXSIWMUWQwWchvBTQJTv6w==
+X-CSE-MsgGUID: Eqx+bwuITTqBd9Jdf2bP6w==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,209,1774335600"; 
-   d="scan'208";a="243722425"
-Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
-  by fmviesa006.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2026 07:56:54 -0700
+X-IronPort-AV: E=Sophos;i="6.24,210,1774335600"; 
+   d="scan'208";a="247381047"
+Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
+  by orviesa010.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2026 22:43:51 -0700
 Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
- ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Wed, 17 Jun 2026 07:56:53 -0700
-Received: from ORSEDG903.ED.cps.intel.com (10.7.248.13) by
  ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Wed, 17 Jun 2026 07:56:53 -0700
-Received: from SJ2PR03CU001.outbound.protection.outlook.com (52.101.43.44) by
- edgegateway.intel.com (134.134.137.113) with Microsoft SMTP Server
+ 15.2.2562.37; Wed, 17 Jun 2026 22:43:37 -0700
+Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Wed, 17 Jun 2026 07:56:53 -0700
+ 15.2.2562.37 via Frontend Transport; Wed, 17 Jun 2026 22:43:37 -0700
+Received: from PH0PR06CU001.outbound.protection.outlook.com (40.107.208.69) by
+ edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Wed, 17 Jun 2026 22:43:37 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=b5ILK40/xvlJ1ueMuSZ4VxTkNpsgqt30U3GzxKxmqvWDfiuxvBSWn3NgPAuigRyi+iNCmcJWuN32jGu1JXIsrCXNrwXYshZDyZddW2uU9FeqGivqhV9nSQX+fUYsFNu4WmV8bIudNbGR+j/9pRlkVd0Q1cspDtYZBUwdXmw74Hdp+Bp0O+EgjgbFZKhWL3bflJPIjZWR8kVR4EuoEUj0ftmK94ywSvRp7ZLH7Zvgd5uRJw2ioxt05caKT3stVP28XYQWgvp8YSiaxGsvH+q/cxwu2JThOnRnO3M8bYJ4ktrDWJTn9ZByUsNYFZ0Fa22Xe+otbhVWeZftCXf2sdTfTQ==
+ b=W9lQiB9SsW/K3iwRspB7wy6jXQFpRJr9wD0mwzd3pf3MwuzHXxZMsrTw/Y6ONBtfjvq4o8bwalv5fcnTwqEICNC4jmtHLIjNTA0dfZIud1f9zrLObJMIJn7vQNJPnvAlXYbUJECvpVKnfmGWN6bNvTNTv8Yma00hlbPSEqFO564Eo+WqijMjf4CcWGZgfU1cyUqi3MvstFWZS/H7KKHfs58s5yJTfoE0fRr2ChZk8NYh/GMCGD+o51UexaQnRRAWUrux7lUE+Aav5cOMQP0gtNGAlz9XWlpfxKLN04VJ4m009cmzhY/yapXy+nxV13kOd9iUAg3MDc26HwPfTN6T7w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6m0/eSUqrKalpFg7b+wYkAASefxF5B5GPqR4Y6dfdxc=;
- b=Xxcsu6a1GEJNnHqblKf8WqbZNFj7MqHVGuAfjn+gCINZu5P35hhRDJ0QvdRDR4sDMmy60GLXiQhi2gJ23MTHiUrO/m7T8TMxtBcziMaQmcY7FEEygRrykyTyT/ZT0W/3fsW5H/d4C9a8YQooqueNDfaR0fNSq66RHiWIXzPiwvt+emvSW8gABIy83LvyZfTeWPrfB0ekQ4fwUvdzgvDaKiqRr+j1qVz/DbpnXFKR/FMI8qLz3igr+/RbQEQDSPA0vzOHa/oe22zEam5ErTHfz2GfqayB07ml2Gi7B1IF2r3HQNmlGIqW3miqHl4v+ZJlrWpfxujXZhfiXedtwSJRqw==
+ bh=gRnV9+vZMhQ4PEpatE6EPBqX/3Atpnl3dK4/X1I87cM=;
+ b=N1gvkTNIVypPHbC9z4Do9QprLxlzmxpDJasBNNhZ7Vj+clVd5IkKC6Dvsfgf7XV32sg3CqZyL/WpDTQUKNGKs82D9xGj7Kq6wVEifiL4cldEnTlxj3QDdTFg2vLonsYjJHoAXiJrjxAGsaoYWM47Sg4mYY/tosJC8aorGhn/m5BE1NYP0B8yLdl4Os7lXxWWUGFJggmMFysIPB4rumVwz76MFx8RS+i90xQQQVvq8SfqIapFHNvYgQIrcTQiHShzxmnOnG4QR85DdQm5p3gC59erwtQ1Ec0wB6LerVrDK7TxvkdR9w2NEaEJiGUJ3i+T/YCjUBqvZyU7WOaOL4PBrg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from PH0PR11MB5832.namprd11.prod.outlook.com (2603:10b6:510:141::7)
- by SA1PR11MB6847.namprd11.prod.outlook.com (2603:10b6:806:29e::9) with
+ by CH0PR11MB5233.namprd11.prod.outlook.com (2603:10b6:610:e0::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.113.18; Wed, 17 Jun
- 2026 14:56:42 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.113.18; Thu, 18 Jun
+ 2026 05:43:35 +0000
 Received: from PH0PR11MB5832.namprd11.prod.outlook.com
  ([fe80::106e:78dd:4c96:d707]) by PH0PR11MB5832.namprd11.prod.outlook.com
- ([fe80::106e:78dd:4c96:d707%5]) with mapi id 15.21.0113.015; Wed, 17 Jun 2026
- 14:56:42 +0000
-Date: Wed, 17 Jun 2026 22:56:32 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Jim Cromie <jim.cromie@gmail.com>, =?utf-8?Q?=C5=81ukasz?= Bartosik
-	<ukaszb@chromium.org>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <oliver.sang@intel.com>
-Subject: [jimc:dd-rust-parse] [dyndbg]  ccfcff60ec:
- BUG:kernel_NULL_pointer_dereference,address
-Message-ID: <202606172227.34266a1f-lkp@intel.com>
+ ([fe80::106e:78dd:4c96:d707%5]) with mapi id 15.21.0113.015; Thu, 18 Jun 2026
+ 05:43:35 +0000
+Date: Thu, 18 Jun 2026 13:43:29 +0800
+From: Oliver Sang <oliver.sang@intel.com>
+To: Danielle Ratson <danieller@nvidia.com>
+CC: "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>, "lkp@intel.com"
+	<lkp@intel.com>, Jakub Kicinski <kuba@kernel.org>, Nikolay Aleksandrov
+	<razor@blackwall.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	<oliver.sang@intel.com>
+Subject: Re: [linux-next:master] [selftests]  a3f88d89f6:
+ kernel-selftests-bpf.net.test_bridge_neigh_suppress.sh.arping.fail
+Message-ID: <ajOFgSdzLFqNwdCl@xsang-OptiPlex-9020>
+References: <202606110955.8f29025d-lkp@intel.com>
+ <MN2PR12MB4517EDE21D4DA962A55CF1ECD81B2@MN2PR12MB4517.namprd12.prod.outlook.com>
+ <ai/3+f7LJp6pyLJi@xsang-OptiPlex-9020>
+ <SJ2PR12MB9008502979A1D3566074A273D8E42@SJ2PR12MB9008.namprd12.prod.outlook.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-User-Agent: s-nail v14.9.25
-X-ClientProxiedBy: KUZPR06CA0013.apcprd06.prod.outlook.com
- (2603:1096:d10:30::19) To PH0PR11MB5832.namprd11.prod.outlook.com
+In-Reply-To: <SJ2PR12MB9008502979A1D3566074A273D8E42@SJ2PR12MB9008.namprd12.prod.outlook.com>
+X-ClientProxiedBy: TP0P295CA0020.TWNP295.PROD.OUTLOOK.COM
+ (2603:1096:910:5::10) To PH0PR11MB5832.namprd11.prod.outlook.com
  (2603:10b6:510:141::7)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -96,248 +103,256 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR11MB5832:EE_|SA1PR11MB6847:EE_
-X-MS-Office365-Filtering-Correlation-Id: e9684c9f-2ff9-4b63-5cad-08decc80a489
+X-MS-TrafficTypeDiagnostic: PH0PR11MB5832:EE_|CH0PR11MB5233:EE_
+X-MS-Office365-Filtering-Correlation-Id: fa0530d8-1935-4438-60ee-08deccfc89fc
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|23010399003|1800799024|3023799007|11063799006|56012099006|18002099003;
-X-Microsoft-Antispam-Message-Info: D7i9TW6qbigTxgmckLSTDeKQJJexhAMKNZKGMTZ0MTTAcZ/OyXIeb187lnAnGbNkUBLbI0UCoNkVPTPIRCZU3kt2XzoZm4zIdARo6gn1+mKKKLr44tOaS/eTkj1RaV9m376rOuEV9c2AkYwyVm0e10PtXidculFSZbHraRdIkZ4Tc0lmiutLJXAVD52ZPwFO8qFN1hA0J41CIyNyXwOqkrN3dxpEKgws7pKTqYKX5+Y3k+VZ0FBI5Dd8bmJPZm8++BC2CMgnkndk4EHJ6fhbpIJISVYqY3lnVZWM1PqRZSFnxYOl+AOSIKO/MiPTmZfRjZNpxkxePh+T23CKNIljK7BAolYJHWjmjc6kbRBwNjMisoAGnN+Fmc7oLGkt/4BPwW50sdazlHWtbbbXA8A3iuo5iyhvYu8sx7ptPlFxAdOt5I29puIEh1/3ndh0hiXbJVip5t4qeIpRXGAQDBJafkBWmOUq8dIK4Ns2O1ZVcOvKhGQovLuhgIvfsnpuWMqzZ91ZGr5lvyh8Xqf3K63IS2WxENbfolaVDH6v+dQtpMwnULyWYyWghA9hy00Q0LVxcmnSgslzKfsQFBE1RgNPmiilsRUCJggnFakjdM/Cb3sSHlg1oEVkp5edsOXjJtynJJaU3tgFUBKPqnz3f52ojd6raxHdYjVTUIc7PpRXUW3Hys9YPVnG3sP+6Y73jU3J
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5832.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(23010399003)(1800799024)(3023799007)(11063799006)(56012099006)(18002099003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|23010399003|376014|1800799024|56012099006|4143699003|11063799006|22082099003|18002099003|3023799007;
+X-Microsoft-Antispam-Message-Info: tEKnf9gsU3JV6hDhNJLTDrrYkmiZBuQpRRi8jWCDsxuJ7kEs6Akct5qBCqEVsnd/m9sXoK8iBrK3AmBUrn3VMqUr2RJfJWNqA0ik3DSoehTn2ElrqVLnaPrUWByQRe9evwfP8i6UB0wPisufCsvEJfJb8DUWENrd5FXBbRekb3HCKTgmIopLK1B0wJo4n7vEjwVNFYRWNMFEl/jOeKz4XxLbQ67ZelqKQgYoLlOGex2AYV1ZkeJ4endjrI5dBr6+mD/SXRGn0klcaOdicwda2QBhoEaSpY0c25lmEwapsqgJTktosOnqySWmmU3A0iQR+kighLQ6mN2pet1sP8ZwryjwvFaf6Za729nWFXnxgvdR1QEqNPdyLB+3BptKJHnd5g51NLJTDb1WfOUtjXfDy4Iel1Z3co0doX5TDjSdzcogogWiKvJOiKSyz35E4ZtsCusaazErApx+KBc6H5zzx4p+whU/VsctVwQ4RoQdPNYSCTTiz6u1M5mxa8EHaJzIBJOnX4muVK0S37Xj89k1WdENJ53y8e0a5hGpuBq+Rh3rlc9uBDpvKvrA+7ACBi5gqlfREslYYFjphoKR1PKYLNfPDsy7yU/kJQJcxKsliSE9LtrikCMXAyZMkPIN8Q7Z/y3VyKGQ+uQyUNfQwYRbC6skLCniGJisSYkfTiFJBZwXAKBU/ucHAMJwpG2YVmdz4nw9CCwG7y51jP020XorSg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5832.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(376014)(1800799024)(56012099006)(4143699003)(11063799006)(22082099003)(18002099003)(3023799007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?wt2Fljq+rGO3F4kXDUsuqrE1stL4Yj1+vSgu6INU0KQp/ueQ69tREM8TfyZx?=
- =?us-ascii?Q?npkhgqzWC47uGcwrwA5aaTs3mM//Xz58lN9XeE2zT3urZG/VpKxCoF3D+XB/?=
- =?us-ascii?Q?xCSU00Tj8J4GVrziE/fHVzsI/8dxlkHKDjQ3rvrO8kb88GM8cEHAS7uoUAoW?=
- =?us-ascii?Q?kTBlePqt6kZol6TOIksgfBkXkE5uYJVn0y6XU3rX5gRAdkHKHfBv6VEGOM7D?=
- =?us-ascii?Q?AkhJDSMXQt/8DZEUjU31UxwfoNZKydp40VBH1zXL4mcJ1VKB9UwTjyVGz+8Z?=
- =?us-ascii?Q?Aq09ci4j6u1iwglFM97H/3vnm8mZkRlIYHqDHsJBqSExeUg/KvXrqSQ4nTxN?=
- =?us-ascii?Q?pcrc3Yq6q/pfv1GJDKnNkN9vtFbyJJImLvGdh0I7lwwAZ1IEm2zOtLDv6PUI?=
- =?us-ascii?Q?LKr1nn9sd5BS7Ysdc/RtxTB/kKqajIgnh6A8g9tIETDgbqSZV22rUjd76RvU?=
- =?us-ascii?Q?wvliJE9TOWHcWp3qs4d9h6ZMBqcfCXqZxRVw2PcjuoLBiJkhJHE0sN1IWCpC?=
- =?us-ascii?Q?81wFsR1DG4h7W+AczK13RDjQLjlsyeXhVtNTFnZVgFqbvmz0tRncZHvmwsE6?=
- =?us-ascii?Q?VowKuSC3mvzQnFRDOKKMqk8DIHuppgbkt6Ekhnv250fEXiDbELpqLtgJjJb4?=
- =?us-ascii?Q?6fX24jz1u+GWfPNmaxiCmzdEijIb6WUmzqAG03SMJ9HZ1fDOxL5bR3wdIWc+?=
- =?us-ascii?Q?GqMOZftWUZQhyirfZL97K/y+thHAqx7tep3GaulEOG7Y+7U51obIlUmZx6bF?=
- =?us-ascii?Q?h3jezrD4un0+PqA1yYE1XlPtlD6AG0V3IL/4ZYqeeGA4Ba4tM/VnJgHPzTHy?=
- =?us-ascii?Q?BzgtP5Tx7tMTRvnPnoZXXm9yhDnxfX8j262AYpth95FchSm0JuAkP/qhvX61?=
- =?us-ascii?Q?ziRWDyH9lla0DtbwlR+sax2A8MZnr2qF8cXNymqWTb8a+/BgT6Jz5VyQ51/b?=
- =?us-ascii?Q?HisJuqWwUd2twJK3PfL0sNuvJ+Tv8UjpV2mYnnzZCKlQPQxQiws6D+b3LRa2?=
- =?us-ascii?Q?/XaB0CxQxPxoPzLUMZFAlssC/9J9BUdugvPGbKp/s3rx7HDSS72PAlGs6aAI?=
- =?us-ascii?Q?0hySSuDlvccjJzkul3YSe2C1wdiP4PYRxi6Oi92VHCWnX3Y1lPgArOhhYF+t?=
- =?us-ascii?Q?eT+tmWf8V/dG59uadLEueMkJv9jtSJZTXmZ7EPcoSF5y4c469BVVav6mufE7?=
- =?us-ascii?Q?h09qCgYvYXFroNuCV/sT94UAOh6dt84MnPbwLL92FNQYDbuAf+jf16yrBH9G?=
- =?us-ascii?Q?6/eMdDq2XEiIzzSVxKGCWWBPMseab40SzUdBFCrqdZTyjU1h572yogvUzDEr?=
- =?us-ascii?Q?mTGqfGIZP6BIBe1rdshsJC7Qtf72qKkxzEzjiMTWNSCh9bSVbf6gtHInN/4X?=
- =?us-ascii?Q?A1p7bPzh9aaA53e0t10dPAa3t4Tkn0H1vDGC/Czz8nkucxdAb3c/ES6A4Cms?=
- =?us-ascii?Q?nShoAbhoSKkZcttsYy8zu3lZb07TQhwEoTWGEI9mxKFlcwYkSuoO7RRqT8Vl?=
- =?us-ascii?Q?pe32RkaVH5Gej+S6Gdy1pVGRkFNPOid7iBuWilvLK4DVlhyGrAvcwuYrjuul?=
- =?us-ascii?Q?6TCS35CmVJWsaGAb7fr+R4b2NXN6qIwa5siKMvBPVPn3zvNCIF2VVWuESTKY?=
- =?us-ascii?Q?vEyyYlYLy00zehV9H5Kb+G5DmiooilIcP9PVkjGe3Gp9tMF9F3wZul/q5gz8?=
- =?us-ascii?Q?DoZdy1kyw7u92wGbNg9TUxORhxEpqHQnJl+GiC6uUVen4rlYd4yky44uFPm3?=
- =?us-ascii?Q?AV/339lx5g=3D=3D?=
-X-Exchange-RoutingPolicyChecked: TdRT9SJmmxxG3YpSnK0XMb0+NTbWVpDh7rA/eT4mO8T66mZC8Pa8ARptToi/nQBMDXvhstlz2YBXg7YD8fqN4O583K3K0LgK+czmAJ7H+Fjr81qbLDfjXEX5Ypl6oSuA7OoiU+KyTw5dcUZQP8mjPixGkSlb0HxOViZr5nvQXrvh//cXyxKnuyMEL/FYSdfGR+D0FSWvFXuRiZSxIxPHNfJ3eQCd4Y9I9e8DSO4VJZOjZsf06bN2CgZfI2LSDk9ndw7kUlfxKsyWSRIgfoP3QnzbOk28yuQ0x8pzU10BlCBgER2895mPo1SKe1ZMHMh/D3VLkR9OjAgv997agKgT9Q==
-X-MS-Exchange-CrossTenant-Network-Message-Id: e9684c9f-2ff9-4b63-5cad-08decc80a489
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/XS2uSQDum7lx2vR4ZKL7YiNSCIXsH4RPf68TTyw/kYxlNy7dxPfroJjSbgV?=
+ =?us-ascii?Q?jx+DAP+idXo5CwTepvXrM50Z6mwH+XUr1MlE+HaiLHsfXpGII1S/H6lRv1c2?=
+ =?us-ascii?Q?LArB23jw1YNGiLvYs1Oiolr3CVLIkQfG13lfe30YMpORxIkjlkQwFEnAmwdp?=
+ =?us-ascii?Q?wLLT+KiGugIE1msotaq0v0C9oVRmv2DXBqqoB0V/gRab4+/5EEXU97iUytgh?=
+ =?us-ascii?Q?j3sUoBWv7fncMEQ4lTTCxQIoQkJpEKN2UUNC3BHvlKNHRXXUD10yLd9rmMYr?=
+ =?us-ascii?Q?eLogigQ4zAGtpqOiUBEJyMM/ti38VXYbgy5pnWf/e+Dp7DaySZd5Ul0TVG5z?=
+ =?us-ascii?Q?Et4jKIZpxoWL/pcEE6JgkhXTDKbYbXN2e8jIqrMC1AKEYHvZnG1e6uOWh8ud?=
+ =?us-ascii?Q?9hj3SbqzIKZNkEJY/OgGIxMBFNXN1wX/3mOiyO3NBiQUF3rajrLpKVfoLzt7?=
+ =?us-ascii?Q?9fUUkCsWYf0oDd1qDTyoUPHJRZaP0oLP3bKjhNObF3WdhMJU3WTxxKjMnbih?=
+ =?us-ascii?Q?YMXJt2isJhOU+eyoLySyNDcu1pRUO/LbF5bF/lV6yy1yw9kztLaxPgiqbhAX?=
+ =?us-ascii?Q?PX6n0KA3qQFGLdtro/WTtMn6PLDtJJIzo/qDvFU2aIabKYsv2u1FaGpi+S3j?=
+ =?us-ascii?Q?4jmlrxBwu5a2kzL50LD8lhGgTF9hnGMwFAb+iojHfmQntN6luGJMPm79+25f?=
+ =?us-ascii?Q?XF8hIsvW3AzWfRxDp3lJ3r2xf/Wa1iMtnUGt9T+V6o0rQUTDAdMZ54R6Maf4?=
+ =?us-ascii?Q?Epjfp6ZZloDlNFTS2OwOo+BGgCdrKpmvqUYwmmwIfAgh0U1WaCwuFzGUIMIZ?=
+ =?us-ascii?Q?xLHwmp55H6eNQpnI4//V29/8D/giEKj2/xeVO86pVpqtDQ0AXjjJGAKMGbGw?=
+ =?us-ascii?Q?0eH/ETEaeYoxYiRAAfBkzQZpEvP58gGjyku3Wb5+GTJTwgceDkbXuGP2tUTK?=
+ =?us-ascii?Q?kSPHAYVziKKKIOGXtnvHD/qPIlc2wvcW8rNauCWIxzKgnllFzLsEftuThmf5?=
+ =?us-ascii?Q?P3BFYIH7cM2kx+1MtxP197Y1Tj9BxS9OsxnH9Id6jOChzwSyrVOn1FPn9MKc?=
+ =?us-ascii?Q?0U72zMtShISuXMFvz1jViZenAhxOmgcSQFv08l9rYA6Am1Oc5L9ZEe5Pbo9U?=
+ =?us-ascii?Q?inSFPSrRImD6ls3xx+IWhkjjCxFo390OTxPf9nCym9dpg66xitZYB6NvI6eH?=
+ =?us-ascii?Q?dH5iyqTyGZpu3Rwl6RUBNodBjn4p9l5khNIK8QxpamtxhNXVQ0HWsV6f3Vd/?=
+ =?us-ascii?Q?ACYrNDZv1pGA/lC0/D7OT2jEnUV+lVXHqwjTyxEZhDSmHRQIVWFhJfiByhSW?=
+ =?us-ascii?Q?mTcWEm+fv98yPUsiWky0P6+d6cIp9Lf78aYM7JAT2cKf8CqTDGNw/gi/82mX?=
+ =?us-ascii?Q?BVBAe5kWMNIlTVe+hH8iDyLk4kS/7rSGTF3Nql6fndlTSGhP+Su/Wz9QvjN9?=
+ =?us-ascii?Q?32WP1WgS92++DglTKa5TsjTF46tA5fU/iwjvU2BWvyxjBkzOjlGQR7a6dWB5?=
+ =?us-ascii?Q?pObd+EhL/rXGdVo0jYS70vJTney3bSpoRkfO4ZodLpmqFsK/+SpFcV/1ONSf?=
+ =?us-ascii?Q?QeVgugYQtTr2eQRNBorDrWCYACaqxvsEJGZtcCVcKt0Ekm4del8GSvwPn3kR?=
+ =?us-ascii?Q?qDduYA5PsJxFJoaH2botSoF+5trAfzbWMWfaGSm6FveOEiD7PyatsNPUbzHv?=
+ =?us-ascii?Q?gnBGqs/BhfgAEyfNtaKqKx1O5PpQy8ObrPBPMNQk9SGXZvy+JdvrC/dJwDxY?=
+ =?us-ascii?Q?iUggQ7A8Jw=3D=3D?=
+X-Exchange-RoutingPolicyChecked: DDOK/I5WpcA+qcQ1Z4fkcGWsikE173sO0nNPZVta77f52Kh8Y4RannS5IGy6NasVib0/Yy0RCEYGHr5zagoueXQa7tVuWc+sIa1D3iCj4AWHJEaOHFieOZGFqlhnCWoZukTx/tOVpWcXcPh/2a7pAKSljSY/2FzWatDJ+6ghRbjysdHd6PgqIOV2kR5MQsqyYAPXDj6NieTOBB5nmKksC+Nbto7saarb8pszCeMN2/TX3toJRGVVqGnw2fx55L3IbROSosRh5GE66f01PEXDP6qLW4tFkJ22w9BkH87TLV2XQRSSGMXLpqtVf6E3Q7KLxqnG4Kh3BY9U7J5Nb1RcGw==
+X-MS-Exchange-CrossTenant-Network-Message-Id: fa0530d8-1935-4438-60ee-08deccfc89fc
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5832.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jun 2026 14:56:42.7188
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jun 2026 05:43:35.3359
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: WWZMII7qpaJolQOlMxPKb+2WRyJHlT2/knkb8Xv6Z7Q1T2n3wfOi1WBCScFDVvE+A4FqpP+cRcvmrQxUdgnXVQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB6847
+X-MS-Exchange-CrossTenant-UserPrincipalName: Cju+TLqvq/qolO81UfUQztF39vx4VMdE8qHudkpIi3TDJh2huYvHnPT4Lealy+YV8scIXxLwwhaQwfjWfxeJNg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR11MB5233
 X-OriginatorOrg: intel.com
 
+hi, Danielle,
 
-hi, Jim Cromie,
+On Wed, Jun 17, 2026 at 07:29:48AM +0000, Danielle Ratson wrote:
+> Hi Oliver,
+> 
+> Thank you for confirming the arping version. ARPing 2.25 by Thomas Habets has incompatible semantics for several flags that the test relies on (-D, b, -U, -A). 
+> So, the failures are a tool version issue rather than a kernel regression.
+> 
+> This is not limited to the new commit- looking at the 56 failures in the added log, the other arping-based test cases that existed before commit a3f88d89f698 are also failing, which confirms the root cause.
+> 
+> The same assumption (iputils arping) is made by other net selftests as well:
+> test_vxlan_nh.sh, forwarding/vxlan_asymmetric.sh, and arp_ndisc_untracked_subnets.sh all use iputils-specific flags.
+> 
+> There are two options to address this on your end:
+> 
+> 1. Install iputils-arping and ensure it takes precedence over ARPing 2.25 in PATH. Running "arping -V" should then show "iputils".
 
-for this change, we reported
-"[jimc:dd-shrink] [dyndbg]  1663ffb9c1: BUG:kernel_NULL_pointer_dereference,address"
-in
-https://lore.kernel.org/all/202601211325.7e1f336-lkp@intel.com/
+thanks a lot for information and guildance! we will defintely to install
+iputils-arping.
 
-at that time, we understood that you've already fixed it by a separate patch.
+> 2. If that is not feasible, I can send a fix that adds an iputils version check to test_bridge_neigh_suppress.sh, causing it to SKIP cleanly when iputils arping is not present:
+> 
+> if ! arping -V 2>&1 | grep -q "iputils"; then
+>      echo "SKIP: Test requires iputils arping"
+>      exit $ksft_skip
+> fi
+> 
+> This will result in a SKIP rather than a FAIL for your environment.
 
-now we found the similar issue in another branch, we are not sure if this branch
-is still active. so report out what we observe in our tests just FYI.
+no need to do fix for our env IMHO. this kernel test robot's purpose is to
+bisect the regression and report the fbc to linux kernel community to help
+developers to improve kernel code quality. we need to enable as many test
+cases as possible for this purpose. so we will try above #1 option :)
 
-
-
-Hello,
-
-kernel test robot noticed "BUG:kernel_NULL_pointer_dereference,address" on:
-
-commit: ccfcff60ec48f9294257908cb027b3e29c8f7462 ("dyndbg: resolve "protection" of class'd pr_debug")
-https://github.com/jimc/linux.git dd-rust-parse
-
-in testcase: boot
-
-config: i386-randconfig-015-20260616
-compiler: gcc-14
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 32G
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202606172227.34266a1f-lkp@intel.com
-
+thanks a lot!
 
 
-[    2.060784][    T1] BUG: kernel NULL pointer dereference, address: 00000000
-[    2.064447][    T1] #PF: supervisor read access in kernel mode
-[    2.064447][    T1] #PF: error_code(0x0000) - not-present page
-[    2.064447][    T1] *pde = 00000000
-[    2.064447][    T1] Oops: Oops: 0000 [#1] SMP
-[    2.064447][    T1] CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted 7.1.0-rc7-00035-gccfcff60ec48 #1 PREEMPT(lazy)  4e5eb1741e72fd9e4b9a514cfdc887aab03908af
-[    2.064447][    T1] EIP: strcmp+0x9/0x40
-[    2.064447][    T1] Code: 84 c0 75 f7 31 c0 aa 89 d8 5b 5e 5f 5d c3 8d 76 00 2e 8d b4 26 00 00 00 00 2e 8d b4 26 00 00 00 00 55 89 e5 57 89 d7 56 89 c6 <ac> ae 75 08 84 c0 75 f8 31 c0 eb 04 19 c0 0c 01 5e 5f 5d c3 8d 76
-All code
-========
-   0:	84 c0                	test   %al,%al
-   2:	75 f7                	jne    0xfffffffffffffffb
-   4:	31 c0                	xor    %eax,%eax
-   6:	aa                   	stos   %al,%es:(%rdi)
-   7:	89 d8                	mov    %ebx,%eax
-   9:	5b                   	pop    %rbx
-   a:	5e                   	pop    %rsi
-   b:	5f                   	pop    %rdi
-   c:	5d                   	pop    %rbp
-   d:	c3                   	ret
-   e:	8d 76 00             	lea    0x0(%rsi),%esi
-  11:	2e 8d b4 26 00 00 00 	cs lea 0x0(%rsi,%riz,1),%esi
-  18:	00 
-  19:	2e 8d b4 26 00 00 00 	cs lea 0x0(%rsi,%riz,1),%esi
-  20:	00 
-  21:	55                   	push   %rbp
-  22:	89 e5                	mov    %esp,%ebp
-  24:	57                   	push   %rdi
-  25:	89 d7                	mov    %edx,%edi
-  27:	56                   	push   %rsi
-  28:	89 c6                	mov    %eax,%esi
-  2a:*	ac                   	lods   %ds:(%rsi),%al		<-- trapping instruction
-  2b:	ae                   	scas   %es:(%rdi),%al
-  2c:	75 08                	jne    0x36
-  2e:	84 c0                	test   %al,%al
-  30:	75 f8                	jne    0x2a
-  32:	31 c0                	xor    %eax,%eax
-  34:	eb 04                	jmp    0x3a
-  36:	19 c0                	sbb    %eax,%eax
-  38:	0c 01                	or     $0x1,%al
-  3a:	5e                   	pop    %rsi
-  3b:	5f                   	pop    %rdi
-  3c:	5d                   	pop    %rbp
-  3d:	c3                   	ret
-  3e:	8d                   	.byte 0x8d
-  3f:	76                   	.byte 0x76
-
-Code starting with the faulting instruction
-===========================================
-   0:	ac                   	lods   %ds:(%rsi),%al
-   1:	ae                   	scas   %es:(%rdi),%al
-   2:	75 08                	jne    0xc
-   4:	84 c0                	test   %al,%al
-   6:	75 f8                	jne    0x0
-   8:	31 c0                	xor    %eax,%eax
-   a:	eb 04                	jmp    0x10
-   c:	19 c0                	sbb    %eax,%eax
-   e:	0c 01                	or     $0x1,%al
-  10:	5e                   	pop    %rsi
-  11:	5f                   	pop    %rdi
-  12:	5d                   	pop    %rbp
-  13:	c3                   	ret
-  14:	8d                   	.byte 0x8d
-  15:	76                   	.byte 0x76
-[    2.064447][    T1] EAX: 00000000 EBX: c5c15680 ECX: 00000000 EDX: c45bc35a
-[    2.064447][    T1] ESI: 00000000 EDI: c45bc35a EBP: c5d2fe88 ESP: c5d2fe80
-[    2.064447][    T1] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00010203
-[    2.064447][    T1] CR0: 80050033 CR2: 00000000 CR3: 05289000 CR4: 00040690
-[    2.064447][    T1] Call Trace:
-[    2.064447][    T1]  ddebug_add_module+0xbb/0x380
-[    2.064447][    T1]  ? blocking_notifier_chain_register+0x2e/0x80
-[    2.064447][    T1]  ? dynamic_debug_init_control+0x74/0x74
-[    2.064447][    T1]  dynamic_debug_init+0xf2/0x208
-[    2.064447][    T1]  ? dynamic_debug_init_control+0x74/0x74
-[    2.064447][    T1]  do_one_initcall+0x59/0x3c0
-[    2.064447][    T1]  ? __register_sysctl_table+0x101/0x140
-[    2.064447][    T1]  ? rest_init+0x180/0x180
-[    2.064447][    T1]  kernel_init_freeable+0x8f/0x114
-[    2.064447][    T1]  kernel_init+0x12/0x100
-[    2.064447][    T1]  ret_from_fork+0x228/0x2c0
-[    2.064447][    T1]  ? rest_init+0x180/0x180
-[    2.064447][    T1]  ret_from_fork_asm+0x12/0x18
-[    2.064447][    T1]  entry_INT80_32+0x10d/0x10d
-[    2.064447][    T1] Modules linked in:
-[    2.064447][    T1] CR2: 0000000000000000
-[    2.064447][    T1] ---[ end trace 0000000000000000 ]---
-[    2.064447][    T1] EIP: strcmp+0x9/0x40
-[    2.064447][    T1] Code: 84 c0 75 f7 31 c0 aa 89 d8 5b 5e 5f 5d c3 8d 76 00 2e 8d b4 26 00 00 00 00 2e 8d b4 26 00 00 00 00 55 89 e5 57 89 d7 56 89 c6 <ac> ae 75 08 84 c0 75 f8 31 c0 eb 04 19 c0 0c 01 5e 5f 5d c3 8d 76
-All code
-========
-   0:	84 c0                	test   %al,%al
-   2:	75 f7                	jne    0xfffffffffffffffb
-   4:	31 c0                	xor    %eax,%eax
-   6:	aa                   	stos   %al,%es:(%rdi)
-   7:	89 d8                	mov    %ebx,%eax
-   9:	5b                   	pop    %rbx
-   a:	5e                   	pop    %rsi
-   b:	5f                   	pop    %rdi
-   c:	5d                   	pop    %rbp
-   d:	c3                   	ret
-   e:	8d 76 00             	lea    0x0(%rsi),%esi
-  11:	2e 8d b4 26 00 00 00 	cs lea 0x0(%rsi,%riz,1),%esi
-  18:	00 
-  19:	2e 8d b4 26 00 00 00 	cs lea 0x0(%rsi,%riz,1),%esi
-  20:	00 
-  21:	55                   	push   %rbp
-  22:	89 e5                	mov    %esp,%ebp
-  24:	57                   	push   %rdi
-  25:	89 d7                	mov    %edx,%edi
-  27:	56                   	push   %rsi
-  28:	89 c6                	mov    %eax,%esi
-  2a:*	ac                   	lods   %ds:(%rsi),%al		<-- trapping instruction
-  2b:	ae                   	scas   %es:(%rdi),%al
-  2c:	75 08                	jne    0x36
-  2e:	84 c0                	test   %al,%al
-  30:	75 f8                	jne    0x2a
-  32:	31 c0                	xor    %eax,%eax
-  34:	eb 04                	jmp    0x3a
-  36:	19 c0                	sbb    %eax,%eax
-  38:	0c 01                	or     $0x1,%al
-  3a:	5e                   	pop    %rsi
-  3b:	5f                   	pop    %rdi
-  3c:	5d                   	pop    %rbp
-  3d:	c3                   	ret
-  3e:	8d                   	.byte 0x8d
-  3f:	76                   	.byte 0x76
-
-Code starting with the faulting instruction
-===========================================
-   0:	ac                   	lods   %ds:(%rsi),%al
-   1:	ae                   	scas   %es:(%rdi),%al
-   2:	75 08                	jne    0xc
-   4:	84 c0                	test   %al,%al
-   6:	75 f8                	jne    0x0
-   8:	31 c0                	xor    %eax,%eax
-   a:	eb 04                	jmp    0x10
-   c:	19 c0                	sbb    %eax,%eax
-   e:	0c 01                	or     $0x1,%al
-  10:	5e                   	pop    %rsi
-  11:	5f                   	pop    %rdi
-  12:	5d                   	pop    %rbp
-  13:	c3                   	ret
-  14:	8d                   	.byte 0x8d
-  15:	76                   	.byte 0x76
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20260617/202606172227.34266a1f-lkp@intel.com
-
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+> 
+> Thanks,
+> Danielle
+> 
+> > -----Original Message-----
+> > From: Oliver Sang <oliver.sang@intel.com>
+> > Sent: Monday, 15 June 2026 16:03
+> > To: Danielle Ratson <danieller@nvidia.com>
+> > Cc: oe-lkp@lists.linux.dev; lkp@intel.com; Jakub Kicinski <kuba@kernel.org>;
+> > Nikolay Aleksandrov <razor@blackwall.org>; netdev@vger.kernel.org;
+> > oliver.sang@intel.com
+> > Subject: Re: [linux-next:master] [selftests] a3f88d89f6: kernel-selftests-
+> > bpf.net.test_bridge_neigh_suppress.sh.arping.fail
+> > 
+> > hi, Danielle,
+> > 
+> > On Thu, Jun 11, 2026 at 11:44:39AM +0000, Danielle Ratson wrote:
+> > > Hi Oliver,
+> > >
+> > > Thank you for the report.
+> > >
+> > > The failures appear to be caused by an arping tool version mismatch.
+> > > The test was written assuming iputils arping semantics, but not all
+> > distributions ship that version. Different arping implementations have
+> > incompatible behavior for the flags used throughout
+> > test_bridge_neigh_suppress.sh.
+> > >
+> > > Looking at the added log, the 56 failures are not limited to the
+> > neigh_suppress_arp_probe section.
+> > > The other arping-based test cases in the file are also affected, which is
+> > consistent with a tool version issue rather than a kernel regression.
+> > >
+> > > To confirm the root cause on your end, please share the results for running
+> > the below:
+> > > $ arping -V
+> > > $ ./test_bridge_neigh_suppress.sh -t neigh_suppress_arp -v
+> > 
+> > sorry for late.
+> > 
+> > our tests run in a auto framework, I had to add some code to print above
+> > information, but so far, it just generates below output.
+> > before we try further, want to seek your advice if these information are
+> > enough?
+> > 
+> > KERNEL SELFTESTS: linux_headers_dir is /usr/src/linux-headers-x86_64-rhel-
+> > 9.4-bpf-a3f88d89f698743a8cd91fb43f997e2d292a168d
+> > ### arping -V
+> > arping: option requires an argument -- 'V'
+> > ARPing 2.25, by Thomas Habets <thomas@habets.se>
+> > usage: arping [ -0aAbdDeFpPqrRuUvzZ ] [ -w <sec> ] [ -W <sec> ] [ -S <host/ip>
+> > ]
+> >               [ -T <host/ip ] [ -s <MAC> ] [ -t <MAC> ] [ -c <count> ]
+> >               [ -C <count> ] [ -i <interface> ] [ -m <type> ] [ -g <group> ]
+> >               [ -V <vlan> ] [ -Q <priority> ] <host/ip/MAC | -B> For complete usage
+> > info, use --help or check the manpage.
+> > ### ./test_bridge_neigh_suppress.sh -t neigh_suppress_arp -v
+> >                                                 <-------- seems there is no output here
+> > Per-port ARP suppression - VLAN 10              <-------- seems already start the
+> > tests
+> > ----------------------------------
+> > COMMAND: tc -n sw1-U1mYwE qdisc replace dev vx0 clsact
+> > 
+> > 
+> > >
+> > > Thanks,
+> > > Danielle
+> > >
+> > > > -----Original Message-----
+> > > > From: kernel test robot <oliver.sang@intel.com>
+> > > > Sent: Thursday, 11 June 2026 10:23
+> > > > To: Danielle Ratson <danieller@nvidia.com>
+> > > > Cc: oe-lkp@lists.linux.dev; lkp@intel.com; Jakub Kicinski
+> > > > <kuba@kernel.org>; Nikolay Aleksandrov <razor@blackwall.org>;
+> > > > netdev@vger.kernel.org; oliver.sang@intel.com
+> > > > Subject: [linux-next:master] [selftests] a3f88d89f6:
+> > > > kernel-selftests- bpf.net.test_bridge_neigh_suppress.sh.arping.fail
+> > > >
+> > > >
+> > > > hi, Danielle Ratson,
+> > > >
+> > > > for new added tests, we still found some failures in our tests, not
+> > > > sure if any dependencies we missed? thanks
+> > > >
+> > > >
+> > > > Hello,
+> > > >
+> > > > kernel test robot noticed "kernel-selftests-
+> > > > bpf.net.test_bridge_neigh_suppress.sh.arping.fail" on:
+> > > >
+> > > > commit: a3f88d89f698743a8cd91fb43f997e2d292a168d ("selftests: net:
+> > > > Add tests for ARP probe and DAD NS handling")
+> > > > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git
+> > > > master
+> > > >
+> > > > in testcase: kernel-selftests-bpf
+> > > > version:
+> > > > with following parameters:
+> > > >
+> > > > 	group: net
+> > > >
+> > > >
+> > > > config: x86_64-rhel-9.4-bpf
+> > > > compiler: gcc-14
+> > > > test machine: 16 threads Intel(R) Core(TM) i7-13620H (Raptor Lake)
+> > > > with 32G memory
+> > > >
+> > > > (please refer to attached dmesg/kmsg for entire log/backtrace)
+> > > >
+> > > >
+> > > >
+> > > > If you fix the issue in a separate patch/commit (i.e. not just a new
+> > > > version of the same patch/commit), kindly add following tags
+> > > > | Reported-by: kernel test robot <oliver.sang@intel.com>
+> > > > | Closes:
+> > > > | https://lore.kernel.org/oe-lkp/202606110955.8f29025d-lkp@intel.com
+> > > >
+> > > >
+> > > > # timeout set to 3600
+> > > > # selftests: net: test_bridge_neigh_suppress.sh #
+> > > >
+> > > > [...]
+> > > >
+> > > > #
+> > > > # Per-port ARP probe suppression
+> > > > # ------------------------------
+> > > > # TEST: ARP probe suppression                                         [FAIL]
+> > > > # TEST: "neigh_suppress" is on                                        [ OK ]
+> > > > # TEST: ARP probe suppression                                         [FAIL]
+> > > > # TEST: FDB and neighbor entry installation                           [ OK ]
+> > > > # TEST: arping                                                        [FAIL]
+> > > > # TEST: ARP probe suppression                                         [FAIL]
+> > > > # TEST: neighbor removal                                              [ OK ]
+> > > > # TEST: ARP probe suppression                                         [FAIL]
+> > > > # TEST: "neigh_suppress" is off                                       [ OK ]
+> > > > # TEST: ARP probe suppression                                         [FAIL]
+> > > > #
+> > > > # Per-port DAD NS suppression
+> > > > # ---------------------------
+> > > > # TEST: DAD NS suppression                                            [ OK ]
+> > > > # TEST: "neigh_suppress" is on                                        [ OK ]
+> > > > # TEST: DAD NS suppression                                            [ OK ]
+> > > > # TEST: FDB and neighbor entry installation                           [ OK ]
+> > > > # TEST: DAD NS suppression                                            [ OK ]
+> > > > # TEST: DAD NS proxy NA reply                                         [ OK ]
+> > > > # TEST: neighbor removal                                              [ OK ]
+> > > > # TEST: DAD NS suppression                                            [ OK ]
+> > > > # TEST: "neigh_suppress" is off                                       [ OK ]
+> > > > # TEST: DAD NS suppression                                            [ OK ]
+> > > > #
+> > > > # Tests passed: 124
+> > > > # Tests failed:  56
+> > > > not ok 110 selftests: net: test_bridge_neigh_suppress.sh # exit=1
+> > > >
+> > > >
+> > > >
+> > > > The kernel config and materials to reproduce are available at:
+> > > > https://download.01.org/0day-
+> > > > ci/archive/20260611/202606110955.8f29025d-lkp@intel.com
+> > > >
+> > > >
+> > > >
+> > > > --
+> > > > 0-DAY CI Kernel Test Service
+> > > > https://github.com/intel/lkp-tests/wiki
+> > >
