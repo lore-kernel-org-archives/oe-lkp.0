@@ -1,91 +1,94 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA3E63A7F52
-	for <oe-lkp@lists.linux.dev>; Wed, 15 Jul 2026 05:09:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15496351C2D
+	for <oe-lkp@lists.linux.dev>; Wed, 15 Jul 2026 05:17:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.16
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784092145; cv=fail; b=eMK6scfG2yNNZ3prG5ftD2IQ6ea+xe9ErHJ8bTs5C6e5NKprG8x1wJSkLEAJHKzdUIiOCj2egmufwNxOvyQCdylB6VQyT6wZ4K6TsB410epVUGq/oZDPbhL4tlLTG6T1gZBqE71pWWG9RxX29hEb5j96zfTgX3eq9AaUja+kpOk=
+	t=1784092665; cv=fail; b=kmESQvfkdvUCOd+C8RO0wj47KoxEslyCYIjan/aGV4XtS4xUo8BUYC6vGa1RnM72E3nD0MiUWiEyxKvNyL5VnrIqZ9k5csRV7tGJamIcUb/8O8dsckvP8VU5Bpj/4Eaivn+YrYBEVQDUWUbsbHo1sTvnWt9P5A0NvwM9Xz4tr8I=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784092145; c=relaxed/simple;
-	bh=xWGxWl9eWdEErB4Xc5FVdmZCPRch9uDRNerzEUJbpX0=;
+	s=arc-20240116; t=1784092665; c=relaxed/simple;
+	bh=a6gFDC2WXYS75wBMx5TOJIX0yrOzridQFiVIOsDd0SA=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=MdEopAWgw6FTLknm25ECQhYpr0+Ey2wcRuu1Tt1AFBabWZ15UkLaORXrlTbUzTfE4C+X302d8mEB5c0VpD8MyG9MKLGppiIW8dmjEtbRzhnxfx8LR1GvIB9SnzA0nveFP7Yy2vp//XFYzMWJcmPmJs79G+gRlYD9qmMYLwBJA6Y=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kHgkomKQ; arc=fail smtp.client-ip=192.198.163.7
+	 Content-Disposition:MIME-Version; b=B9RKgIdVSb14GPpq7gOVy2A8aJBK8xEnoLtqKL2lsRUw1fy1PkzaWu1hdZGIJhMN7AYit3HzeJ78jFtcGYt3mh8ENNhRXBPwFsT/ZWXDBRby4rhXbb+5SRz+qpDd7hJlTXJWzrD0dXeMME4wg97/aDYiAzPlxOzbnxeyJpaOCII=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SLABAXQB; arc=fail smtp.client-ip=192.198.163.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kHgkomKQ"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SLABAXQB"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1784092144; x=1815628144;
+  t=1784092661; x=1815628661;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=xWGxWl9eWdEErB4Xc5FVdmZCPRch9uDRNerzEUJbpX0=;
-  b=kHgkomKQ+LRyTGhEzxVf2UUNSqqGtFAy70vppezd0mgh85+lb/ZzsxTf
-   f9tinBiGqy7GCG2WCAQ/cQEdxP8pzo33P0/rHJ3KTyErjtN2X6S725mte
-   oZYEvdjjdQe2dCx1HoeyVRVpR8rFhCYnXStemd+laiJiJJJk8rwuq0kfl
-   v2998qRIuDk7iO+vvyRbuH/OZn8zMN2a9vCSA/v/L6LyaZHFW1LPMqZE0
-   PSmeeF/xzkQNQ608U3He5ReAaUAKoP9XWQEXhbwaZCKopQf4Ioi4VOk+n
-   UKdt05/77pHcOqUUHmcSqrxhoMDOKFNF247nuNoCPyhj6f5xUINnbLv0M
+  bh=a6gFDC2WXYS75wBMx5TOJIX0yrOzridQFiVIOsDd0SA=;
+  b=SLABAXQBle5dpDCIgHXpqwKF/ZHFuO70b1+G2AFVo7PwjYI2jKzfDlKU
+   3xiCW7zyII4WRZwkADLDPYs/Hb0DsAVdDH9yn9qAXHRpodDXceHtPr3tD
+   JKAL9IVuv3F5Nz/Oxx9Nx6W7zr7qSSPTYyxYIsElqkTeStImSX/Uw/M+i
+   Mj1+kjWHXespSk6PNVloWQSrPaMDzaJE/iA5ytzNskCskp2S8pnjXjiZc
+   iQdQYujfd9rq3nEcTqlhO5Ej90QnQU5LJdb1OYKMnTzaNQ0IlFe3f2M/I
+   UGosMJC+uvnVDI6mW/dIa37DLGjqgvd/7Za0pONlPbQ17SpH6nAczp/Ll
    g==;
-X-CSE-ConnectionGUID: TIdNEOb4STWVgrkp7v4bvA==
-X-CSE-MsgGUID: BFDpH0f/SCCyeZTfcjD2Kw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11847"; a="110267240"
+X-CSE-ConnectionGUID: FLGOOv4NT727jwve3QYlNw==
+X-CSE-MsgGUID: xg7fppC5RBGFO+yXfY6mWA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11847"; a="72247762"
 X-IronPort-AV: E=Sophos;i="6.25,164,1779174000"; 
-   d="scan'208";a="110267240"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 22:09:03 -0700
-X-CSE-ConnectionGUID: M4d3QvuHSuaGxW142zvG0A==
-X-CSE-MsgGUID: PFm/Dqs1S0atfHxeMDRIhA==
+   d="scan'208";a="72247762"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 22:17:40 -0700
+X-CSE-ConnectionGUID: A2dxr/RgS+2FgU/CGVDNUA==
+X-CSE-MsgGUID: 0jP6htOfRPO8qbNgUqmpcw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,164,1779174000"; 
-   d="scan'208";a="259892383"
-Received: from fmsmsx902.amr.corp.intel.com ([10.18.126.91])
-  by orviesa004.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 22:09:03 -0700
-Received: from FMSMSX902.amr.corp.intel.com (10.18.126.91) by
- fmsmsx902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+   d="scan'208";a="251651436"
+Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
+  by fmviesa006.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 22:17:38 -0700
+Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.43; Tue, 14 Jul 2026 22:09:02 -0700
-Received: from fmsedg901.ED.cps.intel.com (10.1.192.143) by
- FMSMSX902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ 15.2.2562.43; Tue, 14 Jul 2026 22:17:37 -0700
+Received: from ORSEDG902.ED.cps.intel.com (10.7.248.12) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.43 via Frontend Transport; Tue, 14 Jul 2026 22:09:02 -0700
-Received: from DM5PR21CU001.outbound.protection.outlook.com (52.101.62.44) by
- edgegateway.intel.com (192.55.55.81) with Microsoft SMTP Server
+ 15.2.2562.43 via Frontend Transport; Tue, 14 Jul 2026 22:17:37 -0700
+Received: from SN4PR2101CU001.outbound.protection.outlook.com (40.93.195.62)
+ by edgegateway.intel.com (134.134.137.112) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.43; Tue, 14 Jul 2026 22:09:02 -0700
+ 15.2.2562.43; Tue, 14 Jul 2026 22:17:35 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ab2yOW6Oq3Nzl8RY/dYSvM3J9s7nrAfLtcA4vKdMqo6RJSDYHZylRVasRKLS3zcpTYsiwQjXOvEDTa0Eq/9wzDQIiy9GgDYSjUnzQhzoYvyhgpzEwoAiyluqADz/Pzg2fHjioVv1DZuQsjEAB1dUfRLFNqqnpIeMqWPXxAz+4knbPwwk7wDoARXmaTi22dpN2imJYkx1ksbnNGeQ+k6c0gXgBZQZgFIcIfCFfKlYDgx9ZtL37mdAfTCCM7kv79qR+H1EVajS1zLkJ4mK+4BLMWCotthTi50vOSmKERwUAL9kVmFEgZ4z3fCBU6dkzgl2qWOrJC/UrWiIx1Zx2uI4bQ==
+ b=fWwW1SvGbOv5Hcf+Q9QWfmuRp1apt/VrIopC03JcTu8az0/ZxfuMTsUe6QJ2R/dLCzPfvJORvRIegjgW8zRvLjNJcELZd0Ksn77rjqn2yiOV8pCPB+qGeROe4NOQK0nFmiJY2VWfxlZKsemcWTEpeAlszHjEBsxoOfhiKFVn3TGsO5Fc1racGZ3tS11rFYoEU2aXtv1Sg3GnHVorOX9gNpZxQX+pm0QQJ4D7PrEo+SAK9MytnKRbQYX+GvbLMTEXSHmZA0aJ/vFl51Q/N9GnILiVIZddOmORXeFC/7tRakcDptkLq+60wp9Z9vWdzYteOTZTrxX8xHrwPxQNkh38iA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Jv+FpPVsjgHSktIu4d4vWD3LL6k4NOvtWI+nhk8hZJc=;
- b=wQK4AjslZYFCE5MTlnpIeR3DX4St152FcK5L+IS9LjDPvKkWOAmyzV18EcQcKi3avHC2MO/ALx9e21Dq9OdA4zBfmm5hDGARrGVNbJOyJPQt7QY4qfmmJNPHBK+J/266zdDi5bjVnrsrsRiWUey3fpP2iHeQaNuQuI72EixyJq4Al7uI789QPC8Ulu4jZd9IBEJHUGyclF0pX5ZOK5BjbieACT0jYh5ESWHNus7orMb6/Srgacs+VV7re8vnMNsge4EKXyps4TUkpZREotvbWKAnTnA3RtUeegUDoxz62/LIr3sChFFAjf2Kx/Mxqp432ERccvtG4MoPCycgld/xdQ==
+ bh=CmkNRFgO86WJNgrjKa4f71hcrdr9OXvpV0Uby21HBB8=;
+ b=rg1fPs0PisS4jQFRIYMbSeiEKo5XJyuJ0KZZVn7H5HwWiwIrGenLS9RGU4aUjjsGl3YFUvKR4ICITX3HGJpBd+jT2kl3530VHHSHu7eWsJpH61TmBZw3N0mvbBRtRxfGw1x+/rfh0/3z6mFNcaxlQMuNnwRUSj5wqffY4Mxd5Q9JWXboMiMZBVoXAhTlcBec8ktvpWCsTlcf0ePF93v1WdYRLus9FQtqWc9pROFISlgoBsvm/kYr2+shd6s+PGTVL0nOrQPwrTVmttwKnDPzcaRouyR5cV0ISyOGl/5USvna6NaSVv9yxlyIZsKb6YQRpInSED46Hhsi27A9FBmVxQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from PH0PR11MB5832.namprd11.prod.outlook.com (2603:10b6:510:141::7)
- by DM4PR11MB6019.namprd11.prod.outlook.com (2603:10b6:8:60::5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.202.19; Wed, 15 Jul 2026 05:08:54 +0000
+ by SA1PR11MB7064.namprd11.prod.outlook.com (2603:10b6:806:2b7::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.223.10; Wed, 15 Jul
+ 2026 05:17:32 +0000
 Received: from PH0PR11MB5832.namprd11.prod.outlook.com
  ([fe80::106e:78dd:4c96:d707]) by PH0PR11MB5832.namprd11.prod.outlook.com
  ([fe80::106e:78dd:4c96:d707%5]) with mapi id 15.21.0223.008; Wed, 15 Jul 2026
- 05:08:54 +0000
-Date: Wed, 15 Jul 2026 13:08:46 +0800
+ 05:17:28 +0000
+Date: Wed, 15 Jul 2026 13:17:19 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <oliver.sang@intel.com>
-Subject: [morimoto:sound-cleanup-2026-07-01-3] [ASoC]  a5740d78e4:
- dmesg.kernel_BUG_at_lib/list_debug.c
-Message-ID: <202607151058.c3835ba8-lkp@intel.com>
+To: Qingfang Deng <qingfang.deng@linux.dev>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+	<oliver.sang@intel.com>
+Subject: [linus:master] [selftests]  6160ec9d03:
+ kselftests-bpf.drivers/net.gro.py.fail
+Message-ID: <202607150740.c8e9119d-lkp@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
 User-Agent: s-nail v14.9.25
-X-ClientProxiedBy: KUZPR01CA0014.apcprd01.prod.exchangelabs.com
- (2603:1096:d10:34::15) To PH0PR11MB5832.namprd11.prod.outlook.com
+X-ClientProxiedBy: KL1PR0401CA0017.apcprd04.prod.outlook.com
+ (2603:1096:820:f::22) To PH0PR11MB5832.namprd11.prod.outlook.com
  (2603:10b6:510:141::7)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -94,78 +97,79 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR11MB5832:EE_|DM4PR11MB6019:EE_
-X-MS-Office365-Filtering-Correlation-Id: f353d6c2-500a-4cc5-c13e-08dee22f2a94
+X-MS-TrafficTypeDiagnostic: PH0PR11MB5832:EE_|SA1PR11MB7064:EE_
+X-MS-Office365-Filtering-Correlation-Id: fd3315a6-01a6-4614-38b6-08dee2305d42
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|23010399003|1800799024|376014|11063799006|56012099006|3023799007|18002099003;
-X-Microsoft-Antispam-Message-Info: NBklmL6SABQW3K//M81GjT0bQGo+3UfBkFMD9yzDoSlZ1BJkgFQM8BqzZu7W6W/Et7udhbJz+pWYN8ndslBHWUMbBizict6NropsEXD4p0fTX9jzUdAHtj7mJi+i1P93hAUnFjCbkJHEogGK9GJnTj+h1XvXTp+bD1CCaCYzYog5+UdoBeLhQFDz5wtP4YkQXgpsd0qbK6x9ZtLSz5/1cQb+M98ImQanExNIer+8XjcG2RwNr+xVgGv1fUfBvoEzRcXKBqIFQCm5XDlVlsFKaFP8WkwKS+z2wnrpapLAJ0dcbv0LLujkn71zbWkcaAFJu35hpi0ZnuS1Ktdz2knjdDoBUiM3Yn4+egaMp5nMpM2tY7FIjP/5LmUcFm1FRI2untjL22u2KEQoL6n3dXmDb7ijwnfh+xKXyg4TRIr8tTwH8quwCcgtPBcILnn2GhXFXD5Ei6jlcvs3E9PLR2rdi8M/ZFNDrNhNnbh0p02rGTtysC9ubgLNAnmsmx8ZxI5NIb39LIbIkUHFrETzhNO+MxarW19Id6Qi+s4aHX7zURIzAKpadsHL7/jjB+nAsGcOL5bcrZKcNpgn/gR/Dos1moST46/QiHJcIGkXGtA6pNa1xszvkP/Yq00iZT4wjEbf
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5832.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(1800799024)(376014)(11063799006)(56012099006)(3023799007)(18002099003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|23010399003|366016|1800799024|376014|13003099007|3023799007|11063799006|56012099006|6133799003|18002099003;
+X-Microsoft-Antispam-Message-Info: RCGz1+aO2rRpY+VHHd0117zasnGDAJ5QcehhBjjTqbVwnqSobsgeg69cPN2dJ0ow9dfLNCEmt9rwt7EJnXH10+HSNFN0PG7QE1YQpL5UjYCy9IV4IYph28XTTBWJmpZhJudKlfmGX6zIlglUsVJ1UG1je8JSgWnuldbSUoKClyaMPVH7ENhDyhbchdedyT/KJZmfgbxCaYqydgAAm2h6786sqBHrMI4p4aJ12ccGhkEbjngJoSfChd4LP6ucUt+AN4YhTRQPu0VRa3dgjh8nUwv8gapUWzF9HY/vZjat2fPWz6VTawp6XPQ592Yna5JqeD0sA2Rujmwvfp6zwtlM1upH6Av+LEqqMpPvnE/bTHRqw6jOYfn2sFz51sAMWvZf1RkPBvvVLNWyJw3ebSn+CdZg8cQ0pzGHbfARhCAT76M/nWtkQ2gSPVBy+OImLaMPAyUPR4vhMS6AsByqTdiKIvQ/zfFdh6Cf0CNhe+z/Kf0v41l2m52mWdj88CE/l6O3X4Pea9/+3guPopaYjQLqHYrZ0+C9wF7c+4ObF0JB1cyBByp8NXFid7YIJTeCtAibDJFUVvuCDa5nt/Js4F0m8PtxN9gH5D3mk+Lbboo5G+4=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5832.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(366016)(1800799024)(376014)(13003099007)(3023799007)(11063799006)(56012099006)(6133799003)(18002099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?aZkQuRESjBp1s2mufR4eXYOq6FLScm94v0c6dxhX7pvBCwJqtHsstDOWFrrg?=
- =?us-ascii?Q?lZnxmqEC8VrFwyleUTVMKpyXrMv2jhFP84LTXQgPVq1aarsG5enngiqFU95m?=
- =?us-ascii?Q?7P2J8gft0HscZ23XGLk1df2uuZm0xYOsQRXqE2ukbUwIMqo1id7v7DBIWyoU?=
- =?us-ascii?Q?zeElwH/THtZyckQ8fEpJYoCK2jIBy+1UCGFIsWVFYmkYl2nla3/8IJnjZvAm?=
- =?us-ascii?Q?HLMxyTwnhC8ptOeAtyYWZHvuO3O5SaEvrKfpbjuF/Cct+gEVAL1GxNl0uFOt?=
- =?us-ascii?Q?QxbZaAr8dmQm1Cpm+KuZbW7A7Qudjrk5+buKLZ2+IlgWSwBRWJ/hTdUqc+dJ?=
- =?us-ascii?Q?GRNLdFrRB8GOAXTrH9oCcPsYZgHJTAgXZZGI96hGuOjRaxYvgk4KrbScvgjv?=
- =?us-ascii?Q?Xv46dapjVglO2FO0BO0qgPLjfwYvhjBzr6S7IcV9xZk5Hp4GDkgC906QevQg?=
- =?us-ascii?Q?bb8235qV2Mw5PtC3Cs4r4dntAejtu137n7XqEcm/jriovbSceJ8W+r0xvvDl?=
- =?us-ascii?Q?OhcTKt/bpeoqE6Ca1mO9ozf35KU3wIT1Wu1igJm3Vrf4rJ9UvS/+e/Hi6ee1?=
- =?us-ascii?Q?SjGei+1pzyVfhBgw8IfcB/TixbQEE6pQJUSDuZv6j5P7BaO8uY5FiXJFJl0Q?=
- =?us-ascii?Q?JbiyvTfghFNOe5rXeYX11xryUfuBgyC9Li1XGcNMpw/6VjYwcWmeEC3w35rd?=
- =?us-ascii?Q?CK0xYjAEH+rq5raBKGBIyJ9jfyb4Vc1QOD8sGPxMCArwExRALUQ2+bOan+D1?=
- =?us-ascii?Q?7ZzLm0g1LApcOARV0A2y59CgPR2j++1Q2oLyXFTWOS02da5r6n/pjtagqbY3?=
- =?us-ascii?Q?hnjun7aJugZdmibY/BWwRsG/cNq/rsdRn41E9LgEQDK9wDUPPsRI71o00LLn?=
- =?us-ascii?Q?TwX1hSaJY9a7kxXWfSdVu1tgFNck7xfCldHP07UkNEyp0/okkkfKkdHQ4CDW?=
- =?us-ascii?Q?TtnNFTs/7dg+02UL+FRkpuJLMY0AUAh5kuKRNYEbu0vPlBFTKj/RhQcxSwKE?=
- =?us-ascii?Q?LECuo3KjCi+Aa2JevY4vgZ5MZc5TdzIIZrVKLaWcVXbibrN1Upn/91gwPfd5?=
- =?us-ascii?Q?Q0oCJviYlDW1DA66czE6xPukbdtASFbEEQGmqBcXb0JzlaYpSLMQp0BJFzGq?=
- =?us-ascii?Q?pJzSmiY7tlaZFwBOJDGLLS0MDgGq+1Dqt1MHCs/VRAUnqox7F6LCh9BbSeuM?=
- =?us-ascii?Q?TxfJnrOJj79zkAooSeIsLsZmPyxzT5zU8N2EvG+CBBR0CbwX1+x844glRDjc?=
- =?us-ascii?Q?Ij8DDSN0cDdZkwdsI8Sp9Oxhkk81zD9qU63dBw/Cgp3ve1xB/f2dqQTDDnGD?=
- =?us-ascii?Q?8CEbUFtCdX4+ECOkg8jKvCaR8j6dMgUzSUJiY+KYIGbXCnG7t/jixGWSuGWB?=
- =?us-ascii?Q?y3F2xEMtYz+hB3ti1FmAVE4IUUoeIumhsW9puKOYTfTVyOdIlUpkxBfjjy3Z?=
- =?us-ascii?Q?rau5iR5FrNQ79W83xDDoBnziGQ6gtp2IZ0GYuxzpdUZqhqSjFLbk3haVbKlK?=
- =?us-ascii?Q?uN+IWSwNgCVCclvG5/dEeFCdfpxU/VEJ3S1gJD87aTiRzIkukeEZwjjiceyB?=
- =?us-ascii?Q?RXkevBBFnB/Wp9K5UBI3hETbfMCqBJ4Acs9lORvSGSr9b5Yr72xV46Fz8gmT?=
- =?us-ascii?Q?hNRgHdFLKmXaTF3V5FIXzzJhPnvZdmNtqR+whDjbzSim0fgyjsvXVeVI3L6F?=
- =?us-ascii?Q?knR6Yy1CsAH2ZOt6oxe7hjbdBR6NB73Y9UbT3D+vqYSXOZDdZoPBVVQz+Wns?=
- =?us-ascii?Q?mh2BuRDeuQ=3D=3D?=
-X-Exchange-RoutingPolicyChecked: p8MlEDCKbgOlWK+cL0QGWOAk007MSkXGNiDEo0/nrL00m2USpfeU6IEe5ZPRjWatpGMIsJEuxHMVxbhP0UaeOmI7avW5cSw+cqEHM1MUw4YPd4p7aoEX7t7fHk7Z7eyubTiqaA+p6S9iKmPTwudde4Vtyg8v6mDqY9/FxEntDo1EjnL12L2dtEsfwh3QheSkMC/7FAgZVyDiTNwhDsRgbFVt3MMw0wYXq9+sW4QjrLYA9N+gC3PwOsR+3fY8ygLbAA52w6gcTRGYrg277t08/T8ACtSfJyda5s2kTSVjxKEeINFQGP4B0nUcji+E0AtbnhL/IL1dGzDRp0fFKm+G1A==
-X-MS-Exchange-CrossTenant-Network-Message-Id: f353d6c2-500a-4cc5-c13e-08dee22f2a94
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?j/X56QcOW/ynvwAbyxXPt2SgUQdhFqFj16haLR2O/df9iqPzfX4unYSqGVh6?=
+ =?us-ascii?Q?9bQ/k0hUwUPsuOKhH1BeS6shuukp/zKFLFRUJa/LaEvuMS6W5LN+nwBEUagj?=
+ =?us-ascii?Q?3FJ2jHFxRqlHfBXlJ+/GB5+igaj3/6OLPaechJd8RV90YhOYLT8GLU/t7V9q?=
+ =?us-ascii?Q?02EfEoV65DnVyocQqPf7x7GaY0tcXwyigGjzlmD5BX+4cp7WQRxsKsW+TzEO?=
+ =?us-ascii?Q?yUqnYcMCLRI7sLGhQICicA026OMfMM+oHttIgw2jiDVxQcJpNEVVu1/aLRxm?=
+ =?us-ascii?Q?Z0B1z/nK8ReE9pqeX0BMFuQdRkm5FTOvapxj20MP2DLkYNboCT1KaysmqyLR?=
+ =?us-ascii?Q?xFWb1D63X11QCHyjzrmRQPwsXw4yj4ieAbunFU+Mt7Z9JQMtd1hYvubNH5bf?=
+ =?us-ascii?Q?pEKSfeQyZGiPIdkPFPIQEnp2XaI0U22WahxQ5lgIzZl4t/noQ/N9tEROluAU?=
+ =?us-ascii?Q?OcpTR5xTu1TiYLweDRmfWZqE5wwg+aF3mVEvhusA2aT+kt2tF9E2Aw/6e0Fx?=
+ =?us-ascii?Q?EaU7lwbcSwf8t/zajQ52HFA8NS82V4tXebtxDLZmEe631oTQzaGc1WXxK26m?=
+ =?us-ascii?Q?GjaV6IqB6xfSYKp12DIbmxuDOSOWkvtQ7KsgMWwSsQ3wN9yDkue4qeQDvYV1?=
+ =?us-ascii?Q?/D02b57ipTcvTUFgCH6GDOhwc+LWtq616uQtOxqsn3d4uCvhSzbAKIavXLCC?=
+ =?us-ascii?Q?NA2mkKRQE0IabJIVy3sOQhwfJ6kW2Jzo5v/lwSbfCWnAQJ8KMxYRPlH/4do4?=
+ =?us-ascii?Q?OdrF6RQgYeU4Mgqul+7KoT3HLeWB1Y++CCf2vn/MiKO9AIoDgrB8qORSWTdT?=
+ =?us-ascii?Q?h1O5OQaWLF+4LDAkD0nf/AutICbIoB4Ht3jvxgQB9OGCKk1anrMwB9/P6s0j?=
+ =?us-ascii?Q?/W1uMcn/hzN83tRrZ0SVN9wq/cAhy4eAUncplA4rKSJiDElH2unZAphN8xsc?=
+ =?us-ascii?Q?fNixn1VC2Nvq9a0LHz12wndX1EAH9FZQSWrzTxPzh4w0fhkx5ZDpTOvfHpnA?=
+ =?us-ascii?Q?FtthXZNylVPmMjkl0PRZTK5h2dCvFmcTYPs0nSFU/Af+8/q5lQ/0PgS+u1ZC?=
+ =?us-ascii?Q?T6YDd4CLgg6liT/sFAlZxjVxXzXl0xwR/2FocvU5nlo3XW0F9EyUH6GxkG90?=
+ =?us-ascii?Q?sLAZTKZgLUOIP9ELbcN6XIs2KNJ0luOd3Ke/LI5oLGj22AHbvEjeMnv1Ae0S?=
+ =?us-ascii?Q?c8a5MVpnNmEQ3jEVDEr9kuJnw8WkIWYHW3bmYcEOemty47pfFYFOM/QjXEzY?=
+ =?us-ascii?Q?qIg28rOC/VPws+O3tERJk/gUhyK3YLbJeQDet4a32RfUMX+tc43Zc+vX5NUg?=
+ =?us-ascii?Q?5wcf2dpQxX64ZdLhxXoskjkCKNZMlznSFOlut5l9ieLI6pyw96mJdeCrGsTY?=
+ =?us-ascii?Q?hj5sNTWv/DH30wmtwTHfrli9HZKKJdoRemVgqLPgFdwgaiwkUvCZGBc6d4IK?=
+ =?us-ascii?Q?g1xZc1E2hJIW+k9zXtYJP959WsX/TZToY9XU+VJiBak8ukCK0Ia/VqwgFMJ1?=
+ =?us-ascii?Q?0kgQFgx9p/ktToRnH2qZOPy8Rhdywl4xfqLlR6KFqjBJS0VNMsFH9e4aQEw9?=
+ =?us-ascii?Q?hJDGJ22RfoLtqkhJdc68frUDlIGi5N5kyaPluDkMurJuZct714mgvmGo4C5u?=
+ =?us-ascii?Q?3pcNbhV9v5USdCjUoL1ltl9hq2ld2YY/wVN8PI6KfiTsVT3XNCJUXk+fo6yS?=
+ =?us-ascii?Q?JY1+I9v36El17UD7BQbGi8KmKPjPBp7xl8BDFWpijjDLyjGsLGSaP93CD1Hi?=
+ =?us-ascii?Q?okMODqohJQ=3D=3D?=
+X-Exchange-RoutingPolicyChecked: rYektcUjx7zuof0igwFrJc/WxTQiADkHjLARVTkAyCj3CvfIv0cqTHcvazvJvFkEoI8VM4E7gT27A1SxhjawyIxyE0aVX/9FRkVCTZGxZpSI6jX91AHD/IW6cwwchtz91qt4sRTDMBTwRDJwusTdznB5Ps3GzGVdYlDtt9JeNmQdvUNPiOtPaYHsI7dhjiZBfQVaSGsAAsZUZD6xFEXameuYlNC0qxD2Qselrk8NnLwkDxNHo11NoWZpWQNbMNzHcdHVI+VtNV7CWw8uyOOApumjmF9/5dSpSooldgK7/qaZ8gB2bZENs5DZwNZTcvlTkl1z9fopF1qaJjTTVaGQLQ==
+X-MS-Exchange-CrossTenant-Network-Message-Id: fd3315a6-01a6-4614-38b6-08dee2305d42
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5832.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2026 05:08:54.3951
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2026 05:17:28.8350
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jhpneMj75Zu58LVDSWM9hM4ocUjbdwePl73pl4s1uicd3Cs2qezHtkL14zE8LIEPmFApRojZxaap/t9HNbjc4w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB6019
+X-MS-Exchange-CrossTenant-UserPrincipalName: UrkOPpfjppZzh+3F3T/E2GiwewGbIwbZ1XAiFZtOY0xXT0TOymOnvLan9DnrMAKPRRDEItVxKHzZpo79iZ74xA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB7064
 X-OriginatorOrg: intel.com
-
 
 
 
 Hello,
 
-kernel test robot noticed "dmesg.kernel_BUG_at_lib/list_debug.c" on:
+kernel test robot noticed "kselftests-bpf.drivers/net.gro.py.fail" on:
 
-commit: a5740d78e4c663847aa2d91c6d97b90789824627 ("ASoC: soc-topology-test: use snd_soc_card_register()")
-https://github.com/morimoto/linux sound-cleanup-2026-07-01-3
+commit: 6160ec9d03d7af5aa345b8b994de80fa8454274b ("selftests: net: test PPPoE packets in gro.sh")
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-in testcase: kunit
+[test failed on linus/master      0e35b9b6ec0ffcc5e23cbdec09f5c622ad532b53]
+[test failed on linux-next/master 5c73cd9f0819c1c44e373e3dabb68318b1de1a12]
+
+in testcase: kselftests-bpf
 version: 
 with following parameters:
 
-	group: group-00
+	group: drivers
 
 
-
-config: x86_64-rhel-9.4-kunit
+config: x86_64-rhel-9.4-bpf
 compiler: gcc-14
-test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (Haswell) with 16G memory
+test machine: 16 threads Intel(R) Core(TM) i7-13620H (Raptor Lake) with 32G memory
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
 
@@ -173,173 +177,894 @@ test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (Haswe
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202607151058.c3835ba8-lkp@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202607150740.c8e9119d-lkp@intel.com
+
+
+# timeout set to 300
+# selftests: drivers/net: gro.py
+# TAP version 13
+# 1..318
+# ok 1 gro.test.sw_ipv4_data_same
+# ok 2 gro.test.sw_ipv4_data_lrg_sml
+# ok 3 gro.test.sw_ipv4_data_sml_lrg
+# ok 4 gro.test.sw_ipv4_data_lrg_1byte
+# ok 5 gro.test.sw_ipv4_data_burst
+# ok 6 gro.test.sw_ipv4_ack
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --ipv4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test flags_psh --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: psh flag ends coalescing:
+# #   STDERR: Expected {300 200 }, Total 2 packets
+# #           Received {200 [!=300]100 [!=200]200 [!=0]}, Total 3 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 1/6 failed, retrying...
+# ok 7 gro.test.sw_ipv4_flags_psh
+# ok 8 gro.test.sw_ipv4_flags_syn
+# ok 9 gro.test.sw_ipv4_flags_rst
+# ok 10 gro.test.sw_ipv4_flags_urg
+# ok 11 gro.test.sw_ipv4_flags_cwr
+# ok 12 gro.test.sw_ipv4_tcp_csum
+# ok 13 gro.test.sw_ipv4_tcp_seq
+# ok 14 gro.test.sw_ipv4_tcp_ts
+# ok 15 gro.test.sw_ipv4_tcp_opt
+# ok 16 gro.test.sw_ipv4_ip_ecn
+# ok 17 gro.test.sw_ipv4_ip_tos
+# ok 18 gro.test.sw_ipv4_large_max
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --ipv4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test large_rem --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: last segment sent individually:
+# #   STDERR: Expected {64896 600 600 }, Total 3 packets
+# #           Received {48672 [!=64896]16824 [!=600]600 }, Total 3 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect packet geometry
+# # Attempt 1/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --ipv4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test large_rem --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: last segment sent individually:
+# #   STDERR: Expected {64896 600 600 }, Total 3 packets
+# #           Received {40560 [!=64896]24936 [!=600]600 }, Total 3 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect packet geometry
+# # Attempt 2/6 failed, retrying...
+# ok 19 gro.test.sw_ipv4_large_rem
+# ok 20 gro.test.sw_ipv4_ip_csum
+# ok 21 gro.test.sw_ipv4_ip_ttl
+# ok 22 gro.test.sw_ipv4_ip_opt
+# ok 23 gro.test.sw_ipv4_ip_frag4
+# ok 24 gro.test.sw_ipv4_ip_id_df1_inc
+# ok 25 gro.test.sw_ipv4_ip_id_df1_fixed
+# ok 26 gro.test.sw_ipv4_ip_id_df0_inc
+# ok 27 gro.test.sw_ipv4_ip_id_df0_fixed
+# ok 28 gro.test.sw_ipv4_ip_id_df1_inc_fixed
+# ok 29 gro.test.sw_ipv4_ip_id_df1_fixed_inc
+# ok 30 gro.test.sw_ipv6_data_same
+# ok 31 gro.test.sw_ipv6_data_lrg_sml
+# ok 32 gro.test.sw_ipv6_data_sml_lrg
+# ok 33 gro.test.sw_ipv6_data_lrg_1byte
+# ok 34 gro.test.sw_ipv6_data_burst
+# ok 35 gro.test.sw_ipv6_ack
+# ok 36 gro.test.sw_ipv6_flags_psh
+# ok 37 gro.test.sw_ipv6_flags_syn
+# ok 38 gro.test.sw_ipv6_flags_rst
+# ok 39 gro.test.sw_ipv6_flags_urg
+# ok 40 gro.test.sw_ipv6_flags_cwr
+# ok 41 gro.test.sw_ipv6_tcp_csum
+# ok 42 gro.test.sw_ipv6_tcp_seq
+# ok 43 gro.test.sw_ipv6_tcp_ts
+# ok 44 gro.test.sw_ipv6_tcp_opt
+# ok 45 gro.test.sw_ipv6_ip_ecn
+# ok 46 gro.test.sw_ipv6_ip_tos
+# ok 47 gro.test.sw_ipv6_large_max
+# ok 48 gro.test.sw_ipv6_large_rem
+# ok 49 gro.test.sw_ipv6_ip_frag6
+# ok 50 gro.test.sw_ipv6_ip_v6ext_same
+# ok 51 gro.test.sw_ipv6_ip_v6ext_diff
+# ok 52 gro.test.sw_ipip_data_same
+# ok 53 gro.test.sw_ipip_data_lrg_sml
+# ok 54 gro.test.sw_ipip_data_sml_lrg
+# ok 55 gro.test.sw_ipip_data_lrg_1byte
+# ok 56 gro.test.sw_ipip_data_burst
+# ok 57 gro.test.sw_ipip_ack
+# ok 58 gro.test.sw_ipip_flags_psh
+# ok 59 gro.test.sw_ipip_flags_syn
+# ok 60 gro.test.sw_ipip_flags_rst
+# ok 61 gro.test.sw_ipip_flags_urg
+# ok 62 gro.test.sw_ipip_flags_cwr
+# ok 63 gro.test.sw_ipip_tcp_csum
+# ok 64 gro.test.sw_ipip_tcp_seq
+# ok 65 gro.test.sw_ipip_tcp_ts
+# ok 66 gro.test.sw_ipip_tcp_opt
+# ok 67 gro.test.sw_ipip_ip_ecn
+# ok 68 gro.test.sw_ipip_ip_tos
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --ipip --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test large_max --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: Shouldn't coalesce if exceed IP max pkt size:
+# #   STDERR: Expected {65475 899 }, Total 2 packets
+# #           Received {40360 [!=65475]25115 [!=899]899 [!=0]}, Total 3 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 1/6 failed, retrying...
+# ok 69 gro.test.sw_ipip_large_max
+# ok 70 gro.test.sw_ipip_large_rem
+# ok 71 gro.test.sw_ipip_ip_csum
+# ok 72 gro.test.sw_ipip_ip_ttl
+# ok 73 gro.test.sw_ipip_ip_opt
+# ok 74 gro.test.sw_ipip_ip_frag4
+# ok 75 gro.test.sw_ipip_ip_id_df1_inc
+# ok 76 gro.test.sw_ipip_ip_id_df1_fixed
+# ok 77 gro.test.sw_ipip_ip_id_df0_inc
+# ok 78 gro.test.sw_ipip_ip_id_df0_fixed
+# ok 79 gro.test.sw_ipip_ip_id_df1_inc_fixed
+# ok 80 gro.test.sw_ipip_ip_id_df1_fixed_inc
+# ok 81 gro.test.sw_ip6ip6_data_same
+# ok 82 gro.test.sw_ip6ip6_data_lrg_sml
+# ok 83 gro.test.sw_ip6ip6_data_sml_lrg
+# ok 84 gro.test.sw_ip6ip6_data_lrg_1byte
+# ok 85 gro.test.sw_ip6ip6_data_burst
+# ok 86 gro.test.sw_ip6ip6_ack
+# ok 87 gro.test.sw_ip6ip6_flags_psh
+# ok 88 gro.test.sw_ip6ip6_flags_syn
+# ok 89 gro.test.sw_ip6ip6_flags_rst
+# ok 90 gro.test.sw_ip6ip6_flags_urg
+# ok 91 gro.test.sw_ip6ip6_flags_cwr
+# ok 92 gro.test.sw_ip6ip6_tcp_csum
+# ok 93 gro.test.sw_ip6ip6_tcp_seq
+# ok 94 gro.test.sw_ip6ip6_tcp_ts
+# ok 95 gro.test.sw_ip6ip6_tcp_opt
+# ok 96 gro.test.sw_ip6ip6_ip_ecn
+# ok 97 gro.test.sw_ip6ip6_ip_tos
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --ip6ip6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test large_max --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: Shouldn't coalesce if exceed IP max pkt size:
+# #   STDERR: Expected {65435 1499 }, Total 2 packets
+# #           Received {63936 [!=65435]1499 1499 [!=0]}, Total 3 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 1/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --ip6ip6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test large_max --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: Shouldn't coalesce if exceed IP max pkt size:
+# #   STDERR: Expected {65435 1499 }, Total 2 packets
+# #           Received {23976 [!=65435]41459 [!=1499]1499 [!=0]}, Total 3 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 2/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --ip6ip6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test large_max --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: Shouldn't coalesce if exceed IP max pkt size:
+# #   STDERR: Expected {65435 1499 }, Total 2 packets
+# #           Received {19980 [!=65435]45455 [!=1499]1499 [!=0]}, Total 3 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 3/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --ip6ip6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test large_max --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: Shouldn't coalesce if exceed IP max pkt size:
+# #   STDERR: Expected {65435 1499 }, Total 2 packets
+# #           Received {23976 [!=65435]41459 [!=1499]1499 [!=0]}, Total 3 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 4/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --ip6ip6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test large_max --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: Shouldn't coalesce if exceed IP max pkt size:
+# #   STDERR: Expected {65435 1499 }, Total 2 packets
+# #           Received {31968 [!=65435]33467 [!=1499]1499 [!=0]}, Total 3 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 5/6 failed, retrying...
+# ok 98 gro.test.sw_ip6ip6_large_max
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --ip6ip6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test large_rem --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: last segment sent individually:
+# #   STDERR: Expected {63936 1500 1500 }, Total 3 packets
+# #           Received {51948 [!=63936]13488 [!=1500]1500 }, Total 3 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect packet geometry
+# # Attempt 1/6 failed, retrying...
+# ok 99 gro.test.sw_ip6ip6_large_rem
+# ok 100 gro.test.hw_ipv4_data_same # XFAIL Device does not support rx-gro-hw
+# ok 101 gro.test.hw_ipv4_data_lrg_sml # XFAIL Device does not support rx-gro-hw
+# ok 102 gro.test.hw_ipv4_data_sml_lrg # XFAIL Device does not support rx-gro-hw
+# ok 103 gro.test.hw_ipv4_data_lrg_1byte # XFAIL Device does not support rx-gro-hw
+# ok 104 gro.test.hw_ipv4_data_burst # XFAIL Device does not support rx-gro-hw
+# ok 105 gro.test.hw_ipv4_ack # XFAIL Device does not support rx-gro-hw
+# ok 106 gro.test.hw_ipv4_flags_psh # XFAIL Device does not support rx-gro-hw
+# ok 107 gro.test.hw_ipv4_flags_syn # XFAIL Device does not support rx-gro-hw
+# ok 108 gro.test.hw_ipv4_flags_rst # XFAIL Device does not support rx-gro-hw
+# ok 109 gro.test.hw_ipv4_flags_urg # XFAIL Device does not support rx-gro-hw
+# ok 110 gro.test.hw_ipv4_flags_cwr # XFAIL Device does not support rx-gro-hw
+# ok 111 gro.test.hw_ipv4_tcp_csum # XFAIL Device does not support rx-gro-hw
+# ok 112 gro.test.hw_ipv4_tcp_seq # XFAIL Device does not support rx-gro-hw
+# ok 113 gro.test.hw_ipv4_tcp_ts # XFAIL Device does not support rx-gro-hw
+# ok 114 gro.test.hw_ipv4_tcp_opt # XFAIL Device does not support rx-gro-hw
+# ok 115 gro.test.hw_ipv4_ip_ecn # XFAIL Device does not support rx-gro-hw
+# ok 116 gro.test.hw_ipv4_ip_tos # XFAIL Device does not support rx-gro-hw
+# ok 117 gro.test.hw_ipv4_large_max # XFAIL Device does not support rx-gro-hw
+# ok 118 gro.test.hw_ipv4_large_rem # XFAIL Device does not support rx-gro-hw
+# ok 119 gro.test.hw_ipv4_ip_csum # XFAIL Device does not support rx-gro-hw
+# ok 120 gro.test.hw_ipv4_ip_ttl # XFAIL Device does not support rx-gro-hw
+# ok 121 gro.test.hw_ipv4_ip_opt # XFAIL Device does not support rx-gro-hw
+# ok 122 gro.test.hw_ipv4_ip_frag4 # XFAIL Device does not support rx-gro-hw
+# ok 123 gro.test.hw_ipv4_ip_id_df1_inc # XFAIL Device does not support rx-gro-hw
+# ok 124 gro.test.hw_ipv4_ip_id_df1_fixed # XFAIL Device does not support rx-gro-hw
+# ok 125 gro.test.hw_ipv4_ip_id_df0_inc # XFAIL Device does not support rx-gro-hw
+# ok 126 gro.test.hw_ipv4_ip_id_df0_fixed # XFAIL Device does not support rx-gro-hw
+# ok 127 gro.test.hw_ipv4_ip_id_df1_inc_fixed # XFAIL Device does not support rx-gro-hw
+# ok 128 gro.test.hw_ipv4_ip_id_df1_fixed_inc # XFAIL Device does not support rx-gro-hw
+# ok 129 gro.test.hw_ipv6_data_same # XFAIL Device does not support rx-gro-hw
+# ok 130 gro.test.hw_ipv6_data_lrg_sml # XFAIL Device does not support rx-gro-hw
+# ok 131 gro.test.hw_ipv6_data_sml_lrg # XFAIL Device does not support rx-gro-hw
+# ok 132 gro.test.hw_ipv6_data_lrg_1byte # XFAIL Device does not support rx-gro-hw
+# ok 133 gro.test.hw_ipv6_data_burst # XFAIL Device does not support rx-gro-hw
+# ok 134 gro.test.hw_ipv6_ack # XFAIL Device does not support rx-gro-hw
+# ok 135 gro.test.hw_ipv6_flags_psh # XFAIL Device does not support rx-gro-hw
+# ok 136 gro.test.hw_ipv6_flags_syn # XFAIL Device does not support rx-gro-hw
+# ok 137 gro.test.hw_ipv6_flags_rst # XFAIL Device does not support rx-gro-hw
+# ok 138 gro.test.hw_ipv6_flags_urg # XFAIL Device does not support rx-gro-hw
+# ok 139 gro.test.hw_ipv6_flags_cwr # XFAIL Device does not support rx-gro-hw
+# ok 140 gro.test.hw_ipv6_tcp_csum # XFAIL Device does not support rx-gro-hw
+# ok 141 gro.test.hw_ipv6_tcp_seq # XFAIL Device does not support rx-gro-hw
+# ok 142 gro.test.hw_ipv6_tcp_ts # XFAIL Device does not support rx-gro-hw
+# ok 143 gro.test.hw_ipv6_tcp_opt # XFAIL Device does not support rx-gro-hw
+# ok 144 gro.test.hw_ipv6_ip_ecn # XFAIL Device does not support rx-gro-hw
+# ok 145 gro.test.hw_ipv6_ip_tos # XFAIL Device does not support rx-gro-hw
+# ok 146 gro.test.hw_ipv6_large_max # XFAIL Device does not support rx-gro-hw
+# ok 147 gro.test.hw_ipv6_large_rem # XFAIL Device does not support rx-gro-hw
+# ok 148 gro.test.hw_ipv6_ip_frag6 # XFAIL Device does not support rx-gro-hw
+# ok 149 gro.test.hw_ipv6_ip_v6ext_same # XFAIL Device does not support rx-gro-hw
+# ok 150 gro.test.hw_ipv6_ip_v6ext_diff # XFAIL Device does not support rx-gro-hw
+# ok 151 gro.test.hw_ipip_data_same # XFAIL Device does not support rx-gro-hw
+# ok 152 gro.test.hw_ipip_data_lrg_sml # XFAIL Device does not support rx-gro-hw
+# ok 153 gro.test.hw_ipip_data_sml_lrg # XFAIL Device does not support rx-gro-hw
+# ok 154 gro.test.hw_ipip_data_lrg_1byte # XFAIL Device does not support rx-gro-hw
+# ok 155 gro.test.hw_ipip_data_burst # XFAIL Device does not support rx-gro-hw
+# ok 156 gro.test.hw_ipip_ack # XFAIL Device does not support rx-gro-hw
+# ok 157 gro.test.hw_ipip_flags_psh # XFAIL Device does not support rx-gro-hw
+# ok 158 gro.test.hw_ipip_flags_syn # XFAIL Device does not support rx-gro-hw
+# ok 159 gro.test.hw_ipip_flags_rst # XFAIL Device does not support rx-gro-hw
+# ok 160 gro.test.hw_ipip_flags_urg # XFAIL Device does not support rx-gro-hw
+# ok 161 gro.test.hw_ipip_flags_cwr # XFAIL Device does not support rx-gro-hw
+# ok 162 gro.test.hw_ipip_tcp_csum # XFAIL Device does not support rx-gro-hw
+# ok 163 gro.test.hw_ipip_tcp_seq # XFAIL Device does not support rx-gro-hw
+# ok 164 gro.test.hw_ipip_tcp_ts # XFAIL Device does not support rx-gro-hw
+# ok 165 gro.test.hw_ipip_tcp_opt # XFAIL Device does not support rx-gro-hw
+# ok 166 gro.test.hw_ipip_ip_ecn # XFAIL Device does not support rx-gro-hw
+# ok 167 gro.test.hw_ipip_ip_tos # XFAIL Device does not support rx-gro-hw
+# ok 168 gro.test.hw_ipip_large_max # XFAIL Device does not support rx-gro-hw
+# ok 169 gro.test.hw_ipip_large_rem # XFAIL Device does not support rx-gro-hw
+# ok 170 gro.test.hw_ipip_ip_csum # XFAIL Device does not support rx-gro-hw
+# ok 171 gro.test.hw_ipip_ip_ttl # XFAIL Device does not support rx-gro-hw
+# ok 172 gro.test.hw_ipip_ip_opt # XFAIL Device does not support rx-gro-hw
+# ok 173 gro.test.hw_ipip_ip_frag4 # XFAIL Device does not support rx-gro-hw
+# ok 174 gro.test.hw_ipip_ip_id_df1_inc # XFAIL Device does not support rx-gro-hw
+# ok 175 gro.test.hw_ipip_ip_id_df1_fixed # XFAIL Device does not support rx-gro-hw
+# ok 176 gro.test.hw_ipip_ip_id_df0_inc # XFAIL Device does not support rx-gro-hw
+# ok 177 gro.test.hw_ipip_ip_id_df0_fixed # XFAIL Device does not support rx-gro-hw
+# ok 178 gro.test.hw_ipip_ip_id_df1_inc_fixed # XFAIL Device does not support rx-gro-hw
+# ok 179 gro.test.hw_ipip_ip_id_df1_fixed_inc # XFAIL Device does not support rx-gro-hw
+# ok 180 gro.test.hw_ip6ip6_data_same # XFAIL Device does not support rx-gro-hw
+# ok 181 gro.test.hw_ip6ip6_data_lrg_sml # XFAIL Device does not support rx-gro-hw
+# ok 182 gro.test.hw_ip6ip6_data_sml_lrg # XFAIL Device does not support rx-gro-hw
+# ok 183 gro.test.hw_ip6ip6_data_lrg_1byte # XFAIL Device does not support rx-gro-hw
+# ok 184 gro.test.hw_ip6ip6_data_burst # XFAIL Device does not support rx-gro-hw
+# ok 185 gro.test.hw_ip6ip6_ack # XFAIL Device does not support rx-gro-hw
+# ok 186 gro.test.hw_ip6ip6_flags_psh # XFAIL Device does not support rx-gro-hw
+# ok 187 gro.test.hw_ip6ip6_flags_syn # XFAIL Device does not support rx-gro-hw
+# ok 188 gro.test.hw_ip6ip6_flags_rst # XFAIL Device does not support rx-gro-hw
+# ok 189 gro.test.hw_ip6ip6_flags_urg # XFAIL Device does not support rx-gro-hw
+# ok 190 gro.test.hw_ip6ip6_flags_cwr # XFAIL Device does not support rx-gro-hw
+# ok 191 gro.test.hw_ip6ip6_tcp_csum # XFAIL Device does not support rx-gro-hw
+# ok 192 gro.test.hw_ip6ip6_tcp_seq # XFAIL Device does not support rx-gro-hw
+# ok 193 gro.test.hw_ip6ip6_tcp_ts # XFAIL Device does not support rx-gro-hw
+# ok 194 gro.test.hw_ip6ip6_tcp_opt # XFAIL Device does not support rx-gro-hw
+# ok 195 gro.test.hw_ip6ip6_ip_ecn # XFAIL Device does not support rx-gro-hw
+# ok 196 gro.test.hw_ip6ip6_ip_tos # XFAIL Device does not support rx-gro-hw
+# ok 197 gro.test.hw_ip6ip6_large_max # XFAIL Device does not support rx-gro-hw
+# ok 198 gro.test.hw_ip6ip6_large_rem # XFAIL Device does not support rx-gro-hw
+# ok 199 gro.test.lro_ipv4_data_same # XFAIL Test does not work on netdevsim
+# ok 200 gro.test.lro_ipv4_data_lrg_sml # XFAIL Test does not work on netdevsim
+# ok 201 gro.test.lro_ipv4_data_sml_lrg # XFAIL Test does not work on netdevsim
+# ok 202 gro.test.lro_ipv4_data_lrg_1byte # XFAIL Test does not work on netdevsim
+# ok 203 gro.test.lro_ipv4_data_burst # XFAIL Test does not work on netdevsim
+# ok 204 gro.test.lro_ipv4_ack # XFAIL Test does not work on netdevsim
+# ok 205 gro.test.lro_ipv4_flags_psh # XFAIL Test does not work on netdevsim
+# ok 206 gro.test.lro_ipv4_flags_syn # XFAIL Test does not work on netdevsim
+# ok 207 gro.test.lro_ipv4_flags_rst # XFAIL Test does not work on netdevsim
+# ok 208 gro.test.lro_ipv4_flags_urg # XFAIL Test does not work on netdevsim
+# ok 209 gro.test.lro_ipv4_flags_cwr # XFAIL Test does not work on netdevsim
+# ok 210 gro.test.lro_ipv4_tcp_csum # XFAIL Test does not work on netdevsim
+# ok 211 gro.test.lro_ipv4_tcp_seq # XFAIL Test does not work on netdevsim
+# ok 212 gro.test.lro_ipv4_tcp_ts # XFAIL Test does not work on netdevsim
+# ok 213 gro.test.lro_ipv4_tcp_opt # XFAIL Test does not work on netdevsim
+# ok 214 gro.test.lro_ipv4_ip_ecn # XFAIL Test does not work on netdevsim
+# ok 215 gro.test.lro_ipv4_ip_tos # XFAIL Test does not work on netdevsim
+# ok 216 gro.test.lro_ipv4_large_max # XFAIL Test does not work on netdevsim
+# ok 217 gro.test.lro_ipv4_large_rem # XFAIL Test does not work on netdevsim
+# ok 218 gro.test.lro_ipv4_ip_csum # XFAIL Test does not work on netdevsim
+# ok 219 gro.test.lro_ipv4_ip_ttl # XFAIL Test does not work on netdevsim
+# ok 220 gro.test.lro_ipv4_ip_opt # XFAIL Test does not work on netdevsim
+# ok 221 gro.test.lro_ipv4_ip_frag4 # XFAIL Test does not work on netdevsim
+# ok 222 gro.test.lro_ipv4_ip_id_df1_inc # XFAIL Test does not work on netdevsim
+# ok 223 gro.test.lro_ipv4_ip_id_df1_fixed # XFAIL Test does not work on netdevsim
+# ok 224 gro.test.lro_ipv4_ip_id_df0_inc # XFAIL Test does not work on netdevsim
+# ok 225 gro.test.lro_ipv4_ip_id_df0_fixed # XFAIL Test does not work on netdevsim
+# ok 226 gro.test.lro_ipv4_ip_id_df1_inc_fixed # XFAIL Test does not work on netdevsim
+# ok 227 gro.test.lro_ipv4_ip_id_df1_fixed_inc # XFAIL Test does not work on netdevsim
+# ok 228 gro.test.lro_ipv6_data_same # XFAIL Test does not work on netdevsim
+# ok 229 gro.test.lro_ipv6_data_lrg_sml # XFAIL Test does not work on netdevsim
+# ok 230 gro.test.lro_ipv6_data_sml_lrg # XFAIL Test does not work on netdevsim
+# ok 231 gro.test.lro_ipv6_data_lrg_1byte # XFAIL Test does not work on netdevsim
+# ok 232 gro.test.lro_ipv6_data_burst # XFAIL Test does not work on netdevsim
+# ok 233 gro.test.lro_ipv6_ack # XFAIL Test does not work on netdevsim
+# ok 234 gro.test.lro_ipv6_flags_psh # XFAIL Test does not work on netdevsim
+# ok 235 gro.test.lro_ipv6_flags_syn # XFAIL Test does not work on netdevsim
+# ok 236 gro.test.lro_ipv6_flags_rst # XFAIL Test does not work on netdevsim
+# ok 237 gro.test.lro_ipv6_flags_urg # XFAIL Test does not work on netdevsim
+# ok 238 gro.test.lro_ipv6_flags_cwr # XFAIL Test does not work on netdevsim
+# ok 239 gro.test.lro_ipv6_tcp_csum # XFAIL Test does not work on netdevsim
+# ok 240 gro.test.lro_ipv6_tcp_seq # XFAIL Test does not work on netdevsim
+# ok 241 gro.test.lro_ipv6_tcp_ts # XFAIL Test does not work on netdevsim
+# ok 242 gro.test.lro_ipv6_tcp_opt # XFAIL Test does not work on netdevsim
+# ok 243 gro.test.lro_ipv6_ip_ecn # XFAIL Test does not work on netdevsim
+# ok 244 gro.test.lro_ipv6_ip_tos # XFAIL Test does not work on netdevsim
+# ok 245 gro.test.lro_ipv6_large_max # XFAIL Test does not work on netdevsim
+# ok 246 gro.test.lro_ipv6_large_rem # XFAIL Test does not work on netdevsim
+# ok 247 gro.test.lro_ipv6_ip_frag6 # XFAIL Test does not work on netdevsim
+# ok 248 gro.test.lro_ipv6_ip_v6ext_same # XFAIL Test does not work on netdevsim
+# ok 249 gro.test.lro_ipv6_ip_v6ext_diff # XFAIL Test does not work on netdevsim
+# ok 250 gro.test.lro_ipip_data_same # XFAIL Test does not work on netdevsim
+# ok 251 gro.test.lro_ipip_data_lrg_sml # XFAIL Test does not work on netdevsim
+# ok 252 gro.test.lro_ipip_data_sml_lrg # XFAIL Test does not work on netdevsim
+# ok 253 gro.test.lro_ipip_data_lrg_1byte # XFAIL Test does not work on netdevsim
+# ok 254 gro.test.lro_ipip_data_burst # XFAIL Test does not work on netdevsim
+# ok 255 gro.test.lro_ipip_ack # XFAIL Test does not work on netdevsim
+# ok 256 gro.test.lro_ipip_flags_psh # XFAIL Test does not work on netdevsim
+# ok 257 gro.test.lro_ipip_flags_syn # XFAIL Test does not work on netdevsim
+# ok 258 gro.test.lro_ipip_flags_rst # XFAIL Test does not work on netdevsim
+# ok 259 gro.test.lro_ipip_flags_urg # XFAIL Test does not work on netdevsim
+# ok 260 gro.test.lro_ipip_flags_cwr # XFAIL Test does not work on netdevsim
+# ok 261 gro.test.lro_ipip_tcp_csum # XFAIL Test does not work on netdevsim
+# ok 262 gro.test.lro_ipip_tcp_seq # XFAIL Test does not work on netdevsim
+# ok 263 gro.test.lro_ipip_tcp_ts # XFAIL Test does not work on netdevsim
+# ok 264 gro.test.lro_ipip_tcp_opt # XFAIL Test does not work on netdevsim
+# ok 265 gro.test.lro_ipip_ip_ecn # XFAIL Test does not work on netdevsim
+# ok 266 gro.test.lro_ipip_ip_tos # XFAIL Test does not work on netdevsim
+# ok 267 gro.test.lro_ipip_large_max # XFAIL Test does not work on netdevsim
+# ok 268 gro.test.lro_ipip_large_rem # XFAIL Test does not work on netdevsim
+# ok 269 gro.test.lro_ipip_ip_csum # XFAIL Test does not work on netdevsim
+# ok 270 gro.test.lro_ipip_ip_ttl # XFAIL Test does not work on netdevsim
+# ok 271 gro.test.lro_ipip_ip_opt # XFAIL Test does not work on netdevsim
+# ok 272 gro.test.lro_ipip_ip_frag4 # XFAIL Test does not work on netdevsim
+# ok 273 gro.test.lro_ipip_ip_id_df1_inc # XFAIL Test does not work on netdevsim
+# ok 274 gro.test.lro_ipip_ip_id_df1_fixed # XFAIL Test does not work on netdevsim
+# ok 275 gro.test.lro_ipip_ip_id_df0_inc # XFAIL Test does not work on netdevsim
+# ok 276 gro.test.lro_ipip_ip_id_df0_fixed # XFAIL Test does not work on netdevsim
+# ok 277 gro.test.lro_ipip_ip_id_df1_inc_fixed # XFAIL Test does not work on netdevsim
+# ok 278 gro.test.lro_ipip_ip_id_df1_fixed_inc # XFAIL Test does not work on netdevsim
+# ok 279 gro.test.lro_ip6ip6_data_same # XFAIL Test does not work on netdevsim
+# ok 280 gro.test.lro_ip6ip6_data_lrg_sml # XFAIL Test does not work on netdevsim
+# ok 281 gro.test.lro_ip6ip6_data_sml_lrg # XFAIL Test does not work on netdevsim
+# ok 282 gro.test.lro_ip6ip6_data_lrg_1byte # XFAIL Test does not work on netdevsim
+# ok 283 gro.test.lro_ip6ip6_data_burst # XFAIL Test does not work on netdevsim
+# ok 284 gro.test.lro_ip6ip6_ack # XFAIL Test does not work on netdevsim
+# ok 285 gro.test.lro_ip6ip6_flags_psh # XFAIL Test does not work on netdevsim
+# ok 286 gro.test.lro_ip6ip6_flags_syn # XFAIL Test does not work on netdevsim
+# ok 287 gro.test.lro_ip6ip6_flags_rst # XFAIL Test does not work on netdevsim
+# ok 288 gro.test.lro_ip6ip6_flags_urg # XFAIL Test does not work on netdevsim
+# ok 289 gro.test.lro_ip6ip6_flags_cwr # XFAIL Test does not work on netdevsim
+# ok 290 gro.test.lro_ip6ip6_tcp_csum # XFAIL Test does not work on netdevsim
+# ok 291 gro.test.lro_ip6ip6_tcp_seq # XFAIL Test does not work on netdevsim
+# ok 292 gro.test.lro_ip6ip6_tcp_ts # XFAIL Test does not work on netdevsim
+# ok 293 gro.test.lro_ip6ip6_tcp_opt # XFAIL Test does not work on netdevsim
+# ok 294 gro.test.lro_ip6ip6_ip_ecn # XFAIL Test does not work on netdevsim
+# ok 295 gro.test.lro_ip6ip6_ip_tos # XFAIL Test does not work on netdevsim
+# ok 296 gro.test.lro_ip6ip6_large_max # XFAIL Test does not work on netdevsim
+# ok 297 gro.test.lro_ip6ip6_large_rem # XFAIL Test does not work on netdevsim
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_same --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: pure data packet of same size:
+# #   STDERR: Expected {200 }, Total 1 packets
+# #           Received {100 [!=200]100 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 1/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_same --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: pure data packet of same size:
+# #   STDERR: Expected {200 }, Total 1 packets
+# #           Received {100 [!=200]100 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 2/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_same --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: pure data packet of same size:
+# #   STDERR: Expected {200 }, Total 1 packets
+# #           Received {100 [!=200]100 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 3/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_same --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: pure data packet of same size:
+# #   STDERR: Expected {200 }, Total 1 packets
+# #           Received {100 [!=200]100 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 4/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_same --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: pure data packet of same size:
+# #   STDERR: Expected {200 }, Total 1 packets
+# #           Received {100 [!=200]100 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 5/6 failed, retrying...
+# # Exception| Traceback (most recent call last):
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/ksft.py", line 420, in ksft_run
+# # Exception|     func(*args)
+# # Exception|     ~~~~^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/drivers/net/./gro.py", line 365, in test
+# # Exception|     rx_proc = _run_gro_bin(cfg, test_name, protocol=protocol,
+# # Exception|                            verbose=True, fail=fail_now)
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/drivers/net/./gro.py", line 220, in _run_gro_bin
+# # Exception|     with bkg(rx_cmd, ksft_ready=True, exit_wait=True, fail=fail) as rx_proc:
+# # Exception|          ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/utils.py", line 200, in __exit__
+# # Exception|     return self.process(terminate=terminate, fail=self.check_fail,
+# # Exception|            ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|                         expect_fail=self.expect_fail)
+# # Exception|                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/utils.py", line 129, in process
+# # Exception|     raise CmdExitFailure("Command failed", self)
+# # Exception| net.lib.py.utils.CmdExitFailure: Command failed
+# # Exception| CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_same --verbose --rx --iface eth1
+# # Exception|   EXIT: 1
+# # Exception|   STDOUT: pure data packet of same size:
+# # Exception|   STDERR: Expected {200 }, Total 1 packets
+# # Exception|           Received {100 [!=200]100 [!=0]}, Total 2 packets.
+# # Exception|           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Exception| 
+# not ok 298 gro.test.sw_pppoev4_data_same
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_lrg_sml --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: large data packets followed by a smaller one:
+# #   STDERR: Expected {150 }, Total 1 packets
+# #           Received {100 [!=150]50 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 1/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_lrg_sml --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: large data packets followed by a smaller one:
+# #   STDERR: Expected {150 }, Total 1 packets
+# #           Received {100 [!=150]50 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 2/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_lrg_sml --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: large data packets followed by a smaller one:
+# #   STDERR: Expected {150 }, Total 1 packets
+# #           Received {100 [!=150]50 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 3/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_lrg_sml --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: large data packets followed by a smaller one:
+# #   STDERR: Expected {150 }, Total 1 packets
+# #           Received {100 [!=150]50 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 4/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_lrg_sml --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: large data packets followed by a smaller one:
+# #   STDERR: Expected {150 }, Total 1 packets
+# #           Received {100 [!=150]50 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 5/6 failed, retrying...
+# # Exception| Traceback (most recent call last):
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/ksft.py", line 420, in ksft_run
+# # Exception|     func(*args)
+# # Exception|     ~~~~^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/drivers/net/./gro.py", line 365, in test
+# # Exception|     rx_proc = _run_gro_bin(cfg, test_name, protocol=protocol,
+# # Exception|                            verbose=True, fail=fail_now)
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/drivers/net/./gro.py", line 220, in _run_gro_bin
+# # Exception|     with bkg(rx_cmd, ksft_ready=True, exit_wait=True, fail=fail) as rx_proc:
+# # Exception|          ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/utils.py", line 200, in __exit__
+# # Exception|     return self.process(terminate=terminate, fail=self.check_fail,
+# # Exception|            ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|                         expect_fail=self.expect_fail)
+# # Exception|                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/utils.py", line 129, in process
+# # Exception|     raise CmdExitFailure("Command failed", self)
+# # Exception| net.lib.py.utils.CmdExitFailure: Command failed
+# # Exception| CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_lrg_sml --verbose --rx --iface eth1
+# # Exception|   EXIT: 1
+# # Exception|   STDOUT: large data packets followed by a smaller one:
+# # Exception|   STDERR: Expected {150 }, Total 1 packets
+# # Exception|           Received {100 [!=150]50 [!=0]}, Total 2 packets.
+# # Exception|           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Exception| 
+# not ok 299 gro.test.sw_pppoev4_data_lrg_sml
+# ok 300 gro.test.sw_pppoev4_data_sml_lrg
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_lrg_1byte --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: large data packet followed by a 1 byte one:
+# #   STDERR: Expected {101 }, Total 1 packets
+# #           Received {100 [!=101]1 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 1/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_lrg_1byte --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: large data packet followed by a 1 byte one:
+# #   STDERR: Expected {101 }, Total 1 packets
+# #           Received {100 [!=101]1 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 2/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_lrg_1byte --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: large data packet followed by a 1 byte one:
+# #   STDERR: Expected {101 }, Total 1 packets
+# #           Received {100 [!=101]1 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 3/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_lrg_1byte --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: large data packet followed by a 1 byte one:
+# #   STDERR: Expected {101 }, Total 1 packets
+# #           Received {100 [!=101]1 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 4/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_lrg_1byte --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: large data packet followed by a 1 byte one:
+# #   STDERR: Expected {101 }, Total 1 packets
+# #           Received {100 [!=101]1 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 5/6 failed, retrying...
+# # Exception| Traceback (most recent call last):
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/ksft.py", line 420, in ksft_run
+# # Exception|     func(*args)
+# # Exception|     ~~~~^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/drivers/net/./gro.py", line 365, in test
+# # Exception|     rx_proc = _run_gro_bin(cfg, test_name, protocol=protocol,
+# # Exception|                            verbose=True, fail=fail_now)
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/drivers/net/./gro.py", line 220, in _run_gro_bin
+# # Exception|     with bkg(rx_cmd, ksft_ready=True, exit_wait=True, fail=fail) as rx_proc:
+# # Exception|          ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/utils.py", line 200, in __exit__
+# # Exception|     return self.process(terminate=terminate, fail=self.check_fail,
+# # Exception|            ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|                         expect_fail=self.expect_fail)
+# # Exception|                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/utils.py", line 129, in process
+# # Exception|     raise CmdExitFailure("Command failed", self)
+# # Exception| net.lib.py.utils.CmdExitFailure: Command failed
+# # Exception| CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_lrg_1byte --verbose --rx --iface eth1
+# # Exception|   EXIT: 1
+# # Exception|   STDOUT: large data packet followed by a 1 byte one:
+# # Exception|   STDERR: Expected {101 }, Total 1 packets
+# # Exception|           Received {100 [!=101]1 [!=0]}, Total 2 packets.
+# # Exception|           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Exception| 
+# not ok 301 gro.test.sw_pppoev4_data_lrg_1byte
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_burst --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: two bursts of two data packets:
+# #   STDERR: Expected {200 200 }, Total 2 packets
+# #           Received {100 [!=200]100 [!=200]100 [!=0]100 [!=0]}, Total 4 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 1/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_burst --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: two bursts of two data packets:
+# #   STDERR: Expected {200 200 }, Total 2 packets
+# #           Received {100 [!=200]100 [!=200]100 [!=0]100 [!=0]}, Total 4 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 2/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_burst --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: two bursts of two data packets:
+# #   STDERR: Expected {200 200 }, Total 2 packets
+# #           Received {100 [!=200]100 [!=200]100 [!=0]100 [!=0]}, Total 4 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 3/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_burst --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: two bursts of two data packets:
+# #   STDERR: Expected {200 200 }, Total 2 packets
+# #           Received {100 [!=200]100 [!=200]100 [!=0]100 [!=0]}, Total 4 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 4/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_burst --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: two bursts of two data packets:
+# #   STDERR: Expected {200 200 }, Total 2 packets
+# #           Received {100 [!=200]100 [!=200]100 [!=0]100 [!=0]}, Total 4 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 5/6 failed, retrying...
+# # Exception| Traceback (most recent call last):
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/ksft.py", line 420, in ksft_run
+# # Exception|     func(*args)
+# # Exception|     ~~~~^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/drivers/net/./gro.py", line 365, in test
+# # Exception|     rx_proc = _run_gro_bin(cfg, test_name, protocol=protocol,
+# # Exception|                            verbose=True, fail=fail_now)
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/drivers/net/./gro.py", line 220, in _run_gro_bin
+# # Exception|     with bkg(rx_cmd, ksft_ready=True, exit_wait=True, fail=fail) as rx_proc:
+# # Exception|          ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/utils.py", line 200, in __exit__
+# # Exception|     return self.process(terminate=terminate, fail=self.check_fail,
+# # Exception|            ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|                         expect_fail=self.expect_fail)
+# # Exception|                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/utils.py", line 129, in process
+# # Exception|     raise CmdExitFailure("Command failed", self)
+# # Exception| net.lib.py.utils.CmdExitFailure: Command failed
+# # Exception| CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev4 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 192.0.2.1 --saddr 192.0.2.2 --test data_burst --verbose --rx --iface eth1
+# # Exception|   EXIT: 1
+# # Exception|   STDOUT: two bursts of two data packets:
+# # Exception|   STDERR: Expected {200 200 }, Total 2 packets
+# # Exception|           Received {100 [!=200]100 [!=200]100 [!=0]100 [!=0]}, Total 4 packets.
+# # Exception|           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Exception| 
+# not ok 302 gro.test.sw_pppoev4_data_burst
+# ok 303 gro.test.sw_pppoev4_pppoe_sid
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_same --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: pure data packet of same size:
+# #   STDERR: Expected {200 }, Total 1 packets
+# #           Received {100 [!=200]100 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 1/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_same --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: pure data packet of same size:
+# #   STDERR: Expected {200 }, Total 1 packets
+# #           Received {100 [!=200]100 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 2/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_same --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: pure data packet of same size:
+# #   STDERR: Expected {200 }, Total 1 packets
+# #           Received {100 [!=200]100 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 3/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_same --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: pure data packet of same size:
+# #   STDERR: Expected {200 }, Total 1 packets
+# #           Received {100 [!=200]100 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 4/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_same --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: pure data packet of same size:
+# #   STDERR: Expected {200 }, Total 1 packets
+# #           Received {100 [!=200]100 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 5/6 failed, retrying...
+# # Exception| Traceback (most recent call last):
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/ksft.py", line 420, in ksft_run
+# # Exception|     func(*args)
+# # Exception|     ~~~~^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/drivers/net/./gro.py", line 365, in test
+# # Exception|     rx_proc = _run_gro_bin(cfg, test_name, protocol=protocol,
+# # Exception|                            verbose=True, fail=fail_now)
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/drivers/net/./gro.py", line 220, in _run_gro_bin
+# # Exception|     with bkg(rx_cmd, ksft_ready=True, exit_wait=True, fail=fail) as rx_proc:
+# # Exception|          ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/utils.py", line 200, in __exit__
+# # Exception|     return self.process(terminate=terminate, fail=self.check_fail,
+# # Exception|            ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|                         expect_fail=self.expect_fail)
+# # Exception|                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/utils.py", line 129, in process
+# # Exception|     raise CmdExitFailure("Command failed", self)
+# # Exception| net.lib.py.utils.CmdExitFailure: Command failed
+# # Exception| CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_same --verbose --rx --iface eth1
+# # Exception|   EXIT: 1
+# # Exception|   STDOUT: pure data packet of same size:
+# # Exception|   STDERR: Expected {200 }, Total 1 packets
+# # Exception|           Received {100 [!=200]100 [!=0]}, Total 2 packets.
+# # Exception|           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Exception| 
+# not ok 304 gro.test.sw_pppoev6_data_same
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_lrg_sml --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: large data packets followed by a smaller one:
+# #   STDERR: Expected {150 }, Total 1 packets
+# #           Received {100 [!=150]50 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 1/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_lrg_sml --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: large data packets followed by a smaller one:
+# #   STDERR: Expected {150 }, Total 1 packets
+# #           Received {100 [!=150]50 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 2/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_lrg_sml --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: large data packets followed by a smaller one:
+# #   STDERR: Expected {150 }, Total 1 packets
+# #           Received {100 [!=150]50 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 3/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_lrg_sml --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: large data packets followed by a smaller one:
+# #   STDERR: Expected {150 }, Total 1 packets
+# #           Received {100 [!=150]50 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 4/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_lrg_sml --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: large data packets followed by a smaller one:
+# #   STDERR: Expected {150 }, Total 1 packets
+# #           Received {100 [!=150]50 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 5/6 failed, retrying...
+# # Exception| Traceback (most recent call last):
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/ksft.py", line 420, in ksft_run
+# # Exception|     func(*args)
+# # Exception|     ~~~~^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/drivers/net/./gro.py", line 365, in test
+# # Exception|     rx_proc = _run_gro_bin(cfg, test_name, protocol=protocol,
+# # Exception|                            verbose=True, fail=fail_now)
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/drivers/net/./gro.py", line 220, in _run_gro_bin
+# # Exception|     with bkg(rx_cmd, ksft_ready=True, exit_wait=True, fail=fail) as rx_proc:
+# # Exception|          ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/utils.py", line 200, in __exit__
+# # Exception|     return self.process(terminate=terminate, fail=self.check_fail,
+# # Exception|            ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|                         expect_fail=self.expect_fail)
+# # Exception|                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/utils.py", line 129, in process
+# # Exception|     raise CmdExitFailure("Command failed", self)
+# # Exception| net.lib.py.utils.CmdExitFailure: Command failed
+# # Exception| CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_lrg_sml --verbose --rx --iface eth1
+# # Exception|   EXIT: 1
+# # Exception|   STDOUT: large data packets followed by a smaller one:
+# # Exception|   STDERR: Expected {150 }, Total 1 packets
+# # Exception|           Received {100 [!=150]50 [!=0]}, Total 2 packets.
+# # Exception|           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Exception| 
+# not ok 305 gro.test.sw_pppoev6_data_lrg_sml
+# ok 306 gro.test.sw_pppoev6_data_sml_lrg
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_lrg_1byte --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: large data packet followed by a 1 byte one:
+# #   STDERR: Expected {101 }, Total 1 packets
+# #           Received {100 [!=101]1 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 1/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_lrg_1byte --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: large data packet followed by a 1 byte one:
+# #   STDERR: Expected {101 }, Total 1 packets
+# #           Received {100 [!=101]1 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 2/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_lrg_1byte --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: large data packet followed by a 1 byte one:
+# #   STDERR: Expected {101 }, Total 1 packets
+# #           Received {100 [!=101]1 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 3/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_lrg_1byte --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: large data packet followed by a 1 byte one:
+# #   STDERR: Expected {101 }, Total 1 packets
+# #           Received {100 [!=101]1 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 4/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_lrg_1byte --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: large data packet followed by a 1 byte one:
+# #   STDERR: Expected {101 }, Total 1 packets
+# #           Received {100 [!=101]1 [!=0]}, Total 2 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 5/6 failed, retrying...
+# # Exception| Traceback (most recent call last):
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/ksft.py", line 420, in ksft_run
+# # Exception|     func(*args)
+# # Exception|     ~~~~^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/drivers/net/./gro.py", line 365, in test
+# # Exception|     rx_proc = _run_gro_bin(cfg, test_name, protocol=protocol,
+# # Exception|                            verbose=True, fail=fail_now)
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/drivers/net/./gro.py", line 220, in _run_gro_bin
+# # Exception|     with bkg(rx_cmd, ksft_ready=True, exit_wait=True, fail=fail) as rx_proc:
+# # Exception|          ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/utils.py", line 200, in __exit__
+# # Exception|     return self.process(terminate=terminate, fail=self.check_fail,
+# # Exception|            ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|                         expect_fail=self.expect_fail)
+# # Exception|                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/utils.py", line 129, in process
+# # Exception|     raise CmdExitFailure("Command failed", self)
+# # Exception| net.lib.py.utils.CmdExitFailure: Command failed
+# # Exception| CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_lrg_1byte --verbose --rx --iface eth1
+# # Exception|   EXIT: 1
+# # Exception|   STDOUT: large data packet followed by a 1 byte one:
+# # Exception|   STDERR: Expected {101 }, Total 1 packets
+# # Exception|           Received {100 [!=101]1 [!=0]}, Total 2 packets.
+# # Exception|           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Exception| 
+# not ok 307 gro.test.sw_pppoev6_data_lrg_1byte
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_burst --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: two bursts of two data packets:
+# #   STDERR: Expected {200 200 }, Total 2 packets
+# #           Received {100 [!=200]100 [!=200]100 [!=0]100 [!=0]}, Total 4 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 1/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_burst --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: two bursts of two data packets:
+# #   STDERR: Expected {200 200 }, Total 2 packets
+# #           Received {100 [!=200]100 [!=200]100 [!=0]100 [!=0]}, Total 4 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 2/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_burst --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: two bursts of two data packets:
+# #   STDERR: Expected {200 200 }, Total 2 packets
+# #           Received {100 [!=200]100 [!=200]100 [!=0]100 [!=0]}, Total 4 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 3/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_burst --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: two bursts of two data packets:
+# #   STDERR: Expected {200 200 }, Total 2 packets
+# #           Received {100 [!=200]100 [!=200]100 [!=0]100 [!=0]}, Total 4 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 4/6 failed, retrying...
+# # CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_burst --verbose --rx --iface eth1
+# #   EXIT: 1
+# #   STDOUT: two bursts of two data packets:
+# #   STDERR: Expected {200 200 }, Total 2 packets
+# #           Received {100 [!=200]100 [!=200]100 [!=0]100 [!=0]}, Total 4 packets.
+# #           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Attempt 5/6 failed, retrying...
+# # Exception| Traceback (most recent call last):
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/ksft.py", line 420, in ksft_run
+# # Exception|     func(*args)
+# # Exception|     ~~~~^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/drivers/net/./gro.py", line 365, in test
+# # Exception|     rx_proc = _run_gro_bin(cfg, test_name, protocol=protocol,
+# # Exception|                            verbose=True, fail=fail_now)
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/drivers/net/./gro.py", line 220, in _run_gro_bin
+# # Exception|     with bkg(rx_cmd, ksft_ready=True, exit_wait=True, fail=fail) as rx_proc:
+# # Exception|          ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/utils.py", line 200, in __exit__
+# # Exception|     return self.process(terminate=terminate, fail=self.check_fail,
+# # Exception|            ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|                         expect_fail=self.expect_fail)
+# # Exception|                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# # Exception|   File "/usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/py/utils.py", line 129, in process
+# # Exception|     raise CmdExitFailure("Command failed", self)
+# # Exception| net.lib.py.utils.CmdExitFailure: Command failed
+# # Exception| CMD: /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro --pppoev6 --dmac 8e:06:42:98:a9:5f --smac c6:e6:7b:ad:54:ed --daddr 2001:db8::1 --saddr 2001:db8::2 --test data_burst --verbose --rx --iface eth1
+# # Exception|   EXIT: 1
+# # Exception|   STDOUT: two bursts of two data packets:
+# # Exception|   STDERR: Expected {200 200 }, Total 2 packets
+# # Exception|           Received {100 [!=200]100 [!=200]100 [!=0]100 [!=0]}, Total 4 packets.
+# # Exception|           /usr/src/perf_selftests-x86_64-rhel-9.4-bpf-6160ec9d03d7af5aa345b8b994de80fa8454274b/tools/testing/selftests/net/lib/gro: incorrect number of packets
+# # Exception| 
+# not ok 308 gro.test.sw_pppoev6_data_burst
+# ok 309 gro.test.sw_pppoev6_pppoe_sid
+# ok 310 gro.test_gro_capacity.sw_isolated # XFAIL Device does not support ntuple-filters
+# # flows=8 attempt=1 received=8 wire=16 coalesced=8 [PASS]
+# # flows=16 attempt=1 received=32 wire=32 coalesced=0 [MISS]
+# # flows=16 attempt=2 received=32 wire=32 coalesced=0 [MISS]
+# # flows=16 attempt=3 received=32 wire=32 coalesced=0 [MISS]
+# # Stopped at 16 flows
+# ok 311 gro.test_gro_capacity.sw_1q
+# ok 312 gro.test_gro_capacity.sw_8q # XFAIL Need at least 8 queues, max=1
+# ok 313 gro.test_gro_capacity.hw_isolated # XFAIL Device does not support rx-gro-hw
+# ok 314 gro.test_gro_capacity.hw_1q # XFAIL Device does not support rx-gro-hw
+# ok 315 gro.test_gro_capacity.hw_8q # XFAIL Device does not support rx-gro-hw
+# ok 316 gro.test_gro_capacity.lro_isolated # XFAIL Test does not work on netdevsim
+# ok 317 gro.test_gro_capacity.lro_1q # XFAIL Test does not work on netdevsim
+# ok 318 gro.test_gro_capacity.lro_8q # XFAIL Test does not work on netdevsim
+# # Totals: pass:104 fail:8 xfail:206 xpass:0 skip:0 error:0
+not ok 1 selftests: drivers/net: gro.py # exit=1
+
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20260715/202607151058.c3835ba8-lkp@intel.com
+https://download.01.org/0day-ci/archive/20260715/202607150740.c8e9119d-lkp@intel.com
 
-
-[  146.608726][ T6314] KTAP version 1
-[  146.612757][ T6314] 1..1
-[  146.616156][ T6314]     KTAP version 1
-[  146.619916][ T6314]     # Subtest: snd_soc_tplg_test
-[  146.624877][ T6314]     # module: soc_topology_test
-[  146.624890][ T6314]     1..11
-[  146.633348][ T6316]  non-paged memory
-[  146.636995][ T6316] list_del corruption, ffff88813723ba48->next is LIST_POISON1 (dead000000000100)
-[  146.645917][ T6316] ------------[ cut here ]------------
-[  146.651200][ T6316] kernel BUG at lib/list_debug.c:56!
-[  146.656321][ T6316] Oops: invalid opcode: 0000 [#1] SMP KASAN PTI
-[  146.662375][ T6316] CPU: 2 UID: 0 PID: 6316 Comm: kunit_try_catch Tainted: G S  B   W        N  7.2.0-rc1+ #1 PREEMPT(lazy)
-[  146.673509][ T6316] Tainted: [S]=CPU_OUT_OF_SPEC, [B]=BAD_PAGE, [W]=WARN, [N]=TEST
-[  146.681021][ T6316] Hardware name: Dell Inc. OptiPlex 9020/0DNKMN, BIOS A05 12/05/2013
-[  146.688877][ T6316] RIP: 0010:__list_del_entry_valid_or_report (kbuild/src/lib/list_debug.c:56 (discriminator 8))
-[  146.695620][ T6316] Code: 00 00 5b b8 01 00 00 00 5d 41 5c c3 cc cc cc cc 4c 89 e7 e8 a6 cc 42 ff 4c 89 e2 48 89 de 48 c7 c7 a0 28 9e 84 e8 74 c6 87 fe <0f> 0b 48 89 ef e8 8a cc 42 ff 48 89 ea 48 89 de 48 c7 c7 00 29 9e
-All code
-========
-   0:	00 00                	add    %al,(%rax)
-   2:	5b                   	pop    %rbx
-   3:	b8 01 00 00 00       	mov    $0x1,%eax
-   8:	5d                   	pop    %rbp
-   9:	41 5c                	pop    %r12
-   b:	c3                   	ret
-   c:	cc                   	int3
-   d:	cc                   	int3
-   e:	cc                   	int3
-   f:	cc                   	int3
-  10:	4c 89 e7             	mov    %r12,%rdi
-  13:	e8 a6 cc 42 ff       	call   0xffffffffff42ccbe
-  18:	4c 89 e2             	mov    %r12,%rdx
-  1b:	48 89 de             	mov    %rbx,%rsi
-  1e:	48 c7 c7 a0 28 9e 84 	mov    $0xffffffff849e28a0,%rdi
-  25:	e8 74 c6 87 fe       	call   0xfffffffffe87c69e
-  2a:*	0f 0b                	ud2		<-- trapping instruction
-  2c:	48 89 ef             	mov    %rbp,%rdi
-  2f:	e8 8a cc 42 ff       	call   0xffffffffff42ccbe
-  34:	48 89 ea             	mov    %rbp,%rdx
-  37:	48 89 de             	mov    %rbx,%rsi
-  3a:	48                   	rex.W
-  3b:	c7                   	.byte 0xc7
-  3c:	c7                   	.byte 0xc7
-  3d:	00 29                	add    %ch,(%rcx)
-  3f:	9e                   	sahf
-
-Code starting with the faulting instruction
-===========================================
-   0:	0f 0b                	ud2
-   2:	48 89 ef             	mov    %rbp,%rdi
-   5:	e8 8a cc 42 ff       	call   0xffffffffff42cc94
-   a:	48 89 ea             	mov    %rbp,%rdx
-   d:	48 89 de             	mov    %rbx,%rsi
-  10:	48                   	rex.W
-  11:	c7                   	.byte 0xc7
-  12:	c7                   	.byte 0xc7
-  13:	00 29                	add    %ch,(%rcx)
-  15:	9e                   	sahf
-[  146.714936][ T6316] RSP: 0018:ffffc900027dfa60 EFLAGS: 00010286
-[  146.720813][ T6316] RAX: 000000000000004e RBX: ffff88813723ba48 RCX: 0000000000000000
-[  146.728584][ T6316] RDX: 000000000000004e RSI: 0000000000000008 RDI: fffff520004fbf3f
-[  146.736354][ T6316] RBP: dead000000000122 R08: 0000000000000001 R09: fffff520004fbf08
-[  146.744123][ T6316] R10: ffffc900027df847 R11: 0000000000000001 R12: dead000000000100
-[  146.751897][ T6316] R13: ffff88813723cad0 R14: 0000000000000008 R15: dffffc0000000000
-[  146.759668][ T6316] FS:  0000000000000000(0000) GS:ffff888422776000(0000) knlGS:0000000000000000
-[  146.768397][ T6316] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  146.774791][ T6316] CR2: 00007f8a3a9f00ac CR3: 000000041b674001 CR4: 00000000001726f0
-[  146.782561][ T6316] DR0: ffffffff87d71888 DR1: ffffffff87d71889 DR2: ffffffff87d7188a
-[  146.790332][ T6316] DR3: ffffffff87d7188b DR6: 00000000ffff0ff0 DR7: 0000000000000600
-[  146.798102][ T6316] Call Trace:
-[  146.801219][ T6316]  <TASK>
-[  146.803992][ T6316] soc_card_unbind (kbuild/src/include/linux/list.h:132 kbuild/src/include/linux/list.h:246 kbuild/src/include/linux/list.h:260 kbuild/src/sound/soc/soc-card.c:1004 kbuild/src/sound/soc/soc-card.c:990) snd_soc_core
-[  146.809827][ T6316] snd_soc_card_unregister (kbuild/src/sound/soc/soc-card.c:1474) snd_soc_core
-[  146.816250][ T6316]  release_nodes (kbuild/src/drivers/base/devres.c:546)
-[  146.820577][ T6316]  devres_release_all (kbuild/src/drivers/base/devres.c:576)
-[  146.825335][ T6316]  ? __pfx_devres_release_all (kbuild/src/include/linux/list.h:46 (discriminator 2))
-[  146.830695][ T6316]  device_unbind_cleanup (kbuild/src/drivers/base/dd.c:597)
-[  146.835721][ T6316]  device_release_driver_internal (kbuild/src/drivers/base/dd.c:1354 kbuild/src/drivers/base/dd.c:1372)
-[  146.841598][ T6316]  bus_remove_device (kbuild/src/drivers/base/bus.c:664)
-[  146.846356][ T6316]  ? __pfx_bus_remove_device (kbuild/src/drivers/base/bus.c:623)
-[  146.851632][ T6316]  ? __pfx_device_remove_attrs (kbuild/src/drivers/base/core.c:3143)
-[  146.857077][ T6316]  device_del (kbuild/src/drivers/base/core.c:3961)
-[  146.861232][ T6316]  ? __pfx_device_del (kbuild/src/include/linux/kobject.h:89)
-[  146.865903][ T6316]  ? _raw_spin_lock_irqsave (kbuild/src/include/linux/instrumented.h:55 kbuild/src/include/linux/atomic/atomic-instrumented.h:1301 kbuild/src/include/asm-generic/qspinlock.h:111 kbuild/src/include/linux/spinlock.h:187 kbuild/src/include/linux/spinlock_api_smp.h:133 kbuild/src/kernel/locking/spinlock.c:166)
-[  146.871090][ T6316]  ? __pfx__raw_spin_lock_irqsave (kbuild/src/kernel/locking/spinlock.c:273)
-[  146.876793][ T6316]  device_unregister (kbuild/src/drivers/base/core.c:4002)
-[  146.881376][ T6316]  kunit_remove_resource (kbuild/src/include/kunit/resource.h:115 kbuild/src/include/linux/kref.h:65 kbuild/src/include/kunit/resource.h:138 kbuild/src/lib/kunit/resource.c:59 kbuild/src/lib/kunit/resource.c:48)
-[  146.886476][ T6316]  kunit_cleanup (kbuild/src/lib/kunit/test.c:1052)
-[  146.890802][ T6316]  ? kobject_put (kbuild/src/include/linux/instrumented.h:112 kbuild/src/include/linux/atomic/atomic-instrumented.h:400 kbuild/src/include/linux/refcount.h:389 kbuild/src/include/linux/refcount.h:432 kbuild/src/include/linux/refcount.h:450 kbuild/src/include/linux/kref.h:64 kbuild/src/lib/kobject.c:737)
-[  146.895040][ T6316]  ? __pfx_kunit_try_run_case_cleanup (kbuild/src/lib/kunit/test.c:945)
-[  146.901091][ T6316]  ? __pfx_kunit_generic_run_threadfn_adapter (usercopy_64.c:?)
-[  146.907827][ T6316]  kunit_generic_run_threadfn_adapter (kbuild/src/lib/kunit/try-catch.c:30)
-[  146.913874][ T6316]  kthread (kbuild/src/kernel/kthread.c:436)
-[  146.917769][ T6316]  ? recalc_sigpending (kbuild/src/include/linux/instrumented.h:97 kbuild/src/include/asm-generic/bitops/instrumented-atomic.h:41 kbuild/src/include/linux/thread_info.h:109 kbuild/src/kernel/signal.c:181)
-[  146.922700][ T6316]  ? __pfx_kthread (kbuild/src/include/linux/list.h:404 (discriminator 2))
-[  146.927120][ T6316]  ret_from_fork (kbuild/src/arch/x86/kernel/process.c:158)
-[  146.931531][ T6316]  ? __pfx_ret_from_fork (kbuild/src/arch/x86/include/asm/entry-common.h:54)
-[  146.936458][ T6316]  ? switch_fpu (kbuild/src/include/linux/instrumented.h:82 kbuild/src/include/asm-generic/bitops/instrumented-non-atomic.h:141 kbuild/src/include/linux/thread_info.h:133 kbuild/src/include/linux/sched.h:2087 kbuild/src/arch/x86/include/asm/fpu/sched.h:34)
-[  146.940696][ T6316]  ? __switch_to (kbuild/src/arch/x86/kernel/process_64.c:403 kbuild/src/arch/x86/kernel/process_64.c:663)
-[  146.945115][ T6316]  ? __switch_to_asm (kbuild/src/arch/x86/entry/entry_64.S:206)
-[  146.949710][ T6316]  ? __pfx_kthread (kbuild/src/include/linux/list.h:404 (discriminator 2))
-[  146.954121][ T6316]  ret_from_fork_asm (kbuild/src/arch/x86/entry/entry_64.S:245)
-[  146.958716][ T6316]  </TASK>
-[  146.961573][ T6316] Modules linked in: soc_topology_test snd_soc_core snd_compress iio_rescale industrialio hid_uclogic cros_ec_proto drm_kunit_helpers linear_ranges utf8data ext4 crc16 mbcache jbd2 binfmt_misc snd_hda_codec_intelhdmi snd_hda_codec_hdmi intel_rapl_msr btrfs intel_rapl_common x86_pkg_temp_thermal intel_powerclamp coretemp snd_hda_codec_alc269 libblake2b raid6_pq snd_hda_codec_realtek_lib xor kvm_intel snd_hda_scodec_component i915 snd_hda_codec_generic kvm snd_hda_intel sd_mod sg snd_hda_codec snd_hda_core drm_buddy intel_gtt snd_intel_dspcfg irqbypass dell_wmi ttm snd_intel_sdw_acpi rapl dell_smbios snd_hwdep drm_client_lib intel_cstate dell_wmi_descriptor snd_pcm drm_display_helper sparse_keymap ahci rfkill libahci cec pcspkr dcdbas mei_wdt intel_uncore snd_timer i2c_i801 libata mei_me i2c_smbus lpc_ich drm_kms_helper snd mei video soundcore wmi fuse drm [last unloaded: siphash_kunit]
-[  147.040993][ T6316] ---[ end trace 0000000000000000 ]---
-[  147.046283][ T6316] RIP: 0010:__list_del_entry_valid_or_report (kbuild/src/lib/list_debug.c:56 (discriminator 8))
-[  147.053042][ T6316] Code: 00 00 5b b8 01 00 00 00 5d 41 5c c3 cc cc cc cc 4c 89 e7 e8 a6 cc 42 ff 4c 89 e2 48 89 de 48 c7 c7 a0 28 9e 84 e8 74 c6 87 fe <0f> 0b 48 89 ef e8 8a cc 42 ff 48 89 ea 48 89 de 48 c7 c7 00 29 9e
-All code
-========
-   0:	00 00                	add    %al,(%rax)
-   2:	5b                   	pop    %rbx
-   3:	b8 01 00 00 00       	mov    $0x1,%eax
-   8:	5d                   	pop    %rbp
-   9:	41 5c                	pop    %r12
-   b:	c3                   	ret
-   c:	cc                   	int3
-   d:	cc                   	int3
-   e:	cc                   	int3
-   f:	cc                   	int3
-  10:	4c 89 e7             	mov    %r12,%rdi
-  13:	e8 a6 cc 42 ff       	call   0xffffffffff42ccbe
-  18:	4c 89 e2             	mov    %r12,%rdx
-  1b:	48 89 de             	mov    %rbx,%rsi
-  1e:	48 c7 c7 a0 28 9e 84 	mov    $0xffffffff849e28a0,%rdi
-  25:	e8 74 c6 87 fe       	call   0xfffffffffe87c69e
-  2a:*	0f 0b                	ud2		<-- trapping instruction
-  2c:	48 89 ef             	mov    %rbp,%rdi
-  2f:	e8 8a cc 42 ff       	call   0xffffffffff42ccbe
-  34:	48 89 ea             	mov    %rbp,%rdx
-  37:	48 89 de             	mov    %rbx,%rsi
-  3a:	48                   	rex.W
-  3b:	c7                   	.byte 0xc7
-  3c:	c7                   	.byte 0xc7
-  3d:	00 29                	add    %ch,(%rcx)
-  3f:	9e                   	sahf
-
-Code starting with the faulting instruction
-===========================================
-   0:	0f 0b                	ud2
-   2:	48 89 ef             	mov    %rbp,%rdi
-   5:	e8 8a cc 42 ff       	call   0xffffffffff42cc94
-   a:	48 89 ea             	mov    %rbp,%rdx
-   d:	48 89 de             	mov    %rbx,%rsi
-  10:	48                   	rex.W
-  11:	c7                   	.byte 0xc7
-  12:	c7                   	.byte 0xc7
-  13:	00 29                	add    %ch,(%rcx)
-  15:	9e                   	sahf
-[  147.072371][ T6316] RSP: 0018:ffffc900027dfa60 EFLAGS: 00010286
-[  147.078265][ T6316] RAX: 000000000000004e RBX: ffff88813723ba48 RCX: 0000000000000000
-[  147.086051][ T6316] RDX: 000000000000004e RSI: 0000000000000008 RDI: fffff520004fbf3f
-[  147.093842][ T6316] RBP: dead000000000122 R08: 0000000000000001 R09: fffff520004fbf08
-[  147.101779][ T6316] R10: ffffc900027df847 R11: 0000000000000001 R12: dead000000000100
-[  147.109705][ T6316] R13: ffff88813723cad0 R14: 0000000000000008 R15: dffffc0000000000
-[  147.117504][ T6316] FS:  0000000000000000(0000) GS:ffff888422776000(0000) knlGS:0000000000000000
-[  147.126251][ T6316] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  147.132704][ T6316] CR2: 00007f8a3a9f00ac CR3: 000000041b674001 CR4: 00000000001726f0
-[  147.140498][ T6316] DR0: ffffffff87d71888 DR1: ffffffff87d71889 DR2: ffffffff87d7188a
-[  147.148293][ T6316] DR3: ffffffff87d7188b DR6: 00000000ffff0ff0 DR7: 0000000000000600
-[  147.156088][ T6316] Kernel panic - not syncing: Fatal exception
-[  147.162002][ T6316] Kernel Offset: disabled
 
 
 -- 
