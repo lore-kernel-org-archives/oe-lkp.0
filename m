@@ -1,181 +1,183 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 860152DC76F
-	for <oe-lkp@lists.linux.dev>; Thu, 16 Jul 2026 05:36:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.19
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784180184; cv=fail; b=TYzt5yjk57dhjsHHR5qZMNL22ctYU5rAXMdSwLU709sfc6vLuB3yA6n70RLT2QuNjh9I0wZjNwJ9x/9uYB27Rimf6dza5YP7oQJ/YyaitNyD72OHV+OuBvSi70qtdhHkf27LC5905iDHD1OEtYaxPhAofnjChoo7+OQ4u7s3B2w=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784180184; c=relaxed/simple;
-	bh=DZ6pVGY89GtAuEQRCk7fXoFAAOK/PjJjAIVI3fELjH8=;
-	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=JeS5HcwvqNemoYRHINbPcsQAPhGMy1cajUehzjkkio99k+TOpKYWqFwLXM069/fwMHTmo9hHwraVIkm1l9A8NL8zECn1AC1q5mwetlQy96aUyoS4hBgiqFlZrZrMr/76P9jWrSwL1jefDzdR8uXINPBJMT+DoSP3+JKxU8y5eVw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hcJOmQcj; arc=fail smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C986C3101A2
+	for <oe-lkp@lists.linux.dev>; Thu, 16 Jul 2026 06:29:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784183398; cv=none; b=RLndiXigYRGNDsU8VsR+IRFCXiKhnWOU4j4oxff6NZRp1qPTPfjyyK9y/DUlIRw6rbvSvajLGoNeSUUSj7EYp1YRL3CTJWfI04XCKFNnId+GpmG9Jr0CfPSUUNq88vjBQKusk+ZoBWAI3Qv34KH6ptWIgmpWaUL7xvMokjf6UYU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784183398; c=relaxed/simple;
+	bh=Ppg24Av3CVkqljIMwWSrDncgZ+24ul6xWu7dLksDBaE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=EIdUIkiUTLlcYBwFVS7k1vpP/BCLFWPkDsKRAEHNUdZmuvdHIYT3gzKux88xKhWNR3N4NBVS3OnNQdP8MnrsymRqr938obxXoorCdd5ZP36K2VN7UHZtJJV4JSfH0bjddakROJ/As4Xo1SBD8IprsDUndI55RSa+o7/vvj3F7sc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NHmy7hus; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hcJOmQcj"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NHmy7hus"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1784180182; x=1815716182;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=DZ6pVGY89GtAuEQRCk7fXoFAAOK/PjJjAIVI3fELjH8=;
-  b=hcJOmQcj+0oBy06bnNocb5MYFLXiU4HLA2uEgrw+MbJTJsbrknS7Fm9A
-   qlWlPrInwAYQZ5EKnkpcLjmjVG+4LeGJ3iKzpxiGq2BuIllTxpKn7dipY
-   h1UjAJkTfYfBhtx83URNj8G5Cpsisu96JMq0GFpzX7eZ4FLeDQk5C8f+8
-   WhAL0grJvR2qOeHXWbEZ5RQPNDPrcao5bs1IM+/UdHB6Nb5G1ORnjZScp
-   WGu7/NsEqpPQ6Lzuryoya8HV0+CaFQP/7P4Vz6oBowkaKsBvQZ6p6xyoc
-   q+DUidDU2dg5UrBG7W4S0Xoclgy7iVWg0Q598WmyKai7Dqru2aCzOJmOC
-   A==;
-X-CSE-ConnectionGUID: peMbCGqJQsurjadiTttuJQ==
-X-CSE-MsgGUID: paAgD1EQQBmvcAp8xaUkvA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11847"; a="84791919"
-X-IronPort-AV: E=Sophos;i="6.25,166,1779174000"; 
-   d="scan'208";a="84791919"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2026 22:36:22 -0700
-X-CSE-ConnectionGUID: AP9avCuzTuONyBSBqaI4uw==
-X-CSE-MsgGUID: uKFH+jUhQxSB3ybGK5/yjg==
+  t=1784183396; x=1815719396;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Ppg24Av3CVkqljIMwWSrDncgZ+24ul6xWu7dLksDBaE=;
+  b=NHmy7husy4RlVb1kT/0SOm96RhufAA1bLGc1C2J+SPzKA4nr0k+IpIRN
+   AC010abqWTB+Yo7nzgHLNZoefY4PUZFRPZYj9uwLB6goAY6akViE1g7at
+   qoyyzAiCIB2DfUueZPLz3ESaw6vDMjPhwnXjYy61Z04CJGtIewSOGtL7i
+   kcSOLAim+M3KWt8elYm320RuLYNIuHDjMIH/jbwPD+/ADYR7WUadNEOuU
+   Dh07mpm2n7HMJKl11NEA7nrA62wamhy/ISTS2zE27W1VPCdPn6KMfDuNL
+   tcKPC4HUDLyHlHsBI2ih4CAk2cEGpPvnQYQm+/MBJ6fnxk7VdEj3og8Uj
+   w==;
+X-CSE-ConnectionGUID: nrPJHekPQG2vSBiTVVU7wA==
+X-CSE-MsgGUID: ew3jnCwOQwyxk+D+6AtqDQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11847"; a="110381483"
+X-IronPort-AV: E=Sophos;i="6.25,167,1779174000"; 
+   d="scan'208";a="110381483"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2026 23:29:55 -0700
+X-CSE-ConnectionGUID: lWiLUVFdQYmCHOtDxyr9OA==
+X-CSE-MsgGUID: 2INgkqReTiu+mgY7g+HXDA==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,166,1779174000"; 
-   d="scan'208";a="260703556"
-Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
-  by orviesa005.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2026 22:36:22 -0700
-Received: from ORSMSX903.amr.corp.intel.com (10.22.229.25) by
- ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.43; Wed, 15 Jul 2026 22:36:21 -0700
-Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
- ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.43 via Frontend Transport; Wed, 15 Jul 2026 22:36:21 -0700
-Received: from BL2PR02CU003.outbound.protection.outlook.com (52.101.52.27) by
- edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.43; Wed, 15 Jul 2026 22:36:21 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=QdzLdRde1ahrcJC/z0NBdalthFcP/jYx130L521F90s8GszNtN3t6P/bq0LN7HtFpZBOv0vl6yAWRwiZSVsOQetvYeAQt0iyfRu1DqVA1u/slx9w0upSrNquJZGwNLb7gYPdelvmED45yMu5UMBU2VNrxINNhXgncVPUMU5zmYWI3PQBEQYdDE+reLc3NCXRCK/rHxmaWEq0whGWW1Gs9y6OfpPwdrRERWfPiSNdNL+vH9tmepIYIXU4EEQjgcZc83Yayu5bEKgZOZ1oKs6VgXatGdfnXdGyWPDMxzgLfNExMxpxxejKDrpnMZbiTOgfG2hrdo94wMve8V3BXxR1+A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Pv1XQXhAsKZrJaBfmepqbb6cNiwHWnVZ5QoQsef4Lpk=;
- b=FNHs7Upgudq3Dx2C6sv6KDrHuOXiKWSf2hyGxPIt/nwpqwMay9JfNpMkeWHohwEqF/msP7UIAWIzPyGxIVuQbll2YSbjJm1t1btRfaaoOpIU3FGgocihniY180+qzjGh57cqdsZJAAG88CZoogF+diTRG/ltOfbe9zKWt4W4i3h73qQ/DRrDKyAx8/9EXuoopUFrnVOVc/jrxXOBJizXEuJ6JQIjwjCH4c+YdmoyVuPUjTHdq4opGzLhPmvat8wKHMmBDSFMbTRbrkz2DCrKJ+dzHr0yriUQJQFZpvLOxo9mJE1pfXys9ylzog+hGadH+3wvtjx5weRGLMP9AC53gQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH0PR11MB5832.namprd11.prod.outlook.com (2603:10b6:510:141::7)
- by MW4PR11MB7080.namprd11.prod.outlook.com (2603:10b6:303:21a::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.223.12; Thu, 16 Jul
- 2026 05:36:17 +0000
-Received: from PH0PR11MB5832.namprd11.prod.outlook.com
- ([fe80::106e:78dd:4c96:d707]) by PH0PR11MB5832.namprd11.prod.outlook.com
- ([fe80::106e:78dd:4c96:d707%5]) with mapi id 15.21.0223.008; Thu, 16 Jul 2026
- 05:36:17 +0000
-Date: Thu, 16 Jul 2026 13:36:09 +0800
-From: Oliver Sang <oliver.sang@intel.com>
-To: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-block@vger.kernel.org>,
-	<linux-fsdevel@vger.kernel.org>, <oliver.sang@intel.com>
-Subject: Re: [linux-next:master] [loop] d908729e74:
- stress-ng.umount.ops_per_sec 100.0% regression
-Message-ID: <alhtyV7wdura5Q9m@xsang-OptiPlex-9020>
-References: <202607151655.9d74999d-lkp@intel.com>
- <564105ec-acee-4178-be9f-077f783c1122@I-love.SAKURA.ne.jp>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <564105ec-acee-4178-be9f-077f783c1122@I-love.SAKURA.ne.jp>
-X-ClientProxiedBy: SI1PR02CA0038.apcprd02.prod.outlook.com
- (2603:1096:4:1f6::15) To PH0PR11MB5832.namprd11.prod.outlook.com
- (2603:10b6:510:141::7)
+X-IronPort-AV: E=Sophos;i="6.25,167,1779174000"; 
+   d="scan'208";a="251984828"
+Received: from dapengmi-mobl1.ccr.corp.intel.com (HELO [10.124.241.147]) ([10.124.241.147])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2026 23:29:53 -0700
+Message-ID: <803bfea9-b16c-44d5-8004-096a92e90017@linux.intel.com>
+Date: Thu, 16 Jul 2026 14:29:49 +0800
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR11MB5832:EE_|MW4PR11MB7080:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2e6e7a71-cff9-4236-4f69-08dee2fc28b2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|23010399003|376014|1800799024|11063799006|4143699003|56012099006|10067099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info: +X2Mco40xe/W51tqVL4D2Kuqd+TogfrEdY4MBFjKGY5J850wg75MO8mTcFDpT+Qhi10w+QLfnhJ8+vKmNagh7/jI3GNu2zJ+Yv+Y3JdeK0D9BcvCnh8vPGfBgRp4VajAfrHYUWmVt9wRUJ1M+xl/iVOocsUVV1tQqWdynnXaPTW1/SGK5ls5NIcV+oPbTzvjeUEYvcjRIe4vs5m1xB/n2tFK1T10u/KAaollSl+KxSBRIgyOYI8lrllqw3lbix0X/R/0mb9whcmiUzhMQ/VWi03RqdNI8NULjz26FbNfZBZirkUz9Tzbw6Mgq8eBHZm8I/UEmNucIPwPJevOodf6KVo4msziTprsAJbGz5jiALZoF7j9Ly49Gqaastw+QPmeG0oQAe1fc+EBiUwpXgIeBh+wLU08ZDGV6Uyg82tcWYaxRo94P498yCHLHphzojeBp/l5DVBu6XByjURILAKVnXPM658j30Hb2pNJJyK+7qLFxWcVAKJ8WQqFH8fbWke1nc/A8oFyptYX4BqR2qEEsmk6dYw6UDIvkhDrP1uOsAfHVPkpLMX88Uk9OUGsjX7Mc3M+R59SS2qhwJ+Vw8s0LIn2CY8CU1/75/PYuJIKXHhWwpUXXMqbyRXIZSn0hqxEYV9Xf/Wx7h+kCx3dQd1ueP4ex2BVvFRRqR2e5lS2cu8=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5832.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(376014)(1800799024)(11063799006)(4143699003)(56012099006)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Tmn7B2A085iqJcnYaGWMXJYIRyfwOOpK3o+QpWuG3co/cwP655fH3CdUhWeb?=
- =?us-ascii?Q?9QcSQZrex8sSzKedqqGd7API2atzTBVfL6blIb0rUGSOfsSfVS8BhLCtJU60?=
- =?us-ascii?Q?zi8DHvF2eFec6ZeMiqS4uWgPpXeFTqMXmI6ePRn4x6VZgBc9yMt94N3bw6BM?=
- =?us-ascii?Q?zb7+6umRq+Ru/TLj5qxG+Zvi0Kmh1ppH9CiuUWSlKWk3FYwh7LLgqc2InZH4?=
- =?us-ascii?Q?+wJV/28DR6Ab3H+wPAkkE1ByAhVZBFKdGDq5fJJq+fugVsmwlNbkBSAF8Ms7?=
- =?us-ascii?Q?BMqlaX1yFB90aHBmKgF7Pdf0nCRPDtSc2GdIKSB1vCwaX2exMkocsrSwBDAi?=
- =?us-ascii?Q?CBziGndvsNyjUzwUSUX3Reym0MLMAVEnrmV+Bx0B3j3QTuE+m6yHuGjhqjiM?=
- =?us-ascii?Q?fSFNceuXyMba9EMjwGyvlG3LFnXeAnTORz1Mdhlq4fYwb0mlDXOIELebSyAx?=
- =?us-ascii?Q?bXjms2/DQ5BqPqNcxH6++F5Eebb+cdV05NVTYmp4koCoI8YM4F3YFoQhDYYV?=
- =?us-ascii?Q?gE+NuCmOvVqb5y90QiM5O7ho4TdBR4hDnxi1vUSBVUdfdks6fkWMHqI9aH0k?=
- =?us-ascii?Q?0yWcZ589vpcqOhE+br0B99bXaqNVUT7TcA/zhmdTrZu730om/XRQFAYzTQ/L?=
- =?us-ascii?Q?1NXbRefqs9oiQoKqx83R+OwvZwk8KhCmT/d+57GCcrsqyGHTZa6EGrPuwDds?=
- =?us-ascii?Q?0kwnpgnaGnw2AeYGkzXgfsq2VBAd+bsv9qGZmNz1/8EwuUMtCw0xS/WEglqs?=
- =?us-ascii?Q?Qg/vEUseik4f50cKTXX4z6vOrFEjKplMwuReTiHg0DZ1nki16/jVHBt0kFy0?=
- =?us-ascii?Q?+AB1a57C7tl6kopLtz8fQ8jxEDM10+c90uqOddN5Qyj+h3g474Mm/xHGNVvP?=
- =?us-ascii?Q?zM0fd7ANcWFWHycJ1H1/9VzoG3FJuZy16o0f+P+H2ztJ2jqasUf35Io36m4L?=
- =?us-ascii?Q?Kk5PjGKe8Qumm83k6gdGk9rdyXpiScvdUZOCOC1TGhngwGNpYk2AGNZO2Jvx?=
- =?us-ascii?Q?ue3pOadlq8RSQAzqRAeCTNfiUUJ6Gw6teAzUD1vWUzRlENodPyIAzA4H9ylE?=
- =?us-ascii?Q?Vji1BmrBoy7buuITX8IH09XQrL9uf546OkMSJRmKQ4BC9H1+Ed1SQlpqFndQ?=
- =?us-ascii?Q?aHRUJ8WsmeC75mmdNZ84yweNJ0ouU6EGxkFaf5s7gCX1vCxTr1a9ES8rRqZG?=
- =?us-ascii?Q?Tlo3DKtjPetkRpunTVTbps/rkOQKILSVDA9MimuXupuSepHVboIiQc9uZNpg?=
- =?us-ascii?Q?jWkyN/UM7usoyM6GMiYB7MacVe37a4XIc/GaiI4CzyIErRUXBXF41mMwSD/z?=
- =?us-ascii?Q?nAEfosbu8RAQERIJj1dTlkZ4XCV2RyFC7GJts2k5bXe4JM6jW9psBbYSVKWi?=
- =?us-ascii?Q?zfO8Gga7XYT+F5hW+/fAa5mnrF5+IMqc22bHQNDXtTdtqOYrWjgMM5jfbsDA?=
- =?us-ascii?Q?p/+pS7Do9HFhybYnI1Czm0w2txZmaPx14+LOyW+zIaVsKGmHhdMSr8JWy81d?=
- =?us-ascii?Q?5WdUf7T24aMinuN/AfzK5p7Z//ahmjG8/9yLhj0KdmaCH+JM1EmlNCsMNDoG?=
- =?us-ascii?Q?k9WiseR8eiL5DUnZ87aPXMRdvdr+ZyBauQd//tgvX7umfznY9/WNSaPQHt4+?=
- =?us-ascii?Q?A53meNcDQUg7kQQ1axG+uvUl2Cws+BBhKpDEBxjTOuZ2cp9+n1jzBBK4TJIS?=
- =?us-ascii?Q?ImGFZ/P9uEGgbi6TSj9PLTVlCU9c7XNHRRKzfBnnSO/zL6thTFyviLz+qS7f?=
- =?us-ascii?Q?c9i3Y9/Vkw=3D=3D?=
-X-Exchange-RoutingPolicyChecked: Wz0CMqtwHh+2n4onj5cClsaBijbdinvFam1Vf5gVM3q8faneMZs8td6T2OG1Oh0ehWDVXe28olJ1wCROGs8qgYn5rkkMeA5FWQmZ5VoFSn74mj5XntxSWNGdAZ7zaSWxEY62MkMMPfNqI1zZG3EDGdgLQ5LDhHKUFtWR5YGlhS7aPaNm9jFT1TOTmiKA4Yly03KfQSjsV5QvY2hsHDawkwP9aNMXkibYrWfLSCZHDUyZh6kn2XNqpeBzsyg9MHeXTxItnXz+iSXI3Hd4QdjvXaUcQySsSVyKbVQl96bqQpnn1Hk9HfGlPYpsf7157vyBOEOzrDcycOdFgtQxD2tMwQ==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2e6e7a71-cff9-4236-4f69-08dee2fc28b2
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5832.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jul 2026 05:36:17.8051
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fBWkXr2t29knmEv+JZm1ntOsNbhdwvx9P/E19EnZ5EcUv1elHvkCMkQAQ0HQdhHjYqGQ1n6JKRujAmRmbQKAyw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB7080
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [tip:perf/core] [perf/core] 166f10836a:
+ perf-sanity-tests.Object_code_reading.fail
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+ x86@kernel.org, Peter Zijlstra <peterz@infradead.org>,
+ linux-perf-users@vger.kernel.org
+References: <202607091054.7c96d6c6-lkp@intel.com>
+ <56069e78-7006-4569-add0-6ccdf88c746b@linux.intel.com>
+ <alCwJew7UgGb+EQV@xsang-OptiPlex-9020>
+Content-Language: en-US
+From: "Mi, Dapeng" <dapeng1.mi@linux.intel.com>
+In-Reply-To: <alCwJew7UgGb+EQV@xsang-OptiPlex-9020>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-hi, Tetsuo Handa,
 
-On Wed, Jul 15, 2026 at 11:25:38PM +0900, Tetsuo Handa wrote:
-> On 2026/07/15 22:55, kernel test robot wrote:
-> > 
-> > hi, Tetsuo Handa,
-> > 
-> > this report is just FYI.
-> > we understand d908729e74 is an experimental patch, and it seems there are lots
-> > of print while running stress-ng.umount tests (one dmesg is attached)
-> > 
-> > [   59.370110][T10457] do_umount: task=stress-ng-umoun[10457] propagate_mount_busy()!=0
-> > [   59.394831][T10476] do_umount: task=stress-ng-umoun[10476] propagate_mount_busy()!=0
-> > [   59.404989][T10477] do_umount: task=stress-ng-umoun[10477] propagate_mount_busy()!=0
-> > [   59.414578][T10473] do_umount: task=stress-ng-umoun[10473] propagate_mount_busy()!=0
-> > [   59.423911][T10460] do_umount: task=stress-ng-umoun[10460] propagate_mount_busy()!=0
-> > 
-> > ....
-> > 
-> > 
-> > so the very slow performance is expected?
-> 
-> Since printk() is a slow operation, stressing umount() operation that fail with -EBUSY
-> can cause significantly slow performance. Can you try without fs/namespace.c changes?
-> 
+On 7/10/2026 4:41 PM, Oliver Sang wrote:
+> hi, Dapeng,
+>
+> On Thu, Jul 09, 2026 at 05:04:11PM +0800, Mi, Dapeng wrote:
+>> Hi Oliver,
+>>
+>> It looks the direct reason causing the test case failure is the "0" sampled
+>> IP. This is expected. The commit 166f10836a653dfa280d4335603b52f685b8b1ef
+>> ("perf/core: Fix kernel register info leak via hardware skid") mitigates a
+>> security hole and may lead to the sampled IP could be 0. 
+>>
+>> What user right is used to run this command, root or normal user? If it's a
+> root user. as 'sudo' in attached:
+>
+> "2026-07-10 15:38:50 sudo ASAN_OPTIONS=fast_unwind_on_malloc=0 /usr/src/linux-perf-x86_64-rhel-9.4-bpf-166f10836a653dfa280d4335603b52f685b8b1ef/tools/perf/perf test 23 -vvv"
+>
+>> root user, suppose it should not generate such kind of error. Could you
+>> please add "-vvv" option and rerun this test? The "-vvv" option would print
+>> more  verbose log.
+> as attached, thanks
 
-I saw v5 patch which removes fs/namespace.c changes.
-we won't do manual tests upon it. instead, our bot would automatically bisect
-and report if new version has any performance impacts. thanks
+"
+
+  disabled                         1
+  inherit                          1
+  *exclude_kernel                   1*
+  exclude_hv                       1
+  mmap                             1
+
+"
+
+The event "exclude_kernel" attribute is set in the test case,  so it's
+possible that perf overwrites the kernel IP to 0 to prevent kernel IP
+leakage if PMI hits into kernel space. 
+
+In general, the "exclude_kernel" attribute should not be set for root user,
+I have no idea why "exclude_kernel" is set in this case.
+
+Anyway, we could have to improve this test case and skip these "0" sample IPs.
+
+Thanks.
+
+
+>
+>
+>> Thanks!
+>>
+>> -Dapeng
+>>
+>>
+>> On 7/9/2026 12:36 PM, kernel test robot wrote:
+>>> Hello,
+>>>
+>>> kernel test robot noticed "perf-sanity-tests.Object_code_reading.fail" on:
+>>>
+>>> commit: 166f10836a653dfa280d4335603b52f685b8b1ef ("perf/core: Fix kernel register info leak via hardware skid")
+>>> https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git perf/core
+>>>
+>>>
+>>> in testcase: perf-sanity-tests
+>>> version: 
+>>> with following parameters:
+>>>
+>>> 	perf_compiler: clang
+>>> 	group: group-00
+>>>
+>>>
+>>>
+>>> config: x86_64-rhel-9.4-bpf
+>>> compiler: gcc-14
+>>> test machine: 224 threads 4 sockets Intel(R) Xeon(R) Platinum 8380H CPU @ 2.90GHz (Cooper Lake) with 192G memory
+>>>
+>>> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>>>
+>>>
+>>>
+>>>
+>>> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+>>> the same patch/commit), kindly add following tags
+>>> | Reported-by: kernel test robot <oliver.sang@intel.com>
+>>> | Closes: https://lore.kernel.org/oe-lkp/202607091054.7c96d6c6-lkp@intel.com
+>>>
+>>>
+>>> 2026-07-07 00:10:32 sudo ASAN_OPTIONS=fast_unwind_on_malloc=0 /usr/src/linux-perf-x86_64-rhel-9.4-bpf-166f10836a653dfa280d4335603b52f685b8b1ef/tools/perf/perf test 23 -v
+>>>  23: Object code reading                                 : Running (1 active)
+>>> ---- start ----
+>>> ...
+>>> Bytes read match those read by objdump
+>>> Reading object code for memory address: 0x7feb8f2134fa
+>>> File is: /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+>>> On file address is: 0x204fa
+>>> Objdump command is: objdump -z -d --start-address=0x204fa --stop-address=0x2057a /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+>>> Bytes read match those read by objdump
+>>> Reading object code for memory address: 0
+>>> thread__find_map failed
+>>> ---- end(-1) ----
+>>>  23: Object code reading                                 : FAILED!
+>>>
+>>> === Test Summary ===
+>>> Passed main tests : 0
+>>> Passed subtests   : 0
+>>> Skipped tests     : 0
+>>> Failed tests      : 1
+>>> List of failed tests:
+>>>    23: Object code reading
+>>>
+>>>
+>>>
+>>> The kernel config and materials to reproduce are available at:
+>>> https://download.01.org/0day-ci/archive/20260709/202607091054.7c96d6c6-lkp@intel.com
+>>>
+>>>
+>>>
