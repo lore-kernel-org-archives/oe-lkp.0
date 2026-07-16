@@ -1,235 +1,183 @@
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18832800
-	for <oe-lkp@lists.linux.dev>; Thu, 16 Jul 2026 00:06:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.181.97.72
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784160381; cv=none; b=Rg0nYWG1xes3ASfkSh/GtCmXnM0GlpP223hcb77MIfwCjh8G3KLoq46Ssp8eWkDhNZc1k2KJdNkhVucruOp3+GG7782xcYS8M9ghVDmWB1fnnJAQIG+Xi+1Rfh8hdP7DTKeHoMprp+InPtKVydZ58hhJ3tf+0BzGfFyZvRRJ8r0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784160381; c=relaxed/simple;
-	bh=loSeqtYK/NiwA8y+TJKqU21Bz/sXV4REkqmYxgZEsnI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=paFUO6xBuoGli2iMT1PN9I+wl75VCv+r1s33uYP1rNCngpvqvgGyUQKJUL4GzQ5v0V53qZAy4L60V5mTunI3chkKa/eKlPkxuoCDeEMYOMyJnXDEt1RCVKfiyzBhxFjB2E+PlFzIiop1GhcN7xL9t4sWj2k4wkNPKLDpe0PK2AI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=I-love.SAKURA.ne.jp; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp; arc=none smtp.client-ip=202.181.97.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=I-love.SAKURA.ne.jp
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp
-Received: from www262.sakura.ne.jp (localhost [127.0.0.1])
-	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 66G05doR008344;
-	Thu, 16 Jul 2026 09:05:39 +0900 (JST)
-	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from [192.168.1.6] (M106072072000.v4.enabler.ne.jp [106.72.72.0])
-	(authenticated bits=0)
-	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 66G05cIj008339
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-	Thu, 16 Jul 2026 09:05:38 +0900 (JST)
-	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <30ccdd3c-6353-4a0f-bdc7-230ec3bf4765@I-love.SAKURA.ne.jp>
-Date: Thu, 16 Jul 2026 09:05:38 +0900
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DE2C2F1FD7
+	for <oe-lkp@lists.linux.dev>; Thu, 16 Jul 2026 01:22:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.11
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784164984; cv=fail; b=FhM8TGPHqpZ+OCnjoG2CeGdnjN+338wZh3+JBcH04xb52CTD2+YobrlxUmXRRNudc7OFZngSk2AzGyTQ16jfeNlpTf7vJQpjGv5khnOss5nd25CLKLjhcXRXgj5b1/NXnYJGyDVmmIh/S38Pv/8G0t7Pc9e5m3W63zyGSWIqIrg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784164984; c=relaxed/simple;
+	bh=cJWtDeXb5V4rqOYClLTeSduo04W3fWUr0NLcNo4REos=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=C2edMipImdbt8hmqB6IGL26JkLZ9L0Ar8jaUjSSKj5Tnr2t4PQJ6OEjOQgfbX0bT5XDvl0XlVBv4ueTwNE+r5B6HoTyoF5QhNinKmKoMyYKe4sLYHosnQWNHombp/KnYGdRcG3pwwMfSSJNEb0+RsU3ed7Ilb81jpA+eLASRal8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=h3TXGIG+; arc=fail smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="h3TXGIG+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1784164977; x=1815700977;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=cJWtDeXb5V4rqOYClLTeSduo04W3fWUr0NLcNo4REos=;
+  b=h3TXGIG+6pHPEkiACmlTjkx9Hsh96foJqcZTQ95dspy3eIBYsGFy3mHA
+   Leu9pSNWYNi+wo2rge8dZPn7JHyYAsk5xq3R4Lu4Nuu/qL/eR61Q+qOMC
+   +cR4JKFpTv/X4c0VqAsowh/+bpdkDKQLEsS6L2DyJumlbHxrn0h26lr2V
+   CvDX5mJ2VnDWZh4oLn7hcHfMPk/ZRB8aebDuQzxcwuG4MfhYsDYcNfQAH
+   11Mzm2h7MJriTgabB+3lC/F9btASYemyo1aJNxz4+LYNPAn4eFJWC9OO6
+   y9X2g4jKNtHPdc/4wwsXvqCMNfs1aeZ3Cavajt1lBNZfUCoN1Fkg3YXKK
+   Q==;
+X-CSE-ConnectionGUID: /iuljPpzQcCdlRoFPrKj3g==
+X-CSE-MsgGUID: rclbfvjsTHelXM9OVtIaYw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11847"; a="95170813"
+X-IronPort-AV: E=Sophos;i="6.25,166,1779174000"; 
+   d="scan'208";a="95170813"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2026 18:22:53 -0700
+X-CSE-ConnectionGUID: pkU3FUWXRHaI5W46mwUQsQ==
+X-CSE-MsgGUID: REcP6lncSY2D59KFeLno9A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,166,1779174000"; 
+   d="scan'208";a="256404197"
+Received: from fmsmsx903.amr.corp.intel.com ([10.18.126.92])
+  by orviesa007.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2026 18:22:53 -0700
+Received: from FMSMSX901.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.43; Wed, 15 Jul 2026 18:22:52 -0700
+Received: from fmsedg903.ED.cps.intel.com (10.1.192.145) by
+ FMSMSX901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.43 via Frontend Transport; Wed, 15 Jul 2026 18:22:52 -0700
+Received: from CY3PR05CU001.outbound.protection.outlook.com (40.93.201.16) by
+ edgegateway.intel.com (192.55.55.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.43; Wed, 15 Jul 2026 18:22:50 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Ss3bAs1YVXDP8WxaOwk7NTheyXi53RgpTfh/keifhXDtAsW54RfmesghhhdLqJZ3HmKVqf9I3LUsgmXACym7uEjgHphHID1oSHa2ufc3eZOiuRaoTOzDjZdarhfGhjsyi13Ka+hj1Bxersn/Z9X4WpqX7lAGqt9EQRzGpb09O66TfrM25IXdJvhRH/0+cTouGno6byUKfzbzYCnjohH6oq1xmz1t8OHaCj5XZw5CMmZcxHX86uQ5LnqKF9PgIi8+2AVY0ZN5HquSOq+SkVUI1Lt8LErbM73sesd2DjDKtIIcXXj2r1Pvy7o2KCkDn1t0auGEu7R7xxAAbXTzfPvDeg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QITe8mcKxDGrLMsa5P4ImXZqUIdmR1/vu9F9jEVFyoU=;
+ b=CVDbt/LYdRB9G6Ucji+2snDS45IJR4z7WWKJ0+JsQnizCc2Hvcbq3GhkZP5ojd309vKpXpDU6zirdNBsTOYDNHJqqEM4x0qq61bbF6UqsQ9o2s145nTXk11+LpIgTweaFE/Ycdl1rOxPNny+0sQH9zVnh8tIwHaWf5EXB99zOegSgAVuk0QaqGWmCChHKsYVTswFPJytetbGGgGjwrAZKvZSWuZ3DHgcRCPsUb6XqAZ1dk0RT66Bsd9KxSgbUPZi03X3ldMn+loThFYz13zROEabxTXisf8gXQeyyW42MdJStVHOL1jwfZDXUHjin+KW55Br/C22V8eCV8K+a9j5aA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from PH0PR11MB5832.namprd11.prod.outlook.com (2603:10b6:510:141::7)
+ by SN7PR11MB6703.namprd11.prod.outlook.com (2603:10b6:806:268::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.223.10; Thu, 16 Jul
+ 2026 01:22:47 +0000
+Received: from PH0PR11MB5832.namprd11.prod.outlook.com
+ ([fe80::106e:78dd:4c96:d707]) by PH0PR11MB5832.namprd11.prod.outlook.com
+ ([fe80::106e:78dd:4c96:d707%5]) with mapi id 15.21.0223.008; Thu, 16 Jul 2026
+ 01:22:47 +0000
+Date: Thu, 16 Jul 2026 09:22:35 +0800
+From: Oliver Sang <oliver.sang@intel.com>
+To: Simon Schippers <simon.schippers@tu-dortmund.de>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Brett Sheffield
+	<brett@librecast.net>, <netdev@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <ltp@lists.linux.it>, Willem de Bruijn
+	<willemdebruijn.kernel@gmail.com>, Jason Wang <jasowangio@gmail.com>, "David
+ S . Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, "Jakub
+ Kicinski" <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, "Michael S .
+ Tsirkin" <mst@redhat.com>, Simon Horman <horms@kernel.org>, Jonathan Corbet
+	<corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, Andrew Lunn
+	<andrew+netdev@lunn.ch>, Tim Gebauer <tim.gebauer@tu-dortmund.de>,
+	<linux-doc@vger.kernel.org>, <oliver.sang@intel.com>
+Subject: Re: [PATCH net v3] tun/tap & vhost-net: make qdisc backpressure
+ opt-in via IFF_BACKPRESSURE
+Message-ID: <algyW7c79Vl1Ilq2@xsang-OptiPlex-9020>
+References: <202607151550.5d829a99-lkp@intel.com>
+ <1ecf0eb8-17ef-4f9c-ba87-da69d207e4d4@tu-dortmund.de>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <1ecf0eb8-17ef-4f9c-ba87-da69d207e4d4@tu-dortmund.de>
+X-ClientProxiedBy: KU0P306CA0052.MYSP306.PROD.OUTLOOK.COM
+ (2603:1096:d10:28::8) To PH0PR11MB5832.namprd11.prod.outlook.com
+ (2603:10b6:510:141::7)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: [PATCH v5] loop: Fix NULL pointer dereference in lo_rw_aio()
-To: Jens Axboe <axboe@kernel.dk>, Bart Van Assche <bvanassche@acm.org>,
-        Damien Le Moal <dlemoal@kernel.org>, Al Viro <viro@zeniv.linux.org.uk>
-Cc: Christoph Hellwig <hch@lst.de>, linux-block
- <linux-block@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-btrfs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        Christian Brauner <brauner@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>, Mark Brown <broonie@kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        oe-lkp@lists.linux.dev, kernel test robot <oliver.sang@intel.com>,
-        kbuild test robot <lkp@intel.com>, Hillf Danton <hdanton@sina.com>
-References: <20260714043834.554-1-hdanton@sina.com>
-Content-Language: en-US
-From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <20260714043834.554-1-hdanton@sina.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Virus-Status: clean
-X-Anti-Virus-Server: fsav404.rs.sakura.ne.jp
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR11MB5832:EE_|SN7PR11MB6703:EE_
+X-MS-Office365-Filtering-Correlation-Id: e7e57f20-04df-4a1a-001e-08dee2d8be97
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|23010399003|1800799024|366016|22082099003|18002099003|4143699003|10067099003|56012099006|11063799006;
+X-Microsoft-Antispam-Message-Info: BfqT8v5QqUvpV8vsOvVuXibJ97Rc7vP2rxB9ScZoU6DzWDA+EmtSlU8QfuXTct9crzo/EiqGHT69cn493i4wUPJMGqynnQugxFOT+tuqihTMUXhGlsZkanHfessC3w4TX16xvqSSFcagCRe7v7t9pD4zmdUa0CQE4+dX7NmCFEqGQOW0Skt62uC+fOys8SPapoqN3pzU8caJzWByzmRKVCP/9wDw4yMfMe6gBtNtb+Ih4yItYpIgotjw3AlmFveluE6AHXrtswRRfiYbKhjJCSlMiUOAcPrBHI8IoxdsYR2Jy2T2alI4nNl99AY0OIHK1megY6kVJRueVrB3bo9hYg8Y6UazWOkcE+3KsIMwlBll7/lFeTOrNtAitdQdfV6JSrXAQ+eB/Edgb/vy0vvbZJpcNQBmsKIxje6FYHr93KiAOc2X3wOVNnmxggXu3rYfDkNTROBpFvXPmP5U0qVUD7GCyD81+0AigcogWcaVinP4GsWUTUee3mqGNHBQUVPkma8kguL5pmiqyanTDNNDNmVLPWhVy6tVFtHWE5hISjTqQdEOzZulA/vNuBWqTO/cooqnnAkSvxAqU6GPeqZd+7QaPvT57l5MmtjFSA+XmAhDcPRKLypFlKg4kcEaYvVo
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5832.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(23010399003)(1800799024)(366016)(22082099003)(18002099003)(4143699003)(10067099003)(56012099006)(11063799006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9caDBpouZ06RV6BKTb8R3sURQxELFk3PNnFv/Cw1Sy5noqG+wsKBsq/qFoFY?=
+ =?us-ascii?Q?pynFWPkYYzaUUfWbmmyEqLJNZHxwdmsJVYwdWSCGjL0Fy3AlVjdQ2ichkvYZ?=
+ =?us-ascii?Q?wKYJHr0TI3wkm6r6ckF/t0wc/dR/Y2hTK6yosswVdMl28JthAiafa9f7bt04?=
+ =?us-ascii?Q?HZSmbNQLaebB3ETGv9MVYgXw0huCso16VmGbeokrRUSDzWgPpdN9f1aa1Exk?=
+ =?us-ascii?Q?KnFaG3Xy3ii3Jew+ie5RC0jU0fG5ZytRTxYgzLG6o/3NdeYOMHm7tcLl0Cy7?=
+ =?us-ascii?Q?wRlCMwqmhcRuSAM6cC3kdgBBDXsYZSS+2yTRh2L9onBtk4zzUOfXgBz81fEo?=
+ =?us-ascii?Q?AGJ384JJTmSvL7HKy2Yvjl7z/kwLcpabdykpRrmKHstwwfUpQZ38jgWYdZqj?=
+ =?us-ascii?Q?FgH3VtIuQNkHmZY7GHumiS8OMkG+VF69RSBni17Y0GNwBo1Vp3vqY0irwclu?=
+ =?us-ascii?Q?hrtxjjQ8yZNFOTnxjYc7nFJUg8AD0fD3Mo8ePHlLsN/LjC+nn1dQrgQEX5IY?=
+ =?us-ascii?Q?5YdpOG4BLs2g94bAcsnHu5YkB8V5tpK0qbw2szEe4jRn6WYdHFsZ5OiIHAYI?=
+ =?us-ascii?Q?eCRAIHe4jpw6yVjvf41cNWGlfB748NprSmdGbXBbUYo+wjnywZZeMz1+lS0x?=
+ =?us-ascii?Q?i/C9ffJY59n3OMXbP9FmA8Bjfm8kPxczZV+UFqbd/tmNyLEo48A4AS8bsGwD?=
+ =?us-ascii?Q?YeRxkUCyDL9d39MKM/5VqS6cDUFn0OGZUPH0QgqrG445GKaAqrBnT7reCVr0?=
+ =?us-ascii?Q?aUubeesYKsySwmx8G9GWxGNnkvW9p9LkjNUWz1s7O4Eu4d+ehE8bwYPNsKQS?=
+ =?us-ascii?Q?Kene9NcIijEXwls89V9B/Tpj5NWdXwgD3quSdXEd41YE4qDliJcILhluZj8D?=
+ =?us-ascii?Q?Ohh/HlylQL+yFvISLu7bK1O+s+GQuqEMFsHYybZjZZdKS/siqTFTggALzsAn?=
+ =?us-ascii?Q?caowEUbj25ODV6MGcO/P2ifUjCxxYeJNBEgFIqvZOoStZABbQph42cAEDD/7?=
+ =?us-ascii?Q?t3ZoeTK6zU3AmepDunPf4ldaPa3W3Ex87Gmj8m7EYoSTEbeO4OVuny/Ecaqh?=
+ =?us-ascii?Q?gj4ITxKwblsgeo4EzSlazgtKkTyA42h0l42fLfQGevuX8AHuwVDlzEnkzly7?=
+ =?us-ascii?Q?ZmqsKxRPHT+C2pPDmB1mJamC6xHYD+wMGf/CiR+DlN8C8FviPOGXP6cCpPer?=
+ =?us-ascii?Q?0Hmenac7qJasDD51bOWTBfsoZRS3Kk6YL1vEyO+Y/bE+Fqi85eMMsR4uXL3G?=
+ =?us-ascii?Q?LFnuDMfKZqjNoUabjisvHAhvHpOj5UXTJcSLHdEi1pFznbsFF9jLotnrzEl1?=
+ =?us-ascii?Q?BRHtxtS97KJ7y0FPv5YttI/B2mFBtWtBi9dvATwZcT4Md1MpVUBOJZTaOAZg?=
+ =?us-ascii?Q?l1LC9GzoCelmWNyr+zGgOZhgTH5s6DTp7Oz+ZLdLd+Eq5b7yxlJ/4ALm55fM?=
+ =?us-ascii?Q?4morJpwk44VLGVOmPF32A19+SrwzcCQ8xoUKStj8GESqkzWds2vIUmTfyWXs?=
+ =?us-ascii?Q?FF0igl3F7DqN5boCrq1BBNvuRhwSzXbYpiCjPnr3UE43Ysi7hRdzUXJ6ve5E?=
+ =?us-ascii?Q?SRlJqJB3vi144vAXwxO2oNbu6B5hmCyEbp9Cp6ud2zSFwfTmHZsFOLbXOkuL?=
+ =?us-ascii?Q?viBaFEe6+KITpdzI2rgqsU/GjpbAdeSk+JKUaPx96FCLSrxQT/OslzMP9MdN?=
+ =?us-ascii?Q?kdUQTtZi91O4CIWq++RqhKO59kz5JiqNgqDPW/1+ZFr4nzKsdPrlsLoTB6T4?=
+ =?us-ascii?Q?oozdZdYldQ=3D=3D?=
+X-Exchange-RoutingPolicyChecked: d17A5b7Le+h5eQbGbBgL5XKNWngZfgoxTrFM6kIYm6jaxltNKpFbhJ4TNzh93WHw5Lhz7jMzOZaMF0whtM84ATS/yUE20PN4zHjKBv4SfL2o26/prv94Lh0NZeTWDE5RYyXKngMGZ1c9L9xa6LrAn+OuEZYKOWlRGNimNOafL+/cgjM+TXRLaSZEn9dgUq0SDAqihngqo3h7zZcmI/EMhTG/pWSRjKsdE4tcyV4EE4F9NggxEtNGelJtUHkpyx/J6MR5OhavA40OURnLmByeJvyyXL7BAYZoaSbIlc4px5SIshmMQbapOWoS3Qzh48aloS+mgof6FYNgqiWXUd1fwQ==
+X-MS-Exchange-CrossTenant-Network-Message-Id: e7e57f20-04df-4a1a-001e-08dee2d8be97
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5832.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jul 2026 01:22:47.4138
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qOEptO739PP8YJbZXAZ/F10P2vavdBfDkE7sSo50m4vOXYyy02vTvV4W1hObbU+HbMlyi5qKcHVbJ1faNKIAew==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB6703
+X-OriginatorOrg: intel.com
 
-syzbot is reporting NULL pointer dereference in lo_rw_aio() [1][2].
-An analysis by the Gemini AI collaborator [3] considers that this problem
-is caused by a timing shift primarily exposed by commit 65565ca5f99b
-("block: unify the synchronous bi_end_io callbacks"), along with helper
-refactorings like commit 92c3737a2473 ("block: add a bio_submit_or_kill
-helper").
+hi, Simon Schippers,
 
-But due to difficulty of reproducing this race, discussion about what is
-happening and how to fix this problem is stalling. Also, we haven't
-identified how many filesystems are subjected to this problem.
+On Wed, Jul 15, 2026 at 04:32:26PM +0200, Simon Schippers wrote:
+> On 7/15/26 16:01, kernel test robot wrote:
+> > 
+> > 
+> > Hello,
+> > 
+> > kernel test robot noticed "ltp.ioctl03.fail" on:
+> 
+> ioctl03.c does not know about IFF_BACKPRESSURE which is introduced here,
+> consequently it fails.
+> See [1] where it compares TUN features with known_flags.
 
-Therefore, this patch introduces a grace period for flushing pending I/O
-requests (which should be a good thing from the perspective of defensive
-programming) so that we won't hit NULL pointer dereference problem, and
-also emits BUG: message in order to help filesystem developers identify
-the caller of an I/O request that failed to wait for completion so that
-filesystem developers can fix such caller to wait for completion.
+thanks a lot for information!
 
-Note that emitting BUG: message is enabled only if CONFIG_KCOV=y, for
-this check is a waste of computation resources for almost all users.
+> 
+> Thanks.
+> 
+> [1] Link: https://github.com/linux-test-project/ltp/blob/master/testcases/kernel/syscalls/ioctl/ioctl03.c#L82
+> 
 
-Link: https://syzkaller.appspot.com/bug?extid=cd8a9a308e879a4e2c28 [1]
-Link: https://syzkaller.appspot.com/bug?extid=bc273027d5643e48e5b3 [2]
-Link: https://lkml.kernel.org/r/fbb3edda-f108-4e5b-acf2-266f043f8125@I-love.SAKURA.ne.jp [3]
-Fixes: 65565ca5f99b ("block: unify the synchronous bi_end_io callbacks")
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
----
-syzbot has tested this patch (with debug printk() added) using linux-next,
-and I confirmed that this patch does not cause new problems for syzbot.
-
-I was expecting that Al Viro can reproduce xfs/259 problem with debug printk(),
-but I have to remove this patch (with debug printk() added) from linux-next
-because the debug printk() causes performance problem for unmount stress tests
-( https://lkml.kernel.org/r/202607151655.9d74999d-lkp@intel.com ).
-
-Anyway, like I have explained in
-https://lkml.kernel.org/r/9f8b5ab0-efbc-4cf3-a1f8-b43377416946@I-love.SAKURA.ne.jp ,
-I think that the xfs/259 problem should be addressed by updating the "umount" user,
-for the "target is busy" problem can be reproduced with 7.0 and 7.1 kernels if
-delay injection is used.
-
-Therefore, I think that we should proceed to the next step; i.e. identify
-who is issuing I/O requests too late and fix such users. But I had to stop
-testing this patch using linux-next before syzbot succeeds to find such users.
-
-We can't use "#syz test" because this problem has no reproducers. Since I can
-no longer continue floating debug printk() for this problem, sending this patch
-to upstream will become the only way to identify who is issuing I/O requests
-too late.
-
-drivers/block/loop.c | 83 ++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 81 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/block/loop.c b/drivers/block/loop.c
-index 310de0463beb..c3b607a3ddc4 100644
---- a/drivers/block/loop.c
-+++ b/drivers/block/loop.c
-@@ -85,8 +85,27 @@ struct loop_cmd {
- 	struct bio_vec *bvec;
- 	struct cgroup_subsys_state *blkcg_css;
- 	struct cgroup_subsys_state *memcg_css;
-+#ifdef CONFIG_KCOV
-+	unsigned long stack_entries[30];
-+	int stack_nr;
-+	pid_t pid;
-+	char comm[TASK_COMM_LEN];
-+#endif
- };
- 
-+static void loop_check_io_race(struct loop_device *lo, struct loop_cmd *cmd)
-+{
-+#ifdef CONFIG_KCOV
-+	if (unlikely(data_race(READ_ONCE(lo->lo_state)) == Lo_rundown &&
-+		     disk_openers(lo->lo_disk) == 0)) {
-+		pr_err("BUG: %s/%u is doing I/O request on loop%d in Lo_rundown state.\n",
-+		       cmd->comm, cmd->pid, lo->lo_number);
-+		printk("Call Trace:\n");
-+		stack_trace_print(cmd->stack_entries, cmd->stack_nr, 4);
-+	}
-+#endif
-+}
-+
- #define LOOP_IDLE_WORKER_TIMEOUT (60 * HZ)
- #define LOOP_DEFAULT_HW_Q_DEPTH 128
- 
-@@ -1743,8 +1762,59 @@ static void lo_release(struct gendisk *disk)
- 	need_clear = (lo->lo_state == Lo_rundown);
- 	mutex_unlock(&lo->lo_mutex);
- 
--	if (need_clear)
-+	if (need_clear) {
-+		/*
-+		 * Temporarily release disk->open_mutex in order to flush pending I/O
-+		 * requests before clearing the backing device.
-+		 *
-+		 * This is a layering violation. But since bdev->bd_disk->fops->release()
-+		 * (which is mapped to lo_release()) is the final function which
-+		 * blkdev_put_whole() from bdev_release() calls immediately before
-+		 * releasing disk->open_mutex, this changes nothing except opens a new
-+		 * race window for allowing disk->fops->open() (which is mapped to
-+		 * lo_open()) to be called.
-+		 *
-+		 * Even if lo_open() is called from blkdev_get_whole() due to this race,
-+		 * the Lo_rundown state guarantees that lo_open() will fail with -ENXIO.
-+		 * Thus, there will be effectively no change caused by this violation.
-+		 */
-+		mutex_unlock(&lo->lo_disk->open_mutex);
-+		/*
-+		 * Now that loop_queue_rq() sees lo->lo_state != Lo_bound,
-+		 * wait for already started loop_queue_rq() to complete.
-+		 */
-+		synchronize_rcu();
-+		/*
-+		 * Now that no more works are scheduled by loop_queue_rq(),
-+		 * wait for already scheduled works to complete.
-+		 */
-+		drain_workqueue(lo->workqueue);
-+		/*
-+		 * Now that no more AIO requests are scheduled by lo_rw_aio(),
-+		 * wait for already started AIO to complete.
-+		 *
-+		 * Due to synchronize_rcu() + drain_workqueue() sequence above,
-+		 * calling blk_mq_unfreeze_queue() immediately after blk_mq_freeze_queue()
-+		 * returns has to be safe, for loop_queue_rq() no longer schedules new
-+		 * lo_rw_aio() works and lo_rw_aio() no longer submits new AIO requests.
-+		 *
-+		 * Deferring blk_mq_unfreeze_queue() does not help because we are about
-+		 * to clear the backing device and drop the refcount for the backing device.
-+		 * There is nothing we can do if blk_mq_freeze_queue() fails to flush.
-+		 */
-+		blk_mq_unfreeze_queue(lo->lo_queue, blk_mq_freeze_queue(lo->lo_queue));
-+		/*
-+		 * Perform remaining cleanup, with disk->open_mutex held.
-+		 *
-+		 * The lo->lo_state should remain Lo_rundown despite we temporarily
-+		 * released disk->open_mutex, for I am the only and the last user of
-+		 * this loop device because lo_open() cannot succeed.
-+		 */
-+		mutex_lock(&lo->lo_disk->open_mutex);
-+		if (WARN_ON(data_race(READ_ONCE(lo->lo_state)) != Lo_rundown))
-+			return;
- 		__loop_clr_fd(lo);
-+	}
- }
- 
- static void lo_free_disk(struct gendisk *disk)
-@@ -1851,10 +1921,18 @@ static blk_status_t loop_queue_rq(struct blk_mq_hw_ctx *hctx,
- 	struct loop_cmd *cmd = blk_mq_rq_to_pdu(rq);
- 	struct loop_device *lo = rq->q->queuedata;
- 
-+#ifdef CONFIG_KCOV
-+	cmd->stack_nr = stack_trace_save(cmd->stack_entries, ARRAY_SIZE(cmd->stack_entries), 0);
-+	cmd->pid = current->pid;
-+	get_task_comm(cmd->comm, current);
-+#endif
-+
- 	blk_mq_start_request(rq);
- 
--	if (data_race(READ_ONCE(lo->lo_state)) != Lo_bound)
-+	if (data_race(READ_ONCE(lo->lo_state)) != Lo_bound) {
-+		loop_check_io_race(lo, cmd);
- 		return BLK_STS_IOERR;
-+	}
- 
- 	switch (req_op(rq)) {
- 	case REQ_OP_FLUSH:
-@@ -1897,6 +1975,7 @@ static void loop_handle_cmd(struct loop_cmd *cmd)
- 	int ret = 0;
- 	struct mem_cgroup *old_memcg = NULL;
- 
-+	loop_check_io_race(lo, cmd);
- 	if (write && (lo->lo_flags & LO_FLAGS_READ_ONLY)) {
- 		ret = -EIO;
- 		goto failed;
--- 
-2.52.0
-
-
+[...]
