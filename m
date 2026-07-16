@@ -1,100 +1,100 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24AEA411678
-	for <oe-lkp@lists.linux.dev>; Thu, 16 Jul 2026 10:32:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13C0041DDFF;
+	Thu, 16 Jul 2026 12:16:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784197981; cv=none; b=f/zOYkhxcM+ZbMxxlYth2Lq2z2/iXnILYxIUJ5SQ7f3dBUx1+8HA5OR2Dq1yp53UXKijCV6eRTSfYGBUpvqkxIyvh0iShAZkkP2JM1BfN/7F58KmrdabPgcfCUaEbOpDkGusgbiQmB85LIX/byN0ERVXXIvPMo+G8H086Cg5poU=
+	t=1784204205; cv=none; b=d+sVFun6zQrPSp9hfUwipLn+T+PvnwskLqp225CJSqbD1Rx6OU6uRJJIyrum2ZSf4q0crKRG6Bn7Fv9tCTgD7Dw/kX2STRLmYPvIAPgtaCAbx4RqHDuJ9nVJrYHnGdrcxYTvGAeEVnL/c9x+N2ZL7sf9Udpbq20K+9gC+/YmIQg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784197981; c=relaxed/simple;
-	bh=rkjv/SpOifKyavZEEIA9tjwYr5i07IoORLOPhKOxurU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=NowBCczIR1gn6REJfirs0oBNaGlGrR9wt/q+Uf2B4kb15/ANkllSExMj2hm2cyaIK2wVns+pgt9Lpa8UL2sy9Hvxe26K4foafHyGoMZoTL1VPOvhNq+xC4RFT7l1pYb7EnuWGWshEfIqu9HVlBAHDCkJFmrrpopf/wVrLnpN8MY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XBMhMZpZ; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784204205; c=relaxed/simple;
+	bh=RHnoUoVVBRHznZDjfg7p1zoSY/QFz6KSM7e+8oRx5t4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=T+h6qKBQhqG5/BSeEV/kS/bHC8nWGE6D/B8UUCMxsXb+XcjSImJrTklLmCyK6MtvgXrMJRDGXn2X1NoGWQunGFEb/X0FQS1gxcS8HIq8X/Y3EU2Qy/UDeXlfTCHP/1X31ZV/RAlBKKdZ3JaKT4THvvic/v2MaYa5gavRS+SdNl4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=C7b+FEw5; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XBMhMZpZ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 775CA1F00A3D;
-	Thu, 16 Jul 2026 10:32:58 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="C7b+FEw5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76C0B1F000E9;
+	Thu, 16 Jul 2026 12:16:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784197979;
-	bh=ABaZ+YcrtNMNCAwicFRs1ZvuJFo8JyIItRGawnP1JNc=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=XBMhMZpZWSt7gZDfuKvLQ715QK7nv0dLuG7vQftxEMaBGraCxU+NPf22zwRv+r6fU
-	 vfQQ39aPb0vsMLr5t//3nsew+G/hDq072aIMGKYjho0kgVOJ6Mb4mSY7VQPLeDp7sx
-	 1mSip7a1FmDHddAtR+9Y549puaxC5eGU1AGycKh9wz42MOYl9O7fnZKPDbtlQAgrm4
-	 DwidfaKVLlKfnUy0HHAooLdb4abHnVnII8B1dzEUdZzDcZP00yuyESbqokzju+ZnYa
-	 ISdIIMUH+vjER+Tthwa+OxJZWZGjrX3ETklHBVsM2YqHVCvB+7NxH6A0LYDP9071sb
-	 lped5wPDlr6LA==
-Message-ID: <040d41e3-26c2-4f69-b02e-41a814804d94@kernel.org>
-Date: Thu, 16 Jul 2026 19:32:56 +0900
+	s=k20260515; t=1784204185;
+	bh=OeY/RrnCDHeRA7waqEnCw2zQoIH3AdOyPp5nJdiYRUI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=C7b+FEw5oW4E/09NAyQh5OGXjrU634n8rTS8NN5msWGpky97UJYzngQcko/OfNo9H
+	 7MZyCCbaIAEGufoCKyGKIjODfzlMsW6yt1g2rulcjLtl/rlVAWIZvwKTeNC+JssUnT
+	 h0sqMU+7U4g/0sB2w7zjoXg/pFB/PDoIK9T1YUmtoKmfe7eqCmB8I3S+/aPXATfKeG
+	 Q0NNVAWvcK4Qb3QqYudhggsIgxEsf4dd96OQMfBo4oGCVxr7U+aCYGKtWv4gAU0MoG
+	 vCJ3RW6mMd6zZyJ8g79AMwBGhcKW6h/QF6tRBGeSR4F59aqJEEUZzRmlPWM1cCLhEL
+	 D+Z/FYd0Zuvbg==
+Date: Thu, 16 Jul 2026 13:16:19 +0100
+From: Mark Brown <broonie@kernel.org>
+To: Christoph Hellwig <hch@infradead.org>,
+	Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-block@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, linux-next@vger.kernel.org,
+	axboe@kernel.dk, Paul Moore <paul@paul-moore.com>,
+	James Morris <jmorris@namei.org>,
+	"Serge E. Hallyn" <serge@hallyn.com>
+Subject: Re: [linux-next:master] [loop]  d908729e74:
+ stress-ng.umount.ops_per_sec 100.0% regression
+Message-ID: <e75c9a7c-77dd-47aa-949f-27a937a64760@sirena.org.uk>
+References: <202607151655.9d74999d-lkp@intel.com>
+ <aleZammRRSVN4dl0@infradead.org>
+ <c625eb50-e474-4966-bf3b-e83d7e7d1750@sirena.org.uk>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [harry:kmalloc-no-objext-rfc-v1r3] [mm/slab] d6967566f4:
- RIP:mark_obj_codetag_empty
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
- Danielle Costantino <dcostantino@meta.com>,
- Shakeel Butt <shakeel.butt@linux.dev>, linux-mm@kvack.org
-References: <202607142131.f70bbad3-lkp@intel.com>
- <7bdfdc92-7e75-4dc6-9549-e75b46218b93@kernel.org>
- <aliMiGyj4cgBNIzQ@xsang-OptiPlex-9020>
-Content-Language: en-US
-From: Harry Yoo <harry@kernel.org>
-In-Reply-To: <aliMiGyj4cgBNIzQ@xsang-OptiPlex-9020>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="61mQimz+8MzkIz9g"
+Content-Disposition: inline
+In-Reply-To: <c625eb50-e474-4966-bf3b-e83d7e7d1750@sirena.org.uk>
+X-Cookie: Celebrity voices impersonated.
 
-Hi Oliver,
 
-On 7/16/26 4:47 PM, Oliver Sang wrote:
-> hi, Harry,
-> 
-> On Thu, Jul 16, 2026 at 11:27:11AM +0900, Harry Yoo wrote:
->>
->> Thanks for reporting!
->>
->> Indeed I've seen this false warning and it was fixed in v2.
->>
-> 
-> thanks a lot for information!
-> 
-> I remember I checked if the branch is latest when reporting, now I check again:
-> 
->   kmalloc-no-objext-rfc-v1r2
->   kmalloc-no-objext-rfc-v1r3
->   kmalloc-no-objext-v2r1    <-----
->   kmalloc-no-objext-v2r2
->   kmalloc-no-objext-v3r1
-> 
-> oh, I guess kmalloc-no-objext-v* is the following version to kmalloc-no-objext-rfc-v*,
-> am I right?
+--61mQimz+8MzkIz9g
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-That's correct.
+On Wed, Jul 15, 2026 at 03:57:22PM +0100, Mark Brown wrote:
+> On Wed, Jul 15, 2026 at 07:30:02AM -0700, Christoph Hellwig wrote:
 
-It usually starts w/ RFC, then at some point I drop RFC and
-advance the version number.
+> point where I think I have to do as Christoph suggests.  Looking at the
+> current contents of the tomoyo tree all I see is:
 
-For example,
+> Tetsuo Handa (6):
+>       lib/Kconfig.debug: add CONFIG_DEBUG_AID_FOR_SYZBOT option
+>       net: update dev_put()/dev_hold() debugging
+>       net: add "struct dst_entry" debugging
+>       loop: Fix NULL pointer dereference in lo_rw_aio()
+>       kcov: fix data corruption and race conditions on PREEMPT_RT by moving saved remote state to task_struct
+>       apparmor: temporarily disable in syzbot kernels.
 
-<name>-rfc-v1r1,
-<name>-rfc-v2r1
-<name>-rfc-v2r2 # drop RFC in the next version
-<name>-v3r1,
-<name>-v4r1,
-<name>-v4r2,
+> Absolutely none of which are obviously on topic for the tomoyo tree and
+> some of which are patches that people have previously raised concerns
+> with.  This is very disappointing to see.  I will check the status again
+> tomorrow but as things stand I think I need to drop the tomoyo
+> tree from -next.
 
-[...]
+Looking today I see that all these patches were dropped from the tree so
+I've left tomoyo in place, thanks for taking care of this Tetsuo.
 
-> will be more careful in the future. sorry for noise.
+--61mQimz+8MzkIz9g
+Content-Type: application/pgp-signature; name="signature.asc"
 
-No worries, and thanks for testing, as always!
+-----BEGIN PGP SIGNATURE-----
 
--- 
-Cheers,
-Harry / Hyeonggon
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmpYy5IACgkQJNaLcl1U
+h9AWbwf+LalYQS/hl3QxwcQit0fMn8PF/NHQ2mK5pM/8LWvNLQG5laomGTUjblwJ
+CrmU/rP6ODlTiWwPTv5M3t+9lJXtjjrd0d2tOD6IKPZsUmqJzriYVDUpbZW9M/aW
+QD9EkvubuFJW0chc/XHOoK9ciQJSH1kZnThLARHVmqn0A+bBbsw4el4Q1ZNjZ+f9
+Gkrlg66MqX56yPsCkTsX5xjCWwQEqpyM3z1y11H0ZRd5hIFbZohHw5FuQSl3BD2H
+fpuicDvOkg3m1R35bDOuJzoXC/7aB//qf+TL3OsB+o0glhrTD8+BOEdZvwJhNzSK
+wJUkwaQ+vjLP0iumFcjOzHRtsr5DFw==
+=DFfZ
+-----END PGP SIGNATURE-----
+
+--61mQimz+8MzkIz9g--
