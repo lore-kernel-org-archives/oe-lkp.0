@@ -1,75 +1,90 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02AB73502A3
-	for <oe-lkp@lists.linux.dev>; Mon, 20 Jul 2026 07:58:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57AD842CAE9;
+	Mon, 20 Jul 2026 14:29:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784534294; cv=none; b=OhF/fOdGgCLwzpJqkO3ZXk+2hfiwua2gVZkxWhbXh22rnyxgi+YHH1Q6RqSiyhq+KwzPhSV1juJTtyR+bIwxJHwrSNbHgGt/+iGdmooOw8J4ZeY4EUhtcRtaBqawYirgVhpurZ9VAYDSoGmd7TvfpVICwWiD6pP7D09eqA1D5uw=
+	t=1784557798; cv=none; b=JVTeInLXNQOULvGYEaXdzrizylX6QzRd7VX8PRnlel/vIUe5hC4bgpwsrNF0KjJcw8QVnWiBGplc/SmlVILYlwxT7ef0L4Mg8KmGt5miRYAxJcR6ttS8rniaKXBJgufvqbDhLgDgWYIFZGQLsi8XQ2ULVi0NYc+DlRkcQHn5VdE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784534294; c=relaxed/simple;
-	bh=z2pV5+m7oywp5F57tdzfLtRpSn1K0sQzxY2FXhn1+5s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tLwo9x/p5BcHTseXI7k6vwtOQFLzi0PP6IBtNJK5We9QmWfBfl2KPgVNyn6ms+8xWmx1UT3Omt1tLCma6qCVobhbFBSC1jOiLNPvgWbXuPSgNz5gZZivM1Xy2KiAYWwPF99Wv93tDOKJ6U092lOm9GHoL/gfPKOKAuO/dbh5bOk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 1D8E968BEB; Mon, 20 Jul 2026 09:58:02 +0200 (CEST)
-Date: Mon, 20 Jul 2026 09:58:01 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: Christoph Hellwig <hch@lst.de>, oe-lkp@lists.linux.dev, lkp@intel.com,
-	linux-kernel@vger.kernel.org, Carlos Maiolino <cem@kernel.org>,
-	Carlos Maiolino <cmaiolino@redhat.com>,
-	"Darrick J. Wong" <djwong@kernel.org>, linux-xfs@vger.kernel.org
-Subject: Re: [linus:master] [xfs]  9b64ca202f:
- fxmark.ssd_xfs_DRBH_4_bufferedio.works/sec 24.1% regression
-Message-ID: <20260720075801.GA18087@lst.de>
-References: <202607161601.867c143e-lkp@intel.com> <20260717064807.GA23992@lst.de> <alyHzqUcyw4+EIPp@xsang-OptiPlex-9020>
+	s=arc-20240116; t=1784557798; c=relaxed/simple;
+	bh=X61gKfZ16dz/eDfGeWsjCbEbo9rrjhHhVgQrQ3f1zdE=;
+	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
+	 Mime-Version:Content-Type; b=IBbCUNrYMkB3bHKWOllML9NXwg1Fb7GwOoLwapyAm5HbOIFt+FTxhyXkxVpudxRGGoUOpB8qF/7ne9cGpfu4CSW1XN57Gmnad1AN/lSEyjcaouPu8DqNU3ra3gx3BsjQlNwMUyyCjKWb76pq+oHnyy4HPipN+LtJnQTPvGSEYVk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZJOupfKs; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZJOupfKs"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 043AC1F000E9;
+	Mon, 20 Jul 2026 14:29:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1784557797;
+	bh=IBoDz8X8lKlcSxY2Wrt7FDQtjKk9jl7QKKFHHmDBqPQ=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=ZJOupfKssRpZbOVVDc2bH6py6VCJLbcwIP+8UMIzyWsdaMBIAbq0c2t2O/QVU1RsA
+	 RYIqllRmvXRVEAsIiLH/f0x6MRil4ZqMrS3ME7ppJiMuBwjGn9OLJ9iLTLuoqFwyig
+	 3hNJsO3riynkME2ftgqTbMgTxUb0p1vSPF6h3hQuJXVQvnYiTR3B2j6bXSQ8Lcsy68
+	 4IbvHXNIhIFT88m/3Gn+57HLH3+jHXEI8rYuDzAvBusinEglKXtAYcOzQ/cDYfwymX
+	 77VRWdhqs5XEAjxOyRL9mSHIx/fMThTC0ZOs+aydAyp89esG2OIjW4GAzaoHOhCrG8
+	 3MDT8Rx+UInzw==
+Date: Mon, 20 Jul 2026 23:29:52 +0900
+From: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: Steven Rostedt <rostedt@goodmis.org>, <oe-lkp@lists.linux.dev>,
+ <lkp@intel.com>, <linux-kernel@vger.kernel.org>, Shuah Khan
+ <skhan@linuxfoundation.org>, Masami Hiramatsu <mhiramat@kernel.org>,
+ <linux-trace-kernel@vger.kernel.org>
+Subject: Re: [linus:master] [selftests/tracing]  c5c413534d:
+ kselftests-bpf.ftrace.ftracetest-ktap._instance_event_trigger_-_test_poll_wait_on_histogram.fail
+Message-Id: <20260720232952.94b33d59eddb69cf6457ded4@kernel.org>
+In-Reply-To: <202607161651.ab0a5bf6-lkp@intel.com>
+References: <202607161651.ab0a5bf6-lkp@intel.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alyHzqUcyw4+EIPp@xsang-OptiPlex-9020>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Sun, Jul 19, 2026 at 04:16:14PM +0800, Oliver Sang wrote:
-> hi, Christoph Hellwig,
-> 
-> On Fri, Jul 17, 2026 at 08:48:07AM +0200, Christoph Hellwig wrote:
-> > On Thu, Jul 16, 2026 at 09:13:19PM +0800, kernel test robot wrote:
-> > > 
-> > > 
-> > > Hello,
-> > > 
-> > > kernel test robot noticed a 24.1% regression of fxmark.ssd_xfs_DRBH_4_bufferedio.works/sec on:
-> > > 
-> > 
-> > This looks really odd.  While the patch adds a bit more computation,
-> > that is very cheap shifting and masking.  
-> 
-> in order to avoid the false positive, we rebuilt the kernel and rerun tests
-> on both 9b64ca202f and its parent. though the data has some differences with
-> last time, the regression trend is still similar - 21.8% regression this time.
-> 
-> 
-> > So the only theory I have here
-> > is that this somehow affects the inode data layout.  Can you re-run this
-> > with the patch below applied on top of commit
-> > 9b64ca202f364a6bf8e19bdd20953bc2d776c67f ?
-> 
-> yeah, but applying your patch upon 9b64ca202f, we saw the regression recovered.
-> 
-> from average data, it now becomes even little better than the parent of
-> 9b64ca202f, i.e. caffb4252c, but since the data is not very stable - 4% stddev
-> for caffb4252c and 6% stddev for bd79e961ea, we cannot call +3.1% a valid
-> improvement according to our bot's rules.
+On Thu, 16 Jul 2026 22:30:11 +0800
+kernel test robot <oliver.sang@intel.com> wrote:
 
-Already, so this must be something about cache line sharing.  I'll try to get
-hold of a big enough test box to see if I can reproduce this, in the worst
-case we'll have to just add back the padding for now.
+> 
+> 
+> 
+> Hello,
+> 
+> in fact, we found below two test cases randomly failed upon c5c413534d, while
+> keep succeed on parent:
+> 
+> =========================================================================================
+> tbox_group/testcase/rootfs/kconfig/compiler/group:
+>   igk-rpl-d04/kselftests-bpf/debian-13-x86_64-20250902.cgz/x86_64-rhel-9.4-bpf/gcc-14/ftrace
+> 
+> 22a78be4123dce81 c5c413534d40eb4c982f1794e62
+> ---------------- ---------------------------
+>        fail:runs  %reproduction    fail:runs
+>            |             |             |
+>            :31          52%          16:32    kselftests-bpf.ftrace.ftracetest-ktap._instance_event_trigger_-_test_poll_wait_on_histogram.fail
+>            :31          29%           9:32    kselftests-bpf.ftrace.ftracetest-ktap.event_trigger_-_test_poll_wait_on_histogram.fail
+> 
+> 
+> 
+> kernel test robot noticed "kselftests-bpf.ftrace.ftracetest-ktap._instance_event_trigger_-_test_poll_wait_on_histogram.fail" on:
+> 
+> commit: c5c413534d40eb4c982f1794e62813f926aba747 ("selftests/tracing: Have trigger-hist-poll.tc use sched_process_exit")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> 
+> [test failed on linux-next/master 49362394dad7df66c274c867a271394c10ca2bb8]
+
+Hmm, this seems like a scheduler (event) behavior is different from what
+the test expected.
+
+Steve, I think we should use another deterministic events.
+
+Thank you,
+
+-- 
+Masami Hiramatsu (Google) <mhiramat@kernel.org>
