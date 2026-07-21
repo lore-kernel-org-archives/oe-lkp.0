@@ -1,112 +1,109 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BABC93EFFA9;
-	Tue, 21 Jul 2026 00:20:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41F833659E8;
+	Tue, 21 Jul 2026 00:38:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784593242; cv=none; b=ch0gz8RP97dYkkLbnOksjS/qLawMuJZ8yoAUmEm12of5BP3EO5/n3+l8qcmYLfqZHrcCXSC/HwjIenHqfBikw4I63pIC7tDH4D7+MWNEjGIVo3xeIr3VVweGqMgzU/5HmZBOVAz4S7mGUahDEM/XChMlAoDf/Zzgw3zDHGLm/W8=
+	t=1784594316; cv=none; b=L1u7j2d0wWO6NoWeLehkHOOuvn1ReeDZFR942+3Vb0W/IQScWw6WZTHPZKedy+zpL3CP6LO5jllyq33Il+YmL8GrPI+4XUxJOKZRygh56VH+ENO2lyJk6Y/bQW0TMlJclUimJlteybeGwNXygqha2R4hbt2tuCugwrkCSYZxXZc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784593242; c=relaxed/simple;
-	bh=1h4JxwJyO8SIcXEX92WqeDuHL+4W9pfyCgXRgGwcH3o=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=COMSU0d7g27oDwDYw09tIIZR+0KDuS8BQjEvYLmdCYLTGUS7xrUvyW1qEzdhLwLKIovFPghDld+ajvBPdKIYlvAAXCuD5QJ7lUDSkwh65nIqOtF1C/2p6BCSrbVweI/ipAHRailKU6aw+0BziUDFpdv5loAIlDzEEXe+3xtPbS8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZfFKlArK; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784594316; c=relaxed/simple;
+	bh=jBddrH4ZJlWSqb48y2KqI+9vkGOcIvkKn1uFlDMLDN0=;
+	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
+	 Mime-Version:Content-Type; b=MYa4BLhWTgO79EBdvWI7VHepwDVL8/0GkRZKi94IJ9xcEaaqlFzNWdxWSuEbX9DSAXWGGu7LmYviIaSrBzAfFX69WrKyG+PawMdXGQreoYvmmaQzxoZukNc1iiRICglw25pswmI4Gc2m1okxz6YySlaG9LyMzZqb5x3RpTkYcDo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=heTHd6jQ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZfFKlArK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88BE51F000E9;
-	Tue, 21 Jul 2026 00:20:39 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="heTHd6jQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 664151F000E9;
+	Tue, 21 Jul 2026 00:38:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784593241;
-	bh=wFEXui/GukxLmbOyD/Rw1YoanC5pjuLSP/WS5Y5GA5M=;
-	h=From:To:Cc:Subject:Date;
-	b=ZfFKlArKTfxHH90NJ3L8nDSxc5eCQnriojq4jf05lLOyR8G/wC6Q6c4vsHpC5RDlw
-	 8HEMSxWcSdTkJLVbYmYONZ0uHxFHqRf84OlGvvkN7ZEIQZl4iIxOgy01enh75IQU0Z
-	 tEggriw6q4PK2OxUxttr658mE7XogpMUBMxlv4wHdnDroQ3TfGAxpTkOdrfYUPhAWB
-	 o4BPTTkIeiRBMW0MXG/RHSHzfmCb53SLRFokOWCXfZz/498YhfK+il2W4MR6jKAhK9
-	 8FMA8rLhZXd8lcbz+4LvTAT8V0E5yDCuQDnO1ZimPHtAyaoeoE2Ytd8peoza5fn4uA
-	 2MuhAWzvPYtag==
-From: "Masami Hiramatsu (Google)" <mhiramat@kernel.org>
-To: Steven Rostedt <rostedt@goodmis.org>
-Cc: oe-lkp@lists.linux.dev,
-	lkp@intel.com,
-	linux-kernel@vger.kernel.org,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	linux-trace-kernel@vger.kernel.org,
-	oliver.sang@intel.com
-Subject: [PATCH] selftests/tracing: Fix flakiness in trigger-hist-poll.tc by waiting for task exit
-Date: Tue, 21 Jul 2026 09:20:36 +0900
-Message-ID: <178459323652.354837.10711230683477156733.stgit@devnote2>
-X-Mailer: git-send-email 2.43.0
-User-Agent: StGit/0.19
+	s=k20260515; t=1784594314;
+	bh=HWYzSSvEdfLM5OpyP97q8ZolkKLSQ8fjHRgAnnAJoWQ=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=heTHd6jQTTuFpcKXP+VjDTuE4fp3Om4KiJr37BEVSYbptxVxJn2rQAdpOdgGFOovX
+	 h5XTY7gbuOMsw68Y7tf/b5/5ORDbncvRydX2XMJ7lU2x32N7h/Nubd4Vuim3GwnvGs
+	 u6CocT9OQsLyoEd9xp0/Cfvojx7Amfu/MyuxPUxDzRq/u40ph34v1m8Y7vmJl2wQdl
+	 L0qjA+oXRwnOjpQpNfaEnWpVxNb3S3JCUzrnnx6PxC1Pnn5YhbSiNTMIetdLnSJAJk
+	 M2h3ImEbFpA6oV40TggXhZ0FwPbutrOr+TtKmPMXDjeBJgI9xwM24+oXAbyVny2GAd
+	 jaIo125zrRnvQ==
+Date: Tue, 21 Jul 2026 09:38:30 +0900
+From: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+To: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Cc: kernel test robot <oliver.sang@intel.com>, Steven Rostedt
+ <rostedt@goodmis.org>, <oe-lkp@lists.linux.dev>, <lkp@intel.com>,
+ <linux-kernel@vger.kernel.org>, Shuah Khan <skhan@linuxfoundation.org>,
+ <linux-trace-kernel@vger.kernel.org>
+Subject: Re: [linus:master] [selftests/tracing]  c5c413534d:
+ kselftests-bpf.ftrace.ftracetest-ktap._instance_event_trigger_-_test_poll_wait_on_histogram.fail
+Message-Id: <20260721093830.bb1d57a6a6d30c3f8651a292@kernel.org>
+In-Reply-To: <20260720232952.94b33d59eddb69cf6457ded4@kernel.org>
+References: <202607161651.ab0a5bf6-lkp@intel.com>
+	<20260720232952.94b33d59eddb69cf6457ded4@kernel.org>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-From: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+On Mon, 20 Jul 2026 23:29:52 +0900
+Masami Hiramatsu (Google) <mhiramat@kernel.org> wrote:
 
-Commit c5c413534d40 ("selftests/tracing: Have trigger-hist-poll.tc use
-sched_process_exit") changed the target event from sched_process_free to
-sched_process_exit to avoid timeouts under CONFIG_RCU_LAZY.
+> On Thu, 16 Jul 2026 22:30:11 +0800
+> kernel test robot <oliver.sang@intel.com> wrote:
+> 
+> > 
+> > 
+> > 
+> > Hello,
+> > 
+> > in fact, we found below two test cases randomly failed upon c5c413534d, while
+> > keep succeed on parent:
+> > 
+> > =========================================================================================
+> > tbox_group/testcase/rootfs/kconfig/compiler/group:
+> >   igk-rpl-d04/kselftests-bpf/debian-13-x86_64-20250902.cgz/x86_64-rhel-9.4-bpf/gcc-14/ftrace
+> > 
+> > 22a78be4123dce81 c5c413534d40eb4c982f1794e62
+> > ---------------- ---------------------------
+> >        fail:runs  %reproduction    fail:runs
+> >            |             |             |
+> >            :31          52%          16:32    kselftests-bpf.ftrace.ftracetest-ktap._instance_event_trigger_-_test_poll_wait_on_histogram.fail
+> >            :31          29%           9:32    kselftests-bpf.ftrace.ftracetest-ktap.event_trigger_-_test_poll_wait_on_histogram.fail
+> > 
+> > 
+> > 
+> > kernel test robot noticed "kselftests-bpf.ftrace.ftracetest-ktap._instance_event_trigger_-_test_poll_wait_on_histogram.fail" on:
+> > 
+> > commit: c5c413534d40eb4c982f1794e62813f926aba747 ("selftests/tracing: Have trigger-hist-poll.tc use sched_process_exit")
+> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> > 
+> > [test failed on linux-next/master 49362394dad7df66c274c867a271394c10ca2bb8]
+> 
+> Hmm, this seems like a scheduler (event) behavior is different from what
+> the test expected.
+> 
+> Steve, I think we should use another deterministic events.
 
-However, sched_process_exit fires inside do_exit() before the exiting task
-completes teardown and before the parent shell reaps it. When poll unblocks
-upon sched_process_exit, checking whether /proc/${BGPID} exists immediately
-after poll returns causes a race condition between poll exiting and the
-parent shell reaping the child process.
+I've sent a fix.
 
-Fix this by waiting for the background sleep process (wait ${BGPID}) and
-removing the fragile /proc/${BGPID} check. Checking whether the event was
-logged in the trace buffer already verifies that poll did not exit before
-the event occurred.
+https://lore.kernel.org/all/178459323652.354837.10711230683477156733.stgit@devnote2/
 
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Closes: https://lore.kernel.org/oe-lkp/202607161651.ab0a5bf6-lkp@intel.com
-Fixes: c5c413534d40 ("selftests/tracing: Have trigger-hist-poll.tc use sched_process_exit")
-Signed-off-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
----
- .../ftrace/test.d/trigger/trigger-hist-poll.tc     |   14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+But this drops 2 checkpoints. I think we need to use another deterministic
+event, like trace_marker (but trace_marker does not support histogram trigger)
 
-diff --git a/tools/testing/selftests/ftrace/test.d/trigger/trigger-hist-poll.tc b/tools/testing/selftests/ftrace/test.d/trigger/trigger-hist-poll.tc
-index 04eb8546fc07..d54d54f9ec77 100644
---- a/tools/testing/selftests/ftrace/test.d/trigger/trigger-hist-poll.tc
-+++ b/tools/testing/selftests/ftrace/test.d/trigger/trigger-hist-poll.tc
-@@ -38,11 +38,7 @@ BGPID=$!
- ${POLL} -I -t 4000 ${EVENT}/hist
- echo 0 > tracing_on
- 
--if [ -d /proc/${BGPID} ]; then
--  echo "poll exits too soon"
--  kill -KILL ${BGPID} ||:
--  exit_fail
--fi
-+wait ${BGPID} 2>/dev/null ||:
- 
- if ! grep -qw "sleep" trace; then
-   echo "poll exits before event happens"
-@@ -60,11 +56,7 @@ BGPID=$!
- ${POLL} -P -t 4000 ${EVENT}/hist
- echo 0 > tracing_on
- 
--if [ -d /proc/${BGPID} ]; then
--  echo "poll exits too soon"
--  kill -KILL ${BGPID} ||:
--  exit_fail
--fi
-+wait ${BGPID} 2>/dev/null ||:
- 
- if ! grep -qw "sleep" trace; then
-   echo "poll exits before event happens"
-@@ -72,3 +64,5 @@ if ! grep -qw "sleep" trace; then
- fi
- 
- exit_pass
-+
-+
+Thanks,
 
+
+> 
+> Thank you,
+> 
+> -- 
+> Masami Hiramatsu (Google) <mhiramat@kernel.org>
+
+
+-- 
+Masami Hiramatsu (Google) <mhiramat@kernel.org>
