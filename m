@@ -1,109 +1,80 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from akranes.kaiser.cx (akranes.kaiser.cx [152.53.16.207])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41F833659E8;
-	Tue, 21 Jul 2026 00:38:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0592D471265;
+	Tue, 21 Jul 2026 20:06:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=152.53.16.207
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784594316; cv=none; b=L1u7j2d0wWO6NoWeLehkHOOuvn1ReeDZFR942+3Vb0W/IQScWw6WZTHPZKedy+zpL3CP6LO5jllyq33Il+YmL8GrPI+4XUxJOKZRygh56VH+ENO2lyJk6Y/bQW0TMlJclUimJlteybeGwNXygqha2R4hbt2tuCugwrkCSYZxXZc=
+	t=1784664419; cv=none; b=prDyLWt5I/WvDzd5P4s0CFr+rOhx76V5eEQMwrhnC+qfrCOOTdYnfLID3i9NxJZSN/lUtWa+YAhTgON+VQ7qbAVGjUPG1E7rl3BJZZqU4uzv0qbN18fOow0q/hQ5qKCUnNf3GBRU0nruzbIDfFXZxgUmhR9jfH7wX1vuuPZMgFM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784594316; c=relaxed/simple;
-	bh=jBddrH4ZJlWSqb48y2KqI+9vkGOcIvkKn1uFlDMLDN0=;
-	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=MYa4BLhWTgO79EBdvWI7VHepwDVL8/0GkRZKi94IJ9xcEaaqlFzNWdxWSuEbX9DSAXWGGu7LmYviIaSrBzAfFX69WrKyG+PawMdXGQreoYvmmaQzxoZukNc1iiRICglw25pswmI4Gc2m1okxz6YySlaG9LyMzZqb5x3RpTkYcDo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=heTHd6jQ; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="heTHd6jQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 664151F000E9;
-	Tue, 21 Jul 2026 00:38:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784594314;
-	bh=HWYzSSvEdfLM5OpyP97q8ZolkKLSQ8fjHRgAnnAJoWQ=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=heTHd6jQTTuFpcKXP+VjDTuE4fp3Om4KiJr37BEVSYbptxVxJn2rQAdpOdgGFOovX
-	 h5XTY7gbuOMsw68Y7tf/b5/5ORDbncvRydX2XMJ7lU2x32N7h/Nubd4Vuim3GwnvGs
-	 u6CocT9OQsLyoEd9xp0/Cfvojx7Amfu/MyuxPUxDzRq/u40ph34v1m8Y7vmJl2wQdl
-	 L0qjA+oXRwnOjpQpNfaEnWpVxNb3S3JCUzrnnx6PxC1Pnn5YhbSiNTMIetdLnSJAJk
-	 M2h3ImEbFpA6oV40TggXhZ0FwPbutrOr+TtKmPMXDjeBJgI9xwM24+oXAbyVny2GAd
-	 jaIo125zrRnvQ==
-Date: Tue, 21 Jul 2026 09:38:30 +0900
-From: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-To: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Cc: kernel test robot <oliver.sang@intel.com>, Steven Rostedt
- <rostedt@goodmis.org>, <oe-lkp@lists.linux.dev>, <lkp@intel.com>,
- <linux-kernel@vger.kernel.org>, Shuah Khan <skhan@linuxfoundation.org>,
- <linux-trace-kernel@vger.kernel.org>
-Subject: Re: [linus:master] [selftests/tracing]  c5c413534d:
- kselftests-bpf.ftrace.ftracetest-ktap._instance_event_trigger_-_test_poll_wait_on_histogram.fail
-Message-Id: <20260721093830.bb1d57a6a6d30c3f8651a292@kernel.org>
-In-Reply-To: <20260720232952.94b33d59eddb69cf6457ded4@kernel.org>
-References: <202607161651.ab0a5bf6-lkp@intel.com>
-	<20260720232952.94b33d59eddb69cf6457ded4@kernel.org>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	s=arc-20240116; t=1784664419; c=relaxed/simple;
+	bh=4vtiVO6EBJ14VnSGK6Xjq0LKSP7NwzXM5F9gL2KrXL0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=p7bgTUOo4M1mkx16zE2WloDXRBTU1GmcLFdX6GABYkZy8j+iACOz1vSfrLe6zFwI3QGx1aF1WxWc/RSI63bIZK+yXjb3fuYuA0LWd5/NUz87rqwUAo1RGRh+b+qdYcYrYxTJhsH5ZNWlqcdEYaqva3JmyTlFF8qgeugr59c6+Xg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kaiser.cx; spf=pass smtp.mailfrom=kaiser.cx; arc=none smtp.client-ip=152.53.16.207
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kaiser.cx
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kaiser.cx
+Received: from ipservice-092-209-184-216.092.209.pools.vodafone-ip.de ([92.209.184.216] helo=nb282.user.codasip.com)
+	by akranes.kaiser.cx with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.98.2)
+	(envelope-from <martin@kaiser.cx>)
+	id 1wmGjl-000000023vq-1qeh;
+	Tue, 21 Jul 2026 22:06:45 +0200
+From: Martin Kaiser <martin@kaiser.cx>
+To: Masami Hiramatsu <mhiramat@kernel.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Shuah Khan <shuah@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	linux-trace-kernel@vger.kernel.org,
+	linux-kselftest@vger.kernel.org,
+	oe-lkp@lists.linux.dev,
+	lkp@intel.com,
+	Martin Kaiser <martin@kaiser.cx>,
+	kernel test robot <oliver.sang@intel.com>
+Subject: [PATCH] selftests/ftrace: allow relative paths in eprobe test
+Date: Tue, 21 Jul 2026 22:05:59 +0200
+Message-ID: <20260721200612.1749777-1-martin@kaiser.cx>
+X-Mailer: git-send-email 2.43.7
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-On Mon, 20 Jul 2026 23:29:52 +0900
-Masami Hiramatsu (Google) <mhiramat@kernel.org> wrote:
+The add/remove eprobe test installs an eprobe for the openat syscall,
+runs ls and checks the filenames that were opened.
 
-> On Thu, 16 Jul 2026 22:30:11 +0800
-> kernel test robot <oliver.sang@intel.com> wrote:
-> 
-> > 
-> > 
-> > 
-> > Hello,
-> > 
-> > in fact, we found below two test cases randomly failed upon c5c413534d, while
-> > keep succeed on parent:
-> > 
-> > =========================================================================================
-> > tbox_group/testcase/rootfs/kconfig/compiler/group:
-> >   igk-rpl-d04/kselftests-bpf/debian-13-x86_64-20250902.cgz/x86_64-rhel-9.4-bpf/gcc-14/ftrace
-> > 
-> > 22a78be4123dce81 c5c413534d40eb4c982f1794e62
-> > ---------------- ---------------------------
-> >        fail:runs  %reproduction    fail:runs
-> >            |             |             |
-> >            :31          52%          16:32    kselftests-bpf.ftrace.ftracetest-ktap._instance_event_trigger_-_test_poll_wait_on_histogram.fail
-> >            :31          29%           9:32    kselftests-bpf.ftrace.ftracetest-ktap.event_trigger_-_test_poll_wait_on_histogram.fail
-> > 
-> > 
-> > 
-> > kernel test robot noticed "kselftests-bpf.ftrace.ftracetest-ktap._instance_event_trigger_-_test_poll_wait_on_histogram.fail" on:
-> > 
-> > commit: c5c413534d40eb4c982f1794e62813f926aba747 ("selftests/tracing: Have trigger-hist-poll.tc use sched_process_exit")
-> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> > 
-> > [test failed on linux-next/master 49362394dad7df66c274c867a271394c10ca2bb8]
-> 
-> Hmm, this seems like a scheduler (event) behavior is different from what
-> the test expected.
-> 
-> Steve, I think we should use another deterministic events.
+Commit 206b25c09080 ("tracing: eprobe: read the complete FILTER_PTR_STRING
+pointer") fixed access to some string fields in eprobes. This allows for
+dereferencing more filenames. In some cases, the log now shows a file
+with a relative path instead of "(fault)". A relative path makes the
+test fail.
 
-I've sent a fix.
+Relax the filename checks to fix the test. Allow shared libraries and
+locale configs that use a relative path.
 
-https://lore.kernel.org/all/178459323652.354837.10711230683477156733.stgit@devnote2/
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Closes: https://lore.kernel.org/oe-lkp/202607151010.b68428e1-lkp@intel.com
+Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+---
+ .../selftests/ftrace/test.d/dynevent/add_remove_eprobe.tc      | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-But this drops 2 checkpoints. I think we need to use another deterministic
-event, like trace_marker (but trace_marker does not support histogram trigger)
-
-Thanks,
-
-
-> 
-> Thank you,
-> 
-> -- 
-> Masami Hiramatsu (Google) <mhiramat@kernel.org>
-
-
+diff --git a/tools/testing/selftests/ftrace/test.d/dynevent/add_remove_eprobe.tc b/tools/testing/selftests/ftrace/test.d/dynevent/add_remove_eprobe.tc
+index c300eb020262..baceeca7ccdf 100644
+--- a/tools/testing/selftests/ftrace/test.d/dynevent/add_remove_eprobe.tc
++++ b/tools/testing/selftests/ftrace/test.d/dynevent/add_remove_eprobe.tc
+@@ -22,7 +22,8 @@ ls
+ echo 0 > events/eprobes/$EPROBE/enable
+ 
+ content=`grep '^ *ls-' trace | grep 'file='`
+-nocontent=`grep '^ *ls-' trace | grep 'file=' | grep -v -e '"/' -e '"."' -e '(fault)' ` || true
++nocontent=`grep '^ *ls-' trace | grep 'file=' | \
++	   grep -v -e '"/' -e '.so' -e 'locale' -e '"."' -e '(fault)'` || true
+ 
+ if [ -z "$content" ]; then
+ 	exit_fail
 -- 
-Masami Hiramatsu (Google) <mhiramat@kernel.org>
+2.43.7
+
