@@ -1,192 +1,190 @@
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5ACF73A783F
-	for <oe-lkp@lists.linux.dev>; Tue, 28 Jul 2026 05:25:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FB023A963E
+	for <oe-lkp@lists.linux.dev>; Tue, 28 Jul 2026 10:33:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785216348; cv=none; b=QzZLIhass9JtEAYe8q22ETXs0pq9lcmcJ1GNUV3YxX+IwZdtc3UndG/mgDeDR9ZjLDBE0SNqdMRLLpSk/lfdLnN0qUbIFk1EP21AZzXuezS2kCYRWebnsQhkmJYshd4b8kuXuJ9Qfm7K2/2Wg4IBHnwI5gtTiBnV9n1hecKMOF8=
+	t=1785234816; cv=none; b=gsCyRgX/TZG9mWZlE6QWpsX4+/lpCi+DjYcRJjSJsyuITtxpTv+QX0+oX55z/V08pv11Nh6ZSR4PkwopQqmXgSE3Folo/vgCcLBWiA27BS5RpzHL59A7dr4hvY4VuaeY6xOZCXb3ewrjGM54VRMCaZ2fTaaCzIREIGMvo3dEYxg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785216348; c=relaxed/simple;
-	bh=zEfKElDmqeC3lqlwwNQaWgYZXm9HUEgqpQbdsNE+vX8=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=aNBxS0Jl2LpRG8foFHy8/UoaJp2lu7FW8Eta4TJ3Mntk9NEgUsqsj1Ad9oaD2iw8V3+k6GE432MueSUWAK05gjH0sWr8GtCsJKKHCq1wPSd0h0cvq39FA8Sa2UM2hb62KALhO4vLqFEZwkz2/zvPjqSNoPyijk1flXbbwnY9pVQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=c2obDMJP; arc=none smtp.client-ip=209.85.160.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1785234816; c=relaxed/simple;
+	bh=JEt36yDDZEL76dFXO9sxOTJSXmNdJgGVjufpHh89Ko8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=EsBzjo6FcKXS9Wcg123VZSdlLAtARa6C1HRrHOwj0jetUjcIUn369T0ngX1WQULOfAFJiehnWdptSqXu1TUrZqTvV7meUT1LOY47I/GBEKjw///KvG44JcaeF5WDvnBU0IsJm3Sb1RV9XcH88N588I4ncONvYARG678pgk5g7Vk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=hmspDYhX; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=dfv9hSEH; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=vrM7+Kpp; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=15VO8SDD; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="c2obDMJP"
-Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-5218927884fso36819161cf.3
-        for <oe-lkp@lists.linux.dev>; Mon, 27 Jul 2026 22:25:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785216346; x=1785821146; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=rBznR6Jhz6jAQdgNETeOJVk7gwSsazLfaU1tbs21Zf0=;
-        b=c2obDMJP3n5KJXGjquK/IGIVqU3J5kStHWWaMph7vTSEZYw//jG8hvxVKhGORpIwpw
-         CYuJZVNlyNNMeNUdmk/iZG9o+FK+bOk/6amUZxiq9pYOKrCEIbok135aBXprnIHFqjWj
-         qT1lAS3bXPxJDYUmFPSeM6jJcPoKtCZDX3YKEmlaLXKnDSyVo6qBgSXHLrulag411/Xz
-         c5E92WLnq9J0RFT4BRW+flIJGeJ8ivZZp4FuFInVn0IfhrrRVRen1OwFqWgl+9CrYhfq
-         q1DBUx+0RvfiI7EzHI0adx7ruDcQhIgnClmP1Yxyi0jVILWCK5n8iKSO7PLZH4jelH1h
-         KA3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785216346; x=1785821146;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=rBznR6Jhz6jAQdgNETeOJVk7gwSsazLfaU1tbs21Zf0=;
-        b=ddh/zmUDGlohThR7cn8+aCGit2pLGDIRRfjFcARIa1liHerVWpnqYROgbjW0mek+iw
-         grtDXZfFY8hBlDi4Xw/RhztICyjtA2+idOpYrQuUQg/EviGZ4v5Hl5WskTsM7qXy/N2D
-         q3b4ixtT7YaJPdumuqZcsBuP8sOfRezV31660LawEZgb3ZNN8zUhz4d2EA54ny+iijPC
-         QQjArbc7bGz0kS5ROWKVVoMKJPEkNT4o7+p4El8qmdn7s3QJDN8XL1OqvWiVPAwpXYmU
-         fWYwOSc3SoyrDxyuFedtj9e5JaoAdVSuSAMAdJT0PxcsYSwtDVAYudXLpxrsZuJpP/Xa
-         2CSA==
-X-Forwarded-Encrypted: i=1; AHgh+Rpq/ndwNYN4mJGbYvw8pPWD06CfSlmzCCvPsBz+Q0wniYZJUk7TEbvZX669V/AZV29zNPRFcBw=@lists.linux.dev
-X-Gm-Message-State: AOJu0YwpRZeU7jqW+vdJxQ4yyq4F620DU2pWxz8azPpwUftQQeOD7j2C
-	hZ43XrQICpaEk7A5TFdmd8Cy1aMWJEVY7q13OEHJ1UjgE0rjAy25GNnI
-X-Gm-Gg: AR+sD13rfjvlY3bZthhd4SmFNfOWcBKHYtvBXMKg5GebU5imPqEUFlh5tefY9n9dQdS
-	RDx3jkwEx8EC6QM1Lefxr2umepK0NH7A2PcDMQvmqUYF1vM53EnahHQ9VsfAkwiERxUMgGUuJwD
-	4nlETduzla+oImpPjNhuYQ2HpMmfhekH4K6viq2jgyIzMB1p4FcmRLJd4MsOlm4K0xGC+JA1zBw
-	Q8aWtji4WFfnH7f1vngZhdOWEpUSqbYTL5X182ZPArs6QfgRsWo0a8r/CcNuwz2XDtVD0bK4801
-	e0vFOv99ZjllGffe3hOmCASkSdUpSa3BjEvlNwcLMbt8Z+ul6GKjvyRep/zNDa+NUM9JF6A/8MK
-	82MWpAFRCpR9RCxpHUtN/omcTYwLYs7yxbQaEpMpR8HqI5q34T3KRVqk4apT/evDUIGlIVfzfdg
-	xWD1IrZsoq0tqbHza9il3fU3cCbLrXhkXGgmJeDAcmpxy2nQBX+rjmihL93bG/UoUleRgPkv5ET
-	IgLhw==
-X-Received: by 2002:a05:622a:1b0f:b0:517:6b57:8164 with SMTP id d75a77b69052e-529d70eabf0mr6863181cf.55.1785216346205;
-        Mon, 27 Jul 2026 22:25:46 -0700 (PDT)
-Received: from zhangbo56-PC.mioffice.cn ([43.224.245.235])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-529a298988fsm66434241cf.18.2026.07.27.22.25.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jul 2026 22:25:45 -0700 (PDT)
-From: Bo Zhang <zhangbo0325@gmail.com>
-X-Google-Original-From: Bo Zhang <zhangbo56@xiaomi.com>
-To: fmayle@google.com
-Cc: jack@suse.cz,
-	akpm@linux-foundation.org,
-	david@kernel.org,
-	kaleshsingh@google.com,
-	linux-fsdevel@vger.kernel.org,
-	linux-mm@kvack.org,
-	ljs@kernel.org,
-	lkp@intel.com,
-	oe-lkp@lists.linux.dev,
-	oliver.sang@intel.com,
-	surenb@google.com,
-	willy@infradead.org,
-	baohua@kernel.org,
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="hmspDYhX";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="dfv9hSEH";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="vrM7+Kpp";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="15VO8SDD"
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 3524B3E03;
+	Tue, 28 Jul 2026 10:33:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1785234809; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=9ScQ16CMjFlPTjKS2k1tW3rCTBpjt7WhqtuW+Eef6SU=;
+	b=hmspDYhXrp6nsKgIWnShKcP3m1zateD3bEY3uR3GMErFfIxMI9+7/9QdoMY1OSL1i+d9Ny
+	ss+c7CzUHS0b0s/s+ubeJoKE314FUJcdwBRgQPnYA3jZnGclfq6lclfmk1jrAfkFHmjPXD
+	ALydB6hGuiNUAt7T35xwF/Q7tGqIIw4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1785234809;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=9ScQ16CMjFlPTjKS2k1tW3rCTBpjt7WhqtuW+Eef6SU=;
+	b=dfv9hSEHvWLKGMbbBNhVjCDz2vk/P4DzXoOYrI4DR42iExQvjuX+5M9j7wSOSUNUvXU0J9
+	pxBzL3eURvkQWNAQ==
+Authentication-Results: smtp-out2.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1785234805; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=9ScQ16CMjFlPTjKS2k1tW3rCTBpjt7WhqtuW+Eef6SU=;
+	b=vrM7+KpprfezwZJiC2tqWLgrwHwaue0fD8f19jQfJUlGkmYWSlvkowfoF2O9cJqSfmnc2E
+	2eRBmU3pjwhTkWXbEm98yaEC3/yIJSvaC3seVOLe1nBu+YacKViosmAP40ubcTMimr6XR/
+	8Xli5LeJ4agy1c0nCZRnAXLzkzRjoIM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1785234805;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=9ScQ16CMjFlPTjKS2k1tW3rCTBpjt7WhqtuW+Eef6SU=;
+	b=15VO8SDDjXpk6nGQsh3OpyKNDkmPEvq+Y5DXMA1IPu2e8rn0UdJqkJ/eKY1HHB5Xqxfpku
+	TyjJh3Fea260PcBA==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 261BF779B1;
+	Tue, 28 Jul 2026 10:33:24 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id mOr2BXSFaGppLAAAD6G6ig
+	(envelope-from <pfalcato@suse.de>); Tue, 28 Jul 2026 10:33:24 +0000
+Date: Tue, 28 Jul 2026 11:33:22 +0100
+From: Pedro Falcato <pfalcato@suse.de>
+To: Bo Zhang <zhangbo0325@gmail.com>
+Cc: fmayle@google.com, jack@suse.cz, akpm@linux-foundation.org, 
+	david@kernel.org, kaleshsingh@google.com, linux-fsdevel@vger.kernel.org, 
+	linux-mm@kvack.org, ljs@kernel.org, lkp@intel.com, oe-lkp@lists.linux.dev, 
+	oliver.sang@intel.com, surenb@google.com, willy@infradead.org, baohua@kernel.org, 
 	Bo Zhang <zhangbo56@xiaomi.com>
-Subject: Re: [linux-next:master] [mm] 7b32f64bc5: pts.svt-av1.Preset13.Bosphorus4K.frames_per_second 45.8% regression
-Date: Tue, 28 Jul 2026 13:25:26 +0800
-Message-Id: <20260728052526.3743086-1-zhangbo56@xiaomi.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <CAHCxdc64d-6qNBwwSZX8mdz4-V+88No2x0wG4mex5WPXBDE9AA@mail.gmail.com>
+Subject: Re: [linux-next:master] [mm] 7b32f64bc5:
+ pts.svt-av1.Preset13.Bosphorus4K.frames_per_second 45.8% regression
+Message-ID: <amiCX6kcQneMZu3-@pedro-suse.lan>
 References: <CAHCxdc64d-6qNBwwSZX8mdz4-V+88No2x0wG4mex5WPXBDE9AA@mail.gmail.com>
+ <20260727014610.3479784-1-zhangbo56@xiaomi.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260727014610.3479784-1-zhangbo56@xiaomi.com>
+X-Spam-Score: -4.30
+X-Spam-Level: 
+X-Spam-Flag: NO
+X-Spamd-Result: default: False [-4.30 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	ARC_NA(0.00)[];
+	MISSING_XM_UA(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	RCPT_COUNT_TWELVE(0.00)[16];
+	FREEMAIL_TO(0.00)[gmail.com];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	TO_DN_SOME(0.00)[];
+	RCVD_TLS_ALL(0.00)[];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo]
 
-On Thu, Jul 23, 2026 at 01:34:38PM -0700, Frederick Mayle wrote:
-> I maybe missing something subtle, but, I think you've changed it from "don't
-> read beyond the VMA" to "if there is a chance we could read beyond the VMA,
-> don't read beyond the VMA", which seems like a more complex expression of the
-> same behavior.
+On Mon, Jul 27, 2026 at 09:46:10AM +0800, Bo Zhang wrote:
+> On Thu, Jul 23, 2026 at 01:34:38PM -0700, Frederick Mayle wrote:
+> > I maybe missing something subtle, but, I think you've changed it from "don't
+> > read beyond the VMA" to "if there is a chance we could read beyond the VMA,
+> > don't read beyond the VMA", which seems like a more complex expression of the
+> > same behavior.
+> 
+> Hi Frederick,
+> 
+> The subtlety is in how async readahead interacts with _max_index. The two
+> are not equivalent because async readahead sets ra->start to the end of
+> the previous readahead window, not to vmf->pgoff. So even though the user
+> is still faulting well inside the VMA, the readahead target (ra->start)
+> has already moved past the VMA end, however _max_index blocks it.
+> 
+> Here is the concrete scenario (ra_pages=128, VMA covers pages 0-1023):
+> 
+>   1. Fault at page 0 triggers sync readahead: reads pages 0-127,
+>      places PG_readahead marker at page ~96.
+> 
+>   2. Sequential faults continue. Fault at page 96 hits PG_readahead,
+>      triggers async readahead in do_async_mmap_readahead().
+> 
+>   3. page_cache_async_ra() detects sequential pattern (index == expected)
+>      and does:
+>        ra->start += ra->size;  /* pushes start to end of previous window */
+>      So ra->start = 128 (NOT vmf->pgoff=96), ra->size = 256 which is doubled
+> 
+>   4. page_cache_ra_order() calculates:
+>        limit = min(file_end, ractl->_max_index)
+> 
+>   With the unconditional approach:
+>      _max_index = 1023 (always set)
+>      limit = 1023, ra->start(128) < limit (It works fine here)
+> 
+>   But after several ramp-ups, when the window reaches the boundary:
+> 
+>   5. Fault at page ~896 hits PG_readahead, async readahead fires.
+>      page_cache_async_ra() does ra->start += ra->size:
+>        ra->start = 1024  (previous window ended at 1023)
+>        ra->size  = 128
+> 
+>   6. page_cache_ra_order():
+>        limit = min(file_end, 1023) = 1023
+>        ra->start(1024) > limit(1023) (Which will read NOTHING)
+> 
+>   Result: page 1024 (in VMA2) is never prefetched. When the process
+>   enters VMA2, it takes a major fault and readahead ramps up from scratch.
 
-Hi Frederick,
+That's on purpose.
 
-I looked into the SVT-AV1 benchmark that triggered this regression and
-found why unconditional _max_index causes the 870% major fault increase.
+> 
+> With my conditional approach:
+>   At step 5, vmf->pgoff=896, vma_pages_left = 1024-896 = 128
+>   128 < 128 (the condition is false), so _max_index stays ULONG_MAX
+>   ra->start(1024) < ULONG_MAX, and it will prefetch pages 1024-1151 normally.
 
-SVT-AV1 uses per-frame mmap on Linux to read its input video file.
-From Source/App/EncApp/EbAppProcessCmd.c:
+This is exactly what we're trying to solve.
 
-  void read_input_frames(EbConfig *config, ...) {
-      if (config->mmap.enable) {
-          int64_t offset = get_mmap_offset(config, read_size);
-          input_ptr->luma = svt_mmap(&config->mmap, offset, luma_read_size);
-          offset += luma_read_size;
-          input_ptr->cb = svt_mmap(&config->mmap, offset, chroma_read_size);
-          offset += chroma_read_size;
-          input_ptr->cr = svt_mmap(&config->mmap, offset, chroma_read_size);
-      }
-      ...
-      svt_av1_enc_send_picture(component_handle, header_ptr);
-      if (config->mmap.enable)
-          release_memory_mapped_file(config, is_16bit, header_ptr);  /* munmap */
-  }
+>   Page 1024 is already cached when VMA2 is entered, only minor fault happens.
+> 
+> The key point: when mprotect splits a large file mapping into adjacent
+> VMAs (common for ELF segments, or read-then-write patterns), there's no
+> benefit in preventing readahead from crossing the boundary, so the data is
+> still sequential in the file. The limit only helps when we're actually
+> near the end of useful data (within ra_pages of the VMA end).
 
-Where svt_mmap() is:
+This is completely missing the point. This change tried to back off from
+reading _anything_ past the VMA _on purpose_, due to ELF file spillage. This
+patch reintroduces spillage in a very obfuscated way.
 
-  void *svt_mmap(MemMapFile *h, int64_t offset, int64_t size) {
-      uint8_t *base = mmap(NULL, size, PROT_READ, MAP_PRIVATE, h->fd, offset);
-      return base + align;
-  }
-
-So for Bosphorus 4K (3840x2160 YUV420 8bit), each frame creates 3
-separate mmap regions on the SAME file, the layout is:
-
-  Frame N:   [luma 8MB][cb 2MB][cr 2MB]  (file offsets contiguous)
-  Frame N+1: [luma 8MB][cb 2MB][cr 2MB]  (immediately follows)
-
-In page counts (ra_pages=32 assumed):
-  luma VMA:   ~2025 pages
-  chroma VMA: ~506 pages each
-
-These become 3 independent VMAs per frame, but all map contiguous
-regions of the same file. The encoder accesses each sequentially,
-then munmaps before processing the next frame.
-
-Here is the problem with unconditional _max_index:
-
-  1. Encoder accesses luma VMA sequentially, readahead ramps up.
-     Last async readahead window: ra->start=1993, ra->size=32.
-
-  2. Fault at page ~1993 hits PG_readahead, triggers async readahead:
-       ra->start += ra->size;  Then ra->start = 2025
-
-  3. In page_cache_ra_order():
-       limit = min(file_end, _max_index); so limit = 2024
-       while (index <= limit) ...  so 2025 > 2024, reads NOTHING
-
-  4. Pages 2025+ (which are the cb plane data) are never prefetched.
-     When encoder accesses the cb mmap, it takes a major fault.
-
-  5. Same thing happens at cb->cr boundary, and at frame N->N+1.
-     Result: 3 major faults per frame × 120 frames = hundreds of
-     extra major faults, explaining the 870% increase.
-
-Without _max_index (original kernel):
-  At step 2, readahead proceeds past page 2025, prefetching the cb
-  data into page cache. When the cb mmap is created and accessed,
-  the pages are already cached, so minor fault happens only.
-
-With my conditional patch:
-  At step 2, vmf->pgoff=1993, vma_pages_left = 2025-1993 = 32.
-  The condition "32 < 32" is false, so _max_index stays ULONG_MAX.
-  Readahead proceeds normally, prefetching cb data.
-
-  Only when vma_pages_left < ra_pages (for example, the last few pages
-  of the VMA), we will set the limit, at that point the readahead window
-  has already pushed useful data into the page cache.
-
-For workloads that mmap sequential regions of the same file (SVT-AV1
-frames, ELF segment loading, mprotect-split VMAs), the data beyond the
-VMA boundary is useful and will be accessed soon via a different mapping.
-Blocking readahead at the VMA boundary in these cases hurts performance.
-
-The conditional check preserves the benefit of VMA-bounded readahead
-(avoiding useless prefetch for small partial mappings) while allowing
-cross-VMA prefetch when the access is clearly sequential and far from
-the VMA end.
-
-Thanks to Oliver for reporting this regression and providing the test
-case details, looking into the actual SVT-AV1 code made the mechanism
-much clearer.
-
-Bo
+-- 
+Pedro
