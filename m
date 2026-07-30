@@ -1,106 +1,62 @@
-Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EF0843C04B
-	for <oe-lkp@lists.linux.dev>; Thu, 30 Jul 2026 14:30:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAE6343DA3C;
+	Thu, 30 Jul 2026 14:32:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.92.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785421822; cv=none; b=p4ONp2nCZSkAAkjfwpwCMT1Ll+vLmev/HKCdguksAMIUCeJSXIb4+fTsdY+nuh2Ov5DB1jJ2o3IUmoQWLKfQ37THR5jqkrND/rroNpsXQP1PxUF+2dGhfVjfQvgExzzpNBu6kszpBeh0UJxDuNw9w69FKFoSeONp1e5QNYbh5SU=
+	t=1785421970; cv=none; b=d9rpxy5mDsM7HIPB/8TEGC/nc9xMep17jiI9yweUhDXnc0sYMqzRegdu2+AeGjsJBXi1VGGqqMcTb7DLox/S6rLFKpKFIJq8lo5FrRPFHjN4DLec1zxkn0TS+afgpMKvvduSfabQRYJod/pt9QxUAJCHZrmRjdkHclo45GS36jw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785421822; c=relaxed/simple;
-	bh=6zxsMNNBcnPilLYN0lpOH6oC8qH8IQaVIGoWa8512x4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=LzB4efwQv5aV5jcbVGqQVPG+Dp1GuQmSDvXqF0YA/1jOrWeHo2UuzgOQf+983Z9MRAURrQtCWLAFtdEEFdQam3MUCbwyLuz30m8rF64Tp1eNMAzbDHdQT7JlVQAyIcoIX4aNn2HF2Q8s5GiAkr5AtVuNzfVAaPRP3P8W5SbMzzk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=g5tpr+S0; arc=none smtp.client-ip=209.85.160.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1785421970; c=relaxed/simple;
+	bh=tdeZ3Imnopg1UB1rBsrpYp6t8LoeBv5sr1pNbLRPaSQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rbU0O6MPoXSdd2FHTArEsfs3neV7NJja82o8nPjEfLGZcSRmTeakZAf8RhX6aQKHPyD/Pu3gBLUsh4U2Q8tyWz1P4OwUlE5FlB+hB6u1YXuSnIVTBmkq2IIsyJZ0IAzeOSBxTM7FRgr2aApRJ8l5n9+eEE0P4HPt2BZlo1njgz0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=pass smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=jlMZ2Kap; arc=none smtp.client-ip=90.155.92.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="g5tpr+S0"
-Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-456d267da8cso956840fac.2
-        for <oe-lkp@lists.linux.dev>; Thu, 30 Jul 2026 07:30:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785421820; x=1786026620; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=PziV63Nbks27UfV1soZbzQSjz5qZMrsSwS8b4MFid6w=;
-        b=g5tpr+S0mqjEF5UDLjpF3LQkgKNmRaWydHVWS7AaMG6wY5d4wHbntcXiFEgzoPK1/Z
-         N1txEiTHXChn2HEJTLAdCFT9mwyj+JpA3LIbkyIFyD5zpqjL40NaKS+PcJ6Y/wXB5wNv
-         zmgKYcrGkw6teHKm+tVi0sq5hqNjxJTbjDecFrSPCSItIA75aucqF5Pb6Pg9Etyuk/9m
-         V1m4jqyX1UMk8BZ7HAUb6grIOzXx/5sWAYFl8Te5kZ0Mz7SZlx5E7izsPTyLuiVimmRD
-         lWRH4EIwqPmIcv2XYKkgiAX0ElWva1PSKQgiC+2edQ7GbTQvxjnL1lC4JPq4BJ3JH/G0
-         SdRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785421820; x=1786026620;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=PziV63Nbks27UfV1soZbzQSjz5qZMrsSwS8b4MFid6w=;
-        b=SPwcssiWUcADNbrQY+RqrxTPe1RWjkcKNQasV2vUcsXUPin4MZy+TMwy4b6xDWAV+A
-         XWpoad/1AUqh+NntLk88L4SR2NkdrQdFj4yp38HjOtLXtrgrLouRauHIa0qhoexRkMcH
-         qDJH3R4E2CXQQ63ydFuGIsBo9frqvlqe1iiiVaQJOCdGIf70VYzHdpAbljKJyoxF9DaG
-         bW8ziNHouLPPkLePfQD7Z9BCRhgc2aT0Yn0PsGyjcvNDGh9KqyZiacS5Iju4LCoOC73+
-         Da/SFcBtsal82tD6Bb0NhYQbgD6VDNOUIQD9OIhEKPMpG3dvT+vWkY5+Zh3tTypD2vdP
-         jzQQ==
-X-Gm-Message-State: AOJu0Yz+wWVdC/g+GTUFd7+iXYg7seJNVVcdZmNqS6avQZoE9XHNm1a2
-	7V+OKr9/tRq7Mr4Mk7K6vu4H+O3itiYSKb/s6W2r58MDjiJwalDmB8Jn
-X-Gm-Gg: AR+sD11PA2xpMEl8BodWE2vvoWL67slLi43m9rcK4fj6ek2oeYP42dX3+BLWizE8M2L
-	VNZN25U0EnHJg015OeoM3qRKxQd632wH7v4qhhTII972QGMI8WjxbGG15yNI0Kp5q0hvKsx2rJA
-	zz50DT5ClPqm3jxvDP2NQOIU37L4iEPHftb0POpsaxJKa8CEhU7t+6H0gWNpC5eQVjSyvUTRGBL
-	PzkzW+2B9yehHg3RZdMZbLPz+VOxKxC1KKcfnVDGSxWNRyk6iHZTkEMnIPWXvSStSt9t765aLNX
-	PqUvKhxXMrIyixmh3BKTbOOtyCV3OS/hsayFfCzejePri59+dnSNDeV2aNz0eLeqPGxnAxSy7Qg
-	6W81IRIgiEYsi/+I3qN1c9c8ds9i5GuCpxXPJpF11LmuR7WNgAvhvBzosb7GYi0xxYWxBFMGjOu
-	Ul0bZZNtZtLN5ke1/Ix9cPY7AhE/jrJipNwmLZMmJpFWq29Y4B3Mwt9Aa1J6RxzteygDB2oocsR
-	wZAhADXQz+ZjGu+7IbDCbv+DTP8+Q==
-X-Received: by 2002:a05:6870:8263:b0:456:5582:19be with SMTP id 586e51a60fabf-458c1b24576mr1955115fac.38.1785421820045;
-        Thu, 30 Jul 2026 07:30:20 -0700 (PDT)
-Received: from localhost ([2a03:2880:10ff:41::])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-458c2947cc5sm1964872fac.11.2026.07.30.07.30.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jul 2026 07:30:19 -0700 (PDT)
-From: Joshua Hahn <joshua.hahnjy@gmail.com>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="jlMZ2Kap"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=4ia5hnhZllEVja50krpyemAwuNcIKre0NLlP7mDWzdc=; b=jlMZ2Kapo1+7K/gPLdgC8GJD+b
+	iz2Kic6O4trTjna9rBVrsOX1dPUuZZ62YcekeJ0AhBjRAeZPyFD0nOOdYIUoMSa8s9W6lwpYkeV/v
+	Qj9vdRzQ5rWMIdFzgHviFffEW7I0o5ZEaIMKX3iLJSCB0AU6DWGoQeQ0hhM7RNSalbzGAFaqESC9x
+	RnGlV3EpXosed5op65RQ7IiqXJ9tNwrBTHXm0D3DI3AVZA99bs9OpZrRrq9mw1KbY42GkrIToaIuR
+	l05+En6hjRwIBMDxCx51Ft8yYKm75FU2j2jHQ3vzSy40E4UbxeW+g+69/LJ9K0MV2yX+hRn2GIJkf
+	L3U9sc9Q==;
+Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
+	by desiato.infradead.org with esmtpsa (Exim 4.99.2 #2 (Red Hat Linux))
+	id 1wpRoO-00000006ldZ-3F1B;
+	Thu, 30 Jul 2026 14:32:40 +0000
+Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
+	id 628B030095A; Thu, 30 Jul 2026 16:32:39 +0200 (CEST)
+Date: Thu, 30 Jul 2026 16:32:39 +0200
+From: Peter Zijlstra <peterz@infradead.org>
 To: Oliver Sang <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev,
-	lkp@intel.com,
-	Johannes Weiner <hannes@cmpxchg.org>,
-	cgroups@vger.kernel.org,
-	linux-mm@kvack.org,
-	"Michal Hocko" <mhocko@kernel.org>,
-	Roman Gushchin <roman.gushchin@linux.dev>,
-	"Shakeel Butt" <shakeel.butt@linux.dev>,
-	Muchun Song <muchun.song@linux.dev>,
-	"Andrew Morton" <akpm@linux-foundation.org>,
-	David Hildenbrand <david@kernel.org>,
-	Lorenzo Stoakes <ljs@kernel.org>,
-	"Liam R . Howlett" <liam.howlett@oracle.com>,
-	Vlastimil Babka <vbabka@kernel.org>,
-	Mike Rapoport <rppt@kernel.org>,
-	Suren Baghdasaryan <surenb@google.com>,
-	linux-kernel@vger.kernel.org,
-	kernel-team@meta.com,
-	tim.c.chen@intel.com,
-	vinicius.gomes@intel.com,
-	ehab.ababneh@intel.com,
-	thomas.falcon@intel.com,
-	yu.c.chen@intel.com,
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	aubrey.li@linux.intel.com, yu.c.chen@intel.com,
+	tim.c.chen@intel.com, vinicius.gomes@intel.com,
+	ehab.ababneh@intel.com, thomas.falcon@intel.com,
 	philip.li@intel.com
-Subject: Re: [PATCH v4 4/5] mm/memcontrol: convert memcg to use page_counter_stock
-Date: Thu, 30 Jul 2026 07:30:16 -0700
-Message-ID: <20260730143017.1568456-1-joshua.hahnjy@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <amr1lhRiYC64kYNY@xsang-desk>
-References: 
+Subject: Re: [linux-next:master] [sched/fair]  fb1050ac8e:
+ netperf.Throughput_Mbps 14.6% regression
+Message-ID: <20260730143239.GA687043@noisy.programming.kicks-ass.net>
+References: <202607151644.d59b94e9-lkp@intel.com>
+ <amrrvTgy/p6c6WbJ@xsang-desk>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <amrrvTgy/p6c6WbJ@xsang-desk>
 
-On Thu, 30 Jul 2026 14:56:22 +0800 Oliver Sang <oliver.sang@intel.com> wrote:
-
-> hi, Joshua Hahn,
+On Thu, Jul 30, 2026 at 02:14:21PM +0800, Oliver Sang wrote:
+> hi, Peter Zijlstra,
 > 
 > we are currently piloting AI integrations to help enhance 0-Day's performance
 > analysis and regression-detection capabilities. Since this is in an early trial
@@ -109,21 +65,45 @@ On Thu, 30 Jul 2026 14:56:22 +0800 Oliver Sang <oliver.sang@intel.com> wrote:
 > it's specific bottleneck explanations, a cleaner format, or filtering ideas.
 > 
 > Please share your thoughts and suggestions with us to help guide our development!
-> 
 
-Hello Oliver,
+As with most AI output, I find it incredibly hard to read -- for some
+reason my brain keeps wandering and then I have to restart and refocus.
+I'm not entirely sure what causes this, but I know I'm not the only one
+faced with this.
 
-Thank you for this sample fix, and thank you for the report. It helped me
-realize that uncharging should return stock, but only in the networking
-side (and not the lru side, since it's already batched there).
+That said, I struggled through it, and while it goes a little off the
+rails at times (eg. the callgraph stuff doesn't at all seem relevant
+here), it seems to be mostly on point.
 
-This is a personal style preference but I like to keep reply context as
-minimal as possible, I think that the AI response might not need to keep
-all the performance statistics still in the reply at the end : -)
+There are a few things that I find missing that might be possible:
 
-Otherwise I am a big fan of this (for my patches, at least) as an author.
-I'm wondering if reviewers and maintainers may find this to be too noisy
-to be sent out in the mailing list.
+ - determine the specific task that is now preempting less; I suspect it
+   is ksoftirqd because network workload.
 
-Thank you again, I hope you have a great day!
-Joshua
+   I suspect it doesn't have the data to determine this, but it should
+   probably ask for such data and or, if it has access to the guest
+   running this, gather it itself.
+
+ - a section on possible 'mitigations' for this regression given
+   existing configuration options. It touched upon the new debugfs knob
+   to revert to the old behaviour, but I suspect that setting a shorter
+   slice on ksoftirq might also help.
+
+   That is, something like so:
+
+   ps -def | awk '/ksoftirqd/ { if ($0 !~ /awk/) print $2}' | while read pid;
+   do
+     chrt --pid -o -T $((`cat /sys/kernel/debug/sched/base_slice_ns`/10)) $pid;
+   done
+
+   or perhaps the opposite, giving the netperf thing a larger slice such
+   that ksoftirq will more reaily preempt it.
+
+   And then there is of course the option to renice things, the netperf
+   cgroup could be given a smaller slice or ksoftirq a larger.
+
+   (all operating under the assumption that it is indeed ksoftirq that
+   is now ran less readily)
+   
+
+This is the only regression found so far for tip/sched/core?
