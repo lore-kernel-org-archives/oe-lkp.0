@@ -1,332 +1,211 @@
-Received: from out-172.mta0.migadu.com (out-172.mta0.migadu.com [91.218.175.172])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CABDD37701A
-	for <oe-lkp@lists.linux.dev>; Thu,  6 Aug 2026 13:32:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786023165; cv=none; b=YT/MyfHjw1mIi8vDtLUuMtQvOELmGTqZ6X2huVzKeslHzmp6C3dhjVYemmjkUGvgnKTjoLL94cX3ku39xGlknmOC3NJydtC9JRzG8s+ybp+/lmVJv4HuafgPLpSWGlEV1BzgpGSskIs9qUbIxYmWSa1h+RNk16TKkhObM6S2dtw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786023165; c=relaxed/simple;
-	bh=xs8MoWCfZQVdVW8VW0NekylzA3RTtiy7eWgRKCTDo6A=;
-	h=MIME-Version:Date:Content-Type:From:Message-ID:Subject:To:Cc:
-	 In-Reply-To:References; b=GRvH5CfwraPj+Is7BF9Y8bSizl05xkfQCYPlVTldabxS1QHXE7e/FMiRyNUq4hhfse7dXrCsvL0g6qHh4hrk4inQFXhOp1FH69+DGJKi1Qg58ulUeORDmVvbaT3A2GTA1qY/x0TGfgRDLMB8ea+LNEwHaFmKDBpV2ZLw5jNIkgw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=e9ekHQT7; arc=none smtp.client-ip=91.218.175.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7A733FDC0E
+	for <oe-lkp@lists.linux.dev>; Fri,  7 Aug 2026 08:51:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.15
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786092666; cv=fail; b=ehZQVcq3W0M+sr3U/yZ8Rv4PCPjrEzgLZLgsDXLDdfPDefde/T+6n5gJkgBpEvEGgGNRUj96G028hWzORJuGhPv4DbXzapWG4JpQs9i+8LGm8zC4P5CbgGbpb/yFE90AHEvFMqapZ70Y8kuJxDBRuq9HAUtuuyw89kNlkubzLKE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786092666; c=relaxed/simple;
+	bh=Eo8ohsgNuKzdxbsF2jtk+kmdE4xcSkCRWGA2O8WvFQo=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:MIME-Version; b=bMg7n7fVOOrrSMtrlIQAchx88elBsj/n+3MgdByXkn+nzyaVuGAjiDTRHLP4f9BTaFOEEeWPOygajXdZZgHDcmHjpc2iY5gNrgOR93GglF956PbmGgePd9Bjax1CwGe7s6+O0uBVzLMuvdMEekaNw1Oi7kg1PEpMnI2gRO+qkQw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WIODc+oh; arc=fail smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="e9ekHQT7"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WIODc+oh"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1786092664; x=1817628664;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Eo8ohsgNuKzdxbsF2jtk+kmdE4xcSkCRWGA2O8WvFQo=;
+  b=WIODc+ohmKvudqBMHZ+3DHh+9V4KsqCAIORjdpHbimqb4rtz5rMhrLn1
+   CaJ2Wi55l+EthRpvZnqUvlDw8IVxQ9Id+WJoP4Dp9Oc8Bt6vpCgMeHkNj
+   AFcYL8y1RbCSzb+/sfttJjV3zfDCmT1UXXHFrOyc6yakl6y1jt2aDqn2r
+   7lzC2ZBmQP0nP1nDkuZm+lnqBVEaUIlVsneHo78NHTzVfdAY+31geyeO3
+   EU96T5Fzoz2tTI4fzITUIvcv61E7TcBySUJo9AE0S7KNhZ2+RThP1EjIM
+   2bpX18gtyDudLRGeQy1a37JRUEukX2a9z84UIHqpAYcUXFM106m0nvyg7
+   A==;
+X-CSE-ConnectionGUID: x9l0lmHjQP+32aM4ZXGoBQ==
+X-CSE-MsgGUID: RFvBVRfaSzincRyGJRnvBQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11867"; a="86810273"
+X-IronPort-AV: E=Sophos;i="6.25,210,1779174000"; 
+   d="scan'208";a="86810273"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2026 01:51:03 -0700
+X-CSE-ConnectionGUID: ahIomiVhTKKiNveXGyVI4Q==
+X-CSE-MsgGUID: L5q+NM/SRnW+ZpigXnFwNA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,210,1779174000"; 
+   d="scan'208";a="261827156"
+Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
+  by orviesa008.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2026 01:51:03 -0700
+Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.45; Fri, 7 Aug 2026 01:51:02 -0700
+Received: from ORSEDG903.ED.cps.intel.com (10.7.248.13) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.45 via Frontend Transport; Fri, 7 Aug 2026 01:51:02 -0700
+Received: from DM1PR04CU001.outbound.protection.outlook.com (52.101.61.30) by
+ edgegateway.intel.com (134.134.137.113) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.45; Fri, 7 Aug 2026 01:51:02 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=tFAEgErJt/MbKDeIHQy/BZEjGu3NKEY+vTa+RZLx90R4GlFKhp6rNGQkXPnld1FqRdUH79MXoOuYgPzdDNp6jjRWa6p378mwRMibT5DiOcffCwDLemMBhwzMd3HPhd1TZNW5ag2p/y+7ov+7kNkrgJdX8MweZTntQHc2f1RGVDYMkqkX1EaJJViNuoho3iqQeUMx3wAsGoUEM40SKcjBBeoGi14e6kCMX/QOr4knEzpoTtY7m5kHj9OArTKkWkQdMfDhYquIUpO93P+/ubDeSjOg8n8G0ZrUqqdGj4HFEVw5+8UQjF+JhPsaVVw+f+z1rmiG/3DH7fvG2EKTq/4peg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/tDI1uxEU+gT9dEWdegZm6YWd7cGliao4qAxglRfnWA=;
+ b=jtxTrVcy+L01CmaUC8IXUXH9T3Fq85j3nx5Qxs5rSk24gY0KxxuOZ4+vHDHzlnDWlaDTQHHczvkmm7SPIho1dbbvi5qb9IOWFiuQtnAlmFVb4eQSwa0dQA8s7B20pPetiYIhM46pheGFka+JzpfpJAcePWh6B9NFR4Dwt4/9Tjbeot6Ocxzf4RCpqVFK6NpOG6SMBuDiWKZOsc6f/753NRPH11zrOD/dqNwCWsQLIJLQpN4QtMpatCdGVumDfJbC4p9c6ne1miXPTqBOMDTOF43unI5Ubgy8mxczzDSFRpglnrfuxGfdsFZ7FwUFqcu9Jr3iz1kCCpUhdv6HH7aNIA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from PH0PR11MB5832.namprd11.prod.outlook.com (2603:10b6:510:141::7)
+ by SA0PR11MB4749.namprd11.prod.outlook.com (2603:10b6:806:9a::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.292.23; Fri, 7 Aug
+ 2026 08:50:59 +0000
+Received: from PH0PR11MB5832.namprd11.prod.outlook.com
+ ([fe80::106e:78dd:4c96:d707]) by PH0PR11MB5832.namprd11.prod.outlook.com
+ ([fe80::106e:78dd:4c96:d707%5]) with mapi id 15.21.0292.018; Fri, 7 Aug 2026
+ 08:50:58 +0000
+Date: Fri, 7 Aug 2026 16:50:48 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Peter Zijlstra <peterz@infradead.org>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	<x86@kernel.org>, K Prateek Nayak <kprateek.nayak@amd.com>, Charlie Jenkins
+	<thecharlesjenkins@gmail.com>, <linux-arch@vger.kernel.org>,
+	<oliver.sang@intel.com>
+Subject: [tip:locking/core] [futex]  b78b0b6582:
+ kselftests.damon.sysfs_memcg_path_leak.sh.fail
+Message-ID: <202608071053.6db6276e-lkp@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+User-Agent: s-nail v14.9.25
+X-ClientProxiedBy: KL1PR02CA0023.apcprd02.prod.outlook.com
+ (2603:1096:820:d::10) To PH0PR11MB5832.namprd11.prod.outlook.com
+ (2603:10b6:510:141::7)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1786023159;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=+yXKHIliu4nNH6rdKiQNfMKmkJok+mA9W8j4ZPZGOSY=;
-	b=e9ekHQT7TiZ1RzdCVOYo5hER8oAzvAB5A6gPwE9AkKq2JCwbJpcqOELXEqK8rRwLwV9j6o
-	yxrYO4+5d9U0BxQRWAi3CnBGraeSv4lGP/EdApRPusLDjDlOa1FzaYTvlUXX95NzgxFZkC
-	Fst9uqMYSmiFP6+a3CiS4ZRcnYwhc6c=
-Date: Thu, 06 Aug 2026 13:32:37 +0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: "Zqiang" <qiang.zhang@linux.dev>
-Message-ID: <2b6ec84c0a2469eea964d881de295ae2e156713b@linux.dev>
-TLS-Required: No
-Subject: Re: [linux-next:master] [srcu] 05c3e88488: RIP:cleanup_srcu_struct
-To: "kernel test robot" <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, "Paul E. McKenney"
- <paulmck@kernel.org>, rcu@vger.kernel.org, oliver.sang@intel.com
-In-Reply-To: <202608060833.bce92909-lkp@intel.com>
-References: <202608060833.bce92909-lkp@intel.com>
-X-Migadu-Flow: FLOW_OUT
-
->=20
->=20Hello,
->=20
->=20kernel test robot noticed "RIP:cleanup_srcu_struct" on:
->=20
->=20commit: 05c3e88488ed8c12129ca04db84e4c02a16d7ee9 ("srcu: Queue sdp->w=
-ork when the delay timer is successfully deleted")
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
->=20
->=20in testcase: blktests
-> version: blktests-x86_64-6f5a1dc-1_20260728
-> with following parameters:
->=20
->=20 disk: 1SSD
->  test: nvme-group-01
->  nvme_trtype: rdma
->  use_siw: true
->=20
->=20config: x86_64-rhel-9.4-func
-> compiler: gcc-14
-> test machine: 16 threads Intel(R) Core(TM) i7-13620H (Raptor Lake) with=
- 32G memory
->=20
->=20(please refer to attached dmesg/kmsg for entire log/backtrace)
->=20
->=20If you fix the issue in a separate patch/commit (i.e. not just a new =
-version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202608060833.bce92909-lkp@inte=
-l.com
-
-Please try it:
-
-
-The WARN_ON() is meant to catch callers that forgot srcu_barrier()
-before cleanup.  however, it can trigger even when srcu_barrier()
-was properly called.
-
-When a SRCU grace period ends and ss_state < SRCU_SIZE_BIG, the mask=3D~0
-causes delay_work timer be queued on every CPU regardless of whether its
-sdp->srcu_cblist has callbacks.  srcu_barrier() only wait srcu_barrier_he=
-ad
-callbacks to complete, however, the srcu_barrier_head will not be inserte=
-d
-into an empty sdp->srcu_cblist. when cleanup_srcu_struct() then finds a
-pending delay_work timer on a CPU with no callbacks, triggering a false
-positive.
-
-This commit therefore add rcu_segcblist_n_cbs() to WARN_ON(),  make the
-warning triggers only when the timer is still pending and there are actua=
-l
-outstanding callbacks.
-
-Signed-off-by: Zqiang <qiang.zhang@linux.dev>
----
- kernel/rcu/srcutree.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/kernel/rcu/srcutree.c b/kernel/rcu/srcutree.c
-index 35fface51d50..090dddfc7463 100644
---- a/kernel/rcu/srcutree.c
-+++ b/kernel/rcu/srcutree.c
-@@ -753,8 +753,9 @@ void cleanup_srcu_struct(struct srcu_struct *ssp)
-=20
-=20		// Call srcu_barrier() before this cleanup_srcu_struct()
- 		// to avoid triggering this WARN_ON().
--		if (WARN_ON(timer_delete_sync(&sdp->delay_work)) &&
--					rcu_cpu_beenfullyonline(sdp->cpu))
-+		if (WARN_ON(timer_delete_sync(&sdp->delay_work) &&
-+			rcu_segcblist_n_cbs(&sdp->srcu_cblist)) &&
-+				rcu_cpu_beenfullyonline(sdp->cpu))
- 			queue_work_on(sdp->cpu, rcu_gp_wq, &sdp->work);
- 		flush_work(&sdp->work);
- 		if (WARN_ON(rcu_segcblist_n_cbs(&sdp->srcu_cblist)))
---=20
-2.17.1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR11MB5832:EE_|SA0PR11MB4749:EE_
+X-MS-Office365-Filtering-Correlation-Id: 920f1c2e-7434-44d7-d765-08def460ffad
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|23010399003|366016|1800799024|376014|18002099003|10067099003|6133799003|56012099006|3023799007|11063799006;
+X-Microsoft-Antispam-Message-Info: UHkGBw3WqjjpaGyktWebb2FbNIPaDuKjob38Urxh5slyUVguiNbNSS8qGPV6qO6cbywqVfq+K1mLx5Vv0kqNoUGZsrAzEDgUBJYlN63DKqRkbtaUfX7sBiUO73ne2nOPXIkK/UPEm3q3a9Ssi++Ny8zCsLCqBwAT6E5zu2c8JD9Txf9+jRWOz6kineJHj6CLynWRzkruHrZ1g8xbUQfSnwZMitVCEJGFwn7bhbezFyGsFUo7TlknxQmAnMcCMvIb2FXAG3HpmAcjpGQMFNGRNoboY/VnOGnWgG+NeYIzxKvq4QaSddSl0JX8591upXoVVjnh+e4KysJhvzYwm9sQ32WPmQUu5qMoK4zUWDJrYEZ/IXxaUnzYhtVjZQkHZRcFgYEqMzC/hNC9SaI6qGV0N9EeQX96Hm+iBTvj1gQEUX8dv2c03Z/adN8UJBc7YE5TJh9JCI+Hspndl8JXgclNGOT+c5NO6jTIxREFcES1Ah0Oq6Q2X2lxxVaeVt9RS1cFhiNRtyJjCJ+PDc7KaVaHt/ywaLdkH0FqzAxcG7zOx2UPHGMToMrNc8Bt1vjhdHwS1CIglQxklz502jnxVa3LbnPpxwjcqWGDWK0HAtxq7FAolPrGpHFUtmKYCmvyuEQMo2wTyuRAb7D0GLdo9Q3qR6AxScGNGJhcnU/SHrlGAHQ=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5832.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(366016)(1800799024)(376014)(18002099003)(10067099003)(6133799003)(56012099006)(3023799007)(11063799006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?yGMTbCyBZclOp16/lMklkc2gd5N+/bEYG1lvcTafDC56sXbvrSOEHrJCB1BB?=
+ =?us-ascii?Q?j7wjoX+CcAg9KoYpZukpaE9HmwpSnIkF4WP0VEaAwvc7h0Tczk5exxCuXpws?=
+ =?us-ascii?Q?nDsScJ5KvvK9c0WP+omTaFcXwB6jb9khhqMPuMnhcCep5M/LAfGQbTFN9BFI?=
+ =?us-ascii?Q?hnNbuwNCkNuNJM2utgDXGmTxjUIFfsesesYlR/JJUR2owJtvNizuSabFo/kc?=
+ =?us-ascii?Q?1NVa1D+2/KheUmuqH/ssdRVoNmB36Wm+8ki19f7KumRExgW/xKD998tTQtwa?=
+ =?us-ascii?Q?cUckimxu8/cnUuvdKh1OcCWidQj+kA4mQP6OhEKlKNgEdsmC2mPvH5bhcfEB?=
+ =?us-ascii?Q?WBJ5wUjygw6hodEyuisui9EzRiVtHdIhCfC1ATIVx0gRMLLCMfSoKkUcXZG6?=
+ =?us-ascii?Q?7jTLhg0Ag5zJD+5jOewQniJNuKmLhLukCLYESuQ71Ax3NWF5Vh5xoOBAEuiz?=
+ =?us-ascii?Q?IoqFwauzgs6glMzvwuy2Ep1C0T2pKitOirlO3HBmwrjmhKU3WrABqEX3SacR?=
+ =?us-ascii?Q?ctnYjN/efLIQbzZar6uIMRG+MPsklzY3wwG/WKjG81353M+aoxHPdmEP4tgc?=
+ =?us-ascii?Q?OUvcgkr2aK8NQoPPc6umpKjOGFHiXSVTHmIXz5rQtH83tb69mHV5nGY2tnfj?=
+ =?us-ascii?Q?xWm/WU1E7qFhrVaTfo4wSRrTF2O/Tj+KD1EU9Hm/9LXDkOvPztCx9sy6uBl/?=
+ =?us-ascii?Q?vsJgMe0H88RtoPllbDWDFRtHpgUGk46dHhhD29jV/Nq5VtMcD2hqznXIL4Ql?=
+ =?us-ascii?Q?XVcuP7caU7fwyZJ7c3r1sA/PveWdZAEL7z9MadgNb7jBYkjqjVc3LWUDiW9P?=
+ =?us-ascii?Q?MUzJrt52TbXkmXbbgTlrEhWDVl0T2ouFpRU9sRd73VVLv4zm9mxkHYeM+/+e?=
+ =?us-ascii?Q?jMIRz/79rFg4xc7JHbzsgibtxysimIv/l2owxkm4QIdtE9y6fN1hxGSk02fY?=
+ =?us-ascii?Q?J5va0MHL/sqc32zNRMwEwixPRhl9ETIP55EzUDzdNPQTfujx4399YZ4JTWxe?=
+ =?us-ascii?Q?edBaEmYuPD4xLKVTROrOI9J2fjB3ep1CpyjsTAR/vXko4bNnvg0vwR/Y+Oc8?=
+ =?us-ascii?Q?jvrZorRqHzGGo9hBK+aIBBF/oAOybPMzMlUS/LDv+WQNl67DBi7dY995AQjh?=
+ =?us-ascii?Q?rf1VHX8ZVBRxmrMSHPVeWtrrT+Xs6+/bS01+MkAysbfDb7v97EnZBFxYzx6I?=
+ =?us-ascii?Q?7iB/X/0j+0vQ455FMekGL7dAGeCJNCah02DZ8qxxso8Tay/QldYTCO39EDNP?=
+ =?us-ascii?Q?pmx2mjVHYAUXPFy1t9PdcMHWeKsX1T4DAZrvMy+zK6grZllMYDwUiu1cX9XL?=
+ =?us-ascii?Q?zFRaqoRyC+WhO5b1G7/CXeHOjyaEv5elkwvxGymgH4SqPPxWrikTiKOtxa1E?=
+ =?us-ascii?Q?wp9puW5LdwI4XLryEQu2LKL1AZjc8AytltkLkSwB0XRo8U8Aainl88HBcPbx?=
+ =?us-ascii?Q?j3K01nntvgaa/b/CqKnaAmoRB0HvJawOiLIORCrVK3CSLJYKv8agDW4gGijP?=
+ =?us-ascii?Q?V+wN4N9U4+O6lP38TZyWuay4KRWunu5h/K7qjlnbh+VQd8jriLze+C1VW6Z+?=
+ =?us-ascii?Q?9fCsFppRG1YwWrKfosmfTz+IIuD30nPynUD/xFOAfXyAW76yOWXc1fU/hDRk?=
+ =?us-ascii?Q?MRwKDNFey1uaSlWSHhLzNVwYINRpaTdipTk+s++JBTFDUhFRyxuLUpetoeDf?=
+ =?us-ascii?Q?9uLkLXAA6pILDHN00zMScBSdAfNLjvXrqrSeV1qUTH7G4ornWISwZx7OV7eC?=
+ =?us-ascii?Q?Qa0ECiiDDg=3D=3D?=
+X-Exchange-RoutingPolicyChecked: KPgiYZRWhHXo1zVYAIkwqhIWZI6MgN2kdaHB27s6IandFS9ogKay7uvoKdMSuZiscHY+gj/qIH6f7PytyYttZEGcRsV99kWGhYWp0hb9LDVuVf7F8+wodIDj3gR6HoSnWJ9rN8VJn0RAbpUF5lIgGisTkKObXkIRSaQG/gCYUNL/eO+WbsLwIaH5sYXkFbnMkJ3mnAOQsCVIoViewOuiIRYe4+hWDpSDwV4DMIIZY69JmdATGbGwTtz2UWugLVfAwIdbjLd9XhOiDimAtGQPuMI7mxMXU4A7/7pmxC5yjxyB6nFNSaHjKogWLCdGWdcNyDf6eDX3nBwDIGljwB/exg==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 920f1c2e-7434-44d7-d765-08def460ffad
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5832.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Aug 2026 08:50:58.0729
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: SQ77VzpBJF0Esi30Ib1qIh7u1DCp42le7YUZF3aUh3Wvi1TMjQ5x5YKHE0GL5ZDIkxQN0noNjmyrqDKo6e4ogw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB4749
+X-OriginatorOrg: intel.com
 
 
 
->=20
-> kern :info : [ 42.171416] [ T3271] nvme nvme1: Removing ctrl: NQN "blkt=
-ests-subsystem-1"
-> kern :info : [ 42.220396] [ T3271] ------------[ cut here ]------------
-> kern :warn : [ 42.221853] [ T3271] WARNING: kernel/rcu/srcutree.c:706 a=
-t cleanup_srcu_struct+0x373/0xa70, CPU#10: nvme/3271
-> kern :warn : [ 42.223306] [ T3271] Modules linked in: siw loop btrfs li=
-bblake2b raid6_pq zstd_compress xor binfmt_misc snd_hda_codec_intelhdmi s=
-nd_hda_codec_hdmi snd_hda_codec_alc269 snd_hda_codec_realtek_lib snd_hda_=
-scodec_component snd_hda_codec_generic intel_rapl_msr intel_uncore_freque=
-ncy intel_uncore_frequency_common x86_pkg_temp_thermal snd_hda_intel snd_=
-sof_pci_intel_tgl snd_sof_pci_intel_cnl snd_sof_intel_hda_generic i915 so=
-undwire_intel intel_powerclamp snd_sof_intel_hda_sdw_bpt coretemp snd_sof=
-_intel_hda_common snd_soc_hdac_hda snd_sof_intel_hda_mlink snd_sof_intel_=
-hda soundwire_cadence snd_sof_pci snd_sof_xtensa_dsp snd_soc_sdw_utils sn=
-d_sof snd_sof_utils snd_soc_acpi_intel_match snd_soc_acpi_intel_sdca_quir=
-ks soundwire_generic_allocation snd_soc_acpi crc8 soundwire_bus snd_soc_s=
-dca snd_soc_avs snd_soc_hda_codec snd_hda_ext_core snd_hda_codec kvm_inte=
-l snd_hda_core spi_pxa2xx_platform dw_dmac spi_pxa2xx_core snd_intel_dspc=
-fg snd_intel_sdw_acpi intel_gtt snd_hwdep drm_buddy ttm kvm snd_soc_core =
-iwlwifi drm_display_helper
-> kern :warn : [ 42.223363] [ T3271] processor_thermal_device_pci process=
-or_thermal_device btusb processor_thermal_wt_hint snd_compress platform_t=
-emperature_control btrtl processor_thermal_soc_slider snd_pcm processor_t=
-hermal_rfim spi_nor btintel cec irqbypass processor_thermal_rapl drm_clie=
-nt_lib rapl intel_rapl_common btbcm think_lmi btmtk drm_kms_helper mtd sn=
-d_timer intel_lpss_pci ahci intel_cstate processor_thermal_wt_req cfg8021=
-1 firmware_attributes_class wmi_bmof bluetooth libahci processor_thermal_=
-power_floor video mei_me intel_pmc_core snd intel_uncore i2c_i801 spi_int=
-el_pci intel_lpss processor_thermal_mbox pl2303 pcspkr libata spi_intel i=
-2c_smbus soundcore idma64 mei pmt_telemetry rfkill int340x_thermal_zone p=
-mt_discovery wmi pmt_class intel_pmc_ssram_telemetry intel_pmc_pwrm_telem=
-etry intel_vsec int3400_thermal acpi_pad pinctrl_tigerlake acpi_tad acpi_=
-thermal_rel drm fuse [last unloaded: siw]
-> kern :warn : [ 42.233209] [ T3271] CPU: 10 UID: 0 PID: 3271 Comm: nvme =
-Tainted: G S W 7.2.0-rc3+ #1 PREEMPT(lazy)
-> kern :warn : [ 42.235107] [ T3271] Tainted: [S]=3DCPU_OUT_OF_SPEC, [W]=
-=3DWARN
-> kern :warn : [ 42.236721] [ T3271] Hardware name: LENOVO 90XW004HPL/336=
-B, BIOS M5LKT1CA 01/06/2025
-> kern :warn : [ 42.238213] [ T3271] RIP: 0010:cleanup_srcu_struct (rcu/s=
-rcutree.c:706 (discriminator 2))
-> kern :warn : [ 42.239837] [ T3271] Code: c1 ea 03 42 80 3c 22 00 0f 85 =
-77 05 00 00 4a 03 1c f5 e0 dd 47 85 48 8d bb d8 00 00 00 e8 15 ca 07 00 8=
-5 c0 0f 84 0e ff ff ff <0f> 0b 48 8d 8b 58 01 00 00 48 b8 00 00 00 00 00 =
-fc ff df 48 89 ca
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->  0: c1 ea 03 shr $0x3,%edx
->  3: 42 80 3c 22 00 cmpb $0x0,(%rdx,%r12,1)
->  8: 0f 85 77 05 00 00 jne 0x585
->  e: 4a 03 1c f5 e0 dd 47 add -0x7ab82220(,%r14,8),%rbx
->  15: 85=20
->=20 16: 48 8d bb d8 00 00 00 lea 0xd8(%rbx),%rdi
->  1d: e8 15 ca 07 00 call 0x7ca37
->  22: 85 c0 test %eax,%eax
->  24: 0f 84 0e ff ff ff je 0xffffffffffffff38
->  2a:* 0f 0b ud2 <-- trapping instruction
->  2c: 48 8d 8b 58 01 00 00 lea 0x158(%rbx),%rcx
->  33: 48 b8 00 00 00 00 00 movabs $0xdffffc0000000000,%rax
->  3a: fc ff df=20
->=20 3d: 48 89 ca mov %rcx,%rdx
->=20
->=20Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->  0: 0f 0b ud2
->  2: 48 8d 8b 58 01 00 00 lea 0x158(%rbx),%rcx
->  9: 48 b8 00 00 00 00 00 movabs $0xdffffc0000000000,%rax
->  10: fc ff df=20
->=20 13: 48 89 ca mov %rcx,%rdx
-> kern :warn : [ 42.241383] [ T3271] RSP: 0018:ffffc900049778f0 EFLAGS: 0=
-0010202
-> kern :warn : [ 42.242985] [ T3271] RAX: 0000000000000001 RBX: ffffe8fff=
-f622fc0 RCX: ffffffff817d27dd
-> kern :warn : [ 42.244560] [ T3271] RDX: 1ffff110ea8e5ce0 RSI: 000000000=
-0000246 RDI: ffff88875472e600
-> kern :warn : [ 42.246197] [ T3271] RBP: 0000000000000000 R08: 000000000=
-0000001 R09: ffffed10ea8e5cc5
-> kern :warn : [ 42.247819] [ T3271] R10: ffff88875472e62f R11: 000000000=
-0000040 R12: dffffc0000000000
-> kern :warn : [ 42.249508] [ T3271] R13: fffffbfff0d0d6ee R14: 000000000=
-0000000 R15: ffff88818083c0a8
-> kern :warn : [ 42.251005] [ T3271] FS: 00007fd8541ea780(0000) GS:ffff88=
-87ccda7000(0000) knlGS:0000000000000000
-> kern :warn : [ 42.252678] [ T3271] CS: 0010 DS: 0000 ES: 0000 CR0: 0000=
-000080050033
-> kern :warn : [ 42.254204] [ T3271] CR2: 00007f7098b7e2c0 CR3: 000000088=
-3d05005 CR4: 0000000000f72ef0
-> kern :warn : [ 42.255916] [ T3271] PKRU: 55555554
-> kern :warn : [ 42.257486] [ T3271] Call Trace:
-> kern :warn : [ 42.259126] [ T3271] <TASK>
-> kern :warn : [ 42.260726] [ T3271] ? __mutex_unlock_slowpath+0x4b3/0x53=
-0
-> kern :warn : [ 42.262369] [ T3271] blk_mq_free_tag_set (blk-mq.c:4976)
-> kern :warn : [ 42.263861] [ T3271] nvme_rdma_teardown_io_queues+0xee/0x=
-130
-> kern :warn : [ 42.265514] [ T3271] nvme_rdma_delete_ctrl (nvme/host/rdm=
-a.c:947 nvme/host/rdma.c:2157 nvme/host/rdma.c:2165)
-> kern :warn : [ 42.267029] [ T3271] nvme_do_delete_ctrl (nvme/host/core.=
-c:247)
-> kern :warn : [ 42.268752] [ T3271] nvme_delete_ctrl_sync.cold (nvme/hos=
-t/core.c:277)
-> kern :warn : [ 42.270328] [ T3271] nvme_sysfs_delete (nvme/host/sysfs.c=
-:498)
-> kern :warn : [ 42.271987] [ T3271] kernfs_fop_write_iter (kernfs/file.c=
-:345)
-> kern :warn : [ 42.273601] [ T3271] vfs_write (read_write.c:595 read_wri=
-te.c:687)
-> kern :warn : [ 42.275278] [ T3271] ? __pfx_vfs_write (linux/fs.h:2733 (=
-discriminator 1))
-> kern :warn : [ 42.276750] [ T3271] ? kmem_cache_free (linux/kasan.h:235=
- slub.c:2705 slub.c:6405 slub.c:6532)
-> kern :warn : [ 42.278425] [ T3271] ? fdget_pos (linux/instrumented.h:82=
- linux/atomic/atomic-instrumented.h:3188 linux/file_ref.h:215 file.c:1231=
- file.c:1257)
-> kern :warn : [ 42.279916] [ T3271] ? do_sys_openat2 (linux/fs.h:2564 li=
-nux/fs.h:2566 open.c:1367)
-> kern :warn : [ 42.281536] [ T3271] ksys_write (read_write.c:739)
-> kern :warn : [ 42.283048] [ T3271] ? __pfx_ksys_write (read_write.c:723=
-)
-> kern :warn : [ 42.284669] [ T3271] do_syscall_64 (x86/entry/syscall_64.=
-c:63 x86/entry/syscall_64.c:94)
-> kern :warn : [ 42.286196] [ T3271] ? ksys_read (read_write.c:716)
-> kern :warn : [ 42.287822] [ T3271] ? do_syscall_64 (linux/irq-entry-com=
-mon.h:210 linux/irq-entry-common.h:230 linux/entry-common.h:318 x86/entry=
-/syscall_64.c:100)
-> kern :warn : [ 42.289367] [ T3271] ? __pfx___do_sys_newfstat (stat.c:44=
-6)
-> kern :warn : [ 42.290855] [ T3271] ? do_syscall_64 (linux/irq-entry-com=
-mon.h:210 linux/irq-entry-common.h:230 linux/entry-common.h:318 x86/entry=
-/syscall_64.c:100)
-> kern :warn : [ 42.292405] [ T3271] ? do_syscall_64 (linux/irq-entry-com=
-mon.h:210 linux/irq-entry-common.h:230 linux/entry-common.h:318 x86/entry=
-/syscall_64.c:100)
-> kern :warn : [ 42.293886] [ T3271] ? __x64_sys_close (open.c:1511 open.=
-c:1496 open.c:1496)
-> kern :warn : [ 42.295469] [ T3271] ? do_syscall_64 (linux/randomize_kst=
-ack.h:57 x86/entry/syscall_64.c:92)
-> kern :warn : [ 42.296937] [ T3271] entry_SYSCALL_64_after_hwframe (x86/=
-entry/entry_64.S:121)
-> kern :warn : [ 42.298472] [ T3271] RIP: 0033:0x7fd8549a2687
-> kern :warn : [ 42.299951] [ T3271] Code: 48 89 fa 4c 89 df e8 58 b3 00 =
-00 8b 93 08 03 00 00 59 5e 48 83 f8 fc 74 1a 5b c3 0f 1f 84 00 00 00 00 0=
-0 48 8b 44 24 10 0f 05 <5b> c3 0f 1f 80 00 00 00 00 83 e2 39 83 fa 08 75 =
-de e8 23 ff ff ff
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->  0: 48 89 fa mov %rdi,%rdx
->  3: 4c 89 df mov %r11,%rdi
->  6: e8 58 b3 00 00 call 0xb363
->  b: 8b 93 08 03 00 00 mov 0x308(%rbx),%edx
->  11: 59 pop %rcx
->  12: 5e pop %rsi
->  13: 48 83 f8 fc cmp $0xfffffffffffffffc,%rax
->  17: 74 1a je 0x33
->  19: 5b pop %rbx
->  1a: c3 ret
->  1b: 0f 1f 84 00 00 00 00 nopl 0x0(%rax,%rax,1)
->  22: 00=20
->=20 23: 48 8b 44 24 10 mov 0x10(%rsp),%rax
->  28: 0f 05 syscall
->  2a:* 5b pop %rbx <-- trapping instruction
->  2b: c3 ret
->  2c: 0f 1f 80 00 00 00 00 nopl 0x0(%rax)
->  33: 83 e2 39 and $0x39,%edx
->  36: 83 fa 08 cmp $0x8,%edx
->  39: 75 de jne 0x19
->  3b: e8 23 ff ff ff call 0xffffffffffffff63
->=20
->=20Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->  0: 5b pop %rbx
->  1: c3 ret
->  2: 0f 1f 80 00 00 00 00 nopl 0x0(%rax)
->  9: 83 e2 39 and $0x39,%edx
->  c: 83 fa 08 cmp $0x8,%edx
->  f: 75 de jne 0xffffffffffffffef
->  11: e8 23 ff ff ff call 0xffffffffffffff39
-> kern :warn : [ 42.301560] [ T3271] RSP: 002b:00007ffdc9d84570 EFLAGS: 0=
-0000202 ORIG_RAX: 0000000000000001
-> kern :warn : [ 42.303102] [ T3271] RAX: ffffffffffffffda RBX: 00007fd85=
-41ea780 RCX: 00007fd8549a2687
-> kern :warn : [ 42.304724] [ T3271] RDX: 0000000000000001 RSI: 00007fd85=
-4b4da0a RDI: 0000000000000004
-> kern :warn : [ 42.306296] [ T3271] RBP: 00007fd854b4da0a R08: 000000000=
-0000000 R09: 0000000000000000
-> kern :warn : [ 42.307782] [ T3271] R10: 0000000000000000 R11: 000000000=
-0000202 R12: 000055a417335e50
-> kern :warn : [ 42.309390] [ T3271] R13: 00007ffdc9d86703 R14: 000055a41=
-7335e50 R15: 000055a417336760
-> kern :warn : [ 42.310924] [ T3271] </TASK>
-> kern :warn : [ 42.312525] [ T3271] ---[ end trace 0000000000000000 ]---
->=20
->=20The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20260806/202608060833.bce92909-=
-lkp@intel.com
->=20
->=20--=20
->=200-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
->
+Hello,
+
+kernel test robot noticed "kselftests.damon.sysfs_memcg_path_leak.sh.fail" on:
+
+commit: b78b0b65825275f58336a43611a700de174be8c3 ("futex: Use runtime constants for __futex_hash() hot path")
+https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git locking/core
+
+
+in testcase: kselftests
+version: kselftests-x86_64-f5098b6bae76-1_20260727
+with following parameters:
+
+	group: damon
+
+
+
+config: x86_64-rhel-9.4-kselftests
+compiler: gcc-14
+test machine: 16 threads Intel(R) Core(TM) i7-13620H (Raptor Lake) with 32G memory
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202608071053.6db6276e-lkp@intel.com
+
+
+# timeout set to 300
+# selftests: damon: sysfs_memcg_path_leak.sh
+# unreferenced object 0xffff8881029e0ab8 (size 8):
+#   comm "swapper/0", pid 1, jiffies 4294668108
+#   hex dump (first 8 bytes):
+#     00 00 d0 02 81 88 ff ff                          ........
+#   backtrace (crc 6c1bc6d6):
+#     __kmalloc_noprof+0x56b/0x830
+#     futex_init+0x108/0x3c0
+#     do_one_initcall+0xc3/0x4b0
+#     do_initcalls+0x215/0x240
+#     kernel_init_freeable+0x4a1/0x530
+#     kernel_init+0x18/0x180
+#     ret_from_fork+0x547/0x870
+#     ret_from_fork_asm+0x1a/0x30
+not ok 13 selftests: damon: sysfs_memcg_path_leak.sh # exit=1
+
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20260807/202608071053.6db6276e-lkp@intel.com
+
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
