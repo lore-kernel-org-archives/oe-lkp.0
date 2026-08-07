@@ -1,101 +1,129 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 78C8A369D7D;
-	Fri,  7 Aug 2026 17:37:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A99FA379989
+	for <oe-lkp@lists.linux.dev>; Fri,  7 Aug 2026 18:35:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786124236; cv=none; b=OsYGT7v2VZSG44gggLSNI1R/yjwchoqFrNZ1/eXFxWoQvdTzVJWyDJ4QZ2qn14yhdNXxBXt+CR+K1j8WTzDuVTkfQ9TPYNhTTW9owge6WVGZVtz05oQer9ltIzqyMNL7RWUr5RacbBJMCf0uHdJl2t0zPeCBh9doPlf6yKEZo14=
+	t=1786127750; cv=none; b=VbRnkTAr0I38XhSAxjufwq/+b3rHSU/i/9OYrHjdpeMRqI3iqxo2qMJ2RTiLTycHe1YpS2jiudQwIRerrSpQ+PYFCf12qeNrK8BRnqsSGN3jnG50XsHqxpY5nI5C/0IeCDEc3GfDZXK/DLVN0t0jgg9a27Cq4ORd0s0ey/84fCA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786124236; c=relaxed/simple;
-	bh=I/MwN7d8rcGjAynfp3Yh2FrK05ByPnLtMo82uZX3gO4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LnbOImkr34ESzP/XzF36VOvZULDOE+5WbwWN+ym8aw8JvM9oLpoAmwHNlrhxw0i8Fj+YTB3Leic9FfPwPudvAMB+8N9/L7BY4Mnc1z0zMy889r0IxAB2CJNPbNvHvtmrj5ttd5YZwvGQcHoJlyrm+KX4Bb6H1XsakI3LEoaBk4k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=u1YBCUje; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1786127750; c=relaxed/simple;
+	bh=6HjUsJVBCV1zSooKnz7AQ1gIW9Lpwv5qLqnebJ1Iq2c=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=cLG90m+FNLYw6PlJBXz3wGdaBztm3SrYrpKOsFH6SxYG2nibrkqCdzkdH7t2w3Yxhsf4MyC6oZeph/4eF9da7R93p5zgPO3iDPpwtA5jC0+hFbnyDdDax6gNyHumyz+BU9u7+P52FFngKAZueoBxCYhlk+gii4Hm5h3H1mX59vA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=kvFPauRw; arc=none smtp.client-ip=209.85.214.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="u1YBCUje"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EF4151516;
-	Fri,  7 Aug 2026 10:37:05 -0700 (PDT)
-Received: from arm.com (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 70A853F86F;
-	Fri,  7 Aug 2026 10:37:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1786124229; bh=I/MwN7d8rcGjAynfp3Yh2FrK05ByPnLtMo82uZX3gO4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=u1YBCUjeDCzJTEobFx+MVNk1Pj6AQM5/5FIGH2K6tYWuBOhiTQQ0znASS67jRUmmo
-	 5CjbLkLy668QaGbK1Nsa39Di2KcW87JsWQZ+KZqBRQDOAg4tyJTKY2Q1Va1m1mY6yO
-	 pF0DAysKHKvSk6j7OlKxaGWU1vgslfWlOBRTRhFo=
-Date: Fri, 7 Aug 2026 18:37:06 +0100
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: SJ Park <sj@kernel.org>, kernel test robot <oliver.sang@intel.com>,
-	oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	x86@kernel.org, K Prateek Nayak <kprateek.nayak@amd.com>,
-	Charlie Jenkins <thecharlesjenkins@gmail.com>,
-	linux-arch@vger.kernel.org, damon@lists.linux.dev
-Subject: Re: [tip:locking/core] [futex]  b78b0b6582:
- kselftests.damon.sysfs_memcg_path_leak.sh.fail
-Message-ID: <anYXwp8peHu8jm-H@arm.com>
-References: <20260807090139.GR776954@noisy.programming.kicks-ass.net>
- <20260807144928.912-1-sj@kernel.org>
- <20260807152353.GP687043@noisy.programming.kicks-ass.net>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="kvFPauRw"
+Received: by mail-pl1-f198.google.com with SMTP id d9443c01a7336-2cc73f47bdcso61764835ad.3
+        for <oe-lkp@lists.linux.dev>; Fri, 07 Aug 2026 11:35:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1786127748; x=1786732548; darn=lists.linux.dev;
+        h=content-type:cc:to:from:subject:message-id:references:mime-version
+         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=pm71kvPkgJxC1haOW3M1MZVVKWNDxYGuYHJrug/WR+c=;
+        b=kvFPauRwSe9LoZ/zW2x0QMpc4joWQbMHGPjhUzXcKB6l6WthXLHyQfaodYWfYbs2hU
+         gsTFPgM8r4FpJigmMpOQJfGU6lQ6tdmQpz0m4uPwViUBg9PGNM37+RcPl8qHTNNo0zA7
+         99HE564c+k+Nl+coKfXKB4/myNGM3GxWQbkJCjgGPgWsmeNKPsGGc667D8iTsBUecK2l
+         6rVVKGpKMjeCIiXaKaKyhGdAxXpfD9MnSGf3WXDzlG8J1J1qwS8QzHLaLsnuWdV3L/Si
+         VyF3T9sYFZbA7rfMXBH32jiAUln1IKWMG9fRe4gWr3iCuykkci8kAFVyjhhrhZgSZjEQ
+         dGgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786127748; x=1786732548;
+        h=content-type:cc:to:from:subject:message-id:references:mime-version
+         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=pm71kvPkgJxC1haOW3M1MZVVKWNDxYGuYHJrug/WR+c=;
+        b=RSH3YLATN3EilcfVxbsrI02pfkN41qLEpUSIaVojmdsmCjvi3AfmTJ0IBG0S4tXnbs
+         WJCORMU4OWMV016RtD7g/Scd5NT3/2KnC4rkqjI6sGEO8Jp365S76bXQfbajlTm3n66V
+         xdT/IpL/00Dx40bbORACeZ4kH/VJKjH9dufCOC7JXOz7yoMD8mCFnAAD2IGC/K1FBmce
+         kgGMI4HrLfWzQcOzR8FsGSXua8R2o19FMa3oGWnXCqsL6l/KvagGrzMIDgUnPudyz+eA
+         b3nZliMA89475swOiK9EIfIYSGljefzz6pAHJRQnR9oSM+fs6hRM2xQFojalL36vAE9/
+         ZY8g==
+X-Forwarded-Encrypted: i=1; AHgh+RrgA2zTfquUfXeHHTv9iCNvqsI52bo9m5iXQ8+CmTwyhROddjHKmsniFMuagFyviAVmK+t6pzo=@lists.linux.dev
+X-Gm-Message-State: AOJu0YxQsKg6eXxXNI6YcNIQgz7uiyRZBGQL6z3l9dKyjtweenE+n9Es
+	ZQOsfS24j/smnH5K9LkG3oCWIKW6tKVfDU1IW5IGV95+Dc7MYolEEYm4aLweaC9ubSXxCKnofdA
+	kbzzKdA==
+X-Received: from pjbct6.prod.google.com ([2002:a17:90a:f586:b0:383:bb4e:85a5])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:528c:b0:37f:bfd6:8b40
+ with SMTP id 98e67ed59e1d1-3903c5993cemr26345212a91.5.1786127747532; Fri, 07
+ Aug 2026 11:35:47 -0700 (PDT)
+Date: Fri, 7 Aug 2026 11:35:46 -0700
+In-Reply-To: <202608071656.86e9fd06-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260807152353.GP687043@noisy.programming.kicks-ass.net>
+Mime-Version: 1.0
+References: <202608071656.86e9fd06-lkp@intel.com>
+Message-ID: <anYlguXMOPZD-cfj@google.com>
+Subject: Re: [kvm-x86:selftests2] [KVM]  a262fc49e0: kselftests.kvm.make.fail
+From: Sean Christopherson <seanjc@google.com>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: David Matlack <dmatlack@google.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	Josh Hilke <jrhilke@google.com>, kvm@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
 
-On Fri, Aug 07, 2026 at 05:23:53PM +0200, Peter Zijlstra wrote:
-> On Fri, Aug 07, 2026 at 07:49:27AM -0700, SJ Park wrote:
-> > > > kernel test robot noticed "kselftests.damon.sysfs_memcg_path_leak.sh.fail" on:
-> > > > 
-> > > > commit: b78b0b65825275f58336a43611a700de174be8c3 ("futex: Use runtime constants for __futex_hash() hot path")
-> > > > https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git locking/core
+On Fri, Aug 07, 2026, kernel test robot wrote:
 > 
-> > The test does a simple DAMON operation and runs kmemleak to see if it caused a
-> > leak.  It doesn't filter out leaks caused by something other than the DAMON
-> > operation, though.  So the test can fail even if there is a leak outside of
-> > DAMON.  This failure is the case.  I confirmed manual kmemleak run without any
-> > DAMON operation reports the leak on the kernel that was built with the reported
-> > commit [1] like below.
 > 
-> > So, the commit is not breaking DAMON.  But apparently it is leaking something.
+> Hello,
 > 
-> Well, its doing a __init allocation and never freeing it because well,
-> futexes cannot be unloaded or anything.
+> kernel test robot noticed "kselftests.kvm.make.fail" on:
 > 
-> Catalin, this seems rather daft, but what do I know. Is the below the
-> right way to tell it to STFU?
+> commit: a262fc49e0aafdeeb1b4fd8cb0d79a0fde447757 ("KVM: selftests: Build and link selftests/vfio/lib into KVM selftests")
+> https://github.com/kvm-x86/linux selftests2
 > 
-> ---
-> diff --git a/kernel/futex/core.c b/kernel/futex/core.c
-> index ad917ff83854..afdbaf754fb7 100644
-> --- a/kernel/futex/core.c
-> +++ b/kernel/futex/core.c
-> @@ -45,6 +45,7 @@
->  #include <linux/rseq.h>
->  #include <linux/slab.h>
->  #include <linux/vmalloc.h>
-> +#include <linux/kmemleak.h>
->  
->  #include <vdso/futex.h>
->  
-> @@ -2058,6 +2059,7 @@ static int __init futex_init(void)
->  	order = get_order(size);
->  
->  	__futex_queues = kcalloc(nr_node_ids, sizeof(*__futex_queues), GFP_KERNEL);
-> +	kmemleak_not_leak(__futex_queues);
->  
->  	runtime_const_init(shift, __futex_shift);
->  	runtime_const_init(mask,  __futex_mask);
+> [test failed on linux-next/master 78bc8af4affb9a732504eb22eeac7d1e50883853]
+> 
+> in testcase: kselftests
+> version: kselftests-x86_64-848acc8ffe1b-1_20260804
+> with following parameters:
+> 
+> 	group: kvm
+> 
+> 
+> config: x86_64-rhel-9.4-kselftests
+> compiler: gcc-14
+> test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 256G memory
+> 
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+> 
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202608071656.86e9fd06-lkp@intel.com
+> 
+> 
+> /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-a262fc49e0aafdeeb1b4fd8cb0d79a0fde447757/tools/testing/selftests/vfio/lib/drivers/ioat/ioat.c:12:10: fatal error: hw.h: No such file or directory
+>    12 | #include "hw.h"
+>       |          ^~~~~~
+> compilation terminated.
+> make[1]: *** [../vfio/lib/libvfio.mk:32:
+> /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-a262fc49e0aafdeeb1b4fd8cb0d79a0fde447757/tools/testing/selftests/kvm/libvfio/drivers/ioat/ioat.o]
+> Error 1 make[1]: *** Waiting for unfinished jobs....
+> /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-a262fc49e0aafdeeb1b4fd8cb0d79a0fde447757/tools/testing/selftests/vfio/lib/drivers/dsa/dsa.c:14:10:
+> fatal error: registers.h: No such file or directory
+>    14 | #include "registers.h"
+>       |          ^~~~~~~~~~~~~
+> compilation terminated.
+> make[1]: *** [../vfio/lib/libvfio.mk:32:
+> /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-a262fc49e0aafdeeb1b4fd8cb0d79a0fde447757/tools/testing/selftests/kvm/libvfio/drivers/dsa/dsa.o]
+> Error 1 make[1]: Leaving directory
+> '/usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-a262fc49e0aafdeeb1b4fd8cb0d79a0fde447757/tools/testing/selftests/kvm'
+> make: *** [Makefile:218: all] Error 2
 
-This would do. Kmemleak is not that advanced to track the
-runtime_const_init() pointers.
+Any chance the file is literally just not there?  Makefile.kvm's -I$(<D) expands
+to:
 
--- 
-Catalin
+ -I/usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-a262fc49e0aafdeeb1b4fd8cb0d79a0fde447757/tools/testing/selftests/vfio/lib/drivers/dsa
+
+which matches the directory of the input file:
+
+ -c/usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-a262fc49e0aafdeeb1b4fd8cb0d79a0fde447757/tools/testing/selftests/vfio/lib/drivers/dsa/dsa.c
+
+so AFAICT the makefile is working as intended?
