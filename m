@@ -1,131 +1,162 @@
-Received: from mta1.migadu.com (out-87.mta1.migadu.com [95.215.58.87])
+Received: from mta1.migadu.com (out-204.mta1.migadu.com [95.215.58.204])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1750B381E8B
-	for <oe-lkp@lists.linux.dev>; Thu, 13 Aug 2026 17:01:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.87
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46DA6476697
+	for <oe-lkp@lists.linux.dev>; Thu, 13 Aug 2026 17:14:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.204
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786640486; cv=none; b=SyCjyxL0ss/bQnys5/nX31V0SgNEfFtNBZ9wG+ubdydnuy0JryqWUBi6Ng9ubOSC3HF19H6kq1eI5yguhSJtIjk5Rial40z2+MOOcp8Dw63vaUzAgBreu0nBGFJ8eSA3+jgeG4byf2eGMoLt+2GzfwhtGE8P/zApDXjtm3RiIO8=
+	t=1786641301; cv=none; b=Zy5zIatSWq3nYWUGnHs59VvuQT/khGdCzL2qSG6tmtXZuKFLUueXID/v1js0pXM4fo8nuk3uYJMFsbpoRppf5hp1JNcAQ1+J0iPrA4uymmyLAMO9XtBUnwNH3kEU6jmd3rpy+vfznub8Q1SB0LIKd81NQcvwfetqPBMmXgHPKRM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786640486; c=relaxed/simple;
-	bh=IC8q4K8Uk8A6ZcbO1N8MmnhqRx/RYea67hNdi4ByC2M=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=D7SR6/DKZlaWNb6LRTCP50Om84PWUpF6MMDf9itu/0/0gLEgQjM8Hn+V2tmwIlxfYG19mloKHE3Ewl/VTpbfAQ0CgU+sDhGExichfLPWhBTrrhOke8H9QuohNmB8MEPvV4F1pWN5qC7ZrtUaEj4Snaga6LFNkqqT7cHYWhI3CV0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=aEqHfNzo; arc=none smtp.client-ip=95.215.58.87
+	s=arc-20240116; t=1786641301; c=relaxed/simple;
+	bh=Yec5Wj8ZUY9zXGuHPs7l8wD80d+XYwicM6WJm2aA3IY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=q6vbLQDliTsK+H80S6xzSQIAY3DtInYmmEmtMLbc3GqwooOCl/0i9auyMMegZHmSa4faMcUAhN7wz3JU9u+axOZFXBnh4UPTqPV9QKxEJePZejONBezBfAyrWUZTCWsMO2ThT1RdwrXAP2hKFTN2AXkEqae1RRHJ3riHsHKHOaI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=ONfwZ9zu; arc=none smtp.client-ip=95.215.58.204
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="aEqHfNzo"
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="ONfwZ9zu"
 X-Envelope-To: oe-lkp@lists.linux.dev
-DKIM-Signature: a=rsa-sha256; bh=IC8q4K8Uk8A6ZcbO1N8MmnhqRx/RYea67hNdi4ByC2M=;
+DKIM-Signature: a=rsa-sha256; bh=Yec5Wj8ZUY9zXGuHPs7l8wD80d+XYwicM6WJm2aA3IY=;
  c=simple/simple; d=linux.dev;
  h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1786640482; v=1; x=1787245282;
- b=aEqHfNzoIvCDfrWkqYihGXCwGeugeiLoRs6zokTUSwl/EhRs7jkms7OF91Nz1nZ0rK6bxVhw
- IEKDH5Q/OSwY44D625i1yd+TsPwpE+E14omR5Chvrep8JuvHlV/xpn7r9R6d6z6f3OMIjxsIDLb
- ZzrFAC9CwazpCqL0KcyRTdVw=
+ t=1786641297; v=1; x=1787246097;
+ b=ONfwZ9zudG1WKFJK7xFgYirQ8JVn1gIlzoW/dJ7mi0E4EXMn2MZnW9CW8DkL1HjG6LuWNomN
+ d1Tq2BsoJ7LSIvqrWlWHoHHFppUdWntH7FkCtvkS1szHo7K2KsAR4W6l8FXHEmi8VW+T1s/P7af
+ EfjLvJwwVB0Hf05C8rvCoc0c=
 X-Envelope-To: oe-lkp@lists.linux.dev
-Received: from localhost (2a03:2880:10ff:42::)
-	by smtp.migadu.com with ESMTPS id ac65b9794b46e62b;
-	Thu, 13 Aug 2026 17:01:22 +0000
+Received: from [IPV6:2a03:83e0:1126:4:9d:a05e:5bd8:c200] (2620:10d:c092:500::6:def8)
+	by smtp.migadu.com with ESMTPS id de41cf8ec9c54807;
+	Thu, 13 Aug 2026 17:14:57 +0000
 X-Migadu-Flow: FLOW_OUT
-Date: Thu, 13 Aug 2026 10:01:19 -0700
-From: Shakeel Butt <shakeel.butt@linux.dev>
-To: kernel test robot <yi1.lai@intel.com>
-Cc: Usama Arif <usama.arif@linux.dev>, oe-lkp@lists.linux.dev, 
-	lkp@intel.com, Andrew Morton <akpm@linux-foundation.org>, 
-	David Hildenbrand <david@kernel.org>, Johannes Weiner <hannes@cmpxchg.org>, 
-	"Liam R. Howlett" <liam@infradead.org>, Lorenzo Stoakes <ljs@kernel.org>, Michal Hocko <mhocko@suse.com>, 
-	Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>, Mike Rapoport <rppt@kernel.org>, 
-	Roman Gushchin <roman.gushchin@linux.dev>, Suren Baghdasaryan <surenb@google.com>, 
-	Tejun Heo <tj@kernel.org>, Vlastimil Babka <vbabka@kernel.org>, linux-mm@kvack.org, 
-	cgroups@vger.kernel.org
-Subject: Re: [linux-next:master] [mm/vmpressure]  ea928e9e18:
- stress-ng.mremap.ops_per_sec 36.2% regression
-Message-ID: <an34C2N-yqfok2Nn@linux.dev>
-References: <202608131743.c6a7dda4-lkp@intel.com>
+Message-ID: <017721a3-5eae-449e-8b86-75cffb503dd3@linux.dev>
+Date: Thu, 13 Aug 2026 18:14:50 +0100
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202608131743.c6a7dda4-lkp@intel.com>
-
-On Thu, Aug 13, 2026 at 09:16:22PM +0800, kernel test robot wrote:
-> 
-> 
-> Hello,
-> 
-> kernel test robot noticed a 36.2% regression of stress-ng.mremap.ops_per_sec on:
-> 
-> commit: ea928e9e18da682e9a5bc40aa862bff7ce5ae42e ("mm/vmpressure: move v1 userspace eventfd code into memcontrol-v1.c") https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> 
-> in testcase: stress-ng
-> version: stress-ng-x86_64-29ce10a2c-1_20260712
-> with following parameters:
-> 
-> 	nr_threads: 100%
-> 	testtime: 60s
-> 	test: mremap
-> 	cpufreq_governor: performance
-> 
-> 
-> 
-> config: x86_64-rhel-9.4 (CONFIG_MEMCG=y and CONFIG_MEMCG_V1 is not set)
-> compiler: gcc-14
-> test machine: 256 threads 4 sockets INTEL(R) XEON(R) PLATINUM 8592+ (Emerald Rapids) with 256G memory
-> 
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
-> 
-
-Hi there,
-
-Can you please test the following patch and see if it fixes the regression?
+User-Agent: Mozilla Thunderbird
+Subject: Re: [linux-next:master] [mm/vmpressure] ea928e9e18:
+ stress-ng.mremap.ops_per_sec 36.2% regression
+To: Shakeel Butt <shakeel.butt@linux.dev>,
+ kernel test robot <yi1.lai@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
+ Andrew Morton <akpm@linux-foundation.org>,
+ David Hildenbrand <david@kernel.org>, Johannes Weiner <hannes@cmpxchg.org>,
+ "Liam R. Howlett" <liam@infradead.org>, Lorenzo Stoakes <ljs@kernel.org>,
+ Michal Hocko <mhocko@suse.com>, =?UTF-8?Q?Michal_Koutn=C3=BD?=
+ <mkoutny@suse.com>, Mike Rapoport <rppt@kernel.org>,
+ Roman Gushchin <roman.gushchin@linux.dev>,
+ Suren Baghdasaryan <surenb@google.com>, Tejun Heo <tj@kernel.org>,
+ Vlastimil Babka <vbabka@kernel.org>, linux-mm@kvack.org,
+ cgroups@vger.kernel.org
+References: <202608131743.c6a7dda4-lkp@intel.com> <an34C2N-yqfok2Nn@linux.dev>
+Content-Language: en-US
+From: Usama Arif <usama.arif@linux.dev>
+In-Reply-To: <an34C2N-yqfok2Nn@linux.dev>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
 
-From 84c0b05b3bc5cf73ee66ead75aafb1ad684462c3 Mon Sep 17 00:00:00 2001
-From: Shakeel Butt <shakeel.butt@linux.dev>
-Date: Thu, 13 Aug 2026 09:38:28 -0700
-Subject: [PATCH] memcg: keep vmstats_percpu off the memory_events[] cacheline
 
-Signed-off-by: Shakeel Butt <shakeel.butt@linux.dev>
----
- include/linux/memcontrol.h | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+On 13/08/2026 18:01, Shakeel Butt wrote:
+> On Thu, Aug 13, 2026 at 09:16:22PM +0800, kernel test robot wrote:
+>>
+>>
+>> Hello,
+>>
+>> kernel test robot noticed a 36.2% regression of stress-ng.mremap.ops_per_sec on:
+>>
+>> commit: ea928e9e18da682e9a5bc40aa862bff7ce5ae42e ("mm/vmpressure: move v1 userspace eventfd code into memcontrol-v1.c") https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+>>
+>> in testcase: stress-ng
+>> version: stress-ng-x86_64-29ce10a2c-1_20260712
+>> with following parameters:
+>>
+>> 	nr_threads: 100%
+>> 	testtime: 60s
+>> 	test: mremap
+>> 	cpufreq_governor: performance
+>>
+>>
+>>
+>> config: x86_64-rhel-9.4 (CONFIG_MEMCG=y and CONFIG_MEMCG_V1 is not set)
+>> compiler: gcc-14
+>> test machine: 256 threads 4 sockets INTEL(R) XEON(R) PLATINUM 8592+ (Emerald Rapids) with 256G memory
+>>
+>> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>>
+> 
+> Hi there,
+> 
+> Can you please test the following patch and see if it fixes the regression?
+> 
+> 
+> From 84c0b05b3bc5cf73ee66ead75aafb1ad684462c3 Mon Sep 17 00:00:00 2001
+> From: Shakeel Butt <shakeel.butt@linux.dev>
+> Date: Thu, 13 Aug 2026 09:38:28 -0700
+> Subject: [PATCH] memcg: keep vmstats_percpu off the memory_events[] cacheline
+> 
+> Signed-off-by: Shakeel Butt <shakeel.butt@linux.dev>
+> ---
+>  include/linux/memcontrol.h | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+> index e78bc98ab229..e25d5b9a1db8 100644
+> --- a/include/linux/memcontrol.h
+> +++ b/include/linux/memcontrol.h
+> @@ -246,8 +246,13 @@ struct mem_cgroup {
+>  	/* handle for "memory.swap.events" */
+>  	struct cgroup_file swap_events_file;
+>  
+> -	/* memory.stat */
+> +	/* Read-mostly. */
+>  	struct memcg_vmstats	*vmstats;
+> +	struct memcg_vmstats_percpu __percpu *vmstats_percpu;
+> +	int			kmemcg_id;
+> +
+> +	/* Write-hot from here on; do not let it share with the above. */
+> +	CACHELINE_PADDING(_pad_);
+>  
+>  	/* memory.events */
+>  	atomic_long_t		memory_events[MEMCG_NR_MEMORY_EVENTS];
+> @@ -266,9 +271,6 @@ struct mem_cgroup {
+>  #if BITS_PER_LONG < 64
+>  	seqlock_t		socket_pressure_seqlock;
+>  #endif
+> -	int kmemcg_id;
+> -
+> -	struct memcg_vmstats_percpu __percpu *vmstats_percpu;
+>  
+>  #ifdef CONFIG_CGROUP_WRITEBACK
+>  	struct list_head cgwb_list;
+
+
+I was currently testing this diff, not sure which one would be better.
 
 diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index e78bc98ab229..e25d5b9a1db8 100644
+index e78bc98ab229b..215e2e87f42b2 100644
 --- a/include/linux/memcontrol.h
 +++ b/include/linux/memcontrol.h
-@@ -246,8 +246,13 @@ struct mem_cgroup {
- 	/* handle for "memory.swap.events" */
- 	struct cgroup_file swap_events_file;
- 
--	/* memory.stat */
-+	/* Read-mostly. */
- 	struct memcg_vmstats	*vmstats;
-+	struct memcg_vmstats_percpu __percpu *vmstats_percpu;
-+	int			kmemcg_id;
-+
-+	/* Write-hot from here on; do not let it share with the above. */
-+	CACHELINE_PADDING(_pad_);
- 
- 	/* memory.events */
- 	atomic_long_t		memory_events[MEMCG_NR_MEMORY_EVENTS];
-@@ -266,9 +271,6 @@ struct mem_cgroup {
- #if BITS_PER_LONG < 64
- 	seqlock_t		socket_pressure_seqlock;
+@@ -268,10 +268,15 @@ struct mem_cgroup {
  #endif
--	int kmemcg_id;
--
--	struct memcg_vmstats_percpu __percpu *vmstats_percpu;
- 
- #ifdef CONFIG_CGROUP_WRITEBACK
- 	struct list_head cgwb_list;
--- 
-2.53.0-Meta
+        int kmemcg_id;
 
+-       struct memcg_vmstats_percpu __percpu *vmstats_percpu;
+-
+ #ifdef CONFIG_CGROUP_WRITEBACK
+        struct list_head cgwb_list;
++#endif
++
++       /* Keep the hot per-CPU stats pointer away from memory event counters. */
++       struct memcg_vmstats_percpu __percpu *vmstats_percpu
++               ____cacheline_aligned_in_smp;
++
++#ifdef CONFIG_CGROUP_WRITEBACK
+        struct wb_domain cgwb_domain;
+        struct memcg_cgwb_frn cgwb_frn[MEMCG_CGWB_FRN_CNT];
+ #endif
 
