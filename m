@@ -1,48 +1,66 @@
-Received: from mta1.migadu.com (out-13.mta1.migadu.com [95.215.58.13])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4FCF4B048F
-	for <oe-lkp@lists.linux.dev>; Sat, 15 Aug 2026 00:25:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34A1A1E98E3
+	for <oe-lkp@lists.linux.dev>; Sat, 15 Aug 2026 05:58:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786753545; cv=none; b=ZGG+3iISDb7cB161akh/Wm1sGkrBeuqUekieTVVD22UJBpOGnuIPNMJJO5LWQGDiu5zEAI0voxgrA8NrSKuaKQMhdvOpFVOWODsKQSnYOtxQc1CInMciOs4BNgAmbaq3ndtHrhk5jZ5Jf2c0PWWKuD7MRK1+uoWI9a7CHmYOgko=
+	t=1786773520; cv=none; b=j8rRGmSGdJD+Og2Kl4jjzZZhESX1n4Uj8meQfhd3x0l3gblJajLPzfvGP/SAiDLV3SX6DcHvhbpw3OIr8TDzSj55mqxOLpvY6at8RmXlYA3nT3xf2sK7s2utk9BjphK0BchFSTLxDhdIdfu6Cz+Xdt174RiKhNY0wirPYc3eseE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786753545; c=relaxed/simple;
-	bh=GYuFv7CQYkZCd17N/+SeP2Qi4r1CM+EVfUZM03WzySo=;
+	s=arc-20240116; t=1786773520; c=relaxed/simple;
+	bh=gjNgyi75mKSLP0qFZKF47roDus09J1ZqRh7z5MgfQmQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PsHXNwbd7ThlWv57kn9x/tnduBBLuLo8eUQX0B1CYdxIkAVOUMtyCAKwKXJTCcS1eUlGd/Yfop8b86X3eI35oYdEsQnxVBMpdyOXn8ZJ27wff2+c1spyPEviEpcj2+UVo3L3FFH2xeCkewF48LTn2JN2CmvbxZCsL8wh0grOQE4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=Eu7uF+EZ; arc=none smtp.client-ip=95.215.58.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	 Content-Type:Content-Disposition:In-Reply-To; b=NzVDxkr0fuG95J3ioBf5Ajz4B1My45aylpQSY96QSdyHC8/33EQ3pAEtJMeVbk5DvGJ1b2GAnaLx6503q+5ZLeIZFlroRVM4JdDq4Yb/12SPWI+Wl1TZscjb2llq0Hb9FGuZfwLD76OIckAqDTwXg57tO0BdKFITDB4pJHItAVQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=f1dq3FUr; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="Eu7uF+EZ"
-X-Envelope-To: oe-lkp@lists.linux.dev
-DKIM-Signature: a=rsa-sha256; bh=GYuFv7CQYkZCd17N/+SeP2Qi4r1CM+EVfUZM03WzySo=;
- c=simple/simple; d=linux.dev;
- h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1786753541; v=1; x=1787358341;
- b=Eu7uF+EZUCsY1M8UchM7uP64hCh58Fd58ixSWPXIPj77Vk4FD/ElfoyCr7fYwxHWCHLkZS7s
- 6gvEDUWK9VaL7+w0zZ4hCvgO81mSIUxUmzkKdh4/nnnRGxWcovgn9FI4smVQPfOB2kRXAa4MbNe
- h2kltY+QOq2OMIWNRsq6Myfg=
-X-Envelope-To: oe-lkp@lists.linux.dev
-Received: from localhost (2a03:2880:10ff:7::)
-	by smtp.migadu.com with ESMTPS id b7d206ee5502d7bd;
-	Sat, 15 Aug 2026 00:25:41 +0000
-X-Migadu-Flow: FLOW_OUT
-Date: Fri, 14 Aug 2026 17:25:39 -0700
-From: Shakeel Butt <shakeel.butt@linux.dev>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="f1dq3FUr"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1786773518; x=1818309518;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=gjNgyi75mKSLP0qFZKF47roDus09J1ZqRh7z5MgfQmQ=;
+  b=f1dq3FUrVgslrL13wGwTpueqXjWdKVVqCtCOQTeFqqdq/eVlTiCSAJod
+   3kyb1AVfkYnMxdLiQ5MkZ8RoARvCxGLjKxQorghcbM6JMYfKFQD3q0/ME
+   vLM0g/MY4Uqclt+f+ZFtF2u/UgsjU4yA5qreuMwfyiUZosL5wVyWAab+D
+   CmV/iaiAvsPoAl/iUzx9SrzxgnbRwUUqx6JO5S5dptKVHKn+d2A1UNh6/
+   raEhCyHv3oaAWT7f6DPwtRoHF2DciXZdB5UElEtQbe25Fge8+BpNGSP5J
+   E6qQ3qCzgP4oSAQt8JGfEf+qZC780X2oGZ4RL05gAYDp5q4GhFz3qsO4X
+   g==;
+X-CSE-ConnectionGUID: uCI6bvLhTj+7UQgv390jpw==
+X-CSE-MsgGUID: 5WLF9Id5Su+sTBIePBxHFg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11875"; a="87264105"
+X-IronPort-AV: E=Sophos;i="6.25,224,1779174000"; 
+   d="scan'208";a="87264105"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2026 22:58:37 -0700
+X-CSE-ConnectionGUID: uehPhlSGQi6zUjC9n0w1tA==
+X-CSE-MsgGUID: 4PqaEcKTS7G8yfZBQqcEMQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,224,1779174000"; 
+   d="scan'208";a="302647734"
+Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2026 22:58:33 -0700
+Date: Sat, 15 Aug 2026 13:58:29 +0800
+From: kernel test robot <yi1.lai@intel.com>
 To: Usama Arif <usama.arif@linux.dev>
-Cc: kernel test robot <yi1.lai@intel.com>, oe-lkp@lists.linux.dev, 
-	lkp@intel.com, Andrew Morton <akpm@linux-foundation.org>, 
-	David Hildenbrand <david@kernel.org>, Johannes Weiner <hannes@cmpxchg.org>, 
-	"Liam R. Howlett" <liam@infradead.org>, Lorenzo Stoakes <ljs@kernel.org>, Michal Hocko <mhocko@suse.com>, 
-	Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>, Mike Rapoport <rppt@kernel.org>, 
-	Roman Gushchin <roman.gushchin@linux.dev>, Suren Baghdasaryan <surenb@google.com>, 
-	Tejun Heo <tj@kernel.org>, Vlastimil Babka <vbabka@kernel.org>, linux-mm@kvack.org, 
-	cgroups@vger.kernel.org, oliver.sang@intel.com
+Cc: Shakeel Butt <shakeel.butt@linux.dev>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, Andrew Morton <akpm@linux-foundation.org>,
+	David Hildenbrand <david@kernel.org>,
+	Johannes Weiner <hannes@cmpxchg.org>,
+	"Liam R. Howlett" <liam@infradead.org>,
+	Lorenzo Stoakes <ljs@kernel.org>, Michal Hocko <mhocko@suse.com>,
+	Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
+	Mike Rapoport <rppt@kernel.org>,
+	Roman Gushchin <roman.gushchin@linux.dev>,
+	Suren Baghdasaryan <surenb@google.com>, Tejun Heo <tj@kernel.org>,
+	Vlastimil Babka <vbabka@kernel.org>, linux-mm@kvack.org,
+	cgroups@vger.kernel.org
 Subject: Re: [linux-next:master] [mm/vmpressure] ea928e9e18:
  stress-ng.mremap.ops_per_sec 36.2% regression
-Message-ID: <an-w9UJy6y9Wg11J@linux.dev>
+Message-ID: <aoAABX59IzUXz/Rv@ly-workstation>
 References: <202608131743.c6a7dda4-lkp@intel.com>
  <an34C2N-yqfok2Nn@linux.dev>
  <017721a3-5eae-449e-8b86-75cffb503dd3@linux.dev>
@@ -158,15 +176,9 @@ On Fri, Aug 14, 2026 at 11:32:09AM +0100, Usama Arif wrote:
 > 
 > Do you know if there a way for kernel test robot to test the below patch
 > on its host?
-
-+Oliver
-
-I used to request Oliver to test a patch for performance regressions reported by
-intel test robot.
-
 > 
 > 
-> From b862e84e7bd6a54b1546b7f21a6cf991253def18 Mon Sep 17 00:00:00 2001
+> >From b862e84e7bd6a54b1546b7f21a6cf991253def18 Mon Sep 17 00:00:00 2001
 > From: Usama Arif <usama.arif@linux.dev>
 > Date: Thu, 13 Aug 2026 11:42:05 -0700
 > Subject: [PATCH] mm/memcontrol: avoid false sharing between vmstats and events
@@ -224,7 +236,18 @@ intel test robot.
 > -- 
 > 2.53.0-Meta
 > 
-> 
+>
+
+Tested the patch on the same test machine. Here are the test results
+from stress-ng mremap benchmark (60s, 256 instances):
+
+	Commit Avg.ops_per_sec
+Base	a33b5c91	57311.85
+Reregression ea928e9e	36542.09
+Fix	582a7676	57089.22
+
+The performance regression introduced by ea928e9e is resolved.
+
 > 
 > >>
 > >> diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
