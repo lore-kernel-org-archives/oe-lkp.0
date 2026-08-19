@@ -1,123 +1,91 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD0D847D931
-	for <oe-lkp@lists.linux.dev>; Wed, 19 Aug 2026 15:26:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25B0D34753A
+	for <oe-lkp@lists.linux.dev>; Wed, 19 Aug 2026 18:59:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787153216; cv=none; b=o1Uxf4yBnW/w3mD3CzLElyJRh3FPDfwKtwFJz/e/ZyHiLs0QBc3JeKdA/ZBtHoO8JFdsX/W/XbEgXS465fLX0lQTH8Hr8e32L2Ud9i2aKBuQULxFJYeRB5omGrcNwI1GtSrfhL3jbXf3ZkqtN8s4lXp9EnkDuMjLGxKHDW+OE2c=
+	t=1787165959; cv=none; b=gueRIR+D4Hvk9sFGtq+beXPLE8e9WnDHwlTvEBU6smXOTOEjavUFB1+7Rn9e7znyyo8LN9m7kH+HSDm7vceNgXpkWP+Or+XMrL5tRG2Vacv9wlHkh+yjTo5mT5tyk8xe3/srVB8rn8Ebazd+FiGLO5fvlYywJevArfOSVrFV/OI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787153216; c=relaxed/simple;
-	bh=Qx61ZcnyH8l/ZCeP4lCSfKqZvPUqpeHhttOH69nGnU8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=L3u9Rub9ls6kg8SWiap3Kvlh9D4QemAls5D4WSvF6RG7OBEsVRiqNjjBTCyeeT5Zp/UQjM/4SnVT4Gf+MTx3EB+SrzU/5XePMKKsMxvrG4fjhP9nO6gfJYPOEKenVHRqWrZ9pRycD4IJW5XVO/b9YP/42UMD3d7e9DoX5s49+pM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dl4BMs/S; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1787165959; c=relaxed/simple;
+	bh=sbKurF3MB5hsXtMP7HmwxrWZbHbt4HuspurYj7GgXtY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lKDH9QO5LqbLkFHUF+qruDjQpkG8+0GrNxB/kAk9MzMJCjGJjATWhGdCIbunKGOiUPYWfqn2Xo2dZMgI4IVeiizsExZyl+XFAwwnf7opbDfQRGwsHr+XMPkt+NeBGX9cWZ+EMMaq4G7zB2LS7oy+KiBmJ8gFNH+1Xky8P5DEvac=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eJMSh5qt; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dl4BMs/S"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eJMSh5qt"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1787153215; x=1818689215;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Qx61ZcnyH8l/ZCeP4lCSfKqZvPUqpeHhttOH69nGnU8=;
-  b=dl4BMs/SEORD6EzSrtX9NUsDT188u32jpA7GqyQwCFFyE3DetQxx40jp
-   62sECOX7mIuG2Pnz/ogG93aeqHWlOiynwJTJzqmpz1ZoUGju689XVD1Dl
-   MZvA2IRwt0quK2tBIq9h92J8EAhmF9nD14dGVH8JUcP9anzU7L5Wb7vgT
-   LrRB+zT+9vrxe9AIYZ8q9Xe+dlEA3FZBfVXmrgBlgUoUMIKMmIz3/ORo/
-   Nuz+MErnOWugdvhYZvbdk0/i4rNRxeT3Tg2Be2t1BHYv2fOQPi3DMzn5q
-   F/ci53wmik69kCELqwPCAsXamt8LwRP7cnzwxfS+sEJ1ywOIfXIBZ+Kwf
-   w==;
-X-CSE-ConnectionGUID: fEUsgndjQnOteFdj79kEqw==
-X-CSE-MsgGUID: jZTkgfC0TkK5PguksBT5cA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11880"; a="90191653"
+  t=1787165957; x=1818701957;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=sbKurF3MB5hsXtMP7HmwxrWZbHbt4HuspurYj7GgXtY=;
+  b=eJMSh5qtXEJvhbptObvL7LEnGQnivZojSykDbW7B0syuOqpWQK7O+Cqm
+   eRb/wgFX0Heg+h6h6FT+1VwGBS0FfVOdTXM/4vmX+dNGuQIg5h5NpXQf2
+   yGArY87QkSMWMgWpxEupqff+BUU2DfXbhnmD5H0TC7UAEpTcOyS2IOCpQ
+   WDq4GVXGZ9Ko8aA4rIayF2JQXCioUjmOpMWQ5w/cfF1ncAm2mzlJUVnjl
+   7Hnnn8FLDPN1UZVrqWfzDGpRR9lMbwT3+raeiumwLCZCxh0C4R31MxfHe
+   5lTdvvlQAVPk4zcGg8+r74azqFiCQL7ScTs0wQZ7P99jNnt1mBvyaCPCN
+   A==;
+X-CSE-ConnectionGUID: mhpBIiHCTPKr2xfDQ7PhCw==
+X-CSE-MsgGUID: 1ltVVVg1Q2qfv91VJb2vBA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11880"; a="98362592"
 X-IronPort-AV: E=Sophos;i="6.25,231,1779174000"; 
-   d="scan'208";a="90191653"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2026 08:26:54 -0700
-X-CSE-ConnectionGUID: yYD3B8nlQSOelBEaJXlbbw==
-X-CSE-MsgGUID: VsFntrBzRlKh9umXn3/iAg==
+   d="scan'208";a="98362592"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2026 11:59:16 -0700
+X-CSE-ConnectionGUID: qgGqj6cESFugWTCUOU3eZQ==
+X-CSE-MsgGUID: cJ1hEMnBT3K0FmhDyWde6A==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,231,1779174000"; 
-   d="scan'208";a="303798623"
-Received: from sghuge-mobl2.amr.corp.intel.com (HELO [10.125.108.15]) ([10.125.108.15])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2026 08:26:54 -0700
-Message-ID: <b771b524-ceca-4766-9eaa-07bee153802a@intel.com>
-Date: Wed, 19 Aug 2026 08:26:53 -0700
+   d="scan'208";a="263868455"
+Received: from guptapa-desk.jf.intel.com (HELO desk) ([10.165.239.46])
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2026 11:59:16 -0700
+Date: Wed, 19 Aug 2026 11:59:09 -0700
+From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+To: Dave Hansen <dave.hansen@intel.com>
+Cc: kernel test robot <yi1.lai@intel.com>, oe-lkp@lists.linux.dev, 
+	lkp@intel.com, linux-kernel@vger.kernel.org, bpf@vger.kernel.org, 
+	x86@kernel.org, Daniel Borkmann <daniel@iogearbox.net>, 
+	Dave Hansen <dave.hansen@linux.intel.com>
+Subject: Re: [linus:master] [x86/bugs] a3af84b0fa:
+ stress-ng.seccomp.ops_per_sec 95.7% regression
+Message-ID: <4h7zrdfpu3ailx5ajkyqohmcfuxgrk3tn7i7n3dkp3ksy5xehk@xqg5j6pqzocv>
+References: <202608191340.98574fe2-lkp@intel.com>
+ <b771b524-ceca-4766-9eaa-07bee153802a@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [linus:master] [x86/bugs] a3af84b0fa:
- stress-ng.seccomp.ops_per_sec 95.7% regression
-To: kernel test robot <yi1.lai@intel.com>,
- Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
- bpf@vger.kernel.org, x86@kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
- Dave Hansen <dave.hansen@linux.intel.com>
-References: <202608191340.98574fe2-lkp@intel.com>
-From: Dave Hansen <dave.hansen@intel.com>
-Content-Language: en-US
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- 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
-In-Reply-To: <202608191340.98574fe2-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b771b524-ceca-4766-9eaa-07bee153802a@intel.com>
 
-On 8/18/26 23:20, kernel test robot wrote:
-> kernel test robot noticed a 95.7% regression of stress-ng.seccomp.ops_per_sec on:
+On Wed, Aug 19, 2026 at 08:26:53AM -0700, Dave Hansen wrote:
+> On 8/18/26 23:20, kernel test robot wrote:
+> > kernel test robot noticed a 95.7% regression of stress-ng.seccomp.ops_per_sec on:
+> 
+> One one level this is a "vulnerability mitigations cause performance
+> loss, news at 11" kind of thing. Like, Duh!
+> 
+> The microbenchmark here does seem to be a pretty worse-case scenario
+> where it sits in a loop loading and running a seccomp filter program. In
+> other words, it's just about as pathological of a test as you can have.
+> 
+> I think Pawan had some more ideas about ways to optimize this. Is there
+> any appetite for that? Or is the test just too synthetic to worry about?
 
-One one level this is a "vulnerability mitigations cause performance
-loss, news at 11" kind of thing. Like, Duh!
+One of the optimization is to do fine-grained tracking, i.e. track reuse
+per-chunk instead of per-pack. This requires an additional bitmap per-pack.
 
-The microbenchmark here does seem to be a pretty worse-case scenario
-where it sits in a loop loading and running a seccomp filter program. In
-other words, it's just about as pathological of a test as you can have.
+Another option is to track the CPUs where the cBPF program ran, and only
+send IPIs to those CPUs. This mainly reduces the overhead on workloads on
+other CPUs, not necessarily the workload allocating programs. Seems more
+relevant on servers with many CPUs.
 
-I think Pawan had some more ideas about ways to optimize this. Is there
-any appetite for that? Or is the test just too synthetic to worry about?
+Not sure if these are worth the effort yet, given that I am not aware of a
+real-world workload with a significant impact.
