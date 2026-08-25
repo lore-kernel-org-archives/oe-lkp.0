@@ -1,48 +1,48 @@
 Received: from 011.lax.mailroute.net (011.lax.mailroute.net [199.89.1.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6ACE4908D2
-	for <oe-lkp@lists.linux.dev>; Tue, 25 Aug 2026 22:18:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 263BE3D1A8E
+	for <oe-lkp@lists.linux.dev>; Tue, 25 Aug 2026 23:16:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=199.89.1.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787696328; cv=none; b=A6wOYX2EEwL3r8w/Y62gOWqg6UQBnAWrj7n9+MvbmnU2Xt5ZA+iTIEogDm9iJSdyE3Wv7K8qCQ+0L4YEWvNQVjAKH5wSG/NK8mxvFRKwzziMA5SXqOK+TShmRFQ9/KBejUB+FsHednyAZToGBq58cVagEIqSjUbD6yXSj3JH1oA=
+	t=1787699785; cv=none; b=mjI5Au8skcMkquPG7q9pLSbiYXy893PHmg7suYo3eGZJvMzehvsgWcpSPVXTVYjJh/QPCSZ6dPeHsdYxFWYUBw5hvuc6Pf/tw5zQzxKulA1h8f2V3QdUtTJ+HFOEgsvKW3pqvkX/rH4IESpeFECBhdqjQXvvW0ZhfjDjKgud5iA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787696328; c=relaxed/simple;
-	bh=Wn8t1NSB9z51I0m/t0qwQvRj2tghN354WUGCY5oiGvo=;
+	s=arc-20240116; t=1787699785; c=relaxed/simple;
+	bh=4BH5qBp7d/apfGjVRN79/37yh2NrIAndniiSVDXcDms=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=qUNAJa8fnmJxCvcEtE+4pwhlVFv9+Xm3NLMcbbSqjDDM5GLLNFi6Apj7ZCkZMHNux12y9y92+TndFIuWFH89fS131tL5kofXO0i2b6421GsihnmtQwdbspOLAeJ5HxwDbKmxzUWXjtOqeC7vbf8r+gLPSDYZFrW3sA8QhYm1ReE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=acm.org; spf=pass smtp.mailfrom=acm.org; dkim=pass (2048-bit key) header.d=acm.org header.i=@acm.org header.b=h2t1aLCz; arc=none smtp.client-ip=199.89.1.14
+	 In-Reply-To:Content-Type; b=utfTiFao4cX73yV7h6xy5IXmtnLUnHc6qD78UXB7BUhL/WqsraUAGCBunKv8n0ME/yn98gf9fDC7M9h4i0WCW2kKXB0CLVPycakFNftbzR+05dRooDw1A6h+7p/C4Ru7rDsqlb5fo8KvQKZUYrjc9KHxhgPmP4BglsDHqxaYgh0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=acm.org; spf=pass smtp.mailfrom=acm.org; dkim=pass (2048-bit key) header.d=acm.org header.i=@acm.org header.b=Gf6aL0B4; arc=none smtp.client-ip=199.89.1.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=acm.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=acm.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=acm.org header.i=@acm.org header.b="h2t1aLCz"
+	dkim=pass (2048-bit key) header.d=acm.org header.i=@acm.org header.b="Gf6aL0B4"
 Received: from localhost (localhost [127.0.0.1])
-	by 011.lax.mailroute.net (Postfix) with ESMTP id 4hV2HT71Zhz1XM0vy;
-	Tue, 25 Aug 2026 22:18:45 +0000 (UTC)
+	by 011.lax.mailroute.net (Postfix) with ESMTP id 4hV3Yz4X2kz1XM4Tn;
+	Tue, 25 Aug 2026 23:16:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=acm.org; h=
 	content-transfer-encoding:content-type:content-type:in-reply-to
 	:from:from:content-language:references:subject:subject
 	:user-agent:mime-version:date:date:message-id:received:received;
-	 s=mr01; t=1787696312; x=1790288313; bh=APev5dkDvNxMzoK/H1N0BGHv
-	e+cWp9xVJDN07fDHlNs=; b=h2t1aLCzuR/cd3KzlIaCdpxpXP/1Grx8HhnlliYY
-	k7s1TeTHcnW4b/guFk2wOHoa41YqUwdLJawNJxPoWY0mOISs5IBDEcRnfyuhfhWq
-	2U7V1HN+i8V6Z3JUpC0hoiriVrtbWSyhNR+X2CXgft2lLAqtQPRGnUMKZAwonwUg
-	GTKbbHthuSZw+ZSWnIG2mc6CpTuXlEhMDRxwUTHVG9ZGFju2hCnVji1co9zCuays
-	F+aNMn1ZtmWIkpfFT1uWK52nM/aHm8cn3+qZa0jkX/5U5T54KYFjJr2OV1ILBMdV
-	DuRypGlhL5WXU5uCkgAv8ihIStYU45IAzxvJlR8EhKnzQQ==
+	 s=mr01; t=1787699774; x=1790291775; bh=cvX+ylpk9b8LiWwOaRJY0kOH
+	k31lGuhmVps8jATT9IM=; b=Gf6aL0B4id7CXLF6GFEiHcY0bbnfV7P1Fte9Uy+4
+	IFU2SldGTJ+TeU6J2AEXKbzoEe2H6mPRFaNdc2apgBJ6JN1DDg0p5C+7m1n83mnR
+	ATbESQt32/y4mnbNVAZjGWXXelWpjGx3fNPAkHJ4Ytt1TCZ9rJ9BcvD3l+4tJ4M6
+	v0oqqUwZ3X0+EjG3s32odCQdchuasITFh+MKL91pSj4NjtLxffKnJnQXOO+fTLgQ
+	ufYOuBpZb9ZHKJu5EjpCwXnTqFGv5VcvWQtMdjbaWoGYMTmi4kMEYrhtjCMH8bjx
+	eYG5vcrzKPa2WyhvTVrfFhlx3QDtbHOe8a8z60T3StKaLQ==
 X-Virus-Scanned: by MailRoute
 Received: from 011.lax.mailroute.net ([127.0.0.1])
  by localhost (011.lax [127.0.0.1]) (mroute_mailscanner, port 10029) with LMTP
- id VNNE9JcnAtl9; Tue, 25 Aug 2026 22:18:32 +0000 (UTC)
+ id WZN1Ogep4yCr; Tue, 25 Aug 2026 23:16:14 +0000 (UTC)
 Received: from [100.80.227.50] (unknown [104.135.182.42])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
 	(Authenticated sender: bvanassche@acm.org)
-	by 011.lax.mailroute.net (Postfix) with ESMTPSA id 4hV2H66mzsz1XM4TB;
-	Tue, 25 Aug 2026 22:18:26 +0000 (UTC)
-Message-ID: <845464ce-43c0-45b3-94ea-ccc830fbc76f@acm.org>
-Date: Tue, 25 Aug 2026 15:18:24 -0700
+	by 011.lax.mailroute.net (Postfix) with ESMTPSA id 4hV3Yj4bJtz1XM4TB;
+	Tue, 25 Aug 2026 23:16:08 +0000 (UTC)
+Message-ID: <7e51bca8-218a-40b8-8ff8-fc59671f5add@acm.org>
+Date: Tue, 25 Aug 2026 16:16:07 -0700
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -75,98 +75,23 @@ Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 8/25/26 8:13 AM, Tetsuo Handa wrote:
-> As of commit fe4c990e6a30 ("loop: Add __guarded_by() annotations") in block-loop branch,
+> On 2026/08/25 7:53, Bart Van Assche wrote:
+>> A correction: it is not safe to call drain_workqueue() nor to freeze the
+>> request queue in __loop_clr_fd(). I'm considering to modify the comment
+>> in that function as follows:
 > 
->    modprobe loop
->    losetup /dev/loop0 testfile.img; losetup /dev/loop1 /dev/loop0; losetup -D
->    sleep 1
->    losetup /dev/loop1 testfile.img; losetup /dev/loop0 /dev/loop1; losetup -D
-> 
-> causes lockdep warning. This is a false positive, but we need to avoid it anyway.
-
-Thanks for having shared the above reproducer. I have dropped the 
-patches that protect all lo_backing_file dereferences with lo_mutex. It
-is too tricky to get this right and at the same time to keep lockdep
-happy.
-
 > you also recognized that we can't call drain_workqueue() or flush_workqueue().
 > 
 > Therefore, I chose to temporarily drop lo->lo_disk->open_mutex in order to
 > make it possible to safely perform drain_workqueue().
 
-There is another possibility: set QUEUE_FLAG_DYING in __loop_clr_fd() 
-before modifying queue limits and clear it again after modifying queue
-limits has finished. Feedback on the patch below is welcome.
+My sentence was incomplete: I should have written that it is not safe to
+call drain_workqueue() nor flush_workqueue() from __loop_clr_fd() while
+the request queue is frozen. It is not clear to me how draining or
+flushing the workqueue from inside __loop_clr_fd() could cause trouble
+if this happens with the queue unfrozen since disk->open_mutex is not
+acquired by the memory reclaim code?
 
 Thanks,
 
 Bart.
-
-diff --git a/drivers/block/loop.c b/drivers/block/loop.c
-index df72350cad15..2fb9dc8ea47e 100644
---- a/drivers/block/loop.c
-+++ b/drivers/block/loop.c
-@@ -1153,11 +1153,30 @@ static int loop_configure(struct loop_device 
-*lo, blk_mode_t mode,
-
-  static void __loop_clr_fd(struct loop_device *lo)
-  {
-+	struct request_queue *q = lo->lo_queue;
-  	struct queue_limits lim;
-+	unsigned int memflags;
-  	struct file *filp;
-  	gfp_t gfp = lo->old_gfp_mask;
-  	int err;
-
-+	/*
-+	 * Prevent that new asynchronous I/O is submitted while queue limits
-+	 * are being modified.
-+	 */
-+	blk_queue_flag_set(QUEUE_FLAG_DYING, q);
-+
-+	/* Wait until asynchronous I/O has finished. */
-+	memflags = blk_mq_freeze_queue(q);
-+	blk_mq_unfreeze_queue(q, memflags);
-+
-+	/* Wait until I/O dispatching has finished. */
-+	blk_mq_quiesce_queue(q);
-+	blk_mq_unquiesce_queue(q);
-+
-+	/* Wait until all I/O-related work has finished. */
-+	flush_workqueue(lo->workqueue);
-+
-  	mutex_lock(&lo->lo_mutex);
-  	filp = lo->lo_backing_file;
-  	lo->lo_backing_file = NULL;
-@@ -1168,17 +1187,12 @@ static void __loop_clr_fd(struct loop_device *lo)
-  	lo->lo_sizelimit = 0;
-  	memset(lo->lo_file_name, 0, LO_NAME_SIZE);
-
--	/*
--	 * Reset the block size to the default.
--	 *
--	 * No queue freezing needed because this is called from the final
--	 * ->release call only, so there can't be any outstanding I/O.
--	 */
--	lim = queue_limits_start_update(lo->lo_queue);
-+	/* Reset the block size to the default. */
-+	lim = queue_limits_start_update(q);
-  	lim.logical_block_size = SECTOR_SIZE;
-  	lim.physical_block_size = SECTOR_SIZE;
-  	lim.io_min = SECTOR_SIZE;
--	queue_limits_commit_update(lo->lo_queue, &lim);
-+	queue_limits_commit_update(q, &lim);
-
-  	invalidate_disk(lo->lo_disk);
-  	loop_sysfs_exit(lo);
-@@ -1216,6 +1230,9 @@ static void __loop_clr_fd(struct loop_device *lo)
-  	WRITE_ONCE(lo->lo_state, Lo_unbound);
-  	mutex_unlock(&lo->lo_mutex);
-
-+	/* Reallow I/O. */
-+	blk_queue_flag_clear(QUEUE_FLAG_DYING, q);
-+
-  	fput(filp);
-  }
-
-
