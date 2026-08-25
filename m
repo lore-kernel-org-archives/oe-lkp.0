@@ -1,112 +1,155 @@
-Received: from 013.lax.mailroute.net (013.lax.mailroute.net [199.89.1.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB89637AA97
-	for <oe-lkp@lists.linux.dev>; Mon, 24 Aug 2026 23:24:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=199.89.1.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB3BDDF76
+	for <oe-lkp@lists.linux.dev>; Tue, 25 Aug 2026 10:40:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787613858; cv=none; b=HXCISSY0PJmieuLk4SyLbMghstLgjhxyDG+mEKva9A4dIeJAGpR0h0H/wEud8wndtmfSdBVvcGmEdjdWq+I/FILtpOFPvYHYoPufszVJWUwJiaPTHU3I85PsghJNYoTAdiq1CBLbKgI6ZV9eg4rEBZfYGsXrTHRZY/F9fdWcpXk=
+	t=1787654404; cv=none; b=cUDw4dFY7ORAQ3M0Zrh3fqyzHosIxlaQmhKnU7DeDKyPHJoSit5Vlj9kbqosJRfS2W9hptKWbrPiBTLeEw8CVXald5hAn4NgBJMcuq8ugc3HDRBnjRHryM4wxQLuLI6qpLNqBM2J/BEjJrs2VVYf+y8NkJupcO9s9AJ084iWfIU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787613858; c=relaxed/simple;
-	bh=adOiD5KafkF6qvtKXkip0aox5S//FFAwiXdRqx/1ihM=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=tAsqzwH3xnmz98CjaP5jJNTFn4b6/OB7V9ZqpCBEXwuhcZssWWbqHIVELsixKBxpLEfuEOv3fCOLKgF53zMpHXOL0UNNACBpROSULkzz+p2slLJqcqW0pfIlu9B44JiG6bL1zRJuOSkouHgg3RGH+cgkGysPbO77vayoyEFq2SQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=acm.org; spf=pass smtp.mailfrom=acm.org; dkim=pass (2048-bit key) header.d=acm.org header.i=@acm.org header.b=BcJejdDk; arc=none smtp.client-ip=199.89.1.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=acm.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=acm.org
+	s=arc-20240116; t=1787654404; c=relaxed/simple;
+	bh=77OK7qfo528EFSrktvYwNXNtBWHxgU9rrm+kSM1NtNg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=aTEAgT7zv5S83hFerzjYJX7imdmYUoWUCP6YA1zDcXE0ASrprUcQKqeXIvErg3a9rfmeRpH5yqy3heYaErMzP0miMOAbvVvS/X8WoOWX7E0LDG7yq1CMJIYWKl6O+gJr1gwaES4ULFWpqvTOSz26w4xNDkPItWdtvGT4cN8xnGs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=YI3MOy1B; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=sc+VUg2h; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=fTob6Lo7; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=E7F/3w7p; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=acm.org header.i=@acm.org header.b="BcJejdDk"
-Received: from localhost (localhost [127.0.0.1])
-	by 013.lax.mailroute.net (Postfix) with ESMTP id 4hTRnX3zHxzlfvpN;
-	Mon, 24 Aug 2026 23:24:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=acm.org; h=
-	content-transfer-encoding:content-type:content-type:in-reply-to
-	:content-language:references:from:from:subject:subject
-	:user-agent:mime-version:date:date:message-id:received:received;
-	 s=mr01; t=1787613846; x=1790205847; bh=ocuDfgeVeXBvxz+EsS87xMyg
-	ugyxd5KplnFbu5clVXA=; b=BcJejdDki4grlIGKntNsI5pgZfzlGd1YyvbWX0ZB
-	Cwf50OkEFYbov4nP2f6p8J9Cr1t+uet8WRAGtAfaCmROtsgYWJkzW7SWwds5chSR
-	zsgLVKY9TybKRXdWnwji2VqmwjFyEbnQLcfg0vuuGpVgJ+L44Gee7f05T5eYvgPF
-	1lxKwsZpPZnjrTfAyXQVKzJv7z2iix82/zGvlx8wVI0a8LRMCDO32GidrNfqVDzZ
-	QJ/mcvJztkoWhmV1mcY0p3dJdwOVXOV2FoNqqv2U481l2WlE38OYrlNImlDfE/Je
-	//R0S3s/GKxTXK3umvBwnoW9hM50PyOHAk3R6kbGzGMAFA==
-X-Virus-Scanned: by MailRoute
-Received: from 013.lax.mailroute.net ([127.0.0.1])
- by localhost (013.lax [127.0.0.1]) (mroute_mailscanner, port 10029) with LMTP
- id IeeEtXAXikXI; Mon, 24 Aug 2026 23:24:06 +0000 (UTC)
-Received: from [100.80.227.50] (unknown [104.135.182.42])
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="YI3MOy1B";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="sc+VUg2h";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="fTob6Lo7";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="E7F/3w7p"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	(Authenticated sender: bvanassche@acm.org)
-	by 013.lax.mailroute.net (Postfix) with ESMTPSA id 4hTRnF6xHvzlfvq9;
-	Mon, 24 Aug 2026 23:24:01 +0000 (UTC)
-Message-ID: <27bcb147-bead-4432-8cd0-981489f36228@acm.org>
-Date: Mon, 24 Aug 2026 16:24:00 -0700
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 6580D86DC5;
+	Tue, 25 Aug 2026 10:39:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1787654395;
+	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+	 cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=77OK7qfo528EFSrktvYwNXNtBWHxgU9rrm+kSM1NtNg=;
+	b=YI3MOy1B/Dd7v6wB8/n0aTw5GzE8zx/IALElwvJ3J8gKTGMdCQ7jlnpQBp5ou31dXDNgYJ
+	cYdElYFyP94/i+GAjCLRq+PStJQkOaCfq/iIky8gGS58vKVuvn56P/8wQy0aGq88YmxR1U
+	8F24peBJzkDxKgmaptj0yBgiOeetNBU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1787654395;
+	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+	 cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=77OK7qfo528EFSrktvYwNXNtBWHxgU9rrm+kSM1NtNg=;
+	b=sc+VUg2hgxDSO+wHu+7Fc1YvcrsUaqHDFjFaT8+xLXdoDrbsMKYKOKwFNy3C4YhiZyCQ2l
+	bUbDpFfxMeqqRJDA==
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=fTob6Lo7;
+	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b="E7F/3w7p"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1787654391;
+	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+	 cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=77OK7qfo528EFSrktvYwNXNtBWHxgU9rrm+kSM1NtNg=;
+	b=fTob6Lo7rXoMXfd3hVv1GM4DqHCsA8vFL2T02vB3FDCUUmANEzQeDjfBlDdcKdYgkCkTtR
+	P03UHd3Au95xh0NkRsegtL6J1KJhv+vA135CgaE8gTSUapfIOg+6r5ksUgPCsN+qxPgWtC
+	OGyW9JKBkFV1UHUfPUdQ0XRPVLX/NBw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1787654391;
+	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+	 cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=77OK7qfo528EFSrktvYwNXNtBWHxgU9rrm+kSM1NtNg=;
+	b=E7F/3w7pLm3hsEATXDZEQlelQozBKvIxMAVVOWPvOiq1O7FIp3cHHgtMyvyABCYfPZT5uN
+	NNLI4ERtVL3QPuBA==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 7F7A013332;
+	Tue, 25 Aug 2026 10:39:50 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id C5w0GvZwjWoXEQAAD6G6ig
+	(envelope-from <pvorel@suse.cz>); Tue, 25 Aug 2026 10:39:50 +0000
+Date: Tue, 25 Aug 2026 12:39:48 +0200
+From: Petr Vorel <pvorel@suse.cz>
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: Jan Kara <jack@suse.cz>, Christian Brauner <brauner@kernel.org>,
+	lkp@intel.com, linux-kernel@vger.kernel.org,
+	AnonymeMeow <anonymemeow@gmail.com>, linux-fsdevel@vger.kernel.org,
+	oe-lkp@lists.linux.dev, ltp@lists.linux.it
+Subject: Re: [LTP] [linus:master] [fanotify] 82c6dd2047: ltp.fanotify21.fail
+Message-ID: <20260825103948.GA57544@pevik>
+Reply-To: Petr Vorel <pvorel@suse.cz>
+References: <202606291514.594c4370-lkp@intel.com>
+ <qvbzvyoqab7c4g6jh2rezvdemqed7omco4qgvdq3elwbrlaffn@thrhz2uqtgqt>
+ <akNRvmJdCKALZbo6@xsang-OptiPlex-9020>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6] loop: Fix NULL pointer dereference in lo_rw_aio()
-From: Bart Van Assche <bvanassche@acm.org>
-To: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
- Markus Elfring <Markus.Elfring@web.de>, linux-block@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, linux-btrfs@vger.kernel.org,
- Alexander Viro <viro@zeniv.linux.org.uk>, Damien Le Moal
- <dlemoal@kernel.org>, Jens Axboe <axboe@kernel.dk>
-Cc: linux-kernel@vger.kernel.org, linux-next@vger.kernel.org, lkp@intel.com,
- oe-lkp@lists.linux.dev, Christian Brauner <brauner@kernel.org>,
- Christoph Hellwig <hch@infradead.org>, Christoph Hellwig <hch@lst.de>,
- Hillf Danton <hdanton@sina.com>,
- Linus Torvalds <torvalds@linux-foundation.org>,
- Mark Brown <broonie@kernel.org>, Oliver Sang <oliver.sang@intel.com>
-References: <8dedfc40-9cae-44ff-9960-e0eb1825e963@I-love.SAKURA.ne.jp>
- <550ff0b4-df39-46d2-9781-c8688df10c93@web.de>
- <38ad64c1-edc7-431d-8f52-fba572ebf3eb@I-love.SAKURA.ne.jp>
- <372ca5f6-81a0-4f6c-8f55-ebeeada9f955@acm.org>
-Content-Language: en-US
-In-Reply-To: <372ca5f6-81a0-4f6c-8f55-ebeeada9f955@acm.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <akNRvmJdCKALZbo6@xsang-OptiPlex-9020>
+X-Spamd-Result: default: False [-3.71 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	MID_RHS_NOT_FQDN(0.50)[];
+	HAS_REPLYTO(0.30)[pvorel@suse.cz];
+	R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	MISSING_XM_UA(0.00)[];
+	ARC_NA(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:replyto,suse.cz:dkim,imap1.dmz-prg2.suse.org:rdns,imap1.dmz-prg2.suse.org:helo];
+	TO_DN_SOME(0.00)[];
+	RCVD_TLS_ALL(0.00)[];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	FROM_HAS_DN(0.00)[];
+	FREEMAIL_CC(0.00)[suse.cz,kernel.org,intel.com,vger.kernel.org,gmail.com,lists.linux.dev,lists.linux.it];
+	RCPT_COUNT_SEVEN(0.00)[9];
+	FROM_EQ_ENVFROM(0.00)[];
+	REPLYTO_EQ_FROM(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	DKIM_TRACE(0.00)[suse.cz:+]
+X-Spam-Flag: NO
+X-Spam-Score: -3.71
+X-Spam-Level: 
+X-Rspamd-Queue-Id: 6580D86DC5
+X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
+X-Rspamd-Action: no action
 
-On 8/24/26 3:53 PM, Bart Van Assche wrote:
-> On 8/24/26 3:06 PM, Tetsuo Handa wrote:
->> I still cannot catch why Bart's approach can become safe without
->> synchronize_rcu() and drain_workqueue().
-> 
-> Agreed that drain_workqueue() or flush_workqueue() is necessary. I do
-> not agree that an explicit synchronize_rcu() call is required. Waiting
-> until the request queue is frozen includes this call implicitly.
-> See also __percpu_ref_switch_to_atomic().
+Hi Jan, all,
 
-A correction: it is not safe to call drain_workqueue() nor to freeze the
-request queue in __loop_clr_fd(). I'm considering to modify the comment
-in that function as follows:
+> hi, Jan Kara,
 
---- a/drivers/block/loop.c
-+++ b/drivers/block/loop.c
-@@ -1203,8 +1203,13 @@ static void __loop_clr_fd(struct loop_device *lo)
-         /*
-          * Reset the block size to the default.
-          *
--        * No queue freezing needed because this is called from the final
--        * ->release call only, so there can't be any outstanding I/O.
-+        * Asynchronously submitted I/O may still be in progress. 
-Freezing the
-+        * request queue is not possible without triggering lock inversion.
-+        * Freezing a request queue must happen between the
-+        * queue_limits_start_update() and queue_limits_commit_update 
-calls.  If
-+        * the request queue would be frozen between these two calls, a 
-deadlock
-+        * can be triggered with the loop_clear_limits() call from the 
-I/O path
-+        * since loop_clear_limits() also calls queue_limits_start_update().
-          */
+> On Mon, Jun 29, 2026 at 11:36:25AM +0200, Jan Kara wrote:
+> > On Mon 29-06-26 16:45:58, kernel test robot wrote:
+> > > kernel test robot noticed "ltp.fanotify21.fail" on:
 
-Thanks,
+> > > commit: 82c6dd20479bb6a9625e1d63a650c3be8865e2db ("fanotify: allow reporting pidfds for reaped tasks")
+> > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-Bart.
+> > FWIW this is expected failure. Patch to fix fanotify21 to accept success
+> > in this test was submitted to LTP.
+
+Jan, thanks a lot for a ping, I completely forgot on the rest of the patchset,
+these 4 commits merged now.
+
+> thanks a lot for information!
+
+Oliver, FYI 7.2 specific fix:
+https://github.com/linux-test-project/ltp/commit/a851461ea951622a973980510d031bb6b24a5541
+
+The rest are enhancements.
+
+Kind regards,
+Petr
