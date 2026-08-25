@@ -1,155 +1,111 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB3BDDF76
-	for <oe-lkp@lists.linux.dev>; Tue, 25 Aug 2026 10:40:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC8503F8238
+	for <oe-lkp@lists.linux.dev>; Tue, 25 Aug 2026 15:14:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.181.97.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787654404; cv=none; b=cUDw4dFY7ORAQ3M0Zrh3fqyzHosIxlaQmhKnU7DeDKyPHJoSit5Vlj9kbqosJRfS2W9hptKWbrPiBTLeEw8CVXald5hAn4NgBJMcuq8ugc3HDRBnjRHryM4wxQLuLI6qpLNqBM2J/BEjJrs2VVYf+y8NkJupcO9s9AJ084iWfIU=
+	t=1787670851; cv=none; b=jtw0OBWE3CK0Es9rQ/VnFOiMUTw3P158KIXpUldH3ebZUh4EoQmE9G/LTCQKe6zOh0UQ6SsmMn7EmmQRPFn1bVy+LaAfTEUJfd6lY0v/NKcLM+uw8JYfjkwJ/Vasm7CrFciIxYCjgta8cCcLunayoNKpOYubzrN6VYUjTHmlDBA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787654404; c=relaxed/simple;
-	bh=77OK7qfo528EFSrktvYwNXNtBWHxgU9rrm+kSM1NtNg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aTEAgT7zv5S83hFerzjYJX7imdmYUoWUCP6YA1zDcXE0ASrprUcQKqeXIvErg3a9rfmeRpH5yqy3heYaErMzP0miMOAbvVvS/X8WoOWX7E0LDG7yq1CMJIYWKl6O+gJr1gwaES4ULFWpqvTOSz26w4xNDkPItWdtvGT4cN8xnGs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=YI3MOy1B; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=sc+VUg2h; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=fTob6Lo7; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=E7F/3w7p; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="YI3MOy1B";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="sc+VUg2h";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="fTob6Lo7";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="E7F/3w7p"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 6580D86DC5;
-	Tue, 25 Aug 2026 10:39:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1787654395;
-	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-	 cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=77OK7qfo528EFSrktvYwNXNtBWHxgU9rrm+kSM1NtNg=;
-	b=YI3MOy1B/Dd7v6wB8/n0aTw5GzE8zx/IALElwvJ3J8gKTGMdCQ7jlnpQBp5ou31dXDNgYJ
-	cYdElYFyP94/i+GAjCLRq+PStJQkOaCfq/iIky8gGS58vKVuvn56P/8wQy0aGq88YmxR1U
-	8F24peBJzkDxKgmaptj0yBgiOeetNBU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1787654395;
-	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-	 cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=77OK7qfo528EFSrktvYwNXNtBWHxgU9rrm+kSM1NtNg=;
-	b=sc+VUg2hgxDSO+wHu+7Fc1YvcrsUaqHDFjFaT8+xLXdoDrbsMKYKOKwFNy3C4YhiZyCQ2l
-	bUbDpFfxMeqqRJDA==
-Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=fTob6Lo7;
-	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b="E7F/3w7p"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1787654391;
-	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-	 cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=77OK7qfo528EFSrktvYwNXNtBWHxgU9rrm+kSM1NtNg=;
-	b=fTob6Lo7rXoMXfd3hVv1GM4DqHCsA8vFL2T02vB3FDCUUmANEzQeDjfBlDdcKdYgkCkTtR
-	P03UHd3Au95xh0NkRsegtL6J1KJhv+vA135CgaE8gTSUapfIOg+6r5ksUgPCsN+qxPgWtC
-	OGyW9JKBkFV1UHUfPUdQ0XRPVLX/NBw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1787654391;
-	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-	 cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=77OK7qfo528EFSrktvYwNXNtBWHxgU9rrm+kSM1NtNg=;
-	b=E7F/3w7pLm3hsEATXDZEQlelQozBKvIxMAVVOWPvOiq1O7FIp3cHHgtMyvyABCYfPZT5uN
-	NNLI4ERtVL3QPuBA==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 7F7A013332;
-	Tue, 25 Aug 2026 10:39:50 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id C5w0GvZwjWoXEQAAD6G6ig
-	(envelope-from <pvorel@suse.cz>); Tue, 25 Aug 2026 10:39:50 +0000
-Date: Tue, 25 Aug 2026 12:39:48 +0200
-From: Petr Vorel <pvorel@suse.cz>
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: Jan Kara <jack@suse.cz>, Christian Brauner <brauner@kernel.org>,
-	lkp@intel.com, linux-kernel@vger.kernel.org,
-	AnonymeMeow <anonymemeow@gmail.com>, linux-fsdevel@vger.kernel.org,
-	oe-lkp@lists.linux.dev, ltp@lists.linux.it
-Subject: Re: [LTP] [linus:master] [fanotify] 82c6dd2047: ltp.fanotify21.fail
-Message-ID: <20260825103948.GA57544@pevik>
-Reply-To: Petr Vorel <pvorel@suse.cz>
-References: <202606291514.594c4370-lkp@intel.com>
- <qvbzvyoqab7c4g6jh2rezvdemqed7omco4qgvdq3elwbrlaffn@thrhz2uqtgqt>
- <akNRvmJdCKALZbo6@xsang-OptiPlex-9020>
+	s=arc-20240116; t=1787670851; c=relaxed/simple;
+	bh=3RZDchxNIKlMF+YZZY5dokjhg564AFEZHqUtAa9+kZA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=XvkJ8h+4gVwVgmylhgQkcSJjelAVKWxUdC3jTFXKNKtbNdKpGCWUCTKHNA/h5UU3jr5Rr6lOGkgKg1PnNo2gigDqvJ69RvUYWg96lz3qJEtUyUO7AdZ9rHhrrR4gtyPZuwwYDch9s9H60SnBTkWa5qF3agQ5e4oE+dtNOWEWeNA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=I-love.SAKURA.ne.jp; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp; arc=none smtp.client-ip=202.181.97.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=I-love.SAKURA.ne.jp
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp
+Received: from www262.sakura.ne.jp (localhost [127.0.0.1])
+	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 67PFDXrN052354;
+	Wed, 26 Aug 2026 00:13:33 +0900 (JST)
+	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from [192.168.1.6] (M106072072000.v4.enabler.ne.jp [106.72.72.0])
+	(authenticated bits=0)
+	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 67PFDX2t052350
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+	Wed, 26 Aug 2026 00:13:33 +0900 (JST)
+	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <c41e9198-86a8-4bcd-a608-6f457b24f345@I-love.SAKURA.ne.jp>
+Date: Wed, 26 Aug 2026 00:13:31 +0900
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <akNRvmJdCKALZbo6@xsang-OptiPlex-9020>
-X-Spamd-Result: default: False [-3.71 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	MID_RHS_NOT_FQDN(0.50)[];
-	HAS_REPLYTO(0.30)[pvorel@suse.cz];
-	R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	MISSING_XM_UA(0.00)[];
-	ARC_NA(0.00)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:replyto,suse.cz:dkim,imap1.dmz-prg2.suse.org:rdns,imap1.dmz-prg2.suse.org:helo];
-	TO_DN_SOME(0.00)[];
-	RCVD_TLS_ALL(0.00)[];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com];
-	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	FROM_HAS_DN(0.00)[];
-	FREEMAIL_CC(0.00)[suse.cz,kernel.org,intel.com,vger.kernel.org,gmail.com,lists.linux.dev,lists.linux.it];
-	RCPT_COUNT_SEVEN(0.00)[9];
-	FROM_EQ_ENVFROM(0.00)[];
-	REPLYTO_EQ_FROM(0.00)[];
-	RCVD_COUNT_TWO(0.00)[2];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	DKIM_TRACE(0.00)[suse.cz:+]
-X-Spam-Flag: NO
-X-Spam-Score: -3.71
-X-Spam-Level: 
-X-Rspamd-Queue-Id: 6580D86DC5
-X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
-X-Rspamd-Action: no action
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6] loop: Fix NULL pointer dereference in lo_rw_aio()
+To: Bart Van Assche <bvanassche@acm.org>,
+        Markus Elfring <Markus.Elfring@web.de>, linux-block@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Damien Le Moal <dlemoal@kernel.org>, Jens Axboe <axboe@kernel.dk>
+Cc: linux-kernel@vger.kernel.org, linux-next@vger.kernel.org, lkp@intel.com,
+        oe-lkp@lists.linux.dev, Christian Brauner <brauner@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>, Christoph Hellwig <hch@lst.de>,
+        Hillf Danton <hdanton@sina.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Mark Brown <broonie@kernel.org>, Oliver Sang <oliver.sang@intel.com>,
+        linux-btrfs@vger.kernel.org
+References: <8dedfc40-9cae-44ff-9960-e0eb1825e963@I-love.SAKURA.ne.jp>
+ <550ff0b4-df39-46d2-9781-c8688df10c93@web.de>
+ <38ad64c1-edc7-431d-8f52-fba572ebf3eb@I-love.SAKURA.ne.jp>
+ <372ca5f6-81a0-4f6c-8f55-ebeeada9f955@acm.org>
+ <27bcb147-bead-4432-8cd0-981489f36228@acm.org>
+Content-Language: en-US
+From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+In-Reply-To: <27bcb147-bead-4432-8cd0-981489f36228@acm.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Anti-Virus-Server: fsav412.rs.sakura.ne.jp
+X-Virus-Status: clean
 
-Hi Jan, all,
+On 2026/08/25 7:53, Bart Van Assche wrote:
+> On 8/24/26 3:06 PM, Tetsuo Handa wrote:
+>> but sashiko found problems with Bart's series ( https://sashiko.dev/
+>> #/patchset/8330ca0e-b4d9-451a-bc0d-a50178194ea8@I-love.SAKURA.ne.jp
+>> and https://sashiko.dev/#/patchset/2efb1032-34b9-4c31-
+>> b6fc-4aa9b1d60895@I-love.SAKURA.ne.jp ).
+> 
+> Thanks, I had not yet seen this feedback from Sashiko. My conclusion is
+> that two of the three Sashiko findings are wrong. I will fix the third
+> one - the finding about the potential wait-die deadlock.
+> 
 
-> hi, Jan Kara,
+As of commit fe4c990e6a30 ("loop: Add __guarded_by() annotations") in block-loop branch,
 
-> On Mon, Jun 29, 2026 at 11:36:25AM +0200, Jan Kara wrote:
-> > On Mon 29-06-26 16:45:58, kernel test robot wrote:
-> > > kernel test robot noticed "ltp.fanotify21.fail" on:
+  modprobe loop
+  losetup /dev/loop0 testfile.img; losetup /dev/loop1 /dev/loop0; losetup -D
+  sleep 1
+  losetup /dev/loop1 testfile.img; losetup /dev/loop0 /dev/loop1; losetup -D
 
-> > > commit: 82c6dd20479bb6a9625e1d63a650c3be8865e2db ("fanotify: allow reporting pidfds for reaped tasks")
-> > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+causes lockdep warning. This is a false positive, but we need to avoid it anyway.
 
-> > FWIW this is expected failure. Patch to fix fanotify21 to accept success
-> > in this test was submitted to LTP.
+>> I still cannot catch why Bart's approach can become safe without
+>> synchronize_rcu() and drain_workqueue().
+> 
+> Agreed that drain_workqueue() or flush_workqueue() is necessary. I do
+> not agree that an explicit synchronize_rcu() call is required. Waiting
+> until the request queue is frozen includes this call implicitly.
+> See also __percpu_ref_switch_to_atomic().
 
-Jan, thanks a lot for a ping, I completely forgot on the rest of the patchset,
-these 4 commits merged now.
+OK. You recognized that we need drain_workqueue() or flush_workqueue(), and
 
-> thanks a lot for information!
+On 2026/08/25 8:24, Bart Van Assche wrote:
+> On 8/24/26 3:53 PM, Bart Van Assche wrote:
+>> On 8/24/26 3:06 PM, Tetsuo Handa wrote:
+>>> I still cannot catch why Bart's approach can become safe without
+>>> synchronize_rcu() and drain_workqueue().
+>>
+>> Agreed that drain_workqueue() or flush_workqueue() is necessary. I do
+>> not agree that an explicit synchronize_rcu() call is required. Waiting
+>> until the request queue is frozen includes this call implicitly.
+>> See also __percpu_ref_switch_to_atomic().
+> 
+> A correction: it is not safe to call drain_workqueue() nor to freeze the
+> request queue in __loop_clr_fd(). I'm considering to modify the comment
+> in that function as follows:
 
-Oliver, FYI 7.2 specific fix:
-https://github.com/linux-test-project/ltp/commit/a851461ea951622a973980510d031bb6b24a5541
+you also recognized that we can't call drain_workqueue() or flush_workqueue().
 
-The rest are enhancements.
-
-Kind regards,
-Petr
+Therefore, I chose to temporarily drop lo->lo_disk->open_mutex in order to
+make it possible to safely perform drain_workqueue().
