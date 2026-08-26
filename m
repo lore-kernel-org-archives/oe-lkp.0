@@ -1,251 +1,197 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B00A71DD0EF
-	for <oe-lkp@lists.linux.dev>; Wed, 26 Aug 2026 02:38:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D45B12CDBE
+	for <oe-lkp@lists.linux.dev>; Wed, 26 Aug 2026 03:04:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787711936; cv=none; b=tM1+fG+EErBPAY0I83zKEYfs1NrG6hPBuSD0dZkj0B/PEPwBLObPfEGK1VtlOxoojQE/Zqgh5h7sa1sAnbzOnzeroyf0klArz/+I+47HtUWaP4u3IliqBEwJq/B9hvbb00Gv8fQ7Nqnf1ezn8w1NujugumlgytVoIS5bDjHKDng=
+	t=1787713458; cv=none; b=Ya8iaEecfVLouBnjGbPzNtlZGG8KkCC28FERs0MmaGRdmjnrAP4IcFsMTghlTChzWfR7Sidqx2s93/nAc4ezFv5HurR99r6gC22pS/5fUx378OEDWcAlQobyqafolHWfqrUc/z+DcN4qeu4nPpS2CXNH61KbgX/hG8VFlyDldw8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787711936; c=relaxed/simple;
-	bh=TwpRv1lNCr9MU2GKfWE4oRqYhc8rHTy7DYg5dPa1XqQ=;
+	s=arc-20240116; t=1787713458; c=relaxed/simple;
+	bh=lJrFcn6E687k6uo2fiN/oEF/p1Lvs9Aml8qeAKjzSrk=;
 	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=syo2IXHKbq4gh3ns8t+rTIsEgKJzpN6drwp7VULY47hFKhxEU0d8rJinEYyS7A8Sfs3qB3L5qNDo0sK+yQaUCpfIP3C19hYJDnttF3J0S8cdp3XcPGHpjAZqwHj7uSnsphd9IW/M1yt8Quw1YCskEraDoT3/3F7H1vbaYNtc1IY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CPFluBxA; arc=none smtp.client-ip=192.198.163.18
+	 Content-Disposition; b=ZgIftCG+Z/ZR70NUbk5NGE4Oh63Zc6lyoMBrsduPLZo1qyBV59cyLHgW+XzbIrdQTlXjWfe1ESJb9XYNGPaQ9/TVRb9XoXTOA2b/d8ua8LmkT5AoCmfi2GcnB5khBicRZK1S6bY0uXogACBiLgCn+aDELyWObai1YChT8uDB34E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gCDLguL1; arc=none smtp.client-ip=192.198.163.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CPFluBxA"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gCDLguL1"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1787711935; x=1819247935;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=TwpRv1lNCr9MU2GKfWE4oRqYhc8rHTy7DYg5dPa1XqQ=;
-  b=CPFluBxA6vR0Tyf0jIQsNGF1iQAiyS39CJgT6d+CQFSuf2AHOkyA2jWl
-   ZOZipolICMq5I3lslSNZ41mXEho/Urryu8MR5gXZ8iDcsbF2ESt/ks2sz
-   LvA/+Ax0Wlpd78LrxSDPkVsiXSATjIPAa5AYM54VRtprp6dvLveuEDMke
-   /UgO3YXHwyhbBpEdeYeS/jS3ZdW4w03EAcCA+irbViVLnUhUWu/6eUSB2
-   OouYavTBey4bDb/6ak+k8R/IlNAgT676DNYPmv06ocsjHAeIv56pwfV4Y
-   Z/0BUmRADYdqIWKZV70hnDfm26qVORLYfSfKfKhK/DnrVpHI4bcbUe+bt
+  t=1787713456; x=1819249456;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=lJrFcn6E687k6uo2fiN/oEF/p1Lvs9Aml8qeAKjzSrk=;
+  b=gCDLguL1TCuwSgg/H8u8NYEwk4B9xWAEn7004qrDrUK7JyogUS3MwVsS
+   mqK5xsfYgSI4fGytcxzHmD18AdzAxhAemmHDwQEeVapHqWqwfvjKa0CDT
+   L29Wnq1RbIDUftJ8+/gKY+9xvv8OsVhVxcnlYO5KqgKcAidW0remAmw5r
+   IRU9kaf9CW4x5s1hvuir9F11NoI4PyL2zn5inW3eqfekdzqSbvaEHztEH
+   1qsvdWFfIRyY3setM6bII+iAkJKjAxZvNH1gDv05yjM5YmTK7TJ0foxf/
+   RBk8o4Vp/ba6QUbK75qFnTL2/vvhUJ3WlinmfZNqXat2G/vsFLkp3mfkI
    w==;
-X-CSE-ConnectionGUID: IeoWFqAvRjGDL4iIlIVL+g==
-X-CSE-MsgGUID: YPM41fedSxKQjjw8rDcjcw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11886"; a="87317427"
-X-IronPort-AV: E=Sophos;i="6.25,243,1779174000"; 
-   d="scan'208";a="87317427"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2026 19:38:54 -0700
-X-CSE-ConnectionGUID: SlB1WVdoSP28nVF/i/tVnA==
-X-CSE-MsgGUID: 4Un6m4BQSf6Id9HYF/2tZA==
+X-CSE-ConnectionGUID: yRVcFOaGQJiL0+RU6ZlVOQ==
+X-CSE-MsgGUID: HLsOwgCLSNiEjwX4ylstWA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11886"; a="88317717"
+X-IronPort-AV: E=Sophos;i="6.25,244,1779174000"; 
+   d="scan'208";a="88317717"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2026 20:04:15 -0700
+X-CSE-ConnectionGUID: ysXVb46BSlO5C2HosiifEA==
+X-CSE-MsgGUID: 6m+Ta2kNQxGdnGUPrK4vEQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,243,1779174000"; 
-   d="scan'208";a="265653826"
+X-IronPort-AV: E=Sophos;i="6.25,244,1779174000"; 
+   d="scan'208";a="263704390"
 Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2026 19:38:51 -0700
-Date: Wed, 26 Aug 2026 10:38:48 +0800
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2026 20:04:13 -0700
+Date: Wed, 26 Aug 2026 11:04:10 +0800
 From: kernel test robot <yi1.lai@intel.com>
-To: Jim Cromie <jim.cromie@gmail.com>,
-	=?utf-8?Q?=C5=81ukasz?= Bartosik <ukaszb@chromium.org>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, yi1.lai@intel.com
-Subject: [jimc:jump-batch-apply-fixed] [x86/jump_label]  c80bbdac99:
- BUG:unable_to_handle_page_fault_for_address
-Message-ID: <202608261049.66dbc9f6-lkp@intel.com>
+To: Reinette Chatre <reinette.chatre@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	yi1.lai@intel.com
+Subject: [reinette:resctrl/controls_rfc_v2.4] [arm,x86,fs/resctrl]
+ 54b36bf955:  stress-ng.sigrt.ops_per_sec 8.0% improvement
+Message-ID: <202608261025.2521cb61-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
 
 Hello,
 
-kernel test robot noticed "BUG:unable_to_handle_page_fault_for_address" on:
-
-commit: c80bbdac99096eb3f00e5c3a18d275b9e07fe0ef ("x86/jump_label: use system_state < SYSTEM_RUNNING for early boot fallback") https://github.com/jimc/linux.git jump-batch-apply-fixed
-
-in testcase: trinity
-version: trinity-i386-abe9de86-1_20230429 with following parameters:
-
-	runtime: 300s
-	group: group-04
-	nr_groups: 5
+kernel test robot noticed a 8.0% improvement of stress-ng.sigrt.ops_per_sec on:
 
 
+commit: 54b36bf9552c154f009f53ea023557239a1a3a03 ("arm,x86,fs/resctrl: Transition resource control to a list") https://git.kernel.org/cgit/linux/kernel/git/reinette/linux.git resctrl/controls_rfc_v2.4
 
-config: x86_64-randconfig-102-20260813
+testcase: stress-ng
+config: x86_64-rhel-9.4
 compiler: gcc-14
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 32G
+test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 256G memory
+parameters:
 
-(please refer to attached dmesg/kmsg for entire log/backtrace)
+  nr_threads: 100%
+  testtime: 60s
+  test: sigrt
+  cpufreq_governor: performance
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <yi1.lai@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202608261049.66dbc9f6-lkp@intel.com
 
-[  161.700046][   T10] BUG: unable to handle page fault for address: ffffffff866d0d8b
-[  161.700327][   T10] #PF: supervisor write access in kernel mode
-[  161.700327][   T10] #PF: error_code(0x0003) - permissions violation
-[  161.700327][   T10] PGD 9343067 P4D 9343067 PUD 9344063 PMD 66000a1
-[  161.700327][   T10] Oops: Oops: 0003 [#1] KASAN PTI
-[  161.700327][   T10] CPU: 0 UID: 0 PID: 10 Comm: kworker/0:1 Tainted: G                T   7.2.0-rc6+ #1 PREEMPT(lazy)
-[  161.700327][   T10] Tainted: [T]=RANDSTRUCT
-[  161.700327][   T10] Workqueue: events once_deferred
-[  161.700327][   T10] RIP: 0010:memcpy_orig (x86/lib/memcpy_64.S:164)
-[  161.700327][   T10] Code: 16 fc 89 0f 44 89 44 17 fc c3 cc 66 66 2e 0f 1f 84 00 00 00 00 00 83 ea 01 72 19 0f b6 0e 74 12 4c 0f b6 46 01 4c 0f b6 0c 16 <44> 88 47 01 44 88 0c 17 88 0f c3 cc cc cc cc cc cc cc cc cc cc cc
-All code
-========
-   0:	16                   	(bad)
-   1:	fc                   	cld
-   2:	89 0f                	mov    %ecx,(%rdi)
-   4:	44 89 44 17 fc       	mov    %r8d,-0x4(%rdi,%rdx,1)
-   9:	c3                   	ret
-   a:	cc                   	int3
-   b:	66 66 2e 0f 1f 84 00 	data16 cs nopw 0x0(%rax,%rax,1)
-  12:	00 00 00 00 
-  16:	83 ea 01             	sub    $0x1,%edx
-  19:	72 19                	jb     0x34
-  1b:	0f b6 0e             	movzbl (%rsi),%ecx
-  1e:	74 12                	je     0x32
-  20:	4c 0f b6 46 01       	movzbq 0x1(%rsi),%r8
-  25:	4c 0f b6 0c 16       	movzbq (%rsi,%rdx,1),%r9
-  2a:*	44 88 47 01          	mov    %r8b,0x1(%rdi)		<-- trapping instruction
-  2e:	44 88 0c 17          	mov    %r9b,(%rdi,%rdx,1)
-  32:	88 0f                	mov    %cl,(%rdi)
-  34:	c3                   	ret
-  35:	cc                   	int3
-  36:	cc                   	int3
-  37:	cc                   	int3
-  38:	cc                   	int3
-  39:	cc                   	int3
-  3a:	cc                   	int3
-  3b:	cc                   	int3
-  3c:	cc                   	int3
-  3d:	cc                   	int3
-  3e:	cc                   	int3
-  3f:	cc                   	int3
+In addition to that, the commit also has significant impact on the following tests:
 
-Code starting with the faulting instruction ===========================================
-   0:	44 88 47 01          	mov    %r8b,0x1(%rdi)
-   4:	44 88 0c 17          	mov    %r9b,(%rdi,%rdx,1)
-   8:	88 0f                	mov    %cl,(%rdi)
-   a:	c3                   	ret
-   b:	cc                   	int3
-   c:	cc                   	int3
-   d:	cc                   	int3
-   e:	cc                   	int3
-   f:	cc                   	int3
-  10:	cc                   	int3
-  11:	cc                   	int3
-  12:	cc                   	int3
-  13:	cc                   	int3
-  14:	cc                   	int3
-  15:	cc                   	int3
-[  161.700327][   T10] RSP: 0000:ffffc900000afad8 EFLAGS: 00210002
-[  161.700327][   T10] RAX: ffffffff866d0d8a RBX: 0000000000000002 RCX: 0000000000000066
-[  161.700327][   T10] RDX: 0000000000000001 RSI: ffffffff876529a1 RDI: ffffffff866d0d8a
-[  161.700327][   T10] RBP: ffffc900000afaf8 R08: 0000000000000090 R09: 0000000000000090
-[  161.700327][   T10] R10: ffffffff866d0d8b R11: ffffffff8996e6a0 R12: ffffffff876529a1
-[  161.700327][   T10] R13: ffffffff866d0d8a R14: ffffffff876529a1 R15: ffffffff89001338
-[  161.700327][   T10] FS:  0000000000000000(0000) GS:0000000000000000(0000) knlGS:0000000000000000
-[  161.700327][   T10] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  161.700327][   T10] CR2: ffffffff866d0d8b CR3: 0000000009340000 CR4: 00000000000406f0
-[  161.700327][   T10] Call Trace:
-[  161.700327][   T10]  <TASK>
-[  161.700327][   T10]  ? __asan_memcpy (kasan/shadow.c:109)
-[  161.700327][   T10]  ? flow_hash_from_keys (core/flow_dissector.c:1820)
-[  161.700327][   T10]  text_poke_early (x86/kernel/alternative.c:2505 (discriminator 6))
-[  161.700327][   T10]  jump_label_transform+0x8f/0x100
-[  161.700327][   T10]  ? sched_clock_noinstr (x86/kernel/tsc.c:274)
-[  161.700327][   T10]  arch_jump_label_transform_queue (x86/kernel/jump_label.c:120 x86/kernel/jump_label.c:132)
-[  161.700327][   T10]  ? __kasan_check_read (kasan/shadow.c:31 (discriminator 1))
-[  161.700327][   T10]  __jump_label_update (jump_label.c:549 (discriminator 1))
-[  161.700327][   T10]  jump_label_update_key (jump_label.c:962)
-[  161.700327][   T10]  ? process_one_work (workqueue.c:3297 (discriminator 1))
-[  161.700327][   T10]  static_key_disable_cpuslocked (jump_label.c:967 jump_label.c:241)
-[  161.700327][   T10]  static_key_disable (jump_label.c:249)
-[  161.700327][   T10]  once_deferred (once.c:20)
-[  161.700327][   T10]  process_one_work (workqueue.c:3322)
-[  161.700327][   T10]  ? __queue_delayed_work (workqueue.c:2575)
-[  161.700327][   T10]  ? __this_cpu_preempt_check (smp_processor_id.c:64)
-[  161.700327][   T10]  ? assign_work (workqueue.c:1233)
-[  161.700327][   T10]  worker_thread (workqueue.c:3405 workqueue.c:3486)
-[  161.700327][   T10]  ? trace_hardirqs_on (trace/trace_preemptirq.c:79 (discriminator 1))
-[  161.700327][   T10]  kthread (kthread.c:436)
-[  161.700327][   T10]  ? calculate_sigpending (linux/spinlock.h:402 signal.c:194)
-[  161.700327][   T10]  ? rescuer_thread (x86/include/asm/current.h:23)
-[  161.700327][   T10]  ? kthread_affine_node (linux/list.h:404 (discriminator 2))
-[  161.700327][   T10]  ret_from_fork (x86/kernel/process.c:158)
-[  161.700327][   T10]  ? __kasan_check_read (kasan/shadow.c:31 (discriminator 1))
-[  161.700327][   T10]  ? arch_exit_to_user_mode_prepare+0x180/0x180
-[  161.700327][   T10]  ? __switch_to (x86/kernel/process_64.c:619)
-[  161.700327][   T10]  ? kthread_affine_node (linux/list.h:404 (discriminator 2))
-[  161.700327][   T10]  ret_from_fork_asm (x86/entry/entry_64.S:245)
-[  161.700327][   T10]  </TASK>
-[  161.700327][   T10] Modules linked in:
-[  161.700327][   T10] CR2: ffffffff866d0d8b
-[  161.700327][   T10] ---[ end trace 0000000000000000 ]---
-[  161.700327][   T10] RIP: 0010:memcpy_orig (x86/lib/memcpy_64.S:164)
-[  161.700327][   T10] Code: 16 fc 89 0f 44 89 44 17 fc c3 cc 66 66 2e 0f 1f 84 00 00 00 00 00 83 ea 01 72 19 0f b6 0e 74 12 4c 0f b6 46 01 4c 0f b6 0c 16 <44> 88 47 01 44 88 0c 17 88 0f c3 cc cc cc cc cc cc cc cc cc cc cc
-All code
-========
-   0:	16                   	(bad)
-   1:	fc                   	cld
-   2:	89 0f                	mov    %ecx,(%rdi)
-   4:	44 89 44 17 fc       	mov    %r8d,-0x4(%rdi,%rdx,1)
-   9:	c3                   	ret
-   a:	cc                   	int3
-   b:	66 66 2e 0f 1f 84 00 	data16 cs nopw 0x0(%rax,%rax,1)
-  12:	00 00 00 00 
-  16:	83 ea 01             	sub    $0x1,%edx
-  19:	72 19                	jb     0x34
-  1b:	0f b6 0e             	movzbl (%rsi),%ecx
-  1e:	74 12                	je     0x32
-  20:	4c 0f b6 46 01       	movzbq 0x1(%rsi),%r8
-  25:	4c 0f b6 0c 16       	movzbq (%rsi,%rdx,1),%r9
-  2a:*	44 88 47 01          	mov    %r8b,0x1(%rdi)		<-- trapping instruction
-  2e:	44 88 0c 17          	mov    %r9b,(%rdi,%rdx,1)
-  32:	88 0f                	mov    %cl,(%rdi)
-  34:	c3                   	ret
-  35:	cc                   	int3
-  36:	cc                   	int3
-  37:	cc                   	int3
-  38:	cc                   	int3
-  39:	cc                   	int3
-  3a:	cc                   	int3
-  3b:	cc                   	int3
-  3c:	cc                   	int3
-  3d:	cc                   	int3
-  3e:	cc                   	int3
-  3f:	cc                   	int3
++------------------+---------------------------------------------------------------------------------------------+
+| testcase: change | stress-ng: stress-ng.sigpipe.ops_per_sec 8.2% improvement                                   |
+| test machine     | 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 256G memory |
+| test parameters  | cpufreq_governor=performance                                                                |
+|                  | nr_threads=100%                                                                             |
+|                  | test=sigpipe                                                                                |
+|                  | testtime=60s                                                                                |
++------------------+---------------------------------------------------------------------------------------------+
+| testcase: change | stress-ng: stress-ng.sigsegv.ops_per_sec 9.5% improvement                                   |
+| test machine     | 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 256G memory |
+| test parameters  | cpufreq_governor=performance                                                                |
+|                  | nr_threads=100%                                                                             |
+|                  | test=sigsegv                                                                                |
+|                  | testtime=60s                                                                                |
++------------------+---------------------------------------------------------------------------------------------+
 
-Code starting with the faulting instruction ===========================================
-   0:	44 88 47 01          	mov    %r8b,0x1(%rdi)
-   4:	44 88 0c 17          	mov    %r9b,(%rdi,%rdx,1)
-   8:	88 0f                	mov    %cl,(%rdi)
-   a:	c3                   	ret
-   b:	cc                   	int3
-   c:	cc                   	int3
-   d:	cc                   	int3
-   e:	cc                   	int3
-   f:	cc                   	int3
-  10:	cc                   	int3
-  11:	cc                   	int3
-  12:	cc                   	int3
-  13:	cc                   	int3
-  14:	cc                   	int3
-  15:	cc                   	int3
+
+
+
+Details are as below:
+-------------------------------------------------------------------------------------------------->
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20260826/202608261049.66dbc9f6-lkp@intel.com
+https://download.01.org/0day-ci/archive/20260826/202608261025.2521cb61-lkp@intel.com
+
+=========================================================================================
+compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
+  gcc-14/performance/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/lkp-spr-r02/sigrt/stress-ng/60s
+
+commit: 
+  fc4002bbbd ("x86/resctrl: Include control with information controlling hardware change")
+  54b36bf955 ("arm,x86,fs/resctrl: Transition resource control to a list")
+
+fc4002bbbd84b7af 54b36bf9552c154f009f53ea023
+---------------- --------------------------- 
+         %stddev     %change         %stddev
+             \          |                \  
+    379326            -6.4%     355026        stress-ng.sigrt.nanosecs_between_sigqueue_and_sigwaitinfo_completion
+ 2.145e+08            +8.2%  2.322e+08        stress-ng.sigrt.ops
+   3633830            +8.0%    3924146        stress-ng.sigrt.ops_per_sec
+  54373528            +6.7%   58013987        stress-ng.time.involuntary_context_switches
+     12263            -1.6%      12067        stress-ng.time.system_time
+ 1.903e+08            +6.5%  2.026e+08        stress-ng.time.voluntary_context_switches
+    947802 ±  9%     -20.5%     753882 ±  8%  sched_debug.cpu.max_idle_balance_cost.max
+    551284            +6.5%     587345        sched_debug.cpu.nr_switches.avg
+    124204 ±  7%     -20.7%      98485 ±  4%  sched_debug.cpu.nr_switches.stddev
+
+
+***************************************************************************************************
+lkp-spr-r02: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 256G memory
+=========================================================================================
+compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
+  gcc-14/performance/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/lkp-spr-r02/sigpipe/stress-ng/60s
+
+commit: 
+  fc4002bbbd ("x86/resctrl: Include control with information controlling hardware change")
+  54b36bf955 ("arm,x86,fs/resctrl: Transition resource control to a list")
+
+fc4002bbbd84b7af 54b36bf9552c154f009f53ea023 
+---------------- --------------------------- 
+         %stddev     %change         %stddev
+             \          |                \  
+ 3.893e+08            +8.2%  4.212e+08        stress-ng.sigpipe.ops
+   6505085            +8.2%    7037077        stress-ng.sigpipe.ops_per_sec
+     13180            -1.6%      12968        stress-ng.time.system_time
+     98.54          +221.2%     316.52 ± 12%  stress-ng.time.user_time
+  12288000 ±  6%     -18.6%   10006869 ± 18%  meminfo.DirectMap2M
+     22002 ±  8%     -35.3%      14236 ± 38%  numa-vmstat.node0.nr_slab_reclaimable
+    270.33 ±  8%     -12.8%     235.67 ±  3%  perf-c2c.HITM.remote
+     88017 ±  8%     -35.3%      56943 ± 38%  numa-meminfo.node0.KReclaimable
+   5614606 ±  4%     -45.2%    3078560 ± 59%  numa-meminfo.node0.MemUsed
+     88017 ±  8%     -35.3%      56943 ± 38%  numa-meminfo.node0.SReclaimable
 
 
 
---
+***************************************************************************************************
+lkp-spr-r02: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 256G memory
+=========================================================================================
+compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
+  gcc-14/performance/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/lkp-spr-r02/sigsegv/stress-ng/60s
+
+commit: 
+  fc4002bbbd ("x86/resctrl: Include control with information controlling hardware change")
+  54b36bf955 ("arm,x86,fs/resctrl: Transition resource control to a list")
+
+fc4002bbbd84b7af 54b36bf9552c154f009f53ea023 
+---------------- --------------------------- 
+         %stddev     %change         %stddev
+             \          |                \  
+ 3.954e+08            +9.5%  4.331e+08        stress-ng.sigsegv.ops
+   6607818            +9.5%    7237406        stress-ng.sigsegv.ops_per_sec
+     13048            -1.8%      12811        stress-ng.time.system_time
+    221.98          +108.4%     462.53 ±  5%  stress-ng.time.user_time
+      2256 ± 15%     +24.2%       2803 ± 14%  cpuidle.POLL.usage
+    221.33 ± 14%     -16.6%     184.50 ± 10%  perf-c2c.DRAM.remote
+    206.83 ± 13%     -18.9%     167.83 ±  4%  perf-c2c.HITM.remote
+
+
+
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provided
+for informational purposes only. Any difference in system hardware or software
+design or configuration may affect actual performance.
+
+
+-- 
 0-DAY CI Kernel Test Service
 https://github.com/intel/lkp-tests/wiki
-
 
