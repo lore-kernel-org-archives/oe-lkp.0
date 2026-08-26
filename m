@@ -1,175 +1,124 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 156453AAF51
-	for <oe-lkp@lists.linux.dev>; Wed, 26 Aug 2026 06:30:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8644A343882
+	for <oe-lkp@lists.linux.dev>; Wed, 26 Aug 2026 10:38:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.181.97.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787725827; cv=none; b=mt2+Q3t1NG8sslaxDUS1gPT8WXQcDqngWbIUsriCa3dq7HPdSd5+A/7NVkTnIFJWkBswZT5AXdE86Pw4vQINMcCkVf7QXj1mQT3v6K4RszNDlKiDFZgjIXQ2IcWE1KRPATKSQwB1zh/ekuGFObuSZFqcs3h8ppjD0HniIs3uc2c=
+	t=1787740719; cv=none; b=H9b8fq38SSJs9FVaFrXKhNSZzNfvP1JsGAVUYvJ/FtXL/qfQatQtavzzRCGP18jflqUTbQo4u29m1VHa/h7NfPXLsGLCGTAi5b0fTCXalkDC6koiIKfYld9heu+Jnb+7zXTL+4cV5xA9mAZcH9EaXC51GUx5JSDwM8Vx4/Y1Azo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787725827; c=relaxed/simple;
-	bh=rDKvz/peGRfXq5YQmSPRC3KJaw3+ZougxMrFg0o5odI=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=mmnkwTaqlovTr4H3QjmSFBuMg4YgPL/50X45qR3UapHO5DlWpzIjzJqNOcUdsW+qKcvvRU3IVvy7QEe4tnaYhCHG4+6Q9NvHneC7T0CTFhP1CfMQ57Ns3oD1ot4pKtNGTBnRUa0rSo7m8TOUDTC4FvpyRETfplncyC5Yl00z6cI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=icqxE10a; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="icqxE10a"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1787725822; x=1819261822;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   in-reply-to;
-  bh=rDKvz/peGRfXq5YQmSPRC3KJaw3+ZougxMrFg0o5odI=;
-  b=icqxE10a8PQVd5QFtmBrXQjuhOcTnwArPrVKshe5ciU8n+YniL5DjL9Y
-   qDHlvCYlKlWcoDJcJAd9g2iJaqsbaT26QlgmFWXwUSWgNSe9CpUdxEa6r
-   GhpF55tJBp+IXCp90353AtMrWJV4y1Zis6AxgXoSy+XZ6gIt72ItyNoWU
-   I1xRF8N3lRUGcb+YPO7PZkzikoaN7nyL50kBEhFKt+HCmokicPhiT6mgr
-   8I96cec5Wx/HHfktmLewffV9o8iC7OwZdtniIIZOUdkehTT49Dk/XqVCS
-   9d3mauQF7GMtfea4lGMZgRAbpdYEu2ASUVVcGBa3stJFT+eAakMATrsoK
-   w==;
-X-CSE-ConnectionGUID: KWo7P2wZQ5y5qTEHT4Fuuw==
-X-CSE-MsgGUID: /T8+C/OSS1mOFVw4Lm0rkQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11886"; a="113737051"
-X-IronPort-AV: E=Sophos;i="6.25,244,1779174000"; 
-   d="scan'208";a="113737051"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2026 23:30:16 -0700
-X-CSE-ConnectionGUID: ZfRpfErhTaqv3OW7pFIz3Q==
-X-CSE-MsgGUID: PADR+xa1RxuJ/tY1ZWnwdg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,244,1779174000"; 
-   d="scan'208";a="268067141"
-Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2026 23:30:12 -0700
-Date: Wed, 26 Aug 2026 14:30:05 +0800
-From: kernel test robot <yi1.lai@intel.com>
-To: Prakash Gupta <prakash.gupta@oss.qualcomm.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, cgroups@vger.kernel.org,
-	linux-mm@kvack.org, Johannes Weiner <hannes@cmpxchg.org>,
-	Michal Hocko <mhocko@kernel.org>,
-	Roman Gushchin <roman.gushchin@linux.dev>,
-	Shakeel Butt <shakeel.butt@linux.dev>,
-	Muchun Song <muchun.song@linux.dev>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Kefeng Wang <wangkefeng.wang@huawei.com>,
-	"Matthew Wilcox (Oracle)" <willy@infradead.org>,
-	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org,
-	Prakash Gupta <prakash.gupta@oss.qualcomm.com>, yi1.lai@intel.com
-Subject: Re: [PATCH] mm/memcg: fix NULL nodeinfo[] dereference on
- late-onlined nodes
-Message-ID: <202608261313.1d95c34d-lkp@intel.com>
+	s=arc-20240116; t=1787740719; c=relaxed/simple;
+	bh=aNqnHUAaUhTGvvVwE9ECDTRoDx01i/L5nzyGJk3/rHs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=fmlJ9FjxZJ7FEITKDOkSzZehbe2H9j+A+a1NJeFIR/2PdmqnRZvIhCJBz/1IguVuXgBxZr6x7iLrhfymPipXi3q6wOfQpZVtBXQKVgEOlDVyID33tAKtS+Gx9ajnxc/5fEgyCo7dYHt4zV/391s29lvWPKyh1+8wbcAFmWUgmKM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=I-love.SAKURA.ne.jp; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp; arc=none smtp.client-ip=202.181.97.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=I-love.SAKURA.ne.jp
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp
+Received: from www262.sakura.ne.jp (localhost [127.0.0.1])
+	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 67QAbvDZ079437;
+	Wed, 26 Aug 2026 19:37:57 +0900 (JST)
+	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from [192.168.1.6] (M106072072000.v4.enabler.ne.jp [106.72.72.0])
+	(authenticated bits=0)
+	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 67QAbusX079434
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+	Wed, 26 Aug 2026 19:37:57 +0900 (JST)
+	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <3bb080d0-4421-4012-8a62-6a2bf165cbd9@I-love.SAKURA.ne.jp>
+Date: Wed, 26 Aug 2026 19:37:54 +0900
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260810-memcg-nodeinfo-null-guard-v1-1-77a73204d63a@oss.qualcomm.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6] loop: Fix NULL pointer dereference in lo_rw_aio()
+To: Bart Van Assche <bvanassche@acm.org>,
+        Markus Elfring <Markus.Elfring@web.de>, linux-block@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Damien Le Moal <dlemoal@kernel.org>, Jens Axboe <axboe@kernel.dk>
+Cc: linux-kernel@vger.kernel.org, linux-next@vger.kernel.org, lkp@intel.com,
+        oe-lkp@lists.linux.dev, Christian Brauner <brauner@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>, Christoph Hellwig <hch@lst.de>,
+        Hillf Danton <hdanton@sina.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Mark Brown <broonie@kernel.org>, Oliver Sang <oliver.sang@intel.com>,
+        linux-btrfs@vger.kernel.org
+References: <8dedfc40-9cae-44ff-9960-e0eb1825e963@I-love.SAKURA.ne.jp>
+ <550ff0b4-df39-46d2-9781-c8688df10c93@web.de>
+ <38ad64c1-edc7-431d-8f52-fba572ebf3eb@I-love.SAKURA.ne.jp>
+ <372ca5f6-81a0-4f6c-8f55-ebeeada9f955@acm.org>
+ <27bcb147-bead-4432-8cd0-981489f36228@acm.org>
+ <c41e9198-86a8-4bcd-a608-6f457b24f345@I-love.SAKURA.ne.jp>
+ <7e51bca8-218a-40b8-8ff8-fc59671f5add@acm.org>
+Content-Language: en-US
+From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+In-Reply-To: <7e51bca8-218a-40b8-8ff8-fc59671f5add@acm.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Virus-Status: clean
+X-Anti-Virus-Server: fsav211.rs.sakura.ne.jp
 
+On 2026/08/26 8:16, Bart Van Assche wrote:
+> On 8/25/26 8:13 AM, Tetsuo Handa wrote:
+>> On 2026/08/25 7:53, Bart Van Assche wrote:
+>>> A correction: it is not safe to call drain_workqueue() nor to freeze the
+>>> request queue in __loop_clr_fd(). I'm considering to modify the comment
+>>> in that function as follows:
+>>
+>> you also recognized that we can't call drain_workqueue() or flush_workqueue().
+>>
+>> Therefore, I chose to temporarily drop lo->lo_disk->open_mutex in order to
+>> make it possible to safely perform drain_workqueue().
+> 
+> My sentence was incomplete: I should have written that it is not safe to
+> call drain_workqueue() nor flush_workqueue() from __loop_clr_fd() while
+> the request queue is frozen. It is not clear to me how draining or
+> flushing the workqueue from inside __loop_clr_fd() could cause trouble
+> if this happens with the queue unfrozen since disk->open_mutex is not
+> acquired by the memory reclaim code?
 
-Hello,
+I don't know how "since disk->open_mutex is not acquired by the memory reclaim
+code" is relevant...
 
-kernel test robot noticed "Oops:general_protection_fault,probably_for_non-canonical_address#:#[##]SMP_KASAN" on:
+Current situation is a result of what we had considered 4 years ago; we don't need
+to destroy workqueue (note that destroy_workqueue() implies drain_workqueue()) from
+__loop_clr_fd() ( https://lkml.kernel.org/r/20220330052917.2566582-16-hch@lst.de ).
 
-commit: d793df2588b727e161c6586cafda1b3146216b36 ("[PATCH] mm/memcg: fix NULL nodeinfo[] dereference on late-onlined nodes")
-url: https://github.com/intel-lab-lkp/linux/commits/Prakash-Gupta/mm-memcg-fix-NULL-nodeinfo-dereference-on-late-onlined-nodes/20260810-111630
-patch link: https://lore.kernel.org/all/20260810-memcg-nodeinfo-null-guard-v1-1-77a73204d63a@oss.qualcomm.com/
-patch subject: [PATCH] mm/memcg: fix NULL nodeinfo[] dereference on late-onlined nodes
+Since there is a
 
-in testcase: boot
+  Chain exists of:
+    (wq_completion)loop0 --> system_transition_mutex/1 --> &disk->open_mutex
+  
+   Possible unsafe locking scenario:
+  
+         CPU0                    CPU1
+         ----                    ----
+    lock(&disk->open_mutex);
+                                 lock(system_transition_mutex/1);
+                                 lock(&disk->open_mutex);
+    lock((wq_completion)loop0);
 
-config: x86_64-randconfig-r132-20260821
-compiler: clang-22
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 32G
+dependency, but my proposal to forbid binding loop device to pseudo files
+( https://lkml.kernel.org/r/148efba2-a0b6-47d7-ac76-b19d2f4b696c@I-love.SAKURA.ne.jp )
+was rejected by Christoph, we are stuck in a
 
-(please refer to attached dmesg/kmsg for entire log/backtrace)
+  Draining workqueue with open_mutex held causes creating a complex lock dependency
+  chain involving the global system_transition_mutex. (Maybe there are other paths
+  that create similar dependency chain if we drain workqueue with open_mutex held.)
 
+versus
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <yi1.lai@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202608261313.1d95c34d-lkp@intel.com
+  Not draining workqueue causes NULL pointer dereference in lo_rw_aio().
 
+collision. Therefore,
 
-[    4.964339][   T26] KASAN: probably user-memory-access in range [0x0000000000002040-0x0000000000002047]
-[    4.964822][    T1] clocksource: tsc: mask: 0xffffffffffffffff max_cycles: 0x1e3306b9ada, max_idle_ns: 440795224413 ns
-[    4.964364][   T26] CPU: 1 UID: 0 PID: 26 Comm: kworker/u10:0 Tainted: G                T   7.2.0-rc6-00001-gd793df2588b7 #1 PREEMPTLAZY  7c3d8f436a783d0b482149cc8be5fdb0e2064a33
-[    4.967167][   T26] Tainted: [T]=RANDSTRUCT
-[    4.967167][   T26] Workqueue: async async_run_entry_fn
-[    4.967167][   T26] RIP: 0010:mod_node_state+0x2d/0x180
-[    4.967167][   T26] Code: 41 56 41 55 41 54 53 89 cd 41 89 d4 41 89 f7 49 89 fe 48 8d 9f 40 20 00 00 48 89 d8 48 c1 e8 03 48 b9 00 00 00 00 00 fc ff df <80> 3c 08 00 74 08 48 89 df e8 85 18 13 00 4c 8b 2b 44 89 fb 41 83
-[    4.967167][   T26] RSP: 0000:ffffc900001c7610 EFLAGS: 00010002
-[    4.967167][   T26] RAX: 0000000000000408 RBX: 0000000000002040 RCX: dffffc0000000000
-[    4.967167][   T26] RDX: 0000000000000001 RSI: 0000000000000013 RDI: 0000000000000000
-[    4.967167][   T26] RBP: 0000000000000000 R08: ffffffffffe8ac20 R09: 0000000000000001
-[    4.967167][   T26] R10: 0000000000000000 R11: fffff52000038ecc R12: 0000000000000001
-[    4.967167][   T26] R13: dffffc0000000000 R14: 0000000000000000 R15: 0000000000000013
-[    4.967167][   T26] FS:  0000000000000000(0000) GS:ffff888799a99000(0000) knlGS:0000000000000000
-[    4.967167][   T26] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    4.967167][   T26] CR2: 0000000000000000 CR3: 00000000040c5000 CR4: 00000000000406b0
-[    4.967167][   T26] Call Trace:
-[    4.967167][   T26]  <TASK>
-[    4.967167][   T26]  mod_lruvec_state+0x47/0xc0
-[    4.967167][   T26]  ? lruvec_stat_mod_folio+0x22/0x300
-[    4.967167][   T26]  lruvec_stat_mod_folio+0x181/0x300
-[    4.967167][   T26]  __filemap_add_folio+0x758/0xb00
-[    4.967167][   T26]  ? workingset_activation+0x500/0x500
-[    4.967167][   T26]  filemap_add_folio+0x1ce/0x380
-[    4.967167][   T26]  __filemap_get_folio_mpol+0x3b5/0x940
-[    4.967167][   T26]  simple_write_begin+0x61/0x2c0
-[    4.967167][   T26]  page_symlink+0x1a8/0x300
-[    4.967167][   T26]  ramfs_symlink+0x8c/0x140
-[    4.967167][   T26]  vfs_symlink+0x12f/0x2c0
-[    4.967167][   T26]  filename_symlinkat+0xf4/0x280
-[    4.967167][   T26]  ? __asan_memcpy+0x40/0x80
-[    4.967167][   T26]  init_symlink+0x2e/0x80
-[    4.967167][   T26]  do_symlink+0xa5/0x180
-[    4.967167][   T26]  flush_buffer+0x6b/0x100
-[    4.967167][   T26]  ? unpack_to_rootfs+0x380/0x380
-[    4.967167][   T26]  __gunzip+0x8bd/0xdc0
-[    4.967167][   T26]  ? __gunzip+0xdc0/0xdc0
-[    4.967167][   T26]  ? decompress_method+0x1c0/0x1c0
-[    4.967167][   T26]  unpack_to_rootfs+0x21e/0x380
-[    4.967167][   T26]  ? flush_buffer+0x100/0x100
-[    4.967167][   T26]  ? xwrite+0x100/0x100
-[    4.967167][   T26]  do_populate_rootfs+0x21c/0x300
-[    4.967167][   T26]  async_run_entry_fn+0x95/0x3c0
-[    4.967167][   T26]  ? process_scheduled_works+0x7a6/0x1240
-[    4.967167][   T26]  process_scheduled_works+0x86b/0x1240
-[    4.967167][   T26]  worker_thread+0x749/0xbc0
-[    4.967167][   T26]  kthread+0x338/0x440
-[    4.967167][   T26]  ? alloc_worker+0x2c0/0x2c0
-[    4.967167][   T26]  ? __do_trace_sched_kthread_stop_ret+0x140/0x140
-[    4.967167][   T26]  ret_from_fork+0x291/0x5c0
-[    4.967167][   T26]  ? __do_trace_sched_kthread_stop_ret+0x140/0x140
-[    4.967167][   T26]  ret_from_fork_asm+0x11/0x20
-[    4.967167][   T26]  </TASK>
-[    4.967167][   T26] Modules linked in:
-[    4.967167][   T26] ---[ end trace 0000000000000000 ]---
-[    4.967167][   T26] RIP: 0010:mod_node_state+0x2d/0x180
-[    4.967167][   T26] Code: 41 56 41 55 41 54 53 89 cd 41 89 d4 41 89 f7 49 89 fe 48 8d 9f 40 20 00 00 48 89 d8 48 c1 e8 03 48 b9 00 00 00 00 00 fc ff df <80> 3c 08 00 74 08 48 89 df e8 85 18 13 00 4c 8b 2b 44 89 fb 41 83
-[    4.967167][   T26] RSP: 0000:ffffc900001c7610 EFLAGS: 00010002
-[    4.967167][   T26] RAX: 0000000000000408 RBX: 0000000000002040 RCX: dffffc0000000000
-[    4.967167][   T26] RDX: 0000000000000001 RSI: 0000000000000013 RDI: 0000000000000000
-[    4.967167][   T26] RBP: 0000000000000000 R08: ffffffffffe8ac20 R09: 0000000000000001
-[    4.967167][   T26] R10: 0000000000000000 R11: fffff52000038ecc R12: 0000000000000001
-[    4.967167][   T26] R13: dffffc0000000000 R14: 0000000000000000 R15: 0000000000000013
-[    4.967167][   T26] FS:  0000000000000000(0000) GS:ffff888799a99000(0000) knlGS:0000000000000000
-[    4.967167][   T26] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    4.967167][   T26] CR2: 0000000000000000 CR3: 00000000040c5000 CR4: 00000000000406b0
-[    4.967167][   T26] Kernel panic - not syncing: Fatal exception
+  Draining workqueue *without open_mutex held* can avoid creating a complex lock
+  dependency chain involving the global system_transition_mutex and can also avoid
+  NULL pointer dereference in lo_rw_aio().
 
+is my solution.
 
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20260826/202608261313.1d95c34d-lkp@intel.com
-
-
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
-
+Can you agree with my solution?
