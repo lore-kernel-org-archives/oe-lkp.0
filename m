@@ -1,125 +1,135 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3291282F0E
-	for <oe-lkp@lists.linux.dev>; Thu, 27 Aug 2026 01:15:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A752838D404
+	for <oe-lkp@lists.linux.dev>; Thu, 27 Aug 2026 15:32:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.181.97.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787793320; cv=none; b=t6SN9dRecjvgKN1Jddhr8PrrL3A0U10UaDpquoNxiCsJ3ktI6jh0nlLHpuXBhOPvR4aj8wh7qPCl7UA2F0UW72rukdFapqjM6NwO8CxxQQHu5QpLMh62jDm+oFuJC5p0eDnAG1viC1huYKr3cco50K8lDUV6ZKILdlEQEjSkKzo=
+	t=1787844740; cv=none; b=ZZmEdtkSn+01oUbjfCvTPu0bCC1MCZbwhhhPbsN/ozYdmkrqhE25F5I/GVQcv9aJ7Aom1fPUr1bpIbMnVTH6SDwc3UPzUrsGR3T1mkFlBEfo/cMZCCldgV+baSZMpHXAWtS24nQFc9DejUMoUV0bisplpf1CTSghxaKqNDXgxaQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787793320; c=relaxed/simple;
-	bh=YpygBDzERm5er5rhJaN8G01AxohG9gaiN7EZ7yRhYYk=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=JldBG05lMLT4E+TrLSsOfYFvnZzM0Mh16uR9UZua7HThmN9VjSJeNXnFuSfYceQKpU3jipa9St7gz+j8zYZZHYS/eg56EWlOjIZA2sQrjtPgi9Z0AuowBuNMiv1O4lM/kc+zaUpEQI3cKwM5016EyazDxZ7MGbvbKKnc/5XlBWs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GBVZtYw5; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GBVZtYw5"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1787793317; x=1819329317;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=YpygBDzERm5er5rhJaN8G01AxohG9gaiN7EZ7yRhYYk=;
-  b=GBVZtYw5bwsQqPLLO9hX6SMEeeeuVTVu4Ow6xMIgyxBCwGUZCEUyguKJ
-   UBeZ+Yilg/lyPKatvNXKs1KypoBZiqW0DA0Yn/arC7I01eWiefSbENx5z
-   cEG98JPEDlI5zIikKlUHU0onzqqMCuxhLVvJlDsxK8iL0cDuHggBS1zho
-   0hw5rHGR1xDBeUJ+TtjmrKnD5CUr2wT/C7H6EVpDODWZ37lPSkxgg0Fbe
-   SSE8q6PJOG0GBVZxGNSN0TBimxHJw9eJ26YuPPjKHtRlfB6gzT+X7xZ25
-   qzM2/l1/Xg6R24TUZEVqkuQV8fjsbJ+mmfw0t38WH6imQmwjGhVX/6qKH
-   Q==;
-X-CSE-ConnectionGUID: czcnGI6lS62MOf4xM73oIw==
-X-CSE-MsgGUID: r+mQv08QREi9HlLTcWPtDw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11887"; a="75829064"
-X-IronPort-AV: E=Sophos;i="6.25,245,1779174000"; 
-   d="scan'208";a="75829064"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2026 18:15:16 -0700
-X-CSE-ConnectionGUID: dIvPERJIQWCDJ6cZfza5hg==
-X-CSE-MsgGUID: jov9iflmTgmF9carM5clGw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,245,1779174000"; 
-   d="scan'208";a="261587091"
-Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2026 18:15:15 -0700
-Date: Thu, 27 Aug 2026 09:15:11 +0800
-From: kernel test rebot <yi1.lai@intel.com>
-To: Ard Biesheuvel <ardb@kernel.org>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
-	Ravi Bangoria <ravi.bangoria@amd.com>, linux-efi@vger.kernel.org,
-	yi1.lai@intel.com
-Subject: [ardb:efi-arm-memmap-dtprop] [efivarfs]  eaa4abe54e:
- stress-ng.get.ops_per_sec 2915.8% improvement
-Message-ID: <202608270836.4a9957c0-lkp@intel.com>
+	s=arc-20240116; t=1787844740; c=relaxed/simple;
+	bh=5fULEVdiLNaeaGPmNGVav3cRmsOv0HEjjh0adnjLFWM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=sfr/x9Pv61D+UlnyVIk7X0XswDEQPJy3tzsWxadgotDjg7s+sBJFQoDdPhkWJQ9Exnq3GFCTWWxxiMd2zYfFms2UdbFhHmVieYqLt3gaotAYCqJpKF87v99k7GcdQ1Szdk3cc2PRiS6dJJiEGoMG+wq6EIClpVeyf/yO9nt5vI8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=I-love.SAKURA.ne.jp; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp; arc=none smtp.client-ip=202.181.97.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=I-love.SAKURA.ne.jp
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp
+Received: from www262.sakura.ne.jp (localhost [127.0.0.1])
+	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 67RFUkJh066871;
+	Fri, 28 Aug 2026 00:30:46 +0900 (JST)
+	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from [192.168.1.6] (M106072072000.v4.enabler.ne.jp [106.72.72.0])
+	(authenticated bits=0)
+	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 67RFUdpm066842
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+	Fri, 28 Aug 2026 00:30:45 +0900 (JST)
+	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <e5518546-701e-4d3c-a077-18e34aa8c188@I-love.SAKURA.ne.jp>
+Date: Fri, 28 Aug 2026 00:30:39 +0900
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6] loop: Fix NULL pointer dereference in lo_rw_aio()
+To: Bart Van Assche <bvanassche@acm.org>,
+        Markus Elfring <Markus.Elfring@web.de>, linux-block@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Damien Le Moal <dlemoal@kernel.org>, Jens Axboe <axboe@kernel.dk>
+Cc: linux-kernel@vger.kernel.org, linux-next@vger.kernel.org, lkp@intel.com,
+        oe-lkp@lists.linux.dev, Christian Brauner <brauner@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>, Christoph Hellwig <hch@lst.de>,
+        Hillf Danton <hdanton@sina.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Mark Brown <broonie@kernel.org>, Oliver Sang <oliver.sang@intel.com>,
+        linux-btrfs@vger.kernel.org
+References: <8dedfc40-9cae-44ff-9960-e0eb1825e963@I-love.SAKURA.ne.jp>
+ <550ff0b4-df39-46d2-9781-c8688df10c93@web.de>
+ <38ad64c1-edc7-431d-8f52-fba572ebf3eb@I-love.SAKURA.ne.jp>
+ <372ca5f6-81a0-4f6c-8f55-ebeeada9f955@acm.org>
+ <27bcb147-bead-4432-8cd0-981489f36228@acm.org>
+ <c41e9198-86a8-4bcd-a608-6f457b24f345@I-love.SAKURA.ne.jp>
+ <7e51bca8-218a-40b8-8ff8-fc59671f5add@acm.org>
+ <3bb080d0-4421-4012-8a62-6a2bf165cbd9@I-love.SAKURA.ne.jp>
+ <d2f387b9-031a-4306-9323-56f98a8241b7@acm.org>
+Content-Language: en-US
+From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+In-Reply-To: <d2f387b9-031a-4306-9323-56f98a8241b7@acm.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Anti-Virus-Server: fsav415.rs.sakura.ne.jp
+X-Virus-Status: clean
 
+On 2026/08/27 2:44, Bart Van Assche wrote:
+> Releasing and reacquiring disk->open_mutex from __loop_clr_fd() seems
+> risky to me. There is plenty of code in block/bdev.c that assumes that
+> disk->open_mutex is not released by lo_release().
 
+sashiko's review did not find problems
+( https://sashiko.dev/#/patchset/8dedfc40-9cae-44ff-9960-e0eb1825e963%40I-love.SAKURA.ne.jp ).
+This callback is the last code which is performed immediately before releasing disk->open_mutex.
 
-Hello,
+> 
+> I think there is another solution: instead of draining the workqueue
+> from inside __loop_clr_fd(), postpone it until the next time the loop
+> device is bound. See also the patch below.
 
-kernel test robot noticed a 2915.8% improvement of stress-ng.get.ops_per_sec on:
+That is too late to avoid NULL pointer dereference problem.
+We need to flush before setting lo->lo_backing_file to NULL.
 
+> 
+> Regarding your earlier request for a Sashiko review: I will look into
+> configuring Sashiko such that I can run "sashiko review ${commit_id}"
+> locally. The only part I'm missing right now is a Sashiko API key.
+While Sashiko considers a static blk_mq_freeze_queue() sufficient to avoid
+the NULL pointer dereference, relying on freezing the queue inside __loop_clr_fd()
+while holding `disk->open_mutex` is a dangerous decision.
 
-commit: eaa4abe54eb5de1ee002aa2e4f88fc49156f2fdb ("efivarfs: Cache occupied and available space") https://git.kernel.org/cgit/linux/kernel/git/ardb/linux.git efi-arm-memmap-dtprop
+It is true that blk_mq_freeze_queue() alone is equivalent to
+synchronize_rcu() + drain_workqueue() + blk_mq_freeze_queue().
 
-testcase: stress-ng
-config: x86_64-rhel-9.4
-compiler: gcc-14
-test machine: 256 threads 2 sockets Intel(R) Xeon(R) 6768P  CPU @ 2.4GHz (Granite Rapids) with 64G memory
-parameters:
+Although omitting drain_workqueue() causes lockdep to stop complaining, not
+using drain_workqueue() does not avoid the runtime deadlock situation shown below.
+As long as there is a possibility of an in-flight I/O holding or waiting on a
+lock that subsequently tries to acquire `disk->open_mutex`, the deadlock
+risk remains. Lockdep will remain silent here simply because it cannot inspect
+the wake-up conditions inside wait_event() during a queue freeze.
 
-	nr_threads: 100%
-	testtime: 60s
-	test: get
-	cpufreq_governor: performance
+Here is the exact execution timeline that leads to the silent deadlock:
 
+Thread 1:                         Thread 2:                         Thread 3:
+========================================================================================
+                                                                    Holds a global lock 
+                                                                    (e.g., system_transition_mutex).
 
-Details are as below:
--------------------------------------------------------------------------------------------------->
+                                  Block core increments 
+                                  `q_usage_counter`.
 
+Block core holds `disk->open_mutex`.
 
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20260827/202608270836.4a9957c0-lkp@intel.com
+lo_release() tries to wait for 
+`q_usage_counter` to reach 0 
+via blk_mq_freeze_queue() 
+  => BLOCKED by Thread 2.
+                                  loop_handle_cmd() tries 
+                                  to hold the global lock 
+                                    => BLOCKED by Thread 3.
+                                                                    Tries to hold 
+                                                                    `disk->open_mutex` 
+                                                                      => BLOCKED by Thread 1.
+========================================================================================
 
-=========================================================================================
-compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
-  gcc-14/performance/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/lkp-gnr-2sp4/get/stress-ng/60s
+Since Thread 1 will never release `disk->open_mutex`, Thread 3 can never release
+the global lock, and Thread 2 can never reach blk_mq_end_request() to unblock Thread 1.
 
-commit: 
-  44e4ec1a80 ("efi: apple-properties: validate setup data header length")
-  eaa4abe54e ("efivarfs: Cache occupied and available space")
+I've tried offloading __loop_clr_fd() entirely to task_work context in v3 patch, but
+it did not work due to module lifecycle restrictions
+( https://sashiko.dev/#/patchset/fda8abc8-6aa2-463b-bf72-865f6b838034@I-love.SAKURA.ne.jp ).
 
-44e4ec1a802d2078 eaa4abe54eb5de1ee002aa2e4f8
----------------- --------------------------- 
-         %stddev     %change         %stddev
-             \          |                \  
-  15418287         +2912.1%  4.644e+08        stress-ng.get.ops
-    256967         +2915.8%    7749645        stress-ng.get.ops_per_sec
-    554.00 ±  4%  +11739.5%      65591        stress-ng.time.involuntary_context_switches
-     69114 ± 17%     -52.8%      32593 ±  2%  stress-ng.time.minor_page_faults
-    209.30        +12040.1%      25409        stress-ng.time.percent_of_cpu_this_job_got
-    120.05        +12557.5%      15195        stress-ng.time.system_time
-      6.51         +1095.1%      77.76        stress-ng.time.user_time
-     97296           -41.8%      56610 ± 14%  stress-ng.time.voluntary_context_switches
-
-
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provided
-for informational purposes only. Any difference in system hardware or software
-design or configuration may affect actual performance.
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+Therefore, I consider that temporarily releasing `disk->open_mutex` within the process
+context to safely perform flushing/draining before clearing the backing file pointer
+is the most robust architectural solution to break this deadlock chain.
 
