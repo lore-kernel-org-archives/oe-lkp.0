@@ -1,220 +1,125 @@
-Received: from 013.lax.mailroute.net (013.lax.mailroute.net [199.89.1.16])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FBE23624B7
-	for <oe-lkp@lists.linux.dev>; Wed, 26 Aug 2026 17:44:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=199.89.1.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3291282F0E
+	for <oe-lkp@lists.linux.dev>; Thu, 27 Aug 2026 01:15:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787766299; cv=none; b=DQwHZ8SIp6yQTQBWE+JmerJxMk/TgRgdQcV2iCyRTSEwlv7qdgg/nBHpxx+g1bBQOD2cVFqrpqBoy970egsiX3DygYqznrAAi0kBmuKsoSF7GN2SyjVptTDG6TmcEukJ/tcxyH1AmWKjACOUUOtI1uuIa4ctERYB1u1lYVbTiN0=
+	t=1787793320; cv=none; b=t6SN9dRecjvgKN1Jddhr8PrrL3A0U10UaDpquoNxiCsJ3ktI6jh0nlLHpuXBhOPvR4aj8wh7qPCl7UA2F0UW72rukdFapqjM6NwO8CxxQQHu5QpLMh62jDm+oFuJC5p0eDnAG1viC1huYKr3cco50K8lDUV6ZKILdlEQEjSkKzo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787766299; c=relaxed/simple;
-	bh=Cjej1b9ulZD4SLUQ65giMci24Ri25n5cpkeOZilNV4g=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Fin0ynrAetuPs9jQYKJuWaYJFlq/WkPSe7GfMnb+jhwNBaeOadvLI4gYbnK0ENBqGaHGcTf3evqeNLVGfOSq7AfGQNvBdaZ0CBUAmc+qC+QAqzMvJw4qCNCBCDFMJ9QdqRAkcPsFRIHf2jm1NGj/plyQqTLzvprl1aa5gIgtd5Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=acm.org; spf=pass smtp.mailfrom=acm.org; dkim=pass (2048-bit key) header.d=acm.org header.i=@acm.org header.b=OFqb6n8G; arc=none smtp.client-ip=199.89.1.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=acm.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=acm.org
+	s=arc-20240116; t=1787793320; c=relaxed/simple;
+	bh=YpygBDzERm5er5rhJaN8G01AxohG9gaiN7EZ7yRhYYk=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=JldBG05lMLT4E+TrLSsOfYFvnZzM0Mh16uR9UZua7HThmN9VjSJeNXnFuSfYceQKpU3jipa9St7gz+j8zYZZHYS/eg56EWlOjIZA2sQrjtPgi9Z0AuowBuNMiv1O4lM/kc+zaUpEQI3cKwM5016EyazDxZ7MGbvbKKnc/5XlBWs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GBVZtYw5; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=acm.org header.i=@acm.org header.b="OFqb6n8G"
-Received: from localhost (localhost [127.0.0.1])
-	by 013.lax.mailroute.net (Postfix) with ESMTP id 4hVX8n71kxzlfvpx;
-	Wed, 26 Aug 2026 17:44:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=acm.org; h=
-	content-transfer-encoding:content-type:content-type:in-reply-to
-	:from:from:content-language:references:subject:subject
-	:user-agent:mime-version:date:date:message-id:received:received;
-	 s=mr01; t=1787766265; x=1790358266; bh=pKO6GRYJSRPMTr9pvNHVs822
-	TckI3HU9vvYb2xgjpAU=; b=OFqb6n8GcMt8UWt8cEPiFHdWAFNtin5l+i5VB6wP
-	jTVOkEhfPtcdFjxv0Me7UiKOA2z0h0xP8UyT55M0bTYMwsyoKNj27kluU9XeeN+S
-	vI1gSBHZsSOUWObkuiYnWNpWlJB95IbAA7U766Gkr5Ga0NUDakR9q3aF1vuXJPOc
-	tC5IfBnbtS7iK4O/1o1CiOeJMbz7UAxPGHr9X0x5hX3HgdtzK0Dkpy1j+p5n/zwr
-	DO4vdhdnXALV+9+IYemXGPhNutqDu3XKj0YfT/WiQImBFSIcx16OHu9gRF02ulZF
-	RZ9CRZdGUVBC2c8EfJPH6b+iEy49QWhlQzkLD3tF9enSvg==
-X-Virus-Scanned: by MailRoute
-Received: from 013.lax.mailroute.net ([127.0.0.1])
- by localhost (013.lax [127.0.0.1]) (mroute_mailscanner, port 10029) with LMTP
- id 3siDX9OQjeDl; Wed, 26 Aug 2026 17:44:25 +0000 (UTC)
-Received: from [100.80.227.50] (unknown [104.135.182.42])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: bvanassche@acm.org)
-	by 013.lax.mailroute.net (Postfix) with ESMTPSA id 4hVX8N5fq6zlfvpH;
-	Wed, 26 Aug 2026 17:44:20 +0000 (UTC)
-Message-ID: <d2f387b9-031a-4306-9323-56f98a8241b7@acm.org>
-Date: Wed, 26 Aug 2026 10:44:19 -0700
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GBVZtYw5"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1787793317; x=1819329317;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=YpygBDzERm5er5rhJaN8G01AxohG9gaiN7EZ7yRhYYk=;
+  b=GBVZtYw5bwsQqPLLO9hX6SMEeeeuVTVu4Ow6xMIgyxBCwGUZCEUyguKJ
+   UBeZ+Yilg/lyPKatvNXKs1KypoBZiqW0DA0Yn/arC7I01eWiefSbENx5z
+   cEG98JPEDlI5zIikKlUHU0onzqqMCuxhLVvJlDsxK8iL0cDuHggBS1zho
+   0hw5rHGR1xDBeUJ+TtjmrKnD5CUr2wT/C7H6EVpDODWZ37lPSkxgg0Fbe
+   SSE8q6PJOG0GBVZxGNSN0TBimxHJw9eJ26YuPPjKHtRlfB6gzT+X7xZ25
+   qzM2/l1/Xg6R24TUZEVqkuQV8fjsbJ+mmfw0t38WH6imQmwjGhVX/6qKH
+   Q==;
+X-CSE-ConnectionGUID: czcnGI6lS62MOf4xM73oIw==
+X-CSE-MsgGUID: r+mQv08QREi9HlLTcWPtDw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11887"; a="75829064"
+X-IronPort-AV: E=Sophos;i="6.25,245,1779174000"; 
+   d="scan'208";a="75829064"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2026 18:15:16 -0700
+X-CSE-ConnectionGUID: dIvPERJIQWCDJ6cZfza5hg==
+X-CSE-MsgGUID: jov9iflmTgmF9carM5clGw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,245,1779174000"; 
+   d="scan'208";a="261587091"
+Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2026 18:15:15 -0700
+Date: Thu, 27 Aug 2026 09:15:11 +0800
+From: kernel test rebot <yi1.lai@intel.com>
+To: Ard Biesheuvel <ardb@kernel.org>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
+	Ravi Bangoria <ravi.bangoria@amd.com>, linux-efi@vger.kernel.org,
+	yi1.lai@intel.com
+Subject: [ardb:efi-arm-memmap-dtprop] [efivarfs]  eaa4abe54e:
+ stress-ng.get.ops_per_sec 2915.8% improvement
+Message-ID: <202608270836.4a9957c0-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6] loop: Fix NULL pointer dereference in lo_rw_aio()
-To: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
- Markus Elfring <Markus.Elfring@web.de>, linux-block@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, Alexander Viro <viro@zeniv.linux.org.uk>,
- Damien Le Moal <dlemoal@kernel.org>, Jens Axboe <axboe@kernel.dk>
-Cc: linux-kernel@vger.kernel.org, linux-next@vger.kernel.org, lkp@intel.com,
- oe-lkp@lists.linux.dev, Christian Brauner <brauner@kernel.org>,
- Christoph Hellwig <hch@infradead.org>, Christoph Hellwig <hch@lst.de>,
- Hillf Danton <hdanton@sina.com>,
- Linus Torvalds <torvalds@linux-foundation.org>,
- Mark Brown <broonie@kernel.org>, Oliver Sang <oliver.sang@intel.com>,
- linux-btrfs@vger.kernel.org
-References: <8dedfc40-9cae-44ff-9960-e0eb1825e963@I-love.SAKURA.ne.jp>
- <550ff0b4-df39-46d2-9781-c8688df10c93@web.de>
- <38ad64c1-edc7-431d-8f52-fba572ebf3eb@I-love.SAKURA.ne.jp>
- <372ca5f6-81a0-4f6c-8f55-ebeeada9f955@acm.org>
- <27bcb147-bead-4432-8cd0-981489f36228@acm.org>
- <c41e9198-86a8-4bcd-a608-6f457b24f345@I-love.SAKURA.ne.jp>
- <7e51bca8-218a-40b8-8ff8-fc59671f5add@acm.org>
- <3bb080d0-4421-4012-8a62-6a2bf165cbd9@I-love.SAKURA.ne.jp>
-Content-Language: en-US
-From: Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <3bb080d0-4421-4012-8a62-6a2bf165cbd9@I-love.SAKURA.ne.jp>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
-On 8/26/26 3:37 AM, Tetsuo Handa wrote:
-> Current situation is a result of what we had considered 4 years ago; we don't need
-> to destroy workqueue (note that destroy_workqueue() implies drain_workqueue()) from
-> __loop_clr_fd() ( https://lkml.kernel.org/r/20220330052917.2566582-16-hch@lst.de ).
-> 
-> Since there is a
-> 
->    Chain exists of:
->      (wq_completion)loop0 --> system_transition_mutex/1 --> &disk->open_mutex
->    
->     Possible unsafe locking scenario:
->    
->           CPU0                    CPU1
->           ----                    ----
->      lock(&disk->open_mutex);
->                                   lock(system_transition_mutex/1);
->                                   lock(&disk->open_mutex);
->      lock((wq_completion)loop0);
 
-This ABBA locking scenario can only be triggered if a loop device is
-bound to a sysfs attribute with read or write methods that lock
-system_transition_mutex, e.g. /sys/kernel/power, isn't it?
 
-> dependency, but my proposal to forbid binding loop device to pseudo files
-> ( https://lkml.kernel.org/r/148efba2-a0b6-47d7-ac76-b19d2f4b696c@I-love.SAKURA.ne.jp )
- > was rejected by Christoph, we are stuck in a
- >
->    Draining workqueue with open_mutex held causes creating a complex lock dependency
->    chain involving the global system_transition_mutex. (Maybe there are other paths
->    that create similar dependency chain if we drain workqueue with open_mutex held.)
-> 
-> versus
-> 
->    Not draining workqueue causes NULL pointer dereference in lo_rw_aio().
-> 
-> collision. Therefore,
-> 
->    Draining workqueue *without open_mutex held* can avoid creating a complex lock
->    dependency chain involving the global system_transition_mutex and can also avoid
->    NULL pointer dereference in lo_rw_aio().
-> 
-> is my solution.
+Hello,
 
-Releasing and reacquiring disk->open_mutex from __loop_clr_fd() seems
-risky to me. There is plenty of code in block/bdev.c that assumes that
-disk->open_mutex is not released by lo_release().
+kernel test robot noticed a 2915.8% improvement of stress-ng.get.ops_per_sec on:
 
-I think there is another solution: instead of draining the workqueue
-from inside __loop_clr_fd(), postpone it until the next time the loop
-device is bound. See also the patch below.
 
-Regarding your earlier request for a Sashiko review: I will look into
-configuring Sashiko such that I can run "sashiko review ${commit_id}"
-locally. The only part I'm missing right now is a Sashiko API key.
+commit: eaa4abe54eb5de1ee002aa2e4f88fc49156f2fdb ("efivarfs: Cache occupied and available space") https://git.kernel.org/cgit/linux/kernel/git/ardb/linux.git efi-arm-memmap-dtprop
 
-Thanks,
+testcase: stress-ng
+config: x86_64-rhel-9.4
+compiler: gcc-14
+test machine: 256 threads 2 sockets Intel(R) Xeon(R) 6768P  CPU @ 2.4GHz (Granite Rapids) with 64G memory
+parameters:
 
-Bart.
+	nr_threads: 100%
+	testtime: 60s
+	test: get
+	cpufreq_governor: performance
 
-loop: Serialize I/O and queue limits updates
 
-diff --git a/drivers/block/loop.c b/drivers/block/loop.c
-index 119758b45e47..1406932fae93 100644
---- a/drivers/block/loop.c
-+++ b/drivers/block/loop.c
-@@ -1086,6 +1086,12 @@ static int loop_configure(struct loop_device *lo, 
-blk_mode_t mode,
-  			error = -ENOMEM;
-  			goto out_unlock;
-  		}
-+	} else {
-+		/*
-+		 * Wait until all work related to a previously bound file has
-+		 * finished.
-+		 */
-+		flush_workqueue(lo->workqueue);
-  	}
+Details are as below:
+-------------------------------------------------------------------------------------------------->
 
-  	/* suppress uevents while reconfiguring the device */
-@@ -1154,11 +1160,27 @@ static int loop_configure(struct loop_device 
-*lo, blk_mode_t mode,
-  static void __loop_clr_fd(struct gendisk *disk, struct loop_device *lo)
-  	__must_hold(&disk->open_mutex)
-  {
-+	struct request_queue *q = lo->lo_queue;
-  	struct queue_limits lim;
-+	unsigned int memflags;
-  	struct file *filp;
-  	gfp_t gfp = lo->old_gfp_mask;
-  	int err;
 
-+	/*
-+	 * Prevent that new asynchronous I/O is submitted while queue limits
-+	 * are being modified.
-+	 */
-+	blk_queue_flag_set(QUEUE_FLAG_DYING, q);
-+
-+	/* Wait until asynchronous I/O has finished. */
-+	memflags = blk_mq_freeze_queue(q);
-+	blk_mq_unfreeze_queue(q, memflags);
-+
-+	/* Wait until I/O dispatching has finished. */
-+	blk_mq_quiesce_queue(q);
-+	blk_mq_unquiesce_queue(q);
-+
-  	mutex_lock(&lo->lo_mutex);
-  	filp = lo->lo_backing_file;
-  	lo->lo_backing_file = NULL;
-@@ -1169,17 +1191,12 @@ static void __loop_clr_fd(struct gendisk *disk, 
-struct loop_device *lo)
-  	lo->lo_sizelimit = 0;
-  	memset(lo->lo_file_name, 0, LO_NAME_SIZE);
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20260827/202608270836.4a9957c0-lkp@intel.com
 
--	/*
--	 * Reset the block size to the default.
--	 *
--	 * No queue freezing needed because this is called from the final
--	 * ->release call only, so there can't be any outstanding I/O.
--	 */
--	lim = queue_limits_start_update(lo->lo_queue);
-+	/* Reset the block size to the default. */
-+	lim = queue_limits_start_update(q);
-  	lim.logical_block_size = SECTOR_SIZE;
-  	lim.physical_block_size = SECTOR_SIZE;
-  	lim.io_min = SECTOR_SIZE;
--	queue_limits_commit_update(lo->lo_queue, &lim);
-+	queue_limits_commit_update(q, &lim);
+=========================================================================================
+compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
+  gcc-14/performance/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/lkp-gnr-2sp4/get/stress-ng/60s
 
-  	invalidate_disk(disk);
-  	loop_sysfs_exit(lo);
-@@ -1217,6 +1234,9 @@ static void __loop_clr_fd(struct gendisk *disk, 
-struct loop_device *lo)
-  	WRITE_ONCE(lo->lo_state, Lo_unbound);
-  	mutex_unlock(&lo->lo_mutex);
+commit: 
+  44e4ec1a80 ("efi: apple-properties: validate setup data header length")
+  eaa4abe54e ("efivarfs: Cache occupied and available space")
 
-+	/* Reallow I/O. */
-+	blk_queue_flag_clear(QUEUE_FLAG_DYING, q);
-+
-  	fput(filp);
-  }
+44e4ec1a802d2078 eaa4abe54eb5de1ee002aa2e4f8
+---------------- --------------------------- 
+         %stddev     %change         %stddev
+             \          |                \  
+  15418287         +2912.1%  4.644e+08        stress-ng.get.ops
+    256967         +2915.8%    7749645        stress-ng.get.ops_per_sec
+    554.00 ±  4%  +11739.5%      65591        stress-ng.time.involuntary_context_switches
+     69114 ± 17%     -52.8%      32593 ±  2%  stress-ng.time.minor_page_faults
+    209.30        +12040.1%      25409        stress-ng.time.percent_of_cpu_this_job_got
+    120.05        +12557.5%      15195        stress-ng.time.system_time
+      6.51         +1095.1%      77.76        stress-ng.time.user_time
+     97296           -41.8%      56610 ± 14%  stress-ng.time.voluntary_context_switches
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provided
+for informational purposes only. Any difference in system hardware or software
+design or configuration may affect actual performance.
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
 
 
