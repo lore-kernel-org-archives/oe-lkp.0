@@ -1,138 +1,139 @@
-Received: from 011.lax.mailroute.net (011.lax.mailroute.net [199.89.1.14])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47F122F6586
-	for <oe-lkp@lists.linux.dev>; Thu, 27 Aug 2026 17:28:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=199.89.1.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F9251E22E9
+	for <oe-lkp@lists.linux.dev>; Fri, 28 Aug 2026 00:54:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787851715; cv=none; b=Jna51FTH4lH6bJFRKSmtUDja261/jlLWovMjb9wNjjjCemQCr+q4rbgb3chsEK+Thl9Y2dkZcQ32lulYlTO1wUS3zqoF5/HGo1jY8Mp/SRkRfzOxGH303Hu6pxPR0SD1c4Q8UpWhTr8ZFXN+PfG8qCDyOfznX6NLJmqoRw5bv/I=
+	t=1787878497; cv=none; b=Y+9uRPDHnTLJ+coONP02yt9oEkPjexRLpoRUN6F/oCZ3RNxlRYQJeuPm1u5KyMm5dah6TuIMzFzHWZ/9qU6s19Y4+jpfU3R2d7sg2qj95aMgjSU/yf04GRyYXRgHtyy8BCxT2233x8odeQ3ft6W8RkXR0gQa14B8egsI0Z1SHh8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787851715; c=relaxed/simple;
-	bh=+bVSqeETuoDw1BqSpntt2L1pf1LIQ9cwzg+2T8/W+SI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=MtL6S17WbYkgEGp4PamKrbcR8D3xPAEnmKdShiaqzuFhIGTKmGKyxjlNMZcW6jSt3TAEaH1PS34ISHjbi8TnsZO6Sd7D3Md50dpw4oW8zWl6x23OxFWywfJTbBh3/VSewj4IhAaKYq/OtvR8PM9Let0HE+E7TPv6JVxuAdDE8Kw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=acm.org; spf=pass smtp.mailfrom=acm.org; dkim=pass (2048-bit key) header.d=acm.org header.i=@acm.org header.b=l8MZr2zg; arc=none smtp.client-ip=199.89.1.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=acm.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=acm.org
+	s=arc-20240116; t=1787878497; c=relaxed/simple;
+	bh=lkLNCDmuOclJQul5e0NVXK6dZf+WeD60Xio5XflWVQE=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=XctHP4ZeiAZfCoYd7qlmsWcsF/HSLhX1vUbs9bK4jqyKNCwhNNbS5/FYkZ5S3rl+aJa4SAXcRADbObOinxm36Z6T5BuC01qFDDP0WAfr1p57gL7o1YX3Nno4sulDICMhoZjwZFfHFEu2X34Gh+sJPUHAB8atV80C0ysqhpaiwXI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=leNsmW1+; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=acm.org header.i=@acm.org header.b="l8MZr2zg"
-Received: from localhost (localhost [127.0.0.1])
-	by 011.lax.mailroute.net (Postfix) with ESMTP id 4hW7lj4Q59z1XM0p7;
-	Thu, 27 Aug 2026 17:28:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=acm.org; h=
-	content-transfer-encoding:content-type:content-type:in-reply-to
-	:from:from:content-language:references:subject:subject
-	:user-agent:mime-version:date:date:message-id:received:received;
-	 s=mr01; t=1787851701; x=1790443702; bh=uCX4aVXwG7lP1Y2cPRH5ADHi
-	/a1CbPD/0uCVhN6bZJs=; b=l8MZr2zgBnfuV3VV3T3fA7yVO+6R/3zmvNlC8ef7
-	nvKlHA2cAduk1+ivotVcwM9Tz78WylwH/lZ28K13GZQn+pH4wdfAWxEuuIHd7nkx
-	z0GwO+8XXTJQSAX1/MTmQhRHiTCGHczkncOF2AC57jGs//yZp31fF+jyvS/4L6KY
-	RtDDuEqRSxL/vJzp+Zcq5LxKLkoj7g69Mzkwen50H/tqxO5J8YCF0y7ii/aZBwdT
-	IWmJ8XMVF8Cfw3K9GU7nUKgVUZKsgLRJClcsWKpxdqRNBY/TMzeM3DoP6WfqBXIb
-	BN+jpDwvzgWakt/fxHDdy2raDKCQSW5dLZp02tQKXfPrkA==
-X-Virus-Scanned: by MailRoute
-Received: from 011.lax.mailroute.net ([127.0.0.1])
- by localhost (011.lax [127.0.0.1]) (mroute_mailscanner, port 10029) with LMTP
- id KR0o28xEvOmE; Thu, 27 Aug 2026 17:28:21 +0000 (UTC)
-Received: from [100.80.227.50] (unknown [104.135.182.42])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: bvanassche@acm.org)
-	by 011.lax.mailroute.net (Postfix) with ESMTPSA id 4hW7lN0m3dz1XM0p2;
-	Thu, 27 Aug 2026 17:28:15 +0000 (UTC)
-Message-ID: <c0df5f39-d103-4e36-9807-df0ae0247772@acm.org>
-Date: Thu, 27 Aug 2026 10:28:14 -0700
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="leNsmW1+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1787878496; x=1819414496;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding:in-reply-to;
+  bh=lkLNCDmuOclJQul5e0NVXK6dZf+WeD60Xio5XflWVQE=;
+  b=leNsmW1+JwKw0t0VHL7BswnsLz0nmUAQajMEMB37kEI6IP0Sw/TiWV5y
+   h/BbKjjwskuri/bX2WzZHHH/h+knocBRk/419saAgpq0ZtWgitvtTaLqp
+   3FtVUljLvO8640RYyDt+djHqbFvlh/qN195NPcl4UaCaIxJee6ebMIMX0
+   T73zRpuW6w/rl0d88R2YuI3tODiuBkHuwCarLksvuP6pQhm+PrBvoyTMD
+   bc/JX4uOuCghZlQoKeiJyjpqNIpT3iCbNmwXNy+gNuftb5r+kWmbjyNhj
+   Y9LyzLjbh2CZ5vu3mLclNGT6ReBYa0sLyQRFvmwhzkN/49l0+8y/u95Py
+   A==;
+X-CSE-ConnectionGUID: q9vSXZCBTR+vWG0B4CECXA==
+X-CSE-MsgGUID: hRzJ5o3lSCm4JSra2BdgZw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11888"; a="99548812"
+X-IronPort-AV: E=Sophos;i="6.25,247,1779174000"; 
+   d="scan'208";a="99548812"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Aug 2026 17:54:56 -0700
+X-CSE-ConnectionGUID: 5UaGwS1vRNGl6pWq0sf0kg==
+X-CSE-MsgGUID: vYYcAbSKQAWvwI7oPBWoIg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,247,1779174000"; 
+   d="scan'208";a="268591115"
+Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Aug 2026 17:54:53 -0700
+Date: Fri, 28 Aug 2026 08:54:49 +0800
+From: kernel test robot <yi1.lai@intel.com>
+To: quanyeyang via B4 Relay <devnull+quanyemostima.gmail.com@kernel.org>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-crypto@vger.kernel.org,
+	Thomas Graf <tgraf@suug.ch>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	NeilBrown <neilb@suse.com>, "David S. Miller" <davem@davemloft.net>,
+	linux-kernel@vger.kernel.org,
+	syzbot+ef8d17bae14efb960935@syzkaller.appspotmail.com,
+	quanyeyang <quanyemostima@gmail.com>, yi1.lai@intel.com
+Subject: Re: [PATCH] rhashtable: use per-init-site lockdep classes for bucket
+ locks
+Message-ID: <202608280842.861e5949-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6] loop: Fix NULL pointer dereference in lo_rw_aio()
-To: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
- Markus Elfring <Markus.Elfring@web.de>, linux-block@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, Alexander Viro <viro@zeniv.linux.org.uk>,
- Damien Le Moal <dlemoal@kernel.org>, Jens Axboe <axboe@kernel.dk>
-Cc: linux-kernel@vger.kernel.org, linux-next@vger.kernel.org, lkp@intel.com,
- oe-lkp@lists.linux.dev, Christian Brauner <brauner@kernel.org>,
- Christoph Hellwig <hch@infradead.org>, Christoph Hellwig <hch@lst.de>,
- Hillf Danton <hdanton@sina.com>,
- Linus Torvalds <torvalds@linux-foundation.org>,
- Mark Brown <broonie@kernel.org>, Oliver Sang <oliver.sang@intel.com>,
- linux-btrfs@vger.kernel.org
-References: <8dedfc40-9cae-44ff-9960-e0eb1825e963@I-love.SAKURA.ne.jp>
- <550ff0b4-df39-46d2-9781-c8688df10c93@web.de>
- <38ad64c1-edc7-431d-8f52-fba572ebf3eb@I-love.SAKURA.ne.jp>
- <372ca5f6-81a0-4f6c-8f55-ebeeada9f955@acm.org>
- <27bcb147-bead-4432-8cd0-981489f36228@acm.org>
- <c41e9198-86a8-4bcd-a608-6f457b24f345@I-love.SAKURA.ne.jp>
- <7e51bca8-218a-40b8-8ff8-fc59671f5add@acm.org>
- <3bb080d0-4421-4012-8a62-6a2bf165cbd9@I-love.SAKURA.ne.jp>
- <d2f387b9-031a-4306-9323-56f98a8241b7@acm.org>
- <e5518546-701e-4d3c-a077-18e34aa8c188@I-love.SAKURA.ne.jp>
-Content-Language: en-US
-From: Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <e5518546-701e-4d3c-a077-18e34aa8c188@I-love.SAKURA.ne.jp>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260801-fix-rhashtable-bucket-lockdep-v1-1-15a0f8ae094c@gmail.com>
 
-On 8/27/26 8:30 AM, Tetsuo Handa wrote:
-> While Sashiko considers a static blk_mq_freeze_queue() sufficient to avoid
-> the NULL pointer dereference, relying on freezing the queue inside __loop_clr_fd()
-> while holding `disk->open_mutex` is a dangerous decision.
-> 
-> It is true that blk_mq_freeze_queue() alone is equivalent to
-> synchronize_rcu() + drain_workqueue() + blk_mq_freeze_queue().
-> 
-> Although omitting drain_workqueue() causes lockdep to stop complaining, not
-> using drain_workqueue() does not avoid the runtime deadlock situation shown below.
-> As long as there is a possibility of an in-flight I/O holding or waiting on a
-> lock that subsequently tries to acquire `disk->open_mutex`, the deadlock
-> risk remains. Lockdep will remain silent here simply because it cannot inspect
-> the wake-up conditions inside wait_event() during a queue freeze.
-> 
-> Here is the exact execution timeline that leads to the silent deadlock:
-> 
-> Thread 1:                         Thread 2:                         Thread 3:
-> ========================================================================================
->                                                                      Holds a global lock
->                                                                      (e.g., system_transition_mutex).
-> 
->                                    Block core increments
->                                    `q_usage_counter`.
-> 
-> Block core holds `disk->open_mutex`.
-> 
-> lo_release() tries to wait for
-> `q_usage_counter` to reach 0
-> via blk_mq_freeze_queue()
->    => BLOCKED by Thread 2.
->                                    loop_handle_cmd() tries
->                                    to hold the global lock
->                                      => BLOCKED by Thread 3.
->                                                                      Tries to hold
->                                                                      `disk->open_mutex`
->                                                                        => BLOCKED by Thread 1.
-> ========================================================================================
-> 
-> Since Thread 1 will never release `disk->open_mutex`, Thread 3 can never release
-> the global lock, and Thread 2 can never reach blk_mq_end_request() to unblock Thread 1.
-> 
-> I've tried offloading __loop_clr_fd() entirely to task_work context in v3 patch, but
-> it did not work due to module lifecycle restrictions
-> ( https://sashiko.dev/#/patchset/fda8abc8-6aa2-463b-bf72-865f6b838034@I-love.SAKURA.ne.jp ).
-> 
-> Therefore, I consider that temporarily releasing `disk->open_mutex` within the process
-> context to safely perform flushing/draining before clearing the backing file pointer
-> is the most robust architectural solution to break this deadlock chain.
 
-I'm going to drop patch "loop: Serialize I/O and queue limits updates"
-from my patch series and leave it to someone else to solve this issue
-since none of the proposed fixes that have been discussed so far make me
-enthusiast.
+Hello,
 
-Thanks,
+kernel test robot noticed a 12.5% regression of stress-ng.shm-sysv.ops_per_sec on:
 
-Bart.
+
+commit: 62d8460a4e7a3ee028e5134d86169001490e7a60 ("[PATCH] rhashtable: use per-init-site lockdep classes for bucket locks")
+url: https://github.com/intel-lab-lkp/linux/commits/quanyeyang-via-B4-Relay/rhashtable-use-per-init-site-lockdep-classes-for-bucket-locks/20260815-014140
+patch link: https://lore.kernel.org/all/20260801-fix-rhashtable-bucket-lockdep-v1-1-15a0f8ae094c@gmail.com/
+patch subject: [PATCH] rhashtable: use per-init-site lockdep classes for bucket locks
+
+testcase: stress-ng
+config: x86_64-rhel-9.4
+compiler: gcc-14
+test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 256G memory
+parameters:
+
+	nr_threads: 100%
+	testtime: 60s
+	test: shm-sysv
+	cpufreq_governor: performance
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <yi1.lai@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202608280842.861e5949-lkp@intel.com
+
+
+Details are as below:
+-------------------------------------------------------------------------------------------------->
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20260828/202608280842.861e5949-lkp@intel.com
+
+=========================================================================================
+compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
+  gcc-14/performance/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/lkp-spr-r02/shm-sysv/stress-ng/60s
+
+commit: 
+  0131b508c0 ("Merge tag 'ntfs-for-7.2-rc6' of git://git.kernel.org/pub/scm/linux/kernel/git/linkinjeon/ntfs")
+  62d8460a4e ("[PATCH] rhashtable: use per-init-site lockdep classes for bucket locks")
+
+0131b508c0e2489e 62d8460a4e7a3ee028e5134d861
+---------------- --------------------------- 
+    192413           +44.1%     277255        stress-ng.shm-sysv.nanosecs_per_shmat_call
+    349549           +24.2%     433996        stress-ng.shm-sysv.nanosecs_per_shmdt_call
+    174600           +51.9%     265191        stress-ng.shm-sysv.nanosecs_per_shmget_call
+    793610           -12.5%     694260        stress-ng.shm-sysv.ops
+     13236           -12.5%      11578        stress-ng.shm-sysv.ops_per_sec
+     65737           -10.0%      59167 ±  4%  stress-ng.time.involuntary_context_switches
+  53645785           -12.0%   47213499 ±  2%  stress-ng.time.minor_page_faults
+      4660           +24.6%       5806        stress-ng.time.percent_of_cpu_this_job_got
+      2585           +27.8%       3305        stress-ng.time.system_time
+    214.61           -14.7%     183.11        stress-ng.time.user_time
+  10735595            -7.0%    9986470        stress-ng.time.voluntary_context_switches
+ 
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provided
+for informational purposes only. Any difference in system hardware or software
+design or configuration may affect actual performance.
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
+
