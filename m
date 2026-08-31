@@ -1,221 +1,144 @@
-Received: from mail-pj2-f6.google.com (mail-pj2-f6.google.com [74.125.227.134])
+Received: from mta0.migadu.com (out-3.mta0.migadu.com [91.218.175.3])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32AEB332EBC
-	for <oe-lkp@lists.linux.dev>; Sat, 29 Aug 2026 11:50:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.227.134
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788004209; cv=pass; b=nNX7HnNNl7LI1xdD15CdVVKmsRyJzcGD0G5c+IhAXgA3OVRMMIrtYTqlzGhKqxZMlcoMAXf3RLJsyD2Ue+ZmnLSI2Ss7wiNvn0fDDMACHCb3mUWpqZERRd/N1vvJWV+56rr9v5hXZYZRMNp2COIR1TpMn4D19cHNZxTo3nF1YZk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788004209; c=relaxed/simple;
-	bh=XB59oqxnl9vxrJXiFn7gVAo04muqOAUCBSUo2fWNdsg=;
-	h=In-Reply-To:References:From:Mime-Version:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=DwN9YUfLb63JjmDOeLS1901dBqRRQJFRvbjwDZDWgKYUfp1T2aT8UB3vGYgWWZYyrg7sD4jlbhpkzgtvsPJNGYR/+nzB/uI03HofGBOMbG3etNRC9ddG62HKqmI4h2m5zLcR4c5Ofqh1+6lkod3q+6h28qppM6b7K0FnQZtkeK4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IGJ6I6+w; arc=pass smtp.client-ip=74.125.227.134
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27B514D2EDC
+	for <oe-lkp@lists.linux.dev>; Mon, 31 Aug 2026 14:12:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.3
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788185528; cv=none; b=t9vIXB+5e5tHAHcjiIhrbF/xMV6ds0KVXUVIscTo2hPFxP3rVQOF39aZiOuPTNz+o3DawVk29P06dd04P+GM+uSG3/TiKs5kycI58YKm0QyQpHnkCkqM9rUKdCZEmyEXvBlnj3GGHbgxpiEab0R1Zkf1lHoFLQNqnKSEwtuhES4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788185528; c=relaxed/simple;
+	bh=qeMdGEKedWl1FPeoapg8nysRoTiyOSWg/nAFOX53SYI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=upW9dmai1CZqd96xmevvhvY8Y+NpTOMM4JEePw/bFnI7jORGlYWIquIvV3nkY87aGNsfly91zJyY8d6Qmthk4vi84y4sR/7zY8o5nGjOj9DYyBsyWC5uKJIz4UYT2nqCRVL6oG6Wn9AvXiqj+WjnNrmBHlwV1pvCFGPuQQK7RVE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=UpySgTxB; arc=none smtp.client-ip=91.218.175.3
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IGJ6I6+w"
-Received: by mail-pj2-f6.google.com with SMTP id 98e67ed59e1d1-3964deae8a7so669700a91.0
-        for <oe-lkp@lists.linux.dev>; Sat, 29 Aug 2026 04:50:08 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1788004207; cv=none;
-        d=google.com; s=arc-20260327;
-        b=WS02CKpg1jD8M9GIxzyGeuHoUNsNdijinzmM/vCsBlt1SRAvN8HJcLrzWdzAEJ4M4u
-         ulwuHrk7rc6Tiw2P2y5BADGtbhyqtVLSeF8fAdJoArgsvUkAiiapWOZQEDn832Lz5gTt
-         eiAwnQmxM2H1E692cZS+5ddE7OzU6eXZryDtUPwq4tvglXiSGvY4JFaFPy3wOURHTV0U
-         0eiEZjhmtzFsM9sx1djuG5WpGB6XIG1yzcPNoQBMIXA9+kzxGLW8MMh3QbVXK4Moqli3
-         b96Rm054oqzBzNUomd14KzGCx5VyeGL2UnEM+veWcObYQNo+gQfyk3mOuwusKQayNfSt
-         L3/Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:feedback-id
-         :mime-version:from:references:in-reply-to:dkim-signature;
-        bh=2V7zWxDDkN+khoCSDL6WUb6TTSsQU+AdkqSv9hV5vbU=;
-        fh=iGbOB1f20sltim+n/JSXpKhs93Rg8ScrDti/FLUmam4=;
-        b=b/bzkKtoB5KeOK4SWNCrw8LJQN7y/Z9cAQfpTUJRSTQ059SxTsIvurxwi1cQvlItUs
-         XgOXFLrqdZnC2javmBiqQpN546PaE+NNdRuyblQq/wZwaF/eNM7EOCDo7mDqXkVLZ1i6
-         TzLqdI/4frbOqxqMaskiRBpA3ch8r1IODnLMtIvnNOFRc0f6xv5PVty5PYPalp+Tw7oR
-         CB14yRsNB9HYLPBLtxAqYU5uKAHdgMliJh2itVvaKjSGkHLPQgdoaybDuTdXeczY+Pp1
-         esT1CNVGWQVk8+SXlL3l5zr5qHQLCUKUG1lT54BD7UXrR+XJvAwOZQ8UvzKiYiEkcOdu
-         x1ow==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788004207; x=1788609007; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:feedback-id:mime-version:from:references:in-reply-to:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=2V7zWxDDkN+khoCSDL6WUb6TTSsQU+AdkqSv9hV5vbU=;
-        b=IGJ6I6+wbz2DaDTkVwsmifCicgzMYQIni7AhPK5B3HfwRemFPNwJgnDiFV3JTq+yJo
-         te6KGk9IkAjN5t7xMh65CGGEpsNrfrbDELiDVdPTvW9icN5hPd6nkGb5ylXuvV55ukQK
-         WcRupP+l3y/8hmeXx9CDvl9UT5b9ReZoN+e+UIAASGaZ0yf3sV2fqxXJtkSigEksfiWY
-         tQ3R8fAcCGwqJWYOQDeJnZeqqkq5x/tOLXTq0q0nHroTquYhZQ7y9yImX1mR2601jEd/
-         BTsXmrNU4MY1XikxRzJmGcuLTG5ZWttsoHWhKRCwKiEwk05UjYIsXCp5A+QiLddOg2+H
-         Gekg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788004207; x=1788609007;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:feedback-id:mime-version:from:references:in-reply-to:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=2V7zWxDDkN+khoCSDL6WUb6TTSsQU+AdkqSv9hV5vbU=;
-        b=jQzrDN0zWDvkUa32P42dIutDoVHTNxEpoGWa3sMRqYtkQWAR/mKnPzDJnhp7QG5EoG
-         c9s/ZB83FnLTIIfVtaKFKgAp0vRRLq2SU1THLDkEk9dCa3zRUACOZ7xpSbWAvjlW9YOv
-         8VTbPL7tTsHjsFnzURnPNK9Es6Ubrd8TkVlQxTjS40FmpttFrECsWPFUsrAsa7x8k+Ys
-         R6LnwmAjTOO3YaYjL+aav/UoryhNBhENYAF8ni7X8WYvLZkFHsKynOR1oovLgFSDLHdW
-         +CwTMOpqoqnq+j9aCLmLZ9P9M2PsI+ZaKw3Wct70Oby1JuDzYvoFJmXYTQ0p/Wk0scCi
-         pwxA==
-X-Forwarded-Encrypted: i=1; AKwUvBz9AkSE933vPLGPChTPwb/duModcbBrA0ZHXch34fgJUhJ+C+wqsA8qDOD/kY69RT6tLveKOAk=@lists.linux.dev
-X-Gm-Message-State: AFuF++nkFXgK4prWYs1X/ym/sU1qnBi4K47Wa0R10yL10IvdNQ4cyTbf
-	FmxvtEF61o8cdCPrLfMMBMyNQ0N4Y074y92oLEWB+vzOP0NjAdzO3y6Fd1zPOaIEsl8Q83+FJO/
-	bg2/BanU+NwQiBW9zJ8E+zHpknTCP3+0=
-X-Gm-Gg: AYBFou1ckR+6tdneh/QKADCwQHTo4q6b7YGspXJnOFcwKb7h7TPT9xF3AeNt147y0KC
-	O1x/vqA0ikX2zunWr2x2/17z3fNTOuhFDOtw1/O8oT618/BQF32EHQMSKDHaUyyqIJWRa5mHeHQ
-	L9vgc3pQvl+0cAxVLEpg8H/s5Z4anXa5luazXw55kir4zpsbhYMmOCIjgDjwNJGnb6V9Zg3L+8/
-	YlPCUk3DcHoSrSBYYdxv4Z3Dt9hXWIA0i2p/D6GdJd+RG6dFq+fuIYmLx3iKd9jcDcVY/Eg0i9F
-	eMPpFQRlqi4ITuCKSWdYa5fSyb0jeCOOrq/fbjWaTVfI
-X-Received: by 2002:a17:90b:5490:b0:398:9be6:f997 with SMTP id
- 98e67ed59e1d1-3989be6fabamr8822016a91.22.1788004207359; Sat, 29 Aug 2026
- 04:50:07 -0700 (PDT)
-Received: from 923746734024 named unknown by gmailapi.google.com with
- HTTPREST; Sat, 29 Aug 2026 04:50:05 -0700
-Received: from 923746734024 named unknown by gmailapi.google.com with
- HTTPREST; Sat, 29 Aug 2026 04:50:05 -0700
-In-Reply-To: <202608280842.861e5949-lkp@intel.com>
-References: <202608280842.861e5949-lkp@intel.com>
-From: Quanye Yang <quanyemostima@gmail.com>
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="UpySgTxB"
+X-Envelope-To: oe-lkp@lists.linux.dev
+DKIM-Signature: a=rsa-sha256; bh=qeMdGEKedWl1FPeoapg8nysRoTiyOSWg/nAFOX53SYI=;
+ c=simple/simple; d=linux.dev;
+ h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
+ t=1788185524; v=1; x=1788790324;
+ b=UpySgTxB7rkxUGIyTpQnQIDRnAUoPGeDYZFzZECpxJvXHmpZxm3bwcfx5EYnMnsVdYEBOYwa
+ iu01b13XW9kL8gEQd9HmWD5Y8i8so2ASmXRCDFz73mNWh9S7xSpbLxxHF4uc9GXR/ezP/Q+SGPU
+ 7WbKYyaxgv7iBNoEUydmSMWs=
+X-Envelope-To: oe-lkp@lists.linux.dev
+Received: by smtp.migadu.com with ESMTPS id 0c74ffbab702f936;
+	Mon, 31 Aug 2026 14:11:54 +0000
+X-Mizu-Trace-ID: 0c74ffbab702f936
+X-Migadu-Flow: FLOW_OUT
+From: Tao Cui <cui.tao@linux.dev>
+To: penguin-kernel@i-love.sakura.ne.jp,
+	brauner@kernel.org
+Cc: Markus.Elfring@web.de,
+	axboe@kernel.dk,
+	broonie@kernel.org,
+	bvanassche@acm.org,
+	dlemoal@kernel.org,
+	hch@infradead.org,
+	hch@lst.de,
+	hdanton@sina.com,
+	linux-block@vger.kernel.org,
+	linux-btrfs@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-next@vger.kernel.org,
+	lkp@intel.com,
+	oe-lkp@lists.linux.dev,
+	oliver.sang@intel.com,
+	torvalds@linux-foundation.org,
+	viro@zeniv.linux.org.uk,
+	cui.tao@linux.dev,
+	Tao Cui <cuitao@kylinos.cn>
+Subject: Re: [PATCH v7] loop: Fix NULL pointer dereference in lo_rw_aio()
+Date: Mon, 31 Aug 2026 22:11:43 +0800
+Message-ID: <20260831141143.704821-1-cui.tao@linux.dev>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <6a770a9c-2642-4392-9b9c-609836693f36@I-love.SAKURA.ne.jp>
+References: <6a770a9c-2642-4392-9b9c-609836693f36@I-love.SAKURA.ne.jp>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Feedback-Id: 213336356:user:proton
-X-Pm-Message-Id: 8d3d2ceb8b9608c9c9d01d857cdd8149c2835fc1
-X-Pm-Byoe: Pw38uirqT6X9XEzvvf09C3EfIeu8ZGXF2AbJ5Fdhm3gGXIp_YuxTcMUccburTI2jepf8J_UHG8Snr_TTrKwRpA==
-Date: Sat, 29 Aug 2026 04:50:05 -0700
-X-Gm-Features: AcwNN1X7-N43NwbdvpT-VH5kWVylnqGHXWcCelBlkTW9FoL9KGDR2SlyEm8Am_g
-Message-ID: <CABcBDJuRf+TxC+D3FUBA8=DcsLjmU6As77D-VjPRewWvWAizTw@mail.gmail.com>
-Subject: Re: [PATCH] rhashtable: use per-init-site lockdep classes for bucket locks
-To: kernel test robot <yi1.lai@intel.com>
-Cc: quanyeyang via B4 Relay <devnull+quanyemostima.gmail.com@kernel.org>, oe-lkp@lists.linux.dev, 
-	lkp@intel.com, linux-crypto@vger.kernel.org, Thomas Graf <tgraf@suug.ch>, 
-	Herbert Xu <herbert@gondor.apana.org.au>, Andrew Morton <akpm@linux-foundation.org>, 
-	NeilBrown <neilb@suse.com>, "David S. Miller" <davem@davemloft.net>, linux-kernel@vger.kernel.org, 
-	syzbot+ef8d17bae14efb960935@syzkaller.appspotmail.com
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Sent with Proton Mail secure email.
+From: Tao Cui <cuitao@kylinos.cn>=0D
 
-On Friday, August 28th, 2026 at AM 8:54, kernel test robot
-<yi1.lai@intel.com> wrote:
-
->
-> Hello,
->
-> kernel test robot noticed a 12.5% regression of stress-ng.shm-sysv.ops_pe=
-r_sec on:
->
->
-> commit: 62d8460a4e7a3ee028e5134d86169001490e7a60 ("[PATCH] rhashtable: us=
-e per-init-site lockdep classes for bucket locks")
-> url: https://github.com/intel-lab-lkp/linux/commits/quanyeyang-via-B4-Rel=
-ay/rhashtable-use-per-init-site-lockdep-classes-for-bucket-locks/20260815-0=
-14140
-> patch link: https://lore.kernel.org/all/20260801-fix-rhashtable-bucket-lo=
-ckdep-v1-1-15a0f8ae094c@gmail.com/
-> patch subject: [PATCH] rhashtable: use per-init-site lockdep classes for =
-bucket locks
->
-> testcase: stress-ng
-> config: x86_64-rhel-9.4
-> compiler: gcc-14
-> test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (S=
-apphire Rapids) with 256G memory
-> parameters:
->
-> 	nr_threads: 100%
-> 	testtime: 60s
-> 	test: shm-sysv
-> 	cpufreq_governor: performance
->
->
-> If you fix the issue in a separate patch/commit (i.e. not just a new vers=
-ion of the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <yi1.lai@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202608280842.861e5949-lkp@intel.=
-com
->
->
-> Details are as below:
-> -------------------------------------------------------------------------=
-------------------------->
->
->
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20260828/202608280842.861e5949-lk=
-p@intel.com
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testc=
-ase/testtime:
->   gcc-14/performance/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/l=
-kp-spr-r02/shm-sysv/stress-ng/60s
->
-> commit:
->   0131b508c0 ("Merge tag 'ntfs-for-7.2-rc6' of git://git.kernel.org/pub/s=
-cm/linux/kernel/git/linkinjeon/ntfs")
->   62d8460a4e ("[PATCH] rhashtable: use per-init-site lockdep classes for =
-bucket locks")
->
-> 0131b508c0e2489e 62d8460a4e7a3ee028e5134d861
-> ---------------- ---------------------------
->     192413           +44.1%     277255        stress-ng.shm-sysv.nanosecs=
-_per_shmat_call
->     349549           +24.2%     433996        stress-ng.shm-sysv.nanosecs=
-_per_shmdt_call
->     174600           +51.9%     265191        stress-ng.shm-sysv.nanosecs=
-_per_shmget_call
->     793610           -12.5%     694260        stress-ng.shm-sysv.ops
->      13236           -12.5%      11578        stress-ng.shm-sysv.ops_per_=
-sec
->      65737           -10.0%      59167 =C2=B1  4%  stress-ng.time.involun=
-tary_context_switches
->   53645785           -12.0%   47213499 =C2=B1  2%  stress-ng.time.minor_p=
-age_faults
->       4660           +24.6%       5806        stress-ng.time.percent_of_c=
-pu_this_job_got
->       2585           +27.8%       3305        stress-ng.time.system_time
->     214.61           -14.7%     183.11        stress-ng.time.user_time
->   10735595            -7.0%    9986470        stress-ng.time.voluntary_co=
-ntext_switches
->
->
-> Disclaimer:
-> Results have been estimated based on internal Intel analysis and are prov=
-ided
-> for informational purposes only. Any difference in system hardware or sof=
-tware
-> design or configuration may affect actual performance.
->
->
-> --
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
->
->
->
-Thanks for the report.
-
-This v1 was withdrawn after the subsequent discussion and was never
-merged. I do not plan to resend this approach, so no separate fix will
-be submitted.
-
-The regression is likely caused by the unconditional bucket_lock_key
-pointer changing the size and cacheline layout of struct rhashtable in
-a configuration with CONFIG_DEBUG_LOCK_ALLOC disabled.
-
-Thanks for the testing.
+Hi Tetsuo, Bart,=0D
+=0D
+> +	/* Step 1: Flush all outstanding I/O, without open_mutex held. */=0D
+> +	/*=0D
+> +	 * Now that loop_queue_rq() sees lo->lo_state !=3D Lo_bound,=0D
+> +	 * wait for already started loop_queue_rq() to complete.=0D
+> +	 */=0D
+> +	synchronize_rcu();=0D
+=0D
+Your reply to Bart says loop_queue_rq() is called with RCU read=0D
+lock, but I don't see one.  The two call sites of ->queue_rq() are=0D
+blk_mq_dispatch_rq_list() and __blk_mq_issue_directly(), and=0D
+neither is wrapped in rcu_read_lock().  Direct issue from=0D
+blk_mq_submit_bio() runs in process context with no RCU read-side=0D
+critical section, so synchronize_rcu() does not wait for a=0D
+loop_queue_rq() that is already running there.  Only the softirq=0D
+dispatch path is an implicit RCU reader.=0D
+=0D
+The window is still closed by the steps below, so this is not a=0D
+correctness bug, but the synchronize_rcu() is not doing what the=0D
+comment claims.  blk_mq_quiesce_queue() +=0D
+blk_mq_wait_quiesce_done(), as Bart suggested, would express the=0D
+intent directly.=0D
+=0D
+> +	/*=0D
+> +	 * Now that no more AIO requests are scheduled by lo_rw_aio(),=0D
+> +	 * wait for already started AIO to complete.=0D
+> +	 */=0D
+> +	blk_mq_unfreeze_queue(lo->lo_queue, blk_mq_freeze_queue(lo->lo_queue));=
+=0D
+=0D
+About this step, in your follow-up you wrote:=0D
+=0D
+>   (1) since we are in lo_release() with disk_openers(disk) =3D=3D 0, the =
+activity of=0D
+>       incrementing/decrementing q_usage_counter (incremented before loop_=
+queue_rq()=0D
+>       is called, and decremented after loop_queue_rq() returned BLK_STS_I=
+OERR)) will=0D
+>       cease shortly=0D
+=0D
+The decrement timing here is only true for the error path.  For=0D
+BLK_STS_OK the reference is held until the request is freed, which=0D
+is what makes blk_mq_freeze_queue() wait for requests that already=0D
+passed the state check, including the loop workqueue worker that=0D
+completes them.  That is the property step 1 relies on, and it is=0D
+worth stating in the comment.=0D
+=0D
+What is still open is Bart's question about io_uring fixed files:=0D
+if submissions can continue after the last close, "cease shortly"=0D
+does not hold, and it is the freeze wait that actually drains them.=0D
+=0D
+> +	if (need_clear) {=0D
+> +		/*=0D
+> +		 * Grab all references that will be dropped as soon as=0D
+> +		 * returning from lo_release() and releasing disk->open_mutex.=0D
+> +		 */=0D
+> +		get_device(disk_to_dev(disk));=0D
+> +		__module_get(disk->fops->owner);=0D
+> +		queue_work(system_long_wq, &lo->lo_clr_work);=0D
+> +	}=0D
+=0D
+With teardown now asynchronous, between the last close()=0D
+returning and the work item finishing, lo_open() and=0D
+LOOP_CONFIGURE return -ENXIO.  That is the same behavior change=0D
+that led to the revert of the earlier attempt (bf23747ee053,=0D
+xfs/259).  Moving the xfstests side to the tests is one thing, but=0D
+userspace that closes a loop device and immediately reconfigures=0D
+it now needs to handle a transient -ENXIO.  Is that acceptable, or=0D
+should the retry happen in the kernel?=0D
+=0D
+Thanks,=0D
+Tao=0D
