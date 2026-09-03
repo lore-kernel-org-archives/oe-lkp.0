@@ -1,161 +1,294 @@
-Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com [209.85.210.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EA3F391E77
-	for <oe-lkp@lists.linux.dev>; Thu,  3 Sep 2026 18:43:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FFE823E25B
+	for <oe-lkp@lists.linux.dev>; Thu,  3 Sep 2026 23:16:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.181.97.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788460996; cv=none; b=CeD4byHBKeokwrDHM42FsZ2ZGVaGGTnwQ6nVjCbM32jDjaFJXimUD2VvL3rQjnHhF0kYG33bQOZsEOJRwkBMXoDSzrCREURe3wH8KCNpFpJ4gA9TUC88iH3+MQObpGWk99GN26hlxKHtgeRIsUgbkYHyhtZp/LgytlNceW/7PgI=
+	t=1788477420; cv=none; b=cfoH1tPZCjG1enO1SZSyDp/V1q/kMqi0TqoXPEoJAdAJz/9qE64Ys6BKdZidjRU4Aa7bdyO67Z6REI4JcQzWwZpaawT/ibTJn2r67a1BNzwDmEnp5DTjynHE1JxfCG/JrDjT+IhQqJFqXzutsx/Q65klDHbRHxETQuUbE8M5uDk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788460996; c=relaxed/simple;
-	bh=pFrJD8JwpQUONfEODSlbWTr22BuH3bNFwa8aBmpIdmc=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=bW5sQcrxKQxIcRaF8GMfbSOLp5TfoutL/80mElZNcBzkfbiXThwpNde3K4WLn2lj738vKKoXk26c8LRGvLsjmQjBg6lk27ITlG16hv3uwKWL6/hUgGapvccrpmPEkITdimKdW5Nq/PKdur2eJAb2vOGT8wiDlMFyRrV1TPcj+f0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=GcV5RxPW; arc=none smtp.client-ip=209.85.210.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="GcV5RxPW"
-Received: by mail-pf1-f197.google.com with SMTP id d2e1a72fcca58-84859a64079so155628b3a.3
-        for <oe-lkp@lists.linux.dev>; Thu, 03 Sep 2026 11:43:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1788460994; x=1789065794; darn=lists.linux.dev;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=QpwT7ULhu2KXciyzAQFb13gHE62hglixd7EQ4ssSx84=;
-        b=GcV5RxPWLr5IHs7/9Y0gFDYfQMgYeySi1F9JV0njhZHiJvjzY5Gi37DIIkuzQVb8t0
-         3eHacFiGrPV2teIPI/xZtY8SDzlIt3/iSANqRg/KFcJLzYD13uBhtATl/55oDGWukM3e
-         k9xzADyCvQKppvsBc100bGnjeGPgOQNCwzkrk5sNvYZjUSQFm+pl8ZbFTJrBrx+B0N2y
-         a8A5d3xd4x0pQLwRzsgYWdpPqBrEsIAPjd/H9pBf/fp3cWUW22fU1bVPinNHa+t/2ZJf
-         0B+uZME09vbLrzZbyoySYBj7EdQZ193DzLcDIwieULS+kQitUyaQw6bmhw2UgMj/C8U1
-         DWpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788460994; x=1789065794;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=QpwT7ULhu2KXciyzAQFb13gHE62hglixd7EQ4ssSx84=;
-        b=Bl6jSj9aTEwJCEX5CzHT5xvws57im2go8IUq1UIapfKcyX9O75YJWuQd3PhIKl1vxR
-         bOuD+YI861hN4UjLMo0rdCpM4pEm3ef+UNS350QYvVzG0ZSGT9rnhO3fR0/g6iRQs7Oz
-         dx8VQq7+TC5GWBqL2epaWZKok+9tDv2AZsLEJrjl1ebcBXAWpYbOYRa6XGG1K+X3nIKv
-         /l0j7kcSFt/2IGv7vcT1p2YwjxXg8BdWBF0rAbebZnVUpguZ1XS9Mg36hN8XnGeIxpzz
-         n5yKR87j+r3HXlsyZREXqXxQwE6nEmKMWfe8axC2+q0dj6YfxkK4yUEabTiGOfmmDht5
-         SnrQ==
-X-Gm-Message-State: AFuF++kRIwFtzqQ1Y5SVWMgSR/HzRsJaKKv6DpCSO5aCTsiBAdE1VS2W
-	2zmoe8LCmPKg0nvq+BJ+2FqHQ6qK/mlWE6T55BmPUPXjgDxznn6nAahK32dLKQNXrtqKFXn56Qi
-	3H7nRuQ==
-X-Received: from pfbft4.prod.google.com ([2002:a05:6a00:81c4:b0:845:4da8:56a5])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:990:b0:852:355b:2430
- with SMTP id d2e1a72fcca58-86168b8de8dmr1282438b3a.10.1788460994331; Thu, 03
- Sep 2026 11:43:14 -0700 (PDT)
-Date: Thu, 3 Sep 2026 11:43:13 -0700
-In-Reply-To: <apm0BpPvMZZWYthw@google.com>
+	s=arc-20240116; t=1788477420; c=relaxed/simple;
+	bh=OcraPRWToqpWgIaAhNICXIMXXlLZJ8IO7GQah7aYTWk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=POQ+dmTV3te15VY4bNoXAib2TEzMkqRozzEY2dntxDFwIeLaVrP4OL2iOTqaO73/DqH3FOWcvN5dpAGpCug67DkPPVo9t3qRVVCYUq2KMpMym9xRkj71xSi21okdhO2wXdA9Bly5nSS45krCeG4+AHFcP17dg+ec/+JFvdkN6d4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=I-love.SAKURA.ne.jp; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp; arc=none smtp.client-ip=202.181.97.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=I-love.SAKURA.ne.jp
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp
+Received: from www262.sakura.ne.jp (localhost [127.0.0.1])
+	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 683NFuGC006373;
+	Fri, 4 Sep 2026 08:15:56 +0900 (JST)
+	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from [192.168.1.6] (M106072072000.v4.enabler.ne.jp [106.72.72.0])
+	(authenticated bits=0)
+	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 683NFugi006370
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+	Fri, 4 Sep 2026 08:15:56 +0900 (JST)
+	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <9ac07477-b2be-482b-9e97-87acf9635307@I-love.SAKURA.ne.jp>
+Date: Fri, 4 Sep 2026 08:15:55 +0900
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <202609030248.b516759d-lkp@intel.com> <apm0BpPvMZZWYthw@google.com>
-Message-ID: <apm_wb4yJ0jM9_gg@google.com>
-Subject: Re: [sean-jc:x86/evmcs_vmptrldst] [KVM]  7fecb27e8d: bunch of
- kselftests.kvm failures
-From: Sean Christopherson <seanjc@google.com>
-To: kernel test robot <yi1.lai@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, Yosry Ahmed <yosry@kernel.org>, 
-	kvm@vger.kernel.org
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: [PATCH v7.1] loop: Fix NULL pointer dereference in lo_rw_aio()
+To: Bart Van Assche <bvanassche@acm.org>,
+        Markus Elfring <Markus.Elfring@web.de>, linux-block@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Damien Le Moal <dlemoal@kernel.org>, Jens Axboe <axboe@kernel.dk>
+Cc: linux-kernel@vger.kernel.org, linux-next@vger.kernel.org, lkp@intel.com,
+        oe-lkp@lists.linux.dev, Christian Brauner <brauner@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>, Christoph Hellwig <hch@lst.de>,
+        Hillf Danton <hdanton@sina.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Mark Brown <broonie@kernel.org>, Oliver Sang <oliver.sang@intel.com>,
+        linux-btrfs@vger.kernel.org
+References: <8dedfc40-9cae-44ff-9960-e0eb1825e963@I-love.SAKURA.ne.jp>
+ <550ff0b4-df39-46d2-9781-c8688df10c93@web.de>
+ <38ad64c1-edc7-431d-8f52-fba572ebf3eb@I-love.SAKURA.ne.jp>
+ <372ca5f6-81a0-4f6c-8f55-ebeeada9f955@acm.org>
+ <27bcb147-bead-4432-8cd0-981489f36228@acm.org>
+ <c41e9198-86a8-4bcd-a608-6f457b24f345@I-love.SAKURA.ne.jp>
+ <7e51bca8-218a-40b8-8ff8-fc59671f5add@acm.org>
+ <3bb080d0-4421-4012-8a62-6a2bf165cbd9@I-love.SAKURA.ne.jp>
+ <d2f387b9-031a-4306-9323-56f98a8241b7@acm.org>
+ <e5518546-701e-4d3c-a077-18e34aa8c188@I-love.SAKURA.ne.jp>
+ <c0df5f39-d103-4e36-9807-df0ae0247772@acm.org>
+ <c2ab2547-63b3-48cf-87c1-fc53219e360a@I-love.SAKURA.ne.jp>
+ <d0471919-9b71-4d24-9fb8-5f1d7f3792ca@acm.org>
+ <903a22a2-432c-4e72-bc09-7898becf2f3e@I-love.SAKURA.ne.jp>
+ <d7e26d4b-d9b9-47c0-9658-c241499209b5@acm.org>
+Content-Language: en-US
+From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+In-Reply-To: <d7e26d4b-d9b9-47c0-9658-c241499209b5@acm.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Anti-Virus-Server: fsav311.rs.sakura.ne.jp
+X-Virus-Status: clean
 
-On Thu, Sep 03, 2026, Sean Christopherson wrote:
-> On Thu, Sep 03, 2026, kernel test robot wrote:
-> > kernel test robot noticed "kselftests.kvm.hyperv_evmcs.fail" on:
-> > 
-> > commit: 7fecb27e8d353adda91989eb01b3ae200b846a42 ("KVM: selftests: Always assert that vmwrite() succeeds") https://github.com/sean-jc/linux x86/evmcs_vmptrldst
-> > 
-> > in testcase: kselftests
-> > version: kselftests-x86_64-f5098b6bae76-1_20260727
-> > with following parameters:
-> > 
-> > 	group: kvm
-> > 
-> > config: x86_64-rhel-9.4-kselftests
-> > compiler: gcc-14
-> > test machine: 16 threads Intel(R) Core(TM) i7-13620H (Raptor Lake) with 32G memory
-> > 
-> > If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
-> > | Reported-by: kernel test robot <yi1.lai@intel.com>
-> > | Closes: https://lore.kernel.org/oe-lkp/202609030248.b516759d-lkp@intel.com
-> > 
-> > The kernel config and materials to reproduce are available at:
-> > https://download.01.org/0day-ci/archive/20260903/202609030248.b516759d-lkp@intel.com
-> > 
-> > Detailed log:
-> > # selftests: kvm: evmcs_smm_controls_test
-> > # Random seed: 0x7ad5b4f9
-> > # 
-> > # ==== Test Assertion Failure ====
-> > #   include/x86/vmx.h:434: __vmwrite(encoding, value)
-> > #   pid=5240 tid=5240 errno=4 - Interrupted system call
-> > #      1	0x0000000000412f61: assert_on_unhandled_exception at processor.c:781
-> > #      2	0x0000000000406f86: _vcpu_run at kvm_util.c:1687
-> > #      3	 (inlined by) vcpu_run at kvm_util.c:1698
-> > #      4	0x0000000000402cc6: main at evmcs_smm_controls_test.c:93
-> > #      5	0x00007f0a85d39ca7: ?? ??:0
-> > #      6	0x00007f0a85d39d64: ?? ??:0
-> > #      7	0x00000000004030c0: _start at ??:?
-> > #   vmwrite[0x0] = 0x0 hit VM-Fail
-> 
-> /facepalm
-> 
-> I managed to *repeatedly* not update the repository I was using to build selftests.
-> Thank you friendly kernel test robot for saving me from major embarassment!
+syzbot is reporting NULL pointer dereference in lo_rw_aio() [1][2].
+An analysis by the Gemini AI collaborator [3] considers that this problem
+is caused by a timing shift primarily exposed by commit 65565ca5f99b
+("block: unify the synchronous bi_end_io callbacks"), along with helper
+refactorings like commit 92c3737a2473 ("block: add a bio_submit_or_kill
+helper").
 
-Ok, this is too funny not to tell someone, even if that someone ends up being a
-bot.
+But due to difficulty of reproducing this race, discussion about what is
+happening and how to fix this problem is stalling. Also, we haven't
+identified how many filesystems are subjected to this problem.
 
-I thought for sure I messed up the encoding, i.e. that the "vmwrite[0x0]" in the
-report was either wrong, or or the encoding was getting clobbered along the way.
-Nope, it just so happens that VIRTUAL_PROCESSOR_ID is encoding '0', and the very
-first thing done by prepare_vmcs() => init_vmcs_control_fields() is:
+Therefore, introduce a grace period for flushing outstanding I/O
+(which should be a good thing from the perspective of defensive
+programming) so that we won't hit NULL pointer dereference problem.
 
-	vmwrite(VIRTUAL_PROCESSOR_ID, 0);
+However, calling drain_workqueue() from __loop_clr_fd() with
+disk->open_mutex held causes lockdep warnings. We need to flush
+outstanding I/O without disk->open_mutex held. Therefore, defer
+__loop_clr_fd() to WQ context, like commit 322c4293ecc5 ("loop: make
+autoclear operation asynchronous") did.
 
-The actual bug is stupid simple (and also hilarious/typical):
+The past attempt was reverted by commit bf23747ee053 ("loop: revert "make
+autoclear operation asynchronous"") for two reasons:
 
-diff --git a/tools/testing/selftests/kvm/include/x86/vmx.h b/tools/testing/selftests/kvm/include/x86/vmx.h
-index 81028c24dc9e..a4807e41fe69 100644
---- a/tools/testing/selftests/kvm/include/x86/vmx.h
-+++ b/tools/testing/selftests/kvm/include/x86/vmx.h
-@@ -430,7 +430,7 @@ static __always_inline int __vmwrite(u64 encoding, u64 value)
+  (1) Userspace might be expecting that fput() on the backing file is
+      processed before lo_release() from close() returns to user mode.
+      But a debug patch [4] suggested me that this teardown operation is
+      racy regardless of whether disk->open_mutex is temporarily released
+      or not, and therefore the xfs/259 breakage should be addressed on
+      the xfstests side.
+
+  (2) Lockdep reported circular locking dependency caused by flushing
+      system-wide WQs. But we no longer need to worry that dependency
+      because all in-tree users no longer flush system-wide WQs.
+
+Therefore, let's retry deferring __loop_clr_fd() to WQ context.
+
+Link: https://syzkaller.appspot.com/bug?extid=cd8a9a308e879a4e2c28 [1]
+Link: https://syzkaller.appspot.com/bug?extid=bc273027d5643e48e5b3 [2]
+Link: https://lkml.kernel.org/r/fbb3edda-f108-4e5b-acf2-266f043f8125@I-love.SAKURA.ne.jp [3]
+Link: https://lkml.kernel.org/r/9f8b5ab0-efbc-4cf3-a1f8-b43377416946@I-love.SAKURA.ne.jp [4]
+Fixes: 65565ca5f99b ("block: unify the synchronous bi_end_io callbacks")
+Assisted-by: Gemini-Pro
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+---
+What an AI coding assistant based on Gemini told Bart about the v7.1 patch:
+
+  1. Userspace ABI / Teardown Regression (Asynchronous Autoclear)
+
+  The Regression: When a loop device configured with LO_FLAGS_AUTOCLEAR is
+  closed (such as during unmounting with umount -d or mount -o loop),
+  userspace expects that close() synchronously tears down the device and
+  releases the backing file (fput()) before returning to user mode.
+
+  Prior History: This exact asynchronous deferral was merged in commit
+  322c4293ecc5 ("loop: make autoclear operation asynchronous") and had to
+  be reverted in commit bf23747ee053 ("loop: revert 'make autoclear
+  operation asynchronous'") because standard filesystem unmount sequences
+  (such as umount ext4_on_xfs; umount /xfs) broke with -EBUSY in xfstests
+  (e.g., xfs/259).
+
+  Kernel Policy: Handwaving this in the commit log ("the xfs/259 breakage
+  should be addressed on the xfstests side") is not acceptable. Breaking
+  synchronous teardown semantics violates the core Linux kernel rule: never
+  break userspace. Real-world container engines, test suites, and system
+  utilities rely on fput() having completed when lo_release() / close()
+  returns.
+
+What Bart says about the v6 patch which does synchronous teardown:
+
+  Releasing and reacquiring disk->open_mutex from __loop_clr_fd() seems
+  risky to me. There is plenty of code in block/bdev.c that assumes that
+  disk->open_mutex is not released by lo_release().
+
+Then, what direction can we go?
+
+ drivers/block/loop.c | 74 +++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 60 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/block/loop.c b/drivers/block/loop.c
+index 6f12976035b0..516118b3a16c 100644
+--- a/drivers/block/loop.c
++++ b/drivers/block/loop.c
+@@ -75,6 +75,7 @@ struct loop_device {
+ 	struct gendisk		*lo_disk;
+ 	struct mutex		lo_mutex;
+ 	bool			idr_visible;
++	struct work_struct	lo_clr_work;
+ };
  
- static inline void vmwrite(u64 encoding, u64 value)
- {
--	__GUEST_ASSERT(__vmwrite(encoding, value),
-+	__GUEST_ASSERT(!__vmwrite(encoding, value),
- 		       "vmwrite[0x%lx] = 0x%lx hit VM-Fail", encoding, value);
+ struct loop_cmd {
+@@ -1134,13 +1135,42 @@ static int loop_configure(struct loop_device *lo, blk_mode_t mode,
+ 	return error;
  }
  
-Just to double check that I didn't botch the formatting, I verified that this:
-
-diff --git a/tools/testing/selftests/kvm/lib/x86/vmx.c b/tools/testing/selftests/kvm/lib/x86/vmx.c
-index f32f8319301d..6066d200bcc2 100644
---- a/tools/testing/selftests/kvm/lib/x86/vmx.c
-+++ b/tools/testing/selftests/kvm/lib/x86/vmx.c
-@@ -251,11 +251,11 @@ static inline void init_vmcs_control_fields(struct vmx_pages *vmx)
+-static void __loop_clr_fd(struct loop_device *lo)
++static void __loop_clr_fd(struct work_struct *work)
  {
- 	u32 sec_exec_ctl = 0;
++	struct loop_device *lo = container_of(work, struct loop_device, lo_clr_work);
++	struct gendisk *disk = lo->lo_disk;
+ 	struct queue_limits lim;
+ 	struct file *filp;
+ 	gfp_t gfp = lo->old_gfp_mask;
+ 	int err;
  
-+	vmwrite(PIN_BASED_VM_EXEC_CONTROL, rdmsr(MSR_IA32_VMX_TRUE_PINBASED_CTLS));
++	/* Step 1: Flush all outstanding I/O, without open_mutex held. */
++	/*
++	 * Since loop_queue_rq() is called with RCU read lock, this synchronize_rcu()
++	 * makes sure that no more queue_work() calls are made from loop_queue_work()
++	 * from loop_queue_rq(). Subsequent loop_queue_rq() calls which are made after
++	 * this synchronize_rcu() returned shall see lo->lo_state != Lo_bound and
++	 * return with BLK_STS_IOERR.
++	 */
++	synchronize_rcu();
++	/*
++	 * This drain_workqueue() makes sure that no more loop_handle_cmd() calls are
++	 * made from loop_process_work() from loop_workfn()/loop_rootcg_workfn().
++	 */
++	drain_workqueue(lo->workqueue);
++	/*
++	 * This blk_mq_freeze_queue() waits for completion of all outstanding I/O
++	 * which has been scheduled via loop_queue_rq(), by waiting for q_usage_counter
++	 * to reach 0. Since the lo->lo_state != Lo_bound check in loop_queue_rq()
++	 * guarantees that no more new I/O requests are made, we can call
++	 * blk_mq_unfreeze_queue() immediately after blk_mq_freeze_queue() returns.
++	 */
++	blk_mq_unfreeze_queue(lo->lo_queue, blk_mq_freeze_queue(lo->lo_queue));
 +
- 	vmwrite(VIRTUAL_PROCESSOR_ID, 0);
- 	vmwrite(POSTED_INTR_NV, 0);
++	/* Step 2: Perform remaining cleanup, with open_mutex held. */
++	mutex_lock(&disk->open_mutex);
++	WARN_ON_ONCE(lo->lo_state != Lo_rundown);
++
+ 	spin_lock_irq(&lo->lo_lock);
+ 	filp = lo->lo_backing_file;
+ 	lo->lo_backing_file = NULL;
+@@ -1151,12 +1181,7 @@ static void __loop_clr_fd(struct loop_device *lo)
+ 	lo->lo_sizelimit = 0;
+ 	memset(lo->lo_file_name, 0, LO_NAME_SIZE);
  
--	vmwrite(PIN_BASED_VM_EXEC_CONTROL, rdmsr(MSR_IA32_VMX_TRUE_PINBASED_CTLS));
--
- 	if (vmx->eptp_gpa) {
- 		u64 eptp = vmx->eptp_gpa | EPTP_WB | EPTP_PWL_4;
+-	/*
+-	 * Reset the block size to the default.
+-	 *
+-	 * No queue freezing needed because this is called from the final
+-	 * ->release call only, so there can't be any outstanding I/O.
+-	 */
++	/* Reset the block size to the default. */
+ 	lim = queue_limits_start_update(lo->lo_queue);
+ 	lim.logical_block_size = SECTOR_SIZE;
+ 	lim.physical_block_size = SECTOR_SIZE;
+@@ -1168,8 +1193,6 @@ static void __loop_clr_fd(struct loop_device *lo)
+ 	/* let user-space know about this change */
+ 	kobject_uevent(&disk_to_dev(lo->lo_disk)->kobj, KOBJ_CHANGE);
+ 	mapping_set_gfp_mask(filp->f_mapping, gfp);
+-	/* This is safe: open() is still holding a reference. */
+-	module_put(THIS_MODULE);
  
-Yields:
-
-  vmwrite[0x4000] = 0x3f00000016 hit VM-Fail
+ 	disk_force_media_change(lo->lo_disk);
+ 
+@@ -1199,11 +1222,18 @@ static void __loop_clr_fd(struct loop_device *lo)
+ 	WRITE_ONCE(lo->lo_state, Lo_unbound);
+ 	mutex_unlock(&lo->lo_mutex);
+ 
++	/* Step 3: Drop refcounts, without open_mutex held. */
++	mutex_unlock(&disk->open_mutex);
++
++	put_device(disk_to_dev(disk));
++
+ 	/*
+-	 * Need not hold lo_mutex to fput backing file. Calling fput holding
+-	 * lo_mutex triggers a circular lock dependency possibility warning as
+-	 * fput can take open_mutex which is usually taken before lo_mutex.
++	 * This is safe: flush_work() from loop_remove() from loop_exit() waits
++	 * until this function returns; effectively dropping the final module
++	 * references synchronously.
+ 	 */
++	module_put(THIS_MODULE);
++
+ 	fput(filp);
+ }
+ 
+@@ -1769,8 +1799,20 @@ static void lo_release(struct gendisk *disk)
+ 	need_clear = (lo->lo_state == Lo_rundown);
+ 	mutex_unlock(&lo->lo_mutex);
+ 
+-	if (need_clear)
+-		__loop_clr_fd(lo);
++	if (!need_clear)
++		return;
++	/*
++	 * In order to flush outstanding I/O before clearing the backing
++	 * device, defer __loop_clr_fd() to WQ context. The Lo_rundown state
++	 * guarantees that lo_open() will fail with -ENXIO.
++	 *
++	 * Grab disk reference which will be dropped as soon as
++	 * returning from lo_release() and releasing disk->open_mutex.
++	 * We don't need to grab disk->fops->owner reference because
++	 * we are holding one obtained by loop_configure().
++	 */
++	get_device(disk_to_dev(disk));
++	queue_work(system_long_wq, &lo->lo_clr_work);
+ }
+ 
+ static void lo_free_disk(struct gendisk *disk)
+@@ -2034,6 +2076,7 @@ static int loop_add(int i)
+ 	lo = kzalloc_obj(*lo);
+ 	if (!lo)
+ 		goto out;
++	INIT_WORK(&lo->lo_clr_work, __loop_clr_fd);
+ 	lo->worker_tree = RB_ROOT;
+ 	INIT_LIST_HEAD(&lo->idle_worker_list);
+ 	timer_setup(&lo->timer, loop_free_idle_workers_timer, TIMER_DEFERRABLE);
+@@ -2138,6 +2181,9 @@ static int loop_add(int i)
+ 
+ static void loop_remove(struct loop_device *lo)
+ {
++	/* Wait for __loop_clr_fd() to complete. */
++	flush_work(&lo->lo_clr_work);
++
+ 	/* Make this loop device unreachable from pathname. */
+ 	del_gendisk(lo->lo_disk);
+ 	blk_mq_free_tag_set(&lo->tag_set);
+-- 
+2.55.0
