@@ -1,236 +1,361 @@
-Received: from mta1.migadu.com (out-214.mta1.migadu.com [95.215.58.214])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 291953C4B91
-	for <oe-lkp@lists.linux.dev>; Tue,  1 Sep 2026 13:09:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.214
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF96F21883E
+	for <oe-lkp@lists.linux.dev>; Thu,  3 Sep 2026 00:29:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788268156; cv=none; b=C62IW/7Wed/PD4NKdIh+Qaoq480KTtkb8Q11VhT0yGb6147WeXdWNenBd8Ir3obVlK5arOc8Ys9JTYa+cXLw1LlmyUyVsn9a5vMQ6mqCrwy0POVWxlnSYidpp2RLi/5G6au7SoDg5OykKjc0iSQJNc1WTCokl0hP3XYwfvCox8g=
+	t=1788395380; cv=none; b=YZW+i3M/XMIVFoPCeimS4LAA7w9r3nHJjvaLWj1tmL5f3aUj8u+j8ShBpW7Q9ITLzM/YqNTKkQOi0an6XxJC1zu46sSgcNte4RGoOqQVM982rbNZP4qBjO1hxqUpDRS2pA0CUjRhTkWNHXg6K9R6RWDJOs36kJ8kbIQ+9kmTOLQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788268156; c=relaxed/simple;
-	bh=I9p86zfEc0rxJVFc8bGyzgpJ2NfBzjwUd1RaEkL/cGk=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=FneHp5DQ6soZdpgAQiIO5rNQwgm9NIXaL9ze2lCXljPs28DJgXBnlM9EO9j3awsOMft1ZISSyDC+OTyf+BBTPqyC9AVMBWeJuFxNtBqQPhltTgpDTS4B8JVfaZWVMrDtWjGrWCbQSN470Ym02rP0DlmqzaE/i08uNUwkS8tuKj4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=dCg2zxwu; arc=none smtp.client-ip=95.215.58.214
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1788395380; c=relaxed/simple;
+	bh=zknjuecCDJxzIyAgZM0rdMtP4y5bJzzI3TID4000CWI=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=EcMqmtJdJ0MquTt/C/z63gTfqG7ZjQLmiuuld9fyWa6lCv2G1geLuq7KFvC/+L41VyB5Do3vB2qK2Ny5rtGGUbmLy0lsQ45mbVLptGKSzv+G1q5x/7tT5ka9hQ5G4ofp+FzM3h2S/avDe1xi3XNWfDUIIokaOtQBfhbwlDCri5g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gAOJga1G; arc=none smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="dCg2zxwu"
-X-Envelope-To: oe-lkp@lists.linux.dev
-DKIM-Signature: a=rsa-sha256; bh=I9p86zfEc0rxJVFc8bGyzgpJ2NfBzjwUd1RaEkL/cGk=;
- c=simple/simple; d=linux.dev;
- h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1788268152; v=1; x=1788872952;
- b=dCg2zxwuFLBx2Quos/98lWz2JGJ+CE4Jyd8p/38FdhLFAbbEC9NagDFQxbxKUXaWW229xeqI
- B5i/6cu2iiXyr0M4lQ7ZdXa72blffoFwTH99yBkSbC6QmxSj4/C7rvjGKi3I4AojvgJrxPzEhAt
- qTPkPmYqkSqemffq3WEqyJNI=
-X-Envelope-To: oe-lkp@lists.linux.dev
-Received: by smtp.migadu.com with ESMTPS id 7ec9b92416be4d2e;
-	Tue, 01 Sep 2026 13:09:01 +0000
-X-Mizu-Trace-ID: 7ec9b92416be4d2e
-X-Migadu-Flow: FLOW_OUT
-Message-ID: <d1209b70-7e76-4415-92c9-6ddc192a3347@linux.dev>
-Date: Tue, 1 Sep 2026 21:08:49 +0800
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gAOJga1G"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1788395378; x=1819931378;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=zknjuecCDJxzIyAgZM0rdMtP4y5bJzzI3TID4000CWI=;
+  b=gAOJga1G7mHJfACq+8X4G56vn/SrjIfTjUfqdRwd+QqZBOWVkZ/0rafI
+   JMz9qctsngWi+IxXagAXvdrBNs1Fu7cRKNGpRK8ND1XqhSWf6GwNYha7W
+   dbzSvmqmHsXGvxSMSryH01roRjsKwjTr4fdP6EUZkiwgUaXvnmwkphRV1
+   xXaqipNQxhRrfnungqyRd0SHurD1ciLQD6Z3GTE4VscSLP4VEZHtrXbj/
+   XBlh+G33hvGT0ztJnbCmHzKPrwp+ebv5cVenFy2LJpAJSa2RZNJm7tU77
+   e5N8dNfnQkphDAXbDREvzR20L7f/N92aPbkbj0uLn1hRZ+7yVJE5xKjso
+   Q==;
+X-CSE-ConnectionGUID: BznP7uXBRw2GfcWnPoWgUQ==
+X-CSE-MsgGUID: Lvie35PoTLKJwoQKit/jeQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11894"; a="106387939"
+X-IronPort-AV: E=Sophos;i="6.25,258,1779174000"; 
+   d="scan'208";a="106387939"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2026 17:29:37 -0700
+X-CSE-ConnectionGUID: olpGPJRiTj6Ekv6vTGKGeQ==
+X-CSE-MsgGUID: +R5vuPaDRoyTNu7qiE8XXw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,258,1779174000"; 
+   d="scan'208";a="293062027"
+Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2026 17:29:35 -0700
+Date: Thu, 3 Sep 2026 08:29:32 +0800
+From: kernel test robot <yi1.lai@intel.com>
+To: Sean Christopherson <seanjc@google.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, Yosry Ahmed <yosry@kernel.org>,
+	kvm@vger.kernel.org, yi1.lai@intel.com
+Subject: [sean-jc:x86/evmcs_vmptrldst] [KVM]  7fecb27e8d: bunch of
+ kselftests.kvm failures
+Message-ID: <202609030248.b516759d-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: cui.tao@linux.dev, Markus.Elfring@web.de, axboe@kernel.dk,
- broonie@kernel.org, bvanassche@acm.org, dlemoal@kernel.org,
- hch@infradead.org, hch@lst.de, hdanton@sina.com,
- linux-block@vger.kernel.org, linux-btrfs@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-next@vger.kernel.org, lkp@intel.com, oe-lkp@lists.linux.dev,
- oliver.sang@intel.com, torvalds@linux-foundation.org,
- viro@zeniv.linux.org.uk, Tao Cui <cuitao@kylinos.cn>
-Subject: Re: [PATCH v7] loop: Fix NULL pointer dereference in lo_rw_aio()
-To: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>, brauner@kernel.org
-References: <6a770a9c-2642-4392-9b9c-609836693f36@I-love.SAKURA.ne.jp>
- <20260831141143.704821-1-cui.tao@linux.dev>
- <30528b67-6ff9-4512-892b-f48d819e100f@I-love.SAKURA.ne.jp>
-From: Tao Cui <cui.tao@linux.dev>
-In-Reply-To: <30528b67-6ff9-4512-892b-f48d819e100f@I-love.SAKURA.ne.jp>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Hi Bart, Tetsuo,
 
-Thanks for the detailed replies, and to Tetsuo for the sashiko
-log.
 
-在 2026/8/31 23:49, Tetsuo Handa 写道:
-> Thank you for joining to this thread, Tao.
-> 
-> On 2026/08/31 23:11, Tao Cui wrote:
->> From: Tao Cui <cuitao@kylinos.cn>
->>
->> Hi Tetsuo, Bart,
->>
->>> +	/* Step 1: Flush all outstanding I/O, without open_mutex held. */
->>> +	/*
->>> +	 * Now that loop_queue_rq() sees lo->lo_state != Lo_bound,
->>> +	 * wait for already started loop_queue_rq() to complete.
->>> +	 */
->>> +	synchronize_rcu();
->>
->> Your reply to Bart says loop_queue_rq() is called with RCU read
->> lock, but I don't see one.  The two call sites of ->queue_rq() are
->> blk_mq_dispatch_rq_list() and __blk_mq_issue_directly(), and
->> neither is wrapped in rcu_read_lock().  Direct issue from
->> blk_mq_submit_bio() runs in process context with no RCU read-side
->> critical section, so synchronize_rcu() does not wait for a
->> loop_queue_rq() that is already running there.  Only the softirq
->> dispatch path is an implicit RCU reader.
-> 
-> You can read sashiko's raw logs at https://sashiko.dev/#/log/49552 .
-> 
->   Okay, let's break this down. My initial thought is to examine how the `blk_mq_run_dispatch_ops`
->   macro is implemented. Specifically, how does it handle RCU read locks? It wraps the provided
->   `dispatch_ops` in either `rcu_read_lock()` or `srcu_read_lock()`, depending on the `BLK_MQ_F_BLOCKING`
->   flag. The loop device, however, is set up *without* this `BLK_MQ_F_BLOCKING` flag. Therefore,
->   `loop_queue_rq` executes under the protection of `rcu_read_lock()`.
-> 
->   Now, the critical question: Does the `synchronize_rcu()` call in `__loop_clr_fd` effectively address
->   the potential race conditions? Since `loop_queue_rq()` is indeed RCU-protected, `synchronize_rcu()` will
->   correctly wait for all currently executing instances of `loop_queue_rq()` to complete. Furthermore,
->   the `lo_state` transition to `Lo_rundown` before calling `__loop_clr_fd` ensures that any *new* calls to
->   `loop_queue_rq()` will see this state and return an error. This perfectly fences the execution of
->   `loop_queue_rq()`. Moreover, `drain_workqueue()` then makes sure all queued works are completed, and
->   these are scheduled by `loop_queue_rq()`. This is great; all scheduled works are completed before
->   clearing `lo->lo_backing_file`.
-> 
+Hello,
 
-Bart, on 8/31 you wrote:
-> This is the code that protects .queue_rq() implementations like
-> loop_queue_rq() with an rcu_read_lock() / rcu_read_unlock() pair:
->
-> /* run the code block in @dispatch_ops with rcu/srcu read lock held */
-> #define __blk_mq_run_dispatch_ops(q, check_sleep, dispatch_ops)	\
-> ...
-> 	} else {						\
-> 		rcu_read_lock();				\
-> 		(dispatch_ops);					\
-> 		rcu_read_unlock();				\
-> 	}							\
-> } while (0)
+kernel test robot noticed "kselftests.kvm.hyperv_evmcs.fail" on:
 
-You are both right and I was wrong.  I stopped at
-__blk_mq_issue_directly() and blk_mq_dispatch_rq_list() and missed
-that every caller goes through this macro.  So synchronize_rcu()
-does wait for a running loop_queue_rq() with the current loop
-setup.  I withdraw that comment.
+commit: 7fecb27e8d353adda91989eb01b3ae200b846a42 ("KVM: selftests: Always assert that vmwrite() succeeds") https://github.com/sean-jc/linux x86/evmcs_vmptrldst
 
->>
->> The window is still closed by the steps below, so this is not a
->> correctness bug, but the synchronize_rcu() is not doing what the
->> comment claims.  blk_mq_quiesce_queue() +
->> blk_mq_wait_quiesce_done(), as Bart suggested, would express the
->> intent directly.
-> 
-> synchronize_rcu() + drain_workqueue() can be implied by blk_mq_freeze_queue() + blk_mq_unfreeze_queue().
-> But why are you talking about blk_mq_quiesce_queue() + blk_mq_wait_quiesce_done() ?
-> 
+in testcase: kselftests
+version: kselftests-x86_64-f5098b6bae76-1_20260727
+with following parameters:
 
-That was Bart's suggestion from his earlier review, and I passed
-it on while assuming the synchronize_rcu() was unfounded.  With
-the RCU pairing confirmed, there is nothing left to replace and
-the quiesce suggestion is moot.
+	group: kvm
 
->>
->>> +	/*
->>> +	 * Now that no more AIO requests are scheduled by lo_rw_aio(),
->>> +	 * wait for already started AIO to complete.
->>> +	 */
->>> +	blk_mq_unfreeze_queue(lo->lo_queue, blk_mq_freeze_queue(lo->lo_queue));
->>
->> About this step, in your follow-up you wrote:
->>
->>>   (1) since we are in lo_release() with disk_openers(disk) == 0, the activity of
->>>       incrementing/decrementing q_usage_counter (incremented before loop_queue_rq()
->>>       is called, and decremented after loop_queue_rq() returned BLK_STS_IOERR)) will
->>>       cease shortly
->>
->> The decrement timing here is only true for the error path.  For
->> BLK_STS_OK the reference is held until the request is freed, which
->> is what makes blk_mq_freeze_queue() wait for requests that already
->> passed the state check, including the loop workqueue worker that
->> completes them.  That is the property step 1 relies on, and it is
->> worth stating in the comment.
->>
->> What is still open is Bart's question about io_uring fixed files:
->> if submissions can continue after the last close, "cease shortly"
->> does not hold, and it is the freeze wait that actually drains them.
-> 
+config: x86_64-rhel-9.4-kselftests
+compiler: gcc-14
+test machine: 16 threads Intel(R) Core(TM) i7-13620H (Raptor Lake) with 32G memory
 
-The decrement part I would still reword: for BLK_STS_OK the
-reference is held until the request is freed, and that is the
-property blk_mq_freeze_queue() relies on.  But you are right that
-the activity ceases, and for a simpler reason than the freeze:
+If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <yi1.lai@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202609030248.b516759d-lkp@intel.com
 
-> If submissions can continue _forever_ despite disk_openers(disk) == 0, what
-> mechanism was preventing this problem from occurring until Linux 7.0 ?
-> 
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20260903/202609030248.b516759d-lkp@intel.com
 
-An io_uring fixed file holds a reference to the struct file, so
-bd_openers never reaches zero and lo_release() does not start
-while such a submission path exists.  Any submission needs an
-open block device file (or a mount holding it), so "openers == 0
-but submissions continue" needs no additional mechanism.  I'll
-drop the io_uring part.
+Detailed log:
+# selftests: kvm: evmcs_smm_controls_test
+# Random seed: 0x7ad5b4f9
+# 
+# ==== Test Assertion Failure ====
+#   include/x86/vmx.h:434: __vmwrite(encoding, value)
+#   pid=5240 tid=5240 errno=4 - Interrupted system call
+#      1	0x0000000000412f61: assert_on_unhandled_exception at processor.c:781
+#      2	0x0000000000406f86: _vcpu_run at kvm_util.c:1687
+#      3	 (inlined by) vcpu_run at kvm_util.c:1698
+#      4	0x0000000000402cc6: main at evmcs_smm_controls_test.c:93
+#      5	0x00007f0a85d39ca7: ?? ??:0
+#      6	0x00007f0a85d39d64: ?? ??:0
+#      7	0x00000000004030c0: _start at ??:?
+#   vmwrite[0x0] = 0x0 hit VM-Fail
+not ok 16 selftests: kvm: evmcs_smm_controls_test # exit=254
+# selftests: kvm: hyperv_evmcs
+# Random seed: 0x28ca1a80
+# Running L1 which uses EVMCS to run L2
+# 
+# ==== Test Assertion Failure ====
+#   include/x86/vmx.h:434: __vmwrite(encoding, value)
+#   pid=5437 tid=5437 errno=4 - Interrupted system call
+#      1	0x0000000000414021: assert_on_unhandled_exception at processor.c:781
+#      2	0x0000000000408046: _vcpu_run at kvm_util.c:1687
+#      3	 (inlined by) vcpu_run at kvm_util.c:1698
+#      4	0x0000000000402d93: main at hyperv_evmcs.c:272
+#      5	0x00007fc6db76aca7: ?? ??:0
+#      6	0x00007fc6db76ad64: ?? ??:0
+#      7	0x0000000000403060: _start at ??:?
+#   vmwrite[0x0] = 0x0 hit VM-Fail
+not ok 23 selftests: kvm: hyperv_evmcs # exit=254
+# selftests: kvm: nested_close_kvm_test
+# Random seed: 0xe2dada4
+# 
+# ==== Test Assertion Failure ====
+#   include/x86/vmx.h:434: __vmwrite(encoding, value)
+#   pid=5827 tid=5827 errno=4 - Interrupted system call
+#      1	0x0000000000412be1: assert_on_unhandled_exception at processor.c:781
+#      2	0x0000000000406c06: _vcpu_run at kvm_util.c:1687
+#      3	 (inlined by) vcpu_run at kvm_util.c:1698
+#      4	0x0000000000402c6f: main at nested_close_kvm_test.c:82
+#      5	0x00007f4fd2c0fca7: ?? ??:0
+#      6	0x00007f4fd2c0fd64: ?? ??:0
+#      7	0x0000000000402e40: _start at ??:?
+#   vmwrite[0x0] = 0x0 hit VM-Fail
+not ok 34 selftests: kvm: nested_close_kvm_test # exit=254
+# selftests: kvm: nested_dirty_log_test
+# Random seed: 0x7c40823f
+# Nested TDP: disabled
+# 
+# ==== Test Assertion Failure ====
+#   include/x86/vmx.h:434: __vmwrite(encoding, value)
+#   pid=5856 tid=5856 errno=4 - Interrupted system call
+#      1	0x0000000000413361: assert_on_unhandled_exception at processor.c:781
+#      2	0x0000000000407386: _vcpu_run at kvm_util.c:1687
+#      3	 (inlined by) vcpu_run at kvm_util.c:1698
+#      4	0x000000000040321f: test_dirty_log at nested_dirty_log_test.c:260
+#      5	0x0000000000402c00: main at nested_dirty_log_test.c:283
+#      6	0x00007fbd8e249ca7: ?? ??:0
+#      7	0x00007fbd8e249d64: ?? ??:0
+#      8	0x0000000000402d10: _start at ??:?
+#   vmwrite[0x0] = 0x0 hit VM-Fail
+not ok 35 selftests: kvm: nested_dirty_log_test # exit=254
+# selftests: kvm: nested_exceptions_test
+# Random seed: 0x7c40823f
+# 
+# ==== Test Assertion Failure ====
+#   include/x86/vmx.h:434: __vmwrite(encoding, value)
+#   pid=5910 tid=5910 errno=4 - Interrupted system call
+#      1	0x00000000004140a1: assert_on_unhandled_exception at processor.c:781
+#      2	0x00000000004080c6: _vcpu_run at kvm_util.c:1687
+#      3	 (inlined by) vcpu_run at kvm_util.c:1698
+#      4	0x0000000000402d1c: main at nested_exceptions_test.c:236
+#      5	0x00007fee32f1bca7: ?? ??:0
+#      6	0x00007fee32f1bd64: ?? ??:0
+#      7	0x00000000004030b0: _start at ??:?
+#   vmwrite[0x0] = 0x0 hit VM-Fail
+not ok 37 selftests: kvm: nested_exceptions_test # exit=254
+# selftests: kvm: nested_invalid_cr3_test
+# Random seed: 0x7c40823f
+# 
+# ==== Test Assertion Failure ====
+#   include/x86/vmx.h:434: __vmwrite(encoding, value)
+#   pid=5942 tid=5942 errno=4 - Interrupted system call
+#      1	0x0000000000412ee1: assert_on_unhandled_exception at processor.c:781
+#      2	0x0000000000406f06: _vcpu_run at kvm_util.c:1687
+#      3	 (inlined by) vcpu_run at kvm_util.c:1698
+#      4	0x0000000000402c7a: main at nested_invalid_cr3_test.c:92
+#      5	0x00007f8e4f5e8ca7: ?? ??:0
+#      6	0x00007f8e4f5e8d64: ?? ??:0
+#      7	0x0000000000402e60: _start at ??:?
+#   vmwrite[0x0] = 0x0 hit VM-Fail
+not ok 38 selftests: kvm: nested_invalid_cr3_test # exit=254
+# selftests: kvm: nested_tdp_fault_test
+# Random seed: 0x29ff5ccd
+# 
+# ==== Test Assertion Failure ====
+#   include/x86/vmx.h:434: __vmwrite(encoding, value)
+#   pid=5996 tid=5996 errno=4 - Interrupted system call
+#      1	0x0000000000413361: assert_on_unhandled_exception at processor.c:781
+#      2	0x0000000000407386: _vcpu_run at kvm_util.c:1687
+#      3	 (inlined by) vcpu_run at kvm_util.c:1698
+#      4	0x0000000000403792: run_test at nested_tdp_fault_test.c:275
+#      5	0x0000000000402c09: main at nested_tdp_fault_test.c:302
+#      6	0x00007f0aeb9e0ca7: ?? ??:0
+#      7	0x00007f0aeb9e0d64: ?? ??:0
+#      8	0x0000000000402d30: _start at ??:?
+#   vmwrite[0x0] = 0x0 hit VM-Fail
+not ok 40 selftests: kvm: nested_tdp_fault_test # exit=254
+# selftests: kvm: nested_tsc_adjust_test
+# Random seed: 0x29ff5ccd
+# IA32_TSC_ADJUST is -4294971814 (-1 * TSC_ADJUST_VALUE + -4518).
+# 
+# ==== Test Assertion Failure ====
+#   include/x86/vmx.h:434: __vmwrite(encoding, value)
+#   pid=6025 tid=6025 errno=4 - Interrupted system call
+#      1	0x0000000000413061: assert_on_unhandled_exception at processor.c:781
+#      2	0x0000000000407086: _vcpu_run at kvm_util.c:1687
+#      3	 (inlined by) vcpu_run at kvm_util.c:1698
+#      4	0x0000000000402c80: main at nested_tsc_adjust_test.c:139
+#      5	0x00007feace2e2ca7: ?? ??:0
+#      6	0x00007feace2e2d64: ?? ??:0
+#      7	0x0000000000402ea0: _start at ??:?
+#   vmwrite[0x0] = 0x0 hit VM-Fail
+not ok 41 selftests: kvm: nested_tsc_adjust_test # exit=254
+# selftests: kvm: nested_tsc_scaling_test
+# Random seed: 0x29ff5ccd
+# L1's scale down factor is: 7
+# L2's scale up factor is: 4
+# real TSC frequency is around: 2918711892
+# L1's TSC frequency is around: 417032779
+# 
+# ==== Test Assertion Failure ====
+#   include/x86/vmx.h:434: __vmwrite(encoding, value)
+#   pid=6057 tid=6057 errno=4 - Interrupted system call
+#      1	0x00000000004147e1: assert_on_unhandled_exception at processor.c:781
+#      2	0x0000000000408806: _vcpu_run at kvm_util.c:1687
+#      3	 (inlined by) vcpu_run at kvm_util.c:1698
+#      4	0x0000000000403e31: main at nested_tsc_scaling_test.c:199
+#      5	0x00007f4446ebeca7: ?? ??:0
+#      6	0x00007f4446ebed64: ?? ??:0
+#      7	0x0000000000404130: _start at ??:?
+#   vmwrite[0x0] = 0x0 hit VM-Fail
+not ok 42 selftests: kvm: nested_tsc_scaling_test # exit=254
+# selftests: kvm: smm_test
+# Random seed: 0x1392625a
+# 
+# ==== Test Assertion Failure ====
+#   include/x86/vmx.h:434: __vmwrite(encoding, value)
+#   pid=7454 tid=7454 errno=4 - Interrupted system call
+#      1	0x0000000000412f21: assert_on_unhandled_exception at processor.c:781
+#      2	0x0000000000406f46: _vcpu_run at kvm_util.c:1687
+#      3	 (inlined by) vcpu_run at kvm_util.c:1698
+#      4	0x0000000000402d4b: main at smm_test.c:137
+#      5	0x00007f32887b2ca7: ?? ??:0
+#      6	0x00007f32887b2d64: ?? ??:0
+#      7	0x0000000000403000: _start at ??:?
+#   vmwrite[0x0] = 0x0 hit VM-Fail
+not ok 53 selftests: kvm: smm_test # exit=254
+# selftests: kvm: state_test
+# Random seed: 0x17d47c3
+# 
+# ==== Test Assertion Failure ====
+#   include/x86/vmx.h:434: __vmwrite(encoding, value)
+#   pid=7487 tid=7487 errno=4 - Interrupted system call
+#      1	0x00000000004147e1: assert_on_unhandled_exception at processor.c:781
+#      2	0x0000000000408806: _vcpu_run at kvm_util.c:1687
+#      3	 (inlined by) vcpu_run at kvm_util.c:1698
+#      4	0x0000000000402cb2: main at state_test.c:281
+#      5	0x00007f1838094ca7: ?? ??:0
+#      6	0x00007f1838094d64: ?? ??:0
+#      7	0x0000000000403610: _start at ??:?
+#   vmwrite[0x0] = 0x0 hit VM-Fail
+not ok 54 selftests: kvm: state_test # exit=254
+# timeout set to 120
+# selftests: kvm: vmx_preemption_timer_test
+# Random seed: 0x17d47c3
+# 
+# ==== Test Assertion Failure ====
+#   include/x86/vmx.h:434: __vmwrite(encoding, value)
+#   pid=7523 tid=7523 errno=4 - Interrupted system call
+#      1	0x0000000000413721: assert_on_unhandled_exception at processor.c:781
+#      2	0x0000000000407746: _vcpu_run at kvm_util.c:1687
+#      3	 (inlined by) vcpu_run at kvm_util.c:1698
+#      4	0x0000000000402c8b: main at vmx_preemption_timer_test.c:176
+#      5	0x00007f5c8d197ca7: ?? ??:0
+#      6	0x00007f5c8d197d64: ?? ??:0
+#      7	0x00000000004032e0: _start at ??:?
+#   vmwrite[0x0] = 0x0 hit VM-Fail
+not ok 55 selftests: kvm: vmx_preemption_timer_test # exit=254
+# selftests: kvm: vmx_apic_access_test
+# Random seed: 0x16490829
+# 
+# ==== Test Assertion Failure ====
+#   include/x86/vmx.h:434: __vmwrite(encoding, value)
+#   pid=8014 tid=8014 errno=4 - Interrupted system call
+#      1	0x00000000004133e1: assert_on_unhandled_exception at processor.c:781
+#      2	0x0000000000407406: _vcpu_run at kvm_util.c:1687
+#      3	 (inlined by) vcpu_run at kvm_util.c:1698
+#      4	0x0000000000402c6d: main at vmx_apic_access_test.c:94
+#      5	0x00007fc6a12a7ca7: ?? ??:0
+#      6	0x00007fc6a12a7d64: ?? ??:0
+#      7	0x0000000000402ed0: _start at ??:?
+#   vmwrite[0x0] = 0x0 hit VM-Fail
+not ok 70 selftests: kvm: vmx_apic_access_test # exit=254
+# timeout set to 120
+# selftests: kvm: vmx_apicv_updates_test
+# Random seed: 0x3a977e6
+# 
+# ==== Test Assertion Failure ====
+#   include/x86/vmx.h:434: __vmwrite(encoding, value)
+#   pid=8046 tid=8046 errno=4 - Interrupted system call
+#      1	0x0000000000413361: assert_on_unhandled_exception at processor.c:781
+#      2	0x0000000000407386: _vcpu_run at kvm_util.c:1687
+#      3	 (inlined by) vcpu_run at kvm_util.c:1698
+#      4	0x0000000000402c8b: main at vmx_apicv_updates_test.c:129
+#      5	0x00007f35dc7a6ca7: ?? ??:0
+#      6	0x00007f35dc7a6d64: ?? ??:0
+#      7	0x0000000000402ec0: _start at ??:?
+#   vmwrite[0x0] = 0x0 hit VM-Fail
+not ok 71 selftests: kvm: vmx_apicv_updates_test # exit=254
+# selftests: kvm: vmx_invalid_nested_guest_state
+# Random seed: 0x3a977e6
+# 
+# ==== Test Assertion Failure ====
+#   include/x86/vmx.h:434: __vmwrite(encoding, value)
+#   pid=8126 tid=8126 errno=4 - Interrupted system call
+#      1	0x00000000004131a1: assert_on_unhandled_exception at processor.c:781
+#      2	0x00000000004071c6: _vcpu_run at kvm_util.c:1687
+#      3	 (inlined by) vcpu_run at kvm_util.c:1698
+#      4	0x0000000000402ef7: vcpu_run_to_io at vmx_invalid_nested_guest_state.c:69
+#      5	0x0000000000403022: vm_create_and_run_l2 at vmx_invalid_nested_guest_state.c:96
+#      6	0x000000000040304f: test_invalid_l2_guest_state at vmx_invalid_nested_guest_state.c:108
+#      7	0x0000000000402beb: main at vmx_invalid_nested_guest_state.c:173
+#      8	0x00007f8a1e522ca7: ?? ??:0
+#      9	0x00007f8a1e522d64: ?? ??:0
+#     10	0x0000000000402db0: _start at ??:?
+#   vmwrite[0x0] = 0x0 hit VM-Fail
+not ok 74 selftests: kvm: vmx_invalid_nested_guest_state # exit=254
+# selftests: kvm: triple_fault_event_test
+# Random seed: 0x4e7569c4
+# 
+# ==== Test Assertion Failure ====
+#   include/x86/vmx.h:434: __vmwrite(encoding, value)
+#   pid=8648 tid=8648 errno=4 - Interrupted system call
+#      1	0x00000000004130a1: assert_on_unhandled_exception at processor.c:781
+#      2	0x00000000004070c6: _vcpu_run at kvm_util.c:1687
+#      3	 (inlined by) vcpu_run at kvm_util.c:1698
+#      4	0x0000000000402d22: main at triple_fault_event_test.c:85
+#      5	0x00007f27d646aca7: ?? ??:0
+#      6	0x00007f27d646ad64: ?? ??:0
+#      7	0x0000000000403190: _start at ??:?
+#   vmwrite[0x0] = 0x0 hit VM-Fail
+not ok 93 selftests: kvm: triple_fault_event_test # exit=254
+# selftests: kvm: aperfmperf_test
+# Random seed: 0x622713c7
+# 
+# ==== Test Assertion Failure ====
+#   include/x86/vmx.h:434: __vmwrite(encoding, value)
+#   pid=8724 tid=8724 errno=4 - Interrupted system call
+#      1	0x0000000000413361: assert_on_unhandled_exception at processor.c:781
+#      2	0x0000000000407386: _vcpu_run at kvm_util.c:1687
+#      3	 (inlined by) vcpu_run at kvm_util.c:1698
+#      4	0x0000000000402e04: main at aperfmperf_test.c:168
+#      5	0x00007f032476dca7: ?? ??:0
+#      6	0x00007f032476dd64: ?? ??:0
+#      7	0x0000000000403340: _start at ??:?
+#   vmwrite[0x0] = 0x0 hit VM-Fail
+not ok 95 selftests: kvm: aperfmperf_test # exit=254
 
->>
->>> +	if (need_clear) {
->>> +		/*
->>> +		 * Grab all references that will be dropped as soon as
->>> +		 * returning from lo_release() and releasing disk->open_mutex.
->>> +		 */
->>> +		get_device(disk_to_dev(disk));
->>> +		__module_get(disk->fops->owner);
->>> +		queue_work(system_long_wq, &lo->lo_clr_work);
->>> +	}
->>
->> With teardown now asynchronous, between the last close()
->> returning and the work item finishing, lo_open() and
->> LOOP_CONFIGURE return -ENXIO.  That is the same behavior change
->> that led to the revert of the earlier attempt (bf23747ee053,
->> xfs/259).  Moving the xfstests side to the tests is one thing, but
->> userspace that closes a loop device and immediately reconfigures
->> it now needs to handle a transient -ENXIO.  Is that acceptable, or
->> should the retry happen in the kernel?
-> 
-> Does whether the teardown being synchronous or asynchronous matter so much?
-> 
-> I don't think we can control when e.g. udev-worker becomes the thread
-> who actually calls __loop_clr_fd()
-> ( https://lkml.kernel.org/r/9f8b5ab0-efbc-4cf3-a1f8-b43377416946@I-love.SAKURA.ne.jp ).
-> Even if an existing user app calls close() immediately followed by open(),
-> we can't prove that __loop_clr_fd() is synchronously called by that user app
-> because udev-worker can jump in and udev-worker becomes the thread who actually
-> calls __loop_clr_fd().
-> 
->    An user app     udev-worker
->    -----------     -----------
->                     open()
->     close()
->     open() // => succeeds due to Lo_bound state
->     ioctl(LOOP_CONFIGURE) // => fails with -EBUSY due to Lo_bound state
->     close() // <= gives up due to ioctl() failure
->                     close() // => becomes  Lo_rundown and __loop_clr_fd() is called
-> 
-> A claim that mentions that the kernel is unable to release forever due to a refcount
-> leak bug is valid. But a claim that mentions that the kernel cannot prove that
-> this -ENXIO or -EBUSY problem never happens is invalid. Programs that use the loop
-> device have to be prepared for transient errors.
-
-Your udev-worker sequence shows that synchronous completion was
-never guaranteed and -EBUSY or -ENXIO transients were already
-possible.  I accept that.  The remaining difference is only that
-the window now exists after every close instead of requiring an
-interleaving close from another opener, and if programs must
-tolerate transient errors anyway, that is not a blocker.
-
-Tao
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
 
