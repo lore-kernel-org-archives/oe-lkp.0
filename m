@@ -1,315 +1,188 @@
-Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B98B3B0586
-	for <oe-lkp@lists.linux.dev>; Mon,  7 Sep 2026 20:42:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788813748; cv=none; b=K4X/67jTGlSgJ1IYTl3byJD7mxkAto4VLAV3DVbMvaHNd7ZNE0DFXH/NVdCr1hgtMwzEGs8SeAM9NzlNEvCUyRZYZz5zOAV/vwpPYIPydbn8aID2EeJL/s2qCSNz+hh3MvOLWFDNc+618UDm+Cyr5r6oxdZOoolFWi1CHh5Peh4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788813748; c=relaxed/simple;
-	bh=E4DBlrpx9K3rsq7SrfjPT7sDeGjZgxVnmKr4XZiSc4A=;
-	h=Date:From:To:CC:Subject:In-Reply-To:Message-ID:MIME-Version:
-	 Content-Type; b=Fcg/L30GqbJnlWi87GCZbiNHBVuftK9P8fOI8FmgRI0ZZjn27c+vvYMcquhy60Y+8vem7IlZstYCocIujjHBJ44DPpIE81Kk8raFtemgxbgZKS/SRJDpD5xTyKH8LDvqdSdQHe73RvyOTHTrMjLcJsC3IHK4MX3je7Wze/BUdNg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=NwJVfQWK; dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=0+VXbwlS; arc=none smtp.client-ip=5.75.144.95
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B5623A9605
+	for <oe-lkp@lists.linux.dev>; Tue,  8 Sep 2026 08:08:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.44
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788854890; cv=pass; b=sVQhJUfZRt76vYiXqugnonBMGoChpXbq3TPSpP4uoIKEJV/1uzOxgCROYNfgcwX+5yTF2kBQI6nqXBRvfdtqsDJGywwV7S+ZkF/7eDGOlFmo2/2jY8WIpSk3uB7ty6HQrueSm/YUPQtZZU4VPa7tB8ntY6qH7KCc/kBsGYQlXSs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788854890; c=relaxed/simple;
+	bh=tXGbdgcqzz4CAJeru5w2V89eLrYgFnhR0h4hmZG/qUg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=JRgdF31uBhabJbHorUiTO+ttIkDHc/sm6yyCvg6UGZAUoClaFbS8F7KNLDnZHlzkD63/W5/QOQR8yhcDXSrfxOqsJn9YdtH+Rp6oawWAxLmEAXlrce7pk6vumjXC6JHRJQULPGXeuiT2udI+O+sANsmqCeOKhOJR+hf8aHtw5Yo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ix05KW9c; arc=pass smtp.client-ip=209.85.218.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="NwJVfQWK";
-	dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="0+VXbwlS"
-DKIM-Signature: v=1; a=rsa-sha256; s=202507r; d=mainlining.org; c=relaxed/relaxed;
-	h=Message-ID:Subject:To:From:Date; t=1788813738; bh=WEv8aY73KJJT4gDCLJhWwYT
-	HmE6dl/huMU4w3u/CPT4=; b=NwJVfQWKyx3s0n+h3JfvUpMB+ZvXmCHGPZ44VhSUMoUknmi7Ff
-	EkFjaZSOKb5DbJ16yexqoaCbfYPd37bKPGXtv8CPhqpeS90AJEl+lLG78XiLWpNTuOWTEYBbiVP
-	e/2A966mmRlEVh2iuvaGfoV666H1Hukclqj3fz4UdMXxs6AhL/4QHLC7w8LfbmqAEMGGGNL/EmI
-	myboLGr2WneIR1EuyIAUGPSdsUz1uFv6wYkjcXoqgh1lf9SfDdf5x7AF1qxRP1Lp5ewAg1D8Ow9
-	OA4yQzp51vJgr85qrsrL9GPr1p4hTNQqgr0HDFJdi0QjSonLeuwYIXSSz54m4nIeElA==;
-DKIM-Signature: v=1; a=ed25519-sha256; s=202507e; d=mainlining.org; c=relaxed/relaxed;
-	h=Message-ID:Subject:To:From:Date; t=1788813738; bh=WEv8aY73KJJT4gDCLJhWwYT
-	HmE6dl/huMU4w3u/CPT4=; b=0+VXbwlSD9XlRylYOVTEuCggG9+8w5aq95DdiyzGcs+1/lHLbu
-	9tCdAHY+LtENU0DLbFL45o06oRxn/Tiq/uCQ==;
-Date: Mon, 07 Sep 2026 21:42:19 +0100
-From: Bradley Morgan <brads@mainlining.org>
-To: yi1.lai@intel.com
-CC: boqun@kernel.org, lkp@intel.com, mathieu.desnoyers@efficios.com,
- oe-lkp@lists.linux.dev, paulmck@kernel.org, rcu@vger.kernel.org
-Subject: =?US-ASCII?Q?Re=3A_=5Bpaulmckrcu=3Anon-rcu/n?=
- =?US-ASCII?Q?ext=5D_=5Bhazptrtorture=5D_9b08?=
- =?US-ASCII?Q?a09f6d=3A_BUG=3Akernel=5FNULL=5Fp?=
- =?US-ASCII?Q?ointer=5Fdereference=2Caddress?=
-In-Reply-To: <202608130915.62b53936-lkp@intel.com>
-Message-ID: <9D3C10DF-2BA2-4F97-AAB1-C36AF227F6B3@mainlining.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ix05KW9c"
+Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-c250a2bc3b3so494046166b.2
+        for <oe-lkp@lists.linux.dev>; Tue, 08 Sep 2026 01:08:08 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1788854887; cv=none;
+        d=google.com; s=arc-20260327;
+        b=rC0oqcGOWP6f0fCyj5W3tgZOMnzNotGhAoulmAuiF+D94tErkijHSdz/MfJFi3XYgw
+         ihp1rqgsY/LPSI/afnREQDcxskJCHHV0eANhsRb1JbmSBefxIeNPObInB69G78CU30R3
+         705ahNEr7/ue7VPKXtsrBOyx7R03Fl55CIbvgLTIqkwjqteNK/0eVXXWpCVkCAF8pdQk
+         ePzwXCuI54A8iBT2/eYKNhV65E/c77G4ImDoieUQCyEnA/pddwuqDapGQSfUiVhVbLAI
+         aHtjuPG3jVH3iskLxx0Y5M5/6Cvdr4B5hQlCEZ7JAhvmrbjhBdlKZk3U+eoRa1KjoWYm
+         Jn9w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=sa6upqADQlqR/MmaNL6A6E6rZ+XVW/lKGKReqxKXRig=;
+        fh=v1Twxu7hBIYhhPx07njVrlBcpvMY3tvcyXy6jMwttNo=;
+        b=iPgF5BNBeEzrL3EcwWhqvERZ/PS1bNNDM49VGM+FFw01OK0oYPAvb8yIr6eGbeGmGM
+         0/ODKPCffgxOMYB95asirFQOEgvclF+/beHaNg4zRkfjKGvLJGNc/tRjF+bC+lluYULt
+         fTNC53LFtbu1lpJyfqIfcwjRQojEWtQjM9C8DL2aZYvlazWIFXBIZk2aaaWhTa5zzx/s
+         o/e7ccPp5pcZWt3ujKKgFK5EFCH49/VFG2Qaaq6nl3/J+SJrS10yU343eu9/w6rwTs6k
+         uAbT5/v8KrQJMeK1XZMSSTQxxZo4mimzTEYNWkcisU/yeleOjmhw/OSAQt6wm1GEH190
+         CXiA==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1788854887; x=1789459687; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=sa6upqADQlqR/MmaNL6A6E6rZ+XVW/lKGKReqxKXRig=;
+        b=Ix05KW9ckQMjxE9Ip25Ss77itHyms+Le/GW1OX/7gF2G/ku5/2SW1z2mYONMAuy7DI
+         90lHWD2FugTLgE4/yrNMO+Oo5a7j6wckIrqvUF/r14v92P5X8D5Vi/zqHyzo1r7GFRoX
+         uLi6nBmsKr8Mx0uV4gzOLpsuuEcwLhW0wJk77QcIHhsF7CQRP1CUqMqAvIuacGhxgarO
+         jW+fzXHdQ8GrCiVJ172m3U1I8F66p395j4j4VgUmyxP+/VzGmYS+o6qPuJ7+/Vn1XonN
+         Jc6KJbFTjGlc06FJIxlPOKvFR+UGLQE+ytjanmXB6PhnyX1wAe6AnveO5BjExXYH5ITc
+         TP5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788854887; x=1789459687;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=sa6upqADQlqR/MmaNL6A6E6rZ+XVW/lKGKReqxKXRig=;
+        b=ewwJX5KG66ql0ksQ8CzH30qR/KmDuPMCuGJEQHWYUl0F/+Jqp7BBbnpvvGDT5sBZ59
+         6JttHM+uo5Xo3KYR9LIosyqUy/hdv4rkFMt8kPnUprlfT/AN37HTHvrsIB3p6mNMqXmW
+         M2XtIGagStju9KD0J5IxF4ytYWbk5v1oK7MPaUOTmO5albnDOzUivhU28hsgD5JHtuR3
+         NsWADJd4Y/lyqDi9ZnGli37K3rm5hQGrsUi2st9G+BlZrf+1b3+oJON0qOrYVPwrFxNq
+         NLeqYh/7sF3PwXmZXBvLhFV+21SnuekQXUB0rnXubfx3spx22oX9DAGItjravQokQuc4
+         a5+g==
+X-Forwarded-Encrypted: i=1; AKwUvBwq8OphkkmOgABEZNKx7DITLuJk4ggJuY+/GNfaBQzx6g8OVoWBhJ6alK/m135zi6Ud2e4kq3U=@lists.linux.dev
+X-Gm-Message-State: AFuF++kjQO12+c8Sw/JfQTPV25sqVsxtLcPLdKeisytDdFuzlhaf+GPc
+	fUoNI10DHqDzTHTOj3MymeNDr/dkgaPRVCSz20Uxgu+TvW3lpyZnYN2xJ6WxZbazFGduNx+7wTl
+	enQZq9YyX5V3te1/1UXKK9l6uU1JdXXU=
+X-Gm-Gg: AYBFou32oCVp42vnBkdeskj2ublcVwTrZy4bb0DUALKymP1gp4G+YiC1K3LiogxLs2b
+	XLKwUyxZAwo9p8KtRzRGluZ3y3C/R7F9X4Lb7doa/8+pCVTDpIk0YGQQsdyerYcvZGsbAqJuDyU
+	2ETj4wNxH/I9fA3ikahAorSMyyHGuXKs5dWmT1nqb6oxaQKJtu/tbuRm+ed3UtITY7A2Nm9NPA0
+	c7vHX26FElOxD6z72o3Tgl4xb6ZNBvDn6wkKHXYNbBomJOM29vIESwrpamXVc/CDXHDDJ877MEZ
+	+6hrbOFbjV3N0NnbBHs31GXtLTqZMAHKv6wHICJE+iWTLimwphF4KtuG1zlv6MwlJfQzaD6VTbK
+	kBqhkmdtsxA==
+X-Received: by 2002:a17:906:8d89:b0:c24:c250:a6b5 with SMTP id
+ a640c23a62f3a-c260c993a9amr1051714266b.12.1788854886462; Tue, 08 Sep 2026
+ 01:08:06 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 8bit
+References: <9fbb6bf2-70ae-4d49-9221-751d28dcfd1a@redhat.com>
+ <o6cnjqy4ivjqaj4n5xphstfnk5jznufaygwmfkm2gyixqgfump@7fc6c6h6d5if> <28f144f8-431d-4c3a-a362-56083bb77541@redhat.com>
+In-Reply-To: <28f144f8-431d-4c3a-a362-56083bb77541@redhat.com>
+From: Mateusz Guzik <mjguzik@gmail.com>
+Date: Tue, 8 Sep 2026 10:07:53 +0200
+X-Gm-Features: AcwNN1V1vd5mVM1XveYVMiH3ACcL2s2pHzLcWY3GJUvl9XLSZ31SO_QV5_aeSjk
+Message-ID: <CAGudoHFJne0q+dnjYdXOyDKEfu_zZ71_z+kSiUPiHWG7jCBw-Q@mail.gmail.com>
+Subject: Re: [PATCH RFC] fs: cache-align lock_class_keys in struct file_system_type
+To: Eric Sandeen <sandeen@redhat.com>
+Cc: linux-fsdevel <linux-fsdevel@vger.kernel.org>, linux-kernel@vger.kernel.org, 
+	Christian Brauner <brauner@kernel.org>, David Howells <dhowells@redhat.com>, lkp@intel.com, 
+	oe-lkp@lists.linux.dev, Alexander Viro <aviro@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 13 August 2026 07:49:31 BST, kernel test robot <yi1.lai@intel.com>
+While I'm not convinced spending time on the resulting bug is
+worthwhile, with the arrival of sashiko I think you should rebase &
+resend -- it very well might just point out the problem with 0 human
+effort.
+
+On Tue, Dec 30, 2025 at 11:45=E2=80=AFPM Eric Sandeen <sandeen@redhat.com> =
 wrote:
 >
+> On 12/30/25 4:04 PM, Mateusz Guzik wrote:
+> > On Tue, Dec 30, 2025 at 03:07:10PM -0600, Eric Sandeen wrote:
+> >> LKP reported that one of their tests was failing to even boot with my
+> >> "old mount API code" removal patch. The test was booting an i386 kerne=
+l
+> >> under QEMU, with lockdep enabled. Rather than a functional failure, it
+> >> seemed to have been slowed to a crawl and eventually timed out.
+> >>
+> >> I narrowed the problem down to the removal of the ->mount op from
+> >> file_system_type, which changed structure alignment and seems to have
+> >> caused cacheline issues with this structure. Annotating the alignment
+> >> fixes the problem for me.
+> >>
+> >> Reported-by: kernel test robot <oliver.sang@intel.com>
+> >> Closes: https://lore.kernel.org/oe-lkp/202512230315.1717476b-lkp@intel=
+.com
+> >> Fixes: 51a146e05 ("fs: Remove internal old mount API code")
+> >> Signed-off-by: Eric Sandeen <sandeen@redhat.com>
+> >> ---
+> >>
+> >> RFC because I honestly don't understand why this should be so critical=
+,
+> >> especially the structure was not explicitly (or even very well) aligne=
+d
+> >> before. I would welcome insights from folks who are smarter than me!
+> >>
+> >> diff --git a/include/linux/fs.h b/include/linux/fs.h
+> >> index 9949d253e5aa..b3d8cad15de1 100644
+> >> --- a/include/linux/fs.h
+> >> +++ b/include/linux/fs.h
+> >> @@ -2279,7 +2279,7 @@ struct file_system_type {
+> >>      struct file_system_type * next;
+> >>      struct hlist_head fs_supers;
+> >>
+> >> -    struct lock_class_key s_lock_key;
+> >> +    struct lock_class_key s_lock_key ____cacheline_aligned;
+> >>      struct lock_class_key s_umount_key;
+> >>      struct lock_class_key s_vfs_rename_key;
+> >>      struct lock_class_key s_writers_key[SB_FREEZE_LEVELS];
+> >>
+> >
+> > There is no way is about cacheline bouncing. According to the linked
+> > thread the test vm has only 2 vcpus:
+> >> test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m =
+4G
+> >
+> > Even if the vcpu count was in hundreds and the ping pong was a problem =
+it
+> > still would not have prevented bootup.
 >
->Hello,
+> Fair enough, it really didn't make sense to me.
 >
->kernel test robot noticed "BUG:kernel_NULL_pointer_dereference,address"
->on:
+> > Instead something depends on the old layout for correctness.
 >
->commit: 9b08a09f6d073bebd38e7be08781b0a4758c924e ("hazptrtorture: Defer release of hazard pointers") https://github.com/paulmckrcu/linux non-rcu/next
+> If I add ->mount back to the /end/ of the structure, it boots fine again,
+> so I guess nothing is expecting specific offsets within the structure
+> at least.
 >
->[test failed on linux-next/master
->6b8c8af514d739d0335f5579b585e02babe8a727]
+> (If I turn off lockdep in the kernel config, it boots fine again too,
+> FWIW.)
 >
->in testcase: trinity
->version: trinity-i386-abe9de86-1_20230429 with following parameters:
+> > By any chance is this type-punned somewhere?
 >
->	runtime: 300s
->	group: group-00
->	nr_groups: 5
->	reproduction: run 254 cycles, the issue can be reproduced for 16 times.
+> I don't think so...
 >
+> > While I can't be bothered to investigate, I *suspect* the way to catch
+> > this would patch out all of the lock_class_key vars & uses and boot wit=
+h
+> > KMSAN (or was it KASAN?). Or whatever mechanism which can tell the
+> > access is oob.
 >
->config: i386-randconfig-015-20260807
->compiler: clang-22
->test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m 4G
+> Can't do KASAN or KMSAN on i386, AFAIK. :(
 >
->(please refer to attached dmesg/kmsg for entire log/backtrace)
+> I suppose I could try such things on x86_64 just in case something shows
+> up...
 >
->If you fix the issue in a separate patch/commit (i.e. not just a new
->version of the same patch/commit), kindly add following tags
->| Reported-by: kernel test robot <yi1.lai@intel.com>
->| Closes:
->https://lore.kernel.org/oe-lkp/202608130915.62b53936-lkp@intel.com
+> Thanks!
 >
+> -Eric
 >
->
->[  419.412561][   T52] BUG: kernel NULL pointer dereference, address:
->00000108
->[  419.456670][   T52] #PF: supervisor read access in kernel mode
->[  419.495649][   T52] #PF: error_code(0x0000) - not-present page
->[  419.534113][   T52] *pde = 00000000
->[  419.554661][   T52] Oops: Oops: 0000 [#1] SMP
->[  419.579287][   T52] CPU: 0 UID: 0 PID: 52 Comm: hazptr_torture_
->Tainted: G        W           7.2.0-rc3-00011-g9b08a09f6d07 #1 PREEMPTLAZY
-> 809133f67ba61c2271624f9b1ff820a8a212cdad
->[  419.666331][   T52] Tainted: [W]=WARN
->[  419.686632][   T52] Hardware name: QEMU Standard PC (i440FX + PIIX,
->1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
->[  419.731225][   T52] EIP: hazptr_synchronize_overflow_list+0x43/0xc0
->[  419.767103][   T52] Code: 30 8b 4e 34 90 90 90 89 4d e8 89 7d ec 8d 46
->2c 89 45 f0 8b 45 f0 8b 00 89 45 f0 85 c0 74 67 90 90 90 90 90 90 90 90 8b
->45 f0 <8b> 40 08 3b 45 e4 0f 95 c3 83 f8 01 0f 95 c7 89 f0 e8 67 bc fe 00
->All code
->========
->   0:	30 8b 4e 34 90 90    	xor    %cl,-0x6f6fcbb2(%rbx)
->   6:	90                   	nop
->   7:	89 4d e8             	mov    %ecx,-0x18(%rbp)
->   a:	89 7d ec             	mov    %edi,-0x14(%rbp)
->   d:	8d 46 2c             	lea    0x2c(%rsi),%eax
->  10:	89 45 f0             	mov    %eax,-0x10(%rbp)
->  13:	8b 45 f0             	mov    -0x10(%rbp),%eax
->  16:	8b 00                	mov    (%rax),%eax
->  18:	89 45 f0             	mov    %eax,-0x10(%rbp)
->  1b:	85 c0                	test   %eax,%eax
->  1d:	74 67                	je     0x86
->  1f:	90                   	nop
->  20:	90                   	nop
->  21:	90                   	nop
->  22:	90                   	nop
->  23:	90                   	nop
->  24:	90                   	nop
->  25:	90                   	nop
->  26:	90                   	nop
->  27:	8b 45 f0             	mov    -0x10(%rbp),%eax
->  2a:*	8b 40 08             	mov    0x8(%rax),%eax		<-- trapping instruction
->  2d:	3b 45 e4             	cmp    -0x1c(%rbp),%eax
->  30:	0f 95 c3             	setne  %bl
->  33:	83 f8 01             	cmp    $0x1,%eax
->  36:	0f 95 c7             	setne  %bh
->  39:	89 f0                	mov    %esi,%eax
->  3b:	e8 67 bc fe 00       	call   0xfebca7
->
->Code starting with the faulting instruction
->===========================================
->   0:	8b 40 08             	mov    0x8(%rax),%eax
->   3:	3b 45 e4             	cmp    -0x1c(%rbp),%eax
->   6:	0f 95 c3             	setne  %bl
->   9:	83 f8 01             	cmp    $0x1,%eax
->   c:	0f 95 c7             	setne  %bh
->   f:	89 f0                	mov    %esi,%eax
->  11:	e8 67 bc fe 00       	call   0xfebc7d
->[  419.872228][   T52] EAX: 00000100 EBX: 00000000 ECX: 00000000 EDX:
->00000202
->[  419.904569][   T52] ESI: e4f7e13c EDI: 00000829 EBP: b3e9df20 ESP:
->b3e9df04
->[  419.941247][   T52] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068
->EFLAGS: 00010006
->[  419.980096][   T52] CR0: 80050033 CR2: 00000108 CR3: 05fb1000 CR4:
->00000690
->[  420.005370][   T52] Call Trace:
->[  420.022998][   T52]  hazptr_synchronize+0x166/0x200
->[  420.050473][   T52]  hazptr_torture_writer+0x153/0x400
->[  420.076986][   T52]  ? __kthread_parkme+0x4b/0x100
->[  420.094745][   T52]  kthread+0x107/0x140
->[  420.112829][   T52]  ? hazptr_torture_reader+0x340/0x340
->[  420.140468][   T52]  ? kthread_unuse_mm+0xc0/0xc0
->[  420.165878][   T52]  ? kthread_unuse_mm+0xc0/0xc0
->[  420.185387][   T52]  ret_from_fork+0x131/0x240
->[  420.207521][   T52]  ? kthread_unuse_mm+0xc0/0xc0
->[  420.231501][   T52]  ret_from_fork_asm+0x12/0x20
->[  420.256219][   T52]  entry_INT80_32+0x125/0x125
->[  420.280981][   T52] Modules linked in: ipmi_devintf ppdev rapl
->i2c_piix4 tpm_tis tpm_tis_core i2c_smbus tpm i2c_core ata_generic i6300esb
->libata parport_pc rtc_cmos parport fuse
->[  420.365047][   T52] CR2: 0000000000000108
->[  420.387629][   T52] ---[ end trace 0000000000000000 ]---
->[  420.416535][   T52] EIP: hazptr_synchronize_overflow_list+0x43/0xc0
->[  420.451442][   T52] Code: 30 8b 4e 34 90 90 90 89 4d e8 89 7d ec 8d 46
->2c 89 45 f0 8b 45 f0 8b 00 89 45 f0 85 c0 74 67 90 90 90 90 90 90 90 90 8b
->45 f0 <8b> 40 08 3b 45 e4 0f 95 c3 83 f8 01 0f 95 c7 89 f0 e8 67 bc fe 00
->All code
->========
->   0:	30 8b 4e 34 90 90    	xor    %cl,-0x6f6fcbb2(%rbx)
->   6:	90                   	nop
->   7:	89 4d e8             	mov    %ecx,-0x18(%rbp)
->   a:	89 7d ec             	mov    %edi,-0x14(%rbp)
->   d:	8d 46 2c             	lea    0x2c(%rsi),%eax
->  10:	89 45 f0             	mov    %eax,-0x10(%rbp)
->  13:	8b 45 f0             	mov    -0x10(%rbp),%eax
->  16:	8b 00                	mov    (%rax),%eax
->  18:	89 45 f0             	mov    %eax,-0x10(%rbp)
->  1b:	85 c0                	test   %eax,%eax
->  1d:	74 67                	je     0x86
->  1f:	90                   	nop
->  20:	90                   	nop
->  21:	90                   	nop
->  22:	90                   	nop
->  23:	90                   	nop
->  24:	90                   	nop
->  25:	90                   	nop
->  26:	90                   	nop
->  27:	8b 45 f0             	mov    -0x10(%rbp),%eax
->  2a:*	8b 40 08             	mov    0x8(%rax),%eax		<-- trapping instruction
->  2d:	3b 45 e4             	cmp    -0x1c(%rbp),%eax
->  30:	0f 95 c3             	setne  %bl
->  33:	83 f8 01             	cmp    $0x1,%eax
->  36:	0f 95 c7             	setne  %bh
->  39:	89 f0                	mov    %esi,%eax
->  3b:	e8 67 bc fe 00       	call   0xfebca7
->
->Code starting with the faulting instruction
->===========================================
->   0:	8b 40 08             	mov    0x8(%rax),%eax
->   3:	3b 45 e4             	cmp    -0x1c(%rbp),%eax
->   6:	0f 95 c3             	setne  %bl
->   9:	83 f8 01             	cmp    $0x1,%eax
->   c:	0f 95 c7             	setne  %bh
->   f:	89 f0                	mov    %esi,%eax
->  11:	e8 67 bc fe 00       	call   0xfebc7d
->
->
->The kernel config and materials to reproduce are available at:
->https://download.01.org/0day-ci/archive/20260813/202608130915.62b53936-lkp@intel.com
->
->
->
->--
->0-DAY CI Kernel Test Service
->https://github.com/intel/lkp-tests/wiki
->
->
->
->
-Hi, could anybody test if this fixes it?
-
-
-From 3e92b8153c31106d6a080e1c9bbe9bf1e86e1f63 Mon Sep 17 00:00:00 2001
-From: Bradley Morgan <brads@mainlining.org>
-Date: Mon, 7 Sep 2026 18:00:08 +0000
-Subject: [PATCH] hazptrtorture: Only detach acquired hazard pointers
-
-hazptr_torture_acquire() detaches unconditionally, even when the
-readlock fails. A failed acquire leaves nothing to detach, but the
-detach still promotes the context to its backup slot and chains that
-slot into the running CPU's overflow list. The reader then retries on
-its own CPU, the fast path hands out a per-CPU slot and overwrites
-ctx->slot, and the chained backup node is orphaned, still linked,
-with nobody left to unchain it.
-
-The next detach of the same context chains the same node a second
-time, into another CPU's list, and the node ends up reachable from
-both. The eventual release unchains it once, hlist_del() poisons
-node->next, and the first list is left pointing at the poisoned node.
-The writer's next hazptr_synchronize() walks that list, steps onto
-LIST_POISON1 (0x100 on i386, where POISON_POINTER_DELTA is 0), and
-reads slot.addr at offset 8 of the backup slot, address 0x108, which
-is the crash the robot hit.
-
-  cpuA (IPI acquire)     cpuR (reader)          cpuD (do_pending)
-  ---------------------  ---------------------  -------------------
-  readlock() returns
-    NULL
-  detach chains the
-    backup node into
-    cpuA list
-                         hpp_htp is NULL,
-                           continue
-                         reacquire, ctx->slot
-                           is now a cpuR
-                           per-CPU slot
-                         acquire succeeds,
-                           defer, detach chains
-                           the SAME node into
-                           cpuR list
-                                                release, unchain
-                                                  once, node->next
-                                                  is POISON1
-                                                kfree(hppp)
-  synchronize walks cpuA
-    list, node->next is
-    0x100, reads 0x108,
-    Oops
-
-Skip the detach when the acquire failed. The slot holds NULL in that
-case, note_context_switch() and the synchronize scanners skip NULL
-slots, and the next acquire overwrites ctx->slot, so leaving the
-context attached is safe.
-
-The robot's original report was against the defer path before detach
-existed, which 4bd7f458229a fixed. This is the same crash surviving
-through the IPI acquire path that 6357ec235c59 added.
-
-Fixes: 6357ec235c59 ("hazptrtorture: Fix hazptr ownership issue")
-Reported-by: kernel test robot <yi1.lai@intel.com>
-Closes: https://lore.kernel.org/oe-lkp/202608130915.62b53936-lkp@intel.com
-Signed-off-by: Bradley Morgan <brads@mainlining.org>
----
- kernel/rcu/hazptrtorture.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/rcu/hazptrtorture.c b/kernel/rcu/hazptrtorture.c
-index 7c8b589..267f262 100644
---- a/kernel/rcu/hazptrtorture.c
-+++ b/kernel/rcu/hazptrtorture.c
-@@ -373,8 +373,11 @@ static void hazptr_torture_acquire(void *hppp_in)
- 	/*
- 	 * Acquiring a hazard pointer from a remote CPU.
- 	 * Detach hazptr from its task so it can be released by another task.
-+	 * A failed acquire has nothing to detach, and detaching one anyway
-+	 * orphans the chained backup slot on this CPU's overflow list.
- 	 */
--	hazptr_detach(&hppp->hpp_hc);
-+	if (hppp->hpp_htp)
-+		hazptr_detach(&hppp->hpp_hc);
- 	atomic_long_inc(per_cpu_ptr(&hazptr_torture_acquires_irq, raw_smp_processor_id()));
- }
- 
--- 
-2.47.3
-
-
---- Thanks!
-https://lore.kernel.org/all/EE579805-42F2-4C58-B752-F28779EEB717@grrlz.net/
