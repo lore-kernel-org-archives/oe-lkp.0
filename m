@@ -1,194 +1,132 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CE394CA288
-	for <oe-lkp@lists.linux.dev>; Tue,  8 Sep 2026 23:10:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E6EC368291
+	for <oe-lkp@lists.linux.dev>; Thu, 10 Sep 2026 03:29:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788909055; cv=none; b=NSZ+5t4NyB/Xi5gc9rvvDmGxC+nXPMZFHr1hK3kK5D8P3NuTujI4ZaI0L08bDteK9DGD8CML98nnNZOxyZYWjqSa4yD1yAfaRCx8KpcDInSTK9mBVXke9/9AJoqZjolNR1zN6uXBiwMM+1dNfMEuEVvgUHVjQ/yydcw6zs4lYPE=
+	t=1789010966; cv=none; b=BHUSmZ0a+Ql50WauEcX06AYQXWETUDRElmZBNOcgd3OvsecyB/VkObE1bwdrbrB+SB621txJWSDk0PrfJFHh8Wqy7HHfYrExHrKlH7xSAFYvfVyaornFvnhsD4SvIakyNG8P1roE5jq6JJZilLaitM5Nuq5Hgz0I/E125rQziyc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788909055; c=relaxed/simple;
-	bh=7kdKAv1UutyivaCl7H1vS0Jdc3NzhJZAlxtP4jKPHik=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=e8z8NDiolACeyhpDDHDv+jHxIuIBhvNah094SIGDJiZrP/toQoIHq2Ar51OVKcVUQZdeTldJeSL5GSWrqj8W7WP2Lyu++68/XjjOyzUiBLR8f4AcTbXtUzpAh+W49Ti4ow66sSNZf9XyqkC6SuTIvQ0B7WRb3Sbbw1p8LymElhM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Dj5Jryrm; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1789010966; c=relaxed/simple;
+	bh=R5ZmA9ZvPvP1QNDogTCVyoFtS7h5Z+UX4hS7ENIPH24=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=qjjQ4W+M+E5NWZ2uN1TUvlQxg9Tw+f2Xmfb/LCQ7hBJz0lmosOwZ4/nqbPeR7GeP3onuVwllkdIlirmem1XRa8RZOiFK5Uktl5iD9v+RoU8yQIjLg+28cFBg9Pk8QHRp189X97o38Ag3jgUvAzcAX2YzQykeodVDDmqa9yPpiC0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jqZo0jYu; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Dj5Jryrm"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1788909052;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=GHZMGWGGrZxmd1plGNxBzFOjbHBtD/NVRGD+NRqVMTQ=;
-	b=Dj5JryrmFNdRykxG/33Wz+3g+4bwsBomODn0RdI1PJtvmfp+BWPKy45MGI0UA9uVwyaovN
-	GiNvAmsSg9uy8eS82UZKcP1a5w9/1mCnG4WBbQ9A4YfkCQaCIOYe0Y5t1ApAD1OecIAcZR
-	MDcfvqxo/osIYDilOR8a+xC5qP1AtD0=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-403-IF8G_XjxMAu4UfhMQA1ozQ-1; Tue, 08 Sep 2026 19:10:50 -0400
-X-MC-Unique: IF8G_XjxMAu4UfhMQA1ozQ-1
-X-Mimecast-MFC-AGG-ID: IF8G_XjxMAu4UfhMQA1ozQ_1788909050
-Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-939694871aaso829902185a.2
-        for <oe-lkp@lists.linux.dev>; Tue, 08 Sep 2026 16:10:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788909050; x=1789513850;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=GHZMGWGGrZxmd1plGNxBzFOjbHBtD/NVRGD+NRqVMTQ=;
-        b=i84X0jg5EK1w73MDZEF4aQth76G+lSlHTIRJ/UAXv6XoxadtxAJmPVahzyo5X19gl5
-         dRGbt/yjfhHHY+18MSO5XvOUYUIEvBe7pZHYSRtINFOrfC7HYB9ijnfQlAHoffCIUSgL
-         JCppMTazyLHLdHzLvlhbU0QHF7mTHi0dCesGP0gvYeVIJFiFrNkVhiuTF4jL+KTQl129
-         JsjnBlNzisuhRIMVS+4U5lGNs5o+6G1B5Bdw7dzBy/Lg60BEZVEBWw5yQ+WTWq9hk3P/
-         H8GsxJKG4PV1GakR6zTj6wTy8HSa2BeLJCMpvdtuf4Gp6/ysKn+HX8CwgR/3E/gErE/Y
-         VxKw==
-X-Forwarded-Encrypted: i=1; AKwUvBxLtUdexxJDM7XXqkvtNQDa6HzheEhQTHurFHVnV+45ik7YwmSnXK1E5QXvH00tXloAa3q72zA=@lists.linux.dev
-X-Gm-Message-State: AFuF++nHe2CqEBvV+ZbSzpjayScWXC/pxy/8GeFKTWx6c2NAlbpoKSTb
-	AZHEEjfR4yknN8Wrg1S5nUFzo/66exA+2ObFn7Lyv2InTTCaKyJIbxLnjB2E8hZkr59wNcoFA9C
-	rR1yHprY872x5iAxb5tjojwm3ww/MXe5OS/xFiHdXrcPn/TypFlup4ZJcUg==
-X-Gm-Gg: AYBFou3HXxEV6YSRB3MKLqnf9N4q0zI8RYO8rSxU+3zLvG5J7D1apych/rStsMneDyB
-	7YOMWk38aYPQP3TgYIS4S65ZZt3N6nfqD+vX7db6Nkxrq1vXj73y7Dbd4Kko7cyOn0xk3Wnls9J
-	pQBN1KNKk4K63h8eQ/V97CaASKduIdp7oXzNOAFT2blgpQoQQ7I0O7ifBh36hf4jtRLN2SEgw9N
-	ie8YjasBS5MdKzJFrkrreK8GO5ntPdbad++YrwrSsl0tVThF2FnXi1xDPD8qgfNvmRQjYtOU4gm
-	Pl9eald38H0gmQ1aYICWZCXyptTNy3fau+4nlODCVuAQlPYzQObyfTZZ+Ud3tJZaH1d78AGDyl8
-	uOgebozmAOjwI4Xcv9KhNsAAfy6VYUNFnieOmmRoZ0w==
-X-Received: by 2002:a05:620a:691a:b0:936:cae5:8b38 with SMTP id af79cd13be357-939802fa452mr3511633185a.10.1788909050224;
-        Tue, 08 Sep 2026 16:10:50 -0700 (PDT)
-X-Received: by 2002:a05:620a:691a:b0:936:cae5:8b38 with SMTP id af79cd13be357-939802fa452mr3511625685a.10.1788909049657;
-        Tue, 08 Sep 2026 16:10:49 -0700 (PDT)
-Received: from [10.0.4.228] (97-127-68-83.mpls.qwest.net. [97.127.68.83])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-9397fb70fbdsm1246505785a.32.2026.09.08.16.10.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Sep 2026 16:10:48 -0700 (PDT)
-Message-ID: <fb4bcf42-cb41-4a1e-b307-78dfdc914e00@redhat.com>
-Date: Tue, 8 Sep 2026 18:10:47 -0500
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jqZo0jYu"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1789010964; x=1820546964;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=R5ZmA9ZvPvP1QNDogTCVyoFtS7h5Z+UX4hS7ENIPH24=;
+  b=jqZo0jYu7ijYmdxmtv86GmlfS+cvwRYHTbZCp+LGwePvlgsBhxqgD4zW
+   EJtRz0Eek7bO7M+LnAu3zKtb6pXrnC8GWWQiGrbl6CzbdnavsCZwl9oLP
+   3TA6a5QtiydZFP/FSsiVrnEjrlMp1vIUCzx0K60RoUFcbrCZFefTkto4N
+   7CnJrDny0szR1Pm/ZXb/p394Z2c5u2J/msRMEyfEtgxLBpyXF4WHhGJRS
+   QL7hsb5W8i0ujYjV9E09rPfnG2wjm0Rr7s22/A0X9YAxzukZGxLFZ+6bx
+   EWmghgI8eZjOxMR8rfKytTBjrtb8D/1o/sE+L8nSCo0rRYZWr95T2lTm1
+   Q==;
+X-CSE-ConnectionGUID: KcEWShXfRd2RurQCybBGDw==
+X-CSE-MsgGUID: /1MD3f22QGOfo3ixRHsuSg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11900"; a="93276732"
+X-IronPort-AV: E=Sophos;i="6.25,271,1779174000"; 
+   d="scan'208";a="93276732"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2026 20:29:24 -0700
+X-CSE-ConnectionGUID: Gg1zQX4CT9aLpslbT2VlIw==
+X-CSE-MsgGUID: Kd1uG4YoQhqLtUm6gTu4iQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,271,1779174000"; 
+   d="scan'208";a="275646486"
+Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2026 20:29:22 -0700
+Date: Thu, 10 Sep 2026 11:29:18 +0800
+From: kernel test robot <yi1.lai@intel.com>
+To: Yury Norov <ynorov@nvidia.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	Eliot Courtney <ecourtney@nvidia.com>,
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+	yi1.lai@intel.com
+Subject: [linus:master] [lib]  f4806cc63c:
+ INFO:trying_to_register_non-static_key
+Message-ID: <202609101106.771b567e-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC] fs: cache-align lock_class_keys in struct
- file_system_type
-To: Mateusz Guzik <mjguzik@gmail.com>
-Cc: linux-fsdevel <linux-fsdevel@vger.kernel.org>,
- linux-kernel@vger.kernel.org, Christian Brauner <brauner@kernel.org>,
- David Howells <dhowells@redhat.com>, lkp@intel.com, oe-lkp@lists.linux.dev,
- Alexander Viro <aviro@redhat.com>
-References: <9fbb6bf2-70ae-4d49-9221-751d28dcfd1a@redhat.com>
- <o6cnjqy4ivjqaj4n5xphstfnk5jznufaygwmfkm2gyixqgfump@7fc6c6h6d5if>
- <28f144f8-431d-4c3a-a362-56083bb77541@redhat.com>
- <CAGudoHFJne0q+dnjYdXOyDKEfu_zZ71_z+kSiUPiHWG7jCBw-Q@mail.gmail.com>
-From: Eric Sandeen <sandeen@redhat.com>
-In-Reply-To: <CAGudoHFJne0q+dnjYdXOyDKEfu_zZ71_z+kSiUPiHWG7jCBw-Q@mail.gmail.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: ATultQ37BKQaj2LJn7oVEE4LQg2A4jyB3bROPUmWaqw_1788909050
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-hohum, well I spent a bunch of tokens in claude/opus and basically got
 
-¯\_(ツ)_/¯ 
 
-I could be wrong but I'm not sure sashiko would do a deep dive across
-all the involved code.
+Hello,
 
-I was going to paste the summary of the AI analysis which I generally
-dislike but tbh there's just nothing to go on :(
+kernel test robot noticed "INFO:trying_to_register_non-static_key" on:
 
-It did point out that s_lock_key seems dead/unused and thought removing
-it might magically fix the problem as well.
+commit: f4806cc63cc65bd752fd72d84937614dca6504ec ("lib: test bitmap vs IDA vs Maple Tree performance for region allocations") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
--Eric
+[test failed on linux-next/master a9d7ced84989ec05be09b4b8428759ef60450a0f]
 
-On 9/8/26 3:07 AM, Mateusz Guzik wrote:
-> While I'm not convinced spending time on the resulting bug is
-> worthwhile, with the arrival of sashiko I think you should rebase &
-> resend -- it very well might just point out the problem with 0 human
-> effort.
-> 
-> On Tue, Dec 30, 2025 at 11:45 PM Eric Sandeen <sandeen@redhat.com> wrote:
->>
->> On 12/30/25 4:04 PM, Mateusz Guzik wrote:
->>> On Tue, Dec 30, 2025 at 03:07:10PM -0600, Eric Sandeen wrote:
->>>> LKP reported that one of their tests was failing to even boot with my
->>>> "old mount API code" removal patch. The test was booting an i386 kernel
->>>> under QEMU, with lockdep enabled. Rather than a functional failure, it
->>>> seemed to have been slowed to a crawl and eventually timed out.
->>>>
->>>> I narrowed the problem down to the removal of the ->mount op from
->>>> file_system_type, which changed structure alignment and seems to have
->>>> caused cacheline issues with this structure. Annotating the alignment
->>>> fixes the problem for me.
->>>>
->>>> Reported-by: kernel test robot <oliver.sang@intel.com>
->>>> Closes: https://lore.kernel.org/oe-lkp/202512230315.1717476b-lkp@intel.com
->>>> Fixes: 51a146e05 ("fs: Remove internal old mount API code")
->>>> Signed-off-by: Eric Sandeen <sandeen@redhat.com>
->>>> ---
->>>>
->>>> RFC because I honestly don't understand why this should be so critical,
->>>> especially the structure was not explicitly (or even very well) aligned
->>>> before. I would welcome insights from folks who are smarter than me!
->>>>
->>>> diff --git a/include/linux/fs.h b/include/linux/fs.h
->>>> index 9949d253e5aa..b3d8cad15de1 100644
->>>> --- a/include/linux/fs.h
->>>> +++ b/include/linux/fs.h
->>>> @@ -2279,7 +2279,7 @@ struct file_system_type {
->>>>      struct file_system_type * next;
->>>>      struct hlist_head fs_supers;
->>>>
->>>> -    struct lock_class_key s_lock_key;
->>>> +    struct lock_class_key s_lock_key ____cacheline_aligned;
->>>>      struct lock_class_key s_umount_key;
->>>>      struct lock_class_key s_vfs_rename_key;
->>>>      struct lock_class_key s_writers_key[SB_FREEZE_LEVELS];
->>>>
->>>
->>> There is no way is about cacheline bouncing. According to the linked
->>> thread the test vm has only 2 vcpus:
->>>> test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m 4G
->>>
->>> Even if the vcpu count was in hundreds and the ping pong was a problem it
->>> still would not have prevented bootup.
->>
->> Fair enough, it really didn't make sense to me.
->>
->>> Instead something depends on the old layout for correctness.
->>
->> If I add ->mount back to the /end/ of the structure, it boots fine again,
->> so I guess nothing is expecting specific offsets within the structure
->> at least.
->>
->> (If I turn off lockdep in the kernel config, it boots fine again too,
->> FWIW.)
->>
->>> By any chance is this type-punned somewhere?
->>
->> I don't think so...
->>
->>> While I can't be bothered to investigate, I *suspect* the way to catch
->>> this would patch out all of the lock_class_key vars & uses and boot with
->>> KMSAN (or was it KASAN?). Or whatever mechanism which can tell the
->>> access is oob.
->>
->> Can't do KASAN or KMSAN on i386, AFAIK. :(
->>
->> I suppose I could try such things on x86_64 just in case something shows
->> up...
->>
->> Thanks!
->>
->> -Eric
->>
-> 
+in testcase: boot
+
+config: i386-randconfig-054-20260822
+compiler: gcc-14
+test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m 4G
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <yi1.lai@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202609101106.771b567e-lkp@intel.com
+
+[  157.121248][    T1] INFO: trying to register non-static key.
+[  157.122147][    T1] The code is fine but needs lockdep annotation, or maybe
+[  157.122147][    T1] you didn't initialize this object before use?
+[  157.122147][    T1] turning off the locking correctness validator.
+[  157.122147][    T1] CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted 7.2.0-rc4-00086-gf4806cc63cc6 #1 PREEMPT(full)  167be1ded5cf2d764b5931072317f04af057210f
+[  157.122147][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+[  157.122147][    T1] Call Trace:
+[  157.122147][    T1]  ? show_stack (x86/kernel/dumpstack.c:319 x86/kernel/dumpstack.c:337)
+[  157.122147][    T1]  ? dump_stack_lvl (dump_stack.c:94 dump_stack.c:120)
+[  157.122147][    T1]  ? dump_stack (dump_stack.c:129)
+[  157.122147][    T1]  ? register_lock_class (locking/lockdep.c:984 locking/lockdep.c:1299)
+[  157.122147][    T1]  ? __lock_acquire (locking/lockdep.c:5237)
+[  157.122147][    T1]  ? __lock_acquire (locking/lockdep.c:5112)
+[  157.122147][    T1]  ? lock_acquire (locking/lockdep.c:5872)
+[  157.122147][    T1]  ? mtree_alloc_range (linux/spinlock.h:342 maple_tree.c:5800)
+[  157.122147][    T1]  ? __lock_acquire (locking/lockdep.c:5237)
+[  157.122147][    T1]  ? lock_acquire (locking/lockdep.c:5833)
+[  157.122147][    T1]  ? mtree_alloc_range (linux/spinlock.h:342 maple_tree.c:5800)
+[  157.122147][    T1]  ? _raw_spin_lock (linux/spinlock_api_smp.h:158 (discriminator 1) locking/spinlock.c:158 (discriminator 1))
+[  157.122147][    T1]  ? mtree_alloc_range (linux/spinlock.h:342 maple_tree.c:5800)
+[  157.122147][    T1]  ? __lock_release+0x42/0x140
+[  157.122147][    T1]  ? kvm_clock_get_cycles (x86/kernel/kvmclock.c:80 (discriminator 1) x86/kernel/kvmclock.c:87 (discriminator 1))
+[  157.122147][    T1]  ? ktime_get (time/timekeeping.c:321 time/timekeeping.c:455 time/timekeeping.c:973)
+[  157.122147][    T1]  ? vprintk_default (printk/printk.c:2494)
+[  157.122147][    T1]  ? benchmark_maple_tree (region_alloc_benchmark.c:136 (discriminator 1))
+[  157.122147][    T1]  ? region_alloc_benchmark (region_alloc_benchmark.c:197 (discriminator 1))
+[  157.122147][    T1]  ? benchmark_ida (region_alloc_benchmark.c:124)
+[  157.122147][    T1]  ? do_one_initcall (main.c:1347)
+[  157.122147][    T1]  ? do_initcalls (main.c:1409 (discriminator 1) main.c:1425 (discriminator 1))
+[  157.122147][    T1]  ? kernel_init_freeable (main.c:1445 main.c:1658)
+[  157.122147][    T1]  ? rest_init (main.c:717)
+[  157.122147][    T1]  ? kernel_init (main.c:1548)
+[  157.122147][    T1]  ? ret_from_fork (x86/kernel/process.c:158)
+[  157.122147][    T1]  ? rest_init (main.c:717)
+[  157.122147][    T1]  ? ret_from_fork_asm (x86/entry/entry_32.S:736)
+[  157.122147][    T1]  ? entry_INT80_32 (x86/entry/entry_32.S:940)
+[  158.731005][    C0] clocksource: Marking clocksource tsc unstable due to frequency skew
+[  158.804793][    C0] clocksource: Watchdog               kvm-clock interval:            63117ns
+[  158.871025][    C0] clocksource: Clocksource                  tsc interval:            62703ns
+[  158.935843][    C0] tsc: Marking TSC unstable due to clocksource watchdog
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20260910/202609101106.771b567e-lkp@intel.com
+
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
 
