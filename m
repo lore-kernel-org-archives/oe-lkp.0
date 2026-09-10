@@ -1,132 +1,166 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E6EC368291
-	for <oe-lkp@lists.linux.dev>; Thu, 10 Sep 2026 03:29:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E53948989A
+	for <oe-lkp@lists.linux.dev>; Thu, 10 Sep 2026 14:31:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789010966; cv=none; b=BHUSmZ0a+Ql50WauEcX06AYQXWETUDRElmZBNOcgd3OvsecyB/VkObE1bwdrbrB+SB621txJWSDk0PrfJFHh8Wqy7HHfYrExHrKlH7xSAFYvfVyaornFvnhsD4SvIakyNG8P1roE5jq6JJZilLaitM5Nuq5Hgz0I/E125rQziyc=
+	t=1789050685; cv=none; b=AmEBEM+iu/LMQxNMtf2hZpRIG0J4epvxdUTLO8XUj2EzhGuVKplxmNUKByhkuXcxYSjZP+bImW+zHyWdTNozy3eu26yWssRzqGNW8ToNwUJ4M4n4WW/lT5kN6N25PXD4DzkUKQNYSXFL2VpdEf/rea8FOzcjnaeckf2RK1QygGo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789010966; c=relaxed/simple;
-	bh=R5ZmA9ZvPvP1QNDogTCVyoFtS7h5Z+UX4hS7ENIPH24=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=qjjQ4W+M+E5NWZ2uN1TUvlQxg9Tw+f2Xmfb/LCQ7hBJz0lmosOwZ4/nqbPeR7GeP3onuVwllkdIlirmem1XRa8RZOiFK5Uktl5iD9v+RoU8yQIjLg+28cFBg9Pk8QHRp189X97o38Ag3jgUvAzcAX2YzQykeodVDDmqa9yPpiC0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jqZo0jYu; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1789050685; c=relaxed/simple;
+	bh=ML0jJ6Z/puSs1lXTu7IudKNGcl8Cfx+GtnjJcxQR7F0=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:content-type; b=BqeLPHkA0Lg5vtpYjEWBQXh1KXxOGj0RBjO71SZO60auEx62r7MU00EUZ1F1QOz1K5fc+Leq2JlG2RdzETOJa9fJ76jB93xecDg1XfGNNeAPVJMCeXMi89IhE39MgAhzzNkZ8rVuV6eqAhyi8rA8/joc0aJQTyDiAok6lq/rhaI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=LgiiECLo; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jqZo0jYu"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1789010964; x=1820546964;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=R5ZmA9ZvPvP1QNDogTCVyoFtS7h5Z+UX4hS7ENIPH24=;
-  b=jqZo0jYu7ijYmdxmtv86GmlfS+cvwRYHTbZCp+LGwePvlgsBhxqgD4zW
-   EJtRz0Eek7bO7M+LnAu3zKtb6pXrnC8GWWQiGrbl6CzbdnavsCZwl9oLP
-   3TA6a5QtiydZFP/FSsiVrnEjrlMp1vIUCzx0K60RoUFcbrCZFefTkto4N
-   7CnJrDny0szR1Pm/ZXb/p394Z2c5u2J/msRMEyfEtgxLBpyXF4WHhGJRS
-   QL7hsb5W8i0ujYjV9E09rPfnG2wjm0Rr7s22/A0X9YAxzukZGxLFZ+6bx
-   EWmghgI8eZjOxMR8rfKytTBjrtb8D/1o/sE+L8nSCo0rRYZWr95T2lTm1
-   Q==;
-X-CSE-ConnectionGUID: KcEWShXfRd2RurQCybBGDw==
-X-CSE-MsgGUID: /1MD3f22QGOfo3ixRHsuSg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11900"; a="93276732"
-X-IronPort-AV: E=Sophos;i="6.25,271,1779174000"; 
-   d="scan'208";a="93276732"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2026 20:29:24 -0700
-X-CSE-ConnectionGUID: Gg1zQX4CT9aLpslbT2VlIw==
-X-CSE-MsgGUID: Kd1uG4YoQhqLtUm6gTu4iQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,271,1779174000"; 
-   d="scan'208";a="275646486"
-Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2026 20:29:22 -0700
-Date: Thu, 10 Sep 2026 11:29:18 +0800
-From: kernel test robot <yi1.lai@intel.com>
-To: Yury Norov <ynorov@nvidia.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	Eliot Courtney <ecourtney@nvidia.com>,
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-	yi1.lai@intel.com
-Subject: [linus:master] [lib]  f4806cc63c:
- INFO:trying_to_register_non-static_key
-Message-ID: <202609101106.771b567e-lkp@intel.com>
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="LgiiECLo"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1789050682;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=8oOYydPLSmmKf+EQ0HkeEap1hYLbva2q5CM0ECTUT/E=;
+	b=LgiiECLof9E+I11inPSlX6z6h/z/houkltHXhpfegeSifAJ1AOzEA1DJKCLTuVyDU29d9T
+	jekpnNhjZiko1+vlF3TdCl187wOKrQG45bGBSZ9SojOc798TRjgjcZQ3LwiwiwKv7rcJLB
+	M2rcmC6nPXP2D2UPKuI+uQ2eVsIDu3A=
+Received: from mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-55-O8Ypl9fJPM6L4atbQS4teA-1; Thu,
+ 10 Sep 2026 10:31:19 -0400
+X-MC-Unique: O8Ypl9fJPM6L4atbQS4teA-1
+X-Mimecast-MFC-AGG-ID: O8Ypl9fJPM6L4atbQS4teA_1789050676
+Received: from mx-prod-int-05.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-05.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.17])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 29AB51955DC5;
+	Thu, 10 Sep 2026 14:31:16 +0000 (UTC)
+Received: from atomasov-mac.redhat.corp (headnet03.pony-001.prod.iad2.dc.redhat.com [10.2.32.114])
+	by mx-prod-int-05.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 5C4891955F19;
+	Thu, 10 Sep 2026 14:31:12 +0000 (UTC)
+From: Adrian Tomasov <atomasov@redhat.com>
+To: Eric Dumazet <edumazet@google.com>,
+	kernel test robot <oliver.sang@intel.com>
+Cc: Adrian Tomasov <atomasov@redhat.com>,
+	Jason Xing <kerneljasonxing@gmail.com>,
+	Kuniyuki Iwashima <kuniyu@google.com>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Luke Yang <luyang@redhat.com>,
+	netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	oe-lkp@lists.linux.dev,
+	lkp@intel.com,
+	linuxppc-dev@lists.ozlabs.org
+Subject: Re: [linus:master] [net] 5628f3fe3b: sockperf.throughput.UDP.msg_per_sec 20.1% regression
+Date: Thu, 10 Sep 2026 16:30:40 +0200
+Message-ID: <20260910143041.18106-1-atomasov@redhat.com>
+In-Reply-To: <202512112119.5b9829a-lkp@intel.com>
+References: <202512112119.5b9829a-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-Scanned-By: MIMEDefang 3.0 on 10.30.177.17
+X-Mimecast-MFC-PROC-ID: Ro1v8rbEbCJhq8vaXIzd0u5LW0G65YJw4PqFqFNrqys_1789050676
+X-Mimecast-Originator: redhat.com
+Content-Transfer-Encoding: 8bit
+content-type: text/plain; charset="US-ASCII"; x-default=true
 
+On Thu, Dec 11, 2025, kernel test robot <oliver.sang@intel.com> wrote:
+> kernel test robot noticed a 20.1% regression of
+> sockperf.throughput.UDP.msg_per_sec on:
+> commit: 5628f3fe3b16 ("net: add NUMA awareness to skb_attempt_defer_free()")
 
+We independently reproduced this on a second architecture, ppc64le (POWER10),
+and can add data that both confirms the commit and shows what amplifies it.
 
-Hello,
+Commit: 5628f3fe3b16 ("net: add NUMA awareness to skb_attempt_defer_free()")
+Parent: 844c9db7f7f5 ("net: use llist for sd->defer_list")
 
-kernel test robot noticed "INFO:trying_to_register_non-static_key" on:
+Two factors govern the magnitude, and your x86 report and our ppc64le data
+agree once both are considered:
 
-commit: f4806cc63cc65bd752fd72d84937614dca6504ec ("lib: test bitmap vs IDA vs Maple Tree performance for region allocations") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+(a) How much of the workload runs the net_rx softirq deferred-free path.
+    Tight loopback UDP (sockperf, iperf3 loopback) is softirq-dominated and is
+    hit hard. A real-NIC test bounded by other costs is barely affected.
 
-[test failed on linux-next/master a9d7ced84989ec05be09b4b8428759ef60450a0f]
+(b) How many *possible* NUMA nodes skb_defer_free_flush() now walks. The new
+    for_each_node() loop iterates node_possible_map; on a POWER10 LPAR that is
+    0..31 (32 possible) with only 1 node online, so 31 of every 32 iterations
+    touch a cold, always-empty per-node list on every softirq RX pass. This
+    shows up as _find_next_bit(): ~2.76% on POWER10 vs <1% in your x86 profile.
 
-in testcase: boot
+--- Data point 1: stress-ng UDP, isolated commit A/B (POWER10) ---
 
-config: i386-randconfig-054-20260822
-compiler: gcc-14
-test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m 4G
+POWER10, 8 CPUs, 62 GiB, NUMA 1 online / 32 possible. Two upstream v7.2-rc4
+kernels, same compiler (gcc 16.1.1) and config; the only difference is the
+presence of 5628f3fe3b16. stress-ng 0.19.03, --udp 1 -t 23, 3 runs,
+bogo-ops/sec (higher is better):
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <yi1.lai@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202609101106.771b567e-lkp@intel.com
+    Kernel                        Avg       Delta
+    v7.2-rc4 + revert (good)      265145    baseline
+    v7.2-rc4 stock   (bad)        204854    -22.7%
 
-[  157.121248][    T1] INFO: trying to register non-static key.
-[  157.122147][    T1] The code is fine but needs lockdep annotation, or maybe
-[  157.122147][    T1] you didn't initialize this object before use?
-[  157.122147][    T1] turning off the locking correctness validator.
-[  157.122147][    T1] CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted 7.2.0-rc4-00086-gf4806cc63cc6 #1 PREEMPT(full)  167be1ded5cf2d764b5931072317f04af057210f
-[  157.122147][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[  157.122147][    T1] Call Trace:
-[  157.122147][    T1]  ? show_stack (x86/kernel/dumpstack.c:319 x86/kernel/dumpstack.c:337)
-[  157.122147][    T1]  ? dump_stack_lvl (dump_stack.c:94 dump_stack.c:120)
-[  157.122147][    T1]  ? dump_stack (dump_stack.c:129)
-[  157.122147][    T1]  ? register_lock_class (locking/lockdep.c:984 locking/lockdep.c:1299)
-[  157.122147][    T1]  ? __lock_acquire (locking/lockdep.c:5237)
-[  157.122147][    T1]  ? __lock_acquire (locking/lockdep.c:5112)
-[  157.122147][    T1]  ? lock_acquire (locking/lockdep.c:5872)
-[  157.122147][    T1]  ? mtree_alloc_range (linux/spinlock.h:342 maple_tree.c:5800)
-[  157.122147][    T1]  ? __lock_acquire (locking/lockdep.c:5237)
-[  157.122147][    T1]  ? lock_acquire (locking/lockdep.c:5833)
-[  157.122147][    T1]  ? mtree_alloc_range (linux/spinlock.h:342 maple_tree.c:5800)
-[  157.122147][    T1]  ? _raw_spin_lock (linux/spinlock_api_smp.h:158 (discriminator 1) locking/spinlock.c:158 (discriminator 1))
-[  157.122147][    T1]  ? mtree_alloc_range (linux/spinlock.h:342 maple_tree.c:5800)
-[  157.122147][    T1]  ? __lock_release+0x42/0x140
-[  157.122147][    T1]  ? kvm_clock_get_cycles (x86/kernel/kvmclock.c:80 (discriminator 1) x86/kernel/kvmclock.c:87 (discriminator 1))
-[  157.122147][    T1]  ? ktime_get (time/timekeeping.c:321 time/timekeeping.c:455 time/timekeeping.c:973)
-[  157.122147][    T1]  ? vprintk_default (printk/printk.c:2494)
-[  157.122147][    T1]  ? benchmark_maple_tree (region_alloc_benchmark.c:136 (discriminator 1))
-[  157.122147][    T1]  ? region_alloc_benchmark (region_alloc_benchmark.c:197 (discriminator 1))
-[  157.122147][    T1]  ? benchmark_ida (region_alloc_benchmark.c:124)
-[  157.122147][    T1]  ? do_one_initcall (main.c:1347)
-[  157.122147][    T1]  ? do_initcalls (main.c:1409 (discriminator 1) main.c:1425 (discriminator 1))
-[  157.122147][    T1]  ? kernel_init_freeable (main.c:1445 main.c:1658)
-[  157.122147][    T1]  ? rest_init (main.c:717)
-[  157.122147][    T1]  ? kernel_init (main.c:1548)
-[  157.122147][    T1]  ? ret_from_fork (x86/kernel/process.c:158)
-[  157.122147][    T1]  ? rest_init (main.c:717)
-[  157.122147][    T1]  ? ret_from_fork_asm (x86/entry/entry_32.S:736)
-[  157.122147][    T1]  ? entry_INT80_32 (x86/entry/entry_32.S:940)
-[  158.731005][    C0] clocksource: Marking clocksource tsc unstable due to frequency skew
-[  158.804793][    C0] clocksource: Watchdog               kvm-clock interval:            63117ns
-[  158.871025][    C0] clocksource: Clocksource                  tsc interval:            62703ns
-[  158.935843][    C0] tsc: Marking TSC unstable due to clocksource watchdog
+perf (stock vs revert): skb_defer_free_flush 2.75% -> 0%, _find_next_bit
+2.76% -> 0% -- both eliminated by the revert; consistent with your x86 profile
+(skb_defer_free_flush 0 -> ~4.1%, _find_next_bit -> ~1%).
 
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20260910/202609101106.771b567e-lkp@intel.com
+--- Data point 2: iperf3 UDP loopback A/B (POWER10, second host) ---
 
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Independent reproduction on another POWER10 host (32 possible / 1 online),
+iperf3 -u -b 0 -l 16k -t 20, both ends pinned to the online node, 5 runs,
+Gbit/s (higher is better):
 
+    Kernel (has 5628f3fe3b16?)    median    mean
+    no  (6.12-based)              6.34      6.31    baseline
+    yes (7.1-based)              4.85      4.88    -22.7%
+
+(These two kernels differ in base version, so this delta is not a single-commit
+isolation on its own -- Data point 1 is the clean isolation. Both land at
+-22.7%, matching your 20.1% sockperf figure.)
+
+--- Data point 3: workload dependence (real-NIC vs loopback) ---
+
+The same commit-vs-parent A/B measured with a *real NIC* iperf3 UDP stream
+(200G, 3 reboots/kernel) on a 2-possible-node ppc64le host shows only -2.6%
+(7515.8 -> 7313.8 Mb/s, zero overlap across reboots). Where the deferred-free
+softirq path is a small fraction of the work, the regression is small -- the
+mechanism is the same, the exposure differs. This also matches our observation
+that a same-CPU-heavy stress-ng udp run barely triggers the cross-CPU
+skb_attempt_defer_free() path and shows ~no change.
+
+--- On Jason's question ---
+
+On Sun, Dec 14, 2025, Jason Xing <kerneljasonxing@gmail.com> wrote:
+> from what I've known, commit e20dfbad8aab2 and commit 21664814b89e altogether
+> can lead to a similar regression ... could you also launch some experiments
+> just around those two commits?
+
+On POWER10 our isolation is a direct A/B of 5628f3fe3b16 against its parent
+844c9db7f7f5 with identical compiler and config (Data point 1), and a full
+revert of only 5628f3fe3b16 recovers the throughput and removes
+skb_defer_free_flush()/_find_next_bit() from the profile. So on this hardware
+the regression is attributable to 5628f3fe3b16 specifically; e20dfbad8aab2 and
+21664814b89e are not in the delta. Happy to test those two separately if useful.
+
+--- Suggested fix ---
+
+Use for_each_online_node() instead of for_each_node() in skb_defer_free_flush()
+(and cap what skb_attempt_defer_free() populates accordingly), reducing the loop
+from N_possible to N_online -- 32 -> 1 on these POWER10 LPARs. We can build and
+benchmark a candidate patch on the POWER10 hosts and report back on this thread.
+If a fix is posted, the appropriate tags are:
+
+    Reported-by: kernel test robot <oliver.sang@intel.com>
+    Closes: https://lore.kernel.org/oe-lkp/202512112119.5b9829a-lkp@intel.com
+
+Thanks,
+Adrian Tomasov
+Red Hat -- Kernel Performance QE
 
