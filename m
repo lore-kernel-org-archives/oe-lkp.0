@@ -1,166 +1,204 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E53948989A
-	for <oe-lkp@lists.linux.dev>; Thu, 10 Sep 2026 14:31:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14B0A2E3FE
+	for <oe-lkp@lists.linux.dev>; Fri, 11 Sep 2026 03:06:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789050685; cv=none; b=AmEBEM+iu/LMQxNMtf2hZpRIG0J4epvxdUTLO8XUj2EzhGuVKplxmNUKByhkuXcxYSjZP+bImW+zHyWdTNozy3eu26yWssRzqGNW8ToNwUJ4M4n4WW/lT5kN6N25PXD4DzkUKQNYSXFL2VpdEf/rea8FOzcjnaeckf2RK1QygGo=
+	t=1789096020; cv=none; b=atKQSk1gUEqWyylXSvgQmExJycglOdfrpcxEKod+kYrlXeSRq66c0jqge5hP2Pya9+ibo48gQeutGbzgtWcrwHG/oI7l9uJT8mjGOzQ/jNvCSwb6lcLKJ5Il74q+RIDNt2i6tcvK6y/iSoZbeYApKArrcSdvC0RsX6r4V7xfxXM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789050685; c=relaxed/simple;
-	bh=ML0jJ6Z/puSs1lXTu7IudKNGcl8Cfx+GtnjJcxQR7F0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:content-type; b=BqeLPHkA0Lg5vtpYjEWBQXh1KXxOGj0RBjO71SZO60auEx62r7MU00EUZ1F1QOz1K5fc+Leq2JlG2RdzETOJa9fJ76jB93xecDg1XfGNNeAPVJMCeXMi89IhE39MgAhzzNkZ8rVuV6eqAhyi8rA8/joc0aJQTyDiAok6lq/rhaI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=LgiiECLo; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1789096020; c=relaxed/simple;
+	bh=e3N52camSpbrbd9Lazc3PO5rOzbLbivpGj6w5lEHN4o=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=ppDpbnW2o/TMzHil3cYWrd3+fPFu4AsIoGH5p3kcEyfsM7mbdbTx2lJdXy5WTKvi/bICYCzB9XkIzG+vfZXYCo3e5I25G3kZjibjRC2Ch37luNZ5Nihr1NEEOt+/RokbZS7CxT6U/pKW2zpadVdVxUl39FpOhNEYJ7cxG0PAlkQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eQrwlCke; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="LgiiECLo"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1789050682;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=8oOYydPLSmmKf+EQ0HkeEap1hYLbva2q5CM0ECTUT/E=;
-	b=LgiiECLof9E+I11inPSlX6z6h/z/houkltHXhpfegeSifAJ1AOzEA1DJKCLTuVyDU29d9T
-	jekpnNhjZiko1+vlF3TdCl187wOKrQG45bGBSZ9SojOc798TRjgjcZQ3LwiwiwKv7rcJLB
-	M2rcmC6nPXP2D2UPKuI+uQ2eVsIDu3A=
-Received: from mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com
- (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-55-O8Ypl9fJPM6L4atbQS4teA-1; Thu,
- 10 Sep 2026 10:31:19 -0400
-X-MC-Unique: O8Ypl9fJPM6L4atbQS4teA-1
-X-Mimecast-MFC-AGG-ID: O8Ypl9fJPM6L4atbQS4teA_1789050676
-Received: from mx-prod-int-05.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-05.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.17])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 29AB51955DC5;
-	Thu, 10 Sep 2026 14:31:16 +0000 (UTC)
-Received: from atomasov-mac.redhat.corp (headnet03.pony-001.prod.iad2.dc.redhat.com [10.2.32.114])
-	by mx-prod-int-05.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 5C4891955F19;
-	Thu, 10 Sep 2026 14:31:12 +0000 (UTC)
-From: Adrian Tomasov <atomasov@redhat.com>
-To: Eric Dumazet <edumazet@google.com>,
-	kernel test robot <oliver.sang@intel.com>
-Cc: Adrian Tomasov <atomasov@redhat.com>,
-	Jason Xing <kerneljasonxing@gmail.com>,
-	Kuniyuki Iwashima <kuniyu@google.com>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Luke Yang <luyang@redhat.com>,
-	netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	oe-lkp@lists.linux.dev,
-	lkp@intel.com,
-	linuxppc-dev@lists.ozlabs.org
-Subject: Re: [linus:master] [net] 5628f3fe3b: sockperf.throughput.UDP.msg_per_sec 20.1% regression
-Date: Thu, 10 Sep 2026 16:30:40 +0200
-Message-ID: <20260910143041.18106-1-atomasov@redhat.com>
-In-Reply-To: <202512112119.5b9829a-lkp@intel.com>
-References: <202512112119.5b9829a-lkp@intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eQrwlCke"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1789096017; x=1820632017;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=e3N52camSpbrbd9Lazc3PO5rOzbLbivpGj6w5lEHN4o=;
+  b=eQrwlCkeE9pvO1JxvAJ+m6Y58htFzSOpwNwXMRR1A0BHHMY+57mJuOn5
+   ziYmnCUHRSBKmNcOvFXLiq44OubOrF2gfhB6pxmPvN6JYGR1XDcytRONC
+   L2+ut/tiyyb3Rf3JFgqvgAI1lp7IP/wuMQnPziyzw5opfOtv1evL4VJ8P
+   ckUQOCLY4GInHmBhpjIl7DCicJ4Esot2NIWiozbvDQFSl2eooWjtj1/ai
+   CtRdN9/PhXnw2GxX0E9jR+g+P0xqoT3A7I5L9tr6Ql0S4LFSuvdoIhYI4
+   If9iDOEgyTiTPb07wjiRgEjEZA5am/34bid6W/7J6QYMPunMfaNurcGJO
+   w==;
+X-CSE-ConnectionGUID: iNIFdVCdQiSak/aK25R/jA==
+X-CSE-MsgGUID: aQ9klW+fR8KvwsnPwLW/uQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11901"; a="89429443"
+X-IronPort-AV: E=Sophos;i="6.27,96,1787036400"; 
+   d="scan'208";a="89429443"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2026 20:06:56 -0700
+X-CSE-ConnectionGUID: TRo74acOSVef9oko2DY/ZQ==
+X-CSE-MsgGUID: fjFM+kLASb6uc+o2tBLw5w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,96,1787036400"; 
+   d="scan'208";a="273742228"
+Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2026 20:06:55 -0700
+Date: Fri, 11 Sep 2026 11:06:51 +0800
+From: kernel test robot <yi1.lai@intel.com>
+To: Johannes Berg <johannes.berg@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	linux-wireless@vger.kernel.org, yi1.lai@intel.com
+Subject: [linux-next:master] [wifi]  d25ba7909b:
+ hwsim.uhr_mld_sae_single_link.fail
+Message-ID: <202609110354.fc495fe8-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 3.0 on 10.30.177.17
-X-Mimecast-MFC-PROC-ID: Ro1v8rbEbCJhq8vaXIzd0u5LW0G65YJw4PqFqFNrqys_1789050676
-X-Mimecast-Originator: redhat.com
-Content-Transfer-Encoding: 8bit
-content-type: text/plain; charset="US-ASCII"; x-default=true
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Dec 11, 2025, kernel test robot <oliver.sang@intel.com> wrote:
-> kernel test robot noticed a 20.1% regression of
-> sockperf.throughput.UDP.msg_per_sec on:
-> commit: 5628f3fe3b16 ("net: add NUMA awareness to skb_attempt_defer_free()")
 
-We independently reproduced this on a second architecture, ppc64le (POWER10),
-and can add data that both confirms the commit and shows what amplifies it.
 
-Commit: 5628f3fe3b16 ("net: add NUMA awareness to skb_attempt_defer_free()")
-Parent: 844c9db7f7f5 ("net: use llist for sd->defer_list")
+Hello,
 
-Two factors govern the magnitude, and your x86 report and our ppc64le data
-agree once both are considered:
+kernel test robot noticed "hwsim.uhr_mld_sae_single_link.fail" on:
 
-(a) How much of the workload runs the net_rx softirq deferred-free path.
-    Tight loopback UDP (sockperf, iperf3 loopback) is softirq-dominated and is
-    hit hard. A real-NIC test bounded by other costs is barely affected.
+commit: d25ba7909b2781c827f8b2928f201307c3ad6e44 ("wifi: update UHR to Draf=
+t_P802.11bn D1.5")
+https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 
-(b) How many *possible* NUMA nodes skb_defer_free_flush() now walks. The new
-    for_each_node() loop iterates node_possible_map; on a POWER10 LPAR that is
-    0..31 (32 possible) with only 1 node online, so 31 of every 32 iterations
-    touch a cold, always-empty per-node list on every softirq RX pass. This
-    shows up as _find_next_bit(): ~2.76% on POWER10 vs <1% in your x86 profile.
+[test failed on linux-next/master c68a982815dcce5464e3bf2a31ac94f5146c04ca]
 
---- Data point 1: stress-ng UDP, isolated commit A/B (POWER10) ---
+in testcase: hwsim
+version: hwsim-x86_64-b9562516f-1_20260824
+with following parameters:
 
-POWER10, 8 CPUs, 62 GiB, NUMA 1 online / 32 possible. Two upstream v7.2-rc4
-kernels, same compiler (gcc 16.1.1) and config; the only difference is the
-presence of 5628f3fe3b16. stress-ng 0.19.03, --udp 1 -t 23, 3 runs,
-bogo-ops/sec (higher is better):
+	test: group-21
 
-    Kernel                        Avg       Delta
-    v7.2-rc4 + revert (good)      265145    baseline
-    v7.2-rc4 stock   (bad)        204854    -22.7%
+config: x86_64-rhel-9.4-func
+compiler: gcc-14
+test machine: 16 threads Intel(R) Core(TM) i7-13620H (Raptor Lake) with 32G=
+ memory
 
-perf (stock vs revert): skb_defer_free_flush 2.75% -> 0%, _find_next_bit
-2.76% -> 0% -- both eliminated by the revert; consistent with your x86 profile
-(skb_defer_free_flush 0 -> ~4.1%, _find_next_bit -> ~1%).
+(please refer to attached dmesg/kmsg for entire log/backtrace)
 
---- Data point 2: iperf3 UDP loopback A/B (POWER10, second host) ---
 
-Independent reproduction on another POWER10 host (32 possible / 1 online),
-iperf3 -u -b 0 -l 16k -t 20, both ends pinned to the online node, 5 runs,
-Gbit/s (higher is better):
+If you fix the issue in a separate patch/commit (i.e. not just a new versio=
+n of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <yi1.lai@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202609110354.fc495fe8-lkp@intel.com
 
-    Kernel (has 5628f3fe3b16?)    median    mean
-    no  (6.12-based)              6.34      6.31    baseline
-    yes (7.1-based)              4.85      4.88    -22.7%
+2026-09-10 10:26:26 ./run-tests.py uhr_mld_sae_single_link
+DEV: wlan0: 02:00:00:00:00:00
+DEV: wlan1: 02:00:00:00:01:00
+DEV: wlan2: 02:00:00:00:02:00
+APDEV: wlan3
+APDEV: wlan4
+START uhr_mld_sae_single_link 1/1
+Test: UHR MLD AP with MLD client SAE H2E connection using single link
+Adding link on: ifname=3Dwlan7
+Connect STA wlan8 to AP
+hostapd STATUS: {'state': 'ENABLED', 'phy': 'phy16', 'freq': '2412', 'num_s=
+ta_non_erp': '0', 'num_sta_no_short_slot_time': '0', 'num_sta_no_short_prea=
+mble': '0', 'olbc': '0', 'num_sta_ht_no_gf': '0', 'num_sta_no_ht': '0', 'nu=
+m_sta_ht_20_mhz': '0', 'num_sta_ht40_intolerant': '0', 'olbc_ht': '0', 'ht_=
+op_mode': '0x0', 'hw_mode': 'g', 'cac_time_seconds': '0', 'cac_time_left_se=
+conds': 'N/A', 'channel': '1', 'edmg_enable': '0', 'edmg_channel': '0', 'se=
+condary_channel': '0', 'ieee80211n': '1', 'ieee80211ac': '0', 'ieee80211ax'=
+: '1', 'ieee80211be': '1', 'ieee80211bn': '1', 'beacon_int': '100', 'dtim_p=
+eriod': '2', 'eht_oper_chwidth': '0', 'eht_oper_centr_freq_seg0_idx': '0', =
+'num_links': '1', 'link_id': '0', 'link_addr': '02:00:00:db:32:cc', 'ap_mld=
+_type': 'STR', 'he_oper_chwidth': '0', 'he_oper_centr_freq_seg0_idx': '0', =
+'he_oper_centr_freq_seg1_idx': '0', 'ht_caps_info': '000c', 'ht_mcs_bitmask=
+': 'ffff0000000000000000', 'supported_rates': '02 04 0b 16 0c 12 18 24 30 4=
+8 60 6c', 'max_txpower': '20', 'bss[0]': 'wlan7', 'bssid[0]': '02:00:00:db:=
+32:cc', 'ssid[0]': 'mld_ap_sae_single_link', 'num_sta[0]': '1', 'mld_addr[0=
+]': '02:00:00:00:10:00', 'mld_id[0]': '0', 'mld_link_id[0]': '0'}
+hostapd STA: {'addr': '02:00:00:00:11:00', 'flags': '[AUTH][ASSOC][AUTHORIZ=
+ED][SHORT_PREAMBLE][WMM][MFP][HT][HE][EHT]', 'aid': '1', 'capability': '0x4=
+30', 'listen_interval': '5', 'supported_rates': '02 04 0b 16 0c 12 18 24 30=
+ 48 60 6c', 'timeout_next': 'NULLFUNC POLL', 'auth_alg': '3', 'dot11RSNASta=
+tsSTAAddress': '02:00:00:00:11:00', 'dot11RSNAStatsVersion': '1', 'dot11RSN=
+AStatsSelectedPairwiseCipher': '00-0f-ac-4', 'dot11RSNAStatsTKIPLocalMICFai=
+lures': '0', 'dot11RSNAStatsTKIPRemoteMICFailures': '0', 'wpa': '2', 'AKMSu=
+iteSelector': '00-0f-ac-8', 'hostapdWPAPTKState': '11', 'hostapdWPAPTKGroup=
+State': '0', 'hostapdMFPR': '1', 'rx_packets': '6', 'tx_packets': '5', 'rx_=
+bytes': '627', 'tx_bytes': '916', 'inactive_msec': '7', 'signal': '-50', 'r=
+x_rate_info': '10', 'tx_rate_info': '0', 'ht_mcs_bitmask': 'ffff00000000000=
+00000', 'connected_time': '0', 'sae_group': '19', 'sae_rejected_groups': ''=
+, 'supp_op_classes': '5151525354737475767778797a7b7c7d7e7f8081008280', 'he_=
+capab': '0178c81a400002bfce0000000000000000fafffaff', 'eht_capab': '07007c0=
+000feffff0f01008888880000', 'ht_caps_info': '0x13fe', 'ext_capab': '04004a0=
+2014000400001', 'peer_addr[0]': '16:ef:b1:22:6a:65', 'max_simul_links': '0'}
+valid_links=3D0x1
 
-(These two kernels differ in base version, so this delta is not a single-commit
-isolation on its own -- Data point 1 is the clean isolation. Both land at
--22.7%, matching your 20.1% sockperf figure.)
+active_links=3D0x1
 
---- Data point 3: workload dependence (real-NIC vs loopback) ---
+hostapd STATUS: {'state': 'ENABLED', 'phy': 'phy16', 'freq': '2412', 'num_s=
+ta_non_erp': '0', 'num_sta_no_short_slot_time': '0', 'num_sta_no_short_prea=
+mble': '0', 'olbc': '0', 'num_sta_ht_no_gf': '0', 'num_sta_no_ht': '0', 'nu=
+m_sta_ht_20_mhz': '0', 'num_sta_ht40_intolerant': '0', 'olbc_ht': '0', 'ht_=
+op_mode': '0x0', 'hw_mode': 'g', 'cac_time_seconds': '0', 'cac_time_left_se=
+conds': 'N/A', 'channel': '1', 'edmg_enable': '0', 'edmg_channel': '0', 'se=
+condary_channel': '0', 'ieee80211n': '1', 'ieee80211ac': '0', 'ieee80211ax'=
+: '1', 'ieee80211be': '1', 'ieee80211bn': '1', 'beacon_int': '100', 'dtim_p=
+eriod': '2', 'eht_oper_chwidth': '0', 'eht_oper_centr_freq_seg0_idx': '0', =
+'num_links': '1', 'link_id': '0', 'link_addr': '02:00:00:db:32:cc', 'ap_mld=
+_type': 'STR', 'he_oper_chwidth': '0', 'he_oper_centr_freq_seg0_idx': '0', =
+'he_oper_centr_freq_seg1_idx': '0', 'ht_caps_info': '000c', 'ht_mcs_bitmask=
+': 'ffff0000000000000000', 'supported_rates': '02 04 0b 16 0c 12 18 24 30 4=
+8 60 6c', 'max_txpower': '20', 'bss[0]': 'wlan7', 'bssid[0]': '02:00:00:db:=
+32:cc', 'ssid[0]': 'mld_ap_sae_single_link', 'num_sta[0]': '1', 'mld_addr[0=
+]': '02:00:00:00:10:00', 'mld_id[0]': '0', 'mld_link_id[0]': '0'}
+hostapd STA: {'addr': '02:00:00:00:11:00', 'flags': '[AUTH][ASSOC][AUTHORIZ=
+ED][SHORT_PREAMBLE][WMM][MFP][HT][HE][EHT]', 'aid': '1', 'capability': '0x4=
+30', 'listen_interval': '5', 'supported_rates': '02 04 0b 16 0c 12 18 24 30=
+ 48 60 6c', 'timeout_next': 'NULLFUNC POLL', 'auth_alg': '3', 'dot11RSNASta=
+tsSTAAddress': '02:00:00:00:11:00', 'dot11RSNAStatsVersion': '1', 'dot11RSN=
+AStatsSelectedPairwiseCipher': '00-0f-ac-4', 'dot11RSNAStatsTKIPLocalMICFai=
+lures': '0', 'dot11RSNAStatsTKIPRemoteMICFailures': '0', 'wpa': '2', 'AKMSu=
+iteSelector': '00-0f-ac-8', 'hostapdWPAPTKState': '11', 'hostapdWPAPTKGroup=
+State': '0', 'hostapdMFPR': '1', 'rx_packets': '7', 'tx_packets': '5', 'rx_=
+bytes': '753', 'tx_bytes': '916', 'inactive_msec': '112', 'signal': '-50', =
+'rx_rate_info': '10', 'tx_rate_info': '0', 'ht_mcs_bitmask': 'ffff000000000=
+0000000', 'connected_time': '0', 'sae_group': '19', 'sae_rejected_groups': =
+'', 'supp_op_classes': '5151525354737475767778797a7b7c7d7e7f8081008280', 'h=
+e_capab': '0178c81a400002bfce0000000000000000fafffaff', 'eht_capab': '07007=
+c0000feffff0f01008888880000', 'ht_caps_info': '0x13fe', 'ext_capab': '04004=
+a02014000400001', 'peer_addr[0]': '16:ef:b1:22:6a:65', 'max_simul_links': '=
+0'}
+Exception during test execution: Missing STA flag: UHR
+Traceback (most recent call last):
+  File "/lkp/benchmarks/hwsim/tests/hwsim/./run-tests.py", line 635, in main
+    t(dev, apdev)
+    ~^^^^^^^^^^^^
+  File "/lkp/benchmarks/hwsim/tests/hwsim/test_uhr.py", line 180, in test_u=
+hr_mld_sae_single_link
+    run_uhr_mld_sae_single_link(dev, apdev)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/lkp/benchmarks/hwsim/tests/hwsim/test_uhr.py", line 174, in run_uh=
+r_mld_sae_single_link
+    uhr_verify_status(wpas, hapd0, is_ht=3DTrue)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/lkp/benchmarks/hwsim/tests/hwsim/test_uhr.py", line 60, in uhr_ver=
+ify_status
+    raise Exception("Missing STA flag: UHR")
+Exception: Missing STA flag: UHR
+FAIL uhr_mld_sae_single_link 0.42002 2026-09-10 10:26:27.104099
+passed 0 test case(s)
+skipped 0 test case(s)
+failed tests: uhr_mld_sae_single_link
 
-The same commit-vs-parent A/B measured with a *real NIC* iperf3 UDP stream
-(200G, 3 reboots/kernel) on a 2-possible-node ppc64le host shows only -2.6%
-(7515.8 -> 7313.8 Mb/s, zero overlap across reboots). Where the deferred-free
-softirq path is a small fraction of the work, the regression is small -- the
-mechanism is the same, the exposure differs. This also matches our observation
-that a same-CPU-heavy stress-ng udp run barely triggers the cross-CPU
-skb_attempt_defer_free() path and shows ~no change.
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20260911/202609110354.fc495fe8-lkp@=
+intel.com
 
---- On Jason's question ---
-
-On Sun, Dec 14, 2025, Jason Xing <kerneljasonxing@gmail.com> wrote:
-> from what I've known, commit e20dfbad8aab2 and commit 21664814b89e altogether
-> can lead to a similar regression ... could you also launch some experiments
-> just around those two commits?
-
-On POWER10 our isolation is a direct A/B of 5628f3fe3b16 against its parent
-844c9db7f7f5 with identical compiler and config (Data point 1), and a full
-revert of only 5628f3fe3b16 recovers the throughput and removes
-skb_defer_free_flush()/_find_next_bit() from the profile. So on this hardware
-the regression is attributable to 5628f3fe3b16 specifically; e20dfbad8aab2 and
-21664814b89e are not in the delta. Happy to test those two separately if useful.
-
---- Suggested fix ---
-
-Use for_each_online_node() instead of for_each_node() in skb_defer_free_flush()
-(and cap what skb_attempt_defer_free() populates accordingly), reducing the loop
-from N_possible to N_online -- 32 -> 1 on these POWER10 LPARs. We can build and
-benchmark a candidate patch on the POWER10 hosts and report back on this thread.
-If a fix is posted, the appropriate tags are:
-
-    Reported-by: kernel test robot <oliver.sang@intel.com>
-    Closes: https://lore.kernel.org/oe-lkp/202512112119.5b9829a-lkp@intel.com
-
-Thanks,
-Adrian Tomasov
-Red Hat -- Kernel Performance QE
+--=20
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
 
