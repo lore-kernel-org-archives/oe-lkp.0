@@ -1,56 +1,57 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14B0A2E3FE
-	for <oe-lkp@lists.linux.dev>; Fri, 11 Sep 2026 03:06:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C25D91A9FA0
+	for <oe-lkp@lists.linux.dev>; Mon, 14 Sep 2026 02:34:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789096020; cv=none; b=atKQSk1gUEqWyylXSvgQmExJycglOdfrpcxEKod+kYrlXeSRq66c0jqge5hP2Pya9+ibo48gQeutGbzgtWcrwHG/oI7l9uJT8mjGOzQ/jNvCSwb6lcLKJ5Il74q+RIDNt2i6tcvK6y/iSoZbeYApKArrcSdvC0RsX6r4V7xfxXM=
+	t=1789353249; cv=none; b=naQ0sIKXhabRf0NQJ/eteuDz8k+n45zjjBqsuQlWHKhWVyIBqvHxqy1OjF1HmcnHbmxqG7Fawbs9BVUy+7US9j8rtqvFBkJIxlvwPSeOqIa1oK2FSYMUkOtuaDy5XBOdGigZjuWq+jZoOlDJr+QFGsmrPnV3nJ4ZbH7o6Ewjv5s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789096020; c=relaxed/simple;
-	bh=e3N52camSpbrbd9Lazc3PO5rOzbLbivpGj6w5lEHN4o=;
+	s=arc-20240116; t=1789353249; c=relaxed/simple;
+	bh=gDPynbvaFXlIaeZuhaCZccO2AqwyBkyI5yxUQ+EN3Xc=;
 	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=ppDpbnW2o/TMzHil3cYWrd3+fPFu4AsIoGH5p3kcEyfsM7mbdbTx2lJdXy5WTKvi/bICYCzB9XkIzG+vfZXYCo3e5I25G3kZjibjRC2Ch37luNZ5Nihr1NEEOt+/RokbZS7CxT6U/pKW2zpadVdVxUl39FpOhNEYJ7cxG0PAlkQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eQrwlCke; arc=none smtp.client-ip=192.198.163.17
+	 Content-Disposition; b=TNgmC837Q2MFV1t+awOK90mvcKUQFrSjrKV/fysO7+GUc3U+3X1M+xgFiJbz24VNTqtL+jtTZjwpIx1CNBGMWuDTpF2I2p+XxIPiWrZC8B3NNV/ihxDJoXnolwu7RO1bY66+NtY5LEvsGzlijdwIlpKXPfHR+T8JaMIUPaAB0NM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ci84Nhq7; arc=none smtp.client-ip=192.198.163.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eQrwlCke"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ci84Nhq7"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1789096017; x=1820632017;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=e3N52camSpbrbd9Lazc3PO5rOzbLbivpGj6w5lEHN4o=;
-  b=eQrwlCkeE9pvO1JxvAJ+m6Y58htFzSOpwNwXMRR1A0BHHMY+57mJuOn5
-   ziYmnCUHRSBKmNcOvFXLiq44OubOrF2gfhB6pxmPvN6JYGR1XDcytRONC
-   L2+ut/tiyyb3Rf3JFgqvgAI1lp7IP/wuMQnPziyzw5opfOtv1evL4VJ8P
-   ckUQOCLY4GInHmBhpjIl7DCicJ4Esot2NIWiozbvDQFSl2eooWjtj1/ai
-   CtRdN9/PhXnw2GxX0E9jR+g+P0xqoT3A7I5L9tr6Ql0S4LFSuvdoIhYI4
-   If9iDOEgyTiTPb07wjiRgEjEZA5am/34bid6W/7J6QYMPunMfaNurcGJO
-   w==;
-X-CSE-ConnectionGUID: iNIFdVCdQiSak/aK25R/jA==
-X-CSE-MsgGUID: aQ9klW+fR8KvwsnPwLW/uQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11901"; a="89429443"
-X-IronPort-AV: E=Sophos;i="6.27,96,1787036400"; 
-   d="scan'208";a="89429443"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2026 20:06:56 -0700
-X-CSE-ConnectionGUID: TRo74acOSVef9oko2DY/ZQ==
-X-CSE-MsgGUID: fjFM+kLASb6uc+o2tBLw5w==
+  t=1789353248; x=1820889248;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=gDPynbvaFXlIaeZuhaCZccO2AqwyBkyI5yxUQ+EN3Xc=;
+  b=Ci84Nhq7FBE2IXSji+36qF35Fn0EyUPUzP83d5tV+RZXw34Yi5ZA6Z/V
+   gQ9uVpKaWys+I6Gq1nzlvWmI4ya4HipR2jNF8Ze7dlTSmmQ0ZLi8vnDt2
+   iYMrewxiimWBef7VcuR86THuyefBxx5Oy2r53XLu6k8x4nY2xtKblnkBN
+   pI6cmC8glv9rzgqPJAlayfbyKAP4H2HAnf5nRd059YtXReRicsEi7PBG+
+   873lM0Mw9ZnfaFvscl9WtGELtcndSsShy8S8791J26WaoS7pQw0VIVEkG
+   Lm7YESd/dPT1tNO5DsbBlNbvAyt7ANZBsg86UWLNHIJfcC+nD8OkPPdyK
+   A==;
+X-CSE-ConnectionGUID: QMPpsHlNRLaGmhM1X6tD+A==
+X-CSE-MsgGUID: NRoooWxyQZ2M9J5k8B8q5Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11904"; a="89585518"
+X-IronPort-AV: E=Sophos;i="6.27,102,1787036400"; 
+   d="scan'208";a="89585518"
+Received: from fmviesa013.fm.intel.com ([10.60.135.153])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2026 19:34:07 -0700
+X-CSE-ConnectionGUID: K5XA3zMQQU6WtxE+3LaaHg==
+X-CSE-MsgGUID: 6w+VRTKBRHWVz/kAXWB6Vw==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,96,1787036400"; 
-   d="scan'208";a="273742228"
+X-IronPort-AV: E=Sophos;i="6.27,102,1787036400"; 
+   d="scan'208";a="922092"
 Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2026 20:06:55 -0700
-Date: Fri, 11 Sep 2026 11:06:51 +0800
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2026 19:34:05 -0700
+Date: Mon, 14 Sep 2026 10:34:02 +0800
 From: kernel test robot <yi1.lai@intel.com>
-To: Johannes Berg <johannes.berg@intel.com>
+To: Ard Biesheuvel <ardb@kernel.org>
 Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	linux-wireless@vger.kernel.org, yi1.lai@intel.com
-Subject: [linux-next:master] [wifi]  d25ba7909b:
- hwsim.uhr_mld_sae_single_link.fail
-Message-ID: <202609110354.fc495fe8-lkp@intel.com>
+	Ravi Bangoria <ravi.bangoria@amd.com>,
+	Anisse Astier <anisse@astier.eu>, linux-efi@vger.kernel.org,
+	yi1.lai@intel.com
+Subject: [linus:master] [efivarfs]  b2326338dc: stress-ng.sysinfo.ops_per_sec
+ 19.5% improvement
+Message-ID: <202609141037.779d7909-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -59,146 +60,57 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
 
 
 Hello,
 
-kernel test robot noticed "hwsim.uhr_mld_sae_single_link.fail" on:
+kernel test robot noticed a 19.5% improvement of stress-ng.sysinfo.ops_per_sec on:
 
-commit: d25ba7909b2781c827f8b2928f201307c3ad6e44 ("wifi: update UHR to Draf=
-t_P802.11bn D1.5")
-https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+commit: b2326338dc683e8c1067c0cbf7a47986c4190902 ("efivarfs: Rate limit statfs() handler") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-[test failed on linux-next/master c68a982815dcce5464e3bf2a31ac94f5146c04ca]
-
-in testcase: hwsim
-version: hwsim-x86_64-b9562516f-1_20260824
-with following parameters:
-
-	test: group-21
-
-config: x86_64-rhel-9.4-func
+testcase: stress-ng
+config: x86_64-rhel-9.4
 compiler: gcc-14
-test machine: 16 threads Intel(R) Core(TM) i7-13620H (Raptor Lake) with 32G=
- memory
+test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 256G memory
+parameters:
 
-(please refer to attached dmesg/kmsg for entire log/backtrace)
+	nr_threads: 100%
+	testtime: 60s
+	test: sysinfo
+	cpufreq_governor: performance
 
 
-If you fix the issue in a separate patch/commit (i.e. not just a new versio=
-n of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <yi1.lai@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202609110354.fc495fe8-lkp@intel.com
+Details are as below:
+-------------------------------------------------------------------------------------------------->
 
-2026-09-10 10:26:26 ./run-tests.py uhr_mld_sae_single_link
-DEV: wlan0: 02:00:00:00:00:00
-DEV: wlan1: 02:00:00:00:01:00
-DEV: wlan2: 02:00:00:00:02:00
-APDEV: wlan3
-APDEV: wlan4
-START uhr_mld_sae_single_link 1/1
-Test: UHR MLD AP with MLD client SAE H2E connection using single link
-Adding link on: ifname=3Dwlan7
-Connect STA wlan8 to AP
-hostapd STATUS: {'state': 'ENABLED', 'phy': 'phy16', 'freq': '2412', 'num_s=
-ta_non_erp': '0', 'num_sta_no_short_slot_time': '0', 'num_sta_no_short_prea=
-mble': '0', 'olbc': '0', 'num_sta_ht_no_gf': '0', 'num_sta_no_ht': '0', 'nu=
-m_sta_ht_20_mhz': '0', 'num_sta_ht40_intolerant': '0', 'olbc_ht': '0', 'ht_=
-op_mode': '0x0', 'hw_mode': 'g', 'cac_time_seconds': '0', 'cac_time_left_se=
-conds': 'N/A', 'channel': '1', 'edmg_enable': '0', 'edmg_channel': '0', 'se=
-condary_channel': '0', 'ieee80211n': '1', 'ieee80211ac': '0', 'ieee80211ax'=
-: '1', 'ieee80211be': '1', 'ieee80211bn': '1', 'beacon_int': '100', 'dtim_p=
-eriod': '2', 'eht_oper_chwidth': '0', 'eht_oper_centr_freq_seg0_idx': '0', =
-'num_links': '1', 'link_id': '0', 'link_addr': '02:00:00:db:32:cc', 'ap_mld=
-_type': 'STR', 'he_oper_chwidth': '0', 'he_oper_centr_freq_seg0_idx': '0', =
-'he_oper_centr_freq_seg1_idx': '0', 'ht_caps_info': '000c', 'ht_mcs_bitmask=
-': 'ffff0000000000000000', 'supported_rates': '02 04 0b 16 0c 12 18 24 30 4=
-8 60 6c', 'max_txpower': '20', 'bss[0]': 'wlan7', 'bssid[0]': '02:00:00:db:=
-32:cc', 'ssid[0]': 'mld_ap_sae_single_link', 'num_sta[0]': '1', 'mld_addr[0=
-]': '02:00:00:00:10:00', 'mld_id[0]': '0', 'mld_link_id[0]': '0'}
-hostapd STA: {'addr': '02:00:00:00:11:00', 'flags': '[AUTH][ASSOC][AUTHORIZ=
-ED][SHORT_PREAMBLE][WMM][MFP][HT][HE][EHT]', 'aid': '1', 'capability': '0x4=
-30', 'listen_interval': '5', 'supported_rates': '02 04 0b 16 0c 12 18 24 30=
- 48 60 6c', 'timeout_next': 'NULLFUNC POLL', 'auth_alg': '3', 'dot11RSNASta=
-tsSTAAddress': '02:00:00:00:11:00', 'dot11RSNAStatsVersion': '1', 'dot11RSN=
-AStatsSelectedPairwiseCipher': '00-0f-ac-4', 'dot11RSNAStatsTKIPLocalMICFai=
-lures': '0', 'dot11RSNAStatsTKIPRemoteMICFailures': '0', 'wpa': '2', 'AKMSu=
-iteSelector': '00-0f-ac-8', 'hostapdWPAPTKState': '11', 'hostapdWPAPTKGroup=
-State': '0', 'hostapdMFPR': '1', 'rx_packets': '6', 'tx_packets': '5', 'rx_=
-bytes': '627', 'tx_bytes': '916', 'inactive_msec': '7', 'signal': '-50', 'r=
-x_rate_info': '10', 'tx_rate_info': '0', 'ht_mcs_bitmask': 'ffff00000000000=
-00000', 'connected_time': '0', 'sae_group': '19', 'sae_rejected_groups': ''=
-, 'supp_op_classes': '5151525354737475767778797a7b7c7d7e7f8081008280', 'he_=
-capab': '0178c81a400002bfce0000000000000000fafffaff', 'eht_capab': '07007c0=
-000feffff0f01008888880000', 'ht_caps_info': '0x13fe', 'ext_capab': '04004a0=
-2014000400001', 'peer_addr[0]': '16:ef:b1:22:6a:65', 'max_simul_links': '0'}
-valid_links=3D0x1
-
-active_links=3D0x1
-
-hostapd STATUS: {'state': 'ENABLED', 'phy': 'phy16', 'freq': '2412', 'num_s=
-ta_non_erp': '0', 'num_sta_no_short_slot_time': '0', 'num_sta_no_short_prea=
-mble': '0', 'olbc': '0', 'num_sta_ht_no_gf': '0', 'num_sta_no_ht': '0', 'nu=
-m_sta_ht_20_mhz': '0', 'num_sta_ht40_intolerant': '0', 'olbc_ht': '0', 'ht_=
-op_mode': '0x0', 'hw_mode': 'g', 'cac_time_seconds': '0', 'cac_time_left_se=
-conds': 'N/A', 'channel': '1', 'edmg_enable': '0', 'edmg_channel': '0', 'se=
-condary_channel': '0', 'ieee80211n': '1', 'ieee80211ac': '0', 'ieee80211ax'=
-: '1', 'ieee80211be': '1', 'ieee80211bn': '1', 'beacon_int': '100', 'dtim_p=
-eriod': '2', 'eht_oper_chwidth': '0', 'eht_oper_centr_freq_seg0_idx': '0', =
-'num_links': '1', 'link_id': '0', 'link_addr': '02:00:00:db:32:cc', 'ap_mld=
-_type': 'STR', 'he_oper_chwidth': '0', 'he_oper_centr_freq_seg0_idx': '0', =
-'he_oper_centr_freq_seg1_idx': '0', 'ht_caps_info': '000c', 'ht_mcs_bitmask=
-': 'ffff0000000000000000', 'supported_rates': '02 04 0b 16 0c 12 18 24 30 4=
-8 60 6c', 'max_txpower': '20', 'bss[0]': 'wlan7', 'bssid[0]': '02:00:00:db:=
-32:cc', 'ssid[0]': 'mld_ap_sae_single_link', 'num_sta[0]': '1', 'mld_addr[0=
-]': '02:00:00:00:10:00', 'mld_id[0]': '0', 'mld_link_id[0]': '0'}
-hostapd STA: {'addr': '02:00:00:00:11:00', 'flags': '[AUTH][ASSOC][AUTHORIZ=
-ED][SHORT_PREAMBLE][WMM][MFP][HT][HE][EHT]', 'aid': '1', 'capability': '0x4=
-30', 'listen_interval': '5', 'supported_rates': '02 04 0b 16 0c 12 18 24 30=
- 48 60 6c', 'timeout_next': 'NULLFUNC POLL', 'auth_alg': '3', 'dot11RSNASta=
-tsSTAAddress': '02:00:00:00:11:00', 'dot11RSNAStatsVersion': '1', 'dot11RSN=
-AStatsSelectedPairwiseCipher': '00-0f-ac-4', 'dot11RSNAStatsTKIPLocalMICFai=
-lures': '0', 'dot11RSNAStatsTKIPRemoteMICFailures': '0', 'wpa': '2', 'AKMSu=
-iteSelector': '00-0f-ac-8', 'hostapdWPAPTKState': '11', 'hostapdWPAPTKGroup=
-State': '0', 'hostapdMFPR': '1', 'rx_packets': '7', 'tx_packets': '5', 'rx_=
-bytes': '753', 'tx_bytes': '916', 'inactive_msec': '112', 'signal': '-50', =
-'rx_rate_info': '10', 'tx_rate_info': '0', 'ht_mcs_bitmask': 'ffff000000000=
-0000000', 'connected_time': '0', 'sae_group': '19', 'sae_rejected_groups': =
-'', 'supp_op_classes': '5151525354737475767778797a7b7c7d7e7f8081008280', 'h=
-e_capab': '0178c81a400002bfce0000000000000000fafffaff', 'eht_capab': '07007=
-c0000feffff0f01008888880000', 'ht_caps_info': '0x13fe', 'ext_capab': '04004=
-a02014000400001', 'peer_addr[0]': '16:ef:b1:22:6a:65', 'max_simul_links': '=
-0'}
-Exception during test execution: Missing STA flag: UHR
-Traceback (most recent call last):
-  File "/lkp/benchmarks/hwsim/tests/hwsim/./run-tests.py", line 635, in main
-    t(dev, apdev)
-    ~^^^^^^^^^^^^
-  File "/lkp/benchmarks/hwsim/tests/hwsim/test_uhr.py", line 180, in test_u=
-hr_mld_sae_single_link
-    run_uhr_mld_sae_single_link(dev, apdev)
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
-  File "/lkp/benchmarks/hwsim/tests/hwsim/test_uhr.py", line 174, in run_uh=
-r_mld_sae_single_link
-    uhr_verify_status(wpas, hapd0, is_ht=3DTrue)
-    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/lkp/benchmarks/hwsim/tests/hwsim/test_uhr.py", line 60, in uhr_ver=
-ify_status
-    raise Exception("Missing STA flag: UHR")
-Exception: Missing STA flag: UHR
-FAIL uhr_mld_sae_single_link 0.42002 2026-09-10 10:26:27.104099
-passed 0 test case(s)
-skipped 0 test case(s)
-failed tests: uhr_mld_sae_single_link
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20260911/202609110354.fc495fe8-lkp@=
-intel.com
+https://download.01.org/0day-ci/archive/20260914/202609141037.779d7909-lkp@intel.com
 
---=20
+=========================================================================================
+compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
+  gcc-14/performance/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/lkp-spr-r02/sysinfo/stress-ng/60s
+
+commit: 
+  eb01ffabeb ("efi: apple-properties: validate setup data header length")
+  b2326338dc ("efivarfs: Rate limit statfs() handler")
+
+eb01ffabeb52251f b2326338dc683e8c1067c0cbf7a
+---------------- --------------------------- 
+         %stddev     %change         %stddev
+             \          |                \  
+      5824           +19.2%       6944        stress-ng.sysinfo.ops
+     96.86           +19.5%     115.73        stress-ng.sysinfo.ops_per_sec
+      3.00          +100.0%       6.00        stress-ng.time.percent_of_cpu_this_job_got
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provided
+for informational purposes only. Any difference in system hardware or software
+design or configuration may affect actual performance.
+
+-- 
 0-DAY CI Kernel Test Service
 https://github.com/intel/lkp-tests/wiki
 
