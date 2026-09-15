@@ -1,118 +1,107 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1822940682C
-	for <oe-lkp@lists.linux.dev>; Tue, 15 Sep 2026 04:10:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2BCB46AA94
+	for <oe-lkp@lists.linux.dev>; Tue, 15 Sep 2026 07:45:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789445438; cv=none; b=HrrPbn+wWjoG/hFKGxV7Wo/gztuXn2nH5yrTReUo7doPOaw4yA3GAmqlVoV7s4+3jvJVvLBHtMHd926j33A7ARqwRmj1uHGakiD/oA3wCnUc/a5dCntDdIfOzyjYyabD2wQyCiaNFQSzH190t+5NhSQ+tspyLIEMD8Qgz4HAiYY=
+	t=1789458309; cv=none; b=F2j0P0zz1Dgozmko9vgxCxKaWkz1dc4gXuNoc7fGKqHTDcEu88WU6GYvoiHubGgpm54ErUpM+8cJq+w6WtM1Jwn5bdKR7LQB8iNHi1MCNBTEGAGJyVUtxx9b4vxYkkjHX+Z/0bJ+jkzFqI4DdLpdqFKCrsABhb/aXUdpjlwy0Ao=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789445438; c=relaxed/simple;
-	bh=IoHq6pA68jPK8A5EVELqzPYEiIuRvZaBxIbDPa5atM4=;
+	s=arc-20240116; t=1789458309; c=relaxed/simple;
+	bh=cDqgPOBDkp+pNenRD+cQrf3EVGMAts+ORoSOBC79oLc=;
 	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=fxiGCE2dVJL1LDuzoKTn9AJ5d8NpoKB3z87b+FWq3p7TV3N9goa5x9xRsMR6y0eoKeRszmUi1k2HJzzmTCi/gV/YePGQtFo6VySLezv2Hgi4PA+eEUIkrrRLVdB6ya60dGk5Sus+2EhrET5FZRuD1u78AgoFgsH9kQ+F9dTMLWE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Khi+LOeu; arc=none smtp.client-ip=192.198.163.18
+	 Content-Disposition; b=tYWe6txfsoQnQcMk5TMjDS7Rgj5SZzG0lCvpJIcZwOrJXGMLfZN9PXi9CYTuFXe8vNAgnB8ArHTQkZ4q4CU0pn0GzEDEKT8WkbmsDX9CDJ9vXRMkwtBMxUo7cUKxovuqbmCKe5MzGytw5UiGOKUrj0UzsrANb1Tp0wgEwmrPdG8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nzqZOSb4; arc=none smtp.client-ip=192.198.163.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Khi+LOeu"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nzqZOSb4"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1789445437; x=1820981437;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=IoHq6pA68jPK8A5EVELqzPYEiIuRvZaBxIbDPa5atM4=;
-  b=Khi+LOeud2ee9O/SJXUqgh2eNrWBcsDto12Uh7tzmI2SNy2CHBaBlDme
-   o2X+XgirP+DphtHQTk0Vsb3qHk9ihuD+JeadjXAGNAIos/BTeXjcs5hqM
-   TLuNY38aU1zBNZFuwpZWJR/CRZj9zkAhF4vtaEUUcskutkYSvIKOiXbCd
-   GlkIMJfzHKmKuPJMu+qleR+pXga1B1Y43XwSeP18F5ADYTVHAnRHY3DWW
-   5ZFkRWvRH4Vft3h6hEdhDf0EmRqagcAmTEhb2Smy3LBx7OZ1kzjMtS3pq
-   t99X85+EWTuWAek8yHzbu/zwRTQvdpcZuTu3nhFyjfBEEXvrpxWPti6kF
-   g==;
-X-CSE-ConnectionGUID: RKG82zMgQMSVAOJfXouQwQ==
-X-CSE-MsgGUID: 6EWrPEpqTY2mCAzmBeziYQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="88938113"
+  t=1789458308; x=1820994308;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=cDqgPOBDkp+pNenRD+cQrf3EVGMAts+ORoSOBC79oLc=;
+  b=nzqZOSb4FwyGCfp0Uy+eaOxjXuJYpA11G+c83mEPVbuKHbzmgwgTg7Z/
+   kfQBDYcHviiXefhig0Ihpbh6V+UrAWp1PESF04W2twlN3uVQRzwo4Hk4T
+   5TcgY1Jc3TYyGKDvBGOieq7vFxIf2HeqAVvufw3HKOxiqKWwfkC9IGmwq
+   KOgaqUR7Jhj3Pn6dIIc+1LpA+MMJQopeoqAyPFV5goFTv8S4XuMrpBpuR
+   8IRtFrAdaJ/w5OEPfph7FGPZe/vhrWcVyogp3Uul1+LqJdDK0ZZDvdLXn
+   rsONLyJS45fSPKqTmHXY00DuSXzpulB87Ut1kQeU2aUNAqBmsudERyC5K
+   w==;
+X-CSE-ConnectionGUID: X0DPVb0tQYSK+S2EcywtnQ==
+X-CSE-MsgGUID: 2aheM8URQ8KxNCuu8V6xSg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="77375984"
 X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="88938113"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2026 21:10:36 -0700
-X-CSE-ConnectionGUID: gPi3sKHdTsybD2UWKaT+TA==
-X-CSE-MsgGUID: /+DnVYeZSiKNcvXfa4U5yw==
+   d="scan'208";a="77375984"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2026 00:45:07 -0700
+X-CSE-ConnectionGUID: ERFjJc+IRaaJusSfpHcfMg==
+X-CSE-MsgGUID: u6OLJtLaQsa5WgMoOlAKgQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
-   d="scan'208";a="269551985"
+   d="scan'208";a="278163833"
 Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2026 21:10:34 -0700
-Date: Tue, 15 Sep 2026 12:10:31 +0800
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2026 00:45:04 -0700
+Date: Tue, 15 Sep 2026 15:45:00 +0800
 From: kernel test robot <yi1.lai@intel.com>
-To: Mateusz Guzik <mjguzik@gmail.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
-	Christian Brauner <brauner@kernel.org>,
-	linux-fsdevel@vger.kernel.org, yi1.lai@intel.com
-Subject: [linux-next:master] [fs]  0d1ea15329:  will-it-scale.per_process_ops
- 84.8% improvement
-Message-ID: <202609151145.9d373682-lkp@intel.com>
+To: Dapeng Mi <dapeng1.mi@linux.intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	Peter Zijlstra <peterz@infradead.org>,
+	linux-perf-users@vger.kernel.org, yi1.lai@intel.com
+Subject: [linus:master] [perf/core]  166f10836a:
+ perf-sanity-tests.Object_code_reading.fail
+Message-ID: <202609151503.cb02f753-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
 
 
 
 Hello,
 
-kernel test robot noticed a 84.8% improvement of will-it-scale.per_process_ops on:
+kernel test robot noticed "perf-sanity-tests.Object_code_reading.fail" on:
 
+commit: 166f10836a653dfa280d4335603b52f685b8b1ef ("perf/core: Fix kernel register info leak via hardware skid") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-commit: 0d1ea1532955fa881424cb01c4599d14b90a22f6 ("fs: avoid spurious dentry ref/unref cycle on open") https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+[test failed on linux-next/master 68142f986ff04b2b70b31db00f719bf690f64a9a]
 
-testcase: will-it-scale
-config: x86_64-rhel-9.4
+in testcase: perf-sanity-tests
+with following parameters:
+
+	perf_compiler: gcc
+	group: group-00
+
+config: x86_64-rhel-9.4-bpf
 compiler: gcc-14
-test machine: 256 threads 2 sockets Intel(R) Xeon(R) 6768P  CPU @ 2.4GHz (Granite Rapids) with 64G memory
-parameters:
+test machine: 20 threads 1 sockets (Commet Lake) with 16G memory
 
-	nr_task: 100%
-	mode: process
-	test: open3
-	cpufreq_governor: performance
+If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <yi1.lai@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202609151503.cb02f753-lkp@intel.com
 
 
-Details are as below:
--------------------------------------------------------------------------------------------------->
+2026-09-14 10:03:47 sudo ASAN_OPTIONS=fast_unwind_on_malloc=0 /usr/src/linux-perf-x86_64-rhel-9.4-bpf-166f10836a653dfa280d4335603b52f685b8b1ef/tools/perf/perf test 23 -v
+ 23: Object code reading                                 : Running (1 active)
+---- start ----
+...
+Reading object code for memory address: 0x7f6d46bf44de File is: /usr/lib/x86_64-linux-gnu/libc.so.6
+Already tested /usr/lib/x86_64-linux-gnu/libc.so.6 @ 0xff4de - skipping Reading object code for memory address: 0x7f6d46bf44de File is: /usr/lib/x86_64-linux-gnu/libc.so.6
+Already tested /usr/lib/x86_64-linux-gnu/libc.so.6 @ 0xff4de - skipping Reading object code for memory address: 0 thread__find_map failed
+---- end(-1) ----
+ 23: Object code reading                                 : FAILED!
+
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20260915/202609151145.9d373682-lkp@intel.com
+https://download.01.org/0day-ci/archive/20260915/202609151503.cb02f753-lkp@intel.com
 
-=========================================================================================
-compiler/cpufreq_governor/kconfig/mode/nr_task/rootfs/tbox_group/test/testcase:
-  gcc-14/performance/x86_64-rhel-9.4/process/100%/debian-13-x86_64-20250902.cgz/lkp-gnr-2sp4/open3/will-it-scale
+This defect was originally reported on the perf/core branch (see https://lore.kernel.org/oe-lkp/202607091054.7c96d6c6-lkp@intel.com/). Since the culprit patch has now been merged into the mainline kernel, we have re-submitted the report to ensure proper tracking.
 
-commit: 
-  8ca3582209 ("Merge patch series "vfs: add O_CREAT|O_DIRECTORY to open*(2)"")
-  0d1ea15329 ("fs: avoid spurious dentry ref/unref cycle on open")
-
-8ca35822098a612e 0d1ea1532955fa881424cb01c45
----------------- --------------------------- 
-         %stddev     %change         %stddev
-             \          |                \  
-    517664 ±  2%     +84.8%     956515 ±  5%  will-it-scale.256.processes
-      2021 ±  2%     +84.8%       3736 ±  5%  will-it-scale.per_process_ops
-    517664 ±  2%     +84.8%     956515 ±  5%  will-it-scale.workload
-
-
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provided
-for informational purposes only. Any difference in system hardware or software
-design or configuration may affect actual performance.
-
-
--- 
+--
 0-DAY CI Kernel Test Service
 https://github.com/intel/lkp-tests/wiki
 
