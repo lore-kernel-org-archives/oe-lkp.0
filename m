@@ -1,108 +1,109 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C25D91A9FA0
-	for <oe-lkp@lists.linux.dev>; Mon, 14 Sep 2026 02:34:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1822940682C
+	for <oe-lkp@lists.linux.dev>; Tue, 15 Sep 2026 04:10:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789353249; cv=none; b=naQ0sIKXhabRf0NQJ/eteuDz8k+n45zjjBqsuQlWHKhWVyIBqvHxqy1OjF1HmcnHbmxqG7Fawbs9BVUy+7US9j8rtqvFBkJIxlvwPSeOqIa1oK2FSYMUkOtuaDy5XBOdGigZjuWq+jZoOlDJr+QFGsmrPnV3nJ4ZbH7o6Ewjv5s=
+	t=1789445438; cv=none; b=HrrPbn+wWjoG/hFKGxV7Wo/gztuXn2nH5yrTReUo7doPOaw4yA3GAmqlVoV7s4+3jvJVvLBHtMHd926j33A7ARqwRmj1uHGakiD/oA3wCnUc/a5dCntDdIfOzyjYyabD2wQyCiaNFQSzH190t+5NhSQ+tspyLIEMD8Qgz4HAiYY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789353249; c=relaxed/simple;
-	bh=gDPynbvaFXlIaeZuhaCZccO2AqwyBkyI5yxUQ+EN3Xc=;
+	s=arc-20240116; t=1789445438; c=relaxed/simple;
+	bh=IoHq6pA68jPK8A5EVELqzPYEiIuRvZaBxIbDPa5atM4=;
 	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=TNgmC837Q2MFV1t+awOK90mvcKUQFrSjrKV/fysO7+GUc3U+3X1M+xgFiJbz24VNTqtL+jtTZjwpIx1CNBGMWuDTpF2I2p+XxIPiWrZC8B3NNV/ihxDJoXnolwu7RO1bY66+NtY5LEvsGzlijdwIlpKXPfHR+T8JaMIUPaAB0NM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ci84Nhq7; arc=none smtp.client-ip=192.198.163.17
+	 Content-Disposition; b=fxiGCE2dVJL1LDuzoKTn9AJ5d8NpoKB3z87b+FWq3p7TV3N9goa5x9xRsMR6y0eoKeRszmUi1k2HJzzmTCi/gV/YePGQtFo6VySLezv2Hgi4PA+eEUIkrrRLVdB6ya60dGk5Sus+2EhrET5FZRuD1u78AgoFgsH9kQ+F9dTMLWE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Khi+LOeu; arc=none smtp.client-ip=192.198.163.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ci84Nhq7"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Khi+LOeu"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1789353248; x=1820889248;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=gDPynbvaFXlIaeZuhaCZccO2AqwyBkyI5yxUQ+EN3Xc=;
-  b=Ci84Nhq7FBE2IXSji+36qF35Fn0EyUPUzP83d5tV+RZXw34Yi5ZA6Z/V
-   gQ9uVpKaWys+I6Gq1nzlvWmI4ya4HipR2jNF8Ze7dlTSmmQ0ZLi8vnDt2
-   iYMrewxiimWBef7VcuR86THuyefBxx5Oy2r53XLu6k8x4nY2xtKblnkBN
-   pI6cmC8glv9rzgqPJAlayfbyKAP4H2HAnf5nRd059YtXReRicsEi7PBG+
-   873lM0Mw9ZnfaFvscl9WtGELtcndSsShy8S8791J26WaoS7pQw0VIVEkG
-   Lm7YESd/dPT1tNO5DsbBlNbvAyt7ANZBsg86UWLNHIJfcC+nD8OkPPdyK
-   A==;
-X-CSE-ConnectionGUID: QMPpsHlNRLaGmhM1X6tD+A==
-X-CSE-MsgGUID: NRoooWxyQZ2M9J5k8B8q5Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11904"; a="89585518"
-X-IronPort-AV: E=Sophos;i="6.27,102,1787036400"; 
-   d="scan'208";a="89585518"
-Received: from fmviesa013.fm.intel.com ([10.60.135.153])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2026 19:34:07 -0700
-X-CSE-ConnectionGUID: K5XA3zMQQU6WtxE+3LaaHg==
-X-CSE-MsgGUID: 6w+VRTKBRHWVz/kAXWB6Vw==
+  t=1789445437; x=1820981437;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=IoHq6pA68jPK8A5EVELqzPYEiIuRvZaBxIbDPa5atM4=;
+  b=Khi+LOeud2ee9O/SJXUqgh2eNrWBcsDto12Uh7tzmI2SNy2CHBaBlDme
+   o2X+XgirP+DphtHQTk0Vsb3qHk9ihuD+JeadjXAGNAIos/BTeXjcs5hqM
+   TLuNY38aU1zBNZFuwpZWJR/CRZj9zkAhF4vtaEUUcskutkYSvIKOiXbCd
+   GlkIMJfzHKmKuPJMu+qleR+pXga1B1Y43XwSeP18F5ADYTVHAnRHY3DWW
+   5ZFkRWvRH4Vft3h6hEdhDf0EmRqagcAmTEhb2Smy3LBx7OZ1kzjMtS3pq
+   t99X85+EWTuWAek8yHzbu/zwRTQvdpcZuTu3nhFyjfBEEXvrpxWPti6kF
+   g==;
+X-CSE-ConnectionGUID: RKG82zMgQMSVAOJfXouQwQ==
+X-CSE-MsgGUID: 6EWrPEpqTY2mCAzmBeziYQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11905"; a="88938113"
+X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
+   d="scan'208";a="88938113"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2026 21:10:36 -0700
+X-CSE-ConnectionGUID: gPi3sKHdTsybD2UWKaT+TA==
+X-CSE-MsgGUID: /+DnVYeZSiKNcvXfa4U5yw==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,102,1787036400"; 
-   d="scan'208";a="922092"
+X-IronPort-AV: E=Sophos;i="6.27,103,1787036400"; 
+   d="scan'208";a="269551985"
 Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2026 19:34:05 -0700
-Date: Mon, 14 Sep 2026 10:34:02 +0800
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2026 21:10:34 -0700
+Date: Tue, 15 Sep 2026 12:10:31 +0800
 From: kernel test robot <yi1.lai@intel.com>
-To: Ard Biesheuvel <ardb@kernel.org>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	Ravi Bangoria <ravi.bangoria@amd.com>,
-	Anisse Astier <anisse@astier.eu>, linux-efi@vger.kernel.org,
-	yi1.lai@intel.com
-Subject: [linus:master] [efivarfs]  b2326338dc: stress-ng.sysinfo.ops_per_sec
- 19.5% improvement
-Message-ID: <202609141037.779d7909-lkp@intel.com>
+To: Mateusz Guzik <mjguzik@gmail.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
+	Christian Brauner <brauner@kernel.org>,
+	linux-fsdevel@vger.kernel.org, yi1.lai@intel.com
+Subject: [linux-next:master] [fs]  0d1ea15329:  will-it-scale.per_process_ops
+ 84.8% improvement
+Message-ID: <202609151145.9d373682-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
 
 
 Hello,
 
-kernel test robot noticed a 19.5% improvement of stress-ng.sysinfo.ops_per_sec on:
+kernel test robot noticed a 84.8% improvement of will-it-scale.per_process_ops on:
 
-commit: b2326338dc683e8c1067c0cbf7a47986c4190902 ("efivarfs: Rate limit statfs() handler") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-testcase: stress-ng
+commit: 0d1ea1532955fa881424cb01c4599d14b90a22f6 ("fs: avoid spurious dentry ref/unref cycle on open") https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+
+testcase: will-it-scale
 config: x86_64-rhel-9.4
 compiler: gcc-14
-test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 256G memory
+test machine: 256 threads 2 sockets Intel(R) Xeon(R) 6768P  CPU @ 2.4GHz (Granite Rapids) with 64G memory
 parameters:
 
-	nr_threads: 100%
-	testtime: 60s
-	test: sysinfo
+	nr_task: 100%
+	mode: process
+	test: open3
 	cpufreq_governor: performance
 
 
 Details are as below:
 -------------------------------------------------------------------------------------------------->
 
-
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20260914/202609141037.779d7909-lkp@intel.com
+https://download.01.org/0day-ci/archive/20260915/202609151145.9d373682-lkp@intel.com
 
 =========================================================================================
-compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
-  gcc-14/performance/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/lkp-spr-r02/sysinfo/stress-ng/60s
+compiler/cpufreq_governor/kconfig/mode/nr_task/rootfs/tbox_group/test/testcase:
+  gcc-14/performance/x86_64-rhel-9.4/process/100%/debian-13-x86_64-20250902.cgz/lkp-gnr-2sp4/open3/will-it-scale
 
 commit: 
-  eb01ffabeb ("efi: apple-properties: validate setup data header length")
-  b2326338dc ("efivarfs: Rate limit statfs() handler")
+  8ca3582209 ("Merge patch series "vfs: add O_CREAT|O_DIRECTORY to open*(2)"")
+  0d1ea15329 ("fs: avoid spurious dentry ref/unref cycle on open")
 
-eb01ffabeb52251f b2326338dc683e8c1067c0cbf7a
+8ca35822098a612e 0d1ea1532955fa881424cb01c45
 ---------------- --------------------------- 
          %stddev     %change         %stddev
              \          |                \  
-      5824           +19.2%       6944        stress-ng.sysinfo.ops
-     96.86           +19.5%     115.73        stress-ng.sysinfo.ops_per_sec
-      3.00          +100.0%       6.00        stress-ng.time.percent_of_cpu_this_job_got
+    517664 ±  2%     +84.8%     956515 ±  5%  will-it-scale.256.processes
+      2021 ±  2%     +84.8%       3736 ±  5%  will-it-scale.per_process_ops
+    517664 ±  2%     +84.8%     956515 ±  5%  will-it-scale.workload
 
 
 Disclaimer:
@@ -110,7 +111,9 @@ Results have been estimated based on internal Intel analysis and are provided
 for informational purposes only. Any difference in system hardware or software
 design or configuration may affect actual performance.
 
+
 -- 
 0-DAY CI Kernel Test Service
 https://github.com/intel/lkp-tests/wiki
+
 
