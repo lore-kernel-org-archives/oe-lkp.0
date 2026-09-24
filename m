@@ -1,55 +1,61 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.4])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A57931922FD
-	for <oe-lkp@lists.linux.dev>; Thu, 24 Sep 2026 03:31:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 323443AC0EF
+	for <oe-lkp@lists.linux.dev>; Thu, 24 Sep 2026 03:55:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790220702; cv=none; b=hz00GGcJ1e8M2thn/qjBuHQ+Yr0dgsf3Apb7ev2DKVgXC+ZWC0tsZ0a4zABMF6oVzNkxMUzh64iL7Qk9DArQlPE9CDg6ogRYoXouAfAG3Wt9tjtR4HzyEX2qwkdB67otI0bm4Hfqkyb8ljyaHMebAt/11zAZIf7ZUbliuUvH7e4=
+	t=1790222155; cv=none; b=B2OeGS+XZy9AbEBqj0moWKBD3ZLJeSW+k/X/99EFDTaK0Th9GuUkbvq36K0EV55H6UbFHB4PJ29U80tGvrzpGRIem6ft2r16hgXDaYvA0OgoUfaFxYhOsH2doDR9FN+nHPVXyiFw/er6yFUiiOeeL4wy9EYWopaEQY8Ko4Q/kT4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790220702; c=relaxed/simple;
-	bh=H1jkAmvIJl45FG24xogw+kSeZTMxdV3R3wMWwJodV+U=;
+	s=arc-20240116; t=1790222155; c=relaxed/simple;
+	bh=lzlSPTzlh/Y5qjIW/JUnZhJwQdNHGCW9Q33UHnVlrS4=;
 	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=m7DKps5MgBWInNxJYDVBrjqOUgky9Pebtxk3ZozBMTYejNatvSGZR7yigw0rLw6y95yD9W70ZMeUEam9Dai2Nni/CmtcnS5iXLCf49pZr+ba6R19NpHVNu1ZrN/rcAK1qjcS9Vd7ZNQ0BhVe81ievibEB1yyCjhwvtHu3xUSA+4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kyBEjEPJ; arc=none smtp.client-ip=192.198.163.4
+	 Content-Disposition:In-Reply-To; b=EeNtubtKF0jVWXQgs14MB0+dmYyXF5+wf/hSzjwmGtmbiALKMygeuEsJlcHvq4fWXC+NIZxcA1P+1kstX/+fpYmU48imYB76tM4sbhrF8ieg9uMrkxXJ4b+c7dft001FwuhUes3Mt9jniUZCu4VF288bZQv/WPRmEpbxncP15cg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=W2biRSuj; arc=none smtp.client-ip=192.198.163.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kyBEjEPJ"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="W2biRSuj"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1790220701; x=1821756701;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=H1jkAmvIJl45FG24xogw+kSeZTMxdV3R3wMWwJodV+U=;
-  b=kyBEjEPJdkZOUnwZyiy9SLaEFCmxQttGdSjGOPWpei9j7Ywv+WGnuBC4
-   xsXQZev87ZRa9+TgrJSG5aQTyoKAeegDsI16Lj6u4nUTH/tBCEbFpftsv
-   AKORys6evXeJWTAHMfehOuutMwW6TPAGkcNV091k7VhfXjHYutNs072XN
-   pjzAPi/3EVTRNXOSToxxwm9hfbn2nHjNOXpxLamNSxI3Sz5+nVDQWdn72
-   H28hsq3xIIRL1BFcq7ye3hOYKE+q3ilc/jpAxxT4IXXWHVtBsvw6YnAyg
-   03W+FUsVs+mcgLpx3j7yxaNivsZC4OL6QIxGp9L/PQmiTTFJyleOPDuXA
+  t=1790222154; x=1821758154;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   in-reply-to;
+  bh=lzlSPTzlh/Y5qjIW/JUnZhJwQdNHGCW9Q33UHnVlrS4=;
+  b=W2biRSuj0u0nLtSGbtgkJqnpQCC4qvP1RgqKXMPsphx4A4wzc+AFYpfv
+   xlc2x8BuS3siwN4u5dxsFgMu+RganXeFo1gBT/1+I4qcolXCbZrOTyYCF
+   vQuw/Ifp2mEPWLu6swYn8lLpNbkiBppGESv93SwSDeTJ4wP6oDYdTCpxM
+   KCu7YMIG3YTt92PGHL5NOOLFjEByYvTpcz4P/nXz1YMwCBzoktp2XzWIb
+   Gcv9IVcWKOdmL4FAVR+RlyAt2hHF51mxX1En5rCjyAy9EtllJnBnC4Gu8
+   kJS9bFDV3YTN05g3d3o2yfxZ/v0lFDnzNMG0AqTozqTb16vj4NdN4HjqS
    w==;
-X-CSE-ConnectionGUID: EKiK2SHaRKGvh+8N2c6KqA==
-X-CSE-MsgGUID: JXkOOIe6R3GslZ0hSKnV6Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11914"; a="1492885"
+X-CSE-ConnectionGUID: QddqnivxRf2lbinvRLLrfw==
+X-CSE-MsgGUID: d6RvNYV+TaGkjFPZB1lXlg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11914"; a="91087213"
 X-IronPort-AV: E=Sophos;i="6.27,119,1787036400"; 
-   d="scan'208";a="1492885"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa114.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2026 20:31:40 -0700
-X-CSE-ConnectionGUID: f27awtTlTCacrCx3gHSrVQ==
-X-CSE-MsgGUID: kezlQk1OTY+VOjIGFLjHtQ==
+   d="scan'208";a="91087213"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2026 20:55:53 -0700
+X-CSE-ConnectionGUID: 6IppWfUsRoKkrEUti05hiA==
+X-CSE-MsgGUID: FU/g7o9gQVqhsp1vb3mJVg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,119,1787036400"; 
-   d="scan'208";a="272484925"
+   d="scan'208";a="273381451"
 Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2026 20:31:38 -0700
-Date: Thu, 24 Sep 2026 11:31:35 +0800
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2026 20:55:50 -0700
+Date: Thu, 24 Sep 2026 11:55:47 +0800
 From: kernel test robot <yi1.lai@intel.com>
-To: Maxime Ripard <mripard@kernel.org>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, dri-devel@lists.freedesktop.org,
-	yi1.lai@intel.com
-Subject: [mripard:drm/reset-state-flag] [drm/vkms]  3d18732b92:
- WARNING:at_drivers/gpu/drm/drm_property.c:#drm_property_create
-Message-ID: <202609240921.8ca95532-lkp@intel.com>
+To: "Harry Yoo (Meta)" <harry@kernel.org>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, Hyunwoo Kim <imv4bel@gmail.com>,
+	linux-mm@kvack.org, Vlastimil Babka <vbabka@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Hao Li <hao.li@linux.dev>, Christoph Lameter <cl@gentwo.org>,
+	David Rientjes <rientjes@google.com>,
+	Roman Gushchin <roman.gushchin@linux.dev>,
+	linux-kernel@vger.kernel.org, yi1.lai@intel.com
+Subject: Re: [PATCH v3] mm/slab: take n->list_lock in
+ __slab_try_return_freelist() to avoid race
+Message-ID: <202609240534.9fe4984a-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -58,120 +64,66 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-
+In-Reply-To: <20260903-slab-fix-aba-v3-1-b44cb6badd54@kernel.org>
 
 
 Hello,
 
-kernel test robot noticed "WARNING:at_drivers/gpu/drm/drm_property.c:#drm_property_create" on:
+kernel test robot noticed a 2.3% regression of stress-ng.pagemove.page_remaps_per_sec on:
 
-commit: 3d18732b927902aaa841e0ebb77f3feaf8e519a9 ("drm/vkms: Add driver-specific plane property for testing") https://git.kernel.org/cgit/linux/kernel/git/mripard/linux.git drm/reset-state-flag
 
-in testcase: boot
+commit: 710555228bde64392410a9e8959d0324c1a0a598 ("[PATCH v3] mm/slab: take n->list_lock in __slab_try_return_freelist() to avoid race")
+url: https://github.com/intel-lab-lkp/linux/commits/Harry-Yoo-Meta/mm-slab-take-n-list_lock-in-__slab_try_return_freelist-to-avoid-race/20260903-153226
+patch link: https://lore.kernel.org/all/20260903-slab-fix-aba-v3-1-b44cb6badd54@kernel.org/
+patch subject: [PATCH v3] mm/slab: take n->list_lock in __slab_try_return_freelist() to avoid race
 
-config: x86_64-randconfig-123-20260911
-compiler: clang-22
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 4 -m 16G
+testcase: stress-ng
+config: x86_64-rhel-9.4
+compiler: gcc-14
+test machine: 192 threads 2 sockets Intel(R) Xeon(R) 6740E  CPU @ 2.4GHz (Sierra Forest) with 256G memory
+parameters:
+
+	nr_threads: 100%
+	testtime: 60s
+	test: pagemove
+	cpufreq_governor: performance
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <yi1.lai@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202609240921.8ca95532-lkp@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202609240534.9fe4984a-lkp@intel.com
 
 
-
-[   16.128490][    T1] ------------[ cut here ]------------
-[   16.131898][    T1] WARNING: drivers/gpu/drm/drm_property.c:107 at drm_property_create+0x44f/0x500, CPU#0: swapper/0/1
-[   16.138834][    T1] Modules linked in:
-[   16.142626][    T1] CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Tainted: G                T   7.3.0-rc1-00366-g3d18732b9279 #1 PREEMPTLAZY
-[   16.153490][    T1] Tainted: [T]=RANDSTRUCT
-[   16.157939][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[   16.173562][    T1] RIP: 0010:drm_property_create (gpu/drm/drm_property.c:107 (discriminator 6))
-[   16.177872][    T1] Code: 48 89 df e8 d3 2e 2d fe 4c 89 33 e9 e1 fe ff ff e8 06 44 fc fd e9 6a fd ff ff e8 fc 43 fc fd e9 60 fd ff ff e8 f2 43 fc fd 90 <0f> 0b 90 e9 bc fe ff ff e8 e4 43 fc fd 49 8d 5f 58 48 89 d8 48 c1
-All code
-========
-   0:	48 89 df             	mov    %rbx,%rdi
-   3:	e8 d3 2e 2d fe       	call   0xfffffffffe2d2edb
-   8:	4c 89 33             	mov    %r14,(%rbx)
-   b:	e9 e1 fe ff ff       	jmp    0xfffffffffffffef1
-  10:	e8 06 44 fc fd       	call   0xfffffffffdfc441b
-  15:	e9 6a fd ff ff       	jmp    0xfffffffffffffd84
-  1a:	e8 fc 43 fc fd       	call   0xfffffffffdfc441b
-  1f:	e9 60 fd ff ff       	jmp    0xfffffffffffffd84
-  24:	e8 f2 43 fc fd       	call   0xfffffffffdfc441b
-  29:	90                   	nop
-  2a:*	0f 0b                	ud2		<-- trapping instruction
-  2c:	90                   	nop
-  2d:	e9 bc fe ff ff       	jmp    0xfffffffffffffeee
-  32:	e8 e4 43 fc fd       	call   0xfffffffffdfc441b
-  37:	49 8d 5f 58          	lea    0x58(%r15),%rbx
-  3b:	48 89 d8             	mov    %rbx,%rax
-  3e:	48                   	rex.W
-  3f:	c1                   	.byte 0xc1
-
-Code starting with the faulting instruction ===========================================
-   0:	0f 0b                	ud2
-   2:	90                   	nop
-   3:	e9 bc fe ff ff       	jmp    0xfffffffffffffec4
-   8:	e8 e4 43 fc fd       	call   0xfffffffffdfc43f1
-   d:	49 8d 5f 58          	lea    0x58(%r15),%rbx
-  11:	48 89 d8             	mov    %rbx,%rax
-  14:	48                   	rex.W
-  15:	c1                   	.byte 0xc1
-[   16.191481][    T1] RSP: 0000:ffff88810080f9b8 EFLAGS: 00010293
-[   16.195316][    T1] RAX: ffffffff834b20ce RBX: ffffffff85df7840 RCX: ffff888100805400
-[   16.200307][    T1] RDX: 0000000000000000 RSI: 0000000000000002 RDI: ffffffff85df7840
-[   16.205474][    T1] RBP: 0000000000000002 R08: 00000000ffffffff R09: 0000000000000001
-[   16.210508][    T1] R10: ffff888100dd60a9 R11: ffffed10201bac17 R12: ffff8881243cc000
-[   16.215541][    T1] R13: 0000000000000002 R14: ffffffff85df7840 R15: 0000000000000000
-[   16.220642][    T1] FS:  0000000000000000(0000) GS:0000000000000000(0000) knlGS:0000000000000000
-[   16.226465][    T1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   16.230647][    T1] CR2: ffff88883ffff000 CR3: 00000000074ab000 CR4: 00000000000406b0
-[   16.235620][    T1] Call Trace:
-[   16.237793][    T1]  <TASK>
-[   16.239612][    T1]  drm_property_create_range (gpu/drm/drm_property.c:248 gpu/drm/drm_property.c:281)
-[   16.243716][    T1]  vkms_plane_init (gpu/drm/vkms/vkms_plane.c:335)
-[   16.249316][    T1]  vkms_output_init (gpu/drm/vkms/vkms_output.c:23)
-[   16.253612][    T1]  vkms_create (gpu/drm/vkms/vkms_drv.c:157)
-[   16.257515][    T1]  ? vgem_init (vgem_drv.c:?)
-[   16.261493][    T1]  vkms_init (gpu/drm/vkms/vkms_drv.c:240)
-[   16.265247][    T1]  do_one_initcall (main.c:1357)
-[   16.269406][    T1]  ? kvm_clock_get_cycles (x86/kernel/kvmclock.c:81 (discriminator 257))
-[   16.273596][    T1]  ? ktime_get (time/timekeeping.c:1008)
-[   16.277336][    T1]  ? lockdep_hardirqs_on_prepare (locking/lockdep.c:470)
-[   16.281688][    T1]  ? irqentry_exit (linux/irq-entry-common.h:507)
-[   16.284933][    T1]  ? irqentry_exit (linux/irq-entry-common.h:507)
-[   16.287804][    T1]  ? lockdep_hardirqs_on (locking/lockdep.c:4488)
-[   16.294913][    T1]  ? irqentry_exit (linux/irq-entry-common.h:507)
-[   16.298066][    T1]  ? strlen (string.c:402 (discriminator 1))
-[   16.300438][    T1]  ? next_arg (cmdline.c:276 (discriminator 1024))
-[   16.303260][    T1]  ? parameq (params.c:91 (discriminator 1792))
-[   16.305908][    T1]  ? parse_args (params.c:177 (discriminator 1281))
-[   16.308825][    T1]  ? __kasan_kmalloc (kasan/common.c:398 kasan/common.c:415)
-[   16.311896][    T1]  do_initcall_level (main.c:1419 (discriminator 1))
-[   16.315225][    T1]  do_initcalls (main.c:1435)
-[   16.317948][    T1]  kernel_init_freeable (main.c:1670)
-[   16.321217][    T1]  ? rest_init (main.c:?)
-[   16.323799][    T1]  kernel_init (main.c:1560)
-[   16.326645][    T1]  ? rest_init (main.c:?)
-[   16.329510][    T1]  ret_from_fork (x86/kernel/process.c:158)
-[   16.332366][    T1]  ? rest_init (main.c:?)
-[   16.335223][    T1]  ret_from_fork_asm (x86/entry/entry_64.S:245)
-[   16.338294][    T1]  </TASK>
-[   16.340000][    T1] irq event stamp: 158901
-[   16.344134][    T1] hardirqs last  enabled at (158921): __console_unlock (printk/printk.c:347 (discriminator 3) printk/printk.c:2932 (discriminator 3))
-[   16.353660][    T1] hardirqs last disabled at (158940): __console_unlock (printk/printk.c:345 (discriminator 6) printk/printk.c:2932 (discriminator 6))
-[   16.362876][    T1] softirqs last  enabled at (158574): __irq_exit_rcu (softirq.c:679 softirq.c:519 softirq.c:767)
-[   16.370862][    T1] softirqs last disabled at (158565): __irq_exit_rcu (softirq.c:679 softirq.c:519 softirq.c:767)
-[   16.377646][    T1] ---[ end trace 0000000000000000 ]---
+Details are as below:
+-------------------------------------------------------------------------------------------------->
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20260924/202609240921.8ca95532-lkp@intel.com
+https://download.01.org/0day-ci/archive/20260924/202609240534.9fe4984a-lkp@intel.com
+
+=========================================================================================
+compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
+  gcc-14/performance/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/igk-srf-2sp3/pagemove/stress-ng/60s
+
+commit: 
+  v7.3-rc1
+  710555228b ("[PATCH v3] mm/slab: take n->list_lock in __slab_try_return_freelist() to avoid race")
+
+        v7.3-rc1 710555228bde64392410a9e8959
+---------------- --------------------------- 
+         %stddev     %change         %stddev
+             \          |                \  
+  74699042            -2.5%   72797565        stress-ng.pagemove.ops
+   1245981            -2.5%    1214288        stress-ng.pagemove.ops_per_sec
+    291125            -2.3%     284309        stress-ng.pagemove.page_remaps_per_sec
 
 
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provided
+for informational purposes only. Any difference in system hardware or software
+design or configuration may affect actual performance.
 
---
+
+-- 
 0-DAY CI Kernel Test Service
 https://github.com/intel/lkp-tests/wiki
-
 
