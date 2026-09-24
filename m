@@ -1,122 +1,120 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F4ED47143D
-	for <oe-lkp@lists.linux.dev>; Thu, 24 Sep 2026 11:33:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DF384D5A1
+	for <oe-lkp@lists.linux.dev>; Thu, 24 Sep 2026 13:10:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790249600; cv=none; b=cB9Jh7BaZpJYxvQ/WtUKtKeNvNQ67xb2bhXh0w74jr85d4Wt2s52KNMtylaZojstS4gmRu7obCz+uQ8EYqbIenOU8XKkIsoONL1iERbetDrr/mbi/ISbhTfgl6uAM2URMhvg3KVVpZTxuOa95e7JWwYMHbZ/dL5bQHUGX7SYqDc=
+	t=1790255457; cv=none; b=q683CQBqxhbHKXLU8cF0+aRJt6ftoRN01ocI1N+BLlo9NEwk0NziF6BDLr6lkVwYYp8euBQvYzJk0d9REvDdPa0YLrJBrGW2tEpIRo5/4nQtLJkqd26nWcPkm8P/bxzaIQn2oowTmbirZsLDM2+eJc4lS7jC9Krx7YSr+uYoprQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790249600; c=relaxed/simple;
-	bh=bi4A9oP6oNMDEiR09MQYo1/7+Q8TAO2XFMTYuwz/r3c=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=hxvR48lVt/886HyByi6Mb4BQipdcck+RY5hwJPaG58pxnkNLVRWs+7B7LDjjedw9X0I1CzuF0a0z65/wE6ZntlGB1vkygpYoCymfmCWL/FcSA3FGUAiPDipLbZp3/KNUW9KkOxoLXsRC/S9k0PDe/Idg3VedDHqOjdQcndHAaB8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=K2XHoE6F; arc=none smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1790255457; c=relaxed/simple;
+	bh=gcfeWoiFumGnwZk5oFpcY1/uEIGM3eRC5jcO2JGn5qA=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=WcNYjA6tngTW+KfZNqwUQPo3AN+/LAF2DFXhuL9qc/299P6TR0NyKxGkd1zBrtQBozZfwXGbHJ9rChzwT+2+2kFQzx7bGmry4dEN0tCt0O6iIVBr6aveUYclN2PC8AGUpOUyQnECQT/ewNxjmsKNvjWN8Jn20ktguMeAcPQvHYE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=EXLbNego; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=8xUZhWDf; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="K2XHoE6F"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1790249595; x=1821785595;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=bi4A9oP6oNMDEiR09MQYo1/7+Q8TAO2XFMTYuwz/r3c=;
-  b=K2XHoE6FgimUriwpllOuNFRofZ3tYJvZ04clhieswYlcpsd1zI8yDBPZ
-   +elZn6SIX65RZsMapoTGjb5yjxNgNq/PLyLuQyoQ5X+qNeOTvU4SATsFm
-   5Bd9Jf+7xdEdeQZTSkKTF2LJILJZXyYXhiWuUDbhUsM4b2HswXt7LmChA
-   94qQs2oF831NfScdYBWjJutHA1L2+IdF6ShLok15WXsNHz+YwdWV3MFso
-   STIp/BVq0PI1z++I41KmHBf7jYhZU3eM1q3Zpwn75xhv2wmDoxbcrgPWg
-   iNdbySD5Bl900p3eADvZiHLIdfwhpu8qwJ00IzHSfXhO2LB8eG2NGUUbv
-   w==;
-X-CSE-ConnectionGUID: dm0qhK+xTCaYSk4jC7yL7g==
-X-CSE-MsgGUID: uz2tHaKqQ4iy6v+slxnpPA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11914"; a="89877580"
-X-IronPort-AV: E=Sophos;i="6.27,120,1787036400"; 
-   d="scan'208";a="89877580"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2026 04:33:13 -0700
-X-CSE-ConnectionGUID: dF85Lm6WRf22zoxZNwTU5w==
-X-CSE-MsgGUID: 846Iiz+NT06RMKm4RjbHsw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,120,1787036400"; 
-   d="scan'208";a="270487899"
-Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2026 04:33:11 -0700
-Date: Thu, 24 Sep 2026 19:33:08 +0800
-From: kernel test robot <yi1.lai@intel.com>
-To: Puranjay Mohan <puranjay@kernel.org>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	"Paul E. McKenney" <paulmck@kernel.org>, rcu@vger.kernel.org,
-	yi1.lai@intel.com
-Subject: [linus:master] [rcu]  ec5ee5417b:  stress-ng.ramfs.ops_per_sec 25.7%
- improvement
-Message-ID: <202609241934.228b4a14-lkp@intel.com>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="EXLbNego";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="8xUZhWDf"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1790255452;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=LiKz17vAIdlOfYQvk8/f7uZ7etlql30qRiSSyHC6Ljk=;
+	b=EXLbNegoUgxByyJwIkTuDEyqv0eAtUVKIWN0/OmVk/D6ax7fG+/FVEDOggFDZxQrun8xCX
+	deb2dOVt1Xyjdx2z1bxrWhsG95zX6iroe14+gx4tNqZURxzV80gVXXKyFggN6plpWKur6j
+	AVcHTkmnpdQeneJK8DvZ/O3eS9Z0imK8GuFw7BYwlK8R4gqG+UhFQR3czC3R+dCIiYZxhL
+	WiyFcgQjQf7gN5OYPlUDVHKHJS5szx8SdK8QHL5i+Pnhf9HVKOPX1LmtSUMJNf6uYmFMIN
+	g+rpryqH1/3q3gzUAcBloeuey+Vn5Ow+VrQQUWq/C0Vgd2vunm6+mPf7lK0N8A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1790255452;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=LiKz17vAIdlOfYQvk8/f7uZ7etlql30qRiSSyHC6Ljk=;
+	b=8xUZhWDfY7A477ahokQeXmbTEMGoIg09C4bus0wz8C2qgKdSydq2QkabYH0rMagFVfDfLI
+	Sgq2qvaO/kAgVZAg==
+To: Petr Mladek <pmladek@suse.com>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+ lkp@intel.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ linux-serial@vger.kernel.org, Sergey Senozhatsky
+ <senozhatsky@chromium.org>, Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [linux-next:master] [serial]  d353934702:
+ BUG:kernel_reboot-without-warning_in_test_stage
+In-Reply-To: <87bj9o0yir.fsf@jogness.linutronix.de>
+References: <202608061008.48a1e76e-lkp@intel.com>
+ <87ecek1c8d.fsf@jogness.linutronix.de> <arPQwKbl7wM6IM3x@pathway.suse.cz>
+ <87bj9o0yir.fsf@jogness.linutronix.de>
+Date: Thu, 24 Sep 2026 15:16:51 +0206
+Message-ID: <87pky2u750.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
+Hi Petr,
 
+On 2026-09-23, John Ogness <john.ogness@linutronix.de> wrote:
+>> diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
+>> index d17704fe93ae..48446926dc50 100644
+>> --- a/kernel/printk/nbcon.c
+>> +++ b/kernel/printk/nbcon.c
+>> @@ -1446,6 +1446,10 @@ enum nbcon_prio nbcon_get_default_prio(void)
+>>  	if (panic_on_this_cpu())
+>>  		return NBCON_PRIO_PANIC;
+>>  
+>> +	/* Do not rely on kthreads when the system is going down. */
+>> +	if (system_state > SYSTEM_RUNNING)
+>> +		return NBCON_PRIO_EMERGENCY;
+>> +
+>>  	cpu_emergency_nesting = nbcon_get_cpu_emergency_nesting();
+>>  	if (*cpu_emergency_nesting)
+>>  		return NBCON_PRIO_EMERGENCY;
+>> diff --git a/kernel/reboot.c b/kernel/reboot.c
+>> index d177d89fcc33..776784a82499 100644
+>> --- a/kernel/reboot.c
+>> +++ b/kernel/reboot.c
+>> @@ -8,6 +8,7 @@
+>>  #define pr_fmt(fmt)	"reboot: " fmt
+>>  
+>>  #include <linux/atomic.h>
+>> +#include <linux/console.h>
+>>  #include <linux/ctype.h>
+>>  #include <linux/export.h>
+>>  #include <linux/kexec.h>
+>> @@ -94,6 +95,7 @@ void emergency_restart(void)
+>>  {
+>>  	kmsg_dump(KMSG_DUMP_EMERG);
+>>  	system_state = SYSTEM_RESTART;
+>> +	printk_trigger_flush();
+>>  	machine_emergency_restart();
+>>  }
+>>  EXPORT_SYMBOL_GPL(emergency_restart);
+>> @@ -102,6 +104,7 @@ void kernel_restart_prepare(char *cmd)
+>>  {
+>>  	blocking_notifier_call_chain(&reboot_notifier_list, SYS_RESTART, cmd);
+>>  	system_state = SYSTEM_RESTART;
+>> +	printk_trigger_flush();
+>>  	usermodehelper_disable();
+>>  	device_shutdown();
+>>  }
+>> @@ -305,6 +308,7 @@ static void kernel_shutdown_prepare(enum system_states state)
+>>  	blocking_notifier_call_chain(&reboot_notifier_list,
+>>  		(state == SYSTEM_HALT) ? SYS_HALT : SYS_POWER_OFF, NULL);
+>>  	system_state = state;
+>> +	printk_trigger_flush();
+>>  	usermodehelper_disable();
+>>  	device_shutdown();
+>>  }
+>
+> I am OK with this change.
 
-Hello,
+If you want to roll this into an official patch:
 
-kernel test robot noticed a 25.7% improvement of stress-ng.ramfs.ops_per_sec on:
-
-
-commit: ec5ee5417b00278fa050b38d878b76f1365420fb ("rcu: Advance callbacks for expedited GP completion in rcu_core()") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-
-testcase: stress-ng
-config: x86_64-rhel-9.4
-compiler: gcc-14
-test machine: 256 threads 2 sockets Intel(R) Xeon(R) 6768P  CPU @ 2.4GHz (Granite Rapids) with 64G memory
-parameters:
-
-  nr_threads: 100%
-  testtime: 60s
-  test: ramfs
-  cpufreq_governor: performance
-
-
-Details are as below:
--------------------------------------------------------------------------------------------------->
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20260924/202609241934.228b4a14-lkp@intel.com
-
-=========================================================================================
-compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
-  gcc-14/performance/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/lkp-gnr-2sp4/ramfs/stress-ng/60s
-
-commit: 
-  fde2b18817 ("rcu: Detect expedited grace period completion in rcu_pending()")
-  ec5ee5417b ("rcu: Advance callbacks for expedited GP completion in rcu_core()")
-
-fde2b18817e4f32b ec5ee5417b00278fa050b38d878
----------------- --------------------------- 
-         %stddev     %change         %stddev
-             \          |                \  
-    427110           +25.7%     537009        stress-ng.ramfs.ops
-      7124           +25.7%       8957        stress-ng.ramfs.ops_per_sec
-      6004 ±  2%    +561.7%      39731        stress-ng.time.involuntary_context_switches
-    685.50            -5.1%     650.33        stress-ng.time.percent_of_cpu_this_job_got
-    405.23            -5.4%     383.53        stress-ng.time.system_time
-    776758           +19.9%     931227        stress-ng.time.voluntary_context_switches
-
-
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provided
-for informational purposes only. Any difference in system hardware or software
-design or configuration may affect actual performance.
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+Reviewed-by: John Ogness <john.ogness@linutronix.de>
