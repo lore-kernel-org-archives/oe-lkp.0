@@ -1,213 +1,208 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 604BD4C9DE4
-	for <oe-lkp@lists.linux.dev>; Fri,  9 Oct 2026 11:03:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C5E744A71E
+	for <oe-lkp@lists.linux.dev>; Fri,  9 Oct 2026 12:59:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791543847; cv=none; b=d12tQMLCo5Tnxvd3dDCd5aa6SF27t9MOb1mKpPXBUdrWFyd5uYatWw8EBaOauRznrSZfqIQ6NU6St5zUZMzoQ1YR8Z9MSfIm1Z9zZDLPLyEniGlnn9RZUuSamjr1/q7S93sFuh1X2Ko8WjaQvizvFnuIvU2uzX3amBVb0uT+J5k=
+	t=1791550755; cv=none; b=dl+TYr/7pGu1YUCGDQTuHilXwFr4ihDDwMDk5rI5r20Tq2YXfx15WmX5GQqY/SinHXjjFt8m2Bgm5wX/58tarWQC/o9E6cBgaxlX1ZH+OnAMxHAXG8vYD0I5krFB4wu3Mck2k1hAihuL/YA0U1K0WBkZ3PI7wj60AWozVMAZ8+M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791543847; c=relaxed/simple;
-	bh=9BJzS5xAX1ZfZUEC36qI+T2CthLql9ii8V+PAUYoyuQ=;
+	s=arc-20240116; t=1791550755; c=relaxed/simple;
+	bh=O3HPNiC/H6q/R/UqjxAM9mOq/yQeP0MwgcnJdZbOPAM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tekL3MHFn7aFor0GlQk86D6bxkf5P7LI0lCPwIVBBRg0kCtP9HfIUQ3wDwtzx6fFHqWeAyIv1dVykmWz4GMukgHQE/hKi8jLFaC1KtFmsHyl79Hp/0AI7V/rSErBymhjhpFZlfEQhlHmDRDINRd71WUluw2LovpcaIJ6fAMqnW0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HXtBu0RT; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=HyvX51pSw6HJbJ27fX3KzzsBqgOFZjCv9hkgdHYIYjlL4u6bGF5m5JkMspdMG37dOvE5vLfp0zjXZN5UGjkZv1VtU+B5A04GxPIhMnc8rs0c3J61y4qSLCQ+/W1J/udYInzLpsPp61y3oT3diG8e6s5sJB4LvY6Ur/Ebqe83IFA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=oSNwUpTQ; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=hcfEm8Bl; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HXtBu0RT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 400341F000FF;
-	Fri,  9 Oct 2026 11:03:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791543835;
-	bh=o4mVTD0NTqB9D7Gs5A6eFeOnRu4d7xcFVmW/D5Mtxo8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=HXtBu0RToAts+Aarg/9eCHojiplI8SRWAbjZJ6AzKBdxw0FKyNvaKXojId2Nkjqww
-	 t1ASGTPG2Y07P6986jcR6c3eTgzGuL+YOiIfDKKGcdRlGLJ2RBI7qGbvU10yvOlvmU
-	 pYD6V4Vx8/j2m2xJU7i77Wq0cNDoCBUv2swu++strIRjoqi3bH8gxmgiPAZDEukJaS
-	 hzyigALZCBtHoIiqHQfLQ2epmRM/lFsg70SWMAGAcUjVLfJGLUnA7N1tDhlRPwIu54
-	 qajrwZQM+pH18Bv3X1rr2USxdSJT5+mXmMmMArjxj7+uelh3AMReqU9q1ArVGfffSS
-	 zHQHc2ZMn6yXw==
-Date: Fri, 9 Oct 2026 13:03:45 +0200
-From: Harry Yoo <harry@kernel.org>
-To: kernel test robot <yi1.lai@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-mm@kvack.org, 
-	Vlastimil Babka <vbabka@kernel.org>, Hao Li <hao.li@linux.dev>, 
-	Andrew Morton <akpm@linux-foundation.org>, Christoph Lameter <cl@gentwo.org>, 
-	David Rientjes <rientjes@google.com>, Roman Gushchin <roman.gushchin@linux.dev>, 
-	"Liam R. Howlett" <liam@infradead.org>, Alice Ryhl <aliceryhl@google.com>, 
-	Andrew Ballance <andrewjballance@gmail.com>, maple-tree@lists.infradead.org, 
-	Suren Baghdasaryan <surenb@google.com>
-Subject: Re: [harry:b4/sheaf-size-round-up] [mm/slab]  ddf56dfc79:
- will-it-scale.per_process_ops 54.5% improvement
-Message-ID: <asjIHAeuL1ilE4sn@thinkpad>
-References: <202610091451.beda4ec3-lkp@intel.com>
- <asi-kgXfHJt6Gjp0@thinkpad>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="oSNwUpTQ";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="hcfEm8Bl"
+Date: Fri, 9 Oct 2026 14:59:07 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1791550749;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=YA/AaboNi3kj/HKsO3IF65GjFnmZrdFwxRX2y8NDDDE=;
+	b=oSNwUpTQCVH7lrBBlsXlbo6wu8uh5vxiFD0ugQxgpbcjgI4MHMFcg0nfz5D3WfwnXSfl8U
+	iFRwZRUqBa+zo3Xgr8frX7CwmM/r+/8BXC/Ly254lRkGTDgkAXGReAclormUmKKc0bmm+B
+	s0M3Uh4RWxtSCH/fKUBCc2uyMxWqdQXcjYroWvpOr8K520KICkbMfoUlw3IMYKvQdDPbrY
+	pYuKyzrn6Wits7gKs+XyI7LlVWGReOIEpYVN/bqL/zz1x8oVcKaTx41WJonaWOCnZxY/qe
+	iL0i8DO9qiU9EFZ/+i8dx9LEN9RqX3VW3ZSuS48tfQaYsI5HJ+FibTugxoZIIA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1791550749;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=YA/AaboNi3kj/HKsO3IF65GjFnmZrdFwxRX2y8NDDDE=;
+	b=hcfEm8Bl+gLQPrLfwcEeghv7JRQ93mE/jxF6KBkPb1T7jwOfc66S3dNdIV1f9gz1VySvkq
+	9oEiFCCQczkVaEDg==
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Petr Mladek <pmladek@suse.com>
+Cc: John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
+	Oleg Nesterov <oleg@redhat.com>,
+	Christian Brauner <brauner@kernel.org>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-serial@vger.kernel.org, oliver.sang@intel.com,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] nbcon/reboot: Flush nbcon consoles synchronously on
+ reboot
+Message-ID: <20261009125907.SvaRdfv6@linutronix.de>
+References: <20261008150852.8286-1-pmladek@suse.com>
+ <20261009065152.udyfFRHx@linutronix.de>
+ <asiu8orjDvRJMKuX@pathway.suse.cz>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <asi-kgXfHJt6Gjp0@thinkpad>
+In-Reply-To: <asiu8orjDvRJMKuX@pathway.suse.cz>
 
-Oh, Vlastimil mentioned (off-list) that the performance should be
-re-evaluated on top of Hao Li's recent performance improvement [1].
+On 2026-10-09 11:08:02 [+0200], Petr Mladek wrote:
+> On Fri 2026-10-09 08:51:52, Sebastian Andrzej Siewior wrote:
+> > On 2026-10-08 17:08:52 [+0200], Petr Mladek wrote:
+> > > NBCON consoles emit messages in a dedicated kthreads when the system
+> > > is working properly. printk() tries to flush them synchronously in
+> > > explicitly marked emergency context and in panic().
+> > > 
+> > > Another situation where printk() could not rely on kthreads are the various
+> > > reboot and halt code paths. They can be detected by the `system_state`
+> > > variable.
+> > > 
+> > > Let's default to NBCON_PRIO_EMERGENCY for the post-running states.
+> > > printk() will automatically try flushing the consoles synchronously.
+> > > Also do not rely on printk() and explicitly flush the consoles
+> > > after these states are set.
+> > 
+> > while this seems okay, didn't we have pr_flush() to flush the output on
+> > shutdown/ reboot?
+> 
+> Good point! We should clean this up.
+> 
+> Anyway, IMHO, we should switch to NBCON_PRIO_EMERGENCY for the post-running
+> states and flush the pending messages immediately. It is more
+> reliable. It is easy to find the locations when system_state() is set.
+> And all follow-up printk() calls will try the direct flush so that
+> they won't rely on an explicit flush.
+> 
+> An ideal solution would be to add an wrapper, e.g.
+> 
+> 	void set_syste_state(enum system_states state)
+> 	{
+> 		system_state = state;
+> 
+> 		if (system_state > SYSTEM_RUNNING)
+> 			pr_flush(0, true);
+> 	}
+> 
+> 
+> Another thing is that printk_trigger_flush() is an overkill.
+> It tries to wake kthreads even via irq_work but we are
+> interested only in the direct flush.
+> 
+> I am not sure why neither me nor John used pr_flush().
+> It might be because it originally did not flush atomic consoles
+> directly. At least I had an outdated mental map.
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/mm/slab.git/commit/?id=1b87ea06a34b213e45e3e0c4effd5043f15046ed
+The nbcon should be awake because there is outstanding printing to be
+done as far as I understand. It is just not running or behind. So you
+would need just wait until the thread is done before you continue.
 
-Ideally should be rebased and re-evaluated on top of
-slab/for-next.... :P
+This pops up now because the 8250 does it via the thread now. If you
+don't have an atomic console implementation but use the thread anyway
+(say the PREEMPT_RT case) then you would end up with the same problem,
+right?
 
-On Fri, Oct 09, 2026 at 12:41:21PM +0200, Harry Yoo wrote:
-> [ +Cc slab, maple tree folks, ... and Suren :D ]
-> 
-> On Fri, Oct 09, 2026 at 02:39:02PM +0800, kernel test robot wrote:
-> > 
-> > 
-> > Hello,
-> 
-> Hi, thanks for reporting!
-> 
-> > kernel test robot noticed a 54.5% improvement of will-it-scale.per_process_ops on:
-> 
-> May I ask if there's data on slab memory usage for this experiment?
-> 
-> Performance improvement is nice, but only when we know what's
-> the tradeoff (memory usage).
-> 
-> I think diff on Slab:, SReclaimable:, SUnreclaim: in /proc/meminfo,
-> and in addition to that, ideally diff on per-cache slab memory usage
-> (from slabtop or /proc/slabinfo) during the experiment would be nice
-> to have to make a decision :-)
-> 
-> > commit: ddf56dfc79f5734d7b3aa8ba81f195d52b3e5823 ("mm/slab: round up sheaf size to kmalloc size for explicit sheaf_capacity")
-> > https://git.kernel.org/cgit/linux/kernel/git/harry/linux.git b4/sheaf-size-round-up
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/harry/linux.git/commit/?h=b4/sheaf-size-round-up
-> 
-> Oh, this is a b4 branch that I pushed but did not submit to mailing list
-> yet because I wasn't didn't measure its implication on memory usage.
-> 
-> The patch removes under-utilized 244 bytes per sheaf on maple_node cache
-> by not skipping "rounding up to the next kmalloc size" step for explicit
-> sheaf capacity.
-> 
-> Copying and pasting the patch here:
-> > mm/slab: round up sheaf size to kmalloc size for explicit sheaf_capacity
-> >
-> > calculate_sheaf_capacity() calculates the size of struct slab_sheaf from
-> > the capacity, rounds it up to the next kmalloc bucket size, and then
-> > recalculates the capacity from the rounded-up size so that no memory
-> > is wasted within the bucket.
-> > 
-> > However, when the user explicitly specifies args->sheaf_capacity and it
-> > is larger than the capacity calculated by the heuristic, this round up
-> > step is skipped.
-> > 
-> > This wastes memory for maple_node cache. Its object_size is 256 bytes,
-> > so the capacity calculated from the heuristic is 26. Rounding up
-> > increases the sheaf size from 2 + 26 * 8 = 240 bytes to 256 bytes
-> > (kmalloc-256), yielding a capacity of 28.
-> > 
-> > But since the maple tree cache explicitly specifies a capacity of 32,
-> > the final capacity becomes 32 without any round up, and the sheaf size
-> > becomes 32 + 32 * 8 = 288 bytes, which is allocated from kmalloc-512.
-> > In other words, 512 - 288 = 224 bytes are wasted per sheaf.
-> >
-> > Move the round up step after max(capacity, args->sheaf_capacity) so
-> > that it is also applied to explicitly specified capacities. With this
-> > change, the round up behavior becomes consistent and the sheaf capacity
-> > of maple_node becomes 60 and does not waste memory anymore.
-> 
-> It does it increase memory usage for sheaves because it's reusing wasted
-> memory, but it could end up more memory being used as each sheaf
-> now caches more objects.
-> 
-> > Signed-off-by: Harry Yoo (Meta) <harry@kernel.org>
-> > ---
-> > 
-> > diff --git a/mm/slub.c b/mm/slub.c
-> > index f9b56cb439e709..4fa551bf02cd64 100644
-> > --- a/mm/slub.c
-> > +++ b/mm/slub.c
-> > @@ -7895,17 +7895,19 @@ static unsigned int calculate_sheaf_capacity(struct kmem_cache *s,
-> >  	else
-> >  		capacity = 60;
-> >  
-> > -	/* Increment capacity to make sheaf exactly a kmalloc size bucket */
-> > -	size = struct_size_t(struct slab_sheaf, objects, capacity);
-> > -	size = kmalloc_size_roundup(size);
-> > -	capacity = (size - struct_size_t(struct slab_sheaf, objects, 0)) / sizeof(void *);
-> > -
-> >  	/*
-> >  	 * Respect an explicit request for capacity that's typically motivated by
-> >  	 * expected maximum size of kmem_cache_prefill_sheaf() to not end up
-> >  	 * using low-performance oversize sheaves
-> >  	 */
-> > -	return max(capacity, args->sheaf_capacity);
-> > +	capacity = max(capacity, args->sheaf_capacity);
-> > +
-> > +	/* Increment capacity to make sheaf exactly a kmalloc size bucket */
-> > +	size = struct_size_t(struct slab_sheaf, objects, capacity);
-> > +	size = kmalloc_size_roundup(size);
-> > +	capacity = (size - struct_size_t(struct slab_sheaf, objects, 0)) / sizeof(void *);
-> > +
-> > +	return capacity;
-> >  }
-> >  
-> >  /*
-> 
-> [-------<8 end of the patch-------]
-> 
-> > testcase: will-it-scale
-> > config: x86_64-rhel-9.4
-> > compiler: gcc-14
-> > test machine: 256 threads 2 sockets GENUINE INTEL(R) XEON(R) (Sierra Forest) with 128G memory
-> > parameters:
-> > 
-> > 	nr_task: 100%
-> > 	mode: process
-> > 	test: brk2
-> > 	cpufreq_governor: performance
-> > 
-> > 
-> > Details are as below:
-> > -------------------------------------------------------------------------------------------------->
-> > 
-> > 
-> > The kernel config and materials to reproduce are available at:
-> > https://download.01.org/0day-ci/archive/20261009/202610091451.beda4ec3-lkp@intel.com
-> > 
-> > =========================================================================================
-> > compiler/cpufreq_governor/kconfig/mode/nr_task/rootfs/tbox_group/test/testcase:
-> >   gcc-14/performance/x86_64-rhel-9.4/process/100%/debian-13-x86_64-20250902.cgz/lkp-srf-2sp1/brk2/will-it-scale
-> > 
-> > commit: 
-> >   675a745c61 ("EDITME: cover title for sheaf-size-round-up")
-> >   ddf56dfc79 ("mm/slab: round up sheaf size to kmalloc size for explicit sheaf_capacity")
-> > 
-> > 675a745c6113e420 ddf56dfc79f5734d7b3aa8ba81f 
-> > ---------------- --------------------------- 
-> >          %stddev     %change         %stddev
-> >              \          |                \  
-> >   70440501           +54.5%  1.089e+08        will-it-scale.256.processes
-> >       0.30 ±  3%     +35.9%       0.41 ±  8%  will-it-scale.256.processes_idle
-> >     275157           +54.5%     425248        will-it-scale.per_process_ops
-> >   70440501           +54.5%  1.089e+08        will-it-scale.workload
-> > 
-> > 
-> > Disclaimer:
-> > Results have been estimated based on internal Intel analysis and are provided
-> > for informational purposes only. Any difference in system hardware or software
-> > design or configuration may affect actual performance.
-> > 
-> > 
-> > -- 
-> > 0-DAY CI Kernel Test Service
-> > https://github.com/intel/lkp-tests/wiki
+Recently I did play with CPU shutdown and noticed that PREEMPT_RT misses
+an irq_work sync which explained missing printk output. You probably
+recall the printk part of this :)
 
--- 
-Cheers,
-Harry / Hyeonggon
+Now that I look more into it, the above with pr_flush() does not work
+because by the time SYSTEM_SUSPEND is assigned it expects interrupts to
+be disabled (or disables them a few lines earlier).
+
+emergency_restart() looks like a bad candidate for a flush.
+kernel_restart_prepare() on the other hand would be good. And there is a
+flush in kernel_power_off().
+
+In general I would expect sysrq-b to reboot immediately without the
+flush but an ordinary reboot should flush.
+
+> Also the timeout should not be needed because all consoles should
+> be flushed directly. But it can be solved by using zero timeout.
+> 
+> In fact, we should block the kthreads to prevent seeing more
+> incomplete/interrupted messages, see the commit c41c0ebfa1e0eb
+> ("printk/nbcon: Block printk kthreads when any CPU is in an emergency
+> context"). Something like:
+
+But if we have more than one console and more than one CPU we could let
+them flush in parallel and just wait for them do be done?
+
+> diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
+> index d8f8ec836eea..1c21c1e65b00 100644
+> --- a/kernel/printk/nbcon.c
+> +++ b/kernel/printk/nbcon.c
+> @@ -1187,13 +1187,14 @@ static bool nbcon_kthread_should_wakeup(struct console *con, struct nbcon_contex
+>  		return true;
+>  
+>  	/*
+> -	 * Block the kthread when the system is in an emergency or panic mode.
+> -	 * It increases the chance that these contexts would be able to show
+> -	 * the messages directly. And it reduces the risk of interrupted writes
+> -	 * where the context with a higher priority takes over the nbcon console
+> -	 * ownership in the middle of a message.
+> +	 * Block the kthread when the system is in an emergency, going down,
+> +	 * or panic mode. It increases the chance that these contexts would
+> +	 * be able to show the messages directly. And it reduces the risk of
+> +	 * interrupted writes where the context with a higher priority takes
+> +	 * over the nbcon console ownership in the middle of a message.
+>  	 */
+>  	if (unlikely(atomic_read(&nbcon_cpu_emergency_cnt)) ||
+> +	    unlikely(system_state > SYSTEM_RUNNING) ||
+>  	    unlikely(panic_in_progress()))
+>  		return false;
+>  
+> @@ -1249,10 +1250,12 @@ static int nbcon_kthread_func(void *__console)
+>  			return 0;
+>  
+>  		/*
+> -		 * Block the kthread when the system is in an emergency or panic
+> -		 * mode. See nbcon_kthread_should_wakeup() for more details.
+> +		 * Block the kthread when the system is in an emergency, going
+> +		 * down, or panic mode. See nbcon_kthread_should_wakeup() for
+> +		 * more details.
+>  		 */
+>  		if (unlikely(atomic_read(&nbcon_cpu_emergency_cnt)) ||
+> +		    unlikely(system_state > SYSTEM_RUNNING) ||
+>  		    unlikely(panic_in_progress()))
+>  			goto wait_for_event;
+>  
+> 
+> But wait, this might cause regression on netconsole which sets
+> CON_NBCON_ATOMIC_UNSAFE and is not able to flush the messages
+> directly a safe way.
+
+same as PREEMPT_RT.
+
+> A possibility would be to use con->write_thread() when pr_flush()
+> is called in task context. It should be safe in most shutdown
+> code paths except for the emergency_restart().
+> 
+> And we need an explicit pr_flush() even later in the halt
+> and maybe even some unsafe flush later in emergency_restart()
+> code path.
+> 
+> Sigh, this is getting complicated.
+
+So maybe just identify the few spots in the reboot case.
+
+> Best Regards,
+> Petr
+
+Sebastian
