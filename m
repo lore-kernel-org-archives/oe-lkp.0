@@ -1,232 +1,257 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0085A19F40B
-	for <oe-lkp@lists.linux.dev>; Sat, 10 Oct 2026 03:10:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8160F3B8D78
+	for <oe-lkp@lists.linux.dev>; Sat, 10 Oct 2026 08:56:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791601848; cv=none; b=bwxDubNq2LZqCQKH69EFp6xRcK/BwPG45jTDqPs+BccYqU/Xb8UfjB/taAXIBNTKtFwBdPYq4jKWPcKk7dh4CTFW9yZtguRjIpinlUXNdWEd9jwvmxXYpLp2JfatS4gvbXnZNu690kHR1KLWP+QiENVyZ628NxQoRhLFIeARCDQ=
+	t=1791622592; cv=none; b=cGHInJmY4rtaItMdcaL48FEgzJRJmFYs1ga6YgJQ9N2eGpuZAafI2iW9QN6MXlGqK2g59Ura5SKQUYwWaCD9VQhHrqSsf7f+XgG8VkNhBxFo2LV0wiEzyrnU9GhDXvIUbmnq+ml755nQ+2SjTgoEUIQGWHJMrWumWmB0z/T3k2Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791601848; c=relaxed/simple;
-	bh=bVpuCD+EEZtnTq1oyDHFaTpdSs9eU79YhNwzhyjvIh4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aYkDcmOInMcA3k6JSFzySuwpLjN5a/93QQMsyZgBUQVp7hatIJyOTVoY3bHVF9aVK2EeCDpe/XKS9DlN807OsO0meex29a6AnnSwVPn6PzDFwz9H/IdHXiP3TXjUvxVkFejN4aKFBxbJCXfASkVqUHHJAu1XHdnUof+ClSJy8Eo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=W/RWjNxL; arc=none smtp.client-ip=198.175.65.11
+	s=arc-20240116; t=1791622592; c=relaxed/simple;
+	bh=DSpS3bSiLKZn3l0kYtOd5x5P6qmB1vPDgvJscjdMtuU=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=uxRyD2rmczgnuECDILswrEuwPu6Wsrsulv5efMrKRb/JCL0Jw9Io9hBGu6fuj2zmPqwiiPHjzZkl2bHXKupneeaLo25e5RTVhqHthJ7cyDQrGtjL7VcdAq1Gf8XJz+RbsrDB+BrGHKMbG5DS9HUDFa8C6wOx7gBEZZVejsSSFjc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BbXpP9bp; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="W/RWjNxL"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BbXpP9bp"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1791601846; x=1823137846;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=bVpuCD+EEZtnTq1oyDHFaTpdSs9eU79YhNwzhyjvIh4=;
-  b=W/RWjNxLEVWGneK9CWS1mcs+TjRlSq5bBF9e8/VXMPjIywHlJk2AVdRG
-   ncByCofy/Cupj4lzN2NOEHv8Hqcu9BCC0SRiajwSwnja71DqyjRSQPkRB
-   1anzB+2EkKxWY7KSy6scxtPZsEQnpHMV+5+9DHbVsIO/e4h5JIvfVaF3J
-   UkLE4mM8B036m7vtOsT0d9PSFAPjSd6V6Jt/U8PQTBsjSnKqNvmRDfNE9
-   ROydVlci8sHHLLfLRWL9mF5ILX/V+mgRF9VnUBcPPyLO/yCJKRUUPVGzT
-   hh8LUEOtOPBVprMK+olRNI0NrMGan4d7eEQGzauI5SG+iFv/aFxdmtoUO
+  t=1791622589; x=1823158589;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=DSpS3bSiLKZn3l0kYtOd5x5P6qmB1vPDgvJscjdMtuU=;
+  b=BbXpP9bp+zMEJOR0HWCJyg4pzmtbOIlVyAcgCdUrSSIaZu6XHPh9S6O3
+   Q/RjF832q5Ck/nvrd95BNaPor7djj+nHNb9xeIiqNhGMvEvWzfm+UkiRd
+   F8db9LolqsBXujKg9gAxedS3pz2MvrB46w2dmlxG9KYwTMMUiWSpS73Pd
+   eRwk5SzMApGGBKm0YPjDziBRLEeH2zZF7ZRznXrd0foaOQFDzXUzgetcH
+   DRfh4DL0anIGILXwuQ38Dn/u+SBGGBSRVAUpdiQelwv4Xd/4lVyF8qm8U
+   OlEoqK60B9DZnFMalUxrM5sQA83N6Ul33e9ZjujkU7un5HrXvSYFd2SFc
    g==;
-X-CSE-ConnectionGUID: tL6yuJM+QcumJvAjc8UTVg==
-X-CSE-MsgGUID: ob0JMnpiQc+BFpVpK7nY+A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11930"; a="289240"
-X-IronPort-AV: E=Sophos;i="6.27,149,1787036400"; 
-   d="scan'208";a="289240"
-Received: from fmviesa011.fm.intel.com ([10.60.135.151])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2026 20:10:46 -0700
-X-CSE-ConnectionGUID: l/p3fCV8TeqJxJx4GcL7bw==
-X-CSE-MsgGUID: 91kFolfjSxi5/SIbMZm+Ng==
+X-CSE-ConnectionGUID: cNm26BHOQqysYKzHETxBAA==
+X-CSE-MsgGUID: 01lDRWqwQkynxStuRP8Q4w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11930"; a="288741"
+X-IronPort-AV: E=Sophos;i="6.27,150,1787036400"; 
+   d="scan'208";a="288741"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Oct 2026 01:56:28 -0700
+X-CSE-ConnectionGUID: Qyqum+gdTASebE2A6hwbXQ==
+X-CSE-MsgGUID: kKHQmbOVTuO3dxamKnSyeg==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,149,1787036400"; 
-   d="scan'208";a="2283965"
+X-IronPort-AV: E=Sophos;i="6.27,150,1787036400"; 
+   d="scan'208";a="587890"
 Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2026 20:10:41 -0700
-Date: Sat, 10 Oct 2026 11:10:38 +0800
-From: kernel test rebot <yi1.lai@intel.com>
-To: Harry Yoo <harry@kernel.org>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-mm@kvack.org,
-	Vlastimil Babka <vbabka@kernel.org>, Hao Li <hao.li@linux.dev>,
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Oct 2026 01:56:24 -0700
+Date: Sat, 10 Oct 2026 16:56:22 +0800
+From: kernel test robot <yi1.lai@intel.com>
+To: Yury Norov <ynorov@nvidia.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
 	Andrew Morton <akpm@linux-foundation.org>,
-	Christoph Lameter <cl@gentwo.org>,
-	David Rientjes <rientjes@google.com>,
-	Roman Gushchin <roman.gushchin@linux.dev>,
 	"Liam R. Howlett" <liam@infradead.org>,
 	Alice Ryhl <aliceryhl@google.com>,
 	Andrew Ballance <andrewjballance@gmail.com>,
-	maple-tree@lists.infradead.org,
-	Suren Baghdasaryan <surenb@google.com>
-Subject: Re: [harry:b4/sheaf-size-round-up] [mm/slab]  ddf56dfc79:
- will-it-scale.per_process_ops 54.5% improvement
-Message-ID: <asmsrokhdpPbongD@ly-workstation>
-References: <202610091451.beda4ec3-lkp@intel.com>
- <asi-kgXfHJt6Gjp0@thinkpad>
+	Matthew Wilcox <willy@infradead.org>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+	yi1.lai@intel.com
+Subject: [linux-next:master] [lib]  6b23a67486:
+ WARNING:possible_circular_locking_dependency_detected
+Message-ID: <202610101009.240d59d9-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <asi-kgXfHJt6Gjp0@thinkpad>
 
-On Fri, Oct 09, 2026 at 12:41:18PM +0200, Harry Yoo wrote:
-> [ +Cc slab, maple tree folks, ... and Suren :D ]
-> 
-> On Fri, Oct 09, 2026 at 02:39:02PM +0800, kernel test robot wrote:
-> > 
-> > 
-> > Hello,
-> 
-> Hi, thanks for reporting!
-> 
-> > kernel test robot noticed a 54.5% improvement of will-it-scale.per_process_ops on:
-> 
-> May I ask if there's data on slab memory usage for this experiment?
-> 
-> Performance improvement is nice, but only when we know what's
-> the tradeoff (memory usage).
-> 
-> I think diff on Slab:, SReclaimable:, SUnreclaim: in /proc/meminfo,
-> and in addition to that, ideally diff on per-cache slab memory usage
-> (from slabtop or /proc/slabinfo) during the experiment would be nice
-> to have to make a decision :-)
 
-From the full results already collected:
 
-meminfo.Slab: +37.9% (979712 → 1350738 KB)
-meminfo.SUnreclaim: +46.2% (806254 → 1178980 KB)
+Hello,
 
-Note these are system-wide, not pure per-object overhead. We don't
-currently have a slabinfo snapshot isolating the maple_node cache
-specifically.
+kernel test robot noticed "WARNING:possible_circular_locking_dependency_detected" on:
 
-> 
-> > commit: ddf56dfc79f5734d7b3aa8ba81f195d52b3e5823 ("mm/slab: round up sheaf size to kmalloc size for explicit sheaf_capacity")
-> > https://git.kernel.org/cgit/linux/kernel/git/harry/linux.git b4/sheaf-size-round-up
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/harry/linux.git/commit/?h=b4/sheaf-size-round-up
-> 
-> Oh, this is a b4 branch that I pushed but did not submit to mailing list
-> yet because I wasn't didn't measure its implication on memory usage.
-> 
-> The patch removes under-utilized 244 bytes per sheaf on maple_node cache
-> by not skipping "rounding up to the next kmalloc size" step for explicit
-> sheaf capacity.
-> 
-> Copying and pasting the patch here:
-> > mm/slab: round up sheaf size to kmalloc size for explicit sheaf_capacity
-> >
-> > calculate_sheaf_capacity() calculates the size of struct slab_sheaf from
-> > the capacity, rounds it up to the next kmalloc bucket size, and then
-> > recalculates the capacity from the rounded-up size so that no memory
-> > is wasted within the bucket.
-> > 
-> > However, when the user explicitly specifies args->sheaf_capacity and it
-> > is larger than the capacity calculated by the heuristic, this round up
-> > step is skipped.
-> > 
-> > This wastes memory for maple_node cache. Its object_size is 256 bytes,
-> > so the capacity calculated from the heuristic is 26. Rounding up
-> > increases the sheaf size from 2 + 26 * 8 = 240 bytes to 256 bytes
-> > (kmalloc-256), yielding a capacity of 28.
-> > 
-> > But since the maple tree cache explicitly specifies a capacity of 32,
-> > the final capacity becomes 32 without any round up, and the sheaf size
-> > becomes 32 + 32 * 8 = 288 bytes, which is allocated from kmalloc-512.
-> > In other words, 512 - 288 = 224 bytes are wasted per sheaf.
-> >
-> > Move the round up step after max(capacity, args->sheaf_capacity) so
-> > that it is also applied to explicitly specified capacities. With this
-> > change, the round up behavior becomes consistent and the sheaf capacity
-> > of maple_node becomes 60 and does not waste memory anymore.
-> 
-> It does it increase memory usage for sheaves because it's reusing wasted
-> memory, but it could end up more memory being used as each sheaf
-> now caches more objects.
-> 
-> > Signed-off-by: Harry Yoo (Meta) <harry@kernel.org>
-> > ---
-> > 
-> > diff --git a/mm/slub.c b/mm/slub.c
-> > index f9b56cb439e709..4fa551bf02cd64 100644
-> > --- a/mm/slub.c
-> > +++ b/mm/slub.c
-> > @@ -7895,17 +7895,19 @@ static unsigned int calculate_sheaf_capacity(struct kmem_cache *s,
-> >  	else
-> >  		capacity = 60;
-> >  
-> > -	/* Increment capacity to make sheaf exactly a kmalloc size bucket */
-> > -	size = struct_size_t(struct slab_sheaf, objects, capacity);
-> > -	size = kmalloc_size_roundup(size);
-> > -	capacity = (size - struct_size_t(struct slab_sheaf, objects, 0)) / sizeof(void *);
-> > -
-> >  	/*
-> >  	 * Respect an explicit request for capacity that's typically motivated by
-> >  	 * expected maximum size of kmem_cache_prefill_sheaf() to not end up
-> >  	 * using low-performance oversize sheaves
-> >  	 */
-> > -	return max(capacity, args->sheaf_capacity);
-> > +	capacity = max(capacity, args->sheaf_capacity);
-> > +
-> > +	/* Increment capacity to make sheaf exactly a kmalloc size bucket */
-> > +	size = struct_size_t(struct slab_sheaf, objects, capacity);
-> > +	size = kmalloc_size_roundup(size);
-> > +	capacity = (size - struct_size_t(struct slab_sheaf, objects, 0)) / sizeof(void *);
-> > +
-> > +	return capacity;
-> >  }
-> >  
-> >  /*
-> 
-> [-------<8 end of the patch-------]
-> 
-> > testcase: will-it-scale
-> > config: x86_64-rhel-9.4
-> > compiler: gcc-14
-> > test machine: 256 threads 2 sockets GENUINE INTEL(R) XEON(R) (Sierra Forest) with 128G memory
-> > parameters:
-> > 
-> > 	nr_task: 100%
-> > 	mode: process
-> > 	test: brk2
-> > 	cpufreq_governor: performance
-> > 
-> > 
-> > Details are as below:
-> > -------------------------------------------------------------------------------------------------->
-> > 
-> > 
-> > The kernel config and materials to reproduce are available at:
-> > https://download.01.org/0day-ci/archive/20261009/202610091451.beda4ec3-lkp@intel.com
-> > 
-> > =========================================================================================
-> > compiler/cpufreq_governor/kconfig/mode/nr_task/rootfs/tbox_group/test/testcase:
-> >   gcc-14/performance/x86_64-rhel-9.4/process/100%/debian-13-x86_64-20250902.cgz/lkp-srf-2sp1/brk2/will-it-scale
-> > 
-> > commit: 
-> >   675a745c61 ("EDITME: cover title for sheaf-size-round-up")
-> >   ddf56dfc79 ("mm/slab: round up sheaf size to kmalloc size for explicit sheaf_capacity")
-> > 
-> > 675a745c6113e420 ddf56dfc79f5734d7b3aa8ba81f 
-> > ---------------- --------------------------- 
-> >          %stddev     %change         %stddev
-> >              \          |                \  
-> >   70440501           +54.5%  1.089e+08        will-it-scale.256.processes
-> >       0.30 ±  3%     +35.9%       0.41 ±  8%  will-it-scale.256.processes_idle
-> >     275157           +54.5%     425248        will-it-scale.per_process_ops
-> >   70440501           +54.5%  1.089e+08        will-it-scale.workload
-> > 
-> > 
-> > Disclaimer:
-> > Results have been estimated based on internal Intel analysis and are provided
-> > for informational purposes only. Any difference in system hardware or software
-> > design or configuration may affect actual performance.
-> > 
-> > 
-> > -- 
-> > 0-DAY CI Kernel Test Service
-> > https://github.com/intel/lkp-tests/wiki
+commit: 6b23a6748698a7cbda7d18a3a28e59be63254571 ("lib: fix lock initialization in region allocation benchmark") https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+
+[test failed on linux-next/master aac26bee2287c88af5be5a5ff96d783b19a28790]
+
+in testcase: locktorture
+with following parameters:
+
+	runtime: 300s
+	test: cpuhotplug
+	torture_type: mutex_lock
+
+config: i386-randconfig-2103-20261007
+compiler: gcc-13
+test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 4 -m 4G
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <yi1.lai@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202610101009.240d59d9-lkp@intel.com
+
+[   42.982991][  T184] WARNING: possible circular locking dependency detected
+[   42.989787][  T184] 7.3.0-rc5+ #1 Not tainted
+[   42.991360][  T184] ------------------------------------------------------
+[   42.999839][  T184] systemd-udevd/184 is trying to acquire lock:
+[   43.001945][  T184] bb80a5d0 (&sb->s_type->i_lock_key){+.+.}-{3:3}, at: igrab (linux/spinlock.h:347 inode.c:1594)
+[   43.009033][  T184]
+[   43.009033][  T184] but task is already holding lock:
+[   43.009033][  T184]
+[   43.009033][  T184] but task is already holding lock:
+[   43.009033][  T184]
+[   43.009033][  T184] but task is already holding lock:
+[   43.011272][  T184] b9933d1c (&l->lock){+.+.}-{3:3}, at: __list_lru_walk_one+0x4d/0xe7
+[   43.016330][  T184]
+[   43.016330][  T184] which lock already depends on the new lock.
+[   43.016330][  T184]
+[   43.016330][  T184] which lock already depends on the new lock.
+[   43.016330][  T184]
+[   43.016330][  T184] which lock already depends on the new lock.
+[   43.016330][  T184]
+[   43.016333][  T184]
+[   43.016333][  T184] the existing dependency chain (in reverse order) is:
+[   43.016333][  T184]
+[   43.016333][  T184] the existing dependency chain (in reverse order) is:
+[   43.016333][  T184]
+[   43.016333][  T184] the existing dependency chain (in reverse order) is:
+[   43.016334][  T184]
+[   43.016334][  T184] -> #2 (&l->lock){+.+.}-{3:3}:
+[   43.016334][  T184]
+[   43.016334][  T184] -> #2 (&l->lock){+.+.}-{3:3}:
+[   43.016334][  T184]
+[   43.016334][  T184] -> #2 (&l->lock){+.+.}-{3:3}:
+[   43.016341][  T184]
+[   43.016341][  T184] -> #1 (&lockref->lock){+.+.}-{3:3}:
+[   43.016341][  T184]
+[   43.016341][  T184] -> #1 (&lockref->lock){+.+.}-{3:3}:
+[   43.016341][  T184]
+[   43.016341][  T184] -> #1 (&lockref->lock){+.+.}-{3:3}:
+[   43.016346][  T184]
+[   43.016346][  T184] -> #0 (&sb->s_type->i_lock_key){+.+.}-{3:3}:
+[   43.016346][  T184]
+[   43.016346][  T184] -> #0 (&sb->s_type->i_lock_key){+.+.}-{3:3}:
+[   43.016346][  T184]
+[   43.016346][  T184] -> #0 (&sb->s_type->i_lock_key){+.+.}-{3:3}:
+[   43.016350][  T184]        check_noncircular (locking/lockdep.c:2219)
+[   43.016357][  T184]        check_prev_add (locking/lockdep.c:3209)
+[   43.016359][  T184]        validate_chain (locking/lockdep.c:3328 locking/lockdep.c:3952)
+[   43.016361][  T184]        __lock_acquire (locking/lockdep.c:5288)
+[   43.016363][  T184]        lock_acquire (locking/lockdep.c:5942 locking/lockdep.c:5899)
+[   43.016366][  T184]        _raw_spin_lock (linux/spinlock_api_smp.h:190 (discriminator 1) locking/spinlock.c:173 (discriminator 1))
+[   43.016371][  T184]        igrab (linux/spinlock.h:347 inode.c:1594)
+[   43.016374][  T184]        shmem_unused_huge_isolate (shmem.c:874)
+[   43.016380][  T184]        __list_lru_walk_one+0x8b/0xe7
+[   43.016383][  T184]        list_lru_walk_one (list_lru.c:399)
+[   43.016385][  T184]        list_lru_walk_node (list_lru.c:419)
+[   43.016388][  T184]        shmem_unused_huge_shrink (linux/list_lru.h:352 shmem.c:969)
+[   43.016390][  T184]        shmem_alloc_and_add_folio+0x119/0x1bf
+[   43.016393][  T184]        shmem_get_folio_gfp+0x1a0/0x3ba
+[   43.016395][  T184]        shmem_get_folio (shmem.c:2832 (discriminator 1))
+[   43.016397][  T184]        shmem_write_begin (shmem.c:3467)
+[   43.016400][  T184]        generic_perform_write (filemap.c:4374)
+[   43.016403][  T184]        shmem_file_write_iter (shmem.c:3642)
+[   43.016406][  T184]        vfs_write (read_write.c:595 read_write.c:687)
+[   43.016410][  T184]        ksys_write (read_write.c:739)
+[   43.016413][  T184]        __ia32_sys_write (read_write.c:750 read_write.c:747 read_write.c:747)
+[   43.016416][  T184]        ia32_sys_call (kbuild/obj/consumer/i386-randconfig-2103-20261007/./arch/x86/include/generated/asm/syscalls_32.h:5)
+[   43.016419][  T184]        do_int80_syscall_32 (x86/entry/syscall_32.c:79 x86/entry/syscall_32.c:250)
+[   43.016423][  T184]        restore_all_switch_stack (x86/entry/entry_32.S:945)
+[   43.016425][  T184]
+[   43.016425][  T184] other info that might help us debug this:
+[   43.016425][  T184]
+[   43.016425][  T184] other info that might help us debug this:
+[   43.016425][  T184]
+[   43.016425][  T184] other info that might help us debug this:
+[   43.016425][  T184]
+[   43.016426][  T184] Chain exists of:
+[   43.016426][  T184]   &sb->s_type->i_lock_key --> &lockref->lock --> &l->lock
+[   43.016426][  T184]
+[   43.016426][  T184] Chain exists of:
+[   43.016426][  T184]   &sb->s_type->i_lock_key --> &lockref->lock --> &l->lock
+[   43.016426][  T184]
+[   43.016426][  T184] Chain exists of:
+[   43.016426][  T184]   &sb->s_type->i_lock_key --> &lockref->lock --> &l->lock
+[   43.016426][  T184]
+[   43.016431][  T184]  Possible unsafe locking scenario:
+[   43.016431][  T184]
+[   43.016431][  T184]  Possible unsafe locking scenario:
+[   43.016431][  T184]
+[   43.016431][  T184]  Possible unsafe locking scenario:
+[   43.016431][  T184]
+[   43.016432][  T184]        CPU0                    CPU1
+[   43.016433][  T184]        ----                    ----
+[   43.016434][  T184]   lock(&l->lock);
+[   43.016436][  T184]                                lock(&lockref->lock);
+[   43.016438][  T184]                                lock(&l->lock);
+[   43.016440][  T184]   lock(&sb->s_type->i_lock_key);
+[   43.016442][  T184]
+[   43.016442][  T184]  *** DEADLOCK ***
+[   43.016442][  T184]
+[   43.016442][  T184]  *** DEADLOCK ***
+[   43.016442][  T184]
+[   43.016442][  T184]  *** DEADLOCK ***
+[   43.016442][  T184]
+[   43.016443][  T184] locks held by systemd-udevd/184: 4, last CPU#1:
+[   43.016446][  T184]  #0: bbd65278 (sb_writers#5){.+.+}-{0:0}, at: file_start_write+0x1e/0x29
+[   43.016455][  T184]  #1: bc0d3a54 (&sb->s_type->i_mutex_key#14){+.+.}-{4:4}, at: shmem_file_write_iter (linux/fs.h:1024 shmem.c:3632)
+[   43.016464][  T184]  #2: b9933d1c (&l->lock){+.+.}-{3:3}, at: __list_lru_walk_one+0x4d/0xe7
+[   43.016470][  T184]  #3: bb80a4e0 (&info->lock){+.+.}-{3:3}, at: shmem_unused_huge_isolate (linux/spinlock.h:359 shmem.c:870)
+[   43.016477][  T184]
+[   43.016477][  T184] stack backtrace:
+[   43.016477][  T184]
+[   43.016477][  T184] stack backtrace:
+[   43.016477][  T184]
+[   43.016477][  T184] stack backtrace:
+[   43.016480][  T184] CPU: 1 UID: 0 PID: 184 Comm: systemd-udevd Not tainted 7.3.0-rc5+ #1 PREEMPT  e5cca4e8a868af3244d8321e49341795c86a4be3
+[   43.016484][  T184] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+[   43.016487][  T184] Call Trace:
+[   43.016491][  T184]  dump_stack_lvl (dump_stack.c:94 dump_stack.c:120)
+[   43.016495][  T184]  dump_stack (dump_stack.c:129)
+[   43.016498][  T184]  print_circular_bug (locking/lockdep.c:2087)
+[   43.016501][  T184]  check_noncircular (locking/lockdep.c:2219)
+[   43.016506][  T184]  check_prev_add (locking/lockdep.c:3209)
+[   43.016509][  T184]  validate_chain (locking/lockdep.c:3328 locking/lockdep.c:3952)
+[   43.016513][  T184]  __lock_acquire (locking/lockdep.c:5288)
+[   43.016517][  T184]  lock_acquire (locking/lockdep.c:5942 locking/lockdep.c:5899)
+[   43.016520][  T184]  ? igrab (linux/spinlock.h:347 inode.c:1594)
+[   43.016524][  T184]  ? __lock_release+0x49/0x108
+[   43.016527][  T184]  _raw_spin_lock (linux/spinlock_api_smp.h:190 (discriminator 1) locking/spinlock.c:173 (discriminator 1))
+[   43.016530][  T184]  ? igrab (linux/spinlock.h:347 inode.c:1594)
+[   43.016533][  T184]  igrab (linux/spinlock.h:347 inode.c:1594)
+[   43.016536][  T184]  shmem_unused_huge_isolate (shmem.c:874)
+[   43.016540][  T184]  ? next_order (linux/huge_mm.h:212)
+[   43.016543][  T184]  __list_lru_walk_one+0x8b/0xe7
+[   43.016545][  T184]  ? next_order (linux/huge_mm.h:212)
+[   43.016550][  T184]  list_lru_walk_one (list_lru.c:399)
+[   43.016553][  T184]  list_lru_walk_node (list_lru.c:419)
+[   43.016555][  T184]  ? next_order (linux/huge_mm.h:212)
+[   43.016559][  T184]  shmem_unused_huge_shrink (linux/list_lru.h:352 shmem.c:969)
+[   43.016562][  T184]  ? vm_unacct_memory (linux/mman.h:78 linux/mman.h:83)
+[   43.016567][  T184]  shmem_alloc_and_add_folio+0x119/0x1bf
+[   43.016570][  T184]  shmem_get_folio_gfp+0x1a0/0x3ba
+[   43.016574][  T184]  shmem_get_folio (shmem.c:2832 (discriminator 1))
+[   43.016578][  T184]  shmem_write_begin (shmem.c:3467)
+[   43.016581][  T184]  generic_perform_write (filemap.c:4374)
+[   43.016587][  T184]  shmem_file_write_iter (shmem.c:3642)
+[   43.016591][  T184]  vfs_write (read_write.c:595 read_write.c:687)
+[   43.016596][  T184]  ksys_write (read_write.c:739)
+[   43.016600][  T184]  __ia32_sys_write (read_write.c:750 read_write.c:747 read_write.c:747)
+[   43.016603][  T184]  ia32_sys_call (kbuild/obj/consumer/i386-randconfig-2103-20261007/./arch/x86/include/generated/asm/syscalls_32.h:5)
+[   43.016606][  T184]  do_int80_syscall_32 (x86/entry/syscall_32.c:79 x86/entry/syscall_32.c:250)
+[   43.016609][  T184]  entry_INT80_32 (x86/entry/entry_32.S:940)
+[   43.016612][  T184] EIP: 0x37f80092
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20261010/202610101009.240d59d9-lkp@intel.com
+
+
+
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
