@@ -1,128 +1,151 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70D493A7839
-	for <oe-lkp@lists.linux.dev>; Tue, 13 Oct 2026 07:46:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B25A651EE01
+	for <oe-lkp@lists.linux.dev>; Tue, 13 Oct 2026 15:42:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791877579; cv=none; b=d5BsSCn3+eHE4ugJn37z4x0JlVZRXD5sHjPQpibLBmJ12qT8D3Sxo23RDcCwFM9sVKBtY3gwXiD31w+YlOeLPSjuBa4MjyZvP6dgxwTsb+gV8dhQjOYtSQ9mV9hBhMubeJXrUdPWJLIcAtoOfbE0HyVleFfSQUqfBEP0BGGK5Ec=
+	t=1791906138; cv=none; b=U0f3CywoaRN1Va+HFqhxw29GTMc9D6pvWxW/7ucEFqEv6KkSaPXEav1x9+kPs+1k+EeCz8RJFTSm+CIy1YfPmZB/EomwPU2cDCZghgUHu3gHxSKRZOH4WF343BGCmqCNIYkm5Rt+3GPvveMeOUgXojuWRa5EzJrD4B3Zaj5zpKw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791877579; c=relaxed/simple;
-	bh=+NtnVCGmmGB8pe2zOOxww06KK+9XuftJ2meDrflIhRc=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=EghtYugjph2bwZSpOIQDXAyf9fhUuUaZSL/mVLk4RCIu0b44OyZOB+TENDY6k0gwJT/WWEyoD2t2LFutXlkgj+miyWHSRS2+6nww0tAsuuqmM+y9VzXDLi44RjFYFv9oKskQGRxzYzE5uL55nXN070eHusapaJj/BinIATGAOcM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=l4g7hJlP; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1791906138; c=relaxed/simple;
+	bh=PLKNnY0shbYu+toZqyW6ELKsVMoYRKE9gJsmG7TyZxM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=W4yTWL7VuWYV6GcD9qTeRI4TWajXA4tdMEWV8XuLYSSWvMy9tzZXnBWdlCnzss6fG3eBJYnx5nJ82ELOOrqyMn2g9RKYmUuLgpZXKQ/aXrIlFDjBBLY1Q01LBmrjzh4e03WYnoiDMnkHLs9t8PULVl7GIcjv8+N6UWa6EqcDnrY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=JBPudKTV; arc=none smtp.client-ip=209.85.128.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="l4g7hJlP"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1791877578; x=1823413578;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=+NtnVCGmmGB8pe2zOOxww06KK+9XuftJ2meDrflIhRc=;
-  b=l4g7hJlPaTyAuvT1x1+XYGqgZ4nsWUG39kdgCrlzK7n8q07dOt1tnzJY
-   JctQFXy8UJjJZwdh8RNEGZj2h4A3821/5rXY6QfaPwbrjEQ2eTI4D9HD9
-   Z7veoGkIMQBmTHe//eZN9PmAWueHcMVdoJgr3L+WrgF0S5Pa5sWeIllkm
-   RV/c4RxjeppnX5aSh41Yf/tR/w9DJkVrl3jfa13Xs3ASNzk42NUjzG6tE
-   OtyVybk4lm3zJ4nGGIFv3lAY8JSzPIgQxkz9qZOl9Va7d4vHlZ7cjD8yl
-   16M1IyzMO86UTo06e5zP3OYH6+Nn+wrQ1kOA14nHGVGNEBoMEPBiszvY5
-   g==;
-X-CSE-ConnectionGUID: iIl/lsTISomRxOzUy/A0ag==
-X-CSE-MsgGUID: Crm7S3rcSou09hqHwWoHFw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11933"; a="601181"
-X-IronPort-AV: E=Sophos;i="6.27,155,1787036400"; 
-   d="scan'208";a="601181"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2026 00:46:18 -0700
-X-CSE-ConnectionGUID: WC7WrMN+QhyXEkoCmCO6Iw==
-X-CSE-MsgGUID: AV7yDSPxSJ+/xKM/JgsuTw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,155,1787036400"; 
-   d="scan'208";a="1462091"
-Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2026 00:46:17 -0700
-Date: Tue, 13 Oct 2026 15:46:13 +0800
-From: kernel test robot <yi1.lai@intel.com>
-To: Christian Brauner <brauner@kernel.org>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, yi1.lai@intel.com
-Subject: [linus:master] [fs]  7eb84d54fa:  stress-ng.kvm.ops_per_sec 28.2%
- regression
-Message-ID: <202610130959.d3ca4cfa-lkp@intel.com>
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="JBPudKTV"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4a1b07c3c5fso269225e9.1
+        for <oe-lkp@lists.linux.dev>; Tue, 13 Oct 2026 08:42:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1791906135; x=1792510935; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=0o562vnHxAoJu9TkgWw6HND2WtwAaL2hGXNC5e9IZzI=;
+        b=JBPudKTVdXyWEWnMrmEUpwaNUuyiHVVA/fEpzEMt9li/KnCMYRbaFJ1h7vYI91qEUo
+         IBd43l2BNt+UtDMXbsbjIdo5XIxy0/6sx7tSQWeUUYiXttzu6QpijxwYoJaTzBmKmBCq
+         888ycI4dr6teW7Ve56J3SX7d7n8//1jDpDMpqYA4FaiFFw+NSHKTk8By6xYQfItr3K6/
+         pjix6TqrLlbFmZ8tHnoRPV/1CkmHB5ZzgtulmG7PZPwMEGyg0q4rkffjdOjRBPNVdMYK
+         GMMgfWG8TJ9z3WwWg3IZFQ6BlIvwNQxRq3G4z6pOT8RfteNoppd9vxh3ZeodnY9g/x6n
+         /Uaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791906135; x=1792510935;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=0o562vnHxAoJu9TkgWw6HND2WtwAaL2hGXNC5e9IZzI=;
+        b=PlXH9y7vPUI0PSIiP7ruGjdjLQea8fwe6tVanxPmP6o89XILJJWQ3N1ULk+QG4qRh8
+         PnVf7E01WAYKZZpTX89d21ueuepvaO5cSY+e2TRUw77RkvRO6sDFslghR/P/z764uWi2
+         dVnLkMc/oeVOUqoM0K7q2//R+GcGlFiY+Vj6Hf3HCQynhk2vHzWrMbTwvf8ha9Hm7L6k
+         mVtUpnjsCkh7zPliqOVkNq3u9RO+bFyWg3qE4+pB3tXQQQtHG1ts4P73FdrtUJSt0Na0
+         6sBspL8X5icKFQUWG+wxIFcjui3X7fT8w3GvJ5A2hoUeAsBEtEj4rIO+miqdnr6pk+Ej
+         o2sg==
+X-Forwarded-Encrypted: i=1; AKwUvBxGQLcKlhhzPQv8dBgJCVhNZhnmuo7QMGhrdkwq9sLgqnXMO3yobMq3YzTqoP4sfVIUwIxLxQI=@lists.linux.dev
+X-Gm-Message-State: AFq9FYJgvxHjLRUgc2ffRZ6fX+ZfuceUhquWNW6wIyqvh0NUrHZfo4k8
+	dffJd2jO21DZs2ysvycq7CZ4vUHbKML3grbUIGZSnOKahf7QZSHSwjAXAAZeKoWd46c=
+X-Gm-Gg: AYBFou078l4n1w/HpVPVEc1PzTV1cLD8/Xlxn9k47xOgvNXMN+28O9e29qwSb1K2DDG
+	9Rlq18F1r839bcKZ9MsyKO+mDtyK/rlcmPmq8+E2PyYvMh1J/bFRSBG1loCncVbGofklzJrw1g4
+	Ype7kIhkhmN6R3d0xZwX4pSoDYWc2jOLf6wXvoxYS3lYa3EmQhH0SUSU7hfoSLADBoYDW4K6p0I
+	MOeJtDh0zJ0Qb2gKmCLlwGI2qDToLMLH/u+obiP65ReRQiZPq8/izNQulqodefQlEZd9AwESB+p
+	jumk4vKNEAkuQiH2Hy1MJuhS+NdTI1o3jZQzZFAps/qQYQs5Fsunp14oWchT3SFvWWbJdRDT77W
+	F855r2KNYEL/uRGv6ZBKx9Ta+GflCPaKwgE0887O5zALCsZYv4coSRLZlQ67/m4y/eGD1JSm4hs
+	ssULO/nhIKHiX8Iq9Ofejp2KOKJC1EhzL486beApAW9wZQz0vDstLK6Uh78fH9xlXvYYVKbaV9n
+	fk9rKrtqto=
+X-Received: by 2002:a05:600c:4e89:b0:4a0:22d5:908c with SMTP id 5b1f17b1804b1-4a18e4a4976mr278830225e9.12.1791906131800;
+        Tue, 13 Oct 2026 08:42:11 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a18be8c5e7sm464244575e9.4.2026.10.13.08.42.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Oct 2026 08:42:11 -0700 (PDT)
+From: Petr Mladek <pmladek@suse.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
+	Oleg Nesterov <oleg@redhat.com>,
+	Christian Brauner <brauner@kernel.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	oe-lkp@lists.linux.dev,
+	lkp@intel.com,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Petr Mladek <pmladek@suse.com>
+Subject: [PATCH v2] nbcon/reboot: Switch NBCON consoles into the emergency mode in emergency_restart()
+Date: Tue, 13 Oct 2026 17:41:41 +0200
+Message-ID: <20261013154141.94016-1-pmladek@suse.com>
+X-Mailer: git-send-email 2.56.0
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 
+When the system is going down a normal way, the NBCON kthreads are
+flushed and stopped properly via a syscore shutdown callback, see
+printk_kthreads_shutdown().
 
+One missing piece is emergency_restart() where the kthreads are not
+stopped. It might be called from several non-panic code paths,
+e.g. sysrq-o, kdb_reboot(), or some watchdogs.
 
-Hello,
+Fix it by explicitly entering the emergency (atomic) mode and trying
+to flush the consoles there.
 
-kernel test robot noticed a 28.2% regression of stress-ng.kvm.ops_per_sec on:
+Note that printk_trigger_flush() must be used instead of pr_flush()
+because the later is not safe in an atomic context.
 
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/all/202608061008.48a1e76e-lkp@intel.com/
+Suggested-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+---
+This is a 2nd attempt to make sure that NBCON consoles are flushed
+during a shutdown.
 
-commit: 7eb84d54fac5002bd975d1de8fd61d57e89172ab ("fs: don't let a migrating task hide its reference from do_umount()") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+Changes against [v1]
 
-testcase: stress-ng
-config: x86_64-rhel-9.4
-compiler: gcc-14
-test machine: 192 threads 2 sockets Intel(R) Xeon(R) 6740E  CPU @ 2.4GHz (Sierra Forest) with 256G memory
-parameters:
+  + Handle only emergency_restart() where the syscore shutdown
+    callbacks are not called. [John]
 
-	nr_threads: 100%
-	testtime: 60s
-	test: kvm
-	cpufreq_governor: performance
+  + Explicitly enter nbcon emergency mode instead of relying on
+    the system_state variable. [John]
 
+  + Reworked the commit message completely.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <yi1.lai@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202610130959.d3ca4cfa-lkp@intel.com
+[v1] https://lore.kernel.org/r/20261008150852.8286-1-pmladek@suse.com
+---
+ kernel/reboot.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-
-Details are as below:
--------------------------------------------------------------------------------------------------->
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20261013/202610130959.d3ca4cfa-lkp@intel.com
-
-=========================================================================================
-compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
-  gcc-14/performance/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/lkp-srf-2sp2/kvm/stress-ng/60s
-
-commit: 
-  bba9960c07 ("selftests/filesystems: check that a busy propagated copy blocks a synchronous umount")
-  7eb84d54fa ("fs: don't let a migrating task hide its reference from do_umount()")
-
-bba9960c073dbea8 7eb84d54fac5002bd975d1de8fd
----------------- --------------------------- 
-         %stddev     %change         %stddev
-             \          |                \  
-    134749           -28.2%      96786 ±  2%  stress-ng.kvm.ops
-      2245           -28.2%       1612 ±  2%  stress-ng.kvm.ops_per_sec
-    571737           -25.3%     427284 ±  3%  stress-ng.time.minor_page_faults
-      7905 ±  3%     +35.2%      10690 ±  6%  stress-ng.time.percent_of_cpu_this_job_got
-      4566 ±  3%     +37.9%       6297 ±  6%  stress-ng.time.system_time
-    190.93           -28.1%     137.21 ±  2%  stress-ng.time.user_time
-    698896           -24.8%     525918        stress-ng.time.voluntary_context_switches
-
-
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provided
-for informational purposes only. Any difference in system hardware or software
-design or configuration may affect actual performance.
-
-
+diff --git a/kernel/reboot.c b/kernel/reboot.c
+index d177d89fcc33..5b9691f45f5f 100644
+--- a/kernel/reboot.c
++++ b/kernel/reboot.c
+@@ -8,6 +8,7 @@
+ #define pr_fmt(fmt)	"reboot: " fmt
+ 
+ #include <linux/atomic.h>
++#include <linux/console.h>
+ #include <linux/ctype.h>
+ #include <linux/export.h>
+ #include <linux/kexec.h>
+@@ -94,6 +95,14 @@ void emergency_restart(void)
+ {
+ 	kmsg_dump(KMSG_DUMP_EMERG);
+ 	system_state = SYSTEM_RESTART;
++
++	/*
++	 * NBCON kthreads won't be flushed and stopped properly in
++	 * the emergency restart. Move them to the atomic mode.
++	 */
++	nbcon_cpu_emergency_enter();
++	printk_trigger_flush();
++
+ 	machine_emergency_restart();
+ }
+ EXPORT_SYMBOL_GPL(emergency_restart);
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+2.56.0
 
