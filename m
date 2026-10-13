@@ -1,104 +1,126 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86CBF47143B
-	for <oe-lkp@lists.linux.dev>; Mon, 12 Oct 2026 14:14:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2353F306D2A
+	for <oe-lkp@lists.linux.dev>; Tue, 13 Oct 2026 03:19:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791814460; cv=none; b=EIdOKPdViTXNBRUE+HZb+1ISy7h7VggNOkOPiXr7qENQSGfu+C77qfF/RKdVsNLY8mHM2goZQOQKA05J36e6i0EQ2zUweMTLRtzBDn+EUovm5NA3jlYwNsiKGWKbeVS6cQv7yvj3aM55yfPilvvIZfKOxRAmdgzSQW52BSBWUXg=
+	t=1791861597; cv=none; b=Xot53VwQ6Skk2/3Fn96XO1s2whW7Flv9N3gfgbUUgRAztG8XIw7XwFudvxzHlRfnPJHWBhiM96oelWfhG9Ca+YRf3SsaxDAMBxfvRkm3cO6uGSvy/Rm56urVs3MiY6wQaBqwQHN4iziIKFsaVr3lqJJ/8+wrHqnupQ6vTBDW9Vs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791814460; c=relaxed/simple;
-	bh=kV73uqIkz1gigmsOedM7PoqESt/yOwPLUTsBM7w0c7I=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=tgKef5gDrnnjdR3UvVw1sl9uAtIhhWF6mVRQdRjfSnJxm6CRhpvHG0tgJeS7I0kugCY4xBl9Ve0/QrIOSJ4GgRPXHLfx6AgkWa9IvN9eUBdizPQI5iaPpd3Jkt6nSu/48dadBFhb2c2em+FiMz/Ct4EGYMkMCo0DnmgZtjF/zpI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=OXuNRqHy; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=XENPiXtK; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1791861597; c=relaxed/simple;
+	bh=e/G+/sjP870rWRPl7fW6fScVaR4XUSaNGG10FbSXvXA=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=bPZ7jKipPdU6frE60sSHLNLKvKQufqqTH8msBB7JjT6t/bgPTyEkfnefqoA5tMBIizRpPUNbL6EHhexwYWR5GgUtwhSScYc8n/FCsTkz0nkPZ6JPdXZkqtJrgkhBbrxUkUY5qc8wE6gyAx0dIoFP+KtiKnEdHEwBtmycwFlhfK4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PT2K4Wp7; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="OXuNRqHy";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="XENPiXtK"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1791814457;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=MAhC3w4x6SO8S0tKilkyEO20IHMEvKk4g6c9AZ0BlC0=;
-	b=OXuNRqHyLqtOYD1KPGh3MgZUc5sohbm8SH+eE0LoWJRIbOOYgpzsl/dRA4BABC8giI4ldx
-	bzD4wpdTLcDH73kujqdeVkLAGpKreaIshxJxz0hrjWjl5AJI4EbGT0S7EsWF7RYyE9kyNN
-	e3plsfRcjnyR8YukDPUFuGfRHbu3HPG6DCWa8bXOej6YBLljWrHrU3xDxO0UcpfGIcpHZ0
-	gyipJyg+fID6ORT5GnGsx8osxrqHF2vMxH6/NciemG+97tkal6dRVC5VFegsaqcOOYUQnQ
-	cuY37HKgeDEkonf8HjGssENXrZEolsuoOeOW9FxASSikm5JVwnKIULecUezk9Q==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1791814457;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=MAhC3w4x6SO8S0tKilkyEO20IHMEvKk4g6c9AZ0BlC0=;
-	b=XENPiXtKoyygKkz7Chpoc1n6BCA2zILBMJr1oHQTMKLxFqcGW7gnkeZLQAl/v7V7IITTQz
-	xXo3LDx7vMEjYfAw==
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Petr Mladek
- <pmladek@suse.com>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>, Steven Rostedt
- <rostedt@goodmis.org>, Pavel Tikhomirov <ptikhomirov@virtuozzo.com>, Oleg
- Nesterov <oleg@redhat.com>, Christian Brauner <brauner@kernel.org>,
- oe-lkp@lists.linux.dev, lkp@intel.com, linux-serial@vger.kernel.org,
- oliver.sang@intel.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] nbcon/reboot: Flush nbcon consoles synchronously on reboot
-In-Reply-To: <87jynnxd5v.fsf@jogness.linutronix.de>
-References: <20261008150852.8286-1-pmladek@suse.com>
- <20261009065152.udyfFRHx@linutronix.de>
- <87jynnxd5v.fsf@jogness.linutronix.de>
-Date: Mon, 12 Oct 2026 16:20:16 +0206
-Message-ID: <87h5irxayv.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PT2K4Wp7"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1791861595; x=1823397595;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=e/G+/sjP870rWRPl7fW6fScVaR4XUSaNGG10FbSXvXA=;
+  b=PT2K4Wp70B8g+shu8rrSeEL9Z6h7/c6UG4g/fC4CGa/M7Gudv25H05u/
+   wIVEUzapx9AhyCJgupag629WabFvsBguuwEl1p8TX9Dw+b4Hr5dr6ytyZ
+   lFrRjWMD/5/axFXS9Ue6Uvq767J9XOz8MrCh/pU3hFMuQ5bbRqdAzA6K4
+   TD5t5fossRcwzSEQ/fKtzk3ctC0/SDBeR9LuV1ncZdsykUaSVT3vKUZJS
+   e7PihzT7qxuGQUCkwJx64sqwQvR/R0WeSx1jqUfqLR3CjT1hsNnxx6Wbu
+   XgDOP3KDPE4wGGbzlPswkyd0kUmbIT5RStV3LIrfkgi4mN+BDtUSIsf7D
+   A==;
+X-CSE-ConnectionGUID: +rDgYXqUQ/yqSDieAPngrA==
+X-CSE-MsgGUID: p1uadIcjSLW0XKP0EFf8hQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11933"; a="571469"
+X-IronPort-AV: E=Sophos;i="6.27,154,1787036400"; 
+   d="scan'208";a="571469"
+Received: from fmviesa013.fm.intel.com ([10.60.135.153])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 20:19:53 -0700
+X-CSE-ConnectionGUID: LffCJul+RDKkYWQn3k8nnw==
+X-CSE-MsgGUID: 5VQ6d9m8Q/OW+eAdoilZEQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,154,1787036400"; 
+   d="scan'208";a="2815493"
+Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2026 20:19:52 -0700
+Date: Tue, 13 Oct 2026 11:19:49 +0800
+From: kernel test robot <yi1.lai@intel.com>
+To: aubrey.li@linux.intel.com
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, yi1.lai@intel.com
+Subject: [anolis-intel-cloud:devel-5.10] [sched/fair]  e213519c64:
+ netperf.Throughput_tps 3.8% regression
+Message-ID: <202610091252.d0d6cae8-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
-On 2026-10-12, John Ogness <john.ogness@linutronix.de> wrote:
->> while this seems okay, didn't we have pr_flush() to flush the output on
->> shutdown/ reboot?
->
-> We have the syscore.ops.shutdown registered notifier that gracefully
-> shuts down the kthread printers and transitions to atomic printing.
->
-> There is a pr_flush() in kernel_power_off(), but actually that is no
-> longer needed and should be removed.
 
-After reviewing [0] I am reminded why pr_flush() exists in
-kernel_power_off(). It is purely for legacy consoles on PREEMPT_RT.
 
-I am wondering if instead printk_kthreads_shutdown() should make an
-effort in this case (legacy + PREEMPT_RT):
+Hello,
 
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 0bbf6409d467a..10b655f05fa56 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -3776,6 +3776,15 @@ static void printk_kthreads_shutdown(void *data)
- 		 */
- 		nbcon_atomic_flush_pending();
- 	}
-+
-+	/*
-+	 * If legacy kthread printing is in use, give it a chance to
-+	 * flush any backlog. The kthread is not stopped because when
-+	 * forced, it is the only way legacy consoles can print.
-+	 */
-+	if (force_legacy_kthread() && printk_legacy_kthread)
-+		pr_flush(1000, true);
-+
- 	console_list_unlock();
- }
+kernel test robot noticed a 3.8% regression of netperf.Throughput_tps on:
 
-That would still not cover the final "Power down", so probably the
-pr_flush() should also continue to exist in kernel_power_off(). But it
-is PREEMPT_RT + legacy specific, so I am not too happy about it.
+commit: e213519c64ec899502f211079bb2a4603cb8ab53 ("sched/fair: Avoid a second scan of target in select_idle_cpu") https://gitee.com/anolis/intel-cloud-kernel.git devel-5.10
 
-John
+testcase: netperf
+config: x86_64-anolis-intel-cloud-devel-5.10
+compiler: gcc-14
+test machine: 256 threads 2 sockets Intel(R) Xeon(R) 6768P  CPU @ 2.4GHz (Granite Rapids) with 64G memory
+parameters:
 
-[0] https://lore.kernel.org/lkml/a68e2e94-b4c6-4791-b581-ecbf3fee28e9@paulmck-laptop
+	ip: ipv4
+	runtime: 300s
+	nr_threads: 200%
+	cluster: cs-localhost
+	test: TCP_RR
+	cpufreq_governor: performance
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <yi1.lai@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202610091252.d0d6cae8-lkp@intel.com
+
+
+Details are as below:
+-------------------------------------------------------------------------------------------------->
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20261009/202610091252.d0d6cae8-lkp@intel.com
+
+=========================================================================================
+cluster/compiler/cpufreq_governor/ip/kconfig/nr_threads/rootfs/runtime/tbox_group/test/testcase:
+  cs-localhost/gcc-14/performance/ipv4/x86_64-anolis-intel-cloud-devel-5.10/200%/debian-13-x86_64-20250902.cgz/300s/lkp-gnr-2sp4/TCP_RR/netperf
+
+commit: 
+  eb34bf470a ("sched/fair: Bring back select_idle_smt(), but differently")
+  e213519c64 ("sched/fair: Avoid a second scan of target in select_idle_cpu")
+
+eb34bf470aa84e3d e213519c64ec899502f211079bb
+---------------- --------------------------- 
+         %stddev     %change         %stddev
+             \          |                \  
+  28413404            -3.8%   27329713 ±  2%  netperf.ThroughputBoth_total_tps
+     55494            -3.8%      53378 ±  2%  netperf.ThroughputBoth_tps
+  28413404            -3.8%   27329713 ±  2%  netperf.Throughput_total_tps
+     55494            -3.8%      53378 ±  2%  netperf.Throughput_tps
+      1932 ±  2%      -5.1%       1833        netperf.time.user_time
+ 8.524e+09            -3.8%  8.199e+09 ±  2%  netperf.workload
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provided
+for informational purposes only. Any difference in system hardware or software
+design or configuration may affect actual performance.
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
