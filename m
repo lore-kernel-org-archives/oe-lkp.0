@@ -1,63 +1,73 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.11
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792439580;
-	b=wgJ0tLup4h0X5hRCcFLYIA+N0hJZ+T9+RI8kKEuBmMF9I9D4O3aCLNUR/qZmaaK1mC7u
-	 e31kqEb8e4Iu+z74jS2eVKvpoEgiu87esAfoKVr6eNlbqqjxVJcwIj4eWb7SpdFUCBrrj
-	 cnRy9fvwiqvMm3OOkV9gn1Es2Bx88uhQlcs6p7epP0mEBQ3QvhDcuipTDulv8zKIqHW0P
-	 oHDevc23KJvqgZhl3mqaH2KmUObELx5kdVpCF3Hm22E/QrKm7i1Ftj1yzH8aL5EpLdOCQ
-	 N+3+icEkK2rfX80zhuj3mh8QClfS1bXyJmdYeBUyTd48GW9Gnz43VpKG5Dbpnbbew6g==
+	t=1792466901;
+	b=zZc/jfUzaJYplh5xojH2mkSc8zawjxWlBHiZLUBToIipMD9DL7g7o9bGt34hzFQB8Q0M
+	 HasvuNb4tNACGsQo82oxxg7pBmGaduNG5xw+H3a8FzBigxHEXaq7MgF9rYB0D2XFLlXWf
+	 CHXCDwzQKKtOWoqZDP8u2wcheW+eLB39TQJvaXMkx9vR5Mg/EdUoNWcqckuPhyl+P6pVy
+	 fvD9vSmkGUDfyKvmlUtayBO2+p1Bv3qwInjHL5eBjEXgTWMs6W08cqoXjDxqg7R+Rw8bu
+	 XKeWBZvvoi09ov7BAggFASYUA23DSlm7E47mC+NhdKVLQknH+35Gtq9DAy3p5VivUOg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792439580;
-	h=Received:DKIM-Signature:Message-ID:Subject:From:To:Cc:Date:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:
-	 User-Agent:MIME-Version;
-	bh=/B8Sf2t/5DBguvLLrjlEO7Kkln0Oyn/55MT9a1pjZ1o=;
-	b=KdOqvTeGH8L9TI3ybkVU17ky7T3JY5rDUkUDmlMCX70LYfSaGdiEtrnaUBx0jkHFW0i8
-	 +eKVAQPPRGOwngyJtsG9v8YjDpx14Y7LjISGyT82Y9mYh6rc2Xe7RxDQsQhg2ccE7teNE
-	 O3XQtO/gS/FxXIgj7p36wMYQW8Mk5V2d3hJ4ew7pQB2g/qiPxh76PDKpTGyAT0RRsrWNK
-	 kLfI1uTvkmN3PsLsKBX+UHcqExFgU2rfd2HXtq9CXvTWxpLe26ecd9/nEye7aDky3XwiD
-	 STjNdxxoTGK0npf4Rgz7oLH5YpHSXXqx6JHuw95BKYDN9hCsTetML1ktZgqKfAShl3g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792466901;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition;
+	bh=S11a+q8uthZ6OT5iMGLLaaA4xbs8NGH8wBdksxAdcnA=;
+	b=IeEYT/qdT4Mh/NAoZdhWaUNrTdr7y2ocUk8YROD14H2oK3K0AAt9GWHKVdDCx8hvqvHZ
+	 yJtJQxramN+6RIUzF2pxVmTna0y4KFz7NqvijS3r9z/Ha3qJ7krP6Uvnn7PmS70i61lZl
+	 0syMYfvHAAt0Bt22yq1joNMNKjR3PVGZ78Mw5Liccwd1DhbFB7Y4QXtyxJZKK/kxSWRpT
+	 B5TKKF0+larNo0nByyXOqHzlpDR7qQa/dT1ev7Rkwc8p8QfcmdT4cgZfun6HWT7uqDDjn
+	 S1ABkg0innZszTK0VokMTQtyK67BngdQ3AkioDWpCD3RsaIAxj/XeB7exiT1JWFPU1A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XuNF1GbO;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=A46efsRJ;
+	arc=none smtp.remote-ip=198.175.65.11
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 539B9606A319;
-	Mon, 19 Oct 2026 19:53:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25783606A319
+	for <oe-lkp@lists.linux.dev>; Tue, 20 Oct 2026 03:28:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 25783606A319
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XuNF1GbO
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 592F91F000C4;
-	Mon, 19 Oct 2026 19:52:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792439579;
-	bh=/B8Sf2t/5DBguvLLrjlEO7Kkln0Oyn/55MT9a1pjZ1o=;
-	h=Subject:From:To:Cc:Date:In-Reply-To:References;
-	b=XuNF1GbOzd2BBEAJU6p1RypmvBu3/DMrL0b3wWdC+D++Poq0HXIRFWesrR1Oo8lL/
-	 mhtWvhuAYtWIocMai5rqtHzVncAteP+BI3w+hOW2hU6IBI6rvJPA15oR+4bdizjuTn
-	 dsf8kxRwLKdwlPv9l424Xna5CgBVMDCcZ1Jcc/qlP4AB/uOupNzjZvqcz7BE6QGBD7
-	 c7ltj0F3siFa6PMy6uq9tVAO//JSmGoFMld/h5nkyGLtrIXdadBY6yo0uZO+Vp3XbW
-	 h5+bZIQfi4A3lXHhXdvAJPgvsYBe0a+zHp1pPcLAaAFO9pB5lh38SAOIcLgJAfdjpA
-	 FaZxRbZ3iFzxw==
-Message-ID: <42964fa071bd8dcafd418c89be6d66856def4dc5.camel@kernel.org>
-Subject: Re: [linus:master] [sysctl]  8d75c338f0:
- BUG:KASAN:slab-use-after-free_in_touch_wq_lockdep_map
-From: Allison Henderson <achender@kernel.org>
-To: Oleg Nesterov <oleg@redhat.com>, Joel Granados <joel.granados@kernel.org>
-Cc: kernel test robot <yi1.lai@intel.com>, oe-lkp@lists.linux.dev, 
- lkp@intel.com, linux-kernel@vger.kernel.org,
- linux-m68k@lists.linux-m68k.org,  linux-s390@vger.kernel.org,
- linux-fsdevel@vger.kernel.org,  netdev@vger.kernel.org,
- wireguard@lists.zx2c4.com, rds-devel@oss.oracle.com
-Date: Mon, 19 Oct 2026 12:52:58 -0700
-In-Reply-To: <atY42k00k0Waj6o4@redhat.com>
-References: <202610190310.9737b2e3-lkp@intel.com>
-	 <atYB0bm9eEXp8A2g@redhat.com> <atYW0K3t57puHeLW@hobbes>
-	 <atYuE1xnVYe0BDG4@redhat.com> <atY42k00k0Waj6o4@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.52.3-0ubuntu1.1 
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=A46efsRJ
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1792466900; x=1824002900;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=84pyQ5wUPTxCJ+9dBxDxuHt9gdguUz9LkGze+cgGaAk=;
+  b=A46efsRJxvlzV6DwXq+Fqsi2GvDRpANtnfEqIfXglromCTWZZFzRDPga
+   JscrmH0qcW+N9jAdNsxrod+UWL3Y4gUQhNRrpB0oV0TA3oltES6tuzfnN
+   RxwoA4TsSj6/U+6eQINeJl7C1/xwUq83L587Xg+q1AGaR5RBAhLu5IbcJ
+   M+4UEVW3J1VsT0NbFKFW2cz3QOpAxIeP2IRF3DfxjMeopi74U8digm8E0
+   uRfmEEZJblrVmuS/bg0bLU86tnBwixCWCpQ5qFX2T+1S6S/eN4Nz0RRZn
+   h6qGJHdXx2xlTgrVVGSg0nE60KV7bRrP/APdaDf63qR/senifKf6WCvf1
+   Q==;
+X-CSE-ConnectionGUID: 7S6Z89kXSpioKwo430xcjQ==
+X-CSE-MsgGUID: hsO34AjIQQqmP3g1MwUEVA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11940"; a="1047345"
+X-IronPort-AV: E=Sophos;i="6.27,168,1787036400"; 
+   d="scan'208";a="1047345"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 20:28:19 -0700
+X-CSE-ConnectionGUID: c/57Hva4RUu21ZxF9b1dzw==
+X-CSE-MsgGUID: VX4ZR1j0Tpu4Xwrq6ZGaCQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,168,1787036400"; 
+   d="scan'208";a="3167669"
+Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 20:28:16 -0700
+Date: Tue, 20 Oct 2026 11:28:13 +0800
+From: kernel test robot <yi1.lai@intel.com>
+To: Chengfeng Ye <nicoyip.dev@gmail.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	Steffen Klassert <steffen.klassert@secunet.com>,
+	netdev@vger.kernel.org, yi1.lai@intel.com
+Subject: [linus:master] [xfrm]  89fefad9f9:  stress-ng.epoll.ops_per_sec
+ 25.4% regression
+Message-ID: <202610201112.ddb3ab07-lkp@intel.com>
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -67,180 +77,66 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-
-On Mon, 2026-10-19 at 17:35 +0200, Oleg Nesterov wrote:
-> On 10/19, Oleg Nesterov wrote:
-
-Hi Oleg, Joel,
-
-Thanks for running this down.  Agreed we shouldn't just fail to init becaus=
-e
-sysctl is off.  Some comments below:
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
 
-> >=20
-> > But. rds_init() can also fail even if CONFIG_SYSCTL=3Dy, after
-> > rds_sysctl_init(), so to me this looks like a bug in net/rds/.
-> >=20
-Yes that's a separate bug, so I'll send a separate fix for that.
 
-> >=20
-> > In any case, I guess net/rds/ init paths should not fail if
-> > CONFIG_SYSCTL=3Dn ?
->=20
-> So I think that something like the uncompiled/untested patch below makes
-> sense anyway even if doesn't fix all the potential problems with rds_wq.
->=20
-> What do you think?
->=20
-> Oleg.
-> ---
->=20
-> diff --git a/net/rds/ib_sysctl.c b/net/rds/ib_sysctl.c
-> index 2af678e71e3c..bccdb5c4df1d 100644
-> --- a/net/rds/ib_sysctl.c
-> +++ b/net/rds/ib_sysctl.c
-> @@ -36,19 +36,10 @@
-> =20
->  #include "ib.h"
-> =20
-> -static struct ctl_table_header *rds_ib_sysctl_hdr;
-> -
->  unsigned long rds_ib_sysctl_max_send_wr =3D RDS_IB_DEFAULT_SEND_WR;
->  unsigned long rds_ib_sysctl_max_recv_wr =3D RDS_IB_DEFAULT_RECV_WR;
->  unsigned long rds_ib_sysctl_max_recv_allocation =3D (128 * 1024 * 1024) =
-/ RDS_FRAG_SIZE;
-> -static unsigned long rds_ib_sysctl_max_wr_min =3D 1;
-> -/* hardware will fail CQ creation long before this */
-> -static unsigned long rds_ib_sysctl_max_wr_max =3D (u32)~0;
-> -
->  unsigned long rds_ib_sysctl_max_unsig_wrs =3D 16;
-> -static unsigned long rds_ib_sysctl_max_unsig_wr_min =3D 1;
-> -static unsigned long rds_ib_sysctl_max_unsig_wr_max =3D 64;
-> -
->  /*
->   * This sysctl does nothing.
->   *
-> @@ -61,6 +52,14 @@ static unsigned long rds_ib_sysctl_max_unsig_wr_max =
-=3D 64;
->   */
->  unsigned int rds_ib_sysctl_flow_control =3D 0;
-> =20
-> +#ifdef CONFIG_SYSCTL
-> +static unsigned long rds_ib_sysctl_max_wr_min =3D 1;
-> +/* hardware will fail CQ creation long before this */
-> +static unsigned long rds_ib_sysctl_max_wr_max =3D (u32)~0;
-> +
-> +static unsigned long rds_ib_sysctl_max_unsig_wr_min =3D 1;
-> +static unsigned long rds_ib_sysctl_max_unsig_wr_max =3D 64;
-> +
->  static struct ctl_table rds_ib_sysctl_table[] =3D {
->  	{
->  		.procname       =3D "max_send_wr",
-> @@ -105,6 +104,8 @@ static struct ctl_table rds_ib_sysctl_table[] =3D {
->  	},
->  };
-> =20
-> +static struct ctl_table_header *rds_ib_sysctl_hdr;
-> +
->  void rds_ib_sysctl_exit(void)
->  {
->  	if (rds_ib_sysctl_hdr)
-> @@ -118,3 +119,15 @@ int rds_ib_sysctl_init(void)
->  		return -ENOMEM;
->  	return 0;
->  }
+Hello,
+
+kernel test robot noticed a 25.4% regression of stress-ng.epoll.ops_per_sec on:
 
 
-The real rds_sysctl_init() also does the runtime setup of
-rds_sysctl_reconnect_min_jiffies (msecs_to_jiffies(1)).  Without
-it, the reconnect back off is lost.
+commit: 89fefad9f971bc637fb22373078144f2563c4be9 ("xfrm: serialize state GC with device state flush") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-Also, if register_net_sysctl_sz() returns NULL in rds_tcp_init_net(),
-it fails as an -ENOMEM.  So RDS/TCP would still fail to come up with
-CONFIG_SYSCTL=3Dn.  A simpler fix might be to just handle the NULL at the
-three call sites, e.g.:
+testcase: stress-ng
+config: x86_64-rhel-9.4
+compiler: gcc-14
+test machine: 256 threads 4 sockets INTEL(R) XEON(R) PLATINUM 8592+ (Emerald Rapids) with 256G memory
+parameters:
 
-        rds_sysctl_reg_table =3D
-                register_net_sysctl(&init_net, "net/rds", rds_sysctl_rds_ta=
-ble);
-        if (!rds_sysctl_reg_table && IS_ENABLED(CONFIG_SYSCTL))
-                return -ENOMEM;
+	nr_threads: 100%
+	testtime: 60s
+	test: epoll
+	cpufreq_governor: performance
 
-And same for rds_ib_sysctl_init() and rds_tcp_init_net().  The exit
-paths are ok, since unregister_net_sysctl_table() is already a
-no-op stub when sysctl is off.
 
-Let me know if you want to respin or if you'd rather I send it.
-Either way is fine with me.
+If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <yi1.lai@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202610201112.ddb3ab07-lkp@intel.com
 
-Thanks
-Allison
 
-> +
-> +#else
-> +
-> +void rds_ib_sysctl_exit(void)
-> +{
-> +}
-> +
-> +int rds_ib_sysctl_init(void)
-> +{
-> +	return 0;
-> +}
-> +#endif
-> diff --git a/net/rds/sysctl.c b/net/rds/sysctl.c
-> index 025f518a4349..a0673a41633a 100644
-> --- a/net/rds/sysctl.c
-> +++ b/net/rds/sysctl.c
-> @@ -36,11 +36,6 @@
-> =20
->  #include "rds.h"
-> =20
-> -static struct ctl_table_header *rds_sysctl_reg_table;
-> -
-> -static unsigned long rds_sysctl_reconnect_min =3D 1;
-> -static unsigned long rds_sysctl_reconnect_max =3D ~0UL;
-> -
->  unsigned long rds_sysctl_reconnect_min_jiffies;
->  unsigned long rds_sysctl_reconnect_max_jiffies =3D HZ;
-> =20
-> @@ -49,6 +44,10 @@ unsigned int  rds_sysctl_max_unacked_bytes =3D (16 << =
-20);
-> =20
->  unsigned int rds_sysctl_ping_enable =3D 1;
-> =20
-> +#ifdef CONFIG_SYSCTL
-> +static unsigned long rds_sysctl_reconnect_min =3D 1;
-> +static unsigned long rds_sysctl_reconnect_max =3D ~0UL;
-> +
->  static struct ctl_table rds_sysctl_rds_table[] =3D {
->  	{
->  		.procname       =3D "reconnect_min_delay_ms",
-> @@ -91,6 +90,8 @@ static struct ctl_table rds_sysctl_rds_table[] =3D {
->  	},
->  };
-> =20
-> +static struct ctl_table_header *rds_sysctl_reg_table;
-> +
->  void rds_sysctl_exit(void)
->  {
->  	unregister_net_sysctl_table(rds_sysctl_reg_table);
-> @@ -107,3 +108,15 @@ int rds_sysctl_init(void)
->  		return -ENOMEM;
->  	return 0;
->  }
-> +
-> +#else
-> +
-> +void rds_sysctl_exit(void)
-> +{
-> +}
-> +
-> +int rds_sysctl_init(void)
-> +{
-> +	return 0;
-> +}
-> +#endif
->=20
+Details are as below:
+-------------------------------------------------------------------------------------------------->
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20261020/202610201112.ddb3ab07-lkp@intel.com
+
+=========================================================================================
+compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
+  gcc-14/performance/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/lkp-emr-2sp1/epoll/stress-ng/60s
+
+commit: 
+  d042487dc1 ("xfrm: iptfs: fix stack OOB read in iptfs_skb_reset_frag_walk()")
+  89fefad9f9 ("xfrm: serialize state GC with device state flush")
+
+d042487dc118e494 89fefad9f971bc637fb22373078
+---------------- --------------------------- 
+         %stddev     %change         %stddev
+             \          |                \  
+ 1.889e+08           -25.4%   1.41e+08        stress-ng.epoll.ops
+   3146137           -25.4%    2347837        stress-ng.epoll.ops_per_sec
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provided
+for informational purposes only. Any difference in system hardware or software
+design or configuration may affect actual performance.
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
 
