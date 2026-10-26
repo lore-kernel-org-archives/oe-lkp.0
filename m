@@ -1,76 +1,59 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=212.227.17.21
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792984554;
-	b=kC3wXUnDRfupv9oxbmt7mhqqmbTi/Mebh6I89KIwEoKMgP6W1BQ9ATbPxA9wfgqBGJUy
-	 gko5VqcLPtgG1vj+jRhzRqt9uhXrs4Fq40QOGfu5qqd9vzPG4WuGGhiAGeYd70nRN9soT
-	 UOj2KYzT56wluKevbF51bH2wcuKmZ5zxi83sMwkurikr2CN8+Y8cN5ZczI7KzkLZLTFKP
-	 7tCYSOZ26GMXfZMl845dQUE8Pe0nBPt2IRNhM9EwNEl5KIaZzL8GnsD2BLqoQP15v7lxP
-	 K4UWu4ztqisx+AUCwm9I6ogrFd304vGtI7OeumzpJd8x7rJGi/EqJQgRrun2086rqXw==
+	t=1792994167;
+	b=uZ3us2DESaVXiwxZCtO01BdaHz4gB4ZQE1nYStmADhYL4OVtia+SQdDqgXX3QLBXa17z
+	 RykD4LTFo4S6qXaTYkyNj0bZxP5WlCEtS2/+2R7x3V2VWKs3FKG95WekaobHdSPaHDUZx
+	 j8bF/RzG9uQwwedKPalr9Obe1RLJd43qf1FSZKS5H/xfL3PUSFZerAHYRvjKfIGJ64jKS
+	 PyePv5YonabM0Dt5uuAxKIwdR4kG5CMqMmAFURQYkChdHsyv7iMnk/DMgefrf8+KXhdeb
+	 QPt5dIPnAfHnwY0omwx4Ys/f8a3BnDh255HhwGepzCpWIFi0gazdEDKQhWc9ldxDIzQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792984554;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition;
-	bh=ZZByl35p9L4BlCVvyh65OvB8AbnIxEQyABpEVYwOGXA=;
-	b=fVpY7mAF+lSTMmhLNsrMWURaD0oNjRa1+G5zpo8ObTzKxV4/VFDP0/8/NyW9KibYfxvb
-	 g67nr7N0IvO53VFOPjwlqVPr7tBvMNORloWI6bzlg4iRj+5jI44reGirgRClIC4hgLt4V
-	 STR8/OfubSIuDQXvA+l/L4JUBn5yI9cb47y0uxFw6QixIfVNVtrMKYkcUsIVeq6QQNuAY
-	 DIkgRQnClJacDt17hOAFVPbw9EYTF9rq/2y960750v38GtMuAF59NKM4s+n00yIINYwz/
-	 rztUQg3qd7PtuQmy9/w3xo36FvGacYEFtqVzplgOZS8Wf4D6mQ8Mh3qd2PBlm0m7ooQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792994167;
+	h=DMARC-Filter:DKIM-Signature:X-UI-Sender-Class:Received:Message-ID:
+	 Date:MIME-Version:User-Agent:Subject:To:Cc:References:
+	 Content-Language:From:Autocrypt:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:X-Provags-ID:X-Spam-Flag:UI-OutboundReport;
+	bh=58nqiRAhd/Np2pvtunfKbU7BbeXCrbpR+ovBdOjzMhw=;
+	b=woUEWlicVqc8hwtr7BKwGDcqZ8r2AFf7h6ugYN+CLLC5viB4L/9djiu0V0t6heNTf2iY
+	 ML+6wa2o9ktjd0n0KguPFAjSxt1Q7S7RZvFyN3UdgwxrS1D7DNMASESI2nhy/XluiQNUl
+	 cm3SR/hIoQdZxCi7K4jYNv7jfxH+hWgLowzlrvVNkZS74lie5VoFnDxHcUuGzGAxLxTtg
+	 4xjCirWNr6xD0Wtl57s3kRorVpWKTy+TSNv9P1JW3hHdVCaYA531qP82JlUzsz3/r8ck/
+	 G3S9i1iMaYX2CIuEQUNSmgSGOIqGBYDIJHZ9w531eJn9sZoTTJUXFpyCID8wnmNABOw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Gxhkdid8;
-	arc=none smtp.remote-ip=198.175.65.20
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmx.com;
+	spf=pass smtp.mailfrom=gmx.com;
+	dkim=pass header.d=gmx.com header.i=quwenruo.btrfs@gmx.com header.a=rsa-sha256 header.s=s31663417 header.b=VnPTtHjh;
+	arc=none smtp.remote-ip=212.227.17.21
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43070606A320
-	for <oe-lkp@lists.linux.dev>; Mon, 26 Oct 2026 03:15:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 43070606A320
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7EFF606A327
+	for <oe-lkp@lists.linux.dev>; Mon, 26 Oct 2026 05:56:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E7EFF606A327
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Gxhkdid8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792984551; x=1824520551;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=/cgm4Os2nWWx7D3B94WrvKX+3UdH4e/JyXOwBqaaDpI=;
-  b=Gxhkdid8joOz7VZ575PSCfwtGW9yyrl+7YJPz8dGQcwvIE7dvTPjabWL
-   bWLMkzNI01ZM22Mss5CQzKRSMvmOI0Ph0rlzOIhasAuY0RBdbND/mAAxb
-   w6a1KyJEWDnngx+elZjLwdKKZbXgZQ4H73IR1ExLTH4Ng8cGEXgFOBBrx
-   qLOVZDiG97fZZuEEU7wLnj5sSXOaJvt+cAyPuYu5fYjgYRnHhv8oHGaLW
-   ZTzrsXnyvllRIsvLhmz5ZcJqbAvGSPslPDtproj0JWJQhsZHSGlSF0l89
-   oS/Pu5sWud4U2ZlnKb65cqDzVGFxMFbAfF0aovNGPgz99P9rCMOSa70Ag
-   Q==;
-X-CSE-ConnectionGUID: sx6V07rLSzOOt+FKqodrrQ==
-X-CSE-MsgGUID: B7eoAIJfSher0GV5A/oLLQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11946"; a="1661752"
-X-IronPort-AV: E=Sophos;i="6.27,178,1787036400"; 
-   d="scan'208";a="1661752"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2026 20:15:51 -0700
-X-CSE-ConnectionGUID: a8fRH+HhSnGwxEgoo32b7w==
-X-CSE-MsgGUID: fw6t6X1vTom6gbyC47MdaA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,178,1787036400"; 
-   d="scan'208";a="4534337"
-Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2026 20:15:48 -0700
-Date: Mon, 26 Oct 2026 11:15:44 +0800
-From: kernel test robot <yi1.lai@intel.com>
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	Dave Jiang <dave.jiang@intel.com>, Ingo Molnar <mingo@kernel.org>,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	David Lechner <dlechner@baylibre.com>,
-	"Fabio M. De Francesco" <fabio.m.de.francesco@linux.intel.com>,
-	Jonathan Cameron <jonathan.cameron@huawei.com>, yi1.lai@intel.com
-Subject: [linus:master] [cleanup]  857d18f23a:
- WARNING:at_arch/x86/mm/fault.c:#do_user_addr_fault
-Message-ID: <202610261034.27b7d516-lkp@intel.com>
+	dkim=pass (2048-bit key, unprotected) header.d=gmx.com header.i=quwenruo.btrfs@gmx.com header.a=rsa-sha256 header.s=s31663417 header.b=VnPTtHjh
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.com;
+	s=s31663417; t=1792994155; x=1793598955; i=quwenruo.btrfs@gmx.com;
+	bh=58nqiRAhd/Np2pvtunfKbU7BbeXCrbpR+ovBdOjzMhw=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
+	 References:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:cc:content-transfer-encoding:
+	 content-type:date:from:message-id:mime-version:reply-to:subject:
+	 to;
+	b=VnPTtHjhQe5FHJl992mgzPiQZlv2Xfg+/Bjkkq+82Eub2Ri4R29Cb1tRaTGZYi/c
+	 Oqcd0G+jZ51ovINcYTG7HEDps/5sbAWVSB2r2WqTwHXAQjTRvk5N1oYiTsJTkcKKY
+	 yMFIgKcX6AnpdZGdXtMtBn2nm4LMcmxPjMtOksGDkSYLyI/qIcISbBEXD+w9CMppN
+	 Hv2jTMUV3oMWv0xDhhsit3TSRIQlOiebXO2kvLdKfG2rpqu8kUa0U2H6j7bVABwGh
+	 64kDqbdwFzqQGlaklVfQTFtXqN4fqQVy9T/pkU5ddznIypJEd0o+88pPxv92EiDrq
+	 ErRxVjFqtk5/dqHWfg==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from client.hidden.invalid by mail.gmx.net (mrgmx104
+ [212.227.17.174]) with ESMTPSA (Nemesis) id 1Mn2aN-1wtHBN30a7-00gKgI; Mon, 26
+ Oct 2026 06:55:55 +0100
+Message-ID: <bb5eee0e-26d0-4ebf-9ed6-af01b1093aa4@gmx.com>
+Date: Mon, 26 Oct 2026 16:25:43 +1030
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -80,122 +63,265 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4] iomap: follow the alignment requirement for
+ iomap_dio_hole_iter()
+To: kernel test robot <yi1.lai@intel.com>, Qu Wenruo <wqu@suse.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+ Christian Brauner <brauner@kernel.org>, Christoph Hellwig <hch@lst.de>,
+ Pankaj Raghav <p.raghav@samsung.com>, linux-xfs@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org, linux-btrfs@vger.kernel.org
+References: <202610261048.3dc64aea-lkp@intel.com>
+Content-Language: en-US
+From: Qu Wenruo <quwenruo.btrfs@gmx.com>
+Autocrypt: addr=quwenruo.btrfs@gmx.com; keydata=
+ xsBNBFnVga8BCACyhFP3ExcTIuB73jDIBA/vSoYcTyysFQzPvez64TUSCv1SgXEByR7fju3o
+ 8RfaWuHCnkkea5luuTZMqfgTXrun2dqNVYDNOV6RIVrc4YuG20yhC1epnV55fJCThqij0MRL
+ 1NxPKXIlEdHvN0Kov3CtWA+R1iNN0RCeVun7rmOrrjBK573aWC5sgP7YsBOLK79H3tmUtz6b
+ 9Imuj0ZyEsa76Xg9PX9Hn2myKj1hfWGS+5og9Va4hrwQC8ipjXik6NKR5GDV+hOZkktU81G5
+ gkQtGB9jOAYRs86QG/b7PtIlbd3+pppT0gaS+wvwMs8cuNG+Pu6KO1oC4jgdseFLu7NpABEB
+ AAHNIlF1IFdlbnJ1byA8cXV3ZW5ydW8uYnRyZnNAZ214LmNvbT7CwJQEEwEIAD4CGwMFCwkI
+ BwIGFQgJCgsCBBYCAwECHgECF4AWIQQt33LlpaVbqJ2qQuHCPZHzoSX+qAUCat7o8gUJFKS8
+ OQAKCRDCPZHzoSX+qAogB/9C5ErH7KGAGpcLPte3Wcfdt3acCkGAuMpCjqOt8BVw30mX0kmF
+ SRo2nODjz8YsYhWR1T8L3ylANAS/IGIJ64idBmObaqGHQn845nXLIvG33LqMsAGXmOJdRgTT
+ BnBA+QFCEIZpo7L9Qt1dOQdHSpHT31Ta1kKsbDm582KPVBl6KRcJJBnjudIerOA1/L/zEyDa
+ YjIfHIcvuM3Xm8AS00iBpsmc151QgCPljqnSRXBiup9C1oMgVlaROhY1iDam4UIQB6glkHQs
+ LZhUmFDNimX5LxfOzi2pFJSjJvPclRZVX7Sq6XhK/OFb6IvswN7i0nUYZMQfuGDNqGn70ic3
+ AQImzsBNBFnVga8BCACqU+th4Esy/c8BnvliFAjAfpzhI1wH76FD1MJPmAhA3DnX5JDORcga
+ CbPEwhLj1xlwTgpeT+QfDmGJ5B5BlrrQFZVE1fChEjiJvyiSAO4yQPkrPVYTI7Xj34FnscPj
+ /IrRUUka68MlHxPtFnAHr25VIuOS41lmYKYNwPNLRz9Ik6DmeTG3WJO2BQRNvXA0pXrJH1fN
+ GSsRb+pKEKHKtL1803x71zQxCwLh+zLP1iXHVM5j8gX9zqupigQR/Cel2XPS44zWcDW8r7B0
+ q1eW4Jrv0x19p4P923voqn+joIAostyNTUjCeSrUdKth9jcdlam9X2DziA/DHDFfS5eq4fEv
+ ABEBAAHCwHwEGAEIACYCGwwWIQQt33LlpaVbqJ2qQuHCPZHzoSX+qAUCat7pCgUJFMw7KQAK
+ CRDCPZHzoSX+qEjbB/9crFFjips2NKxkt2XUutUIKjBoUlg/xCeFIj8PsTuJePhrV9HzgKsa
+ rJgSqo3t78oQWmeaP9WPoDYjfhOkQXEs+G9UwHe/LENm70+Q1jrwY3nlcR3YrkDCJ+EvMZOW
+ ackgcOYn46Iri9DN91FbSTszPMnwHi/nf0aeJXicO9krrY5C8mUxv4CSKeKSRg/5BR59uDiy
+ 9CMRHDtIDnpDWaLOXtUeowCdiC5O/jA571PMFx3Aolc7g4SSyNbYodblCBOdJrh0CVm2LlQW
+ 3SXrvFpSAw7LMVDgsS8pTRt4A11eTIS7mz0zqafTohXP1wt+575IBHK5ZpThQb+PzSQmxAqa
+In-Reply-To: <202610261048.3dc64aea-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:ah905IIpVxMjxcZnKdtLaAKMUP2u2PGF11MEEEqBss8AYWJVPc9
+ T9fO+bvgutkKa7Y4l0FuMCvO7E2y9sjGGdUPJpo49lOwOeK/w0pRPhBE80qrcv2Sbj7pT82
+ /nQ2LqtHjwmVj2oqG3qJ4bKuKISFOsLwmqOCU/m3DTQVxIrkgg8qClq/tcGwut7HW3057v4
+ VLA7jqfYJO9VIXp3kTyig==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:BaLmTVVtRD4=;hogxSvAR1xhFBOBB15nBJ1hTAts
+ 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
 
 
 
-Hello,
+=E5=9C=A8 2026/10/26 13:20, kernel test robot =E5=86=99=E9=81=93:
+>=20
+> Hello,
+>=20
+> kernel test robot noticed "xfstests.generic.091.fail" on:
+>=20
+> commit: 4025185cf953e3f52ab63cf5fec50c1485ee7bb7 ("[PATCH v4] iomap: fol=
+low the alignment requirement for iomap_dio_hole_iter()") https://git.kern=
+el.org/cgit/linux/kernel/git/torvalds/linux.git master patch link: https:/=
+/lore.kernel.org/all/73bd4d9b39e821453028ca8e567eaad2ebe0fc18.1785880740.g=
+it.wqu@suse.com/
+> patch subject: [PATCH v4] iomap: follow the alignment requirement for io=
+map_dio_hole_iter()
+>=20
+> [test failed on linux-next/master 20a33c6b6cbe7e4805dfb6cd68816937443aa1=
+48]
+>=20
+> in testcase: xfstests
+> version: xfstests-x86_64-22348afe-1_20261019
+> with following parameters:
+>=20
+> 	disk: 4HDD
+> 	fs: ext4
+> 	test: generic-group-09
+>=20
+>=20
+> config: x86_64-rhel-9.4-func
+> compiler: gcc-14
+> test machine: 8 threads Intel(R) Core(TM) i7-6700 CPU @ 3.40GHz (Skylake=
+) with 28G memory
+>=20
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>=20
+>=20
+> If you fix the issue in a separate patch/commit (i.e. not just a new ver=
+sion of the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <yi1.lai@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202610261048.3dc64aea-lkp@intel=
+.com
+>=20
+>=20
+> 2026-10-24 23:20:06 cd /lkp/benchmarks/xfstests
+> 2026-10-24 23:20:07 export TEST_DIR=3D/fs/sda1
+> 2026-10-24 23:20:07 export TEST_DEV=3D/dev/sda1
+> 2026-10-24 23:20:07 export FSTYP=3Dext4
+> 2026-10-24 23:20:07 export SCRATCH_MNT=3D/fs/scratch
+> 2026-10-24 23:20:07 mkdir /fs/scratch -p
+> 2026-10-24 23:20:07 export SCRATCH_DEV=3D/dev/sda4
+> 2026-10-24 23:20:07 sed "s:^:generic/:" /lkp/benchmarks/xfstests/tests/g=
+eneric-group-09
+> 2026-10-24 23:20:07 ./check -E tests/exclude/ext4 generic/091 generic/09=
+2 generic/093 generic/094 generic/095 generic/096 generic/097 generic/098
+> FSTYP         -- ext4
+> PLATFORM      -- Linux/x86_64 lkp-skl-d01 7.3.0-rc2+ #1 SMP PREEMPT Sat =
+Oct 24 20:47:23 CST 2026
+> MKFS_OPTIONS  -- -F /dev/sda4
+> MOUNT_OPTIONS -- -o acl,user_xattr /dev/sda4 /fs/scratch
+>=20
+> generic/091        [failed, exit status 1]- output mismatch (see /lkp/be=
+nchmarks/xfstests/results//generic/091.out.bad)
+>      --- tests/generic/091.out	2026-10-19 16:30:12.000000000 +0000
+>      +++ /lkp/benchmarks/xfstests/results//generic/091.out.bad	2026-10-2=
+4 23:20:20.173485972 +0000
+>      @@ -1,7 +1,25 @@
+>       QA output created by 091
+>       fsx -N 10000 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z -R -W
+>      -fsx -N 10000 -o 8192 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z -R -W
+>      -fsx -N 10000 -o 32768 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z -R -=
+W
+>      -fsx -N 10000 -o 8192 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z -R -W
+>      -fsx -N 10000 -o 32768 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z -R -=
+W
+>      -fsx -N 10000 -o 128000 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z -W
+>      ...
+>      (Run 'diff -u /lkp/benchmarks/xfstests/tests/generic/091.out /lkp/b=
+enchmarks/xfstests/results//generic/091.out.bad'  to see the entire diff)
 
-kernel test robot noticed "WARNING:at_arch/x86/mm/fault.c:#do_user_addr_fault" on:
+Indeed I can reproduce the problem on both ext4 and xfs.
 
-commit: 857d18f23ab17284d1b6de6f61f4e74958596376 ("cleanup: Introduce ACQUIRE() and ACQUIRE_ERR() for conditional locks") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+It looks like ext4 and non-COW xfs inodes relies on the unaligned hole=20
+iterating behavior.
 
-[test failed on linux-next/master 20a33c6b6cbe7e4805dfb6cd68816937443aa148]
+Considering only btrfs and COW xfs inodes requests FSBLOCK_ALIGNED flag,=
+=20
+for now I'll fix it by only do the revert if it's requested by the dio fla=
+g.
 
-in testcase: boot
+Thanks,
+Qu
 
-config: i386-randconfig-1000-20261024
-compiler: clang-22
-test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 4 -m 4G
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <yi1.lai@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202610261034.27b7d516-lkp@intel.com
-
-
-
-[   11.566677][    T1] ------------[ cut here ]------------
-[   11.568949][    T1] WARNING: CPU: 0 PID: 1 at arch/x86/mm/fault.c:1276 do_user_addr_fault+0x383/0x400
-[   11.575495][    T1] Modules linked in:
-[   11.577054][    T1] CPU: 0 UID: 0 PID: 1 Comm: init Tainted: G                T   6.16.0-rc4-00001-g857d18f23ab1 #1 PREEMPTLAZY  a3ef0aab1ee9544918f8c1ad2e4db51d2fe98b85
-[   11.581652][    T1] Tainted: [T]=RANDSTRUCT
-[   11.582645][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[   11.585110][    T1] EIP: do_user_addr_fault+0x383/0x400
-[   11.586341][    T1] Code: 00 00 83 c4 04 e9 22 fe ff ff 89 f9 89 da ff 75 e4 e8 11 75 f6 ff 83 c4 04 e9 05 fd ff ff b0 01 84 c0 0f 84 3d fd ff ff eb 02 <0f> 0b 89 f9 eb 1f 8b 45 e8 8b 40 34 f7 d0 a8 03 75 a5 e8 26 cc 31
-[   11.590683][    T1] EAX: 00000000 EBX: 00000000 ECX: 80000000 EDX: 00000000
-[   11.592281][    T1] ESI: 81598000 EDI: 81705ed4 EBP: 81705eb0 ESP: 81705e88
-[   11.593863][    T1] DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 0068 EFLAGS: 00010046
-[   11.595609][    T1] CR0: 80050033 CR2: 00000004 CR3: 6c8c8000 CR4: 000406d0
-[   11.597203][    T1] Call Trace:
-[   11.597982][    T1]  exc_page_fault+0x58/0xc0
-[   11.599032][    T1]  ? pvclock_clocksource_read_nowd+0x180/0x180
-[   11.600439][    T1]  ? entry_INT80_32+0x107/0x107
-[   11.601541][    T1]  handle_exception+0x147/0x147
-[   11.602644][    T1] EIP: do_int80_syscall_32+0x1b6/0x340
-[   11.603893][    T1] Code: 5b 5d 31 c0 31 c9 31 d2 c3 e8 a6 3e 00 00 8b 46 0c 8b 08 f7 c1 1e 30 02 00 74 96 89 4e 08 a1 04 80 b6 87 85 c0 74 27 8b 45 00 <8b> 58 04 8b 4e 04 89 da e8 bd c0 8f fe 8b 46 04 89 da 8b 5e 04 e8
-[   11.608196][    T1] EAX: 00000000 EBX: 85200bcb ECX: 00000010 EDX: 00000000
-[   11.609759][    T1] ESI: 81705f70 EDI: 81705fb4 EBP: 81705fac ESP: 81705f30
-[   11.611343][    T1] DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 0068 EFLAGS: 00010002
-[   11.613100][    T1]  ? entry_INT80_32+0x107/0x107
-[   11.614207][    T1]  ? pvclock_clocksource_read_nowd+0x180/0x180
-[   11.615601][    T1]  ? pvclock_clocksource_read_nowd+0x180/0x180
-[   11.616984][    T1]  ? do_int80_syscall_32+0x1b6/0x340
-[   11.618174][    T1]  ? __this_cpu_preempt_check+0x8/0x40
-[   11.619410][    T1]  ? lockdep_hardirqs_on+0x8f/0x140
-[   11.620607][    T1]  ? entry_INT80_32+0x107/0x107
-[   11.621712][    T1]  ? irqentry_exit+0x2f/0x80
-[   11.622759][    T1]  ? exc_page_fault+0x7c/0xc0
-[   11.623844][    T1]  entry_INT80_32+0x107/0x107
-[   11.624921][    T1] EIP: 0x77e6f68a
-[   11.625772][    T1] Code: 33 04 00 83 c4 10 85 ed 0f 85 ea 00 00 00 31 d2 b8 78 00 00 00 65 8b 3d 08 00 00 00 bb 11 00 20 01 83 c7 68 89 d1 89 d6 cd 80 <89> c7 3d 00 f0 ff ff 0f 87 71 01 00 00 85 ff 0f 85 99 00 00 00 8b
-[   11.648329][    T1] EAX: 0000004e EBX: 01200011 ECX: 00000000 EDX: 00000000
-[   11.651045][    T1] ESI: 00000000 EDI: 77dbeda8 EBP: 00000000 ESP: 7ff1f900
-[   11.653829][    T1] DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 007b EFLAGS: 00000202
-[   11.656766][    T1] irq event stamp: 106522
-[   11.658497][    T1] hardirqs last  enabled at (106521): [<853113c0>] wake_up_new_task+0x100/0x1c0
-[   11.661952][    T1] hardirqs last disabled at (106522): [<86b60949>] do_int80_syscall_32+0x109/0x340
-[   11.665602][    T1] softirqs last  enabled at (106504): [<85271c40>] local_bh_enable+0x0/0x40
-[   11.673657][    T1] softirqs last disabled at (106502): [<85271e00>] local_bh_disable+0x0/0x40
-[   11.677104][    T1] ---[ end trace 0000000000000000 ]---
-[   11.679177][    T1] BUG: kernel NULL pointer dereference, address: 00000004
-[   11.681834][    T1] #PF: supervisor read access in kernel mode
-[   11.684116][    T1] #PF: error_code(0x0000) - not-present page
-[   11.686324][    T1] *pde = 00000000
-[   11.687755][    T1] Oops: Oops: 0000 [#1]
-[   11.688761][    T1] CPU: 0 UID: 0 PID: 1 Comm: init Tainted: G        W       T   6.16.0-rc4-00001-g857d18f23ab1 #1 PREEMPTLAZY  a3ef0aab1ee9544918f8c1ad2e4db51d2fe98b85
-[   11.692143][    T1] Tainted: [W]=WARN, [T]=RANDSTRUCT
-[   11.693308][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[   11.695611][    T1] EIP: do_int80_syscall_32+0x1b6/0x340
-[   11.696859][    T1] Code: 5b 5d 31 c0 31 c9 31 d2 c3 e8 a6 3e 00 00 8b 46 0c 8b 08 f7 c1 1e 30 02 00 74 96 89 4e 08 a1 04 80 b6 87 85 c0 74 27 8b 45 00 <8b> 58 04 8b 4e 04 89 da e8 bd c0 8f fe 8b 46 04 89 da 8b 5e 04 e8
-[   11.701146][    T1] EAX: 00000000 EBX: 85200bcb ECX: 00000010 EDX: 00000000
-[   11.702701][    T1] ESI: 81705f70 EDI: 81705fb4 EBP: 81705fac ESP: 81705f30
-[   11.704284][    T1] DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 0068 EFLAGS: 00010002
-[   11.705989][    T1] CR0: 80050033 CR2: 00000004 CR3: 6c8c8000 CR4: 000406d0
-[   11.707559][    T1] Call Trace:
-[   11.708332][    T1]  ? __this_cpu_preempt_check+0x8/0x40
-[   11.709541][    T1]  ? lockdep_hardirqs_on+0x8f/0x140
-[   11.710693][    T1]  ? entry_INT80_32+0x107/0x107
-[   11.711786][    T1]  ? irqentry_exit+0x2f/0x80
-[   11.712837][    T1]  ? exc_page_fault+0x7c/0xc0
-[   11.713896][    T1]  entry_INT80_32+0x107/0x107
-[   11.714947][    T1] EIP: 0x77e6f68a
-[   11.715798][    T1] Code: 33 04 00 83 c4 10 85 ed 0f 85 ea 00 00 00 31 d2 b8 78 00 00 00 65 8b 3d 08 00 00 00 bb 11 00 20 01 83 c7 68 89 d1 89 d6 cd 80 <89> c7 3d 00 f0 ff ff 0f 87 71 01 00 00 85 ff 0f 85 99 00 00 00 8b
-[   11.720097][    T1] EAX: 0000004e EBX: 01200011 ECX: 00000000 EDX: 00000000
-[   11.721656][    T1] ESI: 00000000 EDI: 77dbeda8 EBP: 00000000 ESP: 7ff1f900
-[   11.723218][    T1] DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 007b EFLAGS: 00000202
-[   11.724944][    T1] Modules linked in:
-[   11.725828][    T1] CR2: 0000000000000004
-[   11.726767][    T1] ---[ end trace 0000000000000000 ]---
-[   11.728079][    T1] EIP: do_int80_syscall_32+0x1b6/0x340
-[   11.730139][    T1] Code: 5b 5d 31 c0 31 c9 31 d2 c3 e8 a6 3e 00 00 8b 46 0c 8b 08 f7 c1 1e 30 02 00 74 96 89 4e 08 a1 04 80 b6 87 85 c0 74 27 8b 45 00 <8b> 58 04 8b 4e 04 89 da e8 bd c0 8f fe 8b 46 04 89 da 8b 5e 04 e8
-[   11.750135][    T1] EAX: 00000000 EBX: 85200bcb ECX: 00000010 EDX: 00000000
-[   11.752854][    T1] ESI: 81705f70 EDI: 81705fb4 EBP: 81705fac ESP: 81705f30
-[   11.755587][    T1] DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 0068 EFLAGS: 00010002
-[   11.758498][    T1] CR0: 80050033 CR2: 00000004 CR3: 6c8c8000 CR4: 000406d0
-[   11.761268][    T1] Kernel panic - not syncing: Fatal exception
-[   11.763564][    T1] Kernel Offset: disabled
-[   11.765213][    T1] Rebooting in 30 seconds..
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20261026/202610261034.27b7d516-lkp@intel.com
-
-
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+> generic/092         1s
+> generic/093         1s
+> generic/094         14s
+> generic/095         51s
+> generic/096         1s
+> generic/097         2s
+> generic/098         11s
+> Ran: generic/091 generic/092 generic/093 generic/094 generic/095 generic=
+/096 generic/097 generic/098
+> Failures: generic/091
+> Failed 1 of 8 tests
+>=20
+>=20
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20261026/202610261048.3dc64aea-l=
+kp@intel.com
+>=20
+>=20
+> --
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
 
