@@ -1,78 +1,78 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792981500;
-	b=i8z2JSBYaa1QzjuB5uA2wOtCA2kIiq6EyKptwzMiGbK+wVfwzSZvNZXgJ9R3q65AiZVl
-	 vv4OFF2ssnZ49kVl3pq4ytNqNKczqCP8Ij2I1NONbO0Ma8yr8afSHHp4vqCC/2tugBzSK
-	 n9Arv7lr6bgvEJ22s4UyaVyWUGXZRYDwPY4AAeDfkxhNF+7wWdmIiVZ8FYE5dWyiBDJ5N
-	 /Jauii/9RyAHtI0F6lFoZwLWOphGJhnAMbucS7a67BzktfsVRPNxjsBUhQDb/FZLbZZam
-	 M+Pj1nb7eY+FrTRiFHcI7JJAtpdi4ynZXJrlvXq6hs7XgxiyPvSBmtQdUGa+N5dCoDw==
+	t=1792983065;
+	b=mGtxryA/Gb/1ZSqll3W/Wl04bORowBnfi/YAWijWdJ54i6Ri54caU81jQBC7M+4b2G4q
+	 Vgrh9tI2C5Ya7SeS6383SZSFXmg9MlcCrqKFSa21wbhkPaDsUsHNMR7vk6wqiosUar8uf
+	 PScCZj8P6UW5kKZNqrZyiHFJuMwF2TxNIfgYcDfRaPcl9pGSxYkwmGTWwoUMsbtYOyGTR
+	 mBXyVYjaF5jKdrdgEtA7zBvP1qDFt3f2Legr37UwUXEGsxdB9Vdja0Xr3teJeUKTmDzuI
+	 o7ZdupU31Ab/qN1yrLTp45z8fFe5S+BWt1H3+zzXkpM3hioDb8Cjyltz5WQdtDlkb4w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792981500;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792983065;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition;
-	bh=YxJ4VVeK9bnbWTaneSho9D6B/EMJ1w2pVfFv/idBt/A=;
-	b=Wy70n6IAYavWszBy8vv6zSIRCWrSslV8sMkcQgcd5KoUfKndxiZILO6lJ0BZIB/c6of1
-	 JWzxHW6T8ZdM0L5MCmbxFvVhab5D0FYwTYtADW1fiwgtkrdxfI0Yzfat5ahj+ZRUt2dMs
-	 U8Nw69KNsN2XUL4oEwu78dGFjbOg/9p6MdWfDuSaZBKFwQZlUnbG5U+F1DfARgItxOSLM
-	 xqMzravuFtBaGMBBDOdv4eBXiOVJ8dy6HBWrq0i+8AtTUxHbZgm6dC5V2DNeMyCwuBcob
-	 qDuwie9B8mdxgHv9EMxzOkV2wzC1Qw5Oz8fBs47C4PEJdh/dddKxBgkzjmlPb7fv9Cg==
+	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition:
+	 In-Reply-To;
+	bh=xHuoZ+h2G+HqgwQEUWSqVaW/80N7rYFmQYCMmYvVBMc=;
+	b=kwR419o+Bp/o9qMb0XsVVY5zW2bXaNcgZv/kdbcN+E6r7oGdKpSn5IYmrczFgKHDQn3k
+	 VSEZJQ8fgLvDDLYWnl5J+OB/LGq3oh90yYX/+V2Nr8UrXI13Rn5T7SkD5ICLCFk3cQOVS
+	 qbo7pcv0myuVLsH7fbOQtFKGfMaT2R6Y+xMc2k3Yc0Wmjep7acHAddOb4skkHi8qjxIqT
+	 5+Y0RWVm1dITbDaaAahcxQJu/bU6s7l/G9tO3Z/PSnjBnUNYPAj/zSNVtB02jQhdE+60w
+	 m6mxLBSCe7Di/gy+fbGSYqRLRSYZaa9CQeFOq8gv+L3FA0BLByGrHtfbXErFnidUWNw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=YtOjyr4k;
-	arc=none smtp.remote-ip=192.198.163.9
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=eE0xLLmA;
+	arc=none smtp.remote-ip=198.175.65.18
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67AFF606A31A
-	for <oe-lkp@lists.linux.dev>; Mon, 26 Oct 2026 02:24:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 67AFF606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7168606A31D
+	for <oe-lkp@lists.linux.dev>; Mon, 26 Oct 2026 02:51:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A7168606A31D
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=YtOjyr4k
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=eE0xLLmA
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792981497; x=1824517497;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=p5EF9DrvTI9TWr4SfD0pPKgmrR5yJPb+Hj8Ptw3CoUk=;
-  b=YtOjyr4kaBebV0pOkn8VQNHcSSJThVzZ6aOOY2cmn9xkHKk6gOXS/0Tg
-   OURFZVH1z5L3gy74VCqC/WwruPzwLX0iEuV2owQ0HGEFvFGiSIOcN2J1c
-   xwAqaauwGCf2TIDgJOHhfRkS/BomcJQIJL69TeQWuu4MK7/qR3BeuN6WR
-   XH7rkbM1RHN3KEjzBnMzXjw1SK+XzZb43l+NOrwFtzXVBYvr7uwqLtmoP
-   NwOh1mMtb7COhd/MYEMUXUnOn9RzF8HK/3KMecsBflRoOzHSy1R5iRcO2
-   WBWDz2AxnE33RrnxvWQvj1H/tQxy8qlTt9Uu2+QmOomA0lYZX+XXpWhE9
+  t=1792983062; x=1824519062;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   in-reply-to;
+  bh=37QYAusxgWwB+9fgXsOBG6M9Blu9law9qU4Uq9MXK1w=;
+  b=eE0xLLmAUpBI9Oze0JEfbTVUj1Y4hVuiTNNaC0f9vBY9eUfzRK1BbmrP
+   oKLpzVVn23lEzd7lBpMJkncZvTVHBm5U3laFWEotGY5ZokoYXAoXrzeZI
+   5O7slihLgdR4Op2eDzrzGgw2g/clMuCTC8hoQQnCUtSGCccwvAqQ4FpNr
+   8kTaVwzKwoQ1NglDhjZ8adiOqOiih6UIuvT2MAuLUadu/sHXKwsLDL1Dy
+   kI/GkpFASlYX947+FnaMCWe322lnsBU1lcxggnMI1bZVI8545f9Kkq8Ny
+   a5mQXW9NyQjnLrUVwD++OId6rxb+Tyt6aGi5rysu8oKkMExQ35tfzyh8G
    A==;
-X-CSE-ConnectionGUID: xqfz77A2TGSyCZ31yNaXAA==
-X-CSE-MsgGUID: Gqt5E44pTKCLJqeIqTzyUA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11946"; a="1530202"
+X-CSE-ConnectionGUID: fdJyFL+JTo6hNgWe0CADvg==
+X-CSE-MsgGUID: syj5HwcQQOSDJTPMFaC2eA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11946"; a="1645940"
 X-IronPort-AV: E=Sophos;i="6.27,178,1787036400"; 
-   d="scan'208";a="1530202"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2026 19:24:57 -0700
-X-CSE-ConnectionGUID: YLFJw+i3QFKha+6X0nM5mA==
-X-CSE-MsgGUID: qhSJhwe5REiQ6PJiIR00FA==
+   d="scan'208";a="1645940"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2026 19:51:02 -0700
+X-CSE-ConnectionGUID: 68vOWsN9QrqwoxAiQxXaYg==
+X-CSE-MsgGUID: UalFpjLVSCOmuymhkr5uvg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,178,1787036400"; 
-   d="scan'208";a="4122800"
+   d="scan'208";a="4244243"
 Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2026 19:24:54 -0700
-Date: Mon, 26 Oct 2026 10:24:50 +0800
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2026 19:50:59 -0700
+Date: Mon, 26 Oct 2026 10:50:56 +0800
 From: kernel test robot <yi1.lai@intel.com>
-To: Christian Brauner <brauner@kernel.org>
+To: Qu Wenruo <wqu@suse.com>
 Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	Arnd Bergmann <arnd@arndb.de>, Jeff Layton <jlayton@kernel.org>,
-	linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
-	linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
-	sparclinux@vger.kernel.org, linux-arch@vger.kernel.org,
+	Christian Brauner <brauner@kernel.org>,
+	Christoph Hellwig <hch@lst.de>,
+	Pankaj Raghav <p.raghav@samsung.com>, linux-xfs@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, linux-btrfs@vger.kernel.org,
 	yi1.lai@intel.com
-Subject: [linus:master] [arch]  b36d4b6aa8:
- WARNING:at_fs/nsfs.c:#is_current_namespace
-Message-ID: <202610260917.6248e316-lkp@intel.com>
+Subject: Re: [PATCH v4] iomap: follow the alignment requirement for
+ iomap_dio_hole_iter()
+Message-ID: <202610261048.3dc64aea-lkp@intel.com>
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -84,137 +84,80 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-
+In-Reply-To: <73bd4d9b39e821453028ca8e567eaad2ebe0fc18.1785880740.git.wqu@suse.com>
 
 
 Hello,
 
-kernel test robot noticed "WARNING:at_fs/nsfs.c:#is_current_namespace" on:
+kernel test robot noticed "xfstests.generic.091.fail" on:
 
-commit: b36d4b6aa88ef039647228b98c59a875e92f8c8e ("arch: hookup listns() system call") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+commit: 4025185cf953e3f52ab63cf5fec50c1485ee7bb7 ("[PATCH v4] iomap: follow the alignment requirement for iomap_dio_hole_iter()") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master patch link: https://lore.kernel.org/all/73bd4d9b39e821453028ca8e567eaad2ebe0fc18.1785880740.git.wqu@suse.com/
+patch subject: [PATCH v4] iomap: follow the alignment requirement for iomap_dio_hole_iter()
 
 [test failed on linux-next/master 20a33c6b6cbe7e4805dfb6cd68816937443aa148]
 
-Our bisection first flagged commit b36d4b6aa88e ("arch: hookup listns() system call") as the first bad commit, since that is the commit that registers the listns() syscall number, making the warning reachable from userspace/trinity.
-
-We also tested the parent commit, 76b6f5dfb3fd ("nstree: add listns()"), and found that it already reproduces a WARNING of its own (see "Regarding the PARENT" below, via setns() this time). This suggests the nstree/listns() code was already not fully robust before b36d4b6aa88e, and that commit's role may simply be exposing/making reachable an issue that predates it, rather than introducing a new one.
-
-in testcase: trinity
-version: trinity-x86_64-d4c26f234-1_20261018
+in testcase: xfstests
+version: xfstests-x86_64-22348afe-1_20261019
 with following parameters:
 
-	runtime: 300s
-	group: group-04
-	nr_groups: 5
+	disk: 4HDD
+	fs: ext4
+	test: generic-group-09
 
 
-config: x86_64-randconfig-015-20251114
+config: x86_64-rhel-9.4-func
 compiler: gcc-14
-test machine: qemu-system-x86_64 -enable-kvm -cpu Icelake-Server-noTSX,enforce -smp 4 -m 16G
+test machine: 8 threads Intel(R) Core(TM) i7-6700 CPU @ 3.40GHz (Skylake) with 28G memory
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
 
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <yi1.lai@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202610260917.6248e316-lkp@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202610261048.3dc64aea-lkp@intel.com
 
 
-[   44.455278][  T526] ------------[ cut here ]------------
-[   44.456351][  T526] WARNING: CPU: 0 PID: 526 at fs/nsfs.c:508 is_current_namespace+0x12f/0x440
-[   44.458109][  T526] Modules linked in:
-[   44.459285][  T526] CPU: 0 UID: 65534 PID: 526 Comm: trinity-c2 Tainted: G                T   6.18.0-rc2-00023-gb36d4b6aa88e #1 VOLUNTARY  e2643480911518fe6c6e798d49763b0f8bc0c2cc
-[   44.464118][  T526] Tainted: [T]=RANDSTRUCT
-[   44.465362][  T526] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[   44.468577][  T526] RIP: 0010:is_current_namespace+0x12f/0x440
-[   44.470566][  T526] Code: 48 c1 e8 03 80 3c 10 00 0f 85 5f 02 00 00 48 8b 3d 7e 55 6c 08 48 83 eb 70 e8 9d 04 78 ff 48 39 c3 5b 41 5c 0f 94 c0 5d c3 90 <0f> 0b 90 31 c0 5b 41 5c 5d c3 e8 c2 b7 2a 06 48 c7 c0 18 10 a3 8a
-[   44.476790][  T526] RSP: 0018:ffa000000184fce0 EFLAGS: 00010206
-[   44.478622][  T526] RAX: 0000000040000000 RBX: ffffffff8e0d4bc0 RCX: 0000000000000015
-[   44.481098][  T526] RDX: 1ffffffff1c1a978 RSI: ffffffff8ab98ec0 RDI: ffffffff8e0d4bc0
-[   44.483561][  T526] RBP: ffa000000184fcf0 R08: 0000000000000001 R09: fff3fc0000309fa6
-[   44.485976][  T526] R10: 0000000000000003 R11: 0000000000000200 R12: ffffffff8e0d4c78
-[   44.488478][  T526] R13: 1ff4000000309fa2 R14: ffffffff8e0d4bdc R15: ffffffff8e0d4bc0
-[   44.490935][  T526] FS:  00007f9b05b17900(0000) GS:0000000000000000(0000) knlGS:0000000000000000
-[   44.493641][  T526] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   44.495638][  T526] CR2: 00007f9b05742e10 CR3: 0000000134aca003 CR4: 0000000000771eb0
-[   44.498129][  T526] PKRU: 55555554
-[   44.499291][  T526] Call Trace:
-[   44.500271][  T526]  <TASK>
-[   44.501134][  T526]  legitimize_ns+0x25f/0x4c0
-[   44.502577][  T526]  ? lookup_ns_owner_at+0x400/0x400
-[   44.504165][  T526]  do_listns+0x185/0x5c0
-[   44.505452][  T526]  __do_sys_listns+0x13b/0x300
-[   44.506941][  T526]  ? do_listns_userns+0x580/0x580
-[   44.508435][  T526]  ? up_read+0x22/0x40
-[   44.509723][  T526]  __x64_sys_listns+0x97/0x100
-[   44.510619][  T526]  ? trace_hardirqs_on+0x21/0xc0
-[   44.511530][  T526]  x64_sys_call+0x21/0xa40
-[   44.512340][  T526]  do_syscall_64+0xb3/0x800
-[   44.513186][  T526]  entry_SYSCALL_64_after_hwframe+0x50/0x58
-[   44.514303][  T526] RIP: 0033:0x7f9b05c28779
-[   44.515114][  T526] Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 4f 86 0d 00 f7 d8 64 89 01 48
-[   44.518758][  T526] RSP: 002b:00007ffe8c345bb8 EFLAGS: 00000246 ORIG_RAX: 00000000000001d6
-[   44.520321][  T526] RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007f9b05c28779
-[   44.521798][  T526] RDX: 0000000000000008 RSI: 00007f9b05740e10 RDI: 00007f9b05742e10
-[   44.523292][  T526] RBP: 00007f9b05912000 R08: 0000000000000000 R09: 0000000000000000
-[   44.524772][  T526] R10: 0000000000000000 R11: 0000000000000246 R12: 00007f9b05912000
-[   44.526247][  T526] R13: 00007f9b05b0f560 R14: 00007f9b05917050 R15: 00007f9b05b176c8
-[   44.527731][  T526]  </TASK>
-[   44.528282][  T526] irq event stamp: 54199
-[   44.529054][  T526] hardirqs last  enabled at (54211): [<ffffffff81bdc218>] __up_console_sem+0x58/0x80
-[   44.530820][  T526] hardirqs last disabled at (54224): [<ffffffff81bdc1fd>] __up_console_sem+0x3d/0x80
-[   44.532559][  T526] softirqs last  enabled at (54144): [<ffffffff81a83670>] handle_softirqs+0x470/0x900
-[   44.534358][  T526] softirqs last disabled at (54133): [<ffffffff81a846fe>] irq_exit_rcu+0xfe/0x140
-[   44.536055][  T526] ---[ end trace 0000000000000000 ]---
+2026-10-24 23:20:06 cd /lkp/benchmarks/xfstests
+2026-10-24 23:20:07 export TEST_DIR=/fs/sda1
+2026-10-24 23:20:07 export TEST_DEV=/dev/sda1
+2026-10-24 23:20:07 export FSTYP=ext4
+2026-10-24 23:20:07 export SCRATCH_MNT=/fs/scratch
+2026-10-24 23:20:07 mkdir /fs/scratch -p
+2026-10-24 23:20:07 export SCRATCH_DEV=/dev/sda4
+2026-10-24 23:20:07 sed "s:^:generic/:" /lkp/benchmarks/xfstests/tests/generic-group-09
+2026-10-24 23:20:07 ./check -E tests/exclude/ext4 generic/091 generic/092 generic/093 generic/094 generic/095 generic/096 generic/097 generic/098
+FSTYP         -- ext4
+PLATFORM      -- Linux/x86_64 lkp-skl-d01 7.3.0-rc2+ #1 SMP PREEMPT Sat Oct 24 20:47:23 CST 2026
+MKFS_OPTIONS  -- -F /dev/sda4
+MOUNT_OPTIONS -- -o acl,user_xattr /dev/sda4 /fs/scratch
 
-Regarding the PARENT (76b6f5dfb3fd), which our bisection marked as the last known-good commit, we observed the following separate WARNING,
-indicating the nstree/listns() area already had an unrelated issue before b36d4b6aa88e landed:
-[   94.367090][  T535] ------------[ cut here ]------------
-[   94.370167][  T535] WARNING: CPU: 0 PID: 535 at include/linux/ns_common.h:311 nsproxy_ns_active_put+0x8cd/0x940
-[   94.375575][  T535] Modules linked in:
-[   94.377666][  T535] CPU: 0 UID: 65534 PID: 535 Comm: trinity-c3 Tainted: G                T   6.18.0-rc2-00022-g76b6f5dfb3fd #1 VOLUNTARY  cb1b9fe02910ecdede8a35f9462ebcf918b6f4e2
-[   94.384602][  T535] Tainted: [T]=RANDSTRUCT
-[   94.386182][  T535] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[   94.389939][  T535] RIP: 0010:nsproxy_ns_active_put+0x8cd/0x940
-[   94.392205][  T535] Code: e9 fc fd ff ff 90 0f 0b 90 e9 97 fe ff ff 90 0f 0b 90 e9 d6 f9 ff ff 90 0f 0b 90 e9 ad fa ff ff 90 0f 0b 90 e9 fa fa ff ff 90 <0f> 0b 90 e9 28 fe ff ff 90 0f 0b 90 e9 b2 f9 ff ff 90 0f 0b 90 e9
-[   94.399343][  T535] RSP: 0018:ffa000000188fda8 EFLAGS: 00010297
-[   94.401546][  T535] RAX: 0000000000000000 RBX: ff110001008d93a8 RCX: ffffffff8236dccb
-[   94.404421][  T535] RDX: 1ffffffff1657494 RSI: 0000000000000004 RDI: ffffffff8b2ba4a0
-[   94.407439][  T535] RBP: ffa000000188fdc0 R08: 0000000000000001 R09: fffffbfff16574a8
-[   94.410390][  T535] R10: ffffffff8b2ba543 R11: ffffffff810000ae R12: ffffffff8b2ba400
-[   94.413332][  T535] R13: ff1100013598c540 R14: ff11000122132440 R15: ff1100013598c540
-[   94.416277][  T535] FS:  00007fa7c6e86900(0000) GS:0000000000000000(0000) knlGS:0000000000000000
-[   94.419588][  T535] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   94.422023][  T535] CR2: 00007fa7c6b5f020 CR3: 00000001337f8005 CR4: 0000000000771eb0
-[   94.425020][  T535] PKRU: 55555564
-[   94.426319][  T535] Call Trace:
-[   94.427494][  T535]  <TASK>
-[   94.428612][  T535]  free_nsproxy+0x16/0x380
-[   94.430265][  T535]  put_nsset+0xa9/0x1c0
-[   94.431822][  T535]  __do_sys_setns+0x2d0/0x700
-[   94.433519][  T535]  ? switch_task_namespaces+0x100/0x100
-[   94.435616][  T535]  __x64_sys_setns+0x53/0x80
-[   94.437263][  T535]  ? trace_hardirqs_on+0x21/0xc0
-[   94.439158][  T535]  x64_sys_call+0x227/0xa40
-[   94.440781][  T535]  do_syscall_64+0xb3/0x700
-[   94.442581][  T535]  entry_SYSCALL_64_after_hwframe+0x50/0x58
-[   94.445676][  T535] RIP: 0033:0x7fa7c6f97779
-[   94.447948][  T535] Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 4f 86 0d 00 f7 d8 64 89 01 48
-[   94.459415][  T535] RSP: 002b:00007ffc93f4e248 EFLAGS: 00000246 ORIG_RAX: 0000000000000134
-[   94.464265][  T535] RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007fa7c6f97779
-[   94.469222][  T535] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 00000000000001ac
-[   94.473612][  T535] RBP: 00007fa7c6c71000 R08: 0000000000000000 R09: 0000000000000000
-[   94.476937][  T535] R10: 0000000000000000 R11: 0000000000000246 R12: 00007fa7c6c71000
-[   94.479999][  T535] R13: 00007fa7c6e78440 R14: 00007fa7c6c76050 R15: 00007fa7c6e866c8
-[   94.483046][  T535]  </TASK>
-[   94.484138][  T535] irq event stamp: 47371
-[   94.485745][  T535] hardirqs last  enabled at (47395): [<ffffffff81bdc798>] __up_console_sem+0x58/0x80
-[   94.489275][  T535] hardirqs last disabled at (47408): [<ffffffff81bdc77d>] __up_console_sem+0x3d/0x80
-[   94.492766][  T535] softirqs last  enabled at (47392): [<ffffffff81a83570>] handle_softirqs+0x470/0x900
+generic/091        [failed, exit status 1]- output mismatch (see /lkp/benchmarks/xfstests/results//generic/091.out.bad)
+    --- tests/generic/091.out	2026-10-19 16:30:12.000000000 +0000
+    +++ /lkp/benchmarks/xfstests/results//generic/091.out.bad	2026-10-24 23:20:20.173485972 +0000
+    @@ -1,7 +1,25 @@
+     QA output created by 091
+     fsx -N 10000 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z -R -W
+    -fsx -N 10000 -o 8192 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z -R -W
+    -fsx -N 10000 -o 32768 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z -R -W
+    -fsx -N 10000 -o 8192 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z -R -W
+    -fsx -N 10000 -o 32768 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z -R -W
+    -fsx -N 10000 -o 128000 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z -W
+    ...
+    (Run 'diff -u /lkp/benchmarks/xfstests/tests/generic/091.out /lkp/benchmarks/xfstests/results//generic/091.out.bad'  to see the entire diff)
+generic/092         1s
+generic/093         1s
+generic/094         14s
+generic/095         51s
+generic/096         1s
+generic/097         2s
+generic/098         11s
+Ran: generic/091 generic/092 generic/093 generic/094 generic/095 generic/096 generic/097 generic/098
+Failures: generic/091
+Failed 1 of 8 tests
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20261026/202610260917.6248e316-lkp@intel.com
+https://download.01.org/0day-ci/archive/20261026/202610261048.3dc64aea-lkp@intel.com
 
 
 --
