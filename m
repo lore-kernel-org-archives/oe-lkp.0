@@ -1,75 +1,72 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.198
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793149914;
-	b=a9Ljd6AU1Q1Pqop3ApHIs4F8Z0MsWfbQJhG/+1tBN9hSCx+5P/Y4vMoQha0NuK+M5+sR
-	 sFBlgffd8wTXyn+TVh7KsSLNnyzOnmQ2ejR2wM9fiTkKFQtRi+xlM2QyIdZzyGnP57bQZ
-	 kzz2NrBc+jPjprZTe6tvXQ3KInSdnF3BtQj40pDuR53BDXaGSDRTrOuTorNwAZetXBPKn
-	 tFg+QN/PnLqLPRJanNxty3G2B0ebFrw5bQl0MR5/c8MCcGyUckTHmhw6O49b9of58hTAs
-	 b5BEDYDXJsxHwZejJfpDyK2kYMqPR3jaPwjC7zb6nr9Xtw4o97bDMFYVV+ybALQ52XA==
+	t=1793164398;
+	b=bbAuO6IeVbf00VolZiiIE8RVUEwv/9XBS1iZkTqgYKq03sudY1VTSme2aUR4DM4ZfKVk
+	 x8enhxuRzE+eAZXqN8XG0sDNRU9QqjVRpfG2BUXwucJLJ0h19DYU3b7n+Q6eqwCjsv7A0
+	 BHSFjlUoRsDcyIIZ/zROORRkNTvs0UhKkzWL9kltCveGvkVQOEmR+SlzJjGRmCMicXWhz
+	 kGAx0+jx+nXw6CUaSd0mmXMRkExSL8mIs2z72voRnOlwqPCDiqHnMqfwyxOLSYjKRYV9Q
+	 N9YECYZaSfqjVBYXCP48J5qW11qJr7OzDENV6sbE9nFtju9LDqmJ36LmVunIjeJuHPQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793149914;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition:
-	 Content-Transfer-Encoding;
-	bh=yMMzs9Pna+jtafw1vf89IdntKCnHY1198130cQ5LmJI=;
-	b=k2UWu6/p5qCbqlXdT9Y3Xq5nXw4xJ5UiS9mPkzANBcjt3HI0MAkPJXY+kAcUfEl7wXJn
-	 fJEDsGOMIn6TVVepvHK4jjU9HiJvwJirkA3HcWq4DhBsKAZgG8bRBqTon2UCIrklBLkMm
-	 tBmgWrE6QP4OQVebCAkY8S7FwWDsdzlTL+BZfDTuVTtt8R4khmjLq0MOhIR7q5wZ1P/CW
-	 jrZeMxoMHjuA3wT91jNgtdrOoZazLHAe+E7fm+qCBHnrRgpImkLT7yhm64GhWoFptlKBQ
-	 05tEdUkm7RwBFxAVo7DQzWjimqMBoCFupMiHNlT77x9EH+PchLKDsA7k7cGlIh2q8Xw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793164398;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:Mime-Version:
+	 X-Mailer:Message-ID:Subject:From:To:Cc:Content-Type;
+	bh=jGHdCexy6WO9vn70fAdnEqZgjYrf6z9TvrrdavCztqo=;
+	b=LdWdZzDejpNq2z6KpBSSqDiWIqe/3jB3gIchlHNfX3BmaONumF9Imhyv4ykYkazXmNuG
+	 gymyBTdJwRZtHPSgfDd3WPibniSRQ4cmcvxjvVHJR+u4baEb1MywndEjTzC0CR8thPdzw
+	 3CKpkTYSrrgAb4XT63RjcYPuPOSJ8G7WvkysMPYAxrE8fX7kqKVBSv45nz1jrbPFF/GUq
+	 baSO1Du9XiIcnIxuASW6K9e+8ZDs351r2geOt+kRsZc60NF2nJN4JboKS7AYSwplYoiud
+	 ic9j9anw35RoEY0Wb08HtYNmq+oftsncC79XKzf9KTjYbeyRds3fKrpZoZnTi09i1Ng==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=WF3dVuBT;
-	arc=none smtp.remote-ip=192.198.163.15
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=flex--surenb.bounces.google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=OH7YbEoX;
+	arc=none smtp.remote-ip=74.125.82.198
+Received: from mail-dy1-f198.google.com (mail-dy1-f198.google.com [74.125.82.198])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8E72606A31A
-	for <oe-lkp@lists.linux.dev>; Wed, 28 Oct 2026 01:11:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C8E72606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B44F606A323
+	for <oe-lkp@lists.linux.dev>; Wed, 28 Oct 2026 05:13:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1B44F606A323
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=WF3dVuBT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793149914; x=1824685914;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=bRrSSI31hvxe5p4s6MhnpET0k5fmh93d4jplPxCRmPw=;
-  b=WF3dVuBTKQk+kN4ykeBbtFSTiCQblhuieRGDKoBwwPAhd8/WXS+2Y8s/
-   oLxK3QpMg2b/mbOyj6VF/of3dQVS4x/m1re0nr82wINcRewpWqSlaExUz
-   QSTmUt53MSv+BlNRsKZOJYvSLMqdzrGZds1fKfIO7kbsdL6dh9MWwzpI2
-   WiINbQNkhD9UraN61MfWAoOnLXJLBWe2eDvaPcGKgB1eUBzVcaWFOlmjj
-   5w22iN8pwP/MXM1YL30e1I4Y08Pq47IvKDsg0Sq/M7R+G0uCWkCY0wyye
-   GrmmT0z4sDhZDSRsyt/s2Y9aaKBETGI3uO7tWvvrLmXnw03suDo/j0sYX
-   A==;
-X-CSE-ConnectionGUID: /hkqV84nSC2cpF3X35lAkA==
-X-CSE-MsgGUID: v+pov8XyQLO1HCIWbpIlBg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11948"; a="1870200"
-X-IronPort-AV: E=Sophos;i="6.27,182,1787036400"; 
-   d="scan'208";a="1870200"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 18:11:54 -0700
-X-CSE-ConnectionGUID: Il5r4mD2TAqZL8hUeXkOWQ==
-X-CSE-MsgGUID: tqfZYdDyQzi7dyaNWBs2uQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,182,1787036400"; 
-   d="scan'208";a="4805966"
-Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 18:11:51 -0700
-Date: Wed, 28 Oct 2026 09:11:48 +0800
-From: kernel test robot <yi1.lai@intel.com>
-To: Vincent Guittot <vincent.guittot@linaro.org>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	Peter Zijlstra <peterz@infradead.org>, aubrey.li@linux.intel.com,
-	yu.c.chen@intel.com, yi1.lai@intel.com
-Subject: [linus:master] [sched]  333238da9a:  stress-ng.vm-rw.ops_per_sec
- 36.4% improvement
-Message-ID: <202610280223.6ff1abde-lkp@intel.com>
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=OH7YbEoX
+Received: by mail-dy1-f198.google.com with SMTP id 5a478bee46e88-33c35f5ca6cso1111322eec.1
+        for <oe-lkp@lists.linux.dev>; Tue, 27 Oct 2026 22:13:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20260707; t=1793164397; x=1793769197; darn=lists.linux.dev;
+        h=content-type:cc:to:from:subject:message-id:mime-version:date:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=jGHdCexy6WO9vn70fAdnEqZgjYrf6z9TvrrdavCztqo=;
+        b=OH7YbEoXGS01NRmojkJKGLJLhPxltIMqfUlNvgXLj+ujKj3JoK3YWTYqb/32AyQv+c
+         yGXl2mEZ8fPV0Hswf3U4i0oSGBecZOVNXedlbvJap9/iesAbmRNqljVPmCEw0lLx/PLB
+         f0U456YIwwTKJsNwAvaD+/8Tj0UVCbr0ABf/UzV4pvJDyQluwOwqpfi0Loc++edreRFf
+         iJiV0+Lebn6TQod+8iZRN7wZmy7GVVSixMdN4SqYT3tj0KT5wzHxR8ZTR3BZ1zA+WBiP
+         LaHXCJwAllefK1d4yynnR30nFcC+TCIoben3WhC65aljYU0tIrmfUM8kq+WgNS9jkKqM
+         +WGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793164397; x=1793769197;
+        h=content-type:cc:to:from:subject:message-id:mime-version:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=jGHdCexy6WO9vn70fAdnEqZgjYrf6z9TvrrdavCztqo=;
+        b=jHFXhRlcznnyiZmLMXoJo8rY3UFSS/jQbLUvIjIr8ehL1Raayl/hkI73xusre3R1T0
+         GHfhdn894ifdAIZhVp1lS/KHiSRhZEG07aqPTFHTsLmOt64lSWIhVSXqzaxJkBFkYBQd
+         9WrmyuLTxKdTWzruyLRQh3czWgkA1LaS4jYz02csr7TGoLIqxGDjsv0vxfN3xT9cYSaf
+         Van3xfHpdq75uT6L7eY5Ai76MCw/+0n447orzYHQukLfM4CWRmGB7xf5erfchT/BaJ4+
+         wTwoqC4YfHaqVD9uxdEivq8EdSQWlwK8MIXVdxh1E9smluI8WbHkU/+jc4zHY3Nz0eMW
+         Etfw==
+X-Forwarded-Encrypted: i=1; AKwUvBw+63GunzPZzJv1yVIq+uRz+bgsH/qBrDJp+Et4qh4NXCo9sR4fJo+ALPamB+CoajeNBryzKk4=@lists.linux.dev
+X-Gm-Message-State: AFq9FYKvt9birkhkDQkq1ovagh8uozpNuVhNR28W3RGRiO7QZExGkLXV
+	NqPN3Xd0SbbpCFJCkhdLzk6IkhgiOw8HYUrIsWFer9TbRSuJ6lC9thDQ+JY2O1pJEH33njSmVor
+	RK6cYzA==
+X-Received: from dlbrl12.prod.google.com ([2002:a05:7022:f50c:b0:195:e16b:fdd2])
+ (user=surenb job=prod-delivery.src-stubby-dispatcher) by 2002:a05:7022:126:b0:16a:c6f2:60c2
+ with SMTP id a92af1059eb24-1a6cd498ddemr1946287c88.12.1793164396372; Tue, 27
+ Oct 2026 22:13:16 -0700 (PDT)
+Date: Tue, 27 Oct 2026 22:13:12 -0700
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -78,64 +75,64 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.56.0.307.g5fe7bd680c-goog
+Message-ID: <20261028051312.1505295-1-surenb@google.com>
+Subject: [PATCH 1/1] selftests/proc: use RSS in /proc/pid/smaps_rollup tearing tests
+From: Suren Baghdasaryan <surenb@google.com>
+To: akpm@linux-foundation.org
+Cc: david@kernel.org, ljs@kernel.org, jannh@google.com, liam@infradead.org, 
+	willy@infradead.org, paulmck@kernel.org, pfalcato@suse.de, 
+	usama.arif@linux.dev, vbabka@kernel.org, linux-fsdevel@vger.kernel.org, 
+	yi1.lai@intel.com, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	linux-kernel@vger.kernel.org, Suren Baghdasaryan <surenb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
+Pss metrics can be affected by map count even if VMA tree stays unchanged,
+therefore test checking VMA tree integrity can't use them. Use Rss instead
+and pre-populate the VMAs so that Rss changes if a VMA gets skipped or
+double-counted.
 
+Fixes: ca5480fb53fa ("selftests/proc: add /proc/pid/smaps_rollup tearing tests")
+Reported-by: kernel test robot <yi1.lai@intel.com>
+Closes: https://lore.kernel.org/oe-lkp/202610271934.fd287c3f-lkp@intel.com
+Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+---
+ tools/testing/selftests/proc/proc-maps-race.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-Hello,
+diff --git a/tools/testing/selftests/proc/proc-maps-race.c b/tools/testing/selftests/proc/proc-maps-race.c
+index bf4c5073f6fc..b6d88afb252b 100644
+--- a/tools/testing/selftests/proc/proc-maps-race.c
++++ b/tools/testing/selftests/proc/proc-maps-race.c
+@@ -528,13 +528,10 @@ static bool compare_smaps_rollup(FIXTURE_DATA(proc_maps_race) *self,
+ 		struct smaps_rollup_stats *actual)
+ {
+ 	/*
+-	 * Clean/dirty metrics might change but Pss-related ones
+-	 * should stay constant.
++	 * Clean/dirty metrics might change. Pss depends on map count and might
++	 * change as well. Rss should stay constant.
+ 	 */
+-	if (cmp_smaps_rollup_stat(expected, actual, Pss) &&
+-	    cmp_smaps_rollup_stat(expected, actual, Pss_Anon) &&
+-	    cmp_smaps_rollup_stat(expected, actual, Pss_File) &&
+-	    cmp_smaps_rollup_stat(expected, actual, Pss_Shmem))
++	if (cmp_smaps_rollup_stat(expected, actual, Rss))
+ 		return true;
+ 
+ 	print_smaps_rollup_stats("Expected stats:", self, expected);
+@@ -759,7 +756,7 @@ FIXTURE_SETUP(proc_maps_race)
+ 
+ 		for (i = 0; i < mod_info->vma_count; i++) {
+ 			mod_info->child_mapped_addr[i] = mmap(NULL, self->page_size * 3, prot,
+-					MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
++					MAP_PRIVATE | MAP_ANONYMOUS | MAP_POPULATE, -1, 0);
+ 			ASSERT_NE(mod_info->child_mapped_addr[i], MAP_FAILED);
+ 			/* change protection in adjacent maps to prevent merging */
+ 			prot ^= PROT_WRITE;
 
-kernel test robot noticed a 36.4% improvement of stress-ng.vm-rw.ops_per_sec on:
-
-
-commit: 333238da9a193ffc58792995f3e951e4cb87bfd2 ("sched: Update time before requeueing delayed entities") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-
-testcase: stress-ng
-config: x86_64-rhel-9.4
-compiler: gcc-14
-test machine: 224 threads 2 sockets Intel(R) Xeon(R) (Sapphire Rapids) with 128G memory
-parameters:
-
-	nr_threads: 100%
-	testtime: 60s
-	test: vm-rw
-	cpufreq_governor: performance
-
-
-Details are as below:
--------------------------------------------------------------------------------------------------->
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20261028/202610280223.6ff1abde-lkp@intel.com
-
-=========================================================================================
-compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
-  gcc-14/performance/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/lkp-spr-2sp3/vm-rw/stress-ng/60s
-
-commit: 
-  v7.2-rc7
-  333238da9a ("sched: Update time before requeueing delayed entities")
-
-        v7.2-rc7 333238da9a193ffc58792995f3e
----------------- --------------------------- 
-         %stddev     %change         %stddev
-             \          |                \  
- 5.011e+08           +35.9%  6.808e+08 ± 35%  stress-ng.time.voluntary_context_switches
- 2.519e+08           +36.4%  3.436e+08 ± 36%  stress-ng.vm-rw.ops
-   4200915           +36.4%    5729669 ± 36%  stress-ng.vm-rw.ops_per_sec
-
-
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provided
-for informational purposes only. Any difference in system hardware or software
-design or configuration may affect actual performance.
-
-
+base-commit: 39274b454e9993cea319f4ac342a8082a9ee1730
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+2.56.0.307.g5fe7bd680c-goog
 
