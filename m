@@ -1,55 +1,108 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=195.135.223.131
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793179193;
-	b=Wk0W0QhCGmkHNM5yfoktoCvbytXbrAYUJK+HmfH4e8LB3d0dsipqMq7FkC5TfZb94yOK
-	 u6bwIvX4sEsf+Dc2w+44uyyj6v651X+hmtodQzIx/OMgT9jv6sIX2FKmxAVa1h6iGnWeg
-	 nZ2uhK9XnYx+MIV88FV4c5sfmQ9EkpEPjWbTIqyTBJGkY3zZdYS2DG2JAOXyFfoudv109
-	 FLTK55P80xUtffEb4tPYFqnbcMuNybBKJ7g4NZAa2uXujZAIcM1AhyPqrnJbGlagZ6EU0
-	 XsKdjhDZlAgx1N9HoDpna8DzO9MLy6Au9mAMBIQXzPB0t7hPARQcXYU10WAhOksh1Aw==
+	t=1793182462;
+	b=XnxXzkZ1lTqa2UDkEVDOdxac7OC4+C3c3R4dKkjdbVdcJlj0WDInmle4hmWMYoClqqv0
+	 z2Bt2rII7ehgC5Vf98Sif1sWRu7RQEUucuTOdnQgn4Lzca/s0Jv1DxpcwE4VhHNHFoXFo
+	 VWzldg5K5a5V/gg015wAN4oUiPJjuVZ1bD30i7BekINTe/KOC86TuQJL9NJxRFF5y3KlH
+	 6KN5eAXUdyZj1UT+7nTqLJcvqubtElb0WmiSXBtHZI+0cNwxvpVh0Qovs8ICLR0L776c0
+	 C4o0cqsU0wR+V4ittze9Di84dc1eIsGrg4SfHQ5WosnNtFwp3eQan7bBOdaS14h97gw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793179193;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=dIQYEI2EXBN3ZRTF+vP2Ww75sjtd+SHDiG1ARLFc8yU=;
-	b=sRwF/sFzLjTWxoaIEmRZgMVqiNXr4AKRpgy+R1a5fI9VhjLKdh6J3SB0fhCtKmffWsTz
-	 RjpXn60nX9xhuUyNqJrQmJRg5SLl4lkyQt4flb8edSPVIDv8BIHAKy8TObP3QKWfRKtTC
-	 xZMlonByR5rd8cyCWpT37iix/+0IZVjclygFqg8AXzazqjrCkhrknZJXqYD6Hg1K/p6Xx
-	 vbyIMh1sbc+QEaYFyXr4RKNfPRiSeIrWbfSpjusz5sb2CF1+62bYVrASWD81/SXkxFpSP
-	 vVZWyqcunILqofNT2dOWNyHsvJ8imtP/SS/uOAOE9NDNuJI7HWcsYXsTKAW+vtq56jg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793182462;
+	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:DKIM-Signature:
+	 DKIM-Signature:Received:Received:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+	 X-Rspamd-Queue-Id:X-Spam-Level:X-Rspamd-Server:X-Rspamd-Action:
+	 X-Spam-Flag:X-Spamd-Result:X-Spam-Score;
+	bh=TkOEGXO4ceRytIfIBg8IGlWQWM8J1Qz+zygeub1NN30=;
+	b=YzVsgcYE2AgAgoaX1DQL0rYpThbAZK6WZN4I5EN6zyqOLhuXOL0170AHorRgA4GU6WGN
+	 T6i2lY1e8iamHHSozE8U0NgegOZkJAyzQpZiWGEUVImiAdrbDeM/u/RXh0gYRN/Iwc5lo
+	 wwxFC9zMhR5fwcqD1M0AQAVy/GDfkalg5rKXCI4rkt+CRwBj+iWvMokLFpUuMOiuQKX8J
+	 j2iNsWUETUUhlw/fHV3Le0IJBgq4OJ/LJPdtLxV6Lzc8ROWNnxSQ5hujiw+D3zSroor2W
+	 nqNfOGjECWR46E3sDijNK+5l4JwrV784PtUUfCZxC+dpv1pLEMY6Ru/JOZuhHaP9GqQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XM6ZOwO4;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=suse.de;
+	spf=pass smtp.mailfrom=suse.de;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b="DuQTg1/+";
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=LGp6AoNR;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=r8VMrlu4;
+	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=wdIeoE5z;
+	arc=none smtp.remote-ip=195.135.223.131
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85BE7606A31A;
-	Wed, 28 Oct 2026 09:19:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCA49606A31A
+	for <oe-lkp@lists.linux.dev>; Wed, 28 Oct 2026 10:14:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DCA49606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XM6ZOwO4
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A155B1F01825;
-	Wed, 28 Oct 2026 09:19:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793179193;
-	bh=dIQYEI2EXBN3ZRTF+vP2Ww75sjtd+SHDiG1ARLFc8yU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=XM6ZOwO4JL0qURt+r1Tt40S78pKBud1WZEdBrmgnRYO1IHQx0nw0QpogbIOKyGmPe
-	 Km3z6nNDakO14FRuEqVD6fltowQlZ7IgPD5kjEDVcYIT1DkJWmyClJk0abCib41owt
-	 ySqTJ4L0jCS75jvustKWciug4KaYB90KVfbHVKFjON78MKKpMEI32cl6UGp/XSzUII
-	 Kt+zseF0qDmtZCYGqCVS+eiWZXxUj2/KE/n3JtTF2FAHW9dMBKdWWQ6H/zFUAAGvXn
-	 mIlgh8GMe/IxdPt8AUsOnaUV6MHtzeNJ/Fh2zHVde2ypPbt8fSQBCXfsZPFDK7ZnEF
-	 8MYy195BPQYgA==
-Date: Wed, 28 Oct 2026 09:19:46 +0000
-From: "Lorenzo Stoakes (ARM)" <ljs@kernel.org>
+	dkim=pass (1024-bit key, unprotected) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=DuQTg1/+;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=LGp6AoNR;
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=r8VMrlu4;
+	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=wdIeoE5z
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id D2C0B1F79E;
+	Wed, 28 Oct 2026 10:14:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1793182460; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=TkOEGXO4ceRytIfIBg8IGlWQWM8J1Qz+zygeub1NN30=;
+	b=DuQTg1/+vkq4mNcpc4bmqroh8oLO0tsmai60QR29cLm9r+2MEUdcSxh47ywNxeEEB0yQfE
+	mPgc1OWwqNMTKbImz6moDw9VBXhU8bTSCzICKFEJLbWI1Iq9FhJclWDZHCeIe41zbvbbPM
+	IYmAwBOeNoCmQc8Q+9zo0b7PS+liawA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1793182460;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=TkOEGXO4ceRytIfIBg8IGlWQWM8J1Qz+zygeub1NN30=;
+	b=LGp6AoNR9vwRYCToEVe5VBQYQvN0D1pOvWKYATd6xrCX0g1xwRkc8Spe7AVZwbfU7qK6zi
+	H1amVG3KiVoD0IAw==
+Authentication-Results: smtp-out2.suse.de;
+	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=r8VMrlu4;
+	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=wdIeoE5z
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1793182459; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=TkOEGXO4ceRytIfIBg8IGlWQWM8J1Qz+zygeub1NN30=;
+	b=r8VMrlu4fGH60fqFeUsEaSAyplCEN5pVRDtBooMwYLBlEV6yNMaAiRXXWdKfrK1yalNtzR
+	PUoqGG338lKhOJi5tifMbrdpvXwj6jMI28CDxuqd3GaS38bkEpZVNjndgLYnnwOYNsZkkw
+	OxSIYlPaKKfRCABk9Z9c9ot/mL3N5oQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1793182459;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=TkOEGXO4ceRytIfIBg8IGlWQWM8J1Qz+zygeub1NN30=;
+	b=wdIeoE5z8QUt9vHG+gRU/oKUYuMbs/ZfFz9KVVQq7ocA6St993htXyu9VTMQzFPtOYDPei
+	JXY0F3Du1lpRr1CA==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 64A771342D;
+	Wed, 28 Oct 2026 10:14:18 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id 66D5C/rK4WoobAAAD6G6ig
+	(envelope-from <pfalcato@suse.de>); Wed, 28 Oct 2026 10:14:18 +0000
+Date: Wed, 28 Oct 2026 10:14:16 +0000
+From: Pedro Falcato <pfalcato@suse.de>
 To: Suren Baghdasaryan <surenb@google.com>
-Cc: akpm@linux-foundation.org, david@kernel.org, jannh@google.com, 
-	liam@infradead.org, willy@infradead.org, paulmck@kernel.org, pfalcato@suse.de, 
+Cc: akpm@linux-foundation.org, david@kernel.org, ljs@kernel.org, 
+	jannh@google.com, liam@infradead.org, willy@infradead.org, paulmck@kernel.org, 
 	usama.arif@linux.dev, vbabka@kernel.org, linux-fsdevel@vger.kernel.org, 
 	yi1.lai@intel.com, oe-lkp@lists.linux.dev, lkp@intel.com, 
 	linux-kernel@vger.kernel.org
 Subject: Re: [PATCH 1/1] selftests/proc: use RSS in /proc/pid/smaps_rollup
  tearing tests
-Message-ID: <auG-BfTvZo1Ejxmm@gremlin>
+Message-ID: <auHK3k-W4gfL_MhI@pedro-suse.tail5790ac.ts.net>
 References: <20261028051312.1505295-1-surenb@google.com>
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -63,62 +116,50 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <20261028051312.1505295-1-surenb@google.com>
+X-Rspamd-Queue-Id: D2C0B1F79E
+X-Spam-Level: 
+X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
+X-Rspamd-Action: no action
+X-Spam-Flag: NO
+X-Spamd-Result: default: False [-13.51 / 50.00];
+	SUSE_INTERNAL_BYPASS(-9.00)[];
+	BAYES_HAM(-3.00)[100.00%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	ARC_NA(0.00)[];
+	MISSING_XM_UA(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	RCPT_COUNT_TWELVE(0.00)[15];
+	MIME_TRACE(0.00)[0:+];
+	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	RCVD_TLS_ALL(0.00)[];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	TO_DN_SOME(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[intel.com:email,imap1.dmz-prg2.suse.org:rdns,imap1.dmz-prg2.suse.org:helo,suse.de:dkim,suse.de:email];
+	DNSWL_BLOCKED(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	DKIM_TRACE(0.00)[suse.de:+]
+X-Spam-Score: -13.51
 
 On Tue, Oct 27, 2026 at 10:13:12PM -0700, Suren Baghdasaryan wrote:
 > Pss metrics can be affected by map count even if VMA tree stays unchanged,
 > therefore test checking VMA tree integrity can't use them. Use Rss instead
 > and pre-populate the VMAs so that Rss changes if a VMA gets skipped or
 > double-counted.
->
+> 
 > Fixes: ca5480fb53fa ("selftests/proc: add /proc/pid/smaps_rollup tearing tests")
 > Reported-by: kernel test robot <yi1.lai@intel.com>
 > Closes: https://lore.kernel.org/oe-lkp/202610271934.fd287c3f-lkp@intel.com
 > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 
-Seems sensible, I gather in general PSS is a less than ideal measure in these
-stats anyway :)
+Reviewed-by: Pedro Falcato <pfalcato@suse.de> 
 
-Reviewed-by: Lorenzo Stoakes (ARM) <ljs@kernel.org>
-
-> ---
->  tools/testing/selftests/proc/proc-maps-race.c | 11 ++++-------
->  1 file changed, 4 insertions(+), 7 deletions(-)
->
-> diff --git a/tools/testing/selftests/proc/proc-maps-race.c b/tools/testing/selftests/proc/proc-maps-race.c
-> index bf4c5073f6fc..b6d88afb252b 100644
-> --- a/tools/testing/selftests/proc/proc-maps-race.c
-> +++ b/tools/testing/selftests/proc/proc-maps-race.c
-> @@ -528,13 +528,10 @@ static bool compare_smaps_rollup(FIXTURE_DATA(proc_maps_race) *self,
->  		struct smaps_rollup_stats *actual)
->  {
->  	/*
-> -	 * Clean/dirty metrics might change but Pss-related ones
-> -	 * should stay constant.
-> +	 * Clean/dirty metrics might change. Pss depends on map count and might
-> +	 * change as well. Rss should stay constant.
->  	 */
-> -	if (cmp_smaps_rollup_stat(expected, actual, Pss) &&
-> -	    cmp_smaps_rollup_stat(expected, actual, Pss_Anon) &&
-> -	    cmp_smaps_rollup_stat(expected, actual, Pss_File) &&
-> -	    cmp_smaps_rollup_stat(expected, actual, Pss_Shmem))
-> +	if (cmp_smaps_rollup_stat(expected, actual, Rss))
->  		return true;
->
->  	print_smaps_rollup_stats("Expected stats:", self, expected);
-> @@ -759,7 +756,7 @@ FIXTURE_SETUP(proc_maps_race)
->
->  		for (i = 0; i < mod_info->vma_count; i++) {
->  			mod_info->child_mapped_addr[i] = mmap(NULL, self->page_size * 3, prot,
-> -					MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-> +					MAP_PRIVATE | MAP_ANONYMOUS | MAP_POPULATE, -1, 0);
->  			ASSERT_NE(mod_info->child_mapped_addr[i], MAP_FAILED);
->  			/* change protection in adjacent maps to prevent merging */
->  			prot ^= PROT_WRITE;
->
-> base-commit: 39274b454e9993cea319f4ac342a8082a9ee1730
-> --
-> 2.56.0.307.g5fe7bd680c-goog
->
-
---
-Cheers, Lorenzo
+-- 
+Pedro
