@@ -1,108 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=195.135.223.130
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793216528;
-	b=YIMCqkZ0dDy3CoDEbFyLOtCAlYYA+Oc8Ct5FRj4fblCd7OFR1xgtzu/RAswHh1q9IOz/
-	 7eiJZ5V2T5Gvi5y87d+hYvlIoCE3crZKDBmcn/HUlga9GxPVCMzYLQqDef9WOk6y3wG/V
-	 QX0I/A9h5DKgQ3wBeNFoFbfzXACfyrQfSil0t9rHT37kuEPNpZgX3P/8rwraq6vQnPYt1
-	 UzFVSN/1EUkG6Qv9Bv+nilpngThkvEK08E3IKI55Fr+x2846Yag8cb3jSTOXczfE5I574
-	 n7U/PAb2751Wd4yUfJnv6wgfqNjLBmHLmJpRepaEyB7BbskWceiq81ZlLkfN5RA+onQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793216528;
-	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:DKIM-Signature:
-	 DKIM-Signature:Received:Received:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
-	 X-Spamd-Result:X-Spam-Score:X-Spam-Level:X-Spam-Flag;
-	bh=WRMwPw8KdbWL+QrztS6XhfD9X02diXUtZhhuJcO8v+Y=;
-	b=Nwek5nI1Bb/Gzcnktuupz1vodk3qUG3SQ1kFXpPJKyr2frCq7knAI2P+J6fZ3YHuLTdR
-	 0tzb6SgnEMGOSDkxe/1vgEHouEY6Q01QxyXQuk9tGR0Pr1HYGHLa4Sfeis7k44RH8LJY6
-	 KCjnFd6eqxnggHXREZ8OUaH8y/jCQ1DPzvpafwD92Hauqr27DGjbNvJPg2zWJyj3LZF53
-	 o5pH4DNtSS5CBM/jg0/VvlUolCuWepRKYbI3XeA1S0lEs87ySx8QjyC3a76ElIf0V24/k
-	 jwEL/MyP1cyEmZ10XWnDF17eI16pyqcy7UevWRXzAxhX66t0qtrYxj2l4ugpKvkey3Q==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=suse.de;
-	spf=pass smtp.mailfrom=suse.de;
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=wSEBWasx;
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=pQSZS2rj;
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=wSEBWasx;
-	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=pQSZS2rj;
-	arc=none smtp.remote-ip=195.135.223.130
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.160.177
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793217568;
+	b=cgYZBTwwtTcjsrY5A6xNNX+4SRLDOStPAahqPIkNyp0ezXbG8bppg41Q+beh6CpD3mel
+	 5SUk3Q01CI0UP5yUxCUlEzzdeqlYK33EnjV8AubRK0vPK1ZRSFeT3A2l/3uCymid4cJnr
+	 xU5bjDLISiFMNk2CqKqEGclHuPe/i0ID0p0HmUG9Bpofb8JDnJ2atXbEHom7F/1TTKoSF
+	 KHW/ggfljTsxVfK7W9tLlJjzd0IPBI261+ykM4HFp5LkPkZMzKCxo1e2H5oqcRMWEC1CP
+	 13nl3VcXyCzGhKT0XUnbGhpbbcqi9ta8VZVlqcRz/KvWSeXyyFTdwzLiDX2IQGJdxbw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793217568;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=KNPolz4ZvstX96ia0adxYWJ+Q8YCwfoUsBDxmY4GZ/g=;
+	b=NvxDKLSOsb0a4c+K7n/YcCThnKtV/HntlD4d1T5m+iZjCvVCgP3ZpThiu4+f9rFrrDH7
+	 b0i3PZkkDZzzbwAl2P8N6F/bWabf5nhhIE/26ut5AcOMkecZdcLpWlBYWd4yDth46Dpe3
+	 5+StXtOaa37eg34SMxk+3RtqM7EOR50SFvPaCTJoRqjJ9wXhk5/g5O7tYNcg7KnhJeL22
+	 6tJpNqlTA0+QQOwcFDSxUlV4PvD+UUOyIfkZyTLA2p1Wm6GaH3kEPQ55vXSpdfXHChiNP
+	 yQ4vrO9LX1DTdTYd2AabmXGYWWD4GGnJ9S9nRW3ZuaHiFfxTIhaewIpiOtk0dLFSZsA==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=dkVuJxHv;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.160.177
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AF36606A320
-	for <oe-lkp@lists.linux.dev>; Wed, 28 Oct 2026 19:42:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6AF36606A320
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9655E606A31A
+	for <oe-lkp@lists.linux.dev>; Wed, 28 Oct 2026 19:59:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9655E606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=wSEBWasx;
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=pQSZS2rj;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=wSEBWasx;
-	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=pQSZS2rj
-Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 6307922121;
-	Wed, 28 Oct 2026 19:42:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1793216525; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=WRMwPw8KdbWL+QrztS6XhfD9X02diXUtZhhuJcO8v+Y=;
-	b=wSEBWasxpiMqwRl293U+wK3/34R5iP24e6nPBenMdMSzYUzM/OwT3UZK1LC+NpFa875quc
-	NyRs/469BHQVISDWxY8xOVf6C7dCOVq5YdOn7Drq7jXBMiGzfgiDdtDBwPvR55nYRfgFZM
-	cE56sKc+rTHVY/HCYyz4RZHs5MzHad4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1793216525;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=WRMwPw8KdbWL+QrztS6XhfD9X02diXUtZhhuJcO8v+Y=;
-	b=pQSZS2rjh+ABytlaRvlb4XP0cUlap2GJLrpPFCRXFYS0NM0d/Q41Ts+rjGuvMddriD/sQl
-	8z/8rbTZWmuLeVAw==
-Authentication-Results: smtp-out1.suse.de;
-	none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1793216525; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=WRMwPw8KdbWL+QrztS6XhfD9X02diXUtZhhuJcO8v+Y=;
-	b=wSEBWasxpiMqwRl293U+wK3/34R5iP24e6nPBenMdMSzYUzM/OwT3UZK1LC+NpFa875quc
-	NyRs/469BHQVISDWxY8xOVf6C7dCOVq5YdOn7Drq7jXBMiGzfgiDdtDBwPvR55nYRfgFZM
-	cE56sKc+rTHVY/HCYyz4RZHs5MzHad4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1793216525;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=WRMwPw8KdbWL+QrztS6XhfD9X02diXUtZhhuJcO8v+Y=;
-	b=pQSZS2rjh+ABytlaRvlb4XP0cUlap2GJLrpPFCRXFYS0NM0d/Q41Ts+rjGuvMddriD/sQl
-	8z/8rbTZWmuLeVAw==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 3CEEA13419;
-	Wed, 28 Oct 2026 19:42:04 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id bhvRBAxQ4mokPQAAD6G6ig
-	(envelope-from <pfalcato@suse.de>); Wed, 28 Oct 2026 19:42:04 +0000
-Date: Wed, 28 Oct 2026 19:42:02 +0000
-From: Pedro Falcato <pfalcato@suse.de>
-To: Suren Baghdasaryan <surenb@google.com>
-Cc: akpm@linux-foundation.org, david@kernel.org, ljs@kernel.org, 
-	jannh@google.com, liam@infradead.org, willy@infradead.org, paulmck@kernel.org, 
-	usama.arif@linux.dev, vbabka@kernel.org, linux-fsdevel@vger.kernel.org, 
-	yi1.lai@intel.com, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] selftests/proc: use RSS in /proc/pid/smaps_rollup
- tearing tests
-Message-ID: <auJO9al4lmAczLAu@pedro-suse.tail5790ac.ts.net>
-References: <20261028051312.1505295-1-surenb@google.com>
- <auHK3k-W4gfL_MhI@pedro-suse.tail5790ac.ts.net>
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=dkVuJxHv
+Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-535f598d126so8901cf.1
+        for <oe-lkp@lists.linux.dev>; Wed, 28 Oct 2026 12:59:28 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1793217567; cv=none;
+        d=google.com; s=arc-20260327;
+        b=ltWrcB1emBhDvWYHp0kuhtcWixNRXBOmGGIc0ZVhk2gc3xpP1HFaEWmOYujA1kLQeY
+         3Tg47T0csEQAaPCJZHsFJ1w71Q1IuZtER6MIWChMQap7Hea6/9TjWNtY8kPouIa00G9F
+         JLUC7q48zEwKUXoncKJWAivuGHIvhOWP+e1z221yqWWBPPqeQMmnX+ZsnXrvOmbocj36
+         2qB27igT2gLF08qVXW8Gaw25CVNpUjAAp2b2ZL/ZcNXnCRY+xB3JkYOATpLZOX2udD6C
+         iUEhQflI5mAWVrx5jkNYpPPEmrHauHSUL3s0roQ+s0QvmvFVe2Fu0M21NtUnYbfCVJrf
+         en4w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=KNPolz4ZvstX96ia0adxYWJ+Q8YCwfoUsBDxmY4GZ/g=;
+        fh=fc9bUHCh5u7iFhv3zYzOAoAMkFYAb6oV6B/qnLCJeKc=;
+        b=lfxQAfk4IJBg13KK5Sb8+TcfeYcrg5/tpYyA1kJXG4AxfGVOfLbF0kW3angIpMh1WR
+         8xUR6n00Tqxsi0XMOl4w+PSSIHPzn/DFG6mG6wv8B8oRJGUBAdl8iddEPutW+wc70w03
+         Mt6ays4ZeisspDirjxRTYXoMfON9u0KZV5TF3vBwASUi1eLheyyBnucpL9drzO0x9eZ3
+         3qKjG8ouVgVOq3hpE9NKNwjGlymWZvrXjBu0iESCvvjDfuSV30V4lVDa2I9DhoNxISX5
+         Hp2QQmllFNiGkl9Q+neEEIlPMQ1qtrSWsFZr5ELNTkGiRzbO5r4DyOHoS7nC6QdHlDFM
+         VEXQ==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20260707; t=1793217567; x=1793822367; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=KNPolz4ZvstX96ia0adxYWJ+Q8YCwfoUsBDxmY4GZ/g=;
+        b=dkVuJxHvyrAfMH9diyFR5ySaHsTgfyuu62nLgWTWrx9PgWq2hqXl+CG3hQIBhci1v2
+         oGwGhShgA2sA2GUmscacNlByq0XQA4dQmPmO78ziq8iLbbf0/FhtzPYT5ioQZdP6Dioa
+         X8SWWVZboKgW8mLFY1CfJpabn6GbYfkEnSd7qmW0HTF7zuimaoFWmKZsqFyQCTvO4yCN
+         qui4hunXyllfKjIA9mBezqXaIQIzsXqN22IOzuhhCR4vn5LV4JB/HTItRMqYl7Zi9ddf
+         sSG1CUaHRG82Rk890dr03uYaMEfx+cCxrYWfkdbNO9s2aqTr0USdSLepbO6KxkMHUpmM
+         q19A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793217567; x=1793822367;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=KNPolz4ZvstX96ia0adxYWJ+Q8YCwfoUsBDxmY4GZ/g=;
+        b=LaLDDbTW4HLiEZ/nysiDUkjEycrKCLyDZSfTW+GGOBI9dsWEii6f8bvGDyiiphRolM
+         KS+oXC8WP6r7SNX2wVm229aMYtBj/atehoJ98Gm28wLU8V5y254LsWt9gNMQ1QeQsRDB
+         8eBNcdiQOQdiaxc4AIFyZsUT+bHksk+d3LuXsS3ovgPdrgPYk/Ck8gFVt1DUgCCzzw6v
+         XMRw7fyHjNxd7+zayT3Lrqu0FJsEyPV8lq4Rn9dDA1I402xrWuWoVKycOYcS20c3i+s9
+         +EX0lnirpFBXWczOHkrrkVxuxK//jtEc5iaWLhQhOEfvqaC7FZ3nsrrDeIXy55XKXCNi
+         hPPQ==
+X-Forwarded-Encrypted: i=1; AKwUvBxAkyBvx2HDgj9+mU7QbFKevbvtJEc9K7zilUCtix3SmU6e784HCw5aoku+sc6nMYykya1wDMQ=@lists.linux.dev
+X-Gm-Message-State: AFq9FYLO8Zsymfigd1dXl0qV3rMnKJWCSlpMwj2uqnZN9ZO4Gbe8b0kD
+	iT0r9KwPjg4m3yocGDuUoXhS//Pn510vWWgNinK+EERgqcSZfHl3M2RfXc1R1xRPDUCkWz/9eMV
+	lyJ2ziyUw6fedpOtMrZDv2ssPsyDLYtuO6gWhp1o5
+X-Gm-Gg: AYBFou2TBa3c7ZxnVtsy4re0z/TEkpMk35D2ndVtqwc7+yoN2v/IV+HxfjubtwiMTmR
+	z7N4rI4ZVN8LEF4tawJnVRbChG/X9y1YfNjqxGcplye40DLawvcfwSmqiz56mqb4gafq9WNHDVk
+	P77O6iBul7D9DdAXZppid51plAad98TufyXeOENs9byws1ztBjWWlDN/c3oh5yxqab3xfpIHZV2
+	O/hyBwd1stLtM7O++B6iDjfkO/056AcD2EprbUlwY4yvtyvuXWhWWWYjvCvI3D4rYCd49FCkeEJ
+	LSqIwUKLXkZOG4+rPW63Pq1FFuBXmfgEAYjad6qa37V7QNTv3ocNjJqxvFSqCvZFq8jOyxrxU93
+	XRsUzDT/zrDNl2QTnCCMJqbWOxyU+6W9jE3D+OVynujH5i3PuLWCppEVEQT2DvJjoeg==
+X-Received: by 2002:ac8:690d:0:b0:534:b7b2:634f with SMTP id
+ d75a77b69052e-5414d92c15bmr762701cf.8.1793217562021; Wed, 28 Oct 2026
+ 12:59:22 -0700 (PDT)
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -112,47 +104,57 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <auHK3k-W4gfL_MhI@pedro-suse.tail5790ac.ts.net>
-X-Spamd-Result: default: False [-13.30 / 50.00];
-	SUSE_INTERNAL_BYPASS(-9.00)[];
-	BAYES_HAM(-3.00)[100.00%];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	ARC_NA(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	MISSING_XM_UA(0.00)[];
-	RCPT_COUNT_TWELVE(0.00)[15];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	RCVD_TLS_ALL(0.00)[];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	FROM_HAS_DN(0.00)[];
-	TO_DN_SOME(0.00)[];
-	FROM_EQ_ENVFROM(0.00)[];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	RCVD_COUNT_TWO(0.00)[2];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,intel.com:email,suse.de:email]
-X-Spam-Score: -13.30
-X-Spam-Level: 
-X-Spam-Flag: NO
+References: <20261028051312.1505295-1-surenb@google.com> <auHK3k-W4gfL_MhI@pedro-suse.tail5790ac.ts.net>
+ <auJO9al4lmAczLAu@pedro-suse.tail5790ac.ts.net>
+In-Reply-To: <auJO9al4lmAczLAu@pedro-suse.tail5790ac.ts.net>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Wed, 28 Oct 2026 12:59:10 -0700
+X-Gm-Features: AclHuK9-6O7OXV5NH16IYTfE9EYxAq4xHV33LgQLBVE22ks0KWFvxZhPdcny1CQ
+Message-ID: <CAJuCfpHAFXDXs4ZBrd8C=8hkQdJxcWCz+DER5BG_Ki0ndGpf9w@mail.gmail.com>
+Subject: Re: [PATCH 1/1] selftests/proc: use RSS in /proc/pid/smaps_rollup
+ tearing tests
+To: Pedro Falcato <pfalcato@suse.de>
+Cc: akpm@linux-foundation.org, david@kernel.org, ljs@kernel.org, 
+	jannh@google.com, liam@infradead.org, willy@infradead.org, paulmck@kernel.org, 
+	usama.arif@linux.dev, vbabka@kernel.org, linux-fsdevel@vger.kernel.org, 
+	yi1.lai@intel.com, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Oct 28, 2026 at 10:14:19AM +0000, Pedro Falcato wrote:
-> On Tue, Oct 27, 2026 at 10:13:12PM -0700, Suren Baghdasaryan wrote:
-> > Pss metrics can be affected by map count even if VMA tree stays unchanged,
-> > therefore test checking VMA tree integrity can't use them. Use Rss instead
-> > and pre-populate the VMAs so that Rss changes if a VMA gets skipped or
-> > double-counted.
-> > 
-> > Fixes: ca5480fb53fa ("selftests/proc: add /proc/pid/smaps_rollup tearing tests")
-> > Reported-by: kernel test robot <yi1.lai@intel.com>
-> > Closes: https://lore.kernel.org/oe-lkp/202610271934.fd287c3f-lkp@intel.com
-> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> 
-> Reviewed-by: Pedro Falcato <pfalcato@suse.de> 
+On Wed, Oct 28, 2026 at 12:42=E2=80=AFPM Pedro Falcato <pfalcato@suse.de> w=
+rote:
+>
+> On Wed, Oct 28, 2026 at 10:14:19AM +0000, Pedro Falcato wrote:
+> > On Tue, Oct 27, 2026 at 10:13:12PM -0700, Suren Baghdasaryan wrote:
+> > > Pss metrics can be affected by map count even if VMA tree stays uncha=
+nged,
+> > > therefore test checking VMA tree integrity can't use them. Use Rss in=
+stead
+> > > and pre-populate the VMAs so that Rss changes if a VMA gets skipped o=
+r
+> > > double-counted.
+> > >
+> > > Fixes: ca5480fb53fa ("selftests/proc: add /proc/pid/smaps_rollup tear=
+ing tests")
+> > > Reported-by: kernel test robot <yi1.lai@intel.com>
+> > > Closes: https://lore.kernel.org/oe-lkp/202610271934.fd287c3f-lkp@inte=
+l.com
+> > > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> >
+> > Reviewed-by: Pedro Falcato <pfalcato@suse.de>
+>
+> Actually, now I'm wondering: isn't Rss also flaky if memory pressure occu=
+rs?
 
-Actually, now I'm wondering: isn't Rss also flaky if memory pressure occurs?
+True. Sashiko's findings are also interesting, so I'll need to figure
+out more robust ways to test smaps_rollup. I will post an update once
+I figure it out.
+Andrew, if this test failure is causing issues in the meantime, please
+feel free to remove the ca5480fb53fa patch until I get a better
+version out.
+Thanks!
 
--- 
-Pedro
+>
+> --
+> Pedro
