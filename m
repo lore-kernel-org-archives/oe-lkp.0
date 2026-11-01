@@ -1,78 +1,72 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.199
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793322511;
-	b=QPx1kCNNX+aiClpv9wKlb26zQ8L5byUiWXJLiLSe/SfaIv9s96BrZxlp1I+bknsnrJJw
-	 Qf8yVaALOLiMeSQxa6RMLzEcvdzo1u/iS4yQousB5thh0LQudv/EHGHwe8rF6dDWQHH6v
-	 XaHm7BRSsnpyyF1mGnHHQ3VKMaKm0ueMQnaMJZQumk8IJui28vUfDx3HBIpCtnrs3AosM
-	 BEH08iJZGsAIZjQI6J/TF5SoyCRKxTWIvEK7+gTE5cSF3tkhuaoQjpRnsXEq0y0SGRwn7
-	 jH9iqej1sQ1PG2YqnaVOWdyV/eViaAPrwPJapTWtMetEwAPqcjuyXSPmf8FSkF65Onw==
+	t=1793547908;
+	b=Fu0zr92yyLHaejXTgNe6tTErDwBx88Ia+JTOWil2MzNfTzey3+pU7uoAaaLwUKbMT4iQ
+	 rGUlMnLyshH/hbt3gp1oNecEwlQ1thITmkL8e+LLDQdTZyV9Jnht2B4Szf0tM5/nE5tE2
+	 zFQKR75SgO9H9AkUOwBNkEBZi7sNtU+QB94KHXpkQU3brSONBNQfMWcDSxkXFRsX8ZCvR
+	 P+7UqCUO0YQzles4wWqNPqqn6Y43HypSQn+MOwUMR7rkVm6HhohtWuz9SxIXvoe5mrOdO
+	 L4iWBCu8V5vd7hIcxloh5EGMBrKpnj0EFsr9jGoT6ywIza+NRW9GqnX9zmcIyVVaUVw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793322511;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition:
-	 In-Reply-To;
-	bh=1B0jHfPMPRZ62CirrzvLJZkEODLPD+5eeWn2nBfOIhs=;
-	b=d3htjZWqIX4vIE6fsRa/pO0MwLMc3TWIJfS8lz+BsW7iwU1fYiDNQDbx6uCVneYrMa+r
-	 MSxL0I5tJ48Pgi3QEOrfpkSj10bb6croxJIHkJaVaeHpXcXOQlZvkvwZ+6tjOzH2zGPYo
-	 925tB5Hha03gSCuqJm1iuTwxlYKwhUSQcX2eLbJxJlwhH1RZ+KORe3E6IWQTshSiyQFty
-	 NEuTbWc8yFUkQLtQHUMLLhyHpAQIHVsCQ+L5KbWI49y9HTVFCS7YZwyp5FsWtRKqu7/Tz
-	 wfywco/XLEmFyul+VfX0dipYvj3y23kPbdxIZmZYXALzww+/QQ/NSW0MrezKn1ji3Ug==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793547908;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:Mime-Version:
+	 X-Mailer:Message-ID:Subject:From:To:Cc:Content-Type;
+	bh=YMgsbDyfk5xc2AQfHD/KzZ6mFWECrL7raaZo0D0MYyc=;
+	b=vEeOfF+7700OS1Ga8IvtXkNrVVD35eX1FLR8qx4ZN44qljmuGBV47B2dTbG58WR5HlYS
+	 Opr2u/k/LklpkwVv0J4qGRMrfJMehmsASCS/YpvdqvlF5W/7lhQik7ogSLVGDD3O9SYg0
+	 G8TkD4Im9EypKMp5QpVgg4b2qQdhlnpn7r9m9KVQCn76FkvkWBUa3OZ4vk6CHJtg73q9d
+	 w9OMPQGyw23LN2XAZmSq65o+e/gaFG58uthO0OmG9PmyiXoSVGw7F6/skYKDZT5qx1bzY
+	 Aewer64e6P70dl8KjXQ8+w9t2PJ5TFRwe8EAlIu/VhJl2VwZK17h6Um1n0mO4OutDAQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Rf+Ja+Ah;
-	arc=none smtp.remote-ip=192.198.163.19
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=flex--surenb.bounces.google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=UWewzAE8;
+	arc=none smtp.remote-ip=74.125.82.199
+Received: from mail-dy1-f199.google.com (mail-dy1-f199.google.com [74.125.82.199])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3024D606A31A
-	for <oe-lkp@lists.linux.dev>; Fri, 30 Oct 2026 01:08:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3024D606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C3DE606A324
+	for <oe-lkp@lists.linux.dev>; Sun,  1 Nov 2026 15:45:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5C3DE606A324
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Rf+Ja+Ah
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793322511; x=1824858511;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   in-reply-to;
-  bh=BQciK/2oCEkdbtbnIXAYM4Zt4tCgCiv7fHDlEIqdxeo=;
-  b=Rf+Ja+AhyanyIGmrsf8EsYVTY62MJ/UhByQmfc9BMkh61KSundRRFzPY
-   a2Or/arl67K4s2gEA/ufdf9pNK1Qkly+q6Pc1vC+hrCgecVOHrhimD0F7
-   8eMdDOv/6cElL9bcZ5NGBYbdofsQJjBZrONZUDeuyXp9wnqlxZTum3+90
-   zT3EeVf4AaQhEk1JJLyDIKP2bZhL7pOtWy4C4f5Ut+nzLpcCnGWT2RFHf
-   nR6YMx31UHUP7DedYde9QC7Kqk0q4LrFav9/WBRplBGPjnTnO4R68DjzZ
-   8ODFYWpnRzebh8cY51evdJ5ikTbfKVVcVp+l2pHmoilhUYPllAEt/MwDG
-   Q==;
-X-CSE-ConnectionGUID: 6nuAXZpwSayylr++UJARNw==
-X-CSE-MsgGUID: 3pTHHZzUR2yIbQjU+QoT9g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11950"; a="2184703"
-X-IronPort-AV: E=Sophos;i="6.27,185,1787036400"; 
-   d="scan'208";a="2184703"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2026 18:08:30 -0700
-X-CSE-ConnectionGUID: iWmivEeeRse+B+PfpvCX9w==
-X-CSE-MsgGUID: PvM8eMDdRCOhRp5NVbumuw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,185,1787036400"; 
-   d="scan'208";a="5212027"
-Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2026 18:08:27 -0700
-Date: Fri, 30 Oct 2026 09:08:23 +0800
-From: kernel test robot <yi1.lai@intel.com>
-To: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-block@vger.kernel.org,
-	Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
-	Nilay Shroff <nilay@linux.ibm.com>,
-	Edward Adam Davis <eadavis@qq.com>,
-	Dave Kleikamp <shaggy@kernel.org>,
-	jfs-discussion@lists.sourceforge.net,
-	Bart Van Assche <bvanassche@acm.org>, yi1.lai@intel.com
-Subject: Re: [PATCH] block: Wait for inflight requests in bdev_release()
-Message-ID: <202610300858.1721b701-lkp@intel.com>
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=UWewzAE8
+Received: by mail-dy1-f199.google.com with SMTP id 5a478bee46e88-33c35f5ca6cso5360509eec.1
+        for <oe-lkp@lists.linux.dev>; Sun, 01 Nov 2026 07:45:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20260707; t=1793547907; x=1794152707; darn=lists.linux.dev;
+        h=content-type:cc:to:from:subject:message-id:mime-version:date:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=YMgsbDyfk5xc2AQfHD/KzZ6mFWECrL7raaZo0D0MYyc=;
+        b=UWewzAE8upjuXemTewSsO4O/8ket3usFr4ciLbMqFkPSx0QNU8+kIHAQNfOjFRpW9Y
+         52uyWwycReUnR+UWnuky0M3hk0NtwaFBF6RkoRqaJ0YW+7eb9qx9YQHBcYoxF37+Lw1t
+         TjTsjdOdJaHHAsZdgrp0N4TxSdjQJc5MFjdgYsQDWFId8vkSyX7HqzbrDz2VdYzNLqmR
+         9+7kcryK+bhn+Lg/et5ccG4r6vC0VGs4otCf0+f8IHqfKDSrY03AcueAahLO0zEIgtZ8
+         V1EEzqwSXJbBuBHf+s+7uqJvjhC/a7U2EpvGpI7h/ll2jlBDS+6Xo8zLsfWlI9DD5L8d
+         KA6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793547907; x=1794152707;
+        h=content-type:cc:to:from:subject:message-id:mime-version:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=YMgsbDyfk5xc2AQfHD/KzZ6mFWECrL7raaZo0D0MYyc=;
+        b=ajhdYMRFd5/zi7M1zddDAol/qdXP+9ODnluKID0Emd781JYrvJ9kvX+T7bvt6nhv0E
+         IKp0zGA4153OxoF+bSbiYugHAcRBf0p6OVgZsLr5fQOkFGNyon/Uc3Q73KEcn6EU4ZaQ
+         Oc56sD9t+Sed+4m3GcavxwwWGWSa+expyPVvPgPT3WiqXI1CzC6MO0PScup2wQX2AiGy
+         LSF2Si8msIDRQl/UbLGNCZvtne0VL01CQk+ha8CQTpadNIBz9Y5A5UL6bd/qjLEW9Uab
+         pIMuEuM6ZpXqfkNQfTf8aKyBzGYG6Wnl8DQoXadD5k5B5Iw259ct+R4OX19Yq4Pa4ETB
+         OcPA==
+X-Forwarded-Encrypted: i=1; AKwUvBxytuzBXxoPjdZ9kUgSnNqyeR/k5y2RftSmNPWfrXKMfrDnungAtaiZRpvBxCvqzhqh7D/X73I=@lists.linux.dev
+X-Gm-Message-State: APuU4Z/5GzKVyjkaM045W+JVTSyKlaxdpUkquQ0LFftFUKGxULfDScOI
+	e1SA1R7hdOCIgUST1sYTPbFZrTz74zMB+EUxWGmZo/DV4fETgePSfKZ6aWzJf/V5auJvDl+Hi8Q
+	SHWhq9Q==
+X-Received: from dybhy42.prod.google.com ([2002:a05:7301:42a:b0:347:7fea:9fec])
+ (user=surenb job=prod-delivery.src-stubby-dispatcher) by 2002:a05:7301:6183:20b0:36a:1089:9836
+ with SMTP id 5a478bee46e88-36a423c8988mr10973150eec.15.1793547906897; Sun, 01
+ Nov 2026 07:45:06 -0800 (PST)
+Date: Sun,  1 Nov 2026 07:45:03 -0800
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -81,104 +75,195 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <53c3ccf7-1a5e-4861-afc0-7cbfd3284655@I-love.SAKURA.ne.jp>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.56.0.317.g454f8302e1-goog
+Message-ID: <20261101154503.3203036-1-surenb@google.com>
+Subject: [PATCH v2 1/1] selftests/proc: use RSS in /proc/pid/smaps_rollup
+ tearing tests
+From: Suren Baghdasaryan <surenb@google.com>
+To: akpm@linux-foundation.org
+Cc: david@kernel.org, ljs@kernel.org, jannh@google.com, liam@infradead.org, 
+	willy@infradead.org, paulmck@kernel.org, pfalcato@suse.de, 
+	usama.arif@linux.dev, vbabka@kernel.org, linux-fsdevel@vger.kernel.org, 
+	yi1.lai@intel.com, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	linux-kernel@vger.kernel.org, Suren Baghdasaryan <surenb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
+Pss metrics can be affected by map count even if VMA tree stays unchanged,
+therefore tests checking VMA tree integrity can't use them. Use Rss instead
+and pre-populate the VMAs so that Rss changes if a VMA gets skipped or
+double-counted.
 
-Hello,
+To ensure all test VMAs are populated with anonymous pages, remain
+mergeable across VMA operations, and do not have their Rss changed by
+memory reclaim:
+- Toggle PROT_EXEC instead of PROT_WRITE between adjacent test VMAs so
+  all test VMAs remain writable and MAP_POPULATE faults in anonymous pages
+  (rather than the shared zero page, which is not accounted in Rss).
+- Use mprotect() instead of mmap(..., MAP_FIXED) in split_vma() and
+  merge_vma() so the first page of the split VMA stays resident.
+  mprotect(..., PROT_NONE) splits the VMA without unmapping the first page
+  (pte_present() remains true for PAGE_NONE PTEs), and
+  mprotect(..., self->mod_info->prot) merges it back. Both parts of the
+  split VMA retain their non-zero Rss.
+- Lock all present pages in the child with mlockall(MCL_CURRENT |
+  MCL_FUTURE | MCL_ONFAULT) so memory pressure cannot reclaim pages and
+  alter Rss during the test.
+- In remap_vma(), unlock next_addr before mremap(..., MREMAP_DONTUNMAP)
+  so next_addr is not split, use mmap(..., MAP_FIXED) in patch_vma() to
+  merge the middle VMA back into addr, and exclude smaps_rollup tests
+  from test_maps_tearing_from_remap since remapping moves and unmaps the
+  page from next_addr.
 
-kernel test robot noticed "blktests.loop/003.fail" on:
+Fixes: ca5480fb53fa ("selftests/proc: add /proc/pid/smaps_rollup tearing tests")
+Reported-by: kernel test robot <yi1.lai@intel.com>
+Closes: https://lore.kernel.org/oe-lkp/202610271934.fd287c3f-lkp@intel.com
+Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+---
+Changes from v1 [1]:
+- fixed the way the odd VMAs are populated to avoid mapping zero pages
+- used mprotect for splitting/merging VMAs to prevent split_vma() from
+  unmapping and freeing the first page
+- mlock all areas to keep Rss unchanged under memory pressure,
+  per Pedro Falcato
+- exclude smaps_rollup tests from test_maps_tearing_from_remap because
+  remapping a populated VMA affects Rss metric
 
-commit: 7ec8033abf279c978b0e9ffcc03367e24fd6205b ("[PATCH] block: Wait for inflight requests in bdev_release()")
-url: https://github.com/intel-lab-lkp/linux/commits/Tetsuo-Handa/block-Wait-for-inflight-requests-in-bdev_release/20261012-172605
-base: https://git.kernel.org/cgit/linux/kernel/git/axboe/linux.git for-next patch link: https://lore.kernel.org/all/53c3ccf7-1a5e-4861-afc0-7cbfd3284655@I-love.SAKURA.ne.jp/
-patch subject: [PATCH] block: Wait for inflight requests in bdev_release()
+[1] https://lore.kernel.org/all/20261028051312.1505295-1-surenb@google.com/
 
-in testcase: blktests
-version: blktests-x86_64-0027abd-1_20261027
-with following parameters:
+ tools/testing/selftests/proc/proc-maps-race.c | 53 ++++++++++---------
+ 1 file changed, 27 insertions(+), 26 deletions(-)
 
-	test: loop-group-00
+diff --git a/tools/testing/selftests/proc/proc-maps-race.c b/tools/testing/selftests/proc/proc-maps-race.c
+index bf4c5073f6fc..6025aea68190 100644
+--- a/tools/testing/selftests/proc/proc-maps-race.c
++++ b/tools/testing/selftests/proc/proc-maps-race.c
+@@ -528,13 +528,10 @@ static bool compare_smaps_rollup(FIXTURE_DATA(proc_maps_race) *self,
+ 		struct smaps_rollup_stats *actual)
+ {
+ 	/*
+-	 * Clean/dirty metrics might change but Pss-related ones
+-	 * should stay constant.
++	 * Clean/dirty metrics might change. Pss depends on map count and might
++	 * change as well. Rss should stay constant.
+ 	 */
+-	if (cmp_smaps_rollup_stat(expected, actual, Pss) &&
+-	    cmp_smaps_rollup_stat(expected, actual, Pss_Anon) &&
+-	    cmp_smaps_rollup_stat(expected, actual, Pss_File) &&
+-	    cmp_smaps_rollup_stat(expected, actual, Pss_Shmem))
++	if (cmp_smaps_rollup_stat(expected, actual, Rss))
+ 		return true;
+ 
+ 	print_smaps_rollup_stats("Expected stats:", self, expected);
+@@ -637,14 +634,13 @@ static bool query_addr_at(int maps_fd, void *addr,
+ static inline bool split_vma(FIXTURE_DATA(proc_maps_race) *self)
+ {
+ 	/* PROT_NONE differs from both readable neighbors. */
+-	return mmap(self->mod_info->addr, self->page_size, PROT_NONE,
+-		    MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, -1, 0) != MAP_FAILED;
++	return mprotect(self->mod_info->addr, self->page_size, PROT_NONE) == 0;
+ }
+ 
+ static inline bool merge_vma(FIXTURE_DATA(proc_maps_race) *self)
+ {
+-	return mmap(self->mod_info->addr, self->page_size, self->mod_info->prot,
+-		    MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, -1, 0) != MAP_FAILED;
++	return mprotect(self->mod_info->addr, self->page_size,
++			self->mod_info->prot) == 0;
+ }
+ 
+ static inline bool check_split_result(struct line_content *mod_last_line,
+@@ -681,6 +677,12 @@ static inline bool check_shrink_result(struct line_content *mod_last_line,
+ 
+ static inline bool remap_vma(FIXTURE_DATA(proc_maps_race) *self)
+ {
++	/*
++	 * Unlock next_addr so MREMAP_DONTUNMAP does not split it.
++	 */
++	if (munlock(self->mod_info->next_addr, self->page_size * 3) != 0)
++		return false;
++
+ 	/*
+ 	 * Remap the last page of the next vma into the middle of the vma.
+ 	 * This splits the current vma and the first and middle parts (the
+@@ -694,8 +696,9 @@ static inline bool remap_vma(FIXTURE_DATA(proc_maps_race) *self)
+ 
+ static inline bool patch_vma(FIXTURE_DATA(proc_maps_race) *self)
+ {
+-	return mprotect(self->mod_info->addr + self->page_size, self->page_size,
+-			self->mod_info->prot) == 0;
++	return mmap(self->mod_info->addr + self->page_size, self->page_size,
++		    self->mod_info->prot,
++		    MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, -1, 0) != MAP_FAILED;
+ }
+ 
+ static inline bool check_remap_result(struct line_content *mod_last_line,
+@@ -759,11 +762,17 @@ FIXTURE_SETUP(proc_maps_race)
+ 
+ 		for (i = 0; i < mod_info->vma_count; i++) {
+ 			mod_info->child_mapped_addr[i] = mmap(NULL, self->page_size * 3, prot,
+-					MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
++					MAP_PRIVATE | MAP_ANONYMOUS | MAP_POPULATE, -1, 0);
+ 			ASSERT_NE(mod_info->child_mapped_addr[i], MAP_FAILED);
+ 			/* change protection in adjacent maps to prevent merging */
+-			prot ^= PROT_WRITE;
++			prot ^= PROT_EXEC;
+ 		}
++		/*
++		 * Lock all present pages in memory so memory reclaim cannot
++		 * change RSS during the test, and use MCL_ONFAULT so
++		 * mremap() expansion does not populate new pages.
++		 */
++		ASSERT_EQ(mlockall(MCL_CURRENT | MCL_FUTURE | MCL_ONFAULT), 0);
+ 		signal_state(mod_info, CHILD_READY);
+ 		wait_for_state(mod_info, PARENT_READY);
+ 		while (true) {
+@@ -833,10 +842,10 @@ FIXTURE_SETUP(proc_maps_race)
+ 	for (int i = 0; i < mod_info->vma_count; i++) {
+ 		if (mod_info->child_mapped_addr[i] == (void *)self->last_line.start_addr) {
+ 			mod_info->addr = mod_info->child_mapped_addr[i];
+-			mod_info->prot = PROT_READ;
+-			/* Even VMAs have write permission */
+-			if ((i % 2) == 0)
+-				mod_info->prot |= PROT_WRITE;
++			mod_info->prot = PROT_READ | PROT_WRITE;
++			/* Odd VMAs have exec permission */
++			if ((i % 2) != 0)
++				mod_info->prot |= PROT_EXEC;
+ 		} else if (mod_info->child_mapped_addr[i] == (void *)self->first_line.start_addr) {
+ 			mod_info->next_addr = mod_info->child_mapped_addr[i];
+ 		}
+@@ -1066,7 +1075,6 @@ TEST_F(proc_maps_race, test_maps_tearing_from_remap)
+ 	struct line_content remapped_first_line;
+ 	struct line_content restored_last_line;
+ 	struct line_content restored_first_line;
+-	struct smaps_rollup_stats orig_stats;
+ 
+ 	wait_for_state(mod_info, SETUP_READY);
+ 
+@@ -1080,8 +1088,6 @@ TEST_F(proc_maps_race, test_maps_tearing_from_remap)
+ 	report_test_start("Tearing from remap", self->verbose);
+ 	ASSERT_TRUE(capture_mod_pattern(self, &remapped_last_line, &remapped_first_line,
+ 					&restored_last_line, &restored_first_line));
+-	if (self->maps_file == SMAPS)
+-		ASSERT_TRUE(parse_smaps_rollup(self, &orig_stats));
+ 
+ 	/* Now start concurrent modifications for self->duration_sec */
+ 	signal_state(mod_info, TEST_READY);
+@@ -1134,11 +1140,6 @@ TEST_F(proc_maps_race, test_maps_tearing_from_remap)
+ 				     vma_end - vma_start == self->page_size * 3) ||
+ 				    (vma_start == self->last_line.start_addr + self->page_size &&
+ 				     vma_end - vma_start == self->page_size));
+-		} else {
+-			struct smaps_rollup_stats stats;
+-
+-			ASSERT_TRUE(parse_smaps_rollup(self, &stats));
+-			ASSERT_TRUE(compare_smaps_rollup(self, &orig_stats, &stats));
+ 		}
+ 		clock_gettime(CLOCK_MONOTONIC_COARSE, &end_ts);
+ 		end_test_iteration(&end_ts, self->verbose);
 
-
-config: x86_64-rhel-9.4-func
-compiler: gcc-14
-test machine: 4 threads Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz (Skylake) with 32G memory
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <yi1.lai@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202610300858.1721b701-lkp@intel.com
-
-
-2026-10-29 13:18:00 cd /lkp/benchmarks/blktests
-2026-10-29 13:18:01 sed "s:^:loop/:" /lkp/benchmarks/blktests/tests/loop-group-00
-2026-10-29 13:18:01 ./check loop/001 loop/002 loop/003 loop/004 loop/005 loop/006 loop/007 loop/008 loop/009 loop/010 loop/011 loop/012 loop/013
-loop/001 (scan loop device partitions)                      
-loop/001 (scan loop device partitions)                       [passed]
-    runtime    ...  0.439s
-loop/002 (try various loop device block sizes)              
-loop/002 (try various loop device block sizes)               [passed]
-    runtime    ...  0.332s
-loop/003 (time opening and closing an unbound loop device)  
-loop/003 (time opening and closing an unbound loop device)   [failed]
-    runtime    ...  8.584s
-    --- tests/loop/003.out	2026-10-27 23:51:50.000000000 +0000
-    +++ /lkp/benchmarks/blktests/results/nodev/loop/003.out.bad	2026-10-29 13:18:10.921226342 +0000
-    @@ -1,3 +1,3 @@
-     Running loop/003
-    -Test took 0 seconds
-    +Test took 8 seconds
-     Test complete
-loop/004 (combine loop direct I/O mode and a custom block size)
-loop/004 (combine loop direct I/O mode and a custom block size) [passed]
-    runtime    ...  14.512s
-loop/005 (call LOOP_GET_STATUS{,64} with a NULL arg)        
-loop/005 (call LOOP_GET_STATUS{,64} with a NULL arg)         [passed]
-    runtime    ...  0.057s
-loop/006 (change loop backing file while creating/removing another loop device)
-loop/006 (change loop backing file while creating/removing another loop device) [failed]
-    runtime    ...  89.048s
-    --- tests/loop/006.out	2026-10-27 23:51:50.000000000 +0000
-    +++ /lkp/benchmarks/blktests/results/nodev/loop/006.out.bad	2026-10-29 13:19:54.981232346 +0000
-    @@ -1,2 +1,3 @@
-     Running loop/006
-    +ioctl: Operation not supported
-     Test complete
-loop/007 (update loop device capacity with filesystem)      
-loop/007 (update loop device capacity with filesystem)       [passed]
-    runtime    ...  0.223s
-loop/008 (setup GPT and ESP on a raw disk image)            
-loop/008 (setup GPT and ESP on a raw disk image)             [passed]
-    runtime    ...  0.497s
-loop/009 (check that LOOP_CONFIGURE sends uevents for partitions)
-loop/009 (check that LOOP_CONFIGURE sends uevents for partitions) [passed]
-    runtime    ...  0.442s
-loop/010 (check stale loop partition)                       
-loop/010 (check stale loop partition)                        [passed]
-    runtime    ...  92.316s
-loop/011 (Make sure unsupported backing file fallocate does not fill dmesg with errors)
-loop/011 (Make sure unsupported backing file fallocate does not fill dmesg with errors) [passed]
-    runtime    ...  0.276s
-loop/012 (check for spurious partition removal when partscan is enabled)
-loop/012 (check for spurious partition removal when partscan is enabled) [not run]
-    systemd version is older than 259
-loop/013 (remove manually added partitions before loop device reuse)
-loop/013 (remove manually added partitions before loop device reuse) [passed]
-    runtime    ...  0.740s
-
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20261030/202610300858.1721b701-lkp@intel.com
-
-
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+base-commit: b61fa14ce6bcbba2cb9a96feea31b760226d6b43
+-- 
+2.56.0.317.g454f8302e1-goog
 
