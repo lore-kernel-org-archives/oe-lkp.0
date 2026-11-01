@@ -1,72 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.199
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793547908;
-	b=Fu0zr92yyLHaejXTgNe6tTErDwBx88Ia+JTOWil2MzNfTzey3+pU7uoAaaLwUKbMT4iQ
-	 rGUlMnLyshH/hbt3gp1oNecEwlQ1thITmkL8e+LLDQdTZyV9Jnht2B4Szf0tM5/nE5tE2
-	 zFQKR75SgO9H9AkUOwBNkEBZi7sNtU+QB94KHXpkQU3brSONBNQfMWcDSxkXFRsX8ZCvR
-	 P+7UqCUO0YQzles4wWqNPqqn6Y43HypSQn+MOwUMR7rkVm6HhohtWuz9SxIXvoe5mrOdO
-	 L4iWBCu8V5vd7hIcxloh5EGMBrKpnj0EFsr9jGoT6ywIza+NRW9GqnX9zmcIyVVaUVw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793547908;
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.160.181
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793548025;
+	b=g/ItHcQmERPxne0CJIltF1SvOGpMLweEJYVgkWUehXYvs2eBPEXILwtRjKs7aQq8fj5d
+	 P8HnMnCU6tsgUL3oofoePcnewkHgcCtpmgdvsCZT3GCMId5QVA6+mpJvpZ+46DVeHKyZv
+	 9JW5n+xHvG2rgV2GMFZ8G0zRQ+xNzt7BR27jncr2GpXeyHluE43Jyh2M2cx26NoAx5rWN
+	 S8L8uq5elgo4uYPQ/mP+sgzY3FWDXzcHPf/S9XFgRLCcXsYU3uMpcQkxU9uPA+bliYa/9
+	 ismZKhu3YMsP8dzThsrJQx1mN0zsvalow/+rzd0qzvaVVf+SvMXuTFBdPgsgJkh54bQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793548025;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:Mime-Version:
-	 X-Mailer:Message-ID:Subject:From:To:Cc:Content-Type;
-	bh=YMgsbDyfk5xc2AQfHD/KzZ6mFWECrL7raaZo0D0MYyc=;
-	b=vEeOfF+7700OS1Ga8IvtXkNrVVD35eX1FLR8qx4ZN44qljmuGBV47B2dTbG58WR5HlYS
-	 Opr2u/k/LklpkwVv0J4qGRMrfJMehmsASCS/YpvdqvlF5W/7lhQik7ogSLVGDD3O9SYg0
-	 G8TkD4Im9EypKMp5QpVgg4b2qQdhlnpn7r9m9KVQCn76FkvkWBUa3OZ4vk6CHJtg73q9d
-	 w9OMPQGyw23LN2XAZmSq65o+e/gaFG58uthO0OmG9PmyiXoSVGw7F6/skYKDZT5qx1bzY
-	 Aewer64e6P70dl8KjXQ8+w9t2PJ5TFRwe8EAlIu/VhJl2VwZK17h6Um1n0mO4OutDAQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=Rnvo9UG8/PyUCxjRTNkK2BrtMq0/hvvsz56LwYy2AKQ=;
+	b=0/+aTbWH2lxBzMT7LkmGUA82w/HfZ+GmNEMURwr1akkhLzVplbM7WUQy0njQMJfWR+da
+	 AxadLFZ1CZjZENmub4j6bk+MNTGfU9KwJEHIyMMWj5LDYiIZRQSf9Bz9c26fZUmMSymdH
+	 BjBMBR51pI2QB2eT7mvitWBIhbGx0yzLlO/2ddtTY8WiJQ6s7vOocw5rCBexJ9pLbq+ER
+	 6DwuEeQIH5Okp2Dm2lDSgE649uW71AbgN7M4hBl8SSCEO+WUzyVXb8KAgOGFK/UXMrfSD
+	 c4X11krEwODhQR3KZBTwpFzzcNlslLbTquIgtgUmrsLbhjOetdHoogNQMSCbqf7YqoQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=flex--surenb.bounces.google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=UWewzAE8;
-	arc=none smtp.remote-ip=74.125.82.199
-Received: from mail-dy1-f199.google.com (mail-dy1-f199.google.com [74.125.82.199])
+	spf=pass smtp.mailfrom=google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=VXgImDvg;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.160.181
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C3DE606A324
-	for <oe-lkp@lists.linux.dev>; Sun,  1 Nov 2026 15:45:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5C3DE606A324
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25605606A326
+	for <oe-lkp@lists.linux.dev>; Sun,  1 Nov 2026 15:47:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 25605606A326
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=UWewzAE8
-Received: by mail-dy1-f199.google.com with SMTP id 5a478bee46e88-33c35f5ca6cso5360509eec.1
-        for <oe-lkp@lists.linux.dev>; Sun, 01 Nov 2026 07:45:08 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=VXgImDvg
+Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-533202fe429so263861cf.0
+        for <oe-lkp@lists.linux.dev>; Sun, 01 Nov 2026 07:47:03 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1793548023; cv=none;
+        d=google.com; s=arc-20260327;
+        b=Jzli2+8t/QfqivNrODYGis+TNrXZhQK0t1cU3ewRsF2wjulkIQ8nYwjLYc66sNPu0k
+         ZUFh5XrfXyAYAm8GrExZKiJcA4//15q75LP+OBEaIqLiZVFW5JRxCL+qRDmRri2tyrvr
+         YQeZBc/ocHkxELGoMFt3Ijkr8F6BxCoZAr03q78RnODd4Lz0CuYv8/5jfF7RAEK7h/Dj
+         QADlFdVM7Q3/9rXqCUHKjMFz9/QFWkml542baf/uLfVJmTjSRyI2xJ9jv9FgyBiF45cT
+         lCfbSjGDOTnYxZFoFO12azYjCWolPryZYyNhnVuI74DcQpzHSZHpQgagx9C6BeJIqsRF
+         cC4w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=Rnvo9UG8/PyUCxjRTNkK2BrtMq0/hvvsz56LwYy2AKQ=;
+        fh=lr0jailW2i7KxtOTWRnS2TPUxdxdNaQ8IDbf1qRoWpg=;
+        b=fUJrTYJfWfL7IH5bdeyf6Hcjmj8UHZjotwTpY1sdJjrx3Gtq521zJgnrBjLgahFb0+
+         II5hY5SOWNIR2eYWrcAm0TRtKUoR+2UkYe5y6KeXBuFOICZa7SUWMTqoRfe7tPO0imr5
+         rPrRRm6iIS2YsiWyKsSPJEALbVFcqvPsVJKPSi1OmJFSDS9TvCm2ZFlOM2XPKsDf7S8O
+         JYYXBhm0qgL+1bjWC5RM+XA1++qp1axfjh/OWeJ8svQQvYiuqjgF7upb+TjO36X/PJXY
+         fGuUzqdr42bMYhf575wauEyVl7ht9aeXvmYPm5H7C2t+KTtSwHR4bnZPSEmQV1+cVkpP
+         JzVw==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1793547907; x=1794152707; darn=lists.linux.dev;
-        h=content-type:cc:to:from:subject:message-id:mime-version:date:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=YMgsbDyfk5xc2AQfHD/KzZ6mFWECrL7raaZo0D0MYyc=;
-        b=UWewzAE8upjuXemTewSsO4O/8ket3usFr4ciLbMqFkPSx0QNU8+kIHAQNfOjFRpW9Y
-         52uyWwycReUnR+UWnuky0M3hk0NtwaFBF6RkoRqaJ0YW+7eb9qx9YQHBcYoxF37+Lw1t
-         TjTsjdOdJaHHAsZdgrp0N4TxSdjQJc5MFjdgYsQDWFId8vkSyX7HqzbrDz2VdYzNLqmR
-         9+7kcryK+bhn+Lg/et5ccG4r6vC0VGs4otCf0+f8IHqfKDSrY03AcueAahLO0zEIgtZ8
-         V1EEzqwSXJbBuBHf+s+7uqJvjhC/a7U2EpvGpI7h/ll2jlBDS+6Xo8zLsfWlI9DD5L8d
-         KA6w==
+        d=google.com; s=20260707; t=1793548023; x=1794152823; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=Rnvo9UG8/PyUCxjRTNkK2BrtMq0/hvvsz56LwYy2AKQ=;
+        b=VXgImDvgS7oTlns/TWxAPt+tVxTN7RK/9XGeixMaq5HBEQxvos9TUuEUkHOWMBE6jA
+         jm2Jweqeu0H9dnX7EdeKRgGoHN04tW+8IDm4UT3Jf3dgMGelDDFUnSrnk33ygc5+pEdz
+         zvpD1x02/pJJTU/1HDygthE9CrlbL8MDVIxyfPRTJNd6oiFky2QBuvk9AkEvBMVVwmsw
+         i3/dB2uhM0blUwEhd1+Dvpv2/R/6A16xIWVySp1NZBYdpHJgN+FeRTVDN6ei4mcGKXWB
+         dpmYVbSQYrK+ijFBRakRkNMmzpQZ1rArL/ctJEZD0znzSc+3Mz4AWtMheTZCdvlM0OFO
+         sgvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793547907; x=1794152707;
-        h=content-type:cc:to:from:subject:message-id:mime-version:date
+        d=1e100.net; s=20260707; t=1793548023; x=1794152823;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=YMgsbDyfk5xc2AQfHD/KzZ6mFWECrL7raaZo0D0MYyc=;
-        b=ajhdYMRFd5/zi7M1zddDAol/qdXP+9ODnluKID0Emd781JYrvJ9kvX+T7bvt6nhv0E
-         IKp0zGA4153OxoF+bSbiYugHAcRBf0p6OVgZsLr5fQOkFGNyon/Uc3Q73KEcn6EU4ZaQ
-         Oc56sD9t+Sed+4m3GcavxwwWGWSa+expyPVvPgPT3WiqXI1CzC6MO0PScup2wQX2AiGy
-         LSF2Si8msIDRQl/UbLGNCZvtne0VL01CQk+ha8CQTpadNIBz9Y5A5UL6bd/qjLEW9Uab
-         pIMuEuM6ZpXqfkNQfTf8aKyBzGYG6Wnl8DQoXadD5k5B5Iw259ct+R4OX19Yq4Pa4ETB
-         OcPA==
-X-Forwarded-Encrypted: i=1; AKwUvBxytuzBXxoPjdZ9kUgSnNqyeR/k5y2RftSmNPWfrXKMfrDnungAtaiZRpvBxCvqzhqh7D/X73I=@lists.linux.dev
-X-Gm-Message-State: APuU4Z/5GzKVyjkaM045W+JVTSyKlaxdpUkquQ0LFftFUKGxULfDScOI
-	e1SA1R7hdOCIgUST1sYTPbFZrTz74zMB+EUxWGmZo/DV4fETgePSfKZ6aWzJf/V5auJvDl+Hi8Q
-	SHWhq9Q==
-X-Received: from dybhy42.prod.google.com ([2002:a05:7301:42a:b0:347:7fea:9fec])
- (user=surenb job=prod-delivery.src-stubby-dispatcher) by 2002:a05:7301:6183:20b0:36a:1089:9836
- with SMTP id 5a478bee46e88-36a423c8988mr10973150eec.15.1793547906897; Sun, 01
- Nov 2026 07:45:06 -0800 (PST)
-Date: Sun,  1 Nov 2026 07:45:03 -0800
+        bh=Rnvo9UG8/PyUCxjRTNkK2BrtMq0/hvvsz56LwYy2AKQ=;
+        b=IlDXkJtaChabMn4n9s+u6YnHko+XKjbYC7CibLSyGE3rIs6VcumEavCEzOZGTG0088
+         URbBnAV8DC48L0GZQIZFMZbfgc0oanhuoj0CUNUBZUW/t4fvNcbRmFhuIfgw9LBdeBfa
+         O2SZVmV4+cXxJgR+7So3zlzw1F/kIy0GWDcvrLgo4OjAb8qjd6SOGZ2grif6eL83lxkb
+         AeVPDzdS1FVsu9bhd67bAaGlrhODjkpZ6tuZ33Yc3bmfj+lcAFQopy2tQKOsgbOkww6n
+         qQyDFYSzjtoYL1UVjkhAoEb1VsbCgiqFvXsQg7PTPeSXd5kgBg/9wV/BiGVn9qllx7yH
+         5XZw==
+X-Forwarded-Encrypted: i=1; AKwUvBxL3TtcR6TtxzYcGOokr/zV+OYuJRjaZfRJwEptiNYOe1JxWNRYllmjLxz62AZ/0FkHqcOa2e4=@lists.linux.dev
+X-Gm-Message-State: AFq9FYJwNt3/EN+m991Aof1SNfJ8GW256PXS5x1HjuFnz8PJthdW1EOt
+	qE/mKgMbQOI55tJqyACBTVKtlPX8BmJLXB3RbrEkAYzBs379vAyuVJiLRGq2wQpa/0ulh8L3T3t
+	jle+VCad6WyE9ZO/7kj4B+Rw+WOWrKMpEtRfwLn/iECTnC+xnrqQqXaGSojA=
+X-Gm-Gg: AYBFou1VyZTxG/dDksjcmrgp1jtzOjAGxC7pu1tLrNa7R1zYlYD3OxLdfCNv/KgTaBW
+	3DQv3Bp33TAEUt8Vxh8WsZwu2pflRUlmp24wrSewYPgid96i0NCc1KtrTNAXeB4rEObgy8tfLfB
+	4qMs2G7WyfIy3yZme6OzRqtNTfoXTZrb9P2camCWkhEEEAkHwAa27Wl8ZLivUptGfg8JfdUQO2d
+	JMzxzvKkiclSi/HBvIk29v89el6q+SKxBstUWIL4YFcqtSnai4xU+JFEXJrQErHf4gG9P1vETxh
+	YjdWKxcGZlcKBtxZoxD6jFoevFBp8G2fS78RSv76zz5fde7Mx315qbyZbDrvDxHoN9XQPL9q9ld
+	d1wB8n1WyYtqMAfVf0mBhuVG+PHPzJBgfcN93JofG77GUUP6GfwVpWDjd
+X-Received: by 2002:a05:622a:2b45:b0:532:eff8:3491 with SMTP id
+ d75a77b69052e-5414ebdf590mr76624581cf.14.1793548022450; Sun, 01 Nov 2026
+ 07:47:02 -0800 (PST)
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -75,195 +103,66 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.56.0.317.g454f8302e1-goog
-Message-ID: <20261101154503.3203036-1-surenb@google.com>
-Subject: [PATCH v2 1/1] selftests/proc: use RSS in /proc/pid/smaps_rollup
- tearing tests
+MIME-Version: 1.0
+References: <20261028051312.1505295-1-surenb@google.com> <auHK3k-W4gfL_MhI@pedro-suse.tail5790ac.ts.net>
+ <auJO9al4lmAczLAu@pedro-suse.tail5790ac.ts.net> <CAJuCfpHAFXDXs4ZBrd8C=8hkQdJxcWCz+DER5BG_Ki0ndGpf9w@mail.gmail.com>
+In-Reply-To: <CAJuCfpHAFXDXs4ZBrd8C=8hkQdJxcWCz+DER5BG_Ki0ndGpf9w@mail.gmail.com>
 From: Suren Baghdasaryan <surenb@google.com>
-To: akpm@linux-foundation.org
-Cc: david@kernel.org, ljs@kernel.org, jannh@google.com, liam@infradead.org, 
-	willy@infradead.org, paulmck@kernel.org, pfalcato@suse.de, 
+Date: Sun, 1 Nov 2026 07:46:51 -0800
+X-Gm-Features: AclHuK84MQqzMKZd-OXYE0wk48ZMx_UhE8Hg8QFqNvu-tilXapmhIB4d1-01OeM
+Message-ID: <CAJuCfpF=DdYZ7UFH5vNJT-qoF9qrDBW7pgk7tHeD5Z9X7PH1og@mail.gmail.com>
+Subject: Re: [PATCH 1/1] selftests/proc: use RSS in /proc/pid/smaps_rollup
+ tearing tests
+To: Pedro Falcato <pfalcato@suse.de>
+Cc: akpm@linux-foundation.org, david@kernel.org, ljs@kernel.org, 
+	jannh@google.com, liam@infradead.org, willy@infradead.org, paulmck@kernel.org, 
 	usama.arif@linux.dev, vbabka@kernel.org, linux-fsdevel@vger.kernel.org, 
 	yi1.lai@intel.com, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	linux-kernel@vger.kernel.org, Suren Baghdasaryan <surenb@google.com>
+	linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Pss metrics can be affected by map count even if VMA tree stays unchanged,
-therefore tests checking VMA tree integrity can't use them. Use Rss instead
-and pre-populate the VMAs so that Rss changes if a VMA gets skipped or
-double-counted.
+On Wed, Oct 28, 2026 at 12:59=E2=80=AFPM Suren Baghdasaryan <surenb@google.=
+com> wrote:
+>
+> On Wed, Oct 28, 2026 at 12:42=E2=80=AFPM Pedro Falcato <pfalcato@suse.de>=
+ wrote:
+> >
+> > On Wed, Oct 28, 2026 at 10:14:19AM +0000, Pedro Falcato wrote:
+> > > On Tue, Oct 27, 2026 at 10:13:12PM -0700, Suren Baghdasaryan wrote:
+> > > > Pss metrics can be affected by map count even if VMA tree stays unc=
+hanged,
+> > > > therefore test checking VMA tree integrity can't use them. Use Rss =
+instead
+> > > > and pre-populate the VMAs so that Rss changes if a VMA gets skipped=
+ or
+> > > > double-counted.
+> > > >
+> > > > Fixes: ca5480fb53fa ("selftests/proc: add /proc/pid/smaps_rollup te=
+aring tests")
+> > > > Reported-by: kernel test robot <yi1.lai@intel.com>
+> > > > Closes: https://lore.kernel.org/oe-lkp/202610271934.fd287c3f-lkp@in=
+tel.com
+> > > > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> > >
+> > > Reviewed-by: Pedro Falcato <pfalcato@suse.de>
+> >
+> > Actually, now I'm wondering: isn't Rss also flaky if memory pressure oc=
+curs?
+>
+> True. Sashiko's findings are also interesting, so I'll need to figure
+> out more robust ways to test smaps_rollup. I will post an update once
+> I figure it out.
 
-To ensure all test VMAs are populated with anonymous pages, remain
-mergeable across VMA operations, and do not have their Rss changed by
-memory reclaim:
-- Toggle PROT_EXEC instead of PROT_WRITE between adjacent test VMAs so
-  all test VMAs remain writable and MAP_POPULATE faults in anonymous pages
-  (rather than the shared zero page, which is not accounted in Rss).
-- Use mprotect() instead of mmap(..., MAP_FIXED) in split_vma() and
-  merge_vma() so the first page of the split VMA stays resident.
-  mprotect(..., PROT_NONE) splits the VMA without unmapping the first page
-  (pte_present() remains true for PAGE_NONE PTEs), and
-  mprotect(..., self->mod_info->prot) merges it back. Both parts of the
-  split VMA retain their non-zero Rss.
-- Lock all present pages in the child with mlockall(MCL_CURRENT |
-  MCL_FUTURE | MCL_ONFAULT) so memory pressure cannot reclaim pages and
-  alter Rss during the test.
-- In remap_vma(), unlock next_addr before mremap(..., MREMAP_DONTUNMAP)
-  so next_addr is not split, use mmap(..., MAP_FIXED) in patch_vma() to
-  merge the middle VMA back into addr, and exclude smaps_rollup tests
-  from test_maps_tearing_from_remap since remapping moves and unmaps the
-  page from next_addr.
+I posted an updated version at
+https://lore.kernel.org/all/20261101154503.3203036-1-surenb@google.com/
+It should work under memory pressure and also address Sahiko's concerns.
 
-Fixes: ca5480fb53fa ("selftests/proc: add /proc/pid/smaps_rollup tearing tests")
-Reported-by: kernel test robot <yi1.lai@intel.com>
-Closes: https://lore.kernel.org/oe-lkp/202610271934.fd287c3f-lkp@intel.com
-Signed-off-by: Suren Baghdasaryan <surenb@google.com>
----
-Changes from v1 [1]:
-- fixed the way the odd VMAs are populated to avoid mapping zero pages
-- used mprotect for splitting/merging VMAs to prevent split_vma() from
-  unmapping and freeing the first page
-- mlock all areas to keep Rss unchanged under memory pressure,
-  per Pedro Falcato
-- exclude smaps_rollup tests from test_maps_tearing_from_remap because
-  remapping a populated VMA affects Rss metric
-
-[1] https://lore.kernel.org/all/20261028051312.1505295-1-surenb@google.com/
-
- tools/testing/selftests/proc/proc-maps-race.c | 53 ++++++++++---------
- 1 file changed, 27 insertions(+), 26 deletions(-)
-
-diff --git a/tools/testing/selftests/proc/proc-maps-race.c b/tools/testing/selftests/proc/proc-maps-race.c
-index bf4c5073f6fc..6025aea68190 100644
---- a/tools/testing/selftests/proc/proc-maps-race.c
-+++ b/tools/testing/selftests/proc/proc-maps-race.c
-@@ -528,13 +528,10 @@ static bool compare_smaps_rollup(FIXTURE_DATA(proc_maps_race) *self,
- 		struct smaps_rollup_stats *actual)
- {
- 	/*
--	 * Clean/dirty metrics might change but Pss-related ones
--	 * should stay constant.
-+	 * Clean/dirty metrics might change. Pss depends on map count and might
-+	 * change as well. Rss should stay constant.
- 	 */
--	if (cmp_smaps_rollup_stat(expected, actual, Pss) &&
--	    cmp_smaps_rollup_stat(expected, actual, Pss_Anon) &&
--	    cmp_smaps_rollup_stat(expected, actual, Pss_File) &&
--	    cmp_smaps_rollup_stat(expected, actual, Pss_Shmem))
-+	if (cmp_smaps_rollup_stat(expected, actual, Rss))
- 		return true;
- 
- 	print_smaps_rollup_stats("Expected stats:", self, expected);
-@@ -637,14 +634,13 @@ static bool query_addr_at(int maps_fd, void *addr,
- static inline bool split_vma(FIXTURE_DATA(proc_maps_race) *self)
- {
- 	/* PROT_NONE differs from both readable neighbors. */
--	return mmap(self->mod_info->addr, self->page_size, PROT_NONE,
--		    MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, -1, 0) != MAP_FAILED;
-+	return mprotect(self->mod_info->addr, self->page_size, PROT_NONE) == 0;
- }
- 
- static inline bool merge_vma(FIXTURE_DATA(proc_maps_race) *self)
- {
--	return mmap(self->mod_info->addr, self->page_size, self->mod_info->prot,
--		    MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, -1, 0) != MAP_FAILED;
-+	return mprotect(self->mod_info->addr, self->page_size,
-+			self->mod_info->prot) == 0;
- }
- 
- static inline bool check_split_result(struct line_content *mod_last_line,
-@@ -681,6 +677,12 @@ static inline bool check_shrink_result(struct line_content *mod_last_line,
- 
- static inline bool remap_vma(FIXTURE_DATA(proc_maps_race) *self)
- {
-+	/*
-+	 * Unlock next_addr so MREMAP_DONTUNMAP does not split it.
-+	 */
-+	if (munlock(self->mod_info->next_addr, self->page_size * 3) != 0)
-+		return false;
-+
- 	/*
- 	 * Remap the last page of the next vma into the middle of the vma.
- 	 * This splits the current vma and the first and middle parts (the
-@@ -694,8 +696,9 @@ static inline bool remap_vma(FIXTURE_DATA(proc_maps_race) *self)
- 
- static inline bool patch_vma(FIXTURE_DATA(proc_maps_race) *self)
- {
--	return mprotect(self->mod_info->addr + self->page_size, self->page_size,
--			self->mod_info->prot) == 0;
-+	return mmap(self->mod_info->addr + self->page_size, self->page_size,
-+		    self->mod_info->prot,
-+		    MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, -1, 0) != MAP_FAILED;
- }
- 
- static inline bool check_remap_result(struct line_content *mod_last_line,
-@@ -759,11 +762,17 @@ FIXTURE_SETUP(proc_maps_race)
- 
- 		for (i = 0; i < mod_info->vma_count; i++) {
- 			mod_info->child_mapped_addr[i] = mmap(NULL, self->page_size * 3, prot,
--					MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-+					MAP_PRIVATE | MAP_ANONYMOUS | MAP_POPULATE, -1, 0);
- 			ASSERT_NE(mod_info->child_mapped_addr[i], MAP_FAILED);
- 			/* change protection in adjacent maps to prevent merging */
--			prot ^= PROT_WRITE;
-+			prot ^= PROT_EXEC;
- 		}
-+		/*
-+		 * Lock all present pages in memory so memory reclaim cannot
-+		 * change RSS during the test, and use MCL_ONFAULT so
-+		 * mremap() expansion does not populate new pages.
-+		 */
-+		ASSERT_EQ(mlockall(MCL_CURRENT | MCL_FUTURE | MCL_ONFAULT), 0);
- 		signal_state(mod_info, CHILD_READY);
- 		wait_for_state(mod_info, PARENT_READY);
- 		while (true) {
-@@ -833,10 +842,10 @@ FIXTURE_SETUP(proc_maps_race)
- 	for (int i = 0; i < mod_info->vma_count; i++) {
- 		if (mod_info->child_mapped_addr[i] == (void *)self->last_line.start_addr) {
- 			mod_info->addr = mod_info->child_mapped_addr[i];
--			mod_info->prot = PROT_READ;
--			/* Even VMAs have write permission */
--			if ((i % 2) == 0)
--				mod_info->prot |= PROT_WRITE;
-+			mod_info->prot = PROT_READ | PROT_WRITE;
-+			/* Odd VMAs have exec permission */
-+			if ((i % 2) != 0)
-+				mod_info->prot |= PROT_EXEC;
- 		} else if (mod_info->child_mapped_addr[i] == (void *)self->first_line.start_addr) {
- 			mod_info->next_addr = mod_info->child_mapped_addr[i];
- 		}
-@@ -1066,7 +1075,6 @@ TEST_F(proc_maps_race, test_maps_tearing_from_remap)
- 	struct line_content remapped_first_line;
- 	struct line_content restored_last_line;
- 	struct line_content restored_first_line;
--	struct smaps_rollup_stats orig_stats;
- 
- 	wait_for_state(mod_info, SETUP_READY);
- 
-@@ -1080,8 +1088,6 @@ TEST_F(proc_maps_race, test_maps_tearing_from_remap)
- 	report_test_start("Tearing from remap", self->verbose);
- 	ASSERT_TRUE(capture_mod_pattern(self, &remapped_last_line, &remapped_first_line,
- 					&restored_last_line, &restored_first_line));
--	if (self->maps_file == SMAPS)
--		ASSERT_TRUE(parse_smaps_rollup(self, &orig_stats));
- 
- 	/* Now start concurrent modifications for self->duration_sec */
- 	signal_state(mod_info, TEST_READY);
-@@ -1134,11 +1140,6 @@ TEST_F(proc_maps_race, test_maps_tearing_from_remap)
- 				     vma_end - vma_start == self->page_size * 3) ||
- 				    (vma_start == self->last_line.start_addr + self->page_size &&
- 				     vma_end - vma_start == self->page_size));
--		} else {
--			struct smaps_rollup_stats stats;
--
--			ASSERT_TRUE(parse_smaps_rollup(self, &stats));
--			ASSERT_TRUE(compare_smaps_rollup(self, &orig_stats, &stats));
- 		}
- 		clock_gettime(CLOCK_MONOTONIC_COARSE, &end_ts);
- 		end_test_iteration(&end_ts, self->verbose);
-
-base-commit: b61fa14ce6bcbba2cb9a96feea31b760226d6b43
--- 
-2.56.0.317.g454f8302e1-goog
-
+> Andrew, if this test failure is causing issues in the meantime, please
+> feel free to remove the ca5480fb53fa patch until I get a better
+> version out.
+> Thanks!
+>
+> >
+> > --
+> > Pedro
