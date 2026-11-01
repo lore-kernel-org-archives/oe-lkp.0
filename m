@@ -1,100 +1,56 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.160.181
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793548025;
-	b=g/ItHcQmERPxne0CJIltF1SvOGpMLweEJYVgkWUehXYvs2eBPEXILwtRjKs7aQq8fj5d
-	 P8HnMnCU6tsgUL3oofoePcnewkHgcCtpmgdvsCZT3GCMId5QVA6+mpJvpZ+46DVeHKyZv
-	 9JW5n+xHvG2rgV2GMFZ8G0zRQ+xNzt7BR27jncr2GpXeyHluE43Jyh2M2cx26NoAx5rWN
-	 S8L8uq5elgo4uYPQ/mP+sgzY3FWDXzcHPf/S9XFgRLCcXsYU3uMpcQkxU9uPA+bliYa/9
-	 ismZKhu3YMsP8dzThsrJQx1mN0zsvalow/+rzd0qzvaVVf+SvMXuTFBdPgsgJkh54bQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793548025;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=Rnvo9UG8/PyUCxjRTNkK2BrtMq0/hvvsz56LwYy2AKQ=;
-	b=0/+aTbWH2lxBzMT7LkmGUA82w/HfZ+GmNEMURwr1akkhLzVplbM7WUQy0njQMJfWR+da
-	 AxadLFZ1CZjZENmub4j6bk+MNTGfU9KwJEHIyMMWj5LDYiIZRQSf9Bz9c26fZUmMSymdH
-	 BjBMBR51pI2QB2eT7mvitWBIhbGx0yzLlO/2ddtTY8WiJQ6s7vOocw5rCBexJ9pLbq+ER
-	 6DwuEeQIH5Okp2Dm2lDSgE649uW71AbgN7M4hBl8SSCEO+WUzyVXb8KAgOGFK/UXMrfSD
-	 c4X11krEwODhQR3KZBTwpFzzcNlslLbTquIgtgUmrsLbhjOetdHoogNQMSCbqf7YqoQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=VXgImDvg;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.160.181
-Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793559662;
+	b=vLe8a9vTkwshA6nZMDygKh9gcC5Pj0yMZTLMq/JmJgSj+IrXHfMLQUlLleJlYvsctQ87
+	 ZFsdrRwNWy70LBxNG/OGzNhDrR/TNiDulXf8L2906TjLkoDlbTyZQAvPVbz5p7AHVGxcl
+	 yDoRtCnue8cLMbZWLzPlAFz1S2rhqRR267HPgjeqdNHVN9E9gLa5FaScgFP/hyvUQ1tIr
+	 zkl3SmsVQr7wp9DihULQhcB9ulcdxZvA7b8EIvb5dvAZ8CUX4F7DuIWS5hlr0h8FBMCzb
+	 aZ/c9M3bevIMkKEbPgwoYxmEvPddTOvFH6SqR2yNhdfk1EEu3vy7OMMGXx/INtYxH1g==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793559662;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-Id:
+	 In-Reply-To:References:X-Mailer:Mime-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=kLQ59jC4onbwXVg0CZOgL+pik6k+x796O8ohuIxssIM=;
+	b=xS9FwekK6lXK9SHtxkgKNdHtGb7ISvQIfH2H7tNwNFYoz+kjDNxjoIfC7DKQWolSEJs+
+	 l84MSAzcjuXxLTgqJglg26Oz4N3icArHC3QamGtEp8tth5NgcYG14N3P2c8VW7wzcysba
+	 01utAH7ni9to+x/S7PenYf4v+s19ma2k2s37+xmb5/YbTBZYz7oLPh8sgYIEowyw7RGCx
+	 Wn7EQ4Q/fE8wiVErJSKzZtSvH9l9QD9VIVdK7xtSnzb8mxahEamRVrgcbmOQhGjMM2VfT
+	 UQYwEOVWeKRmlVhvS+sCWqRtvo5yzVNF6op3T9qbckizNGel2PP639hOSVZLW5FdJCA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=linux-foundation.org header.i=@linux-foundation.org header.a=rsa-sha256 header.s=korg header.b=xdolncDw;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25605606A326
-	for <oe-lkp@lists.linux.dev>; Sun,  1 Nov 2026 15:47:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 25605606A326
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15716606A325;
+	Sun,  1 Nov 2026 19:01:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=VXgImDvg
-Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-533202fe429so263861cf.0
-        for <oe-lkp@lists.linux.dev>; Sun, 01 Nov 2026 07:47:03 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1793548023; cv=none;
-        d=google.com; s=arc-20260327;
-        b=Jzli2+8t/QfqivNrODYGis+TNrXZhQK0t1cU3ewRsF2wjulkIQ8nYwjLYc66sNPu0k
-         ZUFh5XrfXyAYAm8GrExZKiJcA4//15q75LP+OBEaIqLiZVFW5JRxCL+qRDmRri2tyrvr
-         YQeZBc/ocHkxELGoMFt3Ijkr8F6BxCoZAr03q78RnODd4Lz0CuYv8/5jfF7RAEK7h/Dj
-         QADlFdVM7Q3/9rXqCUHKjMFz9/QFWkml542baf/uLfVJmTjSRyI2xJ9jv9FgyBiF45cT
-         lCfbSjGDOTnYxZFoFO12azYjCWolPryZYyNhnVuI74DcQpzHSZHpQgagx9C6BeJIqsRF
-         cC4w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=Rnvo9UG8/PyUCxjRTNkK2BrtMq0/hvvsz56LwYy2AKQ=;
-        fh=lr0jailW2i7KxtOTWRnS2TPUxdxdNaQ8IDbf1qRoWpg=;
-        b=fUJrTYJfWfL7IH5bdeyf6Hcjmj8UHZjotwTpY1sdJjrx3Gtq521zJgnrBjLgahFb0+
-         II5hY5SOWNIR2eYWrcAm0TRtKUoR+2UkYe5y6KeXBuFOICZa7SUWMTqoRfe7tPO0imr5
-         rPrRRm6iIS2YsiWyKsSPJEALbVFcqvPsVJKPSi1OmJFSDS9TvCm2ZFlOM2XPKsDf7S8O
-         JYYXBhm0qgL+1bjWC5RM+XA1++qp1axfjh/OWeJ8svQQvYiuqjgF7upb+TjO36X/PJXY
-         fGuUzqdr42bMYhf575wauEyVl7ht9aeXvmYPm5H7C2t+KTtSwHR4bnZPSEmQV1+cVkpP
-         JzVw==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (1024-bit key, unprotected) header.d=linux-foundation.org header.i=@linux-foundation.org header.a=rsa-sha256 header.s=korg header.b=xdolncDw
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FDD51F000C1;
+	Sun,  1 Nov 2026 19:01:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1793548023; x=1794152823; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=Rnvo9UG8/PyUCxjRTNkK2BrtMq0/hvvsz56LwYy2AKQ=;
-        b=VXgImDvgS7oTlns/TWxAPt+tVxTN7RK/9XGeixMaq5HBEQxvos9TUuEUkHOWMBE6jA
-         jm2Jweqeu0H9dnX7EdeKRgGoHN04tW+8IDm4UT3Jf3dgMGelDDFUnSrnk33ygc5+pEdz
-         zvpD1x02/pJJTU/1HDygthE9CrlbL8MDVIxyfPRTJNd6oiFky2QBuvk9AkEvBMVVwmsw
-         i3/dB2uhM0blUwEhd1+Dvpv2/R/6A16xIWVySp1NZBYdpHJgN+FeRTVDN6ei4mcGKXWB
-         dpmYVbSQYrK+ijFBRakRkNMmzpQZ1rArL/ctJEZD0znzSc+3Mz4AWtMheTZCdvlM0OFO
-         sgvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793548023; x=1794152823;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Rnvo9UG8/PyUCxjRTNkK2BrtMq0/hvvsz56LwYy2AKQ=;
-        b=IlDXkJtaChabMn4n9s+u6YnHko+XKjbYC7CibLSyGE3rIs6VcumEavCEzOZGTG0088
-         URbBnAV8DC48L0GZQIZFMZbfgc0oanhuoj0CUNUBZUW/t4fvNcbRmFhuIfgw9LBdeBfa
-         O2SZVmV4+cXxJgR+7So3zlzw1F/kIy0GWDcvrLgo4OjAb8qjd6SOGZ2grif6eL83lxkb
-         AeVPDzdS1FVsu9bhd67bAaGlrhODjkpZ6tuZ33Yc3bmfj+lcAFQopy2tQKOsgbOkww6n
-         qQyDFYSzjtoYL1UVjkhAoEb1VsbCgiqFvXsQg7PTPeSXd5kgBg/9wV/BiGVn9qllx7yH
-         5XZw==
-X-Forwarded-Encrypted: i=1; AKwUvBxL3TtcR6TtxzYcGOokr/zV+OYuJRjaZfRJwEptiNYOe1JxWNRYllmjLxz62AZ/0FkHqcOa2e4=@lists.linux.dev
-X-Gm-Message-State: AFq9FYJwNt3/EN+m991Aof1SNfJ8GW256PXS5x1HjuFnz8PJthdW1EOt
-	qE/mKgMbQOI55tJqyACBTVKtlPX8BmJLXB3RbrEkAYzBs379vAyuVJiLRGq2wQpa/0ulh8L3T3t
-	jle+VCad6WyE9ZO/7kj4B+Rw+WOWrKMpEtRfwLn/iECTnC+xnrqQqXaGSojA=
-X-Gm-Gg: AYBFou1VyZTxG/dDksjcmrgp1jtzOjAGxC7pu1tLrNa7R1zYlYD3OxLdfCNv/KgTaBW
-	3DQv3Bp33TAEUt8Vxh8WsZwu2pflRUlmp24wrSewYPgid96i0NCc1KtrTNAXeB4rEObgy8tfLfB
-	4qMs2G7WyfIy3yZme6OzRqtNTfoXTZrb9P2camCWkhEEEAkHwAa27Wl8ZLivUptGfg8JfdUQO2d
-	JMzxzvKkiclSi/HBvIk29v89el6q+SKxBstUWIL4YFcqtSnai4xU+JFEXJrQErHf4gG9P1vETxh
-	YjdWKxcGZlcKBtxZoxD6jFoevFBp8G2fS78RSv76zz5fde7Mx315qbyZbDrvDxHoN9XQPL9q9ld
-	d1wB8n1WyYtqMAfVf0mBhuVG+PHPzJBgfcN93JofG77GUUP6GfwVpWDjd
-X-Received: by 2002:a05:622a:2b45:b0:532:eff8:3491 with SMTP id
- d75a77b69052e-5414ebdf590mr76624581cf.14.1793548022450; Sun, 01 Nov 2026
- 07:47:02 -0800 (PST)
+	d=linux-foundation.org; s=korg; t=1793559661;
+	bh=kLQ59jC4onbwXVg0CZOgL+pik6k+x796O8ohuIxssIM=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=xdolncDwxFM9S/Dw11vf+hmkUpwJmqIzOsJcH9B6Xgwk5DZfEQnRV06U9H6pI5djJ
+	 gRqMrJTRXdnX41OIVUV9EbzMevIkIQEBAN+Imto92yjXGPzz+KNqV6Hw323M5TKMxh
+	 IHuQiO6gsuKgy7eRo/m/OySg1WCC9ngmhhLPWiZ0=
+Date: Sun, 1 Nov 2026 11:01:00 -0800
+From: Andrew Morton <akpm@linux-foundation.org>
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: david@kernel.org, ljs@kernel.org, jannh@google.com, liam@infradead.org,
+ willy@infradead.org, paulmck@kernel.org, pfalcato@suse.de,
+ usama.arif@linux.dev, vbabka@kernel.org, linux-fsdevel@vger.kernel.org,
+ yi1.lai@intel.com, oe-lkp@lists.linux.dev, lkp@intel.com,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/1] selftests/proc: use RSS in
+ /proc/pid/smaps_rollup tearing tests
+Message-Id: <20261101110100.90796bf33ef50307a7698dca@linux-foundation.org>
+In-Reply-To: <20261101154503.3203036-1-surenb@google.com>
+References: <20261101154503.3203036-1-surenb@google.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -103,66 +59,222 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
-MIME-Version: 1.0
-References: <20261028051312.1505295-1-surenb@google.com> <auHK3k-W4gfL_MhI@pedro-suse.tail5790ac.ts.net>
- <auJO9al4lmAczLAu@pedro-suse.tail5790ac.ts.net> <CAJuCfpHAFXDXs4ZBrd8C=8hkQdJxcWCz+DER5BG_Ki0ndGpf9w@mail.gmail.com>
-In-Reply-To: <CAJuCfpHAFXDXs4ZBrd8C=8hkQdJxcWCz+DER5BG_Ki0ndGpf9w@mail.gmail.com>
-From: Suren Baghdasaryan <surenb@google.com>
-Date: Sun, 1 Nov 2026 07:46:51 -0800
-X-Gm-Features: AclHuK84MQqzMKZd-OXYE0wk48ZMx_UhE8Hg8QFqNvu-tilXapmhIB4d1-01OeM
-Message-ID: <CAJuCfpF=DdYZ7UFH5vNJT-qoF9qrDBW7pgk7tHeD5Z9X7PH1og@mail.gmail.com>
-Subject: Re: [PATCH 1/1] selftests/proc: use RSS in /proc/pid/smaps_rollup
- tearing tests
-To: Pedro Falcato <pfalcato@suse.de>
-Cc: akpm@linux-foundation.org, david@kernel.org, ljs@kernel.org, 
-	jannh@google.com, liam@infradead.org, willy@infradead.org, paulmck@kernel.org, 
-	usama.arif@linux.dev, vbabka@kernel.org, linux-fsdevel@vger.kernel.org, 
-	yi1.lai@intel.com, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, Oct 28, 2026 at 12:59=E2=80=AFPM Suren Baghdasaryan <surenb@google.=
-com> wrote:
->
-> On Wed, Oct 28, 2026 at 12:42=E2=80=AFPM Pedro Falcato <pfalcato@suse.de>=
- wrote:
-> >
-> > On Wed, Oct 28, 2026 at 10:14:19AM +0000, Pedro Falcato wrote:
-> > > On Tue, Oct 27, 2026 at 10:13:12PM -0700, Suren Baghdasaryan wrote:
-> > > > Pss metrics can be affected by map count even if VMA tree stays unc=
-hanged,
-> > > > therefore test checking VMA tree integrity can't use them. Use Rss =
-instead
-> > > > and pre-populate the VMAs so that Rss changes if a VMA gets skipped=
- or
-> > > > double-counted.
-> > > >
-> > > > Fixes: ca5480fb53fa ("selftests/proc: add /proc/pid/smaps_rollup te=
-aring tests")
-> > > > Reported-by: kernel test robot <yi1.lai@intel.com>
-> > > > Closes: https://lore.kernel.org/oe-lkp/202610271934.fd287c3f-lkp@in=
-tel.com
-> > > > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> > >
-> > > Reviewed-by: Pedro Falcato <pfalcato@suse.de>
-> >
-> > Actually, now I'm wondering: isn't Rss also flaky if memory pressure oc=
-curs?
->
-> True. Sashiko's findings are also interesting, so I'll need to figure
-> out more robust ways to test smaps_rollup. I will post an update once
-> I figure it out.
+On Sun,  1 Nov 2026 07:45:03 -0800 Suren Baghdasaryan <surenb@google.com> wrote:
 
-I posted an updated version at
-https://lore.kernel.org/all/20261101154503.3203036-1-surenb@google.com/
-It should work under memory pressure and also address Sahiko's concerns.
+> Pss metrics can be affected by map count even if VMA tree stays unchanged,
+> therefore tests checking VMA tree integrity can't use them. Use Rss instead
+> and pre-populate the VMAs so that Rss changes if a VMA gets skipped or
+> double-counted.
+> 
+> To ensure all test VMAs are populated with anonymous pages, remain
+> mergeable across VMA operations, and do not have their Rss changed by
+> memory reclaim:
+> - Toggle PROT_EXEC instead of PROT_WRITE between adjacent test VMAs so
+>   all test VMAs remain writable and MAP_POPULATE faults in anonymous pages
+>   (rather than the shared zero page, which is not accounted in Rss).
+> - Use mprotect() instead of mmap(..., MAP_FIXED) in split_vma() and
+>   merge_vma() so the first page of the split VMA stays resident.
+>   mprotect(..., PROT_NONE) splits the VMA without unmapping the first page
+>   (pte_present() remains true for PAGE_NONE PTEs), and
+>   mprotect(..., self->mod_info->prot) merges it back. Both parts of the
+>   split VMA retain their non-zero Rss.
+> - Lock all present pages in the child with mlockall(MCL_CURRENT |
+>   MCL_FUTURE | MCL_ONFAULT) so memory pressure cannot reclaim pages and
+>   alter Rss during the test.
+> - In remap_vma(), unlock next_addr before mremap(..., MREMAP_DONTUNMAP)
+>   so next_addr is not split, use mmap(..., MAP_FIXED) in patch_vma() to
+>   merge the middle VMA back into addr, and exclude smaps_rollup tests
+>   from test_maps_tearing_from_remap since remapping moves and unmaps the
+>   page from next_addr.
 
-> Andrew, if this test failure is causing issues in the meantime, please
-> feel free to remove the ca5480fb53fa patch until I get a better
-> version out.
-> Thanks!
->
-> >
-> > --
-> > Pedro
+Thanks.  This is proving tricky.
+
+My evolving reviewbot still isn't happy:
+
+: This fixes the v1 RSS issues, but two things remain.
+: 
+: Alternating PROT_EXEC breaks with READ_IMPLIES_EXEC: both mappings
+: become RWX and can merge. A syscall test produced two VMAs instead
+: of 16. Could we populate everything writable, then mprotect the odd
+: mappings read-only? That preserved all 16 VMAs and avoids zero pages.
+: 
+: Also, MCL_ONFAULT doesn't bypass RLIMIT_MEMLOCK. If mlockall() fails,
+: the child asserts before CHILD_READY and the parent waits until
+: timeout. Please arrange a coordinated skip for insufficient allowance.
+: 
+: The patched userspace test passed all six cases on an existing
+: x86-64 6.18.57 kernel, with a PID-namespace adjustment. That kernel
+: predates ca5480fb53fa, so this checks selftest behavior, not the
+: intended kernel's procfs changes. Separate syscall tests on that
+: kernel confirmed the EXEC-merging and memlock failure cases.
+
+I said "no, do it yourself" and it came up with the below.
+
+
+
+
+From: Andrew Morton <akpm@linux-foundation.org>
+Subject: selftests/proc: handle personality and memlock constraints
+Date: Sun, 01 Nov 2026 10:55:37 -0800
+
+Alternating PROT_EXEC does not keep the test mappings distinct when
+READ_IMPLIES_EXEC is set: both protection combinations become RWX and
+adjacent mappings can merge, breaking the fixture's layout assumptions.
+
+Populate each mapping writable, then make odd mappings read-only.  This
+retains anonymous pages accounted in RSS while keeping adjacent VMAs
+distinct regardless of READ_IMPLIES_EXEC.  Restore the corresponding
+WRITE-based protection selection in the parent.
+
+Restore the whole three-page destination after remapping, rather than
+replacing only its middle page and relying on the remaining anonymous VMAs
+to merge.  The remap test no longer compares RSS.
+
+mlockall(MCL_CURRENT) checks the whole virtual size against the locked
+memory allowance even with MCL_ONFAULT.  An insufficient allowance makes
+the child exit before CHILD_READY, leaving the parent waiting until the
+test times out.
+
+Pass the locking error through the existing shared state and signal
+CHILD_READY on failure.  The parent reaps the child and releases the
+shared state before skipping resource or permission failures.  Check this
+status before opening the child's proc files, as it may already have
+exited.  Unexpected locking errors remain test failures.
+
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Cc: Suren Baghdasaryan <surenb@google.com>
+Cc: David Hildenbrand <david@kernel.org>
+Cc: Jann Horn <jannh@google.com>
+Cc: kernel test robot <yi1.lai@intel.com>
+Cc: Liam R. Howlett <liam@infradead.org>
+Cc: Lorenzo Stoakes <ljs@kernel.org>
+Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
+Cc: Paul E. McKenney <paulmck@kernel.org>
+Cc: Pedro Falcato <pfalcato@suse.de>
+Cc: Usama Arif <usama.arif@linux.dev>
+Cc: Vlastimil Babka <vbabka@kernel.org>
+---
+On top of Suren's v2 "selftests/proc: use RSS in
+/proc/pid/smaps_rollup tearing tests".
+
+Tested the userspace test on an existing x86-64 Linux 6.18.57 kernel,
+using a separate PID-namespace adaptation which is not in this patch:
+- All six cases passed normally and with READ_IMPLIES_EXEC enabled,
+  using DURATION=1.
+- All six cases skipped promptly with RLIMIT_MEMLOCK set to 64KiB or
+  zero, exercising ENOMEM and EPERM respectively.
+This does not validate the intended kernel's procfs changes.
+
+ tools/testing/selftests/proc/proc-maps-race.c |   49 +++++++++++-----
+ 1 file changed, 36 insertions(+), 13 deletions(-)
+
+--- a/tools/testing/selftests/proc/proc-maps-race.c~proc-maps-race-followup
++++ a/tools/testing/selftests/proc/proc-maps-race.c
+@@ -174,6 +174,7 @@ typedef bool (*vma_mod_result_check_op)(
+ 					struct line_content *restored_first_line);
+ 
+ struct vma_modifier_info {
++	int mlock_error;
+ 	int vma_count;
+ 	void *addr;
+ 	int prot;
+@@ -696,7 +697,8 @@ static inline bool remap_vma(FIXTURE_DAT
+ 
+ static inline bool patch_vma(FIXTURE_DATA(proc_maps_race) *self)
+ {
+-	return mmap(self->mod_info->addr + self->page_size, self->page_size,
++	/* Replace all three pieces without relying on anon_vma merging. */
++	return mmap(self->mod_info->addr, self->page_size * 3,
+ 		    self->mod_info->prot,
+ 		    MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, -1, 0) != MAP_FAILED;
+ }
+@@ -757,22 +759,31 @@ FIXTURE_SETUP(proc_maps_race)
+ 	self->pid = fork();
+ 	if (!self->pid) {
+ 		/* Child process modifying the address space */
+-		int prot = PROT_READ | PROT_WRITE;
+ 		int i;
+ 
+ 		for (i = 0; i < mod_info->vma_count; i++) {
+-			mod_info->child_mapped_addr[i] = mmap(NULL, self->page_size * 3, prot,
++			mod_info->child_mapped_addr[i] = mmap(NULL, self->page_size * 3,
++					PROT_READ | PROT_WRITE,
+ 					MAP_PRIVATE | MAP_ANONYMOUS | MAP_POPULATE, -1, 0);
+ 			ASSERT_NE(mod_info->child_mapped_addr[i], MAP_FAILED);
+-			/* change protection in adjacent maps to prevent merging */
+-			prot ^= PROT_EXEC;
++			/*
++			 * Populate writable to get anonymous pages, then alternate
++			 * write permission even with READ_IMPLIES_EXEC enabled.
++			 */
++			if (i % 2)
++				ASSERT_EQ(mprotect(mod_info->child_mapped_addr[i],
++						   self->page_size * 3, PROT_READ), 0);
+ 		}
+ 		/*
+ 		 * Lock all present pages in memory so memory reclaim cannot
+ 		 * change RSS during the test, and use MCL_ONFAULT so
+ 		 * mremap() expansion does not populate new pages.
+ 		 */
+-		ASSERT_EQ(mlockall(MCL_CURRENT | MCL_FUTURE | MCL_ONFAULT), 0);
++		if (mlockall(MCL_CURRENT | MCL_FUTURE | MCL_ONFAULT)) {
++			mod_info->mlock_error = errno;
++			signal_state(mod_info, CHILD_READY);
++			_exit(0);
++		}
+ 		signal_state(mod_info, CHILD_READY);
+ 		wait_for_state(mod_info, PARENT_READY);
+ 		while (true) {
+@@ -799,6 +810,21 @@ FIXTURE_SETUP(proc_maps_race)
+ 		exit(0);
+ 	}
+ 
++	/* Check setup before opening proc files: the child may have exited. */
++	wait_for_state(mod_info, CHILD_READY);
++	if (mod_info->mlock_error) {
++		int error = mod_info->mlock_error;
++		int status;
++
++		ASSERT_EQ(waitpid(self->pid, &status, 0), self->pid);
++		pthread_cond_destroy(&mod_info->sync_cond);
++		pthread_mutex_destroy(&mod_info->sync_lock);
++		munmap(mod_info, self->shared_mem_size);
++		if (error == ENOMEM || error == EPERM || error == EAGAIN)
++			SKIP(return, "Cannot lock test mappings: %s", strerror(error));
++		ASSERT_EQ(error, 0);
++	}
++
+ 	switch (self->maps_file) {
+ 	case MAPS:
+ 		sprintf(fname, "/proc/%d/maps", self->pid);
+@@ -815,9 +841,6 @@ FIXTURE_SETUP(proc_maps_race)
+ 	self->maps_fd = open(fname, O_RDONLY);
+ 	ASSERT_NE(self->maps_fd, -1);
+ 
+-	/* Wait for the child to map the VMAs */
+-	wait_for_state(mod_info, CHILD_READY);
+-
+ 	/* Read first two pages */
+ 	self->page1.data = malloc(self->page_size);
+ 	ASSERT_NE(self->page1.data, NULL);
+@@ -842,10 +865,10 @@ FIXTURE_SETUP(proc_maps_race)
+ 	for (int i = 0; i < mod_info->vma_count; i++) {
+ 		if (mod_info->child_mapped_addr[i] == (void *)self->last_line.start_addr) {
+ 			mod_info->addr = mod_info->child_mapped_addr[i];
+-			mod_info->prot = PROT_READ | PROT_WRITE;
+-			/* Odd VMAs have exec permission */
+-			if ((i % 2) != 0)
+-				mod_info->prot |= PROT_EXEC;
++			mod_info->prot = PROT_READ;
++			/* Even VMAs have write permission. */
++			if ((i % 2) == 0)
++				mod_info->prot |= PROT_WRITE;
+ 		} else if (mod_info->child_mapped_addr[i] == (void *)self->first_line.start_addr) {
+ 			mod_info->next_addr = mod_info->child_mapped_addr[i];
+ 		}
+_
+
