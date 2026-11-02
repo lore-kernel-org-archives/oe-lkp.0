@@ -1,72 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.18
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793627822;
-	b=UpBdV9tKII9ZsnB2bei0As0hy33O9ELkgvFedpC+O1kDX66JHKpdzExeFawAA4cOfdxN
-	 P7ZBos5ZvhGbousnUfWcBZRhGpQZFxSKK8yzT5qqifZtsUSLcNlK7VGIt4gsnD4LdRc1B
-	 WozaMBFIwDrDWDiPDprODU7LcteNj14/Imf9RFo7Eai6Gq6DL9SKKpW2otjABGPy6y2zN
-	 oQHJQ0gX+6jbOymjrTHFKA3Vny94ix0RVbvM6/C8mCEWclX47tDC/f8RbDxyQ5zYJaJVr
-	 JbbQp/yv4tOgXaljiKl/EZZQdyNISGyfv4QsLnDWv2TadqTXbYsn+bTv2Sk9FBDM2+w==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793627822;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition;
-	bh=aY+uTVkzrvNotrv+R7o9XjTGrkI7pqN52rACqDEBwvw=;
-	b=uSOi1dfp+k02UJnYzt5J1d1uZ+kBjGa1MInqS0emyWXK0DzRaiZwumaWCaaQNpxqMIIK
-	 GRcr4GwhcnERhmcoMoXRwKUWMip63IlrxLENKQSA0KPX/xw5V2wvVTtqjbQ3pYAGiF4wK
-	 OMd2lqkiUAR2Gcc2P+gS2fItVnZtwAkJcrFMWODyKurVgzVx028/jJEKtEicgXa7LoJiX
-	 PdagRURE5Zkt4Wq8kcDxokhtO2/RSimiy3A08IB457RWi/oZ7pTiPGmbr440FZM5B0db8
-	 oBzFwMF0xM24+2xDc5nSUYK+78B85/BCVrvO5KP+xTWfCKgifVn/7jzVDv6nXQuhetw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=cvvF3wWe;
-	arc=none smtp.remote-ip=198.175.65.18
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.160.174
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793633499;
+	b=lR9olinAaMvScHJ36kG3+WcKJwgFT0VEc48V5W8zX/+11qS2Odt6juuJXAOvXT6cTxfM
+	 xJrqn5lq+YPph1lhWuYOyxGIuzyKh55F604oqA39oQADom98A7BqEPKSorH0cXE/YIH0G
+	 DzyTx2hEgZT23C2uknrlnbFfte/1OPDd16jcvP4pyJeHR+yZtx/z9G4+3t2/3vfeKsC6Q
+	 sYp0HJBec7mqPTgsEIyly3D0RI5TMZ6wc1c3NyVi321f7DpqqhyWB4++1fiThtTR2gLrf
+	 65TAz8hYaZmI10GP4Qevlm26vfI54aEZv+ZeEhw88EdlLpOxjsoBuPMIECC0KLVjX4g==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793633499;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=TeCP4ZpYTq9SpZp3YEhJ5WlDwv4/mZ+EDEcMFOS7pT8=;
+	b=rI1bQSbSHsi6k1+RmWN5/eAQjxfH6M/ZGycCyuup8XqmckTPJX1iv1iYPepEffX/EudK
+	 xGHSabCJq1yQjQXf+rIDre5sy/QOwJMqqiBr6HYzK3mWdEA+u+Y7aRrBQ9N1eF4mC2ffx
+	 dQ+2KI9xXIdVVoDmdwi1Hx+TQO7UWiiGEhtJqd+A3fEdSTGqwqcpQzV5V08Jg96cK5HC+
+	 y4Uz6+n872FxIbSfpEsyvbpvQO96mqM82a3rmYisgLeciHhjR1MPy94ZM5ZM+EFgRZDf2
+	 e/IalA/g9YJFu987dDHoosGO/qHHFvk0K37MaGE+gxRThcoHE2jncTJULiOJX8LeL5A==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=K4WNTKQZ;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.160.174
+Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15360606A32F
-	for <oe-lkp@lists.linux.dev>; Mon,  2 Nov 2026 13:56:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 15360606A32F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F622607229C
+	for <oe-lkp@lists.linux.dev>; Mon,  2 Nov 2026 15:31:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7F622607229C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=cvvF3wWe
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793627820; x=1825163820;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=/+Ka65ISl0O8qoyc0FUTNy5aKkP2xUp+ZgLvLFN/wz0=;
-  b=cvvF3wWeimUShSdh8EhSn+xJ3Mmbp0xxhWUE1BFI5xXWjnEvINusZ59Y
-   OJdCwCNR0roG6qlJxcNwxSsWLIsWgBNeNPMFXJCs7Kj/xtwrtJhpgJfpi
-   3fS4y62o0Fh4jNvyxLbn6zLjIn8KYshTecKcho7Ev5+AX9eX9Y17C8Lyh
-   7v6CQ8E2JrQUBvTpUQOA8udJC3Lkc7m4bW4HmubO9+6qICiMkEU1CLIwU
-   ajTmIGXqOshLAWAZToWTxOqVt9WUyygDU6z4mC+V6VQBBdRhllkqshBMz
-   LXf2q5nRykW7/mbb3JrA0D4TGnkj+DH4hAVM/J6+Pd/eJ08zByo/ZE27a
-   g==;
-X-CSE-ConnectionGUID: SyOW5zWQQVi2qedlWgTTYA==
-X-CSE-MsgGUID: oqMNNOKUSlSk5cqs3LGxFA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11954"; a="2328559"
-X-IronPort-AV: E=Sophos;i="6.27,191,1787036400"; 
-   d="scan'208";a="2328559"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2026 05:56:59 -0800
-X-CSE-ConnectionGUID: OV2TL7GUQu6q37LKLBaBmA==
-X-CSE-MsgGUID: wZ3pGcFlTqGwtH2rwJfoWg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,191,1787036400"; 
-   d="scan'208";a="6252146"
-Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2026 05:56:57 -0800
-Date: Mon, 2 Nov 2026 21:56:54 +0800
-From: kernel test robot <yi1.lai@intel.com>
-To: Harry Yoo <harry@kernel.org>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-mm@kvack.org,
-	yi1.lai@intel.com
-Subject: [harry:b4/sheaf-size-round-up] [mm/slab]  7d63a6c06a:
- will-it-scale.per_process_ops 54.0% improvement
-Message-ID: <202611021441.984cb0bb-lkp@intel.com>
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=K4WNTKQZ
+Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-533202fe429so515901cf.0
+        for <oe-lkp@lists.linux.dev>; Mon, 02 Nov 2026 07:31:39 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1793633498; cv=none;
+        d=google.com; s=arc-20260327;
+        b=Tmg+CuJjYB3j6yuuJyn/R6C6Z+Au/8bTYML78PTgaNPTodOSkBWhmvozx+XzUyGRQC
+         6oJ1NbR8OmfVhx1qB6pLNHVmomPG9+Z+Q0m1GGhFRG+IwFtEe9U2Asl6lrQjGBvC3nGX
+         UL72E6brXpze7vvc1rdSVlGSpno5/n+WUrRTDYKZGjIxPcCUGC95ENON4zobBEz7fPn7
+         /hS+RXoKg2L0N0YB91BffECfy9Vo02L2y05mCjfaOq+FkYkv/MDpWr24a47zyzHfWqR1
+         Tpo6iZm5jK28aKVL6jPC+/KSVBmXBoVQ/tk5+Xg6i4LRj79dwFvyrcaWmGR19fcZRxEy
+         /3Hw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=TeCP4ZpYTq9SpZp3YEhJ5WlDwv4/mZ+EDEcMFOS7pT8=;
+        fh=RgqEjV1Mh5gIbbtFXCpoh5YQ6JKXnEmCF2omYKS69cU=;
+        b=Y2QoVYgrRv7QpdyWglaXfUSXCYmJcpeWfSMQ++kVdxzU+XZPDsP0Cp7mPk7wmACTGU
+         OgD2q3Ti3uU3RmAkguI2DIc181kkVllSag+Dapwd4GCvZiLwyEKesvTj0Xl1go3piVs0
+         xKQQt4lHlVn8WWDw0RYwVzD2laAH6n74H79M7pCpd4JlSIWNKriNgEuiw+ocFRmiYvx7
+         KKomBltcU0s8tI4pcphsu9pizVdvchFPKnQM2eKNByllAs1lr17Iq8sU4HCUqU+qY0U3
+         5xyMX2l8TDMSs7zUQD4NsmuVElH0BXX3vruMNF0Zdnjxm2U5la9RY1vNZ/LT6W2GxEvB
+         jCHw==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20260707; t=1793633498; x=1794238298; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=TeCP4ZpYTq9SpZp3YEhJ5WlDwv4/mZ+EDEcMFOS7pT8=;
+        b=K4WNTKQZl6NX86g8iGhFf0f3k/xeY5UN18k75rFJC+sFyeeLh4dyNJFQNg3a/QpIqj
+         cVAgyUQbc6HY7Qf1n5VsjZbcQsm95yXbOFDTViNsTPO+7oWyF3kao/QCIVCLMjmaR+YK
+         K3qaFHPpfsa6w607S19u2I7DNlVLxh0o+2ArsK0XcSKd11J8X39x2oDumbUtWI2vxUBZ
+         gZHWJ4hIARRe70ix2LruPSQT8ZrcmUlDk0D84tFgB48J+/UGs5p05vf5+d+0ym56NUMw
+         3pRjToZimP2UKhKqCQ/r0KwxKmrtolbJE/LvWb//6dIZGkRrsLZnyPEIgNBsxOEFp20M
+         ytAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793633498; x=1794238298;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=TeCP4ZpYTq9SpZp3YEhJ5WlDwv4/mZ+EDEcMFOS7pT8=;
+        b=1/JsaGqQo2SVBwVkZEx7DRVx2LMTrn0Q3F476yl4kpbPHuho2DgMLrIn0l2/ZSpV+6
+         4/F4Sac9+zLimRH/1og2allNovsly43oZYhX29zY84DzXssu11TLp64UGWOuR8G/Tjlz
+         VvZ/j21AxzZiIUhyfgTgTpUN83qKlYQE4gbLLvFpqd+gCUYFUIfsLD/pqTGxK03dVYgf
+         QMrdv0+YDOxAIFcnMjoTZDEFs6UChU49uphz6qvy53TDDFerJ0/aP37srgQsZg1ZVkkg
+         4fKjkF4DqRAnQS+FVXF98Ar73gce+/bnEe+jyfaDoHW1EKlUz6dLeqPL2OTxrAcYFW9X
+         Yudg==
+X-Forwarded-Encrypted: i=1; AKwUvBye/4rO5HDLjP1ZLnqbZjYtZXvcPNVpJN039bDU1s41RzzSPUN8CtQ0lRLe0kzjb+CLDSq13Rw=@lists.linux.dev
+X-Gm-Message-State: APuU4Z9m2LQSbnh4WMyMyV3dqvsrK6jDd+LYPontEL99+VIYtUN57jXj
+	lgi6v0eW7nC7HZPgHP4XnqaHtAI9SCu0/57WSqzoJ0UiwVNM4oowGf/HhZz+1OVQhxqocq5rP6S
+	0uIQ7bQXYAR1SUf/MBB7ap4Vpv7HskoQsECe9f7x2
+X-Gm-Gg: AYBFou1ZKvTWWlnpJyb/jxR1pN4TMFJEzIHCmgW6Q2tmW9vPPLqQMy+6/Egh0XfMnOC
+	Ui4yRjsIlqRHOdj2j3rD1Ot6e1IqSa3PQDhfPG2Gi/IZrnO3hQeUMmePpYWSu5vTbVd6yU0U6j9
+	I3hqOeUfGWMBfc5+f23Omzp9e9koMxw7F84BglOYdWpMxeRZhzm6bTp2vaWrBMnfwIashRHSSey
+	pLwOFvzk5isbx2VVjvmLyOR9PPx9b5hEC3bYad0mxMUWaDQqEe2CLunTpAW5vcynVu+O3GtgfcH
+	bc5In9Wxxzj8IgSJ1hc8RwnWfPhx+VLb3aGjCdnPLR6VnkWVFTVyyWQ39kDwy4ZuDkib2cfTfZE
+	2YQhmTbsyCrJGBBL2cgY8H8wnJT5h2y5sgKBHPMmz2wLhsqLUpYkjAH3j
+X-Received: by 2002:a05:622a:4886:b0:530:e00f:7768 with SMTP id
+ d75a77b69052e-54125fa7a8dmr88444051cf.0.1793633497692; Mon, 02 Nov 2026
+ 07:31:37 -0800 (PST)
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -76,63 +104,82 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20261101154503.3203036-1-surenb@google.com> <20261101110100.90796bf33ef50307a7698dca@linux-foundation.org>
+ <auiKq8zbQTMyY2tG@pedro-suse.tail5790ac.ts.net>
+In-Reply-To: <auiKq8zbQTMyY2tG@pedro-suse.tail5790ac.ts.net>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Mon, 2 Nov 2026 07:31:24 -0800
+X-Gm-Features: AclHuK9TnI7YVwGqKzYt9UR1HPgu0Gc7xrmAN4U7UIU0R4mvvXL1rE30jKEZSis
+Message-ID: <CAJuCfpEcpYxEcje_f17bZ08ngMsDxtDUqNr9p5W+V_PRWOE6-g@mail.gmail.com>
+Subject: Re: [PATCH v2 1/1] selftests/proc: use RSS in /proc/pid/smaps_rollup
+ tearing tests
+To: Pedro Falcato <pfalcato@suse.de>
+Cc: Andrew Morton <akpm@linux-foundation.org>, david@kernel.org, ljs@kernel.org, 
+	jannh@google.com, liam@infradead.org, willy@infradead.org, paulmck@kernel.org, 
+	usama.arif@linux.dev, vbabka@kernel.org, linux-fsdevel@vger.kernel.org, 
+	yi1.lai@intel.com, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+On Mon, Nov 2, 2026 at 5:08=E2=80=AFAM Pedro Falcato <pfalcato@suse.de> wro=
+te:
+>
+> On Sun, Nov 01, 2026 at 11:01:00AM -0800, Andrew Morton wrote:
+> > On Sun,  1 Nov 2026 07:45:03 -0800 Suren Baghdasaryan <surenb@google.co=
+m> wrote:
+> >
+> > > Pss metrics can be affected by map count even if VMA tree stays uncha=
+nged,
+> > > therefore tests checking VMA tree integrity can't use them. Use Rss i=
+nstead
+> > > and pre-populate the VMAs so that Rss changes if a VMA gets skipped o=
+r
+> > > double-counted.
+> > >
+> > > To ensure all test VMAs are populated with anonymous pages, remain
+> > > mergeable across VMA operations, and do not have their Rss changed by
+> > > memory reclaim:
+> > > - Toggle PROT_EXEC instead of PROT_WRITE between adjacent test VMAs s=
+o
+> > >   all test VMAs remain writable and MAP_POPULATE faults in anonymous =
+pages
+> > >   (rather than the shared zero page, which is not accounted in Rss).
+> > > - Use mprotect() instead of mmap(..., MAP_FIXED) in split_vma() and
+> > >   merge_vma() so the first page of the split VMA stays resident.
+> > >   mprotect(..., PROT_NONE) splits the VMA without unmapping the first=
+ page
+> > >   (pte_present() remains true for PAGE_NONE PTEs), and
+> > >   mprotect(..., self->mod_info->prot) merges it back. Both parts of t=
+he
+> > >   split VMA retain their non-zero Rss.
+> > > - Lock all present pages in the child with mlockall(MCL_CURRENT |
+> > >   MCL_FUTURE | MCL_ONFAULT) so memory pressure cannot reclaim pages a=
+nd
+> > >   alter Rss during the test.
+> > > - In remap_vma(), unlock next_addr before mremap(..., MREMAP_DONTUNMA=
+P)
+> > >   so next_addr is not split, use mmap(..., MAP_FIXED) in patch_vma() =
+to
+> > >   merge the middle VMA back into addr, and exclude smaps_rollup tests
+> > >   from test_maps_tearing_from_remap since remapping moves and unmaps =
+the
+> > >   page from next_addr.
+> >
+> > Thanks.  This is proving tricky.
+> >
+> > My evolving reviewbot still isn't happy:
+> >
+> > : This fixes the v1 RSS issues, but two things remain.
+> > :
+> > : Alternating PROT_EXEC breaks with READ_IMPLIES_EXEC: both mappings
+>
+> This is nonsense btw. Not sure we'll ever support random personality()
+> flags being set on selftests.
 
+Yeah, handling different personality() cases on a selftest sounds like
+a stretch. Is this case realistic and do we need to handle it?
 
-Hello,
-
-kernel test robot noticed a 54.0% improvement of will-it-scale.per_process_ops on:
-
-
-commit: 7d63a6c06a85030dc4344dc0884883b115faa64a ("mm/slab: round up sheaf size to kmalloc size for explicit sheaf_capacity")
-https://git.kernel.org/cgit/linux/kernel/git/harry/linux.git b4/sheaf-size-round-up
-
-testcase: will-it-scale
-config: x86_64-rhel-9.4
-compiler: gcc-14
-test machine: 192 threads 2 sockets Intel(R) Xeon(R) 6740E  CPU @ 2.4GHz (Sierra Forest) with 256G memory
-parameters:
-
-	nr_task: 100%
-	mode: process
-	test: mmap1
-	cpufreq_governor: performance
-
-
-Details are as below:
--------------------------------------------------------------------------------------------------->
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20261102/202611021441.984cb0bb-lkp@intel.com
-
-=========================================================================================
-compiler/cpufreq_governor/kconfig/mode/nr_task/rootfs/tbox_group/test/testcase:
-  gcc-14/performance/x86_64-rhel-9.4/process/100%/debian-13-x86_64-20250902.cgz/lkp-srf-2sp2/mmap1/will-it-scale
-
-commit: 
-  6ae424d6ef ("EDITME: cover title for sheaf-size-round-up")
-  7d63a6c06a ("mm/slab: round up sheaf size to kmalloc size for explicit sheaf_capacity")
-
-6ae424d6eff8059f 7d63a6c06a85030dc4344dc0884 
----------------- --------------------------- 
-         %stddev     %change         %stddev
-             \          |                \  
-  38572109           +54.0%   59400688        will-it-scale.192.processes
-    200895           +54.0%     309378        will-it-scale.per_process_ops
-  38572109           +54.0%   59400688        will-it-scale.workload
-
-
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provided
-for informational purposes only. Any difference in system hardware or software
-design or configuration may affect actual performance.
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
-
+>
+> --
+> Pedro
