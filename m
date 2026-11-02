@@ -1,56 +1,74 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.12
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793559662;
-	b=vLe8a9vTkwshA6nZMDygKh9gcC5Pj0yMZTLMq/JmJgSj+IrXHfMLQUlLleJlYvsctQ87
-	 ZFsdrRwNWy70LBxNG/OGzNhDrR/TNiDulXf8L2906TjLkoDlbTyZQAvPVbz5p7AHVGxcl
-	 yDoRtCnue8cLMbZWLzPlAFz1S2rhqRR267HPgjeqdNHVN9E9gLa5FaScgFP/hyvUQ1tIr
-	 zkl3SmsVQr7wp9DihULQhcB9ulcdxZvA7b8EIvb5dvAZ8CUX4F7DuIWS5hlr0h8FBMCzb
-	 aZ/c9M3bevIMkKEbPgwoYxmEvPddTOvFH6SqR2yNhdfk1EEu3vy7OMMGXx/INtYxH1g==
+	t=1793581875;
+	b=dv2kbgPHJQ2lIenxMbWL13LZHkcH8bcgJpJYEOwwy/OJAy/s+ZreiAxi8TJafUJfGeg0
+	 MJvFsXQWTDYMKW+Z33wG/J8P4i3hqhObtQUSyTq4TRafqVQ0OCHM1wHYdKjfswTiOF3EK
+	 GTJ9RgBywTfZAFoly7yu/LlL/od6sCLTIoruR37kM60vKkqNszOkI28pCncOTdmnxCyay
+	 x7S3AM3M+BXW5eEZ6KXkZmtc5+b9i0C/+5EXdAWGjeBwFGFAgUy0FbhSRHZxkQmomz4B6
+	 AZ0F93O028dl7lwFn2vBrNpl7dlLfJn+9eLkZswQUVBSlKdv06MstJXAcMF1/5rMETw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793559662;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-Id:
-	 In-Reply-To:References:X-Mailer:Mime-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=kLQ59jC4onbwXVg0CZOgL+pik6k+x796O8ohuIxssIM=;
-	b=xS9FwekK6lXK9SHtxkgKNdHtGb7ISvQIfH2H7tNwNFYoz+kjDNxjoIfC7DKQWolSEJs+
-	 l84MSAzcjuXxLTgqJglg26Oz4N3icArHC3QamGtEp8tth5NgcYG14N3P2c8VW7wzcysba
-	 01utAH7ni9to+x/S7PenYf4v+s19ma2k2s37+xmb5/YbTBZYz7oLPh8sgYIEowyw7RGCx
-	 Wn7EQ4Q/fE8wiVErJSKzZtSvH9l9QD9VIVdK7xtSnzb8mxahEamRVrgcbmOQhGjMM2VfT
-	 UQYwEOVWeKRmlVhvS+sCWqRtvo5yzVNF6op3T9qbckizNGel2PP639hOSVZLW5FdJCA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793581875;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition;
+	bh=Y+k8hpGVYeUwOEv0Jo/0a23XJqN/6/6dhP4pk6TCZDk=;
+	b=qdlaAIXcK8hTBfmu4Fvmy5q2+4xpakjZ0Hfxv2xX4eQxcYpAklgDVQ+nHft9GzaDjTtV
+	 eaqOh7qdK7AicCS5cIdpiHjhK7KHA5rT3CCUkEz3KDVeOpPBV+jvuGMAhMvQn5wgLY6Xj
+	 A8STkAjoF7dv+IUPuIdpYscYsS8VHWpGMF+FROMoTYevKyixSavyu6eYja21b4MdpsGx8
+	 V7GpooOhFxlDTWJTxJFPSUT9NfL7qMOZKEFf38wA6YM4nZKFiHA7+zypLFPBCXjEreQrM
+	 c3ARWyo65+YILHD2l+8Ax8mU4diAVZNsU5RchA3FXpSLp+zZuAjT8kHfL/umLvW92rw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=linux-foundation.org header.i=@linux-foundation.org header.a=rsa-sha256 header.s=korg header.b=xdolncDw;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=aocOD7WN;
+	arc=none smtp.remote-ip=198.175.65.12
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15716606A325;
-	Sun,  1 Nov 2026 19:01:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11FF2606A324
+	for <oe-lkp@lists.linux.dev>; Mon,  2 Nov 2026 01:11:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 11FF2606A324
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux-foundation.org header.i=@linux-foundation.org header.a=rsa-sha256 header.s=korg header.b=xdolncDw
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FDD51F000C1;
-	Sun,  1 Nov 2026 19:01:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux-foundation.org; s=korg; t=1793559661;
-	bh=kLQ59jC4onbwXVg0CZOgL+pik6k+x796O8ohuIxssIM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=xdolncDwxFM9S/Dw11vf+hmkUpwJmqIzOsJcH9B6Xgwk5DZfEQnRV06U9H6pI5djJ
-	 gRqMrJTRXdnX41OIVUV9EbzMevIkIQEBAN+Imto92yjXGPzz+KNqV6Hw323M5TKMxh
-	 IHuQiO6gsuKgy7eRo/m/OySg1WCC9ngmhhLPWiZ0=
-Date: Sun, 1 Nov 2026 11:01:00 -0800
-From: Andrew Morton <akpm@linux-foundation.org>
-To: Suren Baghdasaryan <surenb@google.com>
-Cc: david@kernel.org, ljs@kernel.org, jannh@google.com, liam@infradead.org,
- willy@infradead.org, paulmck@kernel.org, pfalcato@suse.de,
- usama.arif@linux.dev, vbabka@kernel.org, linux-fsdevel@vger.kernel.org,
- yi1.lai@intel.com, oe-lkp@lists.linux.dev, lkp@intel.com,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] selftests/proc: use RSS in
- /proc/pid/smaps_rollup tearing tests
-Message-Id: <20261101110100.90796bf33ef50307a7698dca@linux-foundation.org>
-In-Reply-To: <20261101154503.3203036-1-surenb@google.com>
-References: <20261101154503.3203036-1-surenb@google.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=aocOD7WN
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793581873; x=1825117873;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=tCMvJzsRcFSMuMigcng7Q379fcSk3XClTExLzr1/g40=;
+  b=aocOD7WNuVReGodsdQd0GARDb6mXP61poR+DKNX0oNeIHlziCJwvWWwT
+   /2uLwTG4O0U/gvDRleb8soSVaIR71zwvIJSi7DtDg2N2bPzIlADxRGkwo
+   ZeBT6yyX3VHgAFwHulTO/vG2LwnvBFvFH054S8wgDV/mroSk3vhS2XaJJ
+   eikz8u87XOISDYTtIUlNP30LOnODnEhm+lboZY0PKZl2rtzzsHxbfQLYV
+   zEjenIhJ+xNgsJwXpB0GFmodyvUtDRbZiUytUA5TjAFqOGmsD7l4T31mv
+   dZLZSyWCnlzINAEj1U1OWwV+2msnv+V1F6q5iSpLURECpnIyY9Cb3hQWw
+   g==;
+X-CSE-ConnectionGUID: eKUQSWXXQwi6EWouWCQ62g==
+X-CSE-MsgGUID: oc0RwB/5SUCIRAVs5Yx5lQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11953"; a="2142341"
+X-IronPort-AV: E=Sophos;i="6.27,190,1787036400"; 
+   d="scan'208";a="2142341"
+Received: from fmviesa012.fm.intel.com ([10.60.135.152])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2026 17:11:12 -0800
+X-CSE-ConnectionGUID: qhj4lhiPQ5uRQLjUNkT4aw==
+X-CSE-MsgGUID: WMBZaa0TTNerH5kGH8hJog==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,190,1787036400"; 
+   d="scan'208";a="7747426"
+Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2026 17:11:09 -0800
+Date: Mon, 2 Nov 2026 09:11:06 +0800
+From: kernel test robot <yi1.lai@intel.com>
+To: Miklos Szeredi <mszeredi@redhat.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	Christian Brauner <brauner@kernel.org>,
+	Amir Goldstein <amir73il@gmail.com>, linux-unionfs@vger.kernel.org,
+	yi1.lai@intel.com
+Subject: [linus:master] [ovl]  a518e63c37:
+ kselftests.filesystems/fscontext_ns.fscontext_ns_test.fscontext_ns.overlay.create_from_descendant_userns.fail
+Message-ID: <202611020115.2281e158-lkp@intel.com>
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -59,222 +77,70 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-
-On Sun,  1 Nov 2026 07:45:03 -0800 Suren Baghdasaryan <surenb@google.com> wrote:
-
-> Pss metrics can be affected by map count even if VMA tree stays unchanged,
-> therefore tests checking VMA tree integrity can't use them. Use Rss instead
-> and pre-populate the VMAs so that Rss changes if a VMA gets skipped or
-> double-counted.
-> 
-> To ensure all test VMAs are populated with anonymous pages, remain
-> mergeable across VMA operations, and do not have their Rss changed by
-> memory reclaim:
-> - Toggle PROT_EXEC instead of PROT_WRITE between adjacent test VMAs so
->   all test VMAs remain writable and MAP_POPULATE faults in anonymous pages
->   (rather than the shared zero page, which is not accounted in Rss).
-> - Use mprotect() instead of mmap(..., MAP_FIXED) in split_vma() and
->   merge_vma() so the first page of the split VMA stays resident.
->   mprotect(..., PROT_NONE) splits the VMA without unmapping the first page
->   (pte_present() remains true for PAGE_NONE PTEs), and
->   mprotect(..., self->mod_info->prot) merges it back. Both parts of the
->   split VMA retain their non-zero Rss.
-> - Lock all present pages in the child with mlockall(MCL_CURRENT |
->   MCL_FUTURE | MCL_ONFAULT) so memory pressure cannot reclaim pages and
->   alter Rss during the test.
-> - In remap_vma(), unlock next_addr before mremap(..., MREMAP_DONTUNMAP)
->   so next_addr is not split, use mmap(..., MAP_FIXED) in patch_vma() to
->   merge the middle VMA back into addr, and exclude smaps_rollup tests
->   from test_maps_tearing_from_remap since remapping moves and unmaps the
->   page from next_addr.
-
-Thanks.  This is proving tricky.
-
-My evolving reviewbot still isn't happy:
-
-: This fixes the v1 RSS issues, but two things remain.
-: 
-: Alternating PROT_EXEC breaks with READ_IMPLIES_EXEC: both mappings
-: become RWX and can merge. A syscall test produced two VMAs instead
-: of 16. Could we populate everything writable, then mprotect the odd
-: mappings read-only? That preserved all 16 VMAs and avoids zero pages.
-: 
-: Also, MCL_ONFAULT doesn't bypass RLIMIT_MEMLOCK. If mlockall() fails,
-: the child asserts before CHILD_READY and the parent waits until
-: timeout. Please arrange a coordinated skip for insufficient allowance.
-: 
-: The patched userspace test passed all six cases on an existing
-: x86-64 6.18.57 kernel, with a PID-namespace adjustment. That kernel
-: predates ca5480fb53fa, so this checks selftest behavior, not the
-: intended kernel's procfs changes. Separate syscall tests on that
-: kernel confirmed the EXEC-merging and memlock failure cases.
-
-I said "no, do it yourself" and it came up with the below.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
 
 
+Hello,
 
-From: Andrew Morton <akpm@linux-foundation.org>
-Subject: selftests/proc: handle personality and memlock constraints
-Date: Sun, 01 Nov 2026 10:55:37 -0800
+kernel test robot noticed "kselftests.filesystems/fscontext_ns.fscontext_ns_test.fscontext_ns.overlay.create_from_descendant_userns.fail" on:
 
-Alternating PROT_EXEC does not keep the test mappings distinct when
-READ_IMPLIES_EXEC is set: both protection combinations become RWX and
-adjacent mappings can merge, breaking the fixture's layout assumptions.
+commit: a518e63c377574784f49653ef5314c70e2463b0c ("ovl: return EINVAL instead of EIO in case of mismatched user_ns")
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-Populate each mapping writable, then make odd mappings read-only.  This
-retains anonymous pages accounted in RSS while keeping adjacent VMAs
-distinct regardless of READ_IMPLIES_EXEC.  Restore the corresponding
-WRITE-based protection selection in the parent.
+[test failed on linux-next/master 7649ba73f9e7e1e04d0b46213e39c79ae09dd55c]
 
-Restore the whole three-page destination after remapping, rather than
-replacing only its middle page and relying on the remaining anonymous VMAs
-to merge.  The remap test no longer compares RSS.
+in testcase: kselftests
+version: kselftests-x86_64-24a19b953e2a-1_20261012
+with following parameters:
 
-mlockall(MCL_CURRENT) checks the whole virtual size against the locked
-memory allowance even with MCL_ONFAULT.  An insufficient allowance makes
-the child exit before CHILD_READY, leaving the parent waiting until the
-test times out.
+	group: filesystems
 
-Pass the locking error through the existing shared state and signal
-CHILD_READY on failure.  The parent reaps the child and releases the
-shared state before skipping resource or permission failures.  Check this
-status before opening the child's proc files, as it may already have
-exited.  Unexpected locking errors remain test failures.
+config: x86_64-rhel-9.4-kselftests
+compiler: gcc-14
+test machine: 16 threads Intel(R) Core(TM) i7-13620H (Raptor Lake) with 32G memory
 
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Cc: Suren Baghdasaryan <surenb@google.com>
-Cc: David Hildenbrand <david@kernel.org>
-Cc: Jann Horn <jannh@google.com>
-Cc: kernel test robot <yi1.lai@intel.com>
-Cc: Liam R. Howlett <liam@infradead.org>
-Cc: Lorenzo Stoakes <ljs@kernel.org>
-Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
-Cc: Paul E. McKenney <paulmck@kernel.org>
-Cc: Pedro Falcato <pfalcato@suse.de>
-Cc: Usama Arif <usama.arif@linux.dev>
-Cc: Vlastimil Babka <vbabka@kernel.org>
----
-On top of Suren's v2 "selftests/proc: use RSS in
-/proc/pid/smaps_rollup tearing tests".
+(please refer to attached dmesg/kmsg for entire log/backtrace)
 
-Tested the userspace test on an existing x86-64 Linux 6.18.57 kernel,
-using a separate PID-namespace adaptation which is not in this patch:
-- All six cases passed normally and with READ_IMPLIES_EXEC enabled,
-  using DURATION=1.
-- All six cases skipped promptly with RLIMIT_MEMLOCK set to 64KiB or
-  zero, exercising ENOMEM and EPERM respectively.
-This does not validate the intended kernel's procfs changes.
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <yi1.lai@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202611020115.2281e158-lkp@intel.com
 
- tools/testing/selftests/proc/proc-maps-race.c |   49 +++++++++++-----
- 1 file changed, 36 insertions(+), 13 deletions(-)
 
---- a/tools/testing/selftests/proc/proc-maps-race.c~proc-maps-race-followup
-+++ a/tools/testing/selftests/proc/proc-maps-race.c
-@@ -174,6 +174,7 @@ typedef bool (*vma_mod_result_check_op)(
- 					struct line_content *restored_first_line);
- 
- struct vma_modifier_info {
-+	int mlock_error;
- 	int vma_count;
- 	void *addr;
- 	int prot;
-@@ -696,7 +697,8 @@ static inline bool remap_vma(FIXTURE_DAT
- 
- static inline bool patch_vma(FIXTURE_DATA(proc_maps_race) *self)
- {
--	return mmap(self->mod_info->addr + self->page_size, self->page_size,
-+	/* Replace all three pieces without relying on anon_vma merging. */
-+	return mmap(self->mod_info->addr, self->page_size * 3,
- 		    self->mod_info->prot,
- 		    MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, -1, 0) != MAP_FAILED;
- }
-@@ -757,22 +759,31 @@ FIXTURE_SETUP(proc_maps_race)
- 	self->pid = fork();
- 	if (!self->pid) {
- 		/* Child process modifying the address space */
--		int prot = PROT_READ | PROT_WRITE;
- 		int i;
- 
- 		for (i = 0; i < mod_info->vma_count; i++) {
--			mod_info->child_mapped_addr[i] = mmap(NULL, self->page_size * 3, prot,
-+			mod_info->child_mapped_addr[i] = mmap(NULL, self->page_size * 3,
-+					PROT_READ | PROT_WRITE,
- 					MAP_PRIVATE | MAP_ANONYMOUS | MAP_POPULATE, -1, 0);
- 			ASSERT_NE(mod_info->child_mapped_addr[i], MAP_FAILED);
--			/* change protection in adjacent maps to prevent merging */
--			prot ^= PROT_EXEC;
-+			/*
-+			 * Populate writable to get anonymous pages, then alternate
-+			 * write permission even with READ_IMPLIES_EXEC enabled.
-+			 */
-+			if (i % 2)
-+				ASSERT_EQ(mprotect(mod_info->child_mapped_addr[i],
-+						   self->page_size * 3, PROT_READ), 0);
- 		}
- 		/*
- 		 * Lock all present pages in memory so memory reclaim cannot
- 		 * change RSS during the test, and use MCL_ONFAULT so
- 		 * mremap() expansion does not populate new pages.
- 		 */
--		ASSERT_EQ(mlockall(MCL_CURRENT | MCL_FUTURE | MCL_ONFAULT), 0);
-+		if (mlockall(MCL_CURRENT | MCL_FUTURE | MCL_ONFAULT)) {
-+			mod_info->mlock_error = errno;
-+			signal_state(mod_info, CHILD_READY);
-+			_exit(0);
-+		}
- 		signal_state(mod_info, CHILD_READY);
- 		wait_for_state(mod_info, PARENT_READY);
- 		while (true) {
-@@ -799,6 +810,21 @@ FIXTURE_SETUP(proc_maps_race)
- 		exit(0);
- 	}
- 
-+	/* Check setup before opening proc files: the child may have exited. */
-+	wait_for_state(mod_info, CHILD_READY);
-+	if (mod_info->mlock_error) {
-+		int error = mod_info->mlock_error;
-+		int status;
-+
-+		ASSERT_EQ(waitpid(self->pid, &status, 0), self->pid);
-+		pthread_cond_destroy(&mod_info->sync_cond);
-+		pthread_mutex_destroy(&mod_info->sync_lock);
-+		munmap(mod_info, self->shared_mem_size);
-+		if (error == ENOMEM || error == EPERM || error == EAGAIN)
-+			SKIP(return, "Cannot lock test mappings: %s", strerror(error));
-+		ASSERT_EQ(error, 0);
-+	}
-+
- 	switch (self->maps_file) {
- 	case MAPS:
- 		sprintf(fname, "/proc/%d/maps", self->pid);
-@@ -815,9 +841,6 @@ FIXTURE_SETUP(proc_maps_race)
- 	self->maps_fd = open(fname, O_RDONLY);
- 	ASSERT_NE(self->maps_fd, -1);
- 
--	/* Wait for the child to map the VMAs */
--	wait_for_state(mod_info, CHILD_READY);
--
- 	/* Read first two pages */
- 	self->page1.data = malloc(self->page_size);
- 	ASSERT_NE(self->page1.data, NULL);
-@@ -842,10 +865,10 @@ FIXTURE_SETUP(proc_maps_race)
- 	for (int i = 0; i < mod_info->vma_count; i++) {
- 		if (mod_info->child_mapped_addr[i] == (void *)self->last_line.start_addr) {
- 			mod_info->addr = mod_info->child_mapped_addr[i];
--			mod_info->prot = PROT_READ | PROT_WRITE;
--			/* Odd VMAs have exec permission */
--			if ((i % 2) != 0)
--				mod_info->prot |= PROT_EXEC;
-+			mod_info->prot = PROT_READ;
-+			/* Even VMAs have write permission. */
-+			if ((i % 2) == 0)
-+				mod_info->prot |= PROT_WRITE;
- 		} else if (mod_info->child_mapped_addr[i] == (void *)self->first_line.start_addr) {
- 			mod_info->next_addr = mod_info->child_mapped_addr[i];
- 		}
-_
+026-10-30 20:02:04 make -j16 TARGETS=filesystems/fscontext_ns run_tests
+gcc -Wall -O0 -g -isystem /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-a518e63c377574784f49653ef5314c70e2463b0c/usr/include -isystem /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-a518e63c377574784f49653ef5314c70e2463b0c/tools/testing/selftests/../../../tools/include/uapi -D_GNU_SOURCE= -I/usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-a518e63c377574784f49653ef5314c70e2463b0c/tools/testing/selftests/../../../tools/testing/selftests  -o /usr/src/perf_selftests-x86_64-rhel-9.4-kselftests-a518e63c377574784f49653ef5314c70e2463b0c/tools/testing/selftests/filesystems/fscontext_ns/fscontext_ns_test fscontext_ns_test.c ../utils.c -lcap
+# timeout set to 300
+# selftests: filesystems/fscontext_ns: fscontext_ns_test
+# TAP version 13
+# 1..3
+# # Starting 3 tests from 3 test cases.
+# #  RUN           global.create_from_same_userns ...
+# #            OK  global.create_from_same_userns
+# ok 1 global.create_from_same_userns
+# #  RUN           fscontext_ns.binfmt_misc.create_from_descendant_userns ...
+# # fscontext_ns_test.c:215:create_from_descendant_userns:TAINT_WARN already set, not checking for a new warning
+# #            OK  fscontext_ns.binfmt_misc.create_from_descendant_userns
+# ok 2 fscontext_ns.binfmt_misc.create_from_descendant_userns
+# #  RUN           fscontext_ns.overlay.create_from_descendant_userns ...
+# # fscontext_ns_test.c:208:create_from_descendant_userns:Expected variant->expected_errno (5) == errno (22)
+# # create_from_descendant_userns: Test terminated by assertion
+# #          FAIL  fscontext_ns.overlay.create_from_descendant_userns
+# not ok 3 fscontext_ns.overlay.create_from_descendant_userns
+# # FAILED: 2 / 3 tests passed.
+# # Totals: pass:2 fail:1 xfail:0 xpass:0 skip:0 error:0
+not ok 1 selftests: filesystems/fscontext_ns: fscontext_ns_test # exit=1
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20261102/202611020115.2281e158-lkp@intel.com
+
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
 
