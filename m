@@ -1,75 +1,73 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793840695;
-	b=T2P2r9WhFUnHFBJRhBYsUzFot8Bk1bdUTz31gScO4WdLFEDTwYjJcqISLiuVuNZ1IASr
-	 CHm75Cur4PKkM0gN/TgjXPWznlmTh74uO1fdyUBTLfCGXF3d+FURjObs18+NQo3755peN
-	 OcFPCnfKZgUWVWydNnEzkZAhgMoxhNQUk8iXFaP1O0f/BLuuDz3omuOBrUUfiXkakNVXk
-	 FK51CCeZCt0085H9bJ6vzoICBxLB8i0YfGiPtZFNc6JKXuNMGpBE+oFWW1K8aqB9cDYkP
-	 k6qIN7yzMRxwDRgjSPM1/aXp/y6eNaEZpD68eohweb1CaoMEZqHnhfFT14Uh/d7IwuQ==
+	t=1793841016;
+	b=Oj/+23iiEY+is/83e784s0/M37efsRUsKFdom1YWzWvDrmJ9OLJzhq/dTZQ1X8koDUdA
+	 ncHrbGa4n+zHBlvKjM8kjyWte36gH4C7TRAXzS1buStkaW4450jeBtqOB4JHeJJNFJ8bi
+	 gbxFXGsywWsX68OdJAfmI2Blg5UNnF+e60jA3dMishBiDT8fetl2Y4p6dWFRljFxZyEf0
+	 aRqT70HnZ46CISiEqI1stO3l0GIxzvZcLXI43YYp6tbOmLLdsMis0fV2JFBn6sLCnLYYN
+	 uW409RMLp1Xg2fr0FTchDuIg5TvTa8u8YEpOolduN3ZAvGPKwxn39mKYhduBG2bi/LA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793840695;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793841016;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition:
-	 In-Reply-To;
-	bh=ZjklZ1XtzVupZR4jiPfWvQJ9B53VB9qvPaAAJzXaKKs=;
-	b=Y4LZs9h4wEKSTAl3gB0AQlerumqyrRm54gd9M0/akgaPlZZtHPQZcVcoMJi6Bi4rqdVR
-	 rMvOxH7mn2ymO6tSa3IRzToAnl+vQUuZeyZewRwxH7lvYHMyGwOr09HTNrT4Wcb7XZcgU
-	 JfD8k2zGX/xPk9X5zWGo0r6FIwFe/0GnoORkaOGfY13fE3pRlDhutFCJR1ixmVmR+a9zf
-	 /6aSkeUkp3z6BwkADeUi8VPtksa4ywGffpWID377/cFFoQNxSNo/F7pUs8x6MgNiQOAkg
-	 vdtAohql+BvM3n5b6ZdUIksWI0AZMoyzDM3sDIjhmhnP1PG7q7HxpbvUhhzExNIR2jA==
+	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition;
+	bh=06i9S58upGsm3b8HTfTIZOPkxtQFsVP1RAkt5cgN0pg=;
+	b=nn6ifDQ7bmGkBtopz1fmc44hw6pl309CCsjSRqvC/TUZfKyNMSnGzoPArgFjBOUCU6ku
+	 Pv3uHwFuFUOus4qDU4FlCoIWL10H9To0AQsNGIlF0kFWVxbCsvlLY/USN2cqcTqLvdFQK
+	 eqsg4j5lYNzZIc2ZZp2d25bxA1vyBqUe0hTrkestWk6etU+kJwzwKS/H90eNljLQmgGdv
+	 FKDRk1+Mr+jczZKE1QiFX6fnVtBCPnW6p/mJ+h4kjrb/5wpSaIL6j6NsmwOibCXnw1Ccl
+	 YtrZqRYRKvk+RTI5CehooF9nvy/v6k7AR32WVoHnWnZKiTvcJIskimQ0/FCxWz8j6uA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=jQcgUmty;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=SfM9ui5B;
 	arc=none smtp.remote-ip=192.198.163.8
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA8F3606A31B
-	for <oe-lkp@lists.linux.dev>; Thu,  5 Nov 2026 01:04:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BA8F3606A31B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70747606A326
+	for <oe-lkp@lists.linux.dev>; Thu,  5 Nov 2026 01:10:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 70747606A326
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=jQcgUmty
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=SfM9ui5B
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793840693; x=1825376693;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   in-reply-to;
-  bh=wC0JHPiXzKgvBgxZ+MMifGEL6SvGZg5uRWKwj3ryTJ4=;
-  b=jQcgUmtyhfA60/Zt3oWVCbpc72enAztbK1iQ5rmimoUosgFEod3BOZ9O
-   8jTiSYXIiHXpnQsUvfG3Q86oGq633qxCrAdM8bf67ukCIgMB3BkmQ1uLe
-   y8oOFx7EceXbiidcIeMX3TGC6diM5HP0BfN11uYjaX4ZCyfg6Nq3yI8TC
-   mP0NffigCsVNxseh3i7KBaYV+Dd6aEK9LAEgKjIvNpYuetn92jxYfOhp3
-   T+lt9POzSZd/dSJ/RjyaLnxCJ4XRP/n3zJTo5gRxhOp32XgyPdWbkCa+R
-   HVqjEKigJ6fzp2ezn/pcUIGYV9fPFa24yeQJnZzD+n+tRPKH7K5Ow3fzE
-   g==;
-X-CSE-ConnectionGUID: cWA8y9AjTNKPsOiLpNINRw==
-X-CSE-MsgGUID: el1JURlMTs2dEL3Fd6V/Lg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11956"; a="2500095"
+  t=1793841016; x=1825377016;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=I+YiZY/GNN0hx/CgEHMS2Vj81O65bVBjTSY+GjWMxsY=;
+  b=SfM9ui5BZZEe7Uu3SHeC6f4avg5Pnf6wCob7HmRGEoNhkEpwK1+yV4Gd
+   lroaa3Lynn8XbneO9BZjpqg1pYX1MYFVPRcQ+ftS0tGry0POHNl+z2u6e
+   rOBRv3nfqoaKrHJei4smy2WhzdEZyaBGY6djo9Yzmf/ltnt5Jiiz9dRmD
+   guriUozmdDZqVBvybnCGoDrfeuitqPXw/lrcDWMqwLPGLDCIXlZiyPVxr
+   oOyq0vdtCLAHqcg+q1zChFY2/f8axh+/It/rUq/DsRuExRqjV4slkafVE
+   i4eP9+m1P+bDSG843tda4DTrGO7n5rmZtHs6wPbLdon+E8g9/JS5MhZS/
+   Q==;
+X-CSE-ConnectionGUID: MBsvHhtYSyWYPqKo/uSlvw==
+X-CSE-MsgGUID: d6IzTkGYRS6g1N8zvUSxRQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11956"; a="2500398"
 X-IronPort-AV: E=Sophos;i="6.27,196,1787036400"; 
-   d="scan'208";a="2500095"
+   d="scan'208";a="2500398"
 Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 17:04:52 -0800
-X-CSE-ConnectionGUID: Hqpe9KkhSxqKXnx+RqoeBQ==
-X-CSE-MsgGUID: ad0CjgkpS0+KFjfau5iIfA==
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 17:10:15 -0800
+X-CSE-ConnectionGUID: 4KySTrwQT9KHlMAPuYHeFA==
+X-CSE-MsgGUID: 02/vagQKS/6/runkKsdT2g==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,196,1787036400"; 
-   d="scan'208";a="6875882"
+   d="scan'208";a="6877447"
 Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 17:04:50 -0800
-Date: Thu, 5 Nov 2026 09:04:47 +0800
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 17:10:14 -0800
+Date: Thu, 5 Nov 2026 09:10:10 +0800
 From: kernel test robot <yi1.lai@intel.com>
-To: Kyle Zeng <kylebot@openai.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
-	Lukas Maar <lukas.maar@tugraz.at>, linux-kernel@vger.kernel.org,
-	tglx@kernel.org, mingo@redhat.com, outbounddisclosures@openai.com,
-	Kyle Zeng <kylebot@openai.com>, yi1.lai@intel.com
-Subject: Re: [PATCH v2] futex: Use a keyed hash for global futex buckets
-Message-ID: <202611050816.9e42490c-lkp@intel.com>
+To: Ian Rogers <irogers@google.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	Arnaldo Carvalho de Melo <acme@redhat.com>,
+	linux-perf-users@vger.kernel.org, yi1.lai@intel.com
+Subject: [linus:master] [perf vendor events intel]  3c989481ee:
+ perf-sanity-tests.x86_topdown.topdown_events.fail
+Message-ID: <202611050801.67bb4af4-lkp@intel.com>
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -81,67 +79,68 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261019183334.29433-1-kylebot@openai.com>
+
 
 
 Hello,
 
-kernel test robot noticed a -6.0% regression of will-it-scale.per_thread_ops on:
+kernel test robot noticed "perf-sanity-tests.x86_topdown.topdown_events.fail" on:
+
+commit: 3c989481ee3cc22ac5d34e73862a4016af770710 ("perf vendor events intel: Update emeraldrapids events from 1.24 to 1.25") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+
+[test failed on linux-next/master 7649ba73f9e7e1e04d0b46213e39c79ae09dd55c]
+
+in testcase: perf-sanity-tests
+with following parameters:
+
+  perf_compiler: gcc
+  group: group-02
 
 
-commit: c44a057178cbedbc04c63404258524975e87a64f ("[PATCH v2] futex: Use a keyed hash for global futex buckets")
-url: https://github.com/intel-lab-lkp/linux/commits/Kyle-Zeng/futex-Use-a-keyed-hash-for-global-futex-buckets/20261019-113334
-patch link: https://lore.kernel.org/all/20261019183334.29433-1-kylebot@openai.com/
-patch subject: [PATCH v2] futex: Use a keyed hash for global futex buckets
-
-testcase: will-it-scale
-config: x86_64-rhel-9.4
+config: x86_64-rhel-9.4-bpf
 compiler: gcc-14
-test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 512G memory
-parameters:
+test machine: 256 threads 4 sockets INTEL(R) XEON(R) PLATINUM 8592+ (Emerald Rapids) with 256G memory
 
-  nr_task: 100%
-  mode: thread
-  test: futex2
-  cpufreq_governor: performance
+(please refer to attached dmesg/kmsg for entire log/backtrace)
 
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <yi1.lai@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202611050816.9e42490c-lkp@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202611050801.67bb4af4-lkp@intel.com
 
 
-Details are as below:
--------------------------------------------------------------------------------------------------->
+2026-10-04 03:23:58 sudo ASAN_OPTIONS=fast_unwind_on_malloc=0 /usr/src/linux-perf-x86_64-rhel-9.4-bpf-3c989481ee3cc22ac5d34e73862a4016af770710/tools/perf/perf test 77 -v
+ 77: x86 topdown                                                                                               :
+ 77.1: topdown events                                                                                          : Running (4 active)
+---- start ----
+...
+event syntax error: 'cpu/mem_trans_retired.load_latency/'
+                     \___ Bad event or PMU ...
+event syntax error: '..atency/'
+                                  \___ expected numeric value ...
+event syntax error: '..atency/'
+                                  \___ expected numeric value ...
+WARNING: events were regrouped to match PMUs evlist after sorting/fixing: '{slots,cpu/topdown-bad-spec/}'
+---- end(-1) ----
+ 77.1: topdown events                                                                                          : FAILED!
+ 77.2: topdown sorting                                                                                         : Ok
+ 77.3: topdown slots injection                                                                                 : Ok
+ 77.4: topdown metrics_clear no extra slots                                                                    : Ok
+
+=== Test Summary ===
+Passed main tests : 0
+Passed subtests   : 3
+Skipped tests     : 0
+Failed tests      : 1
+List of failed tests:
+   77.1: topdown events
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20261105/202611050816.9e42490c-lkp@intel.com
-
-=========================================================================================
-compiler/cpufreq_governor/kconfig/mode/nr_task/rootfs/tbox_group/test/testcase:
-  gcc-14/performance/x86_64-rhel-9.4/thread/100%/debian-13-x86_64-20250902.cgz/lkp-spr-2sp5/futex2/will-it-scale
-
-commit: 
-  0fcb05b723 ("Merge tag 'libcrypto-fixes-for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/ebiggers/linux")
-  c44a057178 ("[PATCH v2] futex: Use a keyed hash for global futex buckets")
-
-0fcb05b72344f408 c44a057178cbedbc04c63404258
----------------- --------------------------- 
-         %stddev     %change         %stddev
-             \          |                \  
- 7.026e+08            -6.0%  6.607e+08        will-it-scale.224.threads
-   3136755            -6.0%    2949754        will-it-scale.per_thread_ops
- 7.026e+08            -6.0%  6.607e+08        will-it-scale.workload
+https://download.01.org/0day-ci/archive/20261105/202611050801.67bb4af4-lkp@intel.com
 
 
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provided
-for informational purposes only. Any difference in system hardware or software
-design or configuration may affect actual performance.
-
-
--- 
+--
 0-DAY CI Kernel Test Service
 https://github.com/intel/lkp-tests/wiki
 
