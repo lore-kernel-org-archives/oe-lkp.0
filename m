@@ -1,101 +1,76 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.160.171
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793758032;
-	b=0uQPmX77RDjfCq7aqs5lKEoPGgGKclKDzYLDMjFh0wXGYydxoWGLaMqfW383bP+8xR/5
-	 rwD5hDjY6Ph2C93Pp7jqz8PQicqiJgPyed/MoSE3DCRCBCer8F5wmTCklmX9+xgMQeMer
-	 8rULHCR+zfxYXzMVj60dd0zTC0+qX8BVzed+CUrqUHMw6YWfnn0pdZt86dj1AT9TdRZ5+
-	 M/fV5VgZRxEmwB/BGgNoExnNn+/8sr3SAtK4fTbkg7KmgrOh/591mvhwgBc14v/RKRGX2
-	 QovTnj1Q7gFOW4Adro+UUuK4LyKnzJqfWdQjsqd7OcQaBWTqCIcwNSfcAq7IxH5UVDQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793758032;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=FAiexPt9F2m0rkGdx3cg9FXpp1bQGTobMFGeTARij3M=;
-	b=ZDxKUJngSvlcx7Ud7YA4lW26keY7UB3LtywmjBYt4/xojTAhg+2hg6Cn4mod21AlYMdu
-	 IxRqa07U9EzkWWZ41jEI/CYO1lgYVaRF+5PCelIQKr+s4g0W4m1Uhef7u7CuoKgk4LhKu
-	 XpGwDaD7jo+bi87O9Yfa4k/S38wc6jiRkTROGSaELerr8h7pbTbK4SJ2eTSvCqKFb0vin
-	 Ae3wBPd9OhFR2QhdnFTTU9RSs8fjyeOvfKIilwN/2bq6nDcqKbHtOeMxIeMvDR3q0ibng
-	 4KdhedbWOcTDX6568yXPGg90OAZviGko/LPeddgWvg7ByELBCxIiFy7Kn/DkFIs6Idg==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=G5eqWZrY;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.160.171
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.16
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793839131;
+	b=BD9BCA4+aoo/dJbhcLdCcTHd8x6ydzG4Rtj0Uuq17rkgYhS6OL5LtqdkJUTwAxDwR92B
+	 c76OIQ8SKa+nRdqOg46uQgjKPaSBaF5skiEjHJMtHZZdt2utOORVla3iXgfh50W6+JSzC
+	 A2Mn+S33j6UEjHhqD9SnZBKCBB25/gSJQ+wRa1JF1ggySHbNoDAqJ2zFiTcy7/RmS39+0
+	 SsUjvhe/zWq3K5tlm/k/4K6wQFLmLFYflkU5nP5Ir2LcFpn4Ba9IUfGer0N/iLw/L2Vgm
+	 ZXAfrTfMmai+kz93IkkDE0a80GvzGyvyMUkLShkzKlVm6Akif1CobvKCg8pQ83dn7tQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793839131;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition:
+	 Content-Transfer-Encoding;
+	bh=3j8nosRT0hMFrdPaU0fdOT3QafLKdAoumLCtN8aeB7c=;
+	b=4+o974iCw1xe+NEtAUiERUAfRBzfXogdTQL2yhpRf17aGdOj5hBL60qwVcCS7XtZ7g4f
+	 RFkUbqafjwrBGggXx/WDwzyJLa5eLbfSBokAAmPnU2/py7gPAod2G7w65FlXTImHjoNs6
+	 9qEHd3OAahdPs5hBrB8H1A1K1LyQJFXEMOm8p3sKhtsuXE5erHJmktm9mxjNzUMVrr5OU
+	 QNd5+2xK44KWxe0ODjyH6XkV/Kyr62ysJnVw3sdpz+LeuEeoNMSOGfGrveX8sX3nBsiLg
+	 gdBnUBaIl6HbmrQ3oGSOlmqFuBLpXn+tRy0snEX3OMZQBMjRKF6S9Y7Vdb50OjGrUXQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=h6i4uEwF;
+	arc=none smtp.remote-ip=192.198.163.16
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90F69606A326
-	for <oe-lkp@lists.linux.dev>; Wed,  4 Nov 2026 02:07:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 90F69606A326
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AD77606A31B
+	for <oe-lkp@lists.linux.dev>; Thu,  5 Nov 2026 00:38:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2AD77606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=G5eqWZrY
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-54492d8a988so137021cf.0
-        for <oe-lkp@lists.linux.dev>; Tue, 03 Nov 2026 18:07:12 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1793758032; cv=none;
-        d=google.com; s=arc-20260327;
-        b=PMjG+OjoFWZ0rEFovfpP5gv5UAOHa1mTGRb8LRRkpQED1X9M3emCb2Cq6CoG0//PhJ
-         BiytQ981naXEyiTI4+eLADozsDhgbKzWTpXVx19NkV8Wn80tlSrgy0fRiu/uQOZGmxfy
-         YPsF9rGiKlhgzzrXrEyDK6frh7ou/YAly30i/Qt8XoT1xhPMCt7Sg1hZsJUIYbFc253Y
-         1+Bh4Vz5s/7txbvnXb66youhhps69U40aCabxIOasGipK6Wu8KbT1KhiiW+35s+6h9dK
-         NYVwT1c47MJeUD1A22M8OUQnnjIqHidGquDJF0QbwItZJSUJEoVdXbnRi9/UUCVbZ0dX
-         hHiQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=FAiexPt9F2m0rkGdx3cg9FXpp1bQGTobMFGeTARij3M=;
-        fh=LzF+nDGJrTg3NOWGnE5TdE7/sSyeii2VUdzZYQwx4ps=;
-        b=gWhts3fMNDnpA1RwnodE7qiIzr/He7IILwDqZeMrrKs3P3BqklV/k+ohnaaHzn2az4
-         /Zz/CAKj7qv9kkDFXiV1DbzA0JKkUhEo1ppcX2hbRFz+dK/o4uCZK1fZLViOCwwIwQM4
-         OiKmfvmgY80gwF9Q0t1wkMjEIrSl8Df5BfGScFxxlLlKNl9owM5mbW5LGe29ahFXWy3h
-         U67erVIQDjsaf0sBtOexKs3dFwE3BMGTrodqFSI7K7Sk07Hbo+MTdf/XbIHCKVkCl68E
-         5AyKVibyt9lhfO4KyY4mNhf3qtjfX5oxmaAgK5/aVwoPIkuSASjcqtLOhjCJgimlaCAg
-         yjjA==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1793758032; x=1794362832; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=FAiexPt9F2m0rkGdx3cg9FXpp1bQGTobMFGeTARij3M=;
-        b=G5eqWZrYjaqZrw0sJ9Hzk9lCcAk+SBBo4IQ10E/cVqxScmEI+TPip38q39v47Sopt1
-         APC3cmGzqW3khpZlvzQ162bPdszoFPMsoNNNLB+wvpvX2tT5kSOr9kDXwcS3rc4BK2pf
-         xfImvRStZbz9J+22cOrVXtIyIxuL5hn4wljCN6qAvJ9EEztJQR3Ft3pVQtOnv/F7DWuc
-         4SzeBUbNU6Ir2A8F/XFandxk6IiYRq1/pD6g/CacxftmEJAP2DiApIaQCavj1e11T1Ec
-         LFbe+Uvu2INgq/61BR7z3CK3zJisSnLZ9LkiPrlV9q/NDcLLwrmpufe5LxTOGNxt3OOA
-         DC3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793758032; x=1794362832;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=FAiexPt9F2m0rkGdx3cg9FXpp1bQGTobMFGeTARij3M=;
-        b=lmvzPzJOky5DqAbw4kDTZg+aYXZ+sKuezDOkt9YoeKKeQ5bvPYXLuRL8YBS1euJVwx
-         S8FYhCBiG9rRRmpj4DpbEW309vvaas2AHBkpkS5Ebu2fh0D38XbtoGnoL97fCKMSobxT
-         XCSfXz3J8m5wpWcJpqachXmzpooDT1GsD2QynpZ+kAhLiOlHmCba8Ik2RGWF5b3gJ/Ce
-         eO8ppmSsY9/0kNzTc+FK9OsBVZgPE99z7Rx10GMBCTTFa0UR+qoVm8YurvXJ87yzTQGR
-         XS1d7ZZZ+GgS22nQcYT4GrIMxa/YM39F5/w2U0lGaH8A9pzAAzAEJySLz9tQg4LAWcVd
-         7FOw==
-X-Forwarded-Encrypted: i=1; AKwUvBy9ZsZ6xWOYGJjImX+C2QPuLw2pz2OILiLgAQNJvWzfnpTPOJI08zmBG38TP0+sv1G0UfaLGvE=@lists.linux.dev
-X-Gm-Message-State: APuU4Z9/NSMBtWYAZ/U2GB0TI5epDwVhOKTGwOGILMn2p9LgNYRmOqHB
-	+TfJf8iIN5Wyoec/i97JGOwX75iwHk8oKz/LgJwKq57EBIfMidwsU4oVYHXS4bz1Apr43ECpy7/
-	2hDckoMrBu/R3zQKKBt9zsmCNvgUjO6TRIbH3WvBc
-X-Gm-Gg: AYBFou1ydscLYqkyRrVJZof77bZ5TLj2kWZlScZXLIbD8HVW1yG7qY9hOL1BHM/C02w
-	l4589a7adt5YPzYG4m6iDZ6Rt8oVjY3zV6NUB2z2npVAtfup9HO78qFoPMj4vMM86w7BKBz0pQI
-	AsZY8vIpLtLDJJRo0+bu9ECb5eA3GqSS4477ZTVnYNlLlXnnjQoKQjAOmhGKspq1doGePEiXt7t
-	8j0SdJ7JZ7vjZI+oLfGQ9Uhfolo/s03PrBOaieqVXyTUvf2dcg8L+Eqqq6IcsaWRPNZ5TcbXAOq
-	GxgZbEQc1227mziVym/KlizFegJWfn91qTNAtKvK4bRUxMxw+cYHfKgYhh1tnLzvsq6euO/bWij
-	bu8Tm508ZG3nAaXD3fTu5Y40uklGO/bEuq8giVoUcCXCvOLZdERCLX7XhSzGpYH897zSGKhwjhP
-	ZrEpcI3xKIxlL9
-X-Received: by 2002:a05:622a:4d86:b0:52f:8389:29e0 with SMTP id
- d75a77b69052e-54b227f261bmr9698371cf.0.1793758030925; Tue, 03 Nov 2026
- 18:07:10 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=h6i4uEwF
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793839131; x=1825375131;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=5+t87+N/s71iHTzWzcKOMalV2nyZX0pYiXF/rYzODWc=;
+  b=h6i4uEwFrfeEv+kx230LwJIbRGbUXf2FXk6G8Iswv+zpLtubgbW0EEiN
+   427KQH5pi4KZjJna1Nrd2lKvzE5z6cRlIQfXyFP8ip+E/bl3y96vWFyRv
+   3kfj/FaoLOjmpNdoMDUInMRnsdH1aPL2vrMnlP6z3sHOSs5QANdqEpX19
+   Hw+MyGugM16yqJaja/ArqQiJUHgde0Pu+C6X3bLWcKwXmAvUm7Q5nk8Bd
+   +EWKV+z7WTCiwxEfTFBrp7HDMuq9Q6HARTaLrqKryhHxatQv9tSltZwBk
+   lEW07AGBgqf4rpaChh2dY1nawdpM68LaJshc3u0bICKBDBuZj27kgJHMW
+   Q==;
+X-CSE-ConnectionGUID: ouCdIcYFRRKfhVTlOUkALQ==
+X-CSE-MsgGUID: r0Dp0oeuT8G+kivITg3svg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11956"; a="2630957"
+X-IronPort-AV: E=Sophos;i="6.27,196,1787036400"; 
+   d="scan'208";a="2630957"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 16:38:50 -0800
+X-CSE-ConnectionGUID: uRcZfDPTQACPdZzQ63gB0g==
+X-CSE-MsgGUID: iLMWVtDLQ3ulnBNpVVj06w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,196,1787036400"; 
+   d="scan'208";a="6866644"
+Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 16:38:48 -0800
+Date: Thu, 5 Nov 2026 08:38:45 +0800
+From: kernel test robot <yi1.lai@intel.com>
+To: Breno Leitao <leitao@debian.org>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	Christian Brauner <brauner@kernel.org>,
+	Mateusz Guzik <mjguzik@gmail.com>, Oleg Nesterov <oleg@redhat.com>,
+	linux-fsdevel@vger.kernel.org, yi1.lai@intel.com
+Subject: [linus:master] [fs/pipe]  f7f4665dc5: lmbench3.PIPE.bandwidth.MB/sec
+ 18.5% regression
+Message-ID: <202611041404.befe64cd-lkp@intel.com>
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -105,58 +80,70 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-References: <20261101154503.3203036-1-surenb@google.com> <20261101110100.90796bf33ef50307a7698dca@linux-foundation.org>
- <CAJuCfpGmPLBRhHa_dmyP10QzyRyvcWMYDLU0+J9t-RCLBsTaWA@mail.gmail.com>
- <20261102080103.6e3f602364747ac6adb13f5c@linux-foundation.org>
- <CAJuCfpGmHWiu0Hmob-PgnvWAMn=CD0-xgiyGztP+P=OFrwwfTw@mail.gmail.com>
- <CAJuCfpGwZqGkOm25=BWAh2QgA8Y00OUmwxsDU+_qOsVsc+KHhg@mail.gmail.com>
- <20261102090125.58a2e80d1669c681c33ed20b@linux-foundation.org> <CAJuCfpGvLt+QDw+n0QnZmBqryMrX+SRZJUTqFhVNR-EXpXBRpg@mail.gmail.com>
-In-Reply-To: <CAJuCfpGvLt+QDw+n0QnZmBqryMrX+SRZJUTqFhVNR-EXpXBRpg@mail.gmail.com>
-From: Suren Baghdasaryan <surenb@google.com>
-Date: Tue, 3 Nov 2026 18:06:59 -0800
-X-Gm-Features: AclHuK9a3R3Bk8Y8NTBpy7q1LcP4CVXMf0d8lIiveKtvu79UpNEuQo-0lJdArDQ
-Message-ID: <CAJuCfpHxk3nAnH7xsqGEtJFDo=ZVWKwWfmck5fSvuLmnrG647Q@mail.gmail.com>
-Subject: Re: [PATCH v2 1/1] selftests/proc: use RSS in /proc/pid/smaps_rollup
- tearing tests
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: david@kernel.org, ljs@kernel.org, jannh@google.com, liam@infradead.org, 
-	willy@infradead.org, paulmck@kernel.org, pfalcato@suse.de, 
-	usama.arif@linux.dev, vbabka@kernel.org, linux-fsdevel@vger.kernel.org, 
-	yi1.lai@intel.com, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
-On Mon, Nov 2, 2026 at 9:21=E2=80=AFAM Suren Baghdasaryan <surenb@google.co=
-m> wrote:
->
-> On Mon, Nov 2, 2026 at 9:01=E2=80=AFAM Andrew Morton <akpm@linux-foundati=
-on.org> wrote:
-> >
-> > On Mon, 2 Nov 2026 08:15:47 -0800 Suren Baghdasaryan <surenb@google.com=
-> wrote:
-> >
-> > > > Ah, I see now why handling READ_IMPLIES_EXEC is needed. Then your
-> > > > complete fix looks fine. Perhaps we should mention this pre-ARMv6 C=
-PU
-> > > > detail in the changelog of your fix to explain why READ_IMPLIES_EXE=
-C
-> > > > is important here?
-> > >
-> > > I guess I have to ask whether you want to post your fix as a followup
-> > > to mine or if I should fold them into one patch and post a v3. What's
-> > > your preference?
-> >
-> > yes, please just prepare a v3.  I don't think bot will be offended.
->
-> Ok, I'll wait a day for others to take a look and will post v3.
-> Thanks!
 
-I posted v3 at https://lore.kernel.org/all/20261104015447.363602-1-surenb@g=
-oogle.com/
 
-Pedro, I confirm that page migration will not change Rss even
-temporarily because pagetable changes are made under the PTE lock and
-smaps walk takes the same lock. It will see either a present PTE or a
-migration entry which it also counts in Rss (via
-smaps_account(present=3Dfalse)).
+Hello,
+
+kernel test robot noticed a 18.5% regression of lmbench3.PIPE.bandwidth.MB/sec on:
+
+
+commit: f7f4665dc520fd8bbc1db20e59945773e03744a0 ("fs/pipe: unify the page pools into a single per-pipe pool") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+
+testcase: lmbench3
+config: x86_64-rhel-9.4
+compiler: gcc-14
+test machine: 224 threads 2 sockets Intel(R) Xeon(R) (Sapphire Rapids) with 128G memory
+parameters:
+
+	test_memory_size: 50%
+	nr_threads: 20%
+	mode: development
+	test: PIPE
+	cpufreq_governor: performance
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <yi1.lai@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202611041404.befe64cd-lkp@intel.com
+
+Details are as below:
+-------------------------------------------------------------------------------------------------->
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20261104/202611041404.befe64cd-lkp@intel.com
+
+=========================================================================================
+compiler/cpufreq_governor/kconfig/mode/nr_threads/rootfs/tbox_group/test/test_memory_size/testcase:
+  gcc-14/performance/x86_64-rhel-9.4/development/20%/debian-13-x86_64-20250902.cgz/lkp-spr-2sp2/PIPE/50%/lmbench3
+
+commit: 
+  c610d2d078 ("fs: annotate inode timestamp accessors")
+  f7f4665dc5 ("fs/pipe: unify the page pools into a single per-pipe pool")
+
+c610d2d0787961cd f7f4665dc520fd8bbc1db20e599
+---------------- --------------------------- 
+         %stddev     %change         %stddev
+             \          |                \  
+     29142 ±  2%     -18.5%      23737        lmbench3.PIPE.bandwidth.MB/sec
+    191.80 ±  8%     +54.1%     295.65 ±  5%  lmbench3.time.elapsed_time
+    191.80 ±  8%     +54.1%     295.65 ±  5%  lmbench3.time.elapsed_time.max
+     23261 ± 16%     +19.3%      27743 ±  5%  lmbench3.time.involuntary_context_switches
+      9853 ± 16%     +27.9%      12605 ±  5%  lmbench3.time.system_time
+     51.80 ±  2%     +11.6%      57.80 ±  3%  lmbench3.time.user_time
+ 2.928e+08 ±  3%     +26.6%  3.706e+08 ±  4%  lmbench3.time.voluntary_context_switches
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provided
+for informational purposes only. Any difference in system hardware or software
+design or configuration may affect actual performance.
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
+
