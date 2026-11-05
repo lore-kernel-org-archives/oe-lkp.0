@@ -1,68 +1,55 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793857322;
-	b=P5QHli56+M5jQyVhui4LxN665vO4CtwYyOupV4xIB60ABq9BGYfEhGLwZvTYX0FcgVmv
-	 z1a9SNHGyQcscdq2dsGkZ58LyVKE62+f994PWHoLEuZ33l7MpLHKIUaz3YjgFms/AHUiH
-	 7JV8KzQkvrTF+FKKAJ7noZBVjjLNURdxP0FnZ6KOKeIywCK0l7uWgPad9oboANo3ap2xa
-	 IHLDOEtOnYOZYNObyCAFmDQfBMvmv0ln+PZV1WjcJFFOYVy9JRRO6JE0543ctC+yak4Lm
-	 OPG5PgPhDwMQxRed1DcUSlv1DC8OaPDqLQkIUn/qmPDHDepTc1X3bWU26V+yHlf7cWg==
+	t=1793891104;
+	b=HBtPVV9jHE6Zjt2TVix6atXCHxIUonHEQBZjMs/8MxIys/Fc/JSltE2vrOPcPz7JwoaR
+	 ci1UgPKLze9Xo5jhzvc9jIcPxfkyNVaxLFyUhUymWWslrUwfz3FAMpZFTR82+3IIb3Jt8
+	 vC2iUO9zDQkzx4NwBIuLbKTNdFE/6NUxo768ComsUHjr6RORBpeisePSRCDEAL1SoN5wo
+	 Ynu/MCf/qOdHqwGxyQX8tPNscXsqBFu8P3Kc1kldU88/Oku0JCYPuRoEqFaIRP0LXiNyE
+	 +kEfk7AfGOeuQSYFtPscN9M5cEwZGJB2KR+F3zgyXzmtEqdl7R2gxL8XTyDCAHKSM+A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793857322;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Date:
-	 MIME-Version:User-Agent:Subject:To:Cc:References:Content-Language:
-	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=9wlTg2Dr/LsFlagA3DtpGqNOCAVA82K6+eoM9BoGZ50=;
-	b=00JoJWsSfocMzmhm7fb/TdU92od2XDVuV3K6rL++FRuS58O5nZXQ4LYoEgRSahAONsme
-	 9TtknE78JgpnwviCNY7hzCyvhZpoKMDrJVDTNNnGIIsZcbEVT+OwCBzGERDVQJ5LNJkaJ
-	 ZdFNNumIMpsV4Om4SrJrlqNDobSV3yKwZoB+5VF/LMSJRsg2DshPItlKakSmlhbxd8Si4
-	 0VoBW4nlReyU64LHGdn2Khf3KFlVheFrbzJJOZADZgQEuSR1ZxNnvKxRXi1pGUZA8hIjV
-	 1yMFZB3OxHAeCUUUOEP4z6sN1WWPlKoRqxq5yd0MHjRXNmkjnyCX2cN99KgvHs+T3Jg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793891104;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:
+	 Content-Transfer-Encoding:In-Reply-To;
+	bh=IDZiEDQ2fJcCZR1mPomOrN1HJzC+gocV2xQLf/Xmqno=;
+	b=ZINlSprPFoPW+BlDy2gFoGryyK4tbnD/wIiX0Vn3q/R2pUJzM8/bpl1AQiNzaDeltiFT
+	 k0nAo6OP5EM42uWZyUrUPR2WsKfuBgb41WJROA/2nFkAy7bFp5myirJ7pmgNasTOdZkj0
+	 SQl3vxyNejgwG/4Q1CYbjOvf7oW7lSLkcNeU5v75c2/xvXBmFG35QBHEygew0C3t02ZLr
+	 cjMh/cPmWQgL4+DpJPweZTd7h8onnPQ81GICQSytR5ckJ+PBa4jecZwCQQ1bJQbumMV/y
+	 qIM/zqoNkElm5wyI50mJyUEPDapE30oxzTDBOHQQowNLmoEE1HYtrOUg3KxLj4NNAdA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=FIvAoHki;
-	arc=none smtp.remote-ip=198.175.65.20
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HrOw8A1j;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2213F606A31B
-	for <oe-lkp@lists.linux.dev>; Thu,  5 Nov 2026 05:42:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2213F606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1A96606A31B;
+	Thu,  5 Nov 2026 15:05:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=FIvAoHki
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793857322; x=1825393322;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=DJf4bTNPHkLVygRJnF6XNHKdcTG9QdbUCz5UjaoLfmM=;
-  b=FIvAoHkizvI1n3/v/lbGYAq2MlS1hpmKrHIKQEnwgLqJ4wP+K1P0w8t5
-   ASdvErTWYYhkmxSIEfOZ4Q2V7WVNd9f+sxvDDvgy4wwAKKFUboVjCH3fT
-   l9y8/AQoCRqL8aTqyfuJmjjcLF7uybCz1XlreX4WQoUx5tZtNL2W6WrNT
-   H0/X+9cNM4NaiVUL+ZtauGujuouok+T91DZ2obi35eq/5M8RKAOLMvwIP
-   n17YBftmnMBC8ph7X9NVjdBH6U5kH1l5XnurujgfmS0IMjQz7Sjjqitqt
-   Glkco7py6wHGPoWYG122AgwwCvFzrFXwGMWaE6KtlOMDL61bUHnJ48sNp
-   w==;
-X-CSE-ConnectionGUID: +6yKZH7+TwG1xIDgAIBJ0w==
-X-CSE-MsgGUID: RrlfbNNrTgueg59UZbo2Eg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11956"; a="2667961"
-X-IronPort-AV: E=Sophos;i="6.27,196,1787036400"; 
-   d="scan'208";a="2667961"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 21:42:01 -0800
-X-CSE-ConnectionGUID: g4XYH+QNRBaBCIfS0JtifA==
-X-CSE-MsgGUID: N0+cnYwkScmA2LHAHWG8JA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,196,1787036400"; 
-   d="scan'208";a="7041297"
-Received: from unknown (HELO [10.238.2.61]) ([10.238.2.61])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 21:41:56 -0800
-Message-ID: <2d1a2dcb-f1db-4126-80b7-217a62cea136@linux.intel.com>
-Date: Thu, 5 Nov 2026 13:41:53 +0800
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HrOw8A1j
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA91E1F000C1;
+	Thu,  5 Nov 2026 15:05:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793891103;
+	bh=IDZiEDQ2fJcCZR1mPomOrN1HJzC+gocV2xQLf/Xmqno=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=HrOw8A1jlUuhJDo1BiAbNQGXgo0JMDDcCaPKHctvyeHpkOGNMXXK9/65YyKmpklzH
+	 rlN5wpQjCoPa3I+ssp3r4upL0cZMHwUddWnS+er5KF4ShJtKSv9Kxe6YZf3mMwZZk3
+	 SAvN2djBmxXJM/XX59Q/5PMOX4NA/rclcaRZTHsB94oMDA9H2FUvtVycQHZv4ravfX
+	 pTPN7wyffQwgwU7ShR+nKJNKSvSQSozsE59O/DR2/496o73Wv2MkC9P0Nz5b06UeBZ
+	 hkcjkn1ly8s5Yerske8dk0Ck2Sdd7endvSjESEOiAwolQU3ipl9m0CjobIs3Cyi+9U
+	 SfdfwyVMM80WA==
+Date: Thu, 5 Nov 2026 16:04:58 +0100
+From: Christian Brauner <brauner@kernel.org>
+To: kernel test robot <yi1.lai@intel.com>, 
+	Breno Leitao <leitao@debian.org>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, 
+	Mateusz Guzik <mjguzik@gmail.com>, Oleg Nesterov <oleg@redhat.com>, linux-fsdevel@vger.kernel.org
+Subject: Re: [linus:master] [fs/pipe]  f7f4665dc5:
+ lmbench3.PIPE.bandwidth.MB/sec 18.5% regression
+Message-ID: <20261105-trommeln-einspannen-radius-ccb4e174e407@brauner>
+References: <202611041404.befe64cd-lkp@intel.com>
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -72,179 +59,79 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [linus:master] [perf vendor events intel] 31efbec216:
- perf-stat-tests.UNC_IIO_NUM_TGT_MATCHED_REQ_OF_CPU.fail
-To: Ian Rogers <irogers@google.com>, kernel test robot <yi1.lai@intel.com>,
- "Taylor, Perry" <perry.taylor@intel.com>,
- Thomas Falcon <thomas.falcon@intel.com>, Edward <edward.baker@intel.com>,
- "Chen, Zide" <zide.chen@intel.com>, luis.f.recalde@intel.com
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
- Arnaldo Carvalho de Melo <acme@redhat.com>,
- linux-perf-users@vger.kernel.org, Stephane Eranian <eranian@google.com>
-References: <202611050912.2cdf1ff5-lkp@intel.com>
- <CAP-5=fUk4Q3PxNiqwHtyM6XTt9LGZaTe9p7o9k2gL7f2LBRBHw@mail.gmail.com>
-Content-Language: en-US
-From: "Mi, Dapeng" <dapeng1.mi@linux.intel.com>
-In-Reply-To: <CAP-5=fUk4Q3PxNiqwHtyM6XTt9LGZaTe9p7o9k2gL7f2LBRBHw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <202611041404.befe64cd-lkp@intel.com>
 
+On Thu, Nov 05, 2026 at 08:38:45AM +0800, kernel test robot wrote:
+> 
+> 
+> Hello,
+> 
+> kernel test robot noticed a 18.5% regression of lmbench3.PIPE.bandwidth.MB/sec on:
+> 
+> 
+> commit: f7f4665dc520fd8bbc1db20e59945773e03744a0 ("fs/pipe: unify the page pools into a single per-pipe pool") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-On 11/5/2026 12:22 PM, Ian Rogers wrote:
-> On Wed, Nov 4, 2026 at 5:47 PM kernel test robot <yi1.lai@intel.com> wrote:
->>
->>
->> Hello,
->>
->> kernel test robot noticed "perf-stat-tests.UNC_IIO_NUM_TGT_MATCHED_REQ_OF_CPU.fail" on:
->>
->> commit: 31efbec2161d2d31b020b086958e41f35f070a38 ("perf vendor events intel: Update sapphirerapids events from 1.39 to 1.40") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->>
->> [test failed on linux-next/master 7649ba73f9e7e1e04d0b46213e39c79ae09dd55c]
->>
->> in testcase: perf-stat-tests
->> with following parameters:
->>
->>
->> config: x86_64-rhel-9.4-bpf
->> compiler: gcc-14
->> test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 256G memory
->>
->> (please refer to attached dmesg/kmsg for entire log/backtrace)
->>
->>
->> If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
->> | Reported-by: kernel test robot <yi1.lai@intel.com>
->> | Closes: https://lore.kernel.org/oe-lkp/202611050912.2cdf1ff5-lkp@intel.com
->>
->>
->> EventName: UNC_IIO_NUM_TGT_MATCHED_REQ_OF_CPU
->> 2026-10-05 17:15:24 perf stat -e UNC_IIO_NUM_TGT_MATCHED_REQ_OF_CPU -a sleep 0.1
->> event syntax error: 'UNC_IIO_NUM_TGT_MATCHED_REQ_OF_CPU'
->>                      \___ Bad event name
->>
->> Unable to find event on a PMU of 'UNC_IIO_NUM_TGT_MATCHED_REQ_OF_CPU'
-> Ok, this is an ugly issue. When we fixed the issue so that umasks of 0
-> weren't dropped, we added new umasks:
-> https://web.git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit?id=31efbec2161d2d31b020b086958e41f35f070a38
-> ```
-> ...
-> @@ -1923,6 +1974,7 @@
->          "PerPkg": "1",
->          "PortMask": "0x0000",
->          "PublicDescription": "UNC_IIO_NUM_TGT_MATCHED_REQ_OF_CPU",
-> +        "UMask": "0x7000000",
-> ...
-> ```
-> The umask calculation is odd:
-> https://github.com/intel/perfmon/blob/main/scripts/create_perf_json.py#L361
-> ```
->         # Combine the umask with the umask_ext. We don't know the
->         # width of the umask as we concatenate the strings, removing
->         # "0x"
->         if umask_ext:
->             self.umask = umask_ext + self.umask[2:] if self.umask else
-> umask_ext + "00"
-> ```
-> For Sapphire Rapids the UMaskExt is:
-> https://github.com/intel/perfmon/blob/main/SPR/events/sapphirerapids_uncore_experimental.json#L17422
-> ```
-> ...
->     {
->       "Unit": "IIO",
->       "EventCode": "0x8f",
->       "UMask": "0x00",
->       "PortMask": "0x0000",
->       "FCMask": "0x00",
->       "UMaskExt": "0x00070000",
->       "EventName": "UNC_IIO_NUM_TGT_MATCHED_REQ_OF_CPU",
->       "BriefDescription": "ITC address map 1",
->       "PublicDescription": "UNC_IIO_NUM_TGT_MATCHED_REQ_OF_CPU",
->       "Counter": "0,1,2,3",
->       "ELLC": "0",
->       "Filter": "na",
->       "ExtSel": "0",
->       "Deprecated": "0",
->       "FILTER_VALUE": "0",
->       "CounterType": "PGMABLE"
->     },
-> ...
-> ```
-> So that's hex 7 followed by 4 zeros. In the generated perf json it is
-> hex 7 followed by 6 zeros as we concatenated the UMask's 00 to the
-> front.
->
->> event syntax error: '..O_NUM_TGT_MATCHED_REQ_OF_CPU'
->>                                   \___ value too big for format (umask), maximum is 255
-> This error indicates that the UMask for the IIO PMU only expects
-> values from 0 to 255.
+@Breno can you reproduce this?
+It's something we should at least investigate.
 
-+ Zide, Luis
+> 
+> testcase: lmbench3
+> config: x86_64-rhel-9.4
+> compiler: gcc-14
+> test machine: 224 threads 2 sockets Intel(R) Xeon(R) (Sapphire Rapids) with 128G memory
+> parameters:
+> 
+> 	test_memory_size: 50%
+> 	nr_threads: 20%
+> 	mode: development
+> 	test: PIPE
+> 	cpufreq_governor: performance
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <yi1.lai@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202611041404.befe64cd-lkp@intel.com
+> 
+> Details are as below:
+> -------------------------------------------------------------------------------------------------->
+> 
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20261104/202611041404.befe64cd-lkp@intel.com
+> 
+> =========================================================================================
+> compiler/cpufreq_governor/kconfig/mode/nr_threads/rootfs/tbox_group/test/test_memory_size/testcase:
+>   gcc-14/performance/x86_64-rhel-9.4/development/20%/debian-13-x86_64-20250902.cgz/lkp-spr-2sp2/PIPE/50%/lmbench3
+> 
+> commit: 
+>   c610d2d078 ("fs: annotate inode timestamp accessors")
+>   f7f4665dc5 ("fs/pipe: unify the page pools into a single per-pipe pool")
+> 
+> c610d2d0787961cd f7f4665dc520fd8bbc1db20e599
+> ---------------- --------------------------- 
+>          %stddev     %change         %stddev
+>              \          |                \  
+>      29142 ±  2%     -18.5%      23737        lmbench3.PIPE.bandwidth.MB/sec
+>     191.80 ±  8%     +54.1%     295.65 ±  5%  lmbench3.time.elapsed_time
+>     191.80 ±  8%     +54.1%     295.65 ±  5%  lmbench3.time.elapsed_time.max
+>      23261 ± 16%     +19.3%      27743 ±  5%  lmbench3.time.involuntary_context_switches
+>       9853 ± 16%     +27.9%      12605 ±  5%  lmbench3.time.system_time
+>      51.80 ±  2%     +11.6%      57.80 ±  3%  lmbench3.time.user_time
+>  2.928e+08 ±  3%     +26.6%  3.706e+08 ±  4%  lmbench3.time.voluntary_context_switches
+> 
+> 
+> Disclaimer:
+> Results have been estimated based on internal Intel analysis and are provided
+> for informational purposes only. Any difference in system hardware or software
+> design or configuration may affect actual performance.
+> 
+> 
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+> 
+> 
+> 
 
-According to current uncore driver, SPR IIO supports the extended umask
-field which locates at bits [50:32], so the UMaskExt data of
-UNC_IIO_NUM_TGT_MATCHED_REQ_OF_CPU looks correct. I suppose we should not
-or could be very hard to check the valid range of umaskext in perf tools.
-Currently different uncore PMUs may have different umaskext layout and the
-umaskext of some uncore events could be very large.
-
-Currently the Intel uncore driver would validate the umask/umaskext from
-user space. It would be good enough.
-
-@Luis, @Edward, please double confirm. Thanks.
-
-
->
-> So something is wrong in how we interpret the UMask and UMaskExt for
-> Sapphire Rapids' IIO. Could someone from Intel take a look? Is the
-> problem in the original perfmon event json, is there a different way
-> to encode the UMaskExt for the IIO on SPR or is the IIO PMU on SPR
-> constraining the umask too much?
->
-> Thanks,
-> Ian
->
->
->> event syntax error: '..O_NUM_TGT_MATCHED_REQ_OF_CPU'
->>                                   \___ value too big for format (umask), maximum is 255
->>
->> event syntax error: '..O_NUM_TGT_MATCHED_REQ_OF_CPU'
->>                                   \___ value too big for format (umask), maximum is 255
->>
->> event syntax error: '..O_NUM_TGT_MATCHED_REQ_OF_CPU'
->>                                   \___ value too big for format (umask), maximum is 255
->>
->> event syntax error: '..O_NUM_TGT_MATCHED_REQ_OF_CPU'
->>                                   \___ value too big for format (umask), maximum is 255
->>
->> event syntax error: '..O_NUM_TGT_MATCHED_REQ_OF_CPU'
->>                                   \___ value too big for format (umask), maximum is 255
->>
->> event syntax error: '..O_NUM_TGT_MATCHED_REQ_OF_CPU'
->>                                   \___ value too big for format (umask), maximum is 255
->>
->> event syntax error: '..O_NUM_TGT_MATCHED_REQ_OF_CPU'
->>                                   \___ value too big for format (umask), maximum is 255
->>
->> event syntax error: '..O_NUM_TGT_MATCHED_REQ_OF_CPU'
->>                                   \___ value too big for format (umask), maximum is 255
->>
->> event syntax error: '..O_NUM_TGT_MATCHED_REQ_OF_CPU'
->>                                   \___ value too big for format (umask), maximum is 255
->> Run 'perf list' for a list of valid events
->>
->>  Usage: perf stat [<options>] [<command>]
->>
->>     -e, --event <event>   event selector. use 'perf list' to list available events
->>
->>
->> The kernel config and materials to reproduce are available at:
->> https://download.01.org/0day-ci/archive/20261105/202611050912.2cdf1ff5-lkp@intel.com
->>
->>
->> --
->> 0-DAY CI Kernel Test Service
->> https://github.com/intel/lkp-tests/wiki
->>
->>
+-- 
