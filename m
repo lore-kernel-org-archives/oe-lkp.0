@@ -1,74 +1,73 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.15
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793929991;
-	b=TLVrED+uBLXRYcUOvSpqw/mTRVQtY3jtp4bmYGvuqgzmACOCMMA09l8sdEUt/+sr6rCl
-	 3NyTfkuyA8R4NVvjjsiUtuAIrNPwxM7NNMUPtUpfg1COs1JTPbKc6V3LIlGWxjbGpshUt
-	 6c//yPYrd1vGTREph8SZIjX4WJ6p4fWJSIH2mDreZ2q9/gpSMVm5RsYzCUfPRcrjAUBes
-	 jRhGFMGOYksBTL5u/9Prz0ntaEWRiYOXOHoa6MC95BGdyytsrVmymFBnL5BE7wmzbUrv9
-	 wjzvgysODUd0hc/OkEap727Y+WmltiErlO0IYldXXkZCCkmuKTed4BJ4fh9WYJrKqQA==
+	t=1793934482;
+	b=FHmudRFgEVgTc6d4577jIYHHMWDJxL9npdMJN5JOaUF60FqwllZ49+iLUq8mqEQuL3x6
+	 lb+6guRrS6RSTLCru7QN/kKpnTeG6DpT5PHOEUmyX0cbAT9qxjo2uIm0zjhGpByVScpEP
+	 umk20gImRS0QxWETe7YwGDA/sVSN9a5PKOPUK3iHdh2bdM47+uN7K6Bn0hTyMoWeuGthe
+	 dJJYFbZPD7ryh7MAxPKHXxjgua5/YBGjKv+7wVRT4pRBwHXiaDlDXe23ROXNMs8PmblnU
+	 dpexL3+yOAiydbkDecuqbaV4NNAekBRH/e2JljSBDN9S9WuD025R1m6EfqiXWznhYEA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793929991;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793934482;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition:
-	 Content-Transfer-Encoding;
-	bh=vphnmM+jwIoRrlB8iEsjeGpfpXI0diKX+EPHgC7tAik=;
-	b=S1kc0K7qE+M3/wD6YKsaTxXf2PMomdOrKQsx6NJ3H9k0hqLd7dkKNzqXldFkDIn0unaD
-	 j2LGSQgaLWV6NWuvcDIBQJ93Xhtf2ZJjEiZTi3NWSSO4tFMMtpmID44RoXEs/57kuB5O8
-	 stKYr6ohvCE/Rad6A+3h5voBdxs0bBrKEvF1U4v2wL/7+G6jsi8ozryTL+Lc36pHDGk0M
-	 JqDphPdxV6UKOXhy8lF+Bllsk72vfgPMxnPaiqpdOb/GIY9jKYv8/fHQO6mLGGIN0ICnj
-	 ePqygh4n0QF6GjdTZ5FVTdwdT5Chutt3kT8XqzuqKfzdePnB5EUhr6iwmd12E3EHdkw==
+	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition;
+	bh=6i0giO9JC/Tn20VM9MLp6JL4dkTvjBKFn8ta8TGBzWs=;
+	b=VK0/Ct+mStCOeakYPgEY7Eo+uoDFfHI+rMa77XleOQ5Kxc/kWeSHW94OpjL3NKouEEIB
+	 8eQNubnhlcsDSW786paOZ5rerD1UEVbhkb/q5sEJsGDJzev5AccMsJLl8ABVPMoETej/S
+	 QZjJlQPJ4eksMlZ9RYBHt4GZwYwp5Rhgy/cfb2nmAbFpUSCku0K/xRhqocktqfcC2Vqq/
+	 +mvwVZytM3O3IbW5t4832+Ihu/88uBsAdtB72Osv/xNHazJ31e3hfnabkTCd/aUUat+2s
+	 9q1rNwwZLZ+YmhdYgq0Vz2RV0XQ0YZ8PRNqo2paWqUEXmelzvDFCZBsnPZXYnuEjfWA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=FQCSelky;
-	arc=none smtp.remote-ip=198.175.65.14
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=OLHcz1g7;
+	arc=none smtp.remote-ip=198.175.65.15
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A66D5606A31B
-	for <oe-lkp@lists.linux.dev>; Fri,  6 Nov 2026 01:53:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A66D5606A31B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42CF1606A31B
+	for <oe-lkp@lists.linux.dev>; Fri,  6 Nov 2026 03:08:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 42CF1606A31B
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=FQCSelky
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=OLHcz1g7
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793929991; x=1825465991;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Tz7i/BkGK7Upp9+h2GI/VokWmLavMPvpV1aNQOLIW8M=;
-  b=FQCSelkysRZFzxsrVq2c27K3uO2gbIKn6yGouj4/qGyPjEYDAwRf/Y38
-   BBSj32amEgBQeuzmE5Igm03Za1F5JuNsEr1j1T4TUtqbMiHLOCZ8tlm+D
-   2Pe3oYvuhu9w1oz9z7igtcd2wC7YfLZfem41IwG/F7Fd6z20+p79wKNtn
-   4LIw7g7BQVYCXwRSCvzNjYacs4NXAr0tE66Q7Dp0x+z4/u24e3d1K7HUJ
-   j8tpHygtwC3hpSpe2O02GwkCCcm9QK6JCcEjfCTV7P+xweh8uhF6SPbJc
-   tlofUr7Nf7eaLJQ169ahC30nqsqBzc53B1+zX+gklRxBkUMktjzW5GH8q
-   Q==;
-X-CSE-ConnectionGUID: 2tEsbj+DQEmPu/hS/jU6CQ==
-X-CSE-MsgGUID: YDpzTb+OTMi5l9XQtEi1uw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11957"; a="2634026"
+  t=1793934482; x=1825470482;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=sHSsITdw52eBg+7eK+akWWmzeFire5iQg00Atu2e4KQ=;
+  b=OLHcz1g7ePmTwXiI2D1PYd68YXvvXFhJ8a3cEvcnsFWrimfYlx88iXbQ
+   U7DotrZ1C9gradlyq0rm+C/StskvilDk4YQ0OBVKPontrNgogugPORSDe
+   z82y2oYzKtt0JFSZYzdoz91SpMVXcq1GlcLK3P9R1R9Mzl/I0YPJF+02M
+   j38DC4SnUKO0oG/E/ErXlMxfiPEEa8GcTmf/xexUEN1lLZ35lKDQEcdxY
+   pTtWLuCpMxSPhZ3Iqi/ij4CxOn9C6EyDRxIzuVWJ5g7Gnno+uAL2ZPnT8
+   C7jbkmBHJeQVdtLglmiZT3DGgmutEzX9rQmymagrPJFIL9FZuW+3MFrmi
+   w==;
+X-CSE-ConnectionGUID: ZvRE3MNaQQCT+VBggyFvXg==
+X-CSE-MsgGUID: bwqoK76KTcKd6xLRdI0qAw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11957"; a="2744332"
 X-IronPort-AV: E=Sophos;i="6.27,197,1787036400"; 
-   d="scan'208";a="2634026"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2026 17:53:10 -0800
-X-CSE-ConnectionGUID: TzwXlRPATqqMRLBfipF6OQ==
-X-CSE-MsgGUID: 85+2EOpoR0Gshj6zqJkAhQ==
+   d="scan'208";a="2744332"
+Received: from fmviesa013.fm.intel.com ([10.60.135.153])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2026 19:08:02 -0800
+X-CSE-ConnectionGUID: XqXT3RTHTsKW0Tln1c9DNQ==
+X-CSE-MsgGUID: ETiATnndQ/KqparOYXV0Yg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,197,1787036400"; 
-   d="scan'208";a="7277393"
+   d="scan'208";a="9047896"
 Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2026 17:53:09 -0800
-Date: Fri, 6 Nov 2026 09:53:05 +0800
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2026 19:07:59 -0800
+Date: Fri, 6 Nov 2026 11:07:56 +0800
 From: kernel test robot <yi1.lai@intel.com>
-To: Peter Zijlstra <peterz@infradead.org>
+To: Steven Rostedt <rostedt@goodmis.org>
 Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	aubrey.li@linux.intel.com, yu.c.chen@intel.com, yi1.lai@intel.com
-Subject: [linus:master] [sched/fair]  fb1050ac8e: stress-ng.sleep.ops_per_sec
- 29.9% regression
-Message-ID: <202611060925.fb5500b1-lkp@intel.com>
+	Martin Kaiser <martin@kaiser.cx>, Vinod Koul <vkoul@kernel.org>,
+	linux-trace-kernel@vger.kernel.org, yi1.lai@intel.com
+Subject: [linus:master] [tracing]  b5cc230af5:
+ WARNING:at_kernel/trace/trace_events.c:#test_double_dereference
+Message-ID: <202611060303.c90f27a7-lkp@intel.com>
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -78,115 +77,109 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
 
 
 
 Hello,
 
-kernel test robot noticed a 29.9% regression of stress-ng.sleep.ops_per_sec on:
+kernel test robot noticed "WARNING:at_kernel/trace/trace_events.c:#test_double_dereference" on:
 
+commit: b5cc230af5e536ff752f8bd5c30e23612936d5c3 ("tracing: Warn when an event dereferences a pointer in TP_printk()") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-commit: fb1050ac8e40aaa014291b5b53612d27890c2b09 ("sched/fair: Change the default cgroup_mode to concur")
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+[test failed on linux-next/master ddfe51b0a0f5dc9e415cc2c8ad8db17532dd426b]
 
-testcase: stress-ng
-config: x86_64-rhel-9.4
+in testcase: boot
+
+config: x86_64-randconfig-r2309-20261012
 compiler: gcc-14
-test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 256G memory
-parameters:
+test machine: qemu-system-x86_64 -enable-kvm -cpu Cascadelake-Server-noTSX,enforce -smp 4 -m 16G
 
-  nr_threads: 100%
-  testtime: 60s
-  test: sleep
-  cpufreq_governor: performance
+(please refer to attached dmesg/kmsg for entire log/backtrace)
 
 
-In addition to that, the commit also has significant impact on the following tests:
-
-+------------------+---------------------------------------------------------------------------------------------+
-| testcase: change | netperf: netperf.Throughput_Mbps -15.9% regression                                          |
-| test machine     | 192 threads 2 sockets Intel(R) Xeon(R) 6740E  CPU @ 2.4GHz (Sierra Forest) with 256G memory |
-| test parameters  | cluster=cs-localhost                                                                        |
-|                  | cpufreq_governor=performance                                                                |
-|                  | ip=ipv4                                                                                     |
-|                  | nr_threads=200%                                                                             |
-|                  | runtime=300s                                                                                |
-|                  | test=TCP_STREAM                                                                             |
-+------------------+---------------------------------------------------------------------------------------------+
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
+If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <yi1.lai@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202611060925.fb5500b1-lkp@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202611060303.c90f27a7-lkp@intel.com
 
 
-Details are as below:
--------------------------------------------------------------------------------------------------->
+[    0.808840][    T0] ------------[ cut here ]------------
+[    0.810236][    T0] Event hfi1_txq_complete has double dereference in TP_printk: REC->sde ? REC->sde->this_idx : 0
+[    0.812882][    T0] WARNING: kernel/trace/trace_events.c:417 at test_double_dereference+0x95/0x100, CPU#0: swapper/0/0
+[    0.815697][    T0] Modules linked in:
+[    0.816602][    T0] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted 7.2.0-rc5+ #1 PREEMPT
+[    0.818731][    T0] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+[    0.821353][    T0] RIP: 0010:test_double_dereference (trace/trace_events.c:417 (discriminator 3))
+[    0.822786][    T0] Code: 30 e8 c9 27 fb ff 80 7b 01 3e 75 25 e8 be 27 fb ff 48 8b 7d d0 e8 75 fa ff ff 48 89 c6 48 8d 3d 8b 30 8f 06 4c 89 e1 44 89 f2 <67> 48 0f b9 3a eb 3b e8 99 27 fb ff 41 0f b6 c7 f6 80 00 a1 fd 85
+All code
+========
+   0:	30 e8                	xor    %ch,%al
+   2:	c9                   	leave
+   3:	27                   	(bad)
+   4:	fb                   	sti
+   5:	ff 80 7b 01 3e 75    	incl   0x753e017b(%rax)
+   b:	25 e8 be 27 fb       	and    $0xfb27bee8,%eax
+  10:	ff 48 8b             	decl   -0x75(%rax)
+  13:	7d d0                	jge    0xffffffffffffffe5
+  15:	e8 75 fa ff ff       	call   0xfffffffffffffa8f
+  1a:	48 89 c6             	mov    %rax,%rsi
+  1d:	48 8d 3d 8b 30 8f 06 	lea    0x68f308b(%rip),%rdi        # 0x68f30af
+  24:	4c 89 e1             	mov    %r12,%rcx
+  27:	44 89 f2             	mov    %r14d,%edx
+  2a:*	67 48 0f b9 3a       	ud1    (%edx),%rdi		<-- trapping instruction
+  2f:	eb 3b                	jmp    0x6c
+  31:	e8 99 27 fb ff       	call   0xfffffffffffb27cf
+  36:	41 0f b6 c7          	movzbl %r15b,%eax
+  3a:	f6                   	.byte 0xf6
+  3b:	80 00 a1             	addb   $0xa1,(%rax)
+  3e:	fd                   	std
+  3f:	85                   	.byte 0x85
+
+Code starting with the faulting instruction ===========================================
+   0:	67 48 0f b9 3a       	ud1    (%edx),%rdi
+   5:	eb 3b                	jmp    0x42
+   7:	e8 99 27 fb ff       	call   0xfffffffffffb27a5
+   c:	41 0f b6 c7          	movzbl %r15b,%eax
+  10:	f6                   	.byte 0xf6
+  11:	80 00 a1             	addb   $0xa1,(%rax)
+  14:	fd                   	std
+  15:	85                   	.byte 0x85
+[    0.827992][    T0] RSP: 0000:ffffffff87403d48 EFLAGS: 00010046
+[    0.829610][    T0] RAX: ffffffff87183110 RBX: ffffffff87dcba95 RCX: ffffffff87dcba82
+[    0.831687][    T0] RDX: 0000000000000021 RSI: ffffffff87183110 RDI: ffffffff87fe7ae0
+[    0.833687][    T0] RBP: ffffffff87403d78 R08: 0000000000000000 R09: 0000000000000000
+[    0.835822][    T0] R10: 0000000000000000 R11: 0000000000000000 R12: ffffffff87dcba82
+[    0.837895][    T0] R13: ffffffff87dcbaa3 R14: 0000000000000021 R15: ffffffff87dcb92d
+[    0.839689][    T0] FS:  0000000000000000(0000) GS:ffff8884a6e38000(0000) knlGS:0000000000000000
+[    0.841148][    T0] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    0.842182][    T0] CR2: ffff88843ffff000 CR3: 0000000007497001 CR4: 00000000000300b0
+[    0.843452][    T0] Call Trace:
+[    0.843961][    T0]  <TASK>
+[    0.844424][    T0]  test_event_printk (trace/trace_events.c:599)
+[    0.845211][    T0]  ? __pfx_trace_event_raw_init (trace/trace_events.c:640)
+[    0.846111][    T0]  trace_event_raw_init (trace/trace_events.c:650)
+[    0.846904][    T0]  event_init (trace/trace_events.c:3384)
+[    0.847591][    T0]  trace_event_init (trace/trace_events.c:4857 trace/trace_events.c:4950)
+[    0.848366][    T0]  trace_init (trace/trace.c:9957)
+[    0.849014][    T0]  start_kernel (main.c:1071)
+[    0.849736][    T0]  x86_64_start_reservations (x86/kernel/head64.c:310)
+[    0.850600][    T0]  x86_64_start_kernel (x86/kernel/head64.c:291)
+[    0.851419][    T0]  common_startup_64 (x86/kernel/head_64.S:418)
+[    0.852218][    T0]  </TASK>
+[    0.852686][    T0] irq event stamp: 0
+[    0.853291][    T0] hardirqs last  enabled at (0): 0x0
+[    0.854409][    T0] hardirqs last disabled at (0): 0x0
+[    0.855533][    T0] softirqs last  enabled at (0): 0x0
+[    0.856645][    T0] softirqs last disabled at (0): 0x0
+[    0.857758][    T0] ---[ end trace 0000000000000000 ]---
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20261106/202611060925.fb5500b1-lkp@intel.com
-
-=========================================================================================
-compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
-  gcc-14/performance/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/lkp-spr-r02/sleep/stress-ng/60s
-
-commit: 
-  507f910a4e ("sched/fair: Add cgroup_mode: tasks")
-  fb1050ac8e ("sched/fair: Change the default cgroup_mode to concur")
-
-507f910a4e1f140a fb1050ac8e40aaa014291b5b536 
----------------- --------------------------- 
-         %stddev     %change         %stddev
-             \          |                \  
-  96108453           -29.9%   67358809        stress-ng.sleep.ops
-   1599640           -29.9%    1120640        stress-ng.sleep.ops_per_sec
-  46082447           -29.1%   32658369 ±  2%  stress-ng.time.involuntary_context_switches
-     15699           -11.3%      13918        stress-ng.time.percent_of_cpu_this_job_got
-      6459            -4.7%       6156        stress-ng.time.system_time
-      3034           -25.5%       2262        stress-ng.time.user_time
-  2.16e+09           -30.6%    1.5e+09        stress-ng.time.voluntary_context_switches
+https://download.01.org/0day-ci/archive/20261106/202611060303.c90f27a7-lkp@intel.com
 
 
-***************************************************************************************************
-lkp-srf-2sp3: 192 threads 2 sockets Intel(R) Xeon(R) 6740E  CPU @ 2.4GHz (Sierra Forest) with 256G memory
-=========================================================================================
-cluster/compiler/cpufreq_governor/ip/kconfig/nr_threads/rootfs/runtime/tbox_group/test/testcase:
-  cs-localhost/gcc-14/performance/ipv4/x86_64-rhel-9.4/200%/debian-13-x86_64-20250902.cgz/300s/lkp-srf-2sp3/TCP_STREAM/netperf
-
-commit: 
-  507f910a4e ("sched/fair: Add cgroup_mode: tasks")
-  fb1050ac8e ("sched/fair: Change the default cgroup_mode to concur")
-
-507f910a4e1f140a fb1050ac8e40aaa014291b5b536 
----------------- --------------------------- 
-         %stddev     %change         %stddev
-             \          |                \  
-      3415           -15.9%       2871        netperf.ThroughputBoth_Mbps
-   1311602           -15.9%    1102665        netperf.ThroughputBoth_total_Mbps
-      3415           -15.9%       2871        netperf.Throughput_Mbps
-   1311602           -15.9%    1102665        netperf.Throughput_total_Mbps
- 3.906e+08 ±  2%     -63.2%  1.439e+08 ±  2%  netperf.time.involuntary_context_switches
-    184303            -3.2%     178397        netperf.time.minor_page_faults
-     11296            +1.6%      11478        netperf.time.percent_of_cpu_this_job_got
-     33938            +2.0%      34626        netperf.time.system_time
-    444.02 ±  2%     -27.5%     321.87 ±  2%  netperf.time.user_time
-    425106 ± 27%     -48.3%     219585 ± 12%  netperf.time.voluntary_context_switches
- 3.002e+09           -15.9%  2.524e+09        netperf.workload
-
-
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provided
-for informational purposes only. Any difference in system hardware or software
-design or configuration may affect actual performance.
-
-
--- 
+--
 0-DAY CI Kernel Test Service
 https://github.com/intel/lkp-tests/wiki
-
 
