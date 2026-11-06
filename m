@@ -1,59 +1,91 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=216.40.44.15
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.174
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793975112;
-	b=SpXcxTQm1vaNQnLAzq9BBuTNLd0G6tBzZa8zN33GUJooGi0LDRZ9eYbKzaWuDQIgIb6g
-	 xMet4Lzi+mnzDL5M9ZqZqnbTEmgkqAXx2v1sr6NWRH0ShN772lq3qRHTAfY5pMVUEkekz
-	 QRAkEIrYnKKEDxCDNy0M8CE5CjdoBSwDdHAojNud+HR3yzhelTUB8OTTLpKXkCzVU/YZE
-	 5Ez/UQ4XFue8g3YXCzGB5PDQrrd8gQ632Jwn4ebUpvgkxnGVG4FSqSxaQxeLLsWJBQgEm
-	 esXcpA6hxkfjaO6xWWKwAIdn9af89sMB/CPaLLBAKz+ASBewDpkkywsoLxycwbzys4w==
+	t=1793989153;
+	b=BUOxIqgNuHE2IH6UQNPe6Pd+ZnN5g4aXuIH7eS8OVy+eRbLWAjb/gAAaAv86aPGIEGNF
+	 aQ9zK9BCAl6G42mA/Y1aBGY+rmTmVj5yfpeNDQtMDuI4kDo01kquJ6tnUubXjFZCc4wt4
+	 HDwg/pK/wKSEX7UJB1nmqhc4J6jef1h5+J17KU+XqyiHxJ3A9g0pc9CzMbwP4KWB+ZCnt
+	 17ULVUwMjTjE1+lQDeDrmf9P1YEyLy7rEigH+Ug6SU5XNSNOti+jJWv9ZplaZVclajJjd
+	 GaGh4matnj+RknVYCQuTMLNyrgHMo8gT4jIWXsCoMvEVjh5hTx/xLCpHhUSfrqjsLCQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793975112;
-	h=DMARC-Filter:Received:Received:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:X-Rspamd-Server:X-Rspamd-Queue-Id:
-	 X-Stat-Signature:X-Spam-Status:X-Session-Marker:X-Session-ID:
-	 DKIM-Signature:X-HE-Tag:X-HE-Meta;
-	bh=cIFQN8lbuhCH6n2559vbvnmkzA9ag6ZDHFiIHX+X3HE=;
-	b=UbdcCEkI4ENbjVDJFUCBrtqrx1hk0zvHLeSzl6OXFnsVrirS9xv6xgPS84nLknL7BKB8
-	 wQ7HKBr0SHglax7jbw/ILHZbwfJ3t25bCez0MxDep8zowMsvdI6g2PELCS9LzB/OW83E0
-	 aoZnd4KyVse23rTHl7AIQ3wNORiXrtnwL94Gi1hdEifQ5CN9L0d6RjUXYl0avR8f2RNH9
-	 CbQV1BamFAq2jXJczj5LLUgWdfzKH6t1ji3eX0IV6Fsgd6yqFdgzCf91wD/6tmPQhGP35
-	 jdCB6KFX2Zy5qjdGm8wmTnGy8uPmCS7q/bxfDBYGOteAsqRir7gE64UQTZlPlk9i6/Q==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793989153;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To;
+	bh=CAF05veWd1mXwHgLUVPA/XS7GxgSXTHbtWBtdYeysgM=;
+	b=kqWep2NR2FffbPfSq9DO+8czRd4rd7JuzpJ0K4gni6dkexl6cb9PqpwmhAiksufVpj/c
+	 dcXhGnHcJ33ar74bJ7Ec7NQ/HGcadQdp9FlVsmouERbc/jXOZOMuF2Ol+CiHPj116xpX8
+	 173ww+8Cb3q0HPgRtAPllgkW51km79tZalBZNBxxo7vVqbtZmnwPn5scv/u230O8xa3gO
+	 TGvxwpcNbRBWbnLsD7ydGFgdcLQALDMDr0kO/1BYU2zBaJHcujevD3lT/wjC31UDzt0nr
+	 xlDtdj6momFgsnHnVwhiHvdrWkqS/Yz6GcoCyq9oSFyETGgCcgBnvFWbhd7OGW121xw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=goodmis.org;
-	spf=pass smtp.mailfrom=goodmis.org;
-	dkim=pass header.d=goodmis.org header.i=@goodmis.org header.a=rsa-sha256 header.s=dkim1 header.b=ot8Grwlz;
-	arc=none smtp.remote-ip=216.40.44.15
-Received: from relay.hostedemail.com (smtprelay0015.hostedemail.com [216.40.44.15])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	dmarc=pass header.from=openai.com;
+	spf=pass smtp.mailfrom=openai.com;
+	dkim=pass header.d=openai.com header.i=@openai.com header.a=rsa-sha256 header.s=google header.b=DVZcL1S8;
+	arc=none smtp.remote-ip=209.85.167.174
+Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72F3B606A329
-	for <oe-lkp@lists.linux.dev>; Fri,  6 Nov 2026 14:25:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 72F3B606A329
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=goodmis.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goodmis.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9848606A32C
+	for <oe-lkp@lists.linux.dev>; Fri,  6 Nov 2026 18:19:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E9848606A32C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=openai.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=openai.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=goodmis.org header.i=@goodmis.org header.a=rsa-sha256 header.s=dkim1 header.b=ot8Grwlz
-Received: from omf14.hostedemail.com (lb01a-stub [10.200.18.249])
-	by unirelay09.hostedemail.com (Postfix) with ESMTP id 4FE42805A8;
-	Fri,  6 Nov 2026 14:25:09 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: rostedt@goodmis.org) by omf14.hostedemail.com (Postfix) with ESMTPA id 079BC2F;
-	Fri,  6 Nov 2026 14:25:06 +0000 (UTC)
-Date: Fri, 6 Nov 2026 09:25:05 -0500
-From: Steven Rostedt <rostedt@goodmis.org>
-To: "Masami Hiramatsu (Google)" <mhiramat@kernel.org>
-Cc: kernel test robot <yi1.lai@intel.com>, oe-lkp@lists.linux.dev,
- lkp@intel.com, linux-kernel@vger.kernel.org, Martin Kaiser
- <martin@kaiser.cx>, Vinod Koul <vkoul@kernel.org>,
- linux-trace-kernel@vger.kernel.org
-Subject: Re: [linus:master] [tracing]  b5cc230af5:
- WARNING:at_kernel/trace/trace_events.c:#test_double_dereference
-Message-ID: <20261106092505.709bd856@gandalf.local.home>
-In-Reply-To: <undine-1793940873129741182-d37e5f54bdcb36ed@undined.local>
-References: <202611060303.c90f27a7-lkp@intel.com>
-	<undine-1793940873129741182-d37e5f54bdcb36ed@undined.local>
-X-Mailer: Claws Mail 3.20.0git84 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (1024-bit key, unprotected) header.d=openai.com header.i=@openai.com header.a=rsa-sha256 header.s=google header.b=DVZcL1S8
+Received: by mail-oi1-f174.google.com with SMTP id 5614622812f47-4af173320f9so579051b6e.2
+        for <oe-lkp@lists.linux.dev>; Fri, 06 Nov 2026 10:19:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=openai.com; s=google; t=1793989152; x=1794593952; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=CAF05veWd1mXwHgLUVPA/XS7GxgSXTHbtWBtdYeysgM=;
+        b=DVZcL1S8+2n9EDTJG+R/0Nogw+dvCAkXLJaWtObgvFbHro0lCyPFgAQJRlO8DyxN/w
+         2yEWLNU+HZt76goO4Yld+tLivD/r3vgz36GInyuloU7NT0KvwX6xzMwDxaUWWhULuZ8P
+         gxdfGq44NzEzU89xypg9vSdxu2qIrrH0HogJU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793989152; x=1794593952;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=CAF05veWd1mXwHgLUVPA/XS7GxgSXTHbtWBtdYeysgM=;
+        b=Iy/h5Ozck9N9wvSxuWhuDu/ayxcuPrRTHrrpryfTLsbYGebtAl8HIT8QhbIYHf3Bto
+         ihP9SgeqxvIcVOWQW2GbCZzvTIDc4U1KQGJ1avX5ixcZVfFZPY3MbczFf2UPiU9Ozttb
+         WztLlslqXHPfep4j/h1K5VBumZhy64jkgkvFV90dSq1//wGByZhcn5nKB5OsoUJZ55RW
+         QlRNnymtRJrF5gJu4YtJNAyAMuCFQRqOUxVp2ikp4oHMV3iBZiwbLC1j0f2tMJx6bFWd
+         yMoczLjuur6u25wU8Jf+P/0LnZM7UUZoHT1/v3b8zQW3gJZTw1BwDzW5D3SqP3CGlc/Z
+         fqsA==
+X-Gm-Message-State: APuU4Z9VjiwTdIwUCsVXpTjRKH+PySczBypQMga32/qiQVCobRzvD7So
+	5sY/FbobSxAsTWR/Fj64aQkDOF1f171ao6eWKSeSWEh06U0Llm1Kbi9KW45UGaUucg0=
+X-Gm-Gg: AYBFou3j2RrhjS7lmDMkvdMrJw6pxFZCK6vm5sF4cXEYKfTGQpX8x/LmXO5Syh9Xjvg
+	rdBwo9WtYMYU4u/ypmzXjlAbLl7m1QiXCOU7od1+i9HfW/+Cz9op0Ns7pQT9AnA7IRh9eVqt4a6
+	IadcScavoOE2CoWM3waMoGMNIB65YGcyxS5axZSKUGK1E3XQ41JouaX6fwrX6+yGoCEoxSObglV
+	DnnB7wng7iG3CD6gV1KgFC7WSo2O9kVqRHRq1Aj4Wz4r7UByzLcNAOQCu3r0QAyakiI9y5W+htH
+	FeJNtE0VgKIrB30pFGSZishtKv6UTgvYpclzCbTSNqtL1MGJeMzEyhkKNTZj2eJwomXJzi20sSm
+	34BUDZe61foEwVjeL7tNtiTwn7dISVwQdtI8q9Txrf8o5XO6i0LbH0pIcdUK8yCcZCrdaLhLTp3
+	rAszCTckfPELUvEt3DJSI2egeMGjychhFrqmAvOfkG9fuX/4ADi3ZVM+61f8drtz3VpupODKUX4
+	D/2iYY5SvWvK9vvWihWyS7Bj+b0+l06XxNb6NhVYyHHejkc8sp6eQu8kAwoHlge84LQdzviGEBS
+	qdX/ZMtSWQCyZoDeUcz57CF4Jnqn7CgFRef2MgY102BHPn3nNKmeM4wfll+TYO6eGLmPhmfXwUl
+	ZrKdGm15CGdqzzyNok6Mu29P/+x06
+X-Received: by 2002:a05:6808:1a21:b0:561:fa43:1b2f with SMTP id 5614622812f47-567e0fc17c3mr2329340b6e.20.1793989151828;
+        Fri, 06 Nov 2026 10:19:11 -0800 (PST)
+Received: from com-75606 ([199.47.143.1])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-567e7e5f6e2sm2027411b6e.11.2026.11.06.10.19.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Nov 2026 10:19:11 -0800 (PST)
+Date: Fri, 6 Nov 2026 10:19:08 -0800
+From: Kyle Zeng <kylebot@openai.com>
+To: kernel test robot <yi1.lai@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
+	Lukas Maar <lukas.maar@tugraz.at>, linux-kernel@vger.kernel.org,
+	tglx@kernel.org, mingo@redhat.com, outbounddisclosures@openai.com
+Subject: Re: [PATCH v2] futex: Use a keyed hash for global futex buckets
+Message-ID: <au4aHJEyPVADFf7L@com-75606>
+References: <20261019183334.29433-1-kylebot@openai.com>
+ <202611050816.9e42490c-lkp@intel.com>
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -63,74 +95,79 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Rspamd-Server: rspamout02
-X-Rspamd-Queue-Id: 079BC2F
-X-Stat-Signature: 66s46irswjjs47phibtxn6i48k4akhuh
-X-Session-Marker: 726F737465647440676F6F646D69732E6F7267
-X-Session-ID: U2FsdGVkX1+oo0ooH9pi1shr4G+DOxcEzseuNzebQug=
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=goodmis.org; h=date:from:to:cc:subject:message-id:in-reply-to:references:mime-version:content-type:content-transfer-encoding; s=dkim1; bh=cIFQN8lbuhCH6n2559vbvnmkzA9ag6ZDHFiIHX+X3HE=; b=ot8GrwlzvFRrxTHjAkWneeNRuygXWNwzqDRpI5yo8DuGcnGjPKxZ0nmz9Gsuxlygw6Rea7GhISHegZErvXC4PKm8GjMgecQ8Xks+yx5N82DkyfS5qVLrbPblrz9qu+4S0/AnrCgNiZdKz0pIXNfG8ssHLILJrWFWPIB+zrkedG4=
-X-HE-Tag: 1793975106-12521
-X-HE-Meta: U2FsdGVkX1+qj6MPSDgSDkuZT5AXZhU9B+iXwgKPW+/B7216Vd43ekFJsXOxnoFdtkKpR6TO5G/td0rTU6wdSqUM94XUTJEcihhWdMBOwbrLp0YXRUeca7fFhBWqmXIJaJkMW+GFohSuORvNuThs8c4l4Lyatmm5EpVuVznQ2TfavGcx9FKG2EMZ9A0k2I5ka5UaLsC1JQwzaKnQ8uogAFXhlOqd8AlWiTe5So4XDvoOL9iO7iCEv8dX29t+qGtorEpMLCkqubtvtDfs/lJ23OXrxWV3jAstaHrOS+UVCMYZ4fN7PfPJ3s08nbwP6gBuxctqbzP8zUP3Ti1g5QLBmfBa76kJqlMMoerhbapiF9OmC74Mq57uHA==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202611050816.9e42490c-lkp@intel.com>
 
-On Fri, 06 Nov 2026 04:54:33 +0000
-"Masami Hiramatsu (Google)" <mhiramat@kernel.org> wrote:
-
-> On Fri, 6 Nov 2026 11:07:56 +0800, kernel test robot <yi1.lai@intel.com> wrote:
-> > 
-> > 
-> > Hello,
-> > 
-> > kernel test robot noticed "WARNING:at_kernel/trace/trace_events.c:#test_double_dereference" on:
-> > 
-> > commit: b5cc230af5e536ff752f8bd5c30e23612936d5c3 ("tracing: Warn when an event dereferences a pointer in TP_printk()") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> > 
-> > [test failed on linux-next/master ddfe51b0a0f5dc9e415cc2c8ad8db17532dd426b]
-> > 
-> > in testcase: boot
-> > 
-> > config: x86_64-randconfig-r2309-20261012
-> > compiler: gcc-14
-> > test machine: qemu-system-x86_64 -enable-kvm -cpu Cascadelake-Server-noTSX,enforce -smp 4 -m 16G
-> > 
-> > (please refer to attached dmesg/kmsg for entire log/backtrace)
-> > 
-> > 
-> > If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
-> > | Reported-by: kernel test robot <yi1.lai@intel.com>
-> > | Closes: https://lore.kernel.org/oe-lkp/202611060303.c90f27a7-lkp@intel.com
-> > 
-> > 
-> > [    0.808840][    T0] ------------[ cut here ]------------
-> > [    0.810236][    T0] Event hfi1_txq_complete has double dereference in TP_printk: REC->sde ? REC->sde->this_idx : 0  
+On Thu, Nov 05, 2026 at 09:04:47AM +0800, kernel test robot wrote:
 > 
-> This seems to be expected behavior. Because "REC->sde" can point already
-> freed/reused object, this should not be allowed. The event must save the
-> sde->this_idx at TP_fast_assign() instead of recording sde.
+> Hello,
 > 
-> In drivers/infiniband/hw/hfi1/trace_tx.h:
-> 
-> DECLARE_EVENT_CLASS(/* AIP  */
->         hfi1_ipoib_txq_template,
-> 	...
->         TP_printk(/* print  */
->                 "[%s] txq %llx idx %u sde %llx:%u cpu %d head %lx tail %lx flow %x used %u stops %d no_desc %d stopped %u",
->                 __get_str(dev),
->                 (unsigned long long)__entry->txq,
->                 __entry->idx,
->                 (unsigned long long)__entry->sde,
->                 __entry->sde ? __entry->sde->this_idx : 0, // this must be recorded as a value
->                 __entry->sde ? __entry->sde->cpu : 0,	// ditto
+> kernel test robot noticed a -6.0% regression of will-it-scale.per_thread_ops on:
 > 
 > 
-> So this is a bug in an infiniband driver.
-
-Yep, I'm working on a fix, unless you are already doing it.
-
--- Steve
-
+> commit: c44a057178cbedbc04c63404258524975e87a64f ("[PATCH v2] futex: Use a keyed hash for global futex buckets")
+> url: https://github.com/intel-lab-lkp/linux/commits/Kyle-Zeng/futex-Use-a-keyed-hash-for-global-futex-buckets/20261019-113334
+> patch link: https://lore.kernel.org/all/20261019183334.29433-1-kylebot@openai.com/
+> patch subject: [PATCH v2] futex: Use a keyed hash for global futex buckets
 > 
-> Thank you,
+> testcase: will-it-scale
+> config: x86_64-rhel-9.4
+> compiler: gcc-14
+> test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 512G memory
+> parameters:
+> 
+>   nr_task: 100%
+>   mode: thread
+>   test: futex2
+>   cpufreq_governor: performance
+> 
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <yi1.lai@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202611050816.9e42490c-lkp@intel.com
+> 
+> 
+> Details are as below:
+> -------------------------------------------------------------------------------------------------->
+> 
+> 
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20261105/202611050816.9e42490c-lkp@intel.com
+> 
+> =========================================================================================
+> compiler/cpufreq_governor/kconfig/mode/nr_task/rootfs/tbox_group/test/testcase:
+>   gcc-14/performance/x86_64-rhel-9.4/thread/100%/debian-13-x86_64-20250902.cgz/lkp-spr-2sp5/futex2/will-it-scale
+> 
+> commit: 
+>   0fcb05b723 ("Merge tag 'libcrypto-fixes-for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/ebiggers/linux")
+>   c44a057178 ("[PATCH v2] futex: Use a keyed hash for global futex buckets")
+> 
+> 0fcb05b72344f408 c44a057178cbedbc04c63404258
+> ---------------- --------------------------- 
+>          %stddev     %change         %stddev
+>              \          |                \  
+>  7.026e+08            -6.0%  6.607e+08        will-it-scale.224.threads
+>    3136755            -6.0%    2949754        will-it-scale.per_thread_ops
+>  7.026e+08            -6.0%  6.607e+08        will-it-scale.workload
+> 
+> 
+> Disclaimer:
+> Results have been estimated based on internal Intel analysis and are provided
+> for informational purposes only. Any difference in system hardware or software
+> design or configuration may affect actual performance.
+> 
+> 
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+> 
 > 
 
+I wonder what is the best way to run this above regression test and what
+will be an acceptable threshold for the patch to be merged.
+I'd like to iterate on the patch, fixing the issue while avoiding the
+the performance regression.
+
+Best,
+Kyle
