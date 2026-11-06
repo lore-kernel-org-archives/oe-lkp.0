@@ -1,101 +1,57 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.41
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793972708;
-	b=MihLWoaqUbtQt+q3OIjQKAMzyUG1cGtUq89gHN3fA+JygXCVeV3TyTDmj8g2pnm7ZwDM
-	 BuT/PxnB69JqK3ga7+GQkVNC8dHAgyf8Ios7H8cDCGlh8Tec874KQi9qqwo+Px8kM3q0q
-	 TefToxyPPK7KJArGEL0XuTWzDJbG9znmRzreX9SO8Q+j6nU8Gzokk9JOHGq7WDrO4DUW+
-	 RyBU76jSAXP2PFC2ZxXjgOY1EdHvGpWWG3sE/L3O8GoRvxuow7sG1e9wQ6X+OuzocIaYa
-	 vv4M3fsPrVVNwjm1BferG7I7wp8srNqupaImylpush4S1VVWBkCNy+j+c2LKkYLINfQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793972708;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=K63SRYXJYnToUzmwwdizK3xJn9h0hSaj5lF2H2514zI=;
-	b=Y865lyIz1SkcdL5XW4T8Ek4VvOkbdRcrvzRoAcYcf5v5ABGUX7LcuWKgbyhBbq/pYKd0
-	 5pELfnxTCCgdOlIfYAIzetLRxz2VhCCjEAPkD9JuJlak9BYNxLqISOLSdv1Q0THgRbdur
-	 rXTYUHaAEw2pfrnWyr6u1QNb9Fcm0mr2TblBUpUr1IrRr2MwjDipS20Y19aE8v/jiEg6/
-	 jniCnvhUqaSAgXje0013rg61ZQLbvCyrwZITsBYzsulGEVDj1X5/6nR1D0m8yk0tGadM0
-	 i7vl9vS6DsDG8+IhnieBJebXjOu/YU6I7647yZQKoCo7RrsMV5jaCwEgxc8ruBj+9bA==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=AaLtDaL3;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.41
-Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=216.40.44.15
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793975035;
+	b=xZXMuF6MOWr1T3Z2RZ//gLPog2eAYPDpY9a7Rm3cv5x/SA0CVoEiqfyLBL6fSYUlTCZd
+	 RdB/OSFJBOLQPB9yodlKcJ8Cz1ltSmYf+uf/kGE5gdiY3GkVg5UPlf0dQE1R/lBoWD5IH
+	 1pCW7jIT1xvhIEUg2DAZCn9gyySpEvflhd/TvHAn/t5hTNr0LG4vD+KL9cKrzFhPKL7qL
+	 hDCmKhe06sD7XNIxxT9YN4OVMjOtumbZO/TsmbO6oK3QDY9152wxU1EHYAQvdnuzinqV1
+	 RMkLPmy4S96YfIkOqONsFux//DBZ+N/hdMicCS1L+baEXxzFLuiPx2I1epAlKF9lMMw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793975035;
+	h=DMARC-Filter:Received:Received:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:X-Rspamd-Server:X-Rspamd-Queue-Id:
+	 X-Stat-Signature:X-Spam-Status:X-Session-Marker:X-Session-ID:
+	 DKIM-Signature:X-HE-Tag:X-HE-Meta;
+	bh=GH/ncfbeQ7ilPdkBkVcg+I7LlA5i2bpzryJ/6Ye4fBU=;
+	b=gvnNHPgdCG1g2vQ6sYUGfXpmuw44s+uZ1Cp09IiVBOW573LB2tcv/27S6PHwWzxbSD7O
+	 zNacn+CdLwVlPnQV3DoCIpuKfTRoN7HY43a+wSMUWJlH04LpGnrCE+4xD9MAnh6SsWhrz
+	 GU4ANv1wkneEPJ2AGS2P1wC21duO+ym2F5uBZJ2oCCS5F4zo5sKSIbVvVLE1pxzdMxNyw
+	 fuo5Wj2BAccKAeCsRebsqfxlAxI0kAwuFQulcH1nwOGINaEwmnusijzSzJp0/u1mhe2vg
+	 xzX3Ccc4eOQfdJKcmp+LXEXU+UmKmZT0UFQIKcVVSNWeaX19ClU74FrKfsgbW7dgx/Q==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=goodmis.org;
+	spf=pass smtp.mailfrom=goodmis.org;
+	dkim=pass header.d=goodmis.org header.i=@goodmis.org header.a=rsa-sha256 header.s=dkim1 header.b=SgAUGpj8;
+	arc=none smtp.remote-ip=216.40.44.15
+Received: from relay.hostedemail.com (smtprelay0015.hostedemail.com [216.40.44.15])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 817C7606EE8E
-	for <oe-lkp@lists.linux.dev>; Fri,  6 Nov 2026 13:45:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 817C7606EE8E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46954606A32E
+	for <oe-lkp@lists.linux.dev>; Fri,  6 Nov 2026 14:23:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 46954606A32E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=goodmis.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goodmis.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=AaLtDaL3
-Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-6b6e7a05225so631569a12.0
-        for <oe-lkp@lists.linux.dev>; Fri, 06 Nov 2026 05:45:08 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1793972707; cv=none;
-        d=google.com; s=arc-20260327;
-        b=VHs3TCKUE5L2OBGi2WW7Ns/HJxqqojGGtWhouTjqO2IpIPAkfYkQvgk9f+STU4I8Wv
-         kDDbzjw5JrLSsx5Y2Esa2ysBZ/XsfSF9NnZ6jEG3WT9GLL9v2gpMC8h2uE4S4uReiX3S
-         dlLFapKOsYPFJM8wBL++Ljm9BPp9hKauVd9R9hJX6n7+iT8mXBhNWVZk3kIxUsO7+2fe
-         4/XX81tJbYAnlrpNomKd9Od7N9iAZ4a3yTahRfMehIY5YgzlOmh/HfK668VMNtv6hao7
-         bTamfAZDqrKJFsONo72yDUqyERoax1F1ToA8jh6gDtCkJD3ugLaUgioYO+r6VOj7nDBL
-         Oiew==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=K63SRYXJYnToUzmwwdizK3xJn9h0hSaj5lF2H2514zI=;
-        fh=3ftWvtdh9HcvWhrbeH/Yq543KUXI8mEKXFtzPhtCc14=;
-        b=AE/2vEH288jC8w/Ys6G35QdW8PiTRNDabj/NooBIm+9sxCWTe0y17AvHAySHMjF21V
-         yiLYJ39GZ8muRAxq8MUXSShCzzQUlFNX32cR8tqxc/NWZ7gJOdkOe9wtGonVMKlQvLOB
-         KSc8RQ9zyBcjHlI0JXQX1G56ab31XW0C5lfRyuXKIdGHeg/tm/d3qRfrnP8rHpAnYlRm
-         EC6aoDhc814R0/CB1DTlHH/nvcTU9W4mlI43nxctOO5tKfwqus+TzmrZBEOtuXQyQBjK
-         fA+axSP8QWWXyd884vS9nELRAqzVzyC23r+KGQycZBmkcGKOoa/gF6hTy+yTV5PZj/O5
-         JuDQ==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793972707; x=1794577507; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=K63SRYXJYnToUzmwwdizK3xJn9h0hSaj5lF2H2514zI=;
-        b=AaLtDaL3ExecXvKhjppsTEFyZKglxhrF6t82EO00OixKlpoVgt9XF4d6uLsXEo1Dne
-         F0FUqS1Kny+EsOCaWXyteLi+0RDVxaxgYwegbLM6JWg9n9/d/2kI+wWJuqkp0dDmjody
-         +28hCLu5CeaDQGsmCcSxYiM2tIBgJJy6Q04d6ZsHp13ttVpoP+aDXFwGvLhDnQJbTK5U
-         F6hZexu4IV5Gz6MHN8PVbiK2lJ/DwXTkbL2cc1NhgQBq9tmuxeVasZ4/Tmmaf32k2VDk
-         T7h3e8GTF0KzUjqw1tO4Kx6MNhSRQiPjzFEE5rCNSzVgOiAQ70BLnsd30v2cImmFa/M3
-         0Y/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793972707; x=1794577507;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=K63SRYXJYnToUzmwwdizK3xJn9h0hSaj5lF2H2514zI=;
-        b=DcVWF9ePF5Jm9Nu7q9YpZ1w++m0Qi0wNECXSThSJnrSgJ0dboG8JNkwRZfkCa/uuus
-         9tGeDLDpgoaaGO2zAjQ0eNiL+Uw6EsC6cZgdBAQeSOoNTHEDW2UzNF7HGnDMafiqdbsk
-         9zFR6RkC2DxPv1GPnQY0ZKtwSZvQ+H9O0ruX+unR+dmEoELQ/Jp0TSjox+NIvMi9LZI7
-         UAVd61zDUk35nUGbAvhTvqZml96occeL7+DDi568E+vC9zSXwPqt7/n0420hwcZs9yAa
-         XVKEV7T4M2dzRAIsyMsIlfOfn27O1XFbzPeeU4aUJiAatr7B4CJ9Js1StDyLQXGOZmR6
-         yDRg==
-X-Forwarded-Encrypted: i=1; AKwUvBz/ZYe7EV27j3FMDwp/wqnBDQtgZBk28qRIheUNCtpdTHpSNM4fcmwJGkYkJUBHV3+uXy8NMeM=@lists.linux.dev
-X-Gm-Message-State: APuU4Z/unvitkZPVKlerH0Zi2juXulQUpZVPFZiAjFs3h3ZKA27w/KWG
-	TK4kk59tqR9h4VQkXh2d420qRBs1/vNldMKKK9CW+Nqj4VT/tsPfFbWGqFe1hMS4biU1pk6/dIA
-	wl/1fKJO+WVCrE8T530YHS3EoE3dQ/QI=
-X-Gm-Gg: AYBFou0Fz9TGWfg0kuWPL1meCnbNH8wBC0M+h43i4xoBwdhDZR5PB8EdVQfVijDfZGB
-	HY2erj9cAtINxT8HOT6Ia/hGOQA4pt5BKLcLdrBj4liG+4J4nCj7D2YYPu74p9Y32ASRf7i+0x4
-	mX4v+X71o4wEplm8QW/HxD5olp9R3GpzDqUgrZrhmg/FOlzyswqM4AKLAkdw+fcwquJZI3ODokq
-	yfvPB+THjLP0Z8G5CHLLJiX4cq03VMnw9gdntZcz9QiRMPiRIk1OOdJ5qt+1I95l3PkTuaRCEwq
-	IhmhV1IyV6yp55d0I/0QxWi79sEIENuhsS27YoVhuPkN8La4lv8yHC7O5Y5uaAysET11/5PbFMx
-	jl4hmzN9Q6/gBjw7ks5pXKWeRGwXtJbhagIRCM0YjDpYU586OXvRDbKTWTwzjSwbhty99ldpMzO
-	2Qoh2ZYN1KHi7CbNhEAsKTpW1dB6jMRWQZ0pyumvAHTuRTwGiDnw==
-X-Received: by 2002:a17:907:ea89:b0:c4c:bff4:200c with SMTP id
- a640c23a62f3a-c4d3531f031mr216233766b.32.1793972706561; Fri, 06 Nov 2026
- 05:45:06 -0800 (PST)
+	dkim=pass (1024-bit key, unprotected) header.d=goodmis.org header.i=@goodmis.org header.a=rsa-sha256 header.s=dkim1 header.b=SgAUGpj8
+Received: from omf09.hostedemail.com (lb01a-stub [10.200.18.249])
+	by unirelay04.hostedemail.com (Postfix) with ESMTP id 844281A0DF4;
+	Fri,  6 Nov 2026 14:23:51 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: rostedt@goodmis.org) by omf09.hostedemail.com (Postfix) with ESMTPA id B83C420025;
+	Fri,  6 Nov 2026 14:23:49 +0000 (UTC)
+Date: Fri, 6 Nov 2026 09:23:48 -0500
+From: Steven Rostedt <rostedt@goodmis.org>
+To: kernel test robot <yi1.lai@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+ Martin Kaiser <martin@kaiser.cx>, Vinod Koul <vkoul@kernel.org>,
+ linux-trace-kernel@vger.kernel.org
+Subject: Re: [linus:master] [tracing]  b5cc230af5:
+ WARNING:at_kernel/trace/trace_events.c:#test_double_dereference
+Message-ID: <20261106092348.59ace6ed@gandalf.local.home>
+In-Reply-To: <202611060303.c90f27a7-lkp@intel.com>
+References: <202611060303.c90f27a7-lkp@intel.com>
+X-Mailer: Claws Mail 3.20.0git84 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -105,170 +61,165 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-References: <202611041404.befe64cd-lkp@intel.com> <20261105-trommeln-einspannen-radius-ccb4e174e407@brauner>
- <auygOHcuBba_o132@gmail.com> <CAGudoHFpNbxL13ZOWiyyLSPpmzXcB=e=RBZ8ZGk+Oc58Aad9pA@mail.gmail.com>
- <au2vjpu_yqNa83pN@gmail.com>
-In-Reply-To: <au2vjpu_yqNa83pN@gmail.com>
-From: Mateusz Guzik <mjguzik@gmail.com>
-Date: Fri, 6 Nov 2026 14:44:54 +0100
-X-Gm-Features: AclHuK9fhTVlPSoaFVQpmWKFtp3rg-Yo_vESXYaoYYRFIlvR-B2NGlbbcPxrfcY
-Message-ID: <CAGudoHF3de_55YvdztPs7QiYs25u6nPEV=uMOzfr=bWmwof69g@mail.gmail.com>
-Subject: Re: [linus:master] [fs/pipe] f7f4665dc5: lmbench3.PIPE.bandwidth.MB/sec
- 18.5% regression
-To: Breno Leitao <leitao@debian.org>
-Cc: Christian Brauner <brauner@kernel.org>, kernel test robot <yi1.lai@intel.com>, oe-lkp@lists.linux.dev, 
-	lkp@intel.com, linux-kernel@vger.kernel.org, Oleg Nesterov <oleg@redhat.com>, 
-	linux-fsdevel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Rspamd-Server: rspamout05
+X-Rspamd-Queue-Id: B83C420025
+X-Stat-Signature: y11ur35snzacao1tnqfm81r83sfn7har
+X-Session-Marker: 726F737465647440676F6F646D69732E6F7267
+X-Session-ID: U2FsdGVkX18UN5ph8eIV3VDT4wh6J+NcPTDpotMJOKE=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=goodmis.org; h=date:from:to:cc:subject:message-id:in-reply-to:references:mime-version:content-type:content-transfer-encoding; s=dkim1; bh=GH/ncfbeQ7ilPdkBkVcg+I7LlA5i2bpzryJ/6Ye4fBU=; b=SgAUGpj8ys0HxCP5kwoJGb3240Ut0DjtKgZO9XuDraiIkMS5H9WuxjTfzTBq9F+N+mBrA/CFysLM0Oh2tst8St9DWN2mMKv8HsIFpxoL/dAS310Avs1urC8fwrsyNJYeFTkYRF4lwK9sTWcaXiFgV9hCeAAWARNPAHxTzbA3l8k=
+X-HE-Tag: 1793975029-751001
+X-HE-Meta: U2FsdGVkX1/DnDILrB7JgUkuEp197qJHo0Ob0V+VXGwcXl0qzwjjatAqoJFSq79krvXWInlwj1AaYJucj/9HLeTD9pqfSY67KKctBP5IR8jIGsRg2taOfKekx6tmRa4To0N5/uHmWJD7Sjpy6u7iMbOcBvI5eXIoqImQqvzkrAp5LoDswIKXenXO7LNnNIJdqlPlxiZak9Zg5QH/wkuW7vJQzyJ/Rqyjf6E197x7xsiOTQhBWSj/pHWAtgLpjEO6p71BN+Iia8AMz6zmOOvBn5UohgrNpX357f//gYI5W8jT7P8zQxsa6wU8Iy7/3SlZLl7ECCubVR+x4oLyxVsKjF5LVuHkhY0nblvYSbudu8XkN1GJnoSC/oKDmZ9ktm5jsIsWObgfmK+JyfHiOAoBOCyFO15HJPRpi38DAT/yL26cjX5K6hOKZHKMlb/MVCT5YNkIm7s1kVQ=
 
-On Fri, Nov 6, 2026 at 12:11=E2=80=AFPM Breno Leitao <leitao@debian.org> wr=
-ote:
->
-> On Thu, Nov 05, 2026 at 04:57:33PM +0100, Mateusz Guzik wrote:
-> > On Thu, Nov 5, 2026 at 4:28=E2=80=AFPM Breno Leitao <leitao@debian.org>=
- wrote:
-> >
-> > The test at hand has multiple readers and writers using the same pipe,
-> > with 64KB i/os.
-> >
-> > Prior to the patch each writer had its own private pool to draw from,
-> > guaranteeing no allocation will happen under the mutex.
-> >
-> > With the patch the reader exit also drains the pool.
-> >
-> > As a result tons of allocation ends up happening under the lock again:
-> >
-> > -   94.88%    94.88%  bw_pipe          [kernel.kallsyms]     [k]
-> > __alloc_frozen_pages_noprof
-> >      94.88% __internal_syscall_cancel
-> >         entry_SYSCALL_64_after_hwframe
-> >         do_syscall_64
-> >         ksys_write
-> >         vfs_write
-> >       - anon_pipe_write
-> >          - 47.46% alloc_pages_noprof
-> >               alloc_pages_mpol
-> >               __alloc_frozen_pages_noprof
-> >          - 47.42% anon_pipe_prefill_and_lock
-> >               alloc_pages_noprof
-> >               alloc_pages_mpol
-> >               __alloc_frozen_pages_noprof
->
-> Ack, this matches what I found as well. Thanks for investigating it.
->
-> Because the preallocated pages are not private to the writer anymore,
-> the reader flushes them while the writer waits for room in the pipe,
-> and the writer then has to allocate them inside the lock.
->
-> This basically loses the wins[0] from commit 212ed884a1aeef ("fs/pipe:
-> pre-allocate pages outside pipe->mutex in anon_pipe_write") for this
-> specific scenario.
->
-> > I don't think multiple high-volume writers vs multiple high
-> > volume-readers is a realistic scenario and I would not bother fixing
-> > it.
->
-> Agree, but I would like to spend some cycles on it.
->
-> > However, should someone want to address it, I think the patch should
-> > be reverted and the resulting state tweaked. The patch at hand came
-> > after the mutex is released -- the kernel prior to any of this would
-> > still put_page on the reader side under the lock. This bit would have
-> > to get tweaked to recover the loss in that scenario (not to be
-> > confused with the loss reported here).
->
-> We can revert the patch, but that would bring back the two page pools
-> (the on-stack prealloc and tmp_page[]), which is probably worse than
-> this regression itself (IIRC it would also lose the gains for smaller
-> writes (about 20% for 8-16 KiB writes IIRC ))
->
+On Fri, 6 Nov 2026 11:07:56 +0800
+kernel test robot <yi1.lai@intel.com> wrote:
 
-Like I said above, per my understanding the win is not specific to the
-unified pool thing, but merely to the fact that the reader would put
-pages *after* releasing the lock. this can be done in either approach.
+> Hello,
+> 
+> kernel test robot noticed "WARNING:at_kernel/trace/trace_events.c:#test_double_dereference" on:
+> 
+> commit: b5cc230af5e536ff752f8bd5c30e23612936d5c3 ("tracing: Warn when an event dereferences a pointer in TP_printk()") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-> That said, these are the items I am planning to spend some time one:
->
-> 1) Reclaiming the pooled pages from a shrinker, as suggested in [1]
->
+That commit warns when there's buggy events. The bot found one.
 
-The more I look at this the more the extra memory usage bothers me --
-even with shrinker support there is just plain waste until it runs and
-it is going to cost elsewhere. If this was "free" performance I would
-have no comments.
+> 
+> [test failed on linux-next/master ddfe51b0a0f5dc9e415cc2c8ad8db17532dd426b]
+> 
+> in testcase: boot
+> 
+> config: x86_64-randconfig-r2309-20261012
+> compiler: gcc-14
+> test machine: qemu-system-x86_64 -enable-kvm -cpu Cascadelake-Server-noTSX,enforce -smp 4 -m 16G
+> 
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+> 
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <yi1.lai@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202611060303.c90f27a7-lkp@intel.com
+> 
+> 
+> [    0.808840][    T0] ------------[ cut here ]------------
+> [    0.810236][    T0] Event hfi1_txq_complete has double dereference in TP_printk: REC->sde ? REC->sde->this_idx : 0
 
-Makes me wonder if there is any practical win to pursuing it in the first p=
-lace.
+Yep, it caught a bug!
 
-But here is an idea just to ponder: what if the threads using the pipe
-were guaranteed to trim it at some point, even if it remains open and
-unused?
+ECLARE_EVENT_CLASS(/* AIP  */
+        hfi1_ipoib_tx_template,
+        TP_PROTO(struct ipoib_txreq *tx, u32 idx),
+        TP_ARGS(tx, idx),
+        TP_STRUCT__entry(/* entry */
+                DD_DEV_ENTRY(tx->txq->priv->dd)
+                __field(struct ipoib_txreq *, tx)
+                __field(struct hfi1_ipoib_txq *, txq)
+                __field(struct sk_buff *, skb)
+                __field(ulong, idx)
+        ),
+        TP_fast_assign(/* assign */
+                DD_DEV_ASSIGN(tx->txq->priv->dd);
+                __entry->tx = tx;
+                __entry->skb = tx->skb;
+                __entry->txq = tx->txq;
+                __entry->idx = idx;
+        ),
+        TP_printk(/* print  */
+                "[%s] tx %llx txq %llx,%u skb %llx idx %lu",
+                __get_str(dev),
+                (unsigned long long)__entry->tx,
+                (unsigned long long)__entry->txq,
+                __entry->txq ? __entry->txq->q_idx : 0,
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Currently there is the notion of task_work, which allows for arbitrary
-callbacks to execute on the user<->kernel boundary. As implemented it
-is rather expensive (atomics) to use and always flushes the entire
-work queue.
+You must not dereference pointers in TP_printk(). That is a bug!
 
-But imagine the mechanism got extended such that there is a separate
-queue where only current can add stuff (so it is cheap). Getting to
-the code could be gated with the same branch which tells the kernel
-about task_work, so no extra overhead in syscall handling as long as
-you don't have anything queued up.
+I'll send a patch to fix their trace event
 
-With this in place pipe code seeing a big buffer could add a callback,
-which would do some magic to decide whether to trim the pool and by
-what amount. Just for the sake of argument, here is an example: 1/16
-chance it will do anything to begin with. if it chooses to do
-something, it checks if there is a "trimmer was here" bit. If no, sets
-the bit and leaves. If yes, shrinks the pool in half. The pipe write
-code would clear the bit, so a pipe with continuous usage would mostly
-remain intact and an unused pipe would eventually drain to nothing
-(including the currently held 2 pages).
+-- Steve
 
-> 2) Trimming the pool gradually on the reader side, instead of cutting it
->    down to two pages in one go. Or not trimming it while a writer is
->    in the waiting room (!?)
->
 
-There is no indicator there is a writer pending, at best you can check
-if the lock is contested. This seems like gaming the benchmark to me
-though, as a real program who happened to generate data a little later
-would suddenly find itself with the pool trimmed.
+                (unsigned long long)__entry->skb,
+                __entry->idx
+        )
+);
 
-Granular trimming definitely makes sense, provided shrinker support is
-implemented.
 
-> 3) Keeping the writer's preallocated pages private again, while keeping
->    the unified pool (i.e. without bringing tmp_page[] back).
->
-> 4) Freeing the pages the reader drops after releasing pipe->mutex,
->    instead of under it, as you suggested. This is independent of the
->    options above.
->
-> 5) Longer term: copying the data into the preallocated pages before
->    taking pipe->mutex, so the writer only links them into the pipe
->    under the lock. This doesn't seem trivial, but it would make this
->    whole pre-allocated buffers go away
->
 
-I think this is sounds awfully complicated in face of multiple writers.
 
-> 6) Any other idea?
+> [    0.812882][    T0] WARNING: kernel/trace/trace_events.c:417 at test_double_dereference+0x95/0x100, CPU#0: swapper/0/0
+> [    0.815697][    T0] Modules linked in:
+> [    0.816602][    T0] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted 7.2.0-rc5+ #1 PREEMPT
+> [    0.818731][    T0] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+> [    0.821353][    T0] RIP: 0010:test_double_dereference (trace/trace_events.c:417 (discriminator 3))
+> [    0.822786][    T0] Code: 30 e8 c9 27 fb ff 80 7b 01 3e 75 25 e8 be 27 fb ff 48 8b 7d d0 e8 75 fa ff ff 48 89 c6 48 8d 3d 8b 30 8f 06 4c 89 e1 44 89 f2 <67> 48 0f b9 3a eb 3b e8 99 27 fb ff 41 0f b6 c7 f6 80 00 a1 fd 85
+> All code
+> ========
+>    0:	30 e8                	xor    %ch,%al
+>    2:	c9                   	leave
+>    3:	27                   	(bad)
+>    4:	fb                   	sti
+>    5:	ff 80 7b 01 3e 75    	incl   0x753e017b(%rax)
+>    b:	25 e8 be 27 fb       	and    $0xfb27bee8,%eax
+>   10:	ff 48 8b             	decl   -0x75(%rax)
+>   13:	7d d0                	jge    0xffffffffffffffe5
+>   15:	e8 75 fa ff ff       	call   0xfffffffffffffa8f
+>   1a:	48 89 c6             	mov    %rax,%rsi
+>   1d:	48 8d 3d 8b 30 8f 06 	lea    0x68f308b(%rip),%rdi        # 0x68f30af
+>   24:	4c 89 e1             	mov    %r12,%rcx
+>   27:	44 89 f2             	mov    %r14d,%edx
+>   2a:*	67 48 0f b9 3a       	ud1    (%edx),%rdi		<-- trapping instruction
+>   2f:	eb 3b                	jmp    0x6c
+>   31:	e8 99 27 fb ff       	call   0xfffffffffffb27cf
+>   36:	41 0f b6 c7          	movzbl %r15b,%eax
+>   3a:	f6                   	.byte 0xf6
+>   3b:	80 00 a1             	addb   $0xa1,(%rax)
+>   3e:	fd                   	std
+>   3f:	85                   	.byte 0x85
+> 
+> Code starting with the faulting instruction ===========================================
+>    0:	67 48 0f b9 3a       	ud1    (%edx),%rdi
+>    5:	eb 3b                	jmp    0x42
+>    7:	e8 99 27 fb ff       	call   0xfffffffffffb27a5
+>    c:	41 0f b6 c7          	movzbl %r15b,%eax
+>   10:	f6                   	.byte 0xf6
+>   11:	80 00 a1             	addb   $0xa1,(%rax)
+>   14:	fd                   	std
+>   15:	85                   	.byte 0x85
+> [    0.827992][    T0] RSP: 0000:ffffffff87403d48 EFLAGS: 00010046
+> [    0.829610][    T0] RAX: ffffffff87183110 RBX: ffffffff87dcba95 RCX: ffffffff87dcba82
+> [    0.831687][    T0] RDX: 0000000000000021 RSI: ffffffff87183110 RDI: ffffffff87fe7ae0
+> [    0.833687][    T0] RBP: ffffffff87403d78 R08: 0000000000000000 R09: 0000000000000000
+> [    0.835822][    T0] R10: 0000000000000000 R11: 0000000000000000 R12: ffffffff87dcba82
+> [    0.837895][    T0] R13: ffffffff87dcbaa3 R14: 0000000000000021 R15: ffffffff87dcb92d
+> [    0.839689][    T0] FS:  0000000000000000(0000) GS:ffff8884a6e38000(0000) knlGS:0000000000000000
+> [    0.841148][    T0] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [    0.842182][    T0] CR2: ffff88843ffff000 CR3: 0000000007497001 CR4: 00000000000300b0
+> [    0.843452][    T0] Call Trace:
+> [    0.843961][    T0]  <TASK>
+> [    0.844424][    T0]  test_event_printk (trace/trace_events.c:599)
+> [    0.845211][    T0]  ? __pfx_trace_event_raw_init (trace/trace_events.c:640)
+> [    0.846111][    T0]  trace_event_raw_init (trace/trace_events.c:650)
+> [    0.846904][    T0]  event_init (trace/trace_events.c:3384)
+> [    0.847591][    T0]  trace_event_init (trace/trace_events.c:4857 trace/trace_events.c:4950)
+> [    0.848366][    T0]  trace_init (trace/trace.c:9957)
+> [    0.849014][    T0]  start_kernel (main.c:1071)
+> [    0.849736][    T0]  x86_64_start_reservations (x86/kernel/head64.c:310)
+> [    0.850600][    T0]  x86_64_start_kernel (x86/kernel/head64.c:291)
+> [    0.851419][    T0]  common_startup_64 (x86/kernel/head_64.S:418)
+> [    0.852218][    T0]  </TASK>
+> [    0.852686][    T0] irq event stamp: 0
+> [    0.853291][    T0] hardirqs last  enabled at (0): 0x0
+> [    0.854409][    T0] hardirqs last disabled at (0): 0x0
+> [    0.855533][    T0] softirqs last  enabled at (0): 0x0
+> [    0.856645][    T0] softirqs last disabled at (0): 0x0
+> [    0.857758][    T0] ---[ end trace 0000000000000000 ]---
+> 
+> 
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20261106/202611060303.c90f27a7-lkp@intel.com
+> 
+> 
+> --
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
 
-The SMAP stuff is the primary problem right now. To reiterate: every
-single buffer read/write takes a SMAP trip, which is very expensive
-even on modern uarchs. Refactoring this into i/o under one SMAP round
-would provide a visible speed up. It also happens to not pose a
-tradeoff in terms of memory usage and would be my first avenue of
-attack if I was working on this.
-
-All that said, one reader vs one writer scenario definitely makes
-sense to optimize.
-
-Apart from that, highly parallel i/o on one pipe is imo the wrong
-thing to look at in the first place. What is more likely to occur in
-the real world is the user having separate processes operating on
-distinct pipes, but this was not benchmarked at all. Another case to
-look at is one reader vs one writer, but all the tuples have unique
-uids.
