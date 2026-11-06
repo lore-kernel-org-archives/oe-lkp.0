@@ -1,73 +1,54 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793934482;
-	b=FHmudRFgEVgTc6d4577jIYHHMWDJxL9npdMJN5JOaUF60FqwllZ49+iLUq8mqEQuL3x6
-	 lb+6guRrS6RSTLCru7QN/kKpnTeG6DpT5PHOEUmyX0cbAT9qxjo2uIm0zjhGpByVScpEP
-	 umk20gImRS0QxWETe7YwGDA/sVSN9a5PKOPUK3iHdh2bdM47+uN7K6Bn0hTyMoWeuGthe
-	 dJJYFbZPD7ryh7MAxPKHXxjgua5/YBGjKv+7wVRT4pRBwHXiaDlDXe23ROXNMs8PmblnU
-	 dpexL3+yOAiydbkDecuqbaV4NNAekBRH/e2JljSBDN9S9WuD025R1m6EfqiXWznhYEA==
+	t=1793940876;
+	b=dvTe1Hso6CbKxVqa5fhb5/Brk/mmY8h5MIuCEEo2xFamoJacspvDaKZ9toWl7U6pUNs5
+	 ioaBaceOdRaFNLAIx+cBBbq2N0LyT292IE3p5YDGCyLkOaGOhvIxJ/Jw+ke629jBFyVrg
+	 MAoZe3OOXX1Qjf+aLTZyVNOS0q9S0IRhoMNHeTdhJSApuISQObEqhafYGYtGDZmuGq8Vm
+	 VosIbs9kP8EDNwdVCViPRKkDwucZ5wVYjUsrbNTXdKm59pWsUDvLQMJwapA8X88vkqqD4
+	 dI8zy9V5iez2KIYWkcDbcf6PLV8oKkCSQkxEuAmGbWM8R/IEvEQ5I7OuMiqTSj/yvWw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793934482;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition;
-	bh=6i0giO9JC/Tn20VM9MLp6JL4dkTvjBKFn8ta8TGBzWs=;
-	b=VK0/Ct+mStCOeakYPgEY7Eo+uoDFfHI+rMa77XleOQ5Kxc/kWeSHW94OpjL3NKouEEIB
-	 8eQNubnhlcsDSW786paOZ5rerD1UEVbhkb/q5sEJsGDJzev5AccMsJLl8ABVPMoETej/S
-	 QZjJlQPJ4eksMlZ9RYBHt4GZwYwp5Rhgy/cfb2nmAbFpUSCku0K/xRhqocktqfcC2Vqq/
-	 +mvwVZytM3O3IbW5t4832+Ihu/88uBsAdtB72Osv/xNHazJ31e3hfnabkTCd/aUUat+2s
-	 9q1rNwwZLZ+YmhdYgq0Vz2RV0XQ0YZ8PRNqo2paWqUEXmelzvDFCZBsnPZXYnuEjfWA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793940876;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 In-Reply-To:References:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=0XXMzfFrMuhQ4F+XnXsFq3w4XgRZy5QKJgrtlHXBe4k=;
+	b=Z+mfnvAWBbJbINDSqYFxlEb1zgiSQ4HQUbg0sbmvE9X3Nt3wX5uYy/PjFRSeefj3VGyd
+	 SYHOyhVZKuBzLA4s9vnb2Cz0ahekA/+uAZX71sMz1UdszzbR/JqFMR2f8lfZsOHoerITY
+	 2vcsp4+dqHh6vQcp9ghre1pOmlAE952StxLHS3bvTSz8soMhkiOv5IWKp6qQED2uTcmPL
+	 5PbmQEVGz2UKOLkmNzPCXNY04X6FiSckUc01LKoLzwEA5GTMGkOUSqAO8VTfux+pKOp6Z
+	 /dyYxrijJbtQl5ZxaTx/waqWSiRVkcNB1Hf9Eovy/pn8OQ3VYyUtGjBGJvoP5FHXSSQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=OLHcz1g7;
-	arc=none smtp.remote-ip=198.175.65.15
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="EBCH59/y";
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42CF1606A31B
-	for <oe-lkp@lists.linux.dev>; Fri,  6 Nov 2026 03:08:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 42CF1606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94E0E606A328;
+	Fri,  6 Nov 2026 04:54:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=OLHcz1g7
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793934482; x=1825470482;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=sHSsITdw52eBg+7eK+akWWmzeFire5iQg00Atu2e4KQ=;
-  b=OLHcz1g7ePmTwXiI2D1PYd68YXvvXFhJ8a3cEvcnsFWrimfYlx88iXbQ
-   U7DotrZ1C9gradlyq0rm+C/StskvilDk4YQ0OBVKPontrNgogugPORSDe
-   z82y2oYzKtt0JFSZYzdoz91SpMVXcq1GlcLK3P9R1R9Mzl/I0YPJF+02M
-   j38DC4SnUKO0oG/E/ErXlMxfiPEEa8GcTmf/xexUEN1lLZ35lKDQEcdxY
-   pTtWLuCpMxSPhZ3Iqi/ij4CxOn9C6EyDRxIzuVWJ5g7Gnno+uAL2ZPnT8
-   C7jbkmBHJeQVdtLglmiZT3DGgmutEzX9rQmymagrPJFIL9FZuW+3MFrmi
-   w==;
-X-CSE-ConnectionGUID: ZvRE3MNaQQCT+VBggyFvXg==
-X-CSE-MsgGUID: bwqoK76KTcKd6xLRdI0qAw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11957"; a="2744332"
-X-IronPort-AV: E=Sophos;i="6.27,197,1787036400"; 
-   d="scan'208";a="2744332"
-Received: from fmviesa013.fm.intel.com ([10.60.135.153])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2026 19:08:02 -0800
-X-CSE-ConnectionGUID: XqXT3RTHTsKW0Tln1c9DNQ==
-X-CSE-MsgGUID: ETiATnndQ/KqparOYXV0Yg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,197,1787036400"; 
-   d="scan'208";a="9047896"
-Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2026 19:07:59 -0800
-Date: Fri, 6 Nov 2026 11:07:56 +0800
-From: kernel test robot <yi1.lai@intel.com>
-To: Steven Rostedt <rostedt@goodmis.org>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	Martin Kaiser <martin@kaiser.cx>, Vinod Koul <vkoul@kernel.org>,
-	linux-trace-kernel@vger.kernel.org, yi1.lai@intel.com
-Subject: [linus:master] [tracing]  b5cc230af5:
- WARNING:at_kernel/trace/trace_events.c:#test_double_dereference
-Message-ID: <202611060303.c90f27a7-lkp@intel.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EBCH59/y
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 098411F008A3;
+	Fri,  6 Nov 2026 04:54:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793940876;
+	bh=0XXMzfFrMuhQ4F+XnXsFq3w4XgRZy5QKJgrtlHXBe4k=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=EBCH59/y9hilVF46mpV5nEtKYrzidn9xHBUwOKDUfytSuRZwVtYspUNP9VSGDt28B
+	 Rgcbt+W7bpMf+HAtpvA2n/TPaCgvQOAYwqEnL8XlwkeGhIAasR9/HImNm5gNBD3PYe
+	 9Zb/bbDwPxZMq/lzrmrFtkTfr94erDv9W98CG3cNvMI+jFeJKo9s/Ob05hig3pBmk/
+	 ofL+dsN2MsZI0j58TAMOWaOY3LB7dQdMPMQZolrjbfDIuPIVKgMwUgdg/V6brAVudm
+	 6vIgf4K/jcp4FQgXlqhsZWJFs+nn//23p7AyaZHc2S5LvNeZ1/zRnsOvPHZJ5NGVWs
+	 z+bsfUwPjBxQg==
+From: "Masami Hiramatsu (Google)" <mhiramat@kernel.org>
+To: kernel test robot <yi1.lai@intel.com>
+Cc: Steven Rostedt <rostedt@goodmis.org>, oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, Martin Kaiser <martin@kaiser.cx>, Vinod Koul <vkoul@kernel.org>, linux-trace-kernel@vger.kernel.org
+Subject: Re: [linus:master] [tracing]  b5cc230af5: WARNING:at_kernel/trace/trace_events.c:#test_double_dereference
+Date: Fri, 06 Nov 2026 04:54:33 +0000
+Message-ID: <undine-1793940873129741182-d37e5f54bdcb36ed@undined.local>
+X-Mailer: UndineD 0.1
+In-Reply-To: <202611060303.c90f27a7-lkp@intel.com>
+References: <202611060303.c90f27a7-lkp@intel.com>
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -77,109 +58,59 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+On Fri, 6 Nov 2026 11:07:56 +0800, kernel test robot <yi1.lai@intel.com> wrote:
+> 
+> 
+> Hello,
+> 
+> kernel test robot noticed "WARNING:at_kernel/trace/trace_events.c:#test_double_dereference" on:
+> 
+> commit: b5cc230af5e536ff752f8bd5c30e23612936d5c3 ("tracing: Warn when an event dereferences a pointer in TP_printk()") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> 
+> [test failed on linux-next/master ddfe51b0a0f5dc9e415cc2c8ad8db17532dd426b]
+> 
+> in testcase: boot
+> 
+> config: x86_64-randconfig-r2309-20261012
+> compiler: gcc-14
+> test machine: qemu-system-x86_64 -enable-kvm -cpu Cascadelake-Server-noTSX,enforce -smp 4 -m 16G
+> 
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+> 
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <yi1.lai@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202611060303.c90f27a7-lkp@intel.com
+> 
+> 
+> [    0.808840][    T0] ------------[ cut here ]------------
+> [    0.810236][    T0] Event hfi1_txq_complete has double dereference in TP_printk: REC->sde ? REC->sde->this_idx : 0
+
+This seems to be expected behavior. Because "REC->sde" can point already
+freed/reused object, this should not be allowed. The event must save the
+sde->this_idx at TP_fast_assign() instead of recording sde.
+
+In drivers/infiniband/hw/hfi1/trace_tx.h:
+
+DECLARE_EVENT_CLASS(/* AIP  */
+        hfi1_ipoib_txq_template,
+	...
+        TP_printk(/* print  */
+                "[%s] txq %llx idx %u sde %llx:%u cpu %d head %lx tail %lx flow %x used %u stops %d no_desc %d stopped %u",
+                __get_str(dev),
+                (unsigned long long)__entry->txq,
+                __entry->idx,
+                (unsigned long long)__entry->sde,
+                __entry->sde ? __entry->sde->this_idx : 0, // this must be recorded as a value
+                __entry->sde ? __entry->sde->cpu : 0,	// ditto
 
 
+So this is a bug in an infiniband driver.
 
-Hello,
+Thank you,
 
-kernel test robot noticed "WARNING:at_kernel/trace/trace_events.c:#test_double_dereference" on:
-
-commit: b5cc230af5e536ff752f8bd5c30e23612936d5c3 ("tracing: Warn when an event dereferences a pointer in TP_printk()") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-
-[test failed on linux-next/master ddfe51b0a0f5dc9e415cc2c8ad8db17532dd426b]
-
-in testcase: boot
-
-config: x86_64-randconfig-r2309-20261012
-compiler: gcc-14
-test machine: qemu-system-x86_64 -enable-kvm -cpu Cascadelake-Server-noTSX,enforce -smp 4 -m 16G
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <yi1.lai@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202611060303.c90f27a7-lkp@intel.com
-
-
-[    0.808840][    T0] ------------[ cut here ]------------
-[    0.810236][    T0] Event hfi1_txq_complete has double dereference in TP_printk: REC->sde ? REC->sde->this_idx : 0
-[    0.812882][    T0] WARNING: kernel/trace/trace_events.c:417 at test_double_dereference+0x95/0x100, CPU#0: swapper/0/0
-[    0.815697][    T0] Modules linked in:
-[    0.816602][    T0] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted 7.2.0-rc5+ #1 PREEMPT
-[    0.818731][    T0] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[    0.821353][    T0] RIP: 0010:test_double_dereference (trace/trace_events.c:417 (discriminator 3))
-[    0.822786][    T0] Code: 30 e8 c9 27 fb ff 80 7b 01 3e 75 25 e8 be 27 fb ff 48 8b 7d d0 e8 75 fa ff ff 48 89 c6 48 8d 3d 8b 30 8f 06 4c 89 e1 44 89 f2 <67> 48 0f b9 3a eb 3b e8 99 27 fb ff 41 0f b6 c7 f6 80 00 a1 fd 85
-All code
-========
-   0:	30 e8                	xor    %ch,%al
-   2:	c9                   	leave
-   3:	27                   	(bad)
-   4:	fb                   	sti
-   5:	ff 80 7b 01 3e 75    	incl   0x753e017b(%rax)
-   b:	25 e8 be 27 fb       	and    $0xfb27bee8,%eax
-  10:	ff 48 8b             	decl   -0x75(%rax)
-  13:	7d d0                	jge    0xffffffffffffffe5
-  15:	e8 75 fa ff ff       	call   0xfffffffffffffa8f
-  1a:	48 89 c6             	mov    %rax,%rsi
-  1d:	48 8d 3d 8b 30 8f 06 	lea    0x68f308b(%rip),%rdi        # 0x68f30af
-  24:	4c 89 e1             	mov    %r12,%rcx
-  27:	44 89 f2             	mov    %r14d,%edx
-  2a:*	67 48 0f b9 3a       	ud1    (%edx),%rdi		<-- trapping instruction
-  2f:	eb 3b                	jmp    0x6c
-  31:	e8 99 27 fb ff       	call   0xfffffffffffb27cf
-  36:	41 0f b6 c7          	movzbl %r15b,%eax
-  3a:	f6                   	.byte 0xf6
-  3b:	80 00 a1             	addb   $0xa1,(%rax)
-  3e:	fd                   	std
-  3f:	85                   	.byte 0x85
-
-Code starting with the faulting instruction ===========================================
-   0:	67 48 0f b9 3a       	ud1    (%edx),%rdi
-   5:	eb 3b                	jmp    0x42
-   7:	e8 99 27 fb ff       	call   0xfffffffffffb27a5
-   c:	41 0f b6 c7          	movzbl %r15b,%eax
-  10:	f6                   	.byte 0xf6
-  11:	80 00 a1             	addb   $0xa1,(%rax)
-  14:	fd                   	std
-  15:	85                   	.byte 0x85
-[    0.827992][    T0] RSP: 0000:ffffffff87403d48 EFLAGS: 00010046
-[    0.829610][    T0] RAX: ffffffff87183110 RBX: ffffffff87dcba95 RCX: ffffffff87dcba82
-[    0.831687][    T0] RDX: 0000000000000021 RSI: ffffffff87183110 RDI: ffffffff87fe7ae0
-[    0.833687][    T0] RBP: ffffffff87403d78 R08: 0000000000000000 R09: 0000000000000000
-[    0.835822][    T0] R10: 0000000000000000 R11: 0000000000000000 R12: ffffffff87dcba82
-[    0.837895][    T0] R13: ffffffff87dcbaa3 R14: 0000000000000021 R15: ffffffff87dcb92d
-[    0.839689][    T0] FS:  0000000000000000(0000) GS:ffff8884a6e38000(0000) knlGS:0000000000000000
-[    0.841148][    T0] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    0.842182][    T0] CR2: ffff88843ffff000 CR3: 0000000007497001 CR4: 00000000000300b0
-[    0.843452][    T0] Call Trace:
-[    0.843961][    T0]  <TASK>
-[    0.844424][    T0]  test_event_printk (trace/trace_events.c:599)
-[    0.845211][    T0]  ? __pfx_trace_event_raw_init (trace/trace_events.c:640)
-[    0.846111][    T0]  trace_event_raw_init (trace/trace_events.c:650)
-[    0.846904][    T0]  event_init (trace/trace_events.c:3384)
-[    0.847591][    T0]  trace_event_init (trace/trace_events.c:4857 trace/trace_events.c:4950)
-[    0.848366][    T0]  trace_init (trace/trace.c:9957)
-[    0.849014][    T0]  start_kernel (main.c:1071)
-[    0.849736][    T0]  x86_64_start_reservations (x86/kernel/head64.c:310)
-[    0.850600][    T0]  x86_64_start_kernel (x86/kernel/head64.c:291)
-[    0.851419][    T0]  common_startup_64 (x86/kernel/head_64.S:418)
-[    0.852218][    T0]  </TASK>
-[    0.852686][    T0] irq event stamp: 0
-[    0.853291][    T0] hardirqs last  enabled at (0): 0x0
-[    0.854409][    T0] hardirqs last disabled at (0): 0x0
-[    0.855533][    T0] softirqs last  enabled at (0): 0x0
-[    0.856645][    T0] softirqs last disabled at (0): 0x0
-[    0.857758][    T0] ---[ end trace 0000000000000000 ]---
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20261106/202611060303.c90f27a7-lkp@intel.com
-
-
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+-- 
+Masami Hiramatsu (Google) <mhiramat@kernel.org>
