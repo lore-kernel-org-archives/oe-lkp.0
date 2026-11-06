@@ -1,54 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=82.195.75.108
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793940876;
-	b=dvTe1Hso6CbKxVqa5fhb5/Brk/mmY8h5MIuCEEo2xFamoJacspvDaKZ9toWl7U6pUNs5
-	 ioaBaceOdRaFNLAIx+cBBbq2N0LyT292IE3p5YDGCyLkOaGOhvIxJ/Jw+ke629jBFyVrg
-	 MAoZe3OOXX1Qjf+aLTZyVNOS0q9S0IRhoMNHeTdhJSApuISQObEqhafYGYtGDZmuGq8Vm
-	 VosIbs9kP8EDNwdVCViPRKkDwucZ5wVYjUsrbNTXdKm59pWsUDvLQMJwapA8X88vkqqD4
-	 dI8zy9V5iez2KIYWkcDbcf6PLV8oKkCSQkxEuAmGbWM8R/IEvEQ5I7OuMiqTSj/yvWw==
+	t=1793963486;
+	b=B0kXT4MlLvuBKsC39KKkvJ7hbsISkwLRtZ6eH/wO/p8btpKw9tYSlmNowtGD/OHf7oOl
+	 zmjMsF3jix5bSB2J3VbtZ3AcsG9uaXtE5gsmMsJ2ZFxX+1h6ZB3uwU7oIPSjHeMkNGl8O
+	 XFUk+oF9mylKYWGYHSyoR0lWtczjyVJiXzrXzS7vw1aJ8WNc9rYN7rEsSsUVgh+z9Jdss
+	 KNtiKQeX6Zk3I+x5GBzuLso8bQVEkBq/p363Sgo9vmZOYiqwZM4QcH541f7xTkY982hz3
+	 SRtJB7z/HDHkftQWfgD+9u/+twIxiRySdOdPjStmNUGuwoiy3Lx2f4xOhp61QDsyBUg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793940876;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 In-Reply-To:References:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=0XXMzfFrMuhQ4F+XnXsFq3w4XgRZy5QKJgrtlHXBe4k=;
-	b=Z+mfnvAWBbJbINDSqYFxlEb1zgiSQ4HQUbg0sbmvE9X3Nt3wX5uYy/PjFRSeefj3VGyd
-	 SYHOyhVZKuBzLA4s9vnb2Cz0ahekA/+uAZX71sMz1UdszzbR/JqFMR2f8lfZsOHoerITY
-	 2vcsp4+dqHh6vQcp9ghre1pOmlAE952StxLHS3bvTSz8soMhkiOv5IWKp6qQED2uTcmPL
-	 5PbmQEVGz2UKOLkmNzPCXNY04X6FiSckUc01LKoLzwEA5GTMGkOUSqAO8VTfux+pKOp6Z
-	 /dyYxrijJbtQl5ZxaTx/waqWSiRVkcNB1Hf9Eovy/pn8OQ3VYyUtGjBGJvoP5FHXSSQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793963486;
+	h=DMARC-Filter:DKIM-Signature:Received:Date:From:To:Cc:Subject:
+	 Message-ID:References:MIME-Version:Content-Type:Content-Disposition:
+	 Content-Transfer-Encoding:In-Reply-To:X-Debian-User;
+	bh=AuFxEXPAYsp+N5j29FDM6Sk7erK7vo72BA6vE8/tGgc=;
+	b=JK74Ywub9rhIV7Uz+qplupVL2MHKe4YKT2BMRzPJKatzAN0KshyBXlA5Awx8F9qlx8oB
+	 6dkGMZ/EqqE1VEpX0BEpdQFc/nL1d6ZDxDjMvYLjhiizPFpM/uobDfcvZRXWsnb5o4lTw
+	 zU1ClbK5h1TzGqVdHbAcSrSPwrfKSrXy0vbyDhSsZpZgl4hcUejlbrY8iPPenOqagiVS6
+	 BvfI6zBbwFt1t9j81T+lfq5x8h9RuezPOTprHzJSfgvbYs6oBHgUX2KbyI4rViRH1ADSl
+	 F/ketbTv1r/hpfi/tjuq1DaOqOU0Y2pzpLe1QogsiFJv10PsfbTeE4uAJCqlVhlofqA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="EBCH59/y";
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=debian.org;
+	spf=pass smtp.mailfrom=debian.org;
+	dkim=pass header.d=debian.org header.i=@debian.org header.a=rsa-sha256 header.s=smtpauto.stravinsky header.b=uMGAgYQA;
+	arc=none smtp.remote-ip=82.195.75.108
+Received: from stravinsky.debian.org (stravinsky.debian.org [82.195.75.108])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94E0E606A328;
-	Fri,  6 Nov 2026 04:54:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6F23606A32F;
+	Fri,  6 Nov 2026 11:11:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C6F23606A32F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=debian.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=debian.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EBCH59/y
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 098411F008A3;
-	Fri,  6 Nov 2026 04:54:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793940876;
-	bh=0XXMzfFrMuhQ4F+XnXsFq3w4XgRZy5QKJgrtlHXBe4k=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=EBCH59/y9hilVF46mpV5nEtKYrzidn9xHBUwOKDUfytSuRZwVtYspUNP9VSGDt28B
-	 Rgcbt+W7bpMf+HAtpvA2n/TPaCgvQOAYwqEnL8XlwkeGhIAasR9/HImNm5gNBD3PYe
-	 9Zb/bbDwPxZMq/lzrmrFtkTfr94erDv9W98CG3cNvMI+jFeJKo9s/Ob05hig3pBmk/
-	 ofL+dsN2MsZI0j58TAMOWaOY3LB7dQdMPMQZolrjbfDIuPIVKgMwUgdg/V6brAVudm
-	 6vIgf4K/jcp4FQgXlqhsZWJFs+nn//23p7AyaZHc2S5LvNeZ1/zRnsOvPHZJ5NGVWs
-	 z+bsfUwPjBxQg==
-From: "Masami Hiramatsu (Google)" <mhiramat@kernel.org>
-To: kernel test robot <yi1.lai@intel.com>
-Cc: Steven Rostedt <rostedt@goodmis.org>, oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, Martin Kaiser <martin@kaiser.cx>, Vinod Koul <vkoul@kernel.org>, linux-trace-kernel@vger.kernel.org
-Subject: Re: [linus:master] [tracing]  b5cc230af5: WARNING:at_kernel/trace/trace_events.c:#test_double_dereference
-Date: Fri, 06 Nov 2026 04:54:33 +0000
-Message-ID: <undine-1793940873129741182-d37e5f54bdcb36ed@undined.local>
-X-Mailer: UndineD 0.1
-In-Reply-To: <202611060303.c90f27a7-lkp@intel.com>
-References: <202611060303.c90f27a7-lkp@intel.com>
+	dkim=pass (2048-bit key, unprotected) header.d=debian.org header.i=@debian.org header.a=rsa-sha256 header.s=smtpauto.stravinsky header.b=uMGAgYQA
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=debian.org;
+	s=smtpauto.stravinsky; h=X-Debian-User:In-Reply-To:Content-Transfer-Encoding:
+	Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+	Reply-To:Content-ID:Content-Description;
+	bh=AuFxEXPAYsp+N5j29FDM6Sk7erK7vo72BA6vE8/tGgc=; b=uMGAgYQANtuQKhq195eAtXdwqQ
+	3YbROkQxjTERFFXO7rspff9yZU3mHsw7eW121bQTjhNqux4UCXVWvCXrbYDA0RwP3u3WSJrvF/t3K
+	iMzm2u4P68ELRHmJvXiYFCHbap0eYkRC/vo+VCXA+qt82El6n41KD2TA4zwNcFli+5xsAGUFWn/nc
+	G+oYwIv2rHBswc9kgTx4Q+SjUjzYVHQ0k54tkF+2mBhUMFC36WEM1amm5d0VOgFn0uRodtF1PR8Cj
+	7CQvW/3PvWTY/kse5UBImwwXfijLcyhGWCHRby5Tdepzzkxw81gdLkOMUvYNJXwfVZ04kRfDr/+3U
+	BhkJOAdw==;
+Received: from authenticated-user
+	by stravinsky.debian.org with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	(Exim 4.96)
+	(envelope-from <leitao@debian.org>)
+	id 1xPHqo-009F2k-2d;
+	Fri, 06 Nov 2026 11:11:19 +0000
+Date: Fri, 6 Nov 2026 03:11:14 -0800
+From: Breno Leitao <leitao@debian.org>
+To: Mateusz Guzik <mjguzik@gmail.com>
+Cc: Christian Brauner <brauner@kernel.org>, 
+	kernel test robot <yi1.lai@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	linux-kernel@vger.kernel.org, Oleg Nesterov <oleg@redhat.com>, linux-fsdevel@vger.kernel.org
+Subject: Re: [linus:master] [fs/pipe] f7f4665dc5:
+ lmbench3.PIPE.bandwidth.MB/sec 18.5% regression
+Message-ID: <au2vjpu_yqNa83pN@gmail.com>
+References: <202611041404.befe64cd-lkp@intel.com>
+ <20261105-trommeln-einspannen-radius-ccb4e174e407@brauner>
+ <auygOHcuBba_o132@gmail.com>
+ <CAGudoHFpNbxL13ZOWiyyLSPpmzXcB=e=RBZ8ZGk+Oc58Aad9pA@mail.gmail.com>
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -59,58 +72,93 @@ List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAGudoHFpNbxL13ZOWiyyLSPpmzXcB=e=RBZ8ZGk+Oc58Aad9pA@mail.gmail.com>
+X-Debian-User: leitao
 
-On Fri, 6 Nov 2026 11:07:56 +0800, kernel test robot <yi1.lai@intel.com> wrote:
+On Thu, Nov 05, 2026 at 04:57:33PM +0100, Mateusz Guzik wrote:
+> On Thu, Nov 5, 2026 at 4:28 PM Breno Leitao <leitao@debian.org> wrote:
+>
+> The test at hand has multiple readers and writers using the same pipe,
+> with 64KB i/os.
 > 
+> Prior to the patch each writer had its own private pool to draw from,
+> guaranteeing no allocation will happen under the mutex.
 > 
-> Hello,
+> With the patch the reader exit also drains the pool.
 > 
-> kernel test robot noticed "WARNING:at_kernel/trace/trace_events.c:#test_double_dereference" on:
+> As a result tons of allocation ends up happening under the lock again:
 > 
-> commit: b5cc230af5e536ff752f8bd5c30e23612936d5c3 ("tracing: Warn when an event dereferences a pointer in TP_printk()") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> 
-> [test failed on linux-next/master ddfe51b0a0f5dc9e415cc2c8ad8db17532dd426b]
-> 
-> in testcase: boot
-> 
-> config: x86_64-randconfig-r2309-20261012
-> compiler: gcc-14
-> test machine: qemu-system-x86_64 -enable-kvm -cpu Cascadelake-Server-noTSX,enforce -smp 4 -m 16G
-> 
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
-> 
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <yi1.lai@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202611060303.c90f27a7-lkp@intel.com
-> 
-> 
-> [    0.808840][    T0] ------------[ cut here ]------------
-> [    0.810236][    T0] Event hfi1_txq_complete has double dereference in TP_printk: REC->sde ? REC->sde->this_idx : 0
+> -   94.88%    94.88%  bw_pipe          [kernel.kallsyms]     [k]
+> __alloc_frozen_pages_noprof
+>      94.88% __internal_syscall_cancel
+>         entry_SYSCALL_64_after_hwframe
+>         do_syscall_64
+>         ksys_write
+>         vfs_write
+>       - anon_pipe_write
+>          - 47.46% alloc_pages_noprof
+>               alloc_pages_mpol
+>               __alloc_frozen_pages_noprof
+>          - 47.42% anon_pipe_prefill_and_lock
+>               alloc_pages_noprof
+>               alloc_pages_mpol
+>               __alloc_frozen_pages_noprof
 
-This seems to be expected behavior. Because "REC->sde" can point already
-freed/reused object, this should not be allowed. The event must save the
-sde->this_idx at TP_fast_assign() instead of recording sde.
+Ack, this matches what I found as well. Thanks for investigating it.
 
-In drivers/infiniband/hw/hfi1/trace_tx.h:
+Because the preallocated pages are not private to the writer anymore,
+the reader flushes them while the writer waits for room in the pipe,
+and the writer then has to allocate them inside the lock.
 
-DECLARE_EVENT_CLASS(/* AIP  */
-        hfi1_ipoib_txq_template,
-	...
-        TP_printk(/* print  */
-                "[%s] txq %llx idx %u sde %llx:%u cpu %d head %lx tail %lx flow %x used %u stops %d no_desc %d stopped %u",
-                __get_str(dev),
-                (unsigned long long)__entry->txq,
-                __entry->idx,
-                (unsigned long long)__entry->sde,
-                __entry->sde ? __entry->sde->this_idx : 0, // this must be recorded as a value
-                __entry->sde ? __entry->sde->cpu : 0,	// ditto
+This basically loses the wins[0] from commit 212ed884a1aeef ("fs/pipe:
+pre-allocate pages outside pipe->mutex in anon_pipe_write") for this
+specific scenario.
 
+> I don't think multiple high-volume writers vs multiple high
+> volume-readers is a realistic scenario and I would not bother fixing
+> it.
 
-So this is a bug in an infiniband driver.
+Agree, but I would like to spend some cycles on it.
 
-Thank you,
+> However, should someone want to address it, I think the patch should
+> be reverted and the resulting state tweaked. The patch at hand came
+> after the mutex is released -- the kernel prior to any of this would
+> still put_page on the reader side under the lock. This bit would have
+> to get tweaked to recover the loss in that scenario (not to be
+> confused with the loss reported here).
 
--- 
-Masami Hiramatsu (Google) <mhiramat@kernel.org>
+We can revert the patch, but that would bring back the two page pools
+(the on-stack prealloc and tmp_page[]), which is probably worse than
+this regression itself (IIRC it would also lose the gains for smaller
+writes (about 20% for 8-16 KiB writes IIRC ))
+
+That said, these are the items I am planning to spend some time one:
+
+1) Reclaiming the pooled pages from a shrinker, as suggested in [1]
+
+2) Trimming the pool gradually on the reader side, instead of cutting it
+   down to two pages in one go. Or not trimming it while a writer is
+   in the waiting room (!?)
+
+3) Keeping the writer's preallocated pages private again, while keeping
+   the unified pool (i.e. without bringing tmp_page[] back).
+
+4) Freeing the pages the reader drops after releasing pipe->mutex,
+   instead of under it, as you suggested. This is independent of the
+   options above.
+
+5) Longer term: copying the data into the preallocated pages before
+   taking pipe->mutex, so the writer only links them into the pipe
+   under the lock. This doesn't seem trivial, but it would make this
+   whole pre-allocated buffers go away
+
+6) Any other idea?
+
+[0] https://lore.kernel.org/all/202607091015.c3936260-lkp@intel.com/
+[1] https://lore.kernel.org/all/CAGudoHGKyN6k+eSAUm35_WDSZcxxtm4QL6fO+4rYJTvtObMqzA@mail.gmail.com/
+
+Thanks for looking at it,
+--breno
+
