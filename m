@@ -1,82 +1,74 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.19
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794125678;
-	b=e6JNSaJLs3Pj6/SG68/gJFH7PuJT9jd7xgKQm9QnFX14BplgrrfJYTYuGBjmZGOLQrSl
-	 PyTB4lbghYi6/PmTXiUYOu7lxpg2vAVGt1XWe6KlUBHn53qQATz1yj4gNvaYnL+52ERxq
-	 JrcQCAz+uHZAmKWKfs5UHAutvYvGmdkpNAZaTFg3Zoopx4dWSXq4Yf5QivRlBDfODEAxW
-	 Gwo6LDGRKjqNN+bd5fqpfhSkts7NWW3/irgNJL1Tp2z4FeM6tdn4sGU6NEA1MY/GNTlDb
-	 8/17HiHMbiB57aLnZ7fuBZLFh9Ud50ZUhelXfHu5wHMwDGmu996MCfLTQ8NyvC/zfgw==
+	t=1794127650;
+	b=04UeZ5hKv8dT8bynyKzDqYBEtlT+gu4x7Hwsy4HCKPFJyk07nByQfx01MzFvf/ur/zgV
+	 GO8eRF9Ays4qzCeKktwqjoiaMBFDjUpmEhdZdOSuAciTG72IwU9xQjaUl4cDmvLB68M4H
+	 PmtsGs9y11oBRj4JRvEHDejN0p260F6lySMcQNTmu8Mgjezb8Iu18g7lhP0atgEOHXl1t
+	 PuIn128mp+blSX1XziTpzl/WpKytOHbfanHC4gWBAMBWRl4WiOg5fw6dhq2fVB9MXeYLF
+	 xcepj6H5Tf/SSAQCPmlujldro7uGcZcS2UrMar2oOJejFkN6c5YbManeM5/3dejUR8A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794125678;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794127650;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition;
-	bh=bfz9+h0yf44yXspz+aihsE+ejM490QZWdZkmfUuMTDA=;
-	b=z0XcmqRm3a9YyP2FwQJG7qpgvf7t7zwQFk1YOT7GQk/VIFGHUXzmLSxHYEMoGSEV6OoJ
-	 1oTKIWgEFDuN2/Ue5QiRp80wSyy04wgNNkD0NbJj1AhKp3nV2dEomAVHM1DCPWc8OGrgX
-	 Tb7eeWLYXr7A9nxKhc3lL/5fgbtjRwbEz1d9e0yrgd0J1VlcjCoOv9TbCnpVWUjxOpcCr
-	 JraMsRdXTtR697IJYPFqAVXYKKHShl3pR0kPR9EDyCjH7lxU74DOn0Hr/Lv/NkpGxP3CQ
-	 vKbrLerYT5Jt0nC4T0G3w9qpuhFtrwaS65TY8ERoMzMoJrfCWLjhGHR1YoTEtEFQmXA==
+	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition:
+	 Content-Transfer-Encoding;
+	bh=+vIKb+5UC4MoJoAuiRAh5ZXkksDm4RPFNdKQsFxtNvg=;
+	b=WT+YOv+Kd+OoOxglONUMG/M5cejy9YMPuDjKALCcnnGsGNlWDytS616MlbP8eKUi4P1o
+	 i86bxxNqD1kGeLJDib9g+s6CfAoVEETmufAq1tOAc2318o8UQLgyNZyeTwdNhhZFZdc9R
+	 e3IcuIRpljXYB1aU5SuF0rg3ZVcOIHGoEHuNj1VhBj+636mUh3AbkHPCUuy9AnVRkB+vW
+	 vylMZhWw4+ReKCrjYVF+2Bd6FwXcju/s+R/o4yrWPvzMAHJ4GbqMeq210gsWddVW1bH/L
+	 WI2wbJBjPOlPyI8WXQw1nmIkAad26WH2/5/+ZMifmS77Qa2O6zr8vjN2QiqiLQ0s2rQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ak9y2n0s;
-	arc=none smtp.remote-ip=192.198.163.18
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=UXQe2gmx;
+	arc=none smtp.remote-ip=192.198.163.19
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2012E606A320
-	for <oe-lkp@lists.linux.dev>; Sun,  8 Nov 2026 08:14:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2012E606A320
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11740606A31C
+	for <oe-lkp@lists.linux.dev>; Sun,  8 Nov 2026 08:47:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 11740606A31C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ak9y2n0s
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=UXQe2gmx
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794125677; x=1825661677;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=rsyIzfhuguUrGhsHYiFFB6SqcWKFh1kR+agy5Bl+Riw=;
-  b=ak9y2n0suFLiQ0z01a/y20URcF7bla+aFVksaT+YWurSV8HCYi5WkYFO
-   Tz2xYELmCmiod7cydeT84zCkO8zzlqsxe/8J++mh2ifukCO+tnEGt4gLR
-   iQ+rJ6JUYli1Ntlla3uErTUWjbq3KTljz2WJ7Hqmg587XU8YGAGqHBvNf
-   W8773et1VEviUjtS3cWi0n6JrZ+JvFucuKZvxFrCk/nyxsF+G2mlupVNU
-   s8gu0zY1Lxk5bc3xZQFCuzM2fO8ozljsQOLq37j6vSpoeXXrlueIw4Ty6
-   Bwe83Kj5Suy/l9T2xIHLCXnZE2CiC+RJcjhdlISi2c0T0m+GlUP8K+a3h
-   A==;
-X-CSE-ConnectionGUID: vpJ3QhsRQpGF4MjUu8bkbA==
-X-CSE-MsgGUID: f7ddyHEHQgChgV4RMoUrJQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11959"; a="2925923"
+  t=1794127648; x=1825663648;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=q4NOqskWQTyg1tTdO2oBl1EJQ8QeJomuhYXJQeCLeWw=;
+  b=UXQe2gmxq64ZmF9+mWk1iNkWOB00GlpOTRqqC9OlqAUL/qP9n+APdW9P
+   Fue+90ShOux5BixT+NfdTJWhoPlp6f58lwCMkajRrGFtyOsJrthzjXiNI
+   HWHF64zbajmza+GVnlo1KPWhzfO1ja7hRr3LIDsMqEGvUGO+ieGG6bi14
+   nnjG+RoCHY2bJESDLEidrZzaPm3mIP4jDb6O+3XX/hWMqEudejBHNUS1R
+   G1evZmgoXJNtAq5q8CAYRX9+csvQ4RzyXepGRgJFLNOHLJwAsT2dMYhaQ
+   N00IaZV1V26sdCyF1le3EMPJksYuRf63vugXTtZE01v5YYY89MrAjTiMz
+   Q==;
+X-CSE-ConnectionGUID: z5MzhEGaQ3Gcr3jMbhJL8Q==
+X-CSE-MsgGUID: 4C1hLB1AQGqhw8YStHN5uw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11959"; a="2984605"
 X-IronPort-AV: E=Sophos;i="6.27,200,1787036400"; 
-   d="scan'208";a="2925923"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2026 00:14:15 -0800
-X-CSE-ConnectionGUID: pxtqn/MhS12FhTRPkvGUMg==
-X-CSE-MsgGUID: JEP1GETWSSid0Ip0b//Hrg==
+   d="scan'208";a="2984605"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2026 00:47:27 -0800
+X-CSE-ConnectionGUID: eHSn27TXSsecr98OEOTotA==
+X-CSE-MsgGUID: 1UzSz17jRoSG/0NK7F3F3g==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,200,1787036400"; 
-   d="scan'208";a="7489387"
+   d="scan'208";a="7637015"
 Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2026 00:14:11 -0800
-Date: Sun, 8 Nov 2026 16:14:08 +0800
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2026 00:47:26 -0800
+Date: Sun, 8 Nov 2026 16:47:22 +0800
 From: kernel test robot <yi1.lai@intel.com>
-To: Dmitry Ilvokhin <d@ilvokhin.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
 Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
-	Michal Hocko <mhocko@suse.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Kiryl Shutsemau <kas@kernel.org>,
-	David Hildenbrand <david@redhat.com>,
-	Hugh Dickins <hughd@google.com>,
-	Liam Howlett <liam.howlett@oracle.com>,
-	Mike Rapoport <rppt@kernel.org>,
-	Suren Baghdasaryan <surenb@google.com>,
-	Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org,
 	yi1.lai@intel.com
-Subject: [linus:master] [mm]  e97d7c5165: trinity.invoked oom-killer
-Message-ID: <202611081559.ec60e6e4-lkp@intel.com>
+Subject: [linus:master] [x86/signal]  9da9f342a8: stress-ng.timer.ops_per_sec
+ 2.8% improvement
+Message-ID: <202611080951.256d230a-lkp@intel.com>
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -86,81 +78,64 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
 
 
 Hello,
 
-kernel test robot noticed "trinity.invoked oom-killer" on:
-
-commit: e97d7c5165227e6e4423b4a869d7805b01706392 ("mm: shmem/tmpfs hugepage defaults config choice") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-
-[test failed on linux-next/master ddfe51b0a0f5dc9e415cc2c8ad8db17532dd426b]
-
-in testcase: trinity
-version: trinity-i386-abe9de86-1_20230429 with following parameters:
-
-  runtime: 300s
-  group: group-01
-  nr_groups: 5
+kernel test robot noticed a 2.8% improvement of stress-ng.timer.ops_per_sec on:
 
 
-config: x86_64-randconfig-1008-20261105
-compiler: clang-22
-test machine: qemu-system-x86_64 -enable-kvm -cpu Icelake-Server-noTSX,enforce -smp 4 -m 16G
+commit: 9da9f342a897a2d43ad947d4073b1912800ab436 ("x86/signal: Use scoped user access in the sigreturn system calls") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-(please refer to attached dmesg/kmsg for entire log/backtrace)
+testcase: stress-ng
+config: x86_64-rhel-9.4
+compiler: gcc-14
+test machine: 192 threads 2 sockets Intel(R) Xeon(R) 6740E  CPU @ 2.4GHz (Sierra Forest) with 256G memory
+parameters:
+
+  nr_threads: 100%
+  testtime: 60s
+  test: timer
+  cpufreq_governor: performance
 
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <yi1.lai@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202611081559.ec60e6e4-lkp@intel.com
-
-
-[  147.803560][ T3738] trinity-c3 invoked oom-killer: gfp_mask=0x440dc0(GFP_KERNEL_ACCOUNT|__GFP_ZERO|__GFP_COMP), order=0, oom_score_adj=500
-[  147.808170][ T3738] CPU: 0 UID: 65534 PID: 3738 Comm: trinity-c3 Not tainted 6.18.0-rc5-00155-ge97d7c516522 #1 PREEMPT(lazy)
-[  147.808179][ T3738] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[  147.808182][ T3738] Call Trace:
-[  147.808186][ T3738]  <TASK>
-[  147.808190][ T3738]  dump_stack_lvl+0xc0/0x138
-[  147.808212][ T3738]  dump_header+0xd3/0x440
-[  147.808225][ T3738]  oom_kill_process+0x107/0xf00
-[  147.808240][ T3738]  ? out_of_memory+0x897/0x12f0
-[  147.808252][ T3738]  out_of_memory+0xeaa/0x12f0
-[  147.808265][ T3738]  ? out_of_memory+0x897/0x12f0
-[  147.808278][ T3738]  __alloc_pages_may_oom+0x1a5/0x2c0
-[  147.808295][ T3738]  __alloc_pages_slowpath+0x6d7/0xe00
-[  147.808316][ T3738]  __alloc_frozen_pages_noprof+0x1fb/0x270
-[  147.808330][ T3738]  alloc_pages_mpol+0x16f/0x340
-[  147.808340][ T3738]  alloc_pages_noprof+0x95/0x1b0
-[  147.808349][ T3738]  pte_alloc_one+0x23/0x2f0
-[  147.808357][ T3738]  ? __pte_alloc+0x1a/0x170
-[  147.808367][ T3738]  __pte_alloc+0x22/0x170
-[  147.808378][ T3738]  do_pte_missing+0x2500/0x3180
-[  147.808401][ T3738]  handle_mm_fault+0x1061/0x36b0
-[  147.808409][ T3738]  ? handle_mm_fault+0x41/0x36b0
-[  147.808435][ T3738]  do_user_addr_fault+0xa18/0x1030
-[  147.808447][ T3738]  ? rcu_is_watching+0x15/0xb0
-[  147.808459][ T3738]  exc_page_fault+0x6d/0xf0
-[  147.808474][ T3738]  asm_exc_page_fault+0x26/0x30
-[  147.808480][ T3738] RIP: 0023:0xf7e1d80e
-[  147.808486][ T3738] Code: c6 44 24 28 00 8b 7c 24 14 89 bd 4c 01 00 00 e9 ca fe ff ff 8d b4 26 00 00 00 00 90 ba 10 00 00 00 29 ca 8d 3c 10 89 f0 29 d0 <89> 17 83 c7 08 83 c8 02 89 47 fc e9 b9 fd ff ff 66 90 89 4c 24 14
-[  147.808490][ T3738] RSP: 002b:00000000ffe58f80 EFLAGS: 00010212
-[  147.808497][ T3738] RAX: 0000000000200ff8 RBX: 00000000f7f84740 RCX: 0000000000000008
-[  147.808501][ T3738] RDX: 0000000000000008 RSI: 0000000000201000 RDI: 00000000f58b3008
-[  147.808505][ T3738] RBP: 00000000f7f84000 R08: 0000000000000000 R09: 0000000000000000
-[  147.808508][ T3738] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-[  147.808511][ T3738] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-[  147.808529][ T3738]  </TASK>
+Details are as below:
+-------------------------------------------------------------------------------------------------->
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20261108/202611081559.ec60e6e4-lkp@intel.com
+https://download.01.org/0day-ci/archive/20261108/202611080951.256d230a-lkp@intel.com
+
+=========================================================================================
+compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
+  gcc-14/performance/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/lkp-srf-2sp3/timer/stress-ng/60s
+
+commit: 
+  2806617c9c ("x86/entry: Use get_user() for the fast 32-bit syscall EBP fetch")
+  9da9f342a8 ("x86/signal: Use scoped user access in the sigreturn system calls")
+
+2806617c9c02fe16 9da9f342a897a2d43ad947d4073
+---------------- --------------------------- 
+         %stddev     %change         %stddev
+             \          |                \  
+      9031            +1.9%       9207        stress-ng.time.system_time
+      1344           -11.8%       1184 ±  2%  stress-ng.time.user_time
+ 5.442e+09            +2.8%  5.593e+09        stress-ng.timer.ops
+  90751049            +2.8%   93261655        stress-ng.timer.ops_per_sec
 
 
---
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provided
+for informational purposes only. Any difference in system hardware or software
+design or configuration may affect actual performance.
+
+
+-- 
 0-DAY CI Kernel Test Service
 https://github.com/intel/lkp-tests/wiki
+
 
