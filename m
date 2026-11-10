@@ -1,72 +1,69 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=82.195.75.108
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794291112;
-	b=HnQ8zwX6GbqNG72mEoIP1JGpjY6G5PmTIykKDHM3h53YX3wGiOvhtXSpYQZoP/kqXaMX
-	 M27yCcVdgcW9NqN+t4iHAiFjrOq1dXBo651j97zQDdh9WYtJ+qjtwTb8GfbdSBLuvM3MK
-	 x6GD8Qk2WoOpiCe5L4F02u5g2j2ier/E2L5oCFYnoxb8+zjkWBew3DPts4BxHxgYb6jij
-	 8el+JH2PaD8uD+mo41R+XjMOyyW8vlrwB3h32fCuEsCaBY+5wi7vBLlkXrUEWaBTd12N3
-	 A3qckP7olaM7I2PWqKkxeQ5EYd9BdGxd0Gh0AWq1+JlloFf+VGyDGMRJ5TBOV3Igrvg==
+	t=1794314794;
+	b=aRaI0IPvX9fyzGNU8z4rhW6vsYmUikMSuIZ9wiS3ylxHTqTH3yyhfChTCoWroWl29FbI
+	 AWRgRL5f4iHpPJH5CXv72rHjcJE3gIUH8STUQ/IVxUW7c6H544KJsozh045diO53jJze5
+	 G5VquAFz2ShpvKhVLJZ1heY+ENwkf4eSNfTyecuFCEF4o/YzmnxqxYzCINPwcu/c8MjTK
+	 vRZ+Zyyd1dUU7TnzIr+0MVeMVI2u+MHXC2jmD6Poeu9epctVHA0u2NVQqPtV/g2+FryCW
+	 yVEQ8OaF0dD29MbHdj1wJrW8ULgAfbn3YJ7/4nKwelEWcNMvGvB2rrzMMKz5S4qCXYA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794291112;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition;
-	bh=J7ho9KHW2LpE8+ntllco9bqf1cmWZ1C0VuDpbdArRa8=;
-	b=wH/kNLWHNvG4WTEtvsFYC2hiUj9DcU05e61Q6KVU0yjhRCJJ8kzGf/OZIJZIO/JSNtps
-	 NYGsXaId23ZT50hAJ2e/YVPPj/ZrmFjRHjhTWuNU55RL1GoVEpI9OPdxkPMetsRxDeVHy
-	 b3hzke4QydxpMIVShI/gz5GhfQio94euKRspUZ+Kj+W3PtwfZXLzVarxCWyM3lBK7S7fv
-	 khqhdw2EGjTwcVws4WTwTKFnwgDwvvFdAD1evv1uL7jPtNzw6MFkkr3T1C/sagYhNin/S
-	 iDq9aU4lHEW5Sd7ZCFOObR8tcGrpDuJvpFM214zkLA6wEIyPmUVrQGrkOuDZQ7uLwHQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794314794;
+	h=DMARC-Filter:DKIM-Signature:Received:Date:From:To:Cc:Subject:
+	 Message-ID:References:MIME-Version:Content-Type:Content-Disposition:
+	 In-Reply-To:X-Debian-User;
+	bh=74G19pmPKgFskXMMqzM3YOhI7qcVhKFNeIMLbYsSlng=;
+	b=UXnvbmZyx2FN5clTFm9aIQVbYaBk4xiErY5kIVks7Z3PL6EiVLR97fNSIhqGxD//ooQH
+	 XPtxVF4JS9YNBE/CHqr3uzNGw44UPfQI0CAyfFjvY8kqqM+/4hK678lEYJqbFsfdU2XG6
+	 YFrVySLnCVa7aNaEJE+Bgdc8fnK4hDYd9rid0anxzwsEyrHdwwx1WvRJMsbCUPMD7vuis
+	 Zy57U2kJeOwE6L+NV3ts8xosJ445hCGLlEHRwQkuF40gnQNssI5QaqqVwUsNPHXeRGlbm
+	 YAIBmKusDZkPsMzaMr72xRf/Q9XzrKc3wbVrE573gJGovV7a5WWIlqmCJ5/0Q6ddMkw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="oHhHH/4h";
-	arc=none smtp.remote-ip=198.175.65.19
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=debian.org;
+	spf=pass smtp.mailfrom=debian.org;
+	dkim=pass header.d=debian.org header.i=@debian.org header.a=rsa-sha256 header.s=smtpauto.stravinsky header.b=VgZih2zJ;
+	arc=none smtp.remote-ip=82.195.75.108
+Received: from stravinsky.debian.org (stravinsky.debian.org [82.195.75.108])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76932606A31C
-	for <oe-lkp@lists.linux.dev>; Tue, 10 Nov 2026 06:11:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 76932606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1477B606A326;
+	Tue, 10 Nov 2026 12:46:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1477B606A326
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=debian.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=debian.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=oHhHH/4h
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794291111; x=1825827111;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=O5I6Rl06WnAaj0F8oXYw40wmI61m5dys5Gdosy2rpLg=;
-  b=oHhHH/4hp8y5BPuwPFya5EHFMmIUXLomJWGDX9jbp6NgkNIFsjtyLsLA
-   gICFY1XT9URnIM7rOj+OJ38zEHYgFk54w9XHCbQqKbNbSB/u1zr6+OYTY
-   JRESIo4kZJaoQWJ6uyBV8OoJsFSQdAXVw+2Yoj4ReNPk4p7ESM3CXcDDx
-   GnJBXRhkwb68qG+F15yuzSB+BqU+u7o43AbNVO+sODWq/SV91JV0rTCPM
-   rBzThLf/EfqSjj3BO/w7Mz7wFzEz/xwnqEmxwTlgX2b6OwWiUgNN6lfFx
-   5KxnZAZNNM4dDm4f6hCgInKsvgq4W7ilTacSidVuIEtWRV2TVyTC+yqSq
-   A==;
-X-CSE-ConnectionGUID: z4UDjaf0Rb+39goiZFINRQ==
-X-CSE-MsgGUID: syGA8pT0RWi7AIL9e9wjhA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="3065671"
-X-IronPort-AV: E=Sophos;i="6.27,205,1787036400"; 
-   d="scan'208";a="3065671"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 22:11:50 -0800
-X-CSE-ConnectionGUID: nZ3HXhNvQxWKpa1mxcsPOA==
-X-CSE-MsgGUID: oMDTi2TnTUaxTMgbmNdNnQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,205,1787036400"; 
-   d="scan'208";a="8211984"
-Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 22:11:48 -0800
-Date: Tue, 10 Nov 2026 14:11:45 +0800
-From: kernel test robot <yi1.lai@intel.com>
-To: Jim Cromie <jim.cromie@gmail.com>,
-	=?utf-8?Q?=C5=81ukasz?= Bartosik <ukaszb@chromium.org>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, yi1.lai@intel.com
-Subject: [jimc:dyndbg-maple-clean] [dyndbg]  da769d641f:
- BUG:sleeping_function_called_from_invalid_context_at_include/linux/sched/mm.h
-Message-ID: <202611100740.41c99f9e-lkp@intel.com>
+	dkim=pass (2048-bit key, unprotected) header.d=debian.org header.i=@debian.org header.a=rsa-sha256 header.s=smtpauto.stravinsky header.b=VgZih2zJ
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=debian.org;
+	s=smtpauto.stravinsky; h=X-Debian-User:In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=74G19pmPKgFskXMMqzM3YOhI7qcVhKFNeIMLbYsSlng=; b=VgZih2zJbpE1+7Mmc0TTYtTGde
+	yt+WciGHO2YL1gnkpV2goaaJOv2m76RK0+5th2x5guoX1uFGRADRIwwNLjUQBH0eZYfOi8KVCul1E
+	/qgjMfgOVl9APNaIs41yW6iHw9lFfg+JHBgIfyus+flyyuAd44g6c6e+idAot0F02DMhCHzL75HSn
+	v+jpx7YPWeO664rjxkTg6oBIToGyHZuRiZAd9OKgYPd40OAA0W3/NYCHjmKiUzah38MCx/GwHvnfr
+	Hm7RtwHbMNe6Vd9prr2PXTNCH5j93+YLCGhLNF+L2Z1Q3sM/CENbm73EecPrMs2JUknVqa3fdCrKl
+	G3s4o0vQ==;
+Received: from authenticated-user
+	by stravinsky.debian.org with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	(Exim 4.96)
+	(envelope-from <leitao@debian.org>)
+	id 1xQlF3-00CPQj-0Q;
+	Tue, 10 Nov 2026 12:46:25 +0000
+Date: Tue, 10 Nov 2026 04:46:21 -0800
+From: Breno Leitao <leitao@debian.org>
+To: Mateusz Guzik <mjguzik@gmail.com>
+Cc: Christian Brauner <brauner@kernel.org>, 
+	kernel test robot <yi1.lai@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	linux-kernel@vger.kernel.org, Oleg Nesterov <oleg@redhat.com>, linux-fsdevel@vger.kernel.org
+Subject: Re: [linus:master] [fs/pipe] f7f4665dc5:
+ lmbench3.PIPE.bandwidth.MB/sec 18.5% regression
+Message-ID: <avMQxhpHhIPM_6HP@gmail.com>
+References: <202611041404.befe64cd-lkp@intel.com>
+ <20261105-trommeln-einspannen-radius-ccb4e174e407@brauner>
+ <auygOHcuBba_o132@gmail.com>
+ <CAGudoHFpNbxL13ZOWiyyLSPpmzXcB=e=RBZ8ZGk+Oc58Aad9pA@mail.gmail.com>
+ <au2vjpu_yqNa83pN@gmail.com>
+ <CAGudoHF3de_55YvdztPs7QiYs25u6nPEV=uMOzfr=bWmwof69g@mail.gmail.com>
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -78,170 +75,255 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <CAGudoHF3de_55YvdztPs7QiYs25u6nPEV=uMOzfr=bWmwof69g@mail.gmail.com>
+X-Debian-User: leitao
+
+On Fri, Nov 06, 2026 at 02:44:54PM +0100, Mateusz Guzik wrote:
+> > 6) Any other idea?
+> 
+> The SMAP stuff is the primary problem right now. To reiterate: every
+> single buffer read/write takes a SMAP trip, which is very expensive
+> even on modern uarchs. Refactoring this into i/o under one SMAP round
+> would provide a visible speed up. It also happens to not pose a
+> tradeoff in terms of memory usage and would be my first avenue of
+> attack if I was working on this.
+> 
+> All that said, one reader vs one writer scenario definitely makes
+> sense to optimize.
+
+I've spent some tokens on it, and it seems to give ~5% improvement on
+the pipe bench. Is this what you had in mind (in a single patch format)?
+
+commit 724fa7def2700d51a7f0427d0de06c123b3bf8e9
+Author: Breno Leitao <leitao@debian.org>
+Date:   Mon Nov 9 05:04:45 2026 -0800
+
+    x86/uaccess, fs/pipe: copy a run of pipe buffers in one user access section
+    
+    Mateusz has been constantly suggesting that The SMAP stuff is the
+    primary problem right now in the pipe code, which summarizes to
+    anon_pipe_read() copying one pipe_buffer per copy_page_to_iter() call.
+    
+    On x86 every call opens and closes its own user access section, so a 64
+    KiB read that drains a full default pipe executes 16 STAC/CLAC pairs.
+    
+    The pipe's pages are not contiguous, so the copies stay separate.
+    
+    Move the body of copy_user_generic() into unsafe_copy_user_generic(),
+    which leaves STAC/CLAC to the caller's user access section, and turn
+    copy_user_generic() into a STAC/CLAC wrapper around it. The existing
+    callers get the same code. (This will eventually be a second patch if/once
+    this becomes an non-PoC)
+    
+    When the destination is a plain user buffer (ITER_UBUF, which is what
+    read(2) passes), copy up to PIPE_DEF_BUFFERS consecutive anonymous
+    buffers that the read consumes whole inside one scoped user write access
+    with unsafe_copy_user_generic(), then release them. The buffers are
+    looked up before the section starts, so that only the copies run with
+    user access enabled.
+    
+    What this buys depends on what SMAP costs the CPU. With the buffer by
+    buffer loop, booting with clearcpuid=smap speeds pipe_bench up by 4-14%
+    on a Sapphire Rapids Xeon Gold 6450C.
+    
+    pipe_bench from the pipe selftests runs 1, 2 or 5 writers against 1, 5
+    or 10 readers on one 1 MiB pipe, with 64 KiB writes and reads.
+    Throughput change from this patch, median of 2 boots x 5 runs, SMAP on:
+    
+                                   Sapphire Rapids
+      1 writer, 1 reader                  +5.2%
+      5 writers, 10 readers               +8.0%
+      all 9 mixes                    +5% to +15%
+    
+    Suggested-by: Mateusz Guzik <mjguzik@gmail.com>
+    Link: https://lore.kernel.org/all/CAGudoHF3de_55YvdztPs7QiYs25u6nPEV=uMOzfr=bWmwof69g@mail.gmail.com/
+    Signed-off-by: Breno Leitao <leitao@debian.org>
+
+diff --git a/arch/x86/include/asm/uaccess_64.h b/arch/x86/include/asm/uaccess_64.h
+index 20de34cc9aa6e7..28208db6132c27 100644
+--- a/arch/x86/include/asm/uaccess_64.h
++++ b/arch/x86/include/asm/uaccess_64.h
+@@ -115,10 +115,13 @@ static inline bool __access_ok(const void __user *ptr, unsigned long size)
+ __must_check unsigned long
+ rep_movs_alternative(void *to, const void *from, unsigned len);
+ 
++/*
++ * copy_user_generic() without the STAC/CLAC, for several copies inside one
++ * user access section. Returns the number of bytes not copied.
++ */
+ static __always_inline __must_check unsigned long
+-copy_user_generic(void *to, const void *from, unsigned long len)
++unsafe_copy_user_generic(void *to, const void *from, unsigned long len)
+ {
+-	stac();
+ 	/*
+ 	 * If CPU has FSRM feature, use 'rep movs'.
+ 	 * Otherwise, use rep_movs_alternative.
+@@ -131,6 +134,16 @@ copy_user_generic(void *to, const void *from, unsigned long len)
+ 		_ASM_EXTABLE_UA(1b, 2b)
+ 		:"+c" (len), "+D" (to), "+S" (from), ASM_CALL_CONSTRAINT
+ 		: : "memory", "rax");
++	return len;
++}
++
++#define unsafe_copy_user_generic unsafe_copy_user_generic
++
++static __always_inline __must_check unsigned long
++copy_user_generic(void *to, const void *from, unsigned long len)
++{
++	stac();
++	len = unsafe_copy_user_generic(to, from, len);
+ 	clac();
+ 	return len;
+ }
+
+diff --git a/fs/pipe.c b/fs/pipe.c
+index 4fa69192e6fba1..6f6041c94abefa 100644
+--- a/fs/pipe.c
++++ b/fs/pipe.c
+@@ -340,6 +340,115 @@ static inline unsigned int pipe_update_tail(struct pipe_inode_info *pipe,
+ 	return tail;
+ }
+ 
++#ifdef unsafe_copy_user_generic
++/* One buffer of a batched read, looked up before the user access section. */
++struct pipe_copy_src {
++	void *kaddr;
++	size_t len;
++};
++
++/*
++ * Fill @run with the anonymous buffers from @tail on that the read consumes
++ * whole. Returns how many, with their total length in @lenp.
++ */
++static unsigned int anon_pipe_batch_lookup(struct pipe_inode_info *pipe,
++					   unsigned int head, unsigned int tail,
++					   size_t total_len,
++					   struct pipe_copy_src *run,
++					   size_t *lenp)
++{
++	struct pipe_buffer *buf;
++	size_t len = 0;
++	unsigned int n;
++
++	for (n = 0; n < PIPE_DEF_BUFFERS && tail + n != head; n++) {
++		buf = pipe_buf(pipe, tail + n);
++		if (buf->ops != &anon_pipe_buf_ops ||
++		    (buf->flags & PIPE_BUF_FLAG_PACKET) ||
++		    buf->len > total_len - len)
++			break;
++		run[n].kaddr = page_address(buf->page) + buf->offset;
++		run[n].len = buf->len;
++		len += buf->len;
++	}
++	*lenp = len;
++	return n;
++}
++
++/*
++ * Copy the @n buffers in @run, @len bytes in all, to @to inside one user
++ * access section. All or nothing: @to only advances if no copy faults.
++ */
++static bool anon_pipe_batch_copy(struct iov_iter *to,
++				 const struct pipe_copy_src *run,
++				 unsigned int n, size_t len)
++{
++	const struct pipe_copy_src *r, *end = run + n;
++	char __user *dst = to->ubuf + to->iov_offset;
++	size_t off;
++
++	if (should_fail_usercopy())
++		return false;
++	might_fault();
++	for (r = run, off = 0; r < end; off += r->len, r++)
++		instrument_copy_to_user(dst + off, r->kaddr, r->len);
++	scoped_user_write_access_size(dst, len, fault) {
++		for (r = run, off = 0; r < end; off += r->len, r++)
++			if (unsafe_copy_user_generic((__force void *)dst + off,
++						     r->kaddr, r->len))
++				goto fault;
++	}
++	iov_iter_advance(to, len);
++	return true;
++
++fault:
++	return false;
++}
++
++/* Release the @n buffers from @tail on, which a read consumed whole. */
++static unsigned int anon_pipe_batch_release(struct pipe_inode_info *pipe,
++					    unsigned int head,
++					    unsigned int tail, unsigned int n,
++					    bool *wake_writer)
++{
++	*wake_writer |= pipe_full(head, tail, pipe->max_usage);
++	while (n--)
++		tail = pipe_update_tail(pipe, pipe_buf(pipe, tail), tail);
++	return tail;
++}
++
++/*
++ * Copy a run of anonymous buffers that the read consumes whole to a plain
++ * user buffer inside one user access section, instead of one STAC/CLAC pair
++ * per buffer. Returns the bytes consumed, or 0 to go buffer by buffer.
++ */
++static ssize_t anon_pipe_read_batch(struct pipe_inode_info *pipe,
++				    struct iov_iter *to, size_t total_len,
++				    unsigned int head, unsigned int *tailp,
++				    bool *wake_writer)
++{
++	struct pipe_copy_src run[PIPE_DEF_BUFFERS];
++	unsigned int n;
++	size_t len;
++
++	if (!iter_is_ubuf(to))
++		return 0;
++	n = anon_pipe_batch_lookup(pipe, head, *tailp, total_len, run, &len);
++	if (n < 2 || !anon_pipe_batch_copy(to, run, n, len))
++		return 0;
++	*tailp = anon_pipe_batch_release(pipe, head, *tailp, n, wake_writer);
++	return len;
++}
++#else
++static ssize_t anon_pipe_read_batch(struct pipe_inode_info *pipe,
++				    struct iov_iter *to, size_t total_len,
++				    unsigned int head, unsigned int *tailp,
++				    bool *wake_writer)
++{
++	return 0;
++}
++#endif
++
+ static ssize_t
+ anon_pipe_read(struct kiocb *iocb, struct iov_iter *to)
+ {
+@@ -347,7 +456,7 @@ anon_pipe_read(struct kiocb *iocb, struct iov_iter *to)
+ 	struct file *filp = iocb->ki_filp;
+ 	struct pipe_inode_info *pipe = filp->private_data;
+ 	bool wake_writer = false, wake_next_reader = false;
+-	ssize_t ret;
++	ssize_t ret, batched;
+ 
+ 	/* Null read succeeds. */
+ 	if (unlikely(total_len == 0))
+@@ -393,7 +502,16 @@ anon_pipe_read(struct kiocb *iocb, struct iov_iter *to)
+ 		}
+ #endif
+ 
+-		if (!pipe_empty(head, tail)) {
++		batched = anon_pipe_read_batch(pipe, to, total_len, head,
++					       &tail, &wake_writer);
++		if (batched) {
++			ret += batched;
++			total_len -= batched;
++			if (!total_len)
++				break;	/* common path: read succeeded */
++			if (!pipe_empty(head, tail))	/* More to do? */
++				continue;
++		} else if (!pipe_empty(head, tail)) {
+ 			struct pipe_buffer *buf = pipe_buf(pipe, tail);
+ 			size_t chars = buf->len;
+ 			size_t written;
 
 
-
-Hello,
-
-kernel test robot noticed "BUG:sleeping_function_called_from_invalid_context_at_include/linux/sched/mm.h" on:
-
-commit: da769d641f3e00c9a0cbfdfd5a378214d8bc7bac ("dyndbg: Cache dynamic prefixes in maple tree") https://github.com/jimc/linux.git dyndbg-maple-clean
-
-in testcase: boot
-
-config: x86_64-randconfig-2300-20261109
-compiler: gcc-14
-test machine: qemu-system-x86_64 -enable-kvm -cpu Broadwell-noTSX,enforce -smp 4 -m 16G
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <yi1.lai@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202611100740.41c99f9e-lkp@intel.com
-
-
-[   19.163631][  T211] BUG: sleeping function called from invalid context at include/linux/sched/mm.h:322
-[   19.167079][  T211] in_atomic(): 1, irqs_disabled(): 1, non_block: 0, pid: 211, name: modprobe
-[   19.170072][  T211] preempt_count: 1, expected: 0
-[   19.171730][  T211] RCU nest depth: 0, expected: 0
-[   19.173465][  T211] locks held by modprobe/211: 3, on CPU#2:
-[   19.175407][  T211]  #0: ffffffff85507870 ((module_notify_list).rwsem){++++}-{4:4}, at: blocking_notifier_call_chain (notifier.c:484 notifier.c:473)
-[   19.178765][  T211]  #1: ffffffff858306c8 (ddebug_lock){+.+.}-{4:4}, at: ddebug_module_notify (dynamic_debug.c:2048 dynamic_debug.c:2087)
-[   19.180757][  T211]  #2: ffffffff858304b8 (pr_prefixes_lock){....}-{3:3}, at: _raw_spin_lock_irqsave (locking/spinlock.c:181)
-[   19.180784][  T211] irq event stamp: 6318
-[   19.180787][  T211] hardirqs last  enabled at (6317): __free_object (linux/irqflags.h:266 (discriminator 1) debugobjects.c:536 (discriminator 1))
-[   19.185875][  T211] hardirqs last disabled at (6318): __raw_spin_lock_irqsave (linux/spinlock_api_smp.h:153 (discriminator 1))
-[   19.187982][  T211] softirqs last  enabled at (6194): local_bh_enable (linux/bottom_half.h:33)
-[   19.189963][  T211] softirqs last disabled at (6192): local_bh_disable (linux/bottom_half.h:20)
-[   19.191922][  T211] Preemption disabled at:
-[   19.191927][  T211] preempt_count_add (sched/core.c:6065)
-[   19.194238][  T211] CPU: 2 UID: 0 PID: 211 Comm: modprobe Tainted: G                T   7.4.0-rc2+ #1 PREEMPT
-[   19.194245][  T211] Tainted: [T]=RANDSTRUCT
-[   19.194247][  T211] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[   19.194250][  T211] Call Trace:
-[   19.194253][  T211]  <TASK>
-[   19.194256][  T211]  dump_stack_lvl (dump_stack.c:94 dump_stack.c:120)
-[   19.194264][  T211]  ? preempt_count_add (sched/core.c:6065)
-[   19.194270][  T211]  dump_stack (dump_stack.c:129)
-[   19.194275][  T211]  __might_resched (sched/core.c:9202)
-[   19.194285][  T211]  __might_sleep (sched/core.c:9131)
-[   19.194296][  T211]  might_alloc (linux/sched/mm.h:322 (discriminator 1) linux/sched/mm.h:314 (discriminator 1))
-[   19.194302][  T211]  mtree_erase (maple_tree.c:6042)
-[   19.194307][  T211]  ? __lock_acquired (locking/lockdep.c:6212 (discriminator 1))
-[   19.194314][  T211]  ? mas_erase (maple_tree.c:5668)
-[   19.194329][  T211]  ? __raw_spin_lock_irqsave (linux/spinlock_api_smp.h:156 (discriminator 1))
-[   19.194338][  T211]  ddebug_drop_cached_prefix (dynamic_debug.c:2183)
-[   19.194346][  T211]  ddebug_module_notify (dynamic_debug.c:2059 dynamic_debug.c:2087)
-[   19.194357][  T211]  notifier_call_chain (notifier.c:86)
-[   19.194367][  T211]  ? debug_smp_processor_id (smp_processor_id.c:58)
-[   19.194378][  T211]  blocking_notifier_call_chain (notifier.c:485 notifier.c:473)
-[   19.194388][  T211]  do_init_module (module/main.c:3238)
-[   19.194402][  T211]  ? free_module (module/main.c:1476)
-[   19.194415][  T211]  load_module (module/main.c:3619)
-[   19.194435][  T211]  ? layout_and_allocate+0x540/0x540
-[   19.194445][  T211]  ? __ia32_sys_fspick (??:?)
-[   19.194459][  T211]  init_module_from_file (module/main.c:3819)
-[   19.194465][  T211]  ? __ia32_sys_init_module (module/main.c:3676)
-[   19.194488][  T211]  ? __this_cpu_preempt_check (smp_processor_id.c:64)
-[   19.194496][  T211]  ? __kasan_check_read (kasan/shadow.c:31 (discriminator 1))
-[   19.194503][  T211]  ? do_raw_spin_unlock (linux/instrumented.h:82 linux/atomic/atomic-instrumented.h:32 asm-generic/qspinlock.h:58 locking/spinlock_debug.c:101 locking/spinlock_debug.c:141)
-[   19.194513][  T211]  idempotent_init_module (module/main.c:3831)
-[   19.194522][  T211]  ? init_module_from_file (module/main.c:3820)
-[   19.194526][  T211]  ? rcu_is_watching (linux/context_tracking.h:128 rcu/tree.c:753)
-[   19.194541][  T211]  ? security_capable (security.c:674 (discriminator 4))
-[   19.194550][  T211]  ? __fget_light (file.c:1344)
-[   19.194559][  T211]  __do_sys_finit_module (module/main.c:3857)
-[   19.194568][  T211]  __ia32_sys_finit_module (module/main.c:3841 module/main.c:3841)
-[   19.194576][  T211]  ia32_sys_call (kbuild/obj/consumer/x86_64-randconfig-2300-20261109/./arch/x86/include/generated/asm/syscalls_32.h:351)
-[   19.194581][  T211]  __do_fast_syscall_32 (x86/entry/syscall_32.c:79 x86/entry/syscall_32.c:286)
-[   19.194590][  T211]  do_fast_syscall_32 (x86/entry/syscall_32.c:311)
-[   19.194596][  T211]  do_SYSENTER_32 (x86/entry/syscall_32.c:349)
-[   19.194600][  T211]  entry_SYSENTER_compat_after_hwframe (x86/entry/entry_64_compat.S:126)
-[   19.194606][  T211] RIP: 0023:0xf7edd40c
-[   19.194613][  T211] Code: d2 74 05 c1 e8 0c 89 02 8b 5d fc 31 c0 c9 31 d2 31 c9 c3 cc 90 90 90 90 90 90 90 90 90 90 0f 1f 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 cc 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90
-All code
-========
-   0: d2 74 05 c1           shlb   %cl,-0x3f(%rbp,%rax,1)
-   4: e8 0c 89 02 8b        call   0xffffffff8b028915
-   9: 5d                    pop    %rbp
-   a: fc                    cld
-   b: 31 c0                 xor    %eax,%eax
-   d: c9                    leave
-   e: 31 d2                 xor    %edx,%edx
-  10: 31 c9                 xor    %ecx,%ecx
-  12: c3                    ret
-  13: cc                    int3
-  14: 90                    nop
-  15: 90                    nop
-  16: 90                    nop
-  17: 90                    nop
-  18: 90                    nop
-  19: 90                    nop
-  1a: 90                    nop
-  1b: 90                    nop
-  1c: 90                    nop
-  1d: 90                    nop
-  1e: 0f 1f 00              nopl   (%rax)
-  21: 51                    push   %rcx
-  22: 52                    push   %rdx
-  23: 55                    push   %rbp
-  24: 89 e5                 mov    %esp,%ebp
-  26: 0f 34                 sysenter
-  28: cd 80                 int    $0x80
-  2a:*  5d                    pop    %rbp   <-- trapping instruction
-  2b: 5a                    pop    %rdx
-  2c: 59                    pop    %rcx
-  2d: c3                    ret
-  2e: cc                    int3
-  2f: 90                    nop
-  30: 90                    nop
-  31: 90                    nop
-  32: 90                    nop
-  33: 90                    nop
-  34: 90                    nop
-  35: 90                    nop
-  36: 90                    nop
-  37: 90                    nop
-  38: 90                    nop
-  39: 90                    nop
-  3a: 90                    nop
-  3b: 90                    nop
-  3c: 90                    nop
-  3d: 90                    nop
-  3e: 90                    nop
-  3f: 90                    nop
-
-Code starting with the faulting instruction ===========================================
-   0: 5d                    pop    %rbp
-   1: 5a                    pop    %rdx
-   2: 59                    pop    %rcx
-   3: c3                    ret
-   4: cc                    int3
-   5: 90                    nop
-   6: 90                    nop
-   7: 90                    nop
-   8: 90                    nop
-   9: 90                    nop
-   a: 90                    nop
-   b: 90                    nop
-   c: 90                    nop
-   d: 90                    nop
-   e: 90                    nop
-   f: 90                    nop
-  10: 90                    nop
-  11: 90                    nop
-  12: 90                    nop
-  13: 90                    nop
-  14: 90                    nop
-  15: 90                    nop
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20261110/202611100740.41c99f9e-lkp@intel.com
-
-
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
 
