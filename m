@@ -1,84 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.11
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794317086;
-	b=yNhRQIXIB/sMxrikuOAngFN4o14fvvqDqalw6FnJb08we8RTUOCmaHTUQ1Tpq/uJvX0g
-	 VfbZCPPsLnCHev+n24z2MyXZa1vBrsXHMz7Ag3Ds6OyX70mX5A92mGx4I+/joe/SKJCdA
-	 c5t8t0R8rwkeZSwm47wZ55DEWQsog2z4aylswukWGhiXIegISUc4+qJ7M6A1dEGU06Xnb
-	 C8AzK7pFuM1bHBhPQVZ/Fr9No/IDSRw7I1E31QQPqluRnAVsERkpcsDBz/VKQE2m5WilZ
-	 VsIMD2f7vmjPyGsaGLyFVkBMYy0TRB7nLBGbrSobPcduEphNZX1nbZ1FFw04uXdf3QQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794317086;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition:
-	 In-Reply-To;
-	bh=vfRXqd1LnLdrT5DLeZnCBWIcxfbAfVCcHISw4AcMLXo=;
-	b=Qge9qBzY3Y6xVE8klZWM6lBfGtK/84c14eSaFtiCTf78y6MLjTApFDqF/ExKZTHnWslX
-	 wiMHtewBFHwqA5ozBbtALAHAXmMOcv06VFc5uie+MGSx1THVb/5Sxi0I5LWbbWi10wooh
-	 PhnovEIWyMIT0wQ1tgE1sSjGI1xKlWKq/d8ItIc+q+Qzi9TaqUa3B3OgxDj2dUTog3AqH
-	 wqL+D1xg5MoonPiRfTbOY4tg+1XJPtMLj2XVCaNOO51KTuw0IiTqTNzx+/N6mMscQunpr
-	 5SXxxLSbQg8B6bYRnathbyXvh1b1RtICTo/6yvUCRlj8fA5nbB6M5EUNdbLCE+jN+Ng==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=YsFAercJ;
-	arc=none smtp.remote-ip=198.175.65.11
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.52
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794321891;
+	b=V4WpUN5/P1BsOmCsLyZywgPbf9ID5YNMZHx6S/9czoD//Gc53/SKmgTz1WiFwuHxT845
+	 Xe7BHlTfrwffBVHWZAMfRsf7k6NbWL0CvNhdey5/nNPcMcFR0M3OXitwMQXh4UEM2vrLc
+	 C98tYfJOs1LixdmY9oD5MwDeetwZEjr7wNi1h8FC4nT+OVmhvHPNkYNE67YOZxrw8kbbd
+	 B2ShwgXApn/buAkarNSoAfqN89Lx54a/J+YghgY4768ZN5j1P/sr7VptumpgNDIzcsoXf
+	 unI7Jes0gTvlYm1tGy6wPD/jEp8joXUvGAcJX6Ybgi5CnHv+OfdCqL8x+qN1XYhyHVQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794321891;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=moeKZ6s5YDC8ka7H6MWH72Yzji4NuAIlVn7AGJL5KvU=;
+	b=C6X2i2Cr+Q7lu2Fo3VgHCe9qWL3YHkqwGVnahFcugYSV1RusEftYaL91uNiKrVMx4ulu
+	 1XIVbgtMQec4nyLKxP9rTwiWlyfPSsHof5DNTK5O+b68po2wY1fdZvYn+ap9VMvbccq/j
+	 5/n0wOIqaLrQC5Ts0qRJqkrNLNDC7t41LdN/DGlxxmbh0l70sFCPw21lsw00UvsbdF6Q5
+	 TdBX76FjSzUxrVe0nJeFBKL0g0bZvZErgRFCl4Dxatp2KxzgOerWFpz4zGzAsb5etUmn2
+	 MzBCwuAI8KOYR9bCLqOBWcqYJK0svn4UNbAFiquOGWTYl6SFDIycnvul2gMyGUt3mtQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=w7OYaYDy;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.52
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23D77606B6E1
-	for <oe-lkp@lists.linux.dev>; Tue, 10 Nov 2026 13:24:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 23D77606B6E1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CB55606A33B
+	for <oe-lkp@lists.linux.dev>; Tue, 10 Nov 2026 14:44:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9CB55606A33B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=YsFAercJ
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794317085; x=1825853085;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   in-reply-to;
-  bh=5tTxzaWXVqSfgbdW+gLegN0tGIRw952nW7MOTTuw5TY=;
-  b=YsFAercJ1EQwkGyMmQNITgpqs9L1kfw2G1tU0FbP6cMJwNUz+qmhU6zI
-   rhP4tYu2JRSQT5ESlXh4WemF0v+hOpMZtAopDlVZg4sCBtIV0FCTdPoFK
-   EmZrZf32NyO7VJXrmqO12RC5IRZn/ai2egDOr8jQ8TeIj+GsBj7X5SZe1
-   r5FJ1t2BRfqGZn+9ICF6REqT1RLVsOz5zV0M3cCcy77C2aRfX1uosfe6b
-   jjrjL+ohcKMhSRVFx68qqNx3exW+fKu7m5XO3RLdx+hHDzjhVDD3RLecA
-   x8geyKO//D+MQ2VS/Y/msl8V9zbJOw1BgrWbJd3/vXr1RVLYOQql4XCVO
-   A==;
-X-CSE-ConnectionGUID: OZMUwmajThmAZH8pMH53Gg==
-X-CSE-MsgGUID: O58mWNIKSFqWyak+PNQHQw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="2949631"
-X-IronPort-AV: E=Sophos;i="6.27,205,1787036400"; 
-   d="scan'208";a="2949631"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 05:24:44 -0800
-X-CSE-ConnectionGUID: ryxvuePEQc2D+6Gn6yq2xg==
-X-CSE-MsgGUID: 7BwU9qouQYK76O3ujJ1jmQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,205,1787036400"; 
-   d="scan'208";a="8318947"
-Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 05:24:39 -0800
-Date: Tue, 10 Nov 2026 21:24:36 +0800
-From: kernel test robot <yi1.lai@intel.com>
-To: Joel Fernandes <joelagnelf@nvidia.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
-	Kunwu Chan <kunwu.chan@gmail.com>,
-	"Paul E. McKenney" <paulmck@kernel.org>, rcu@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Frederic Weisbecker <frederic@kernel.org>,
-	Neeraj Upadhyay <neeraj.upadhyay@kernel.org>,
-	Joel Fernandes <joelagnelf@nvidia.com>,
-	Josh Triplett <josh@joshtriplett.org>,
-	Boqun Feng <boqun@kernel.org>, Uladzislau Rezki <urezki@gmail.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	Lai Jiangshan <jiangshanlai@gmail.com>,
-	Zqiang <qiang.zhang@linux.dev>, yi1.lai@intel.com
-Subject: Re: [PATCH] rcu-tasks: Track barrier callbacks in debugobjects
-Message-ID: <202611102000.66498f89-lkp@intel.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=w7OYaYDy
+Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-6b70192ebceso3715381a12.0
+        for <oe-lkp@lists.linux.dev>; Tue, 10 Nov 2026 06:44:50 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1794321889; cv=none;
+        d=google.com; s=arc-20260327;
+        b=O+uHnWZGiG0K4gGLUce4DMD/8KKLg/rr1pxB0IP8kq5IVjxMECYAPtrfJ83vCd7Djd
+         S7jxkUgRNM9ftytOn6qer8MnN+lK0nco/diHaUCTaBGvvRuHv4KKVLHotFYj85pbhl3w
+         NhtdJhh9pbXCbRjB2Fpvyh9b3BXKRwIhYD/b6knPCUQpeehobe/7YOmMNUMB+xxB2Zjq
+         BtUKcFcfDjK8oDp4R5I7At9G3T4hmtNRz7DruRtcwx8FRkng258bJTs6WN1To6+12zRw
+         TkA6Hrjn6mLJWWAUbrLlHAhUICydAXLWp4/h+LELQ4nomlzRLueWRMagQS4aF9pD8DY2
+         tH6A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=moeKZ6s5YDC8ka7H6MWH72Yzji4NuAIlVn7AGJL5KvU=;
+        fh=vds1y81vhhqHi4vL+efDd9BL5N5mvy36ms5+I3Y845k=;
+        b=ahcb5Wl7iSnTkkglHFJpPVFH2rXHkFeD0sBW3rifxi7B8eTwP3Bo2WJQre9xjCqBPi
+         MB6+Bg3pxM3Ft+qzTnHj9oeqyQpidNjvd8eIvqlS5AtblGxiUsU60EH8f6NAxOF37eGV
+         BkAaUO3BelqclaOJnY3DudQsD5uygCjqV+GLhkBakjrXN0itxeWxmDi/zrA5GKC9zkbM
+         0g+YA6/HbvTpd8nMhfAw9So0Lo5T1bQRWJS/iw06WcivffFdCMBsX0cSrjex0LFhgCZf
+         wdK/aus+4J2LYIR8Id37GMYgMaqAQMVbPHJgpoLKPYijF/3dVEb5h6L5I73sK4mI4XEQ
+         x8Yw==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794321889; x=1794926689; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=moeKZ6s5YDC8ka7H6MWH72Yzji4NuAIlVn7AGJL5KvU=;
+        b=w7OYaYDyoogXGJlEqodkIiSmfOOynPgRqjJBn9k20lI7v4mHwuaIi8sfz3gDEepz9l
+         xBMzwLt7Y5WHxG0G/ZNxss+/qe122MZVrG+2bORIsaYYP6ekln0uMmIxFVFQH6fos3pS
+         i6p/ATLVqin3doToqq8l20GXi5auAoDEIMPV2LaA6fx1gOAhKl93xipS39q074Ys0rrX
+         U3LwEBHZcVjBqphkndUxqUaYC2VMsP3L4KFOqSeRTMoPkzucJhJIXsshL9SoZBMkqqV2
+         lJ6Q3JtZQxYP2BfXBECc5gRliwixBT2nlbJ0Jzf6giYD1X9azdppVPYVMOP+1zmFgK7a
+         DfVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794321889; x=1794926689;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=moeKZ6s5YDC8ka7H6MWH72Yzji4NuAIlVn7AGJL5KvU=;
+        b=oKOXW0ZIVktNTNVVuPajY8LceDyF+VkSW9w7k6Ci99/UEoRXnUjJsmG/Mn61lw3utT
+         hy/ggbeRfaZ0ZLJ9jAuPh2xscjnQAABnsQLEdQfTzYZEKsmdomboNde3jUHC+tcHKjcu
+         n7gzyTSQ5zS+Q0hoCztihL+0C+slIYPi/YEATajaSnTjbCvjZbnNLOWONr8TY7rmVr7Y
+         DtaWdmDyaZlFt57Zva5iyaUvpTaO8A0/pzBZQi3V1Cq3hCxRWxBNpDxBUwFZDASFl1zG
+         ga6zhuZ5W+0naPUUYzBVnFHKysS1jdQanW5mWho+ueaK/VvBqMVrcXWqvjB5EJFGEQ/s
+         mXZw==
+X-Forwarded-Encrypted: i=1; AL+hErF5YxUvvJZW2qhjuv4/BTto4kUYvi8vEayf65gbCVgh602sSvimiMclYm7JDTYW5/zbm2kqoRw=@lists.linux.dev
+X-Gm-Message-State: APuU4Z/2SGNxlTVcSQec+Q1II0x9JUw/XElNwD2cqjJSdBHXxjYB+GpS
+	qCdqgYbH44TE+v8Ms6W4U3hMvH+QBKbrhNGuEr3nirH9X8nJInb3cvjaD351u/rabK+CZcTZBSi
+	3AvwIeXyQqVO10Le+GVkbxJzb7kSwBEw=
+X-Gm-Gg: AYBFou0FONdZYqfl2s0+SXlT1uVmB01HJFv/zJ201S/Ky43H6VyeyOpNxpBcghUd8C1
+	9JqtBDHCpudE9JcoD/G8AsRxCnO13o2T67C204MCvBk6TVBvz9Q+jnClXlITgeCRyoKmAsXdPTL
+	L44qap/Sa+qAASsY4F9XHS8+Rl5A6jPiTNnrxxJMZ01Ekfxs2c/mnedvThcRDGyl4UfJPfcZGjV
+	RlWHTEMUfbSwn0roFTWpYVD9MdtYurYrhrzzJqMNVK+siz6k4HaANdECnU/yDbW70TOk7TIlW1Q
+	4UCg85SUVtl/zpyrr7N0I7KHCXoSixPHZbLZKYDfZSC2YW/n/rUGFQzqNwOUxxHB1PsGVXlUUCT
+	zdbwr0kzHxnZ2nIEQLypQYpfmyW23n922Dm2b5b5PwwPXdHZLfomIjS8/KMBA0iOYPDymcebld/
+	V/EufKZLjq+TMdla19jqgjBZXubAwf
+X-Received: by 2002:aa7:c1c9:0:b0:6b1:ce47:f54b with SMTP id
+ 4fb4d7f45d1cf-6b757243041mr1879154a12.21.1794321888769; Tue, 10 Nov 2026
+ 06:44:48 -0800 (PST)
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -88,98 +105,319 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261104153046.965890-1-joelagnelf@nvidia.com>
+References: <202611041404.befe64cd-lkp@intel.com> <20261105-trommeln-einspannen-radius-ccb4e174e407@brauner>
+ <auygOHcuBba_o132@gmail.com> <CAGudoHFpNbxL13ZOWiyyLSPpmzXcB=e=RBZ8ZGk+Oc58Aad9pA@mail.gmail.com>
+ <au2vjpu_yqNa83pN@gmail.com> <CAGudoHF3de_55YvdztPs7QiYs25u6nPEV=uMOzfr=bWmwof69g@mail.gmail.com>
+ <avMQxhpHhIPM_6HP@gmail.com>
+In-Reply-To: <avMQxhpHhIPM_6HP@gmail.com>
+From: Mateusz Guzik <mjguzik@gmail.com>
+Date: Tue, 10 Nov 2026 15:44:36 +0100
+X-Gm-Features: AclHuK8dFFD73mHOhMvH1NU4_XTmtwUs_i_ldKGW66HJeL7DZokh2ZM31ccn5Lw
+Message-ID: <CAGudoHFe8XgtKZohfn0Q=EH0EeXozTZq+UPJKN0BEmLnEG2s=Q@mail.gmail.com>
+Subject: Re: [linus:master] [fs/pipe] f7f4665dc5: lmbench3.PIPE.bandwidth.MB/sec
+ 18.5% regression
+To: Breno Leitao <leitao@debian.org>
+Cc: Christian Brauner <brauner@kernel.org>, kernel test robot <yi1.lai@intel.com>, oe-lkp@lists.linux.dev, 
+	lkp@intel.com, linux-kernel@vger.kernel.org, Oleg Nesterov <oleg@redhat.com>, 
+	linux-fsdevel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+On Tue, Nov 10, 2026 at 1:46=E2=80=AFPM Breno Leitao <leitao@debian.org> wr=
+ote:
+>
+> On Fri, Nov 06, 2026 at 02:44:54PM +0100, Mateusz Guzik wrote:
+> > > 6) Any other idea?
+> >
+> > The SMAP stuff is the primary problem right now. To reiterate: every
+> > single buffer read/write takes a SMAP trip, which is very expensive
+> > even on modern uarchs. Refactoring this into i/o under one SMAP round
+> > would provide a visible speed up. It also happens to not pose a
+> > tradeoff in terms of memory usage and would be my first avenue of
+> > attack if I was working on this.
+> >
+> > All that said, one reader vs one writer scenario definitely makes
+> > sense to optimize.
+>
+> I've spent some tokens on it, and it seems to give ~5% improvement on
+> the pipe bench. Is this what you had in mind (in a single patch format)?
+>
 
-Hello,
+The resulting behavior matches.
 
-kernel test robot noticed "WARNING:at_lib/debugobjects.c:#debug_print_object" on:
+A clean implementation escapes me and that's part of a reason I did
+not do the work myself.
 
-commit: 658b1b4ca701213b64469ec43cd8f10adaf395f2 ("[PATCH] rcu-tasks: Track barrier callbacks in debugobjects")
-url: https://github.com/intel-lab-lkp/linux/commits/Joel-Fernandes/rcu-tasks-Track-barrier-callbacks-in-debugobjects/20261104-103045
-base: https://git.kernel.org/cgit/linux/kernel/git/rcu/linux.git rcu/dev patch link: https://lore.kernel.org/all/20261104153046.965890-1-joelagnelf@nvidia.com/
-patch subject: [PATCH] rcu-tasks: Track barrier callbacks in debugobjects
+The proposed patch is on the uglier side, but AFAICS that was never a
+blocker in Linux.
 
-in testcase: rcutorture
-with following parameters:
+Or to put it differently, I'm not happy with the shape of the patch,
+but don't have a better suggestion. The win is probably enough of a
+justification to get this in.
 
-	runtime: 300s
-	test: default
-	torture_type: tasks
-
-
-config: x86_64-randconfig-072-20260623
-compiler: gcc-14
-test machine: qemu-system-x86_64 -enable-kvm -cpu Cascadelake-Server-noTSX,enforce -smp 4 -m 16G
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <yi1.lai@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202611102000.66498f89-lkp@intel.com
-
-
-[  325.412340][ T1259] ------------[ cut here ]------------
-[  325.413965][ T1259] ODEBUG: activate active (active state 1) object: ffffffff8a7b1f08 object type: rcu_head hint: 0x0
-[  325.416551][ T1259] WARNING: lib/debugobjects.c:629 at debug_print_object+0x191/0x1d0, CPU#0: rcu_torture_fak/1259
-[  325.419281][ T1259] Modules linked in: rcutorture torture
-[  325.420580][ T1259] CPU: 0 UID: 0 PID: 1259 Comm: rcu_torture_fak Tainted: G                T   7.0.0-rc6-00019-g658b1b4ca701 #1 PREEMPT
-[  325.423791][ T1259] Tainted: [T]=RANDSTRUCT
-[  325.424756][ T1259] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[  325.427494][ T1259] RIP: 0010:debug_print_object+0x1a6/0x1d0
-[  325.428858][ T1259] Code: c1 ea 03 80 3c 02 00 74 05 e8 76 71 25 ff 48 8d 3d 0f 1c f3 0a 41 54 48 8b 14 dd c0 75 72 87 4d 89 f9 4d 89 f0 89 e9 4c 89 ee <67> 48 0f b9 3a 58 ff 05 32 2a ef 0a 5b 5d 41 5c 41 5d 41 5e 41 5f
-[  325.433880][ T1259] RSP: 0018:ffffc90000357c70 EFLAGS: 00010246
-[  325.435364][ T1259] RAX: dffffc0000000000 RBX: 0000000000000003 RCX: 0000000000000001
-[  325.437272][ T1259] RDX: ffffffff87727500 RSI: ffffffff87726e60 RDI: ffffffff8d6cac90
-[  325.439305][ T1259] RBP: 0000000000000001 R08: ffffffff8a7b1f08 R09: ffffffff872da660
-[  325.441227][ T1259] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-[  325.443291][ T1259] R13: ffffffff87726e60 R14: ffffffff8a7b1f08 R15: ffffffff872da660
-[  325.445186][ T1259] FS:  0000000000000000(0000) GS:0000000000000000(0000) knlGS:0000000000000000
-[  325.447423][ T1259] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  325.449011][ T1259] CR2: 000000000805b740 CR3: 0000000154e57001 CR4: 00000000007706b0
-[  325.451076][ T1259] PKRU: 55555554
-[  325.451919][ T1259] Call Trace:
-[  325.452654][ T1259]  <TASK>
-[  325.453464][ T1259]  debug_object_activate+0x207/0x2a0
-[  325.454826][ T1259]  ? debug_object_init_on_stack+0x20/0x20
-[  325.456217][ T1259]  ? find_held_lock+0x2b/0x80
-[  325.457536][ T1259]  ? lockdep_init_map_type+0xb1/0x200
-[  325.462417][ T1259]  ? lockdep_init_map_type+0xb1/0x200
-[  325.464677][ T1259]  ? __init_swait_queue_head+0xd3/0x140
-[  325.471162][ T1259]  rcu_barrier_tasks_generic+0x10d/0x2a0
-[  325.474128][ T1259]  rcu_torture_fakewriter+0x157/0x870 [rcutorture]
-[  325.477019][ T1259]  ? rcu_read_delay+0x250/0x250 [rcutorture]
-[  325.479711][ T1259]  ? lockdep_hardirqs_on+0xd0/0x100
-[  325.481709][ T1259]  ? _raw_spin_unlock_irqrestore+0x4c/0xa0
-[  325.483416][ T1259]  ? __kthread_parkme+0xfe/0x200
-[  325.484751][ T1259]  ? rcu_read_delay+0x250/0x250 [rcutorture]
-[  325.486553][ T1259]  kthread+0x3cd/0x3e0
-[  325.487554][ T1259]  ? kthread_affine_node+0x150/0x150
-[  325.488909][ T1259]  ret_from_fork+0x7a/0x7c0
-[  325.490231][ T1259]  ? arch_exit_to_user_mode_prepare+0x150/0x150
-[  325.491925][ T1259]  ? switch_fpu+0x14/0x1b0
-[  325.493054][ T1259]  ? __switch_to+0x573/0xa70
-[  325.494357][ T1259]  ? kthread_affine_node+0x150/0x150
-[  325.495663][ T1259]  ret_from_fork_asm+0x11/0x20
-[  325.496861][ T1259]  </TASK>
-[  325.497866][ T1259] irq event stamp: 1019
-[  325.499064][ T1259] hardirqs last  enabled at (1033): [<ffffffff815720e0>] __up_console_sem+0x40/0x60
-[  325.501497][ T1259] hardirqs last disabled at (1048): [<ffffffff815720c0>] __up_console_sem+0x20/0x60
-[  325.503957][ T1259] softirqs last  enabled at (1074): [<ffffffff8148eb5f>] handle_softirqs+0x61f/0x6f0
-[  325.506531][ T1259] softirqs last disabled at (1095): [<ffffffff8148ecd8>] __irq_exit_rcu+0xa8/0x1e0
-[  325.508825][ T1259] ---[ end trace 0000000000000000 ]---
-[  325.649375][ T1259] ------------[ cut here ]------------
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20261110/202611102000.66498f89-lkp@intel.com
-
-
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
-
+> commit 724fa7def2700d51a7f0427d0de06c123b3bf8e9
+> Author: Breno Leitao <leitao@debian.org>
+> Date:   Mon Nov 9 05:04:45 2026 -0800
+>
+>     x86/uaccess, fs/pipe: copy a run of pipe buffers in one user access s=
+ection
+>
+>     Mateusz has been constantly suggesting that The SMAP stuff is the
+>     primary problem right now in the pipe code, which summarizes to
+>     anon_pipe_read() copying one pipe_buffer per copy_page_to_iter() call=
+.
+>
+>     On x86 every call opens and closes its own user access section, so a =
+64
+>     KiB read that drains a full default pipe executes 16 STAC/CLAC pairs.
+>
+>     The pipe's pages are not contiguous, so the copies stay separate.
+>
+>     Move the body of copy_user_generic() into unsafe_copy_user_generic(),
+>     which leaves STAC/CLAC to the caller's user access section, and turn
+>     copy_user_generic() into a STAC/CLAC wrapper around it. The existing
+>     callers get the same code. (This will eventually be a second patch if=
+/once
+>     this becomes an non-PoC)
+>
+>     When the destination is a plain user buffer (ITER_UBUF, which is what
+>     read(2) passes), copy up to PIPE_DEF_BUFFERS consecutive anonymous
+>     buffers that the read consumes whole inside one scoped user write acc=
+ess
+>     with unsafe_copy_user_generic(), then release them. The buffers are
+>     looked up before the section starts, so that only the copies run with
+>     user access enabled.
+>
+>     What this buys depends on what SMAP costs the CPU. With the buffer by
+>     buffer loop, booting with clearcpuid=3Dsmap speeds pipe_bench up by 4=
+-14%
+>     on a Sapphire Rapids Xeon Gold 6450C.
+>
+>     pipe_bench from the pipe selftests runs 1, 2 or 5 writers against 1, =
+5
+>     or 10 readers on one 1 MiB pipe, with 64 KiB writes and reads.
+>     Throughput change from this patch, median of 2 boots x 5 runs, SMAP o=
+n:
+>
+>                                    Sapphire Rapids
+>       1 writer, 1 reader                  +5.2%
+>       5 writers, 10 readers               +8.0%
+>       all 9 mixes                    +5% to +15%
+>
+>     Suggested-by: Mateusz Guzik <mjguzik@gmail.com>
+>     Link: https://lore.kernel.org/all/CAGudoHF3de_55YvdztPs7QiYs25u6nPEV=
+=3DuMOzfr=3DbWmwof69g@mail.gmail.com/
+>     Signed-off-by: Breno Leitao <leitao@debian.org>
+>
+> diff --git a/arch/x86/include/asm/uaccess_64.h b/arch/x86/include/asm/uac=
+cess_64.h
+> index 20de34cc9aa6e7..28208db6132c27 100644
+> --- a/arch/x86/include/asm/uaccess_64.h
+> +++ b/arch/x86/include/asm/uaccess_64.h
+> @@ -115,10 +115,13 @@ static inline bool __access_ok(const void __user *p=
+tr, unsigned long size)
+>  __must_check unsigned long
+>  rep_movs_alternative(void *to, const void *from, unsigned len);
+>
+> +/*
+> + * copy_user_generic() without the STAC/CLAC, for several copies inside =
+one
+> + * user access section. Returns the number of bytes not copied.
+> + */
+>  static __always_inline __must_check unsigned long
+> -copy_user_generic(void *to, const void *from, unsigned long len)
+> +unsafe_copy_user_generic(void *to, const void *from, unsigned long len)
+>  {
+> -       stac();
+>         /*
+>          * If CPU has FSRM feature, use 'rep movs'.
+>          * Otherwise, use rep_movs_alternative.
+> @@ -131,6 +134,16 @@ copy_user_generic(void *to, const void *from, unsign=
+ed long len)
+>                 _ASM_EXTABLE_UA(1b, 2b)
+>                 :"+c" (len), "+D" (to), "+S" (from), ASM_CALL_CONSTRAINT
+>                 : : "memory", "rax");
+> +       return len;
+> +}
+> +
+> +#define unsafe_copy_user_generic unsafe_copy_user_generic
+> +
+> +static __always_inline __must_check unsigned long
+> +copy_user_generic(void *to, const void *from, unsigned long len)
+> +{
+> +       stac();
+> +       len =3D unsafe_copy_user_generic(to, from, len);
+>         clac();
+>         return len;
+>  }
+>
+> diff --git a/fs/pipe.c b/fs/pipe.c
+> index 4fa69192e6fba1..6f6041c94abefa 100644
+> --- a/fs/pipe.c
+> +++ b/fs/pipe.c
+> @@ -340,6 +340,115 @@ static inline unsigned int pipe_update_tail(struct =
+pipe_inode_info *pipe,
+>         return tail;
+>  }
+>
+> +#ifdef unsafe_copy_user_generic
+> +/* One buffer of a batched read, looked up before the user access sectio=
+n. */
+> +struct pipe_copy_src {
+> +       void *kaddr;
+> +       size_t len;
+> +};
+> +
+> +/*
+> + * Fill @run with the anonymous buffers from @tail on that the read cons=
+umes
+> + * whole. Returns how many, with their total length in @lenp.
+> + */
+> +static unsigned int anon_pipe_batch_lookup(struct pipe_inode_info *pipe,
+> +                                          unsigned int head, unsigned in=
+t tail,
+> +                                          size_t total_len,
+> +                                          struct pipe_copy_src *run,
+> +                                          size_t *lenp)
+> +{
+> +       struct pipe_buffer *buf;
+> +       size_t len =3D 0;
+> +       unsigned int n;
+> +
+> +       for (n =3D 0; n < PIPE_DEF_BUFFERS && tail + n !=3D head; n++) {
+> +               buf =3D pipe_buf(pipe, tail + n);
+> +               if (buf->ops !=3D &anon_pipe_buf_ops ||
+> +                   (buf->flags & PIPE_BUF_FLAG_PACKET) ||
+> +                   buf->len > total_len - len)
+> +                       break;
+> +               run[n].kaddr =3D page_address(buf->page) + buf->offset;
+> +               run[n].len =3D buf->len;
+> +               len +=3D buf->len;
+> +       }
+> +       *lenp =3D len;
+> +       return n;
+> +}
+> +
+> +/*
+> + * Copy the @n buffers in @run, @len bytes in all, to @to inside one use=
+r
+> + * access section. All or nothing: @to only advances if no copy faults.
+> + */
+> +static bool anon_pipe_batch_copy(struct iov_iter *to,
+> +                                const struct pipe_copy_src *run,
+> +                                unsigned int n, size_t len)
+> +{
+> +       const struct pipe_copy_src *r, *end =3D run + n;
+> +       char __user *dst =3D to->ubuf + to->iov_offset;
+> +       size_t off;
+> +
+> +       if (should_fail_usercopy())
+> +               return false;
+> +       might_fault();
+> +       for (r =3D run, off =3D 0; r < end; off +=3D r->len, r++)
+> +               instrument_copy_to_user(dst + off, r->kaddr, r->len);
+> +       scoped_user_write_access_size(dst, len, fault) {
+> +               for (r =3D run, off =3D 0; r < end; off +=3D r->len, r++)
+> +                       if (unsafe_copy_user_generic((__force void *)dst =
++ off,
+> +                                                    r->kaddr, r->len))
+> +                               goto fault;
+> +       }
+> +       iov_iter_advance(to, len);
+> +       return true;
+> +
+> +fault:
+> +       return false;
+> +}
+> +
+> +/* Release the @n buffers from @tail on, which a read consumed whole. */
+> +static unsigned int anon_pipe_batch_release(struct pipe_inode_info *pipe=
+,
+> +                                           unsigned int head,
+> +                                           unsigned int tail, unsigned i=
+nt n,
+> +                                           bool *wake_writer)
+> +{
+> +       *wake_writer |=3D pipe_full(head, tail, pipe->max_usage);
+> +       while (n--)
+> +               tail =3D pipe_update_tail(pipe, pipe_buf(pipe, tail), tai=
+l);
+> +       return tail;
+> +}
+> +
+> +/*
+> + * Copy a run of anonymous buffers that the read consumes whole to a pla=
+in
+> + * user buffer inside one user access section, instead of one STAC/CLAC =
+pair
+> + * per buffer. Returns the bytes consumed, or 0 to go buffer by buffer.
+> + */
+> +static ssize_t anon_pipe_read_batch(struct pipe_inode_info *pipe,
+> +                                   struct iov_iter *to, size_t total_len=
+,
+> +                                   unsigned int head, unsigned int *tail=
+p,
+> +                                   bool *wake_writer)
+> +{
+> +       struct pipe_copy_src run[PIPE_DEF_BUFFERS];
+> +       unsigned int n;
+> +       size_t len;
+> +
+> +       if (!iter_is_ubuf(to))
+> +               return 0;
+> +       n =3D anon_pipe_batch_lookup(pipe, head, *tailp, total_len, run, =
+&len);
+> +       if (n < 2 || !anon_pipe_batch_copy(to, run, n, len))
+> +               return 0;
+> +       *tailp =3D anon_pipe_batch_release(pipe, head, *tailp, n, wake_wr=
+iter);
+> +       return len;
+> +}
+> +#else
+> +static ssize_t anon_pipe_read_batch(struct pipe_inode_info *pipe,
+> +                                   struct iov_iter *to, size_t total_len=
+,
+> +                                   unsigned int head, unsigned int *tail=
+p,
+> +                                   bool *wake_writer)
+> +{
+> +       return 0;
+> +}
+> +#endif
+> +
+>  static ssize_t
+>  anon_pipe_read(struct kiocb *iocb, struct iov_iter *to)
+>  {
+> @@ -347,7 +456,7 @@ anon_pipe_read(struct kiocb *iocb, struct iov_iter *t=
+o)
+>         struct file *filp =3D iocb->ki_filp;
+>         struct pipe_inode_info *pipe =3D filp->private_data;
+>         bool wake_writer =3D false, wake_next_reader =3D false;
+> -       ssize_t ret;
+> +       ssize_t ret, batched;
+>
+>         /* Null read succeeds. */
+>         if (unlikely(total_len =3D=3D 0))
+> @@ -393,7 +502,16 @@ anon_pipe_read(struct kiocb *iocb, struct iov_iter *=
+to)
+>                 }
+>  #endif
+>
+> -               if (!pipe_empty(head, tail)) {
+> +               batched =3D anon_pipe_read_batch(pipe, to, total_len, hea=
+d,
+> +                                              &tail, &wake_writer);
+> +               if (batched) {
+> +                       ret +=3D batched;
+> +                       total_len -=3D batched;
+> +                       if (!total_len)
+> +                               break;  /* common path: read succeeded */
+> +                       if (!pipe_empty(head, tail))    /* More to do? */
+> +                               continue;
+> +               } else if (!pipe_empty(head, tail)) {
+>                         struct pipe_buffer *buf =3D pipe_buf(pipe, tail);
+>                         size_t chars =3D buf->len;
+>                         size_t written;
+>
+>
+>
