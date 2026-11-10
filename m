@@ -1,91 +1,74 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.14
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794193676;
-	b=yrs3vGCtvX64fFM37If0jUykB5bzTM58VyzbqdvKEC/wWz320icA2qGGqYJR6rvJ0N/s
-	 UtaJ/T2I/Ux46rzjmzoO5q/lURM3ZDxTDU1JV5xGG+BDiYhnRI0DAnN6Q2gfQ2+lbJ/g+
-	 qq/vPQXSb2kV+9npHxOh00SYvlCabtZUQhIc+TH19b58GVyegej8gAupA1F8EAOb/ssiI
-	 ntJBMl4Uv0gd2UKuYdQJdLzkCa6R8Fx2YR4Zw2wshIxWdoLWHOYuUtE9r4m9ASQgRYNbO
-	 wu3cGx60naeMhz0w6wLhoYEBDPzIeSkbNq90Ift3t7LQCyHOORiYqg5mcgB2DniDs6Q==
+	t=1794290135;
+	b=xFqJn4ePYllozLuICUm9UXxdAsmJQ54rIUlc9rZHZOba+63FwFCYQoZg7+Y/1y5Q4EhU
+	 xo1bwhTWXrwH+FTJdZqzFfIcqE1ou7x0bbWs66yuCTskxk8oVtSbFm3H1eLyS0xYHy3xA
+	 xXxkojjLIUdyuBtMYGi4BJWiLlcruuBVGSRjGB/o71rYmsjh+jqB/c/783batDjtiNdkO
+	 4m9zRSFp2s9JvYzIaM7MOj27QRAwqKMU7gouKh7V1lgib7uGyjM3ouwmPkAbgYeXjcc9I
+	 vS4xidEZKM8NebzzeMdNse8j9OClNMiN3GPp6JhQp0ZkgGEbT5hFSw6iMEkU1Jj6P2Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794193676;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794290135;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition;
-	bh=7gH5bT2Vxt0gNrCEsgfTETROJ7GF5H5tMV5hP0235n4=;
-	b=ZLXi/SqEqDl/mOKQAoslK4YSTo7oLgcsgrvL5WMBAxi2Vh9/ZJJMDx4b4cqodLrMjGZk
-	 vm7x23P22brZ+RZ/XNShn82VuGaeVOsG073lY5kc7yUQtwkh8wydf+oqQiKYTbdmtxW5N
-	 WnTVfvoC9hW4hxCTNYkmh/2fxTXdNHO1IQEMGmoLzv59niB/iA23/ss8IBdA+lh8E+Kun
-	 Vw8eiqUJ3F0FUfDJQEW9dm8D+ZAG5NYWnnByUmmQ93BdDQy5jiZ6Id6+bhrkaDXG41dr0
-	 L4uZ/6dw43i/ohDmsA9nhIx+oRGS/vUNjyRK4wlXZvxppkw0CWiPxnDYSUG4bCa6N+A==
+	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition:
+	 Content-Transfer-Encoding;
+	bh=GkcKWJ0heCTsnAPSM2CLKHVBzexochNYD8ZlSD7BEC4=;
+	b=gApXNFkVSy/0FD6osqWlfu87mgSsZ4Gvlpi2eEdPHAR5ykovUXQfAB2XEKiqyT7SQELS
+	 FsfOLrI18vox/rucDH5olPAA7TXtUN9aTL7cvuTHVNn8Te2RiVALuOO4RzddrFTtyA8Q3
+	 M7XRT0pfhwHyrEHz98/C0Kq7ADveZ/LC6Ox0vD/O8kx6yaGHEbkMKuk3HRG3DQF5RbyX8
+	 OFooxQKVuaOU+B78llg5X5jhbLbUvdwX74zJY9Blmbf9pwGx7srIUXfE5lDE/7gl3Tt8V
+	 lznGKgCuODZ+p4jfVNNL6WStOo2z/iWu3CAvXIz635KaldlcurMqF4EIrzzb75DpX3A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=K+RvC28D;
-	arc=none smtp.remote-ip=198.175.65.21
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=lgWVTzXM;
+	arc=none smtp.remote-ip=198.175.65.14
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02780606A323
-	for <oe-lkp@lists.linux.dev>; Mon,  9 Nov 2026 03:07:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 02780606A323
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C03CC606A31C
+	for <oe-lkp@lists.linux.dev>; Tue, 10 Nov 2026 05:55:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C03CC606A31C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=K+RvC28D
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=lgWVTzXM
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794193674; x=1825729674;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=qjDMRVpVkMF74tWTNfZVyzHe4W8bMwXwRyqoOCBYirM=;
-  b=K+RvC28D42ZrzN4Zb9oxQS9E+WRicsX67EOo6cLizBkSAnbkui0cpWS8
-   zMpv8uCsMDCLvYNAFxVlYO18FkBMoLesbmxBrvb1widvEF0WPL/c2yti/
-   0wpat6qsLREwcP2PbikCjgXdz5AuZoec9ZTI2+tD4c4+OwtggdpTfZEIP
-   NkwFQ5cMYd2iWQXpjf4sfyNL3+v5rQaaRgaxQ8cvvhbdpSiGDhPiuMbl7
-   NAoBAKg/kMUR6w76JYn3K5hTFzc0EvwT3bXwjA136BKdpTbI3iRI9Y7pa
-   AcFacdztQk4JrCu9/mUVwf4T2jGkbtVbJ4Ne0e+hlwB1pQfwgBRiZ5NuK
+  t=1794290133; x=1825826133;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=iH88yvmbUE3SFjgUzc6lodYnds+PFSYIA9Ar8F2CVSM=;
+  b=lgWVTzXMJznGGA8Yg83zpzWkwwGBoSiBA3boswZjQBISNwI1tc2Dh9U4
+   pxqKuXU2UfbqW77mE0/7LfLD5C6y/raVh+p3L40F4IcKJl4JCGLtjHdLl
+   pUVM0TyUA/8cxSBrqwoiOw0dFBg2h76+cNpOZoiDpumh0A8Zv7WydylwW
+   5i6ZR0JscS+IiQ7Z6rTkBvHitfa/p9VQXCJNT6DspbUfgq7UQUEmKhjzm
+   tKUUeFh/boMXMFvs0PL953WSRbN5PyGEQZQpu6ySk0JtaWE1R102kZPOs
+   nPIRlLSbqLZFsYhaIos9TRGo2PuczC7fa09lIbNdx5nDNtG1tTlYFpRGk
    w==;
-X-CSE-ConnectionGUID: eFSMiwymTtuhr1t/0/O9AQ==
-X-CSE-MsgGUID: Xb4RbB1pTS6lIl27AvQa5Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11960"; a="3006327"
-X-IronPort-AV: E=Sophos;i="6.27,203,1787036400"; 
-   d="scan'208";a="3006327"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2026 19:07:53 -0800
-X-CSE-ConnectionGUID: UlLbedElT1KnOpMa1ixC7w==
-X-CSE-MsgGUID: i90PE10rQzWi5EpYC7Vy/g==
+X-CSE-ConnectionGUID: P2ZkoHEyRXCPR/jK5ZhJTA==
+X-CSE-MsgGUID: ADjVeT/3TwaqgMrgZrmqlA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="2917653"
+X-IronPort-AV: E=Sophos;i="6.27,205,1787036400"; 
+   d="scan'208";a="2917653"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 21:55:32 -0800
+X-CSE-ConnectionGUID: LcEW59E0QuehKVntU1UV3A==
+X-CSE-MsgGUID: c7XNTJf3QdG48TPU0eC1yQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,203,1787036400"; 
-   d="scan'208";a="7653164"
+X-IronPort-AV: E=Sophos;i="6.27,205,1787036400"; 
+   d="scan'208";a="8366056"
 Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2026 19:07:49 -0800
-Date: Mon, 9 Nov 2026 11:07:45 +0800
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 21:55:31 -0800
+Date: Tue, 10 Nov 2026 13:55:27 +0800
 From: kernel test robot <yi1.lai@intel.com>
-To: Joanne Koong <joannelkoong@gmail.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Shakeel Butt <shakeel.butt@linux.dev>,
-	Yosry Ahmed <yosry@kernel.org>,
-	Johannes Weiner <hannes@cmpxchg.org>,
-	Michal Hocko <mhocko@kernel.org>,
-	Roman Gushchin <roman.gushchin@linux.dev>,
-	Muchun Song <muchun.song@linux.dev>,
-	David Hildenbrand <david@kernel.org>,
-	Lorenzo Stoakes <ljs@kernel.org>,
-	"Liam R. Howlett" <liam@infradead.org>,
-	Vlastimil Babka <vbabka@kernel.org>,
-	Mike Rapoport <rppt@kernel.org>,
-	Suren Baghdasaryan <surenb@google.com>,
-	Kairui Song <kasong@tencent.com>, Qi Zheng <qi.zheng@linux.dev>,
-	Barry Song <baohua@kernel.org>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Axel Rasmussen <axelrasmussen@google.com>,
-	Yuanchu Xie <yuanchu@google.com>, Wei Xu <weixugc@google.com>,
-	Baoquan He <baoquan.he@linux.dev>, linux-mm@kvack.org,
-	yi1.lai@intel.com
-Subject: [linux-next:master] [mm]  1e61c0bd82:  will-it-scale.per_process_ops
- 6.2% improvement
-Message-ID: <202611091011.f4668ccc-lkp@intel.com>
+To: Tejun Heo <tj@kernel.org>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	Yao Kai <yaokai34@huawei.com>, yi1.lai@intel.com
+Subject: [linus:master] [workqueue]  f1639cde5f:  stress-ng.io.ops_per_sec
+ 9.9% improvement
+Message-ID: <202611100656.fcd6dc19-lkp@intel.com>
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -95,52 +78,59 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
 
 
 Hello,
 
-kernel test robot noticed a 6.2% improvement of will-it-scale.per_process_ops on:
+kernel test robot noticed a 9.9% improvement of stress-ng.io.ops_per_sec on:
 
 
-commit: 1e61c0bd822af6f9026c048d53fe8824881df8d7 ("mm: move LRU size stat updates out of lru_lock in folio batches") https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+commit: f1639cde5f5c1bee25498ef988227ee8cf5ddb04 ("workqueue: Make flush_workqueue() visit only pwqs active since the last flush") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-testcase: will-it-scale
+testcase: stress-ng
 config: x86_64-rhel-9.4
 compiler: gcc-14
-test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 512G memory
+test machine: 224 threads 2 sockets Intel(R) Xeon(R) (Sapphire Rapids) with 128G memory
 parameters:
 
-	nr_task: 100%
-	mode: process
-	test: fallocate2
+	nr_threads: 100%
+	disk: 1SSD
+	testtime: 60s
+	fs: xfs
+	test: io
 	cpufreq_governor: performance
+
 
 Details are as below:
 -------------------------------------------------------------------------------------------------->
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20261109/202611091011.f4668ccc-lkp@intel.com
+https://download.01.org/0day-ci/archive/20261110/202611100656.fcd6dc19-lkp@intel.com
 
 =========================================================================================
-compiler/cpufreq_governor/kconfig/mode/nr_task/rootfs/tbox_group/test/testcase:
-  gcc-14/performance/x86_64-rhel-9.4/process/100%/debian-13-x86_64-20250902.cgz/lkp-spr-2sp5/fallocate2/will-it-scale
+compiler/cpufreq_governor/disk/fs/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
+  gcc-14/performance/1SSD/xfs/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/lkp-spr-2sp3/io/stress-ng/60s
 
 commit: 
-  25e9342d48 ("tools/mm/thpmaps: fix missing mapping names")
-  1e61c0bd82 ("mm: move LRU size stat updates out of lru_lock in folio batches")
+  31e33de1f4 ("workqueue: Maintain pwq->total_in_flight")
+  f1639cde5f ("workqueue: Make flush_workqueue() visit only pwqs active since the last flush")
 
-25e9342d487fcfaa 1e61c0bd822af6f9026c048d53f
+31e33de1f4e159c7 f1639cde5f5c1bee25498ef9882
 ---------------- --------------------------- 
          %stddev     %change         %stddev
              \          |                \  
-   5750918            +6.2%    6109659        will-it-scale.224.processes
-     25673            +6.2%      27274        will-it-scale.per_process_ops
-   5750918            +6.2%    6109659        will-it-scale.workload
-  
+    260170 ±  3%      +9.9%     285895 ±  4%  stress-ng.io.ops
+      4337 ±  3%      +9.9%       4766 ±  4%  stress-ng.io.ops_per_sec
+   6244092 ±  3%      +9.9%    6861492 ±  4%  stress-ng.time.file_system_outputs
+      4547 ±  7%     -15.8%       3826 ±  4%  stress-ng.time.involuntary_context_switches
+      3320 ±  3%     -17.5%       2739 ±  5%  stress-ng.time.percent_of_cpu_this_job_got
+      1995 ±  3%     -17.5%       1645 ±  5%  stress-ng.time.system_time
+
 
 Disclaimer:
 Results have been estimated based on internal Intel analysis and are provided
