@@ -1,101 +1,71 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.52
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794321891;
-	b=V4WpUN5/P1BsOmCsLyZywgPbf9ID5YNMZHx6S/9czoD//Gc53/SKmgTz1WiFwuHxT845
-	 Xe7BHlTfrwffBVHWZAMfRsf7k6NbWL0CvNhdey5/nNPcMcFR0M3OXitwMQXh4UEM2vrLc
-	 C98tYfJOs1LixdmY9oD5MwDeetwZEjr7wNi1h8FC4nT+OVmhvHPNkYNE67YOZxrw8kbbd
-	 B2ShwgXApn/buAkarNSoAfqN89Lx54a/J+YghgY4768ZN5j1P/sr7VptumpgNDIzcsoXf
-	 unI7Jes0gTvlYm1tGy6wPD/jEp8joXUvGAcJX6Ybgi5CnHv+OfdCqL8x+qN1XYhyHVQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794321891;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=moeKZ6s5YDC8ka7H6MWH72Yzji4NuAIlVn7AGJL5KvU=;
-	b=C6X2i2Cr+Q7lu2Fo3VgHCe9qWL3YHkqwGVnahFcugYSV1RusEftYaL91uNiKrVMx4ulu
-	 1XIVbgtMQec4nyLKxP9rTwiWlyfPSsHof5DNTK5O+b68po2wY1fdZvYn+ap9VMvbccq/j
-	 5/n0wOIqaLrQC5Ts0qRJqkrNLNDC7t41LdN/DGlxxmbh0l70sFCPw21lsw00UvsbdF6Q5
-	 TdBX76FjSzUxrVe0nJeFBKL0g0bZvZErgRFCl4Dxatp2KxzgOerWFpz4zGzAsb5etUmn2
-	 MzBCwuAI8KOYR9bCLqOBWcqYJK0svn4UNbAFiquOGWTYl6SFDIycnvul2gMyGUt3mtQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=w7OYaYDy;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.52
-Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=82.195.75.108
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794322796;
+	b=5RrQcqtlsQq6zWElVNAvfhwHeDJOJ28ff4qlYy8vR6haeQY0XpBEdbVSGRqvTWjx4jEb
+	 lvTcWHgynQtqHV3wN36GTpktk/BESybKwbL5/nlAVqj+1tuT132/NLWHnbz6lf/pflP6l
+	 MkxglowqPNsvezMuzK179HZtrfs8gZzeBFkOc9TH9RLUa1/yBZgqw+XzGcef/X/Yho6ge
+	 fAc0R1P0dWc/Nzs73FvdqbV9sy16Xkyk/EcvbxmS+Ba3x5+GmoWuZ1gEIL6evZUAPczWF
+	 X2E4Qm9H3lV0UNkTTuVerYgzqwet820SnN3hhhnjaKEkh1rmxRE/1Juw/JFRCcDqYVw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794322796;
+	h=DMARC-Filter:DKIM-Signature:Received:Date:From:To:Cc:Subject:
+	 Message-ID:References:MIME-Version:Content-Type:Content-Disposition:
+	 Content-Transfer-Encoding:In-Reply-To:X-Debian-User;
+	bh=nk5n+KGNUb4vC/tI/kwaF+NJ3eYzXA4Qv23194hGaG8=;
+	b=naNJyieyFnbP5VZGTWJ4oD0I/jAIrFBFUhidkqVvTf5cwzQH+yrSEYXNYdQkUNleclmU
+	 jelGktTZVEnqj1vrFkMIrKynGFikAElsR0lmMBq2X5fjp8j0kDTeVUPxdlEXrVedDlU22
+	 /Qh0GdbB6TV0BNzmT2gd4/0uGJPExD2QHQhnhqO8T03MHHNFKJPCumbKTZ2WlFNL3YrM3
+	 WShTfolETgsc1SVcgsht+skHI1CsIDnOCViOtnDbH8DRUTWkgVEPS/tH72GiDag600/tb
+	 rMUPvwKSNM1iWbsO+utGvGhqXwgdkrPsKlLY+hzlXh8ut2eiMAilI7o3A561PeOZT6g==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=debian.org;
+	spf=pass smtp.mailfrom=debian.org;
+	dkim=pass header.d=debian.org header.i=@debian.org header.a=rsa-sha256 header.s=smtpauto.stravinsky header.b=B1RNKiIN;
+	arc=none smtp.remote-ip=82.195.75.108
+Received: from stravinsky.debian.org (stravinsky.debian.org [82.195.75.108])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CB55606A33B
-	for <oe-lkp@lists.linux.dev>; Tue, 10 Nov 2026 14:44:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9CB55606A33B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F8AF606A332;
+	Tue, 10 Nov 2026 14:59:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3F8AF606A332
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=debian.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=debian.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=w7OYaYDy
-Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-6b70192ebceso3715381a12.0
-        for <oe-lkp@lists.linux.dev>; Tue, 10 Nov 2026 06:44:50 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1794321889; cv=none;
-        d=google.com; s=arc-20260327;
-        b=O+uHnWZGiG0K4gGLUce4DMD/8KKLg/rr1pxB0IP8kq5IVjxMECYAPtrfJ83vCd7Djd
-         S7jxkUgRNM9ftytOn6qer8MnN+lK0nco/diHaUCTaBGvvRuHv4KKVLHotFYj85pbhl3w
-         NhtdJhh9pbXCbRjB2Fpvyh9b3BXKRwIhYD/b6knPCUQpeehobe/7YOmMNUMB+xxB2Zjq
-         BtUKcFcfDjK8oDp4R5I7At9G3T4hmtNRz7DruRtcwx8FRkng258bJTs6WN1To6+12zRw
-         TkA6Hrjn6mLJWWAUbrLlHAhUICydAXLWp4/h+LELQ4nomlzRLueWRMagQS4aF9pD8DY2
-         tH6A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=moeKZ6s5YDC8ka7H6MWH72Yzji4NuAIlVn7AGJL5KvU=;
-        fh=vds1y81vhhqHi4vL+efDd9BL5N5mvy36ms5+I3Y845k=;
-        b=ahcb5Wl7iSnTkkglHFJpPVFH2rXHkFeD0sBW3rifxi7B8eTwP3Bo2WJQre9xjCqBPi
-         MB6+Bg3pxM3Ft+qzTnHj9oeqyQpidNjvd8eIvqlS5AtblGxiUsU60EH8f6NAxOF37eGV
-         BkAaUO3BelqclaOJnY3DudQsD5uygCjqV+GLhkBakjrXN0itxeWxmDi/zrA5GKC9zkbM
-         0g+YA6/HbvTpd8nMhfAw9So0Lo5T1bQRWJS/iw06WcivffFdCMBsX0cSrjex0LFhgCZf
-         wdK/aus+4J2LYIR8Id37GMYgMaqAQMVbPHJgpoLKPYijF/3dVEb5h6L5I73sK4mI4XEQ
-         x8Yw==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794321889; x=1794926689; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=moeKZ6s5YDC8ka7H6MWH72Yzji4NuAIlVn7AGJL5KvU=;
-        b=w7OYaYDyoogXGJlEqodkIiSmfOOynPgRqjJBn9k20lI7v4mHwuaIi8sfz3gDEepz9l
-         xBMzwLt7Y5WHxG0G/ZNxss+/qe122MZVrG+2bORIsaYYP6ekln0uMmIxFVFQH6fos3pS
-         i6p/ATLVqin3doToqq8l20GXi5auAoDEIMPV2LaA6fx1gOAhKl93xipS39q074Ys0rrX
-         U3LwEBHZcVjBqphkndUxqUaYC2VMsP3L4KFOqSeRTMoPkzucJhJIXsshL9SoZBMkqqV2
-         lJ6Q3JtZQxYP2BfXBECc5gRliwixBT2nlbJ0Jzf6giYD1X9azdppVPYVMOP+1zmFgK7a
-         DfVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794321889; x=1794926689;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=moeKZ6s5YDC8ka7H6MWH72Yzji4NuAIlVn7AGJL5KvU=;
-        b=oKOXW0ZIVktNTNVVuPajY8LceDyF+VkSW9w7k6Ci99/UEoRXnUjJsmG/Mn61lw3utT
-         hy/ggbeRfaZ0ZLJ9jAuPh2xscjnQAABnsQLEdQfTzYZEKsmdomboNde3jUHC+tcHKjcu
-         n7gzyTSQ5zS+Q0hoCztihL+0C+slIYPi/YEATajaSnTjbCvjZbnNLOWONr8TY7rmVr7Y
-         DtaWdmDyaZlFt57Zva5iyaUvpTaO8A0/pzBZQi3V1Cq3hCxRWxBNpDxBUwFZDASFl1zG
-         ga6zhuZ5W+0naPUUYzBVnFHKysS1jdQanW5mWho+ueaK/VvBqMVrcXWqvjB5EJFGEQ/s
-         mXZw==
-X-Forwarded-Encrypted: i=1; AL+hErF5YxUvvJZW2qhjuv4/BTto4kUYvi8vEayf65gbCVgh602sSvimiMclYm7JDTYW5/zbm2kqoRw=@lists.linux.dev
-X-Gm-Message-State: APuU4Z/2SGNxlTVcSQec+Q1II0x9JUw/XElNwD2cqjJSdBHXxjYB+GpS
-	qCdqgYbH44TE+v8Ms6W4U3hMvH+QBKbrhNGuEr3nirH9X8nJInb3cvjaD351u/rabK+CZcTZBSi
-	3AvwIeXyQqVO10Le+GVkbxJzb7kSwBEw=
-X-Gm-Gg: AYBFou0FONdZYqfl2s0+SXlT1uVmB01HJFv/zJ201S/Ky43H6VyeyOpNxpBcghUd8C1
-	9JqtBDHCpudE9JcoD/G8AsRxCnO13o2T67C204MCvBk6TVBvz9Q+jnClXlITgeCRyoKmAsXdPTL
-	L44qap/Sa+qAASsY4F9XHS8+Rl5A6jPiTNnrxxJMZ01Ekfxs2c/mnedvThcRDGyl4UfJPfcZGjV
-	RlWHTEMUfbSwn0roFTWpYVD9MdtYurYrhrzzJqMNVK+siz6k4HaANdECnU/yDbW70TOk7TIlW1Q
-	4UCg85SUVtl/zpyrr7N0I7KHCXoSixPHZbLZKYDfZSC2YW/n/rUGFQzqNwOUxxHB1PsGVXlUUCT
-	zdbwr0kzHxnZ2nIEQLypQYpfmyW23n922Dm2b5b5PwwPXdHZLfomIjS8/KMBA0iOYPDymcebld/
-	V/EufKZLjq+TMdla19jqgjBZXubAwf
-X-Received: by 2002:aa7:c1c9:0:b0:6b1:ce47:f54b with SMTP id
- 4fb4d7f45d1cf-6b757243041mr1879154a12.21.1794321888769; Tue, 10 Nov 2026
- 06:44:48 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=debian.org header.i=@debian.org header.a=rsa-sha256 header.s=smtpauto.stravinsky header.b=B1RNKiIN
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=debian.org;
+	s=smtpauto.stravinsky; h=X-Debian-User:In-Reply-To:Content-Transfer-Encoding:
+	Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+	Reply-To:Content-ID:Content-Description;
+	bh=nk5n+KGNUb4vC/tI/kwaF+NJ3eYzXA4Qv23194hGaG8=; b=B1RNKiINUFSEj+uDwF9/8AKB/c
+	jf+zU0SbRDz1P9XyW0wk/aC7Z9ziZ5KxBgVqy4PKNUcfuOMxcTv3kyaddNzyj3R4KS/bFtEE0zNIP
+	cBWlGNn7NAiVTs6THBwh7GqAC2UL8NHyO3kwsZAzCXVJHyMb63Pw8hlUYr6Q6lLDUn2AHJ2J/ApMX
+	fEF5x8HmRaLKSyUYsWdgS/8ZvW3aKXEg4SEfYB8j0weDtT7bx+CGTnXM7A+gLQzBNMHcDGJXOFKqN
+	Sit2N+oUeC7reMR5vNZlhtChDamSWIIz1gIZGJnCB88EdPz8RncU4F4y8kDOCgsk0V4U0U24TYHXO
+	wIf7Tg0Q==;
+Received: from authenticated-user
+	by stravinsky.debian.org with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	(Exim 4.96)
+	(envelope-from <leitao@debian.org>)
+	id 1xQnK8-00CU9c-2S;
+	Tue, 10 Nov 2026 14:59:48 +0000
+Date: Tue, 10 Nov 2026 06:59:43 -0800
+From: Breno Leitao <leitao@debian.org>
+To: Mateusz Guzik <mjguzik@gmail.com>
+Cc: Christian Brauner <brauner@kernel.org>, 
+	kernel test robot <yi1.lai@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	linux-kernel@vger.kernel.org, Oleg Nesterov <oleg@redhat.com>, linux-fsdevel@vger.kernel.org
+Subject: Re: [linus:master] [fs/pipe] f7f4665dc5:
+ lmbench3.PIPE.bandwidth.MB/sec 18.5% regression
+Message-ID: <avMxCN0yayzLh2p1@gmail.com>
+References: <202611041404.befe64cd-lkp@intel.com>
+ <20261105-trommeln-einspannen-radius-ccb4e174e407@brauner>
+ <auygOHcuBba_o132@gmail.com>
+ <CAGudoHFpNbxL13ZOWiyyLSPpmzXcB=e=RBZ8ZGk+Oc58Aad9pA@mail.gmail.com>
+ <au2vjpu_yqNa83pN@gmail.com>
+ <CAGudoHF3de_55YvdztPs7QiYs25u6nPEV=uMOzfr=bWmwof69g@mail.gmail.com>
+ <avMQxhpHhIPM_6HP@gmail.com>
+ <CAGudoHFe8XgtKZohfn0Q=EH0EeXozTZq+UPJKN0BEmLnEG2s=Q@mail.gmail.com>
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -105,319 +75,46 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-References: <202611041404.befe64cd-lkp@intel.com> <20261105-trommeln-einspannen-radius-ccb4e174e407@brauner>
- <auygOHcuBba_o132@gmail.com> <CAGudoHFpNbxL13ZOWiyyLSPpmzXcB=e=RBZ8ZGk+Oc58Aad9pA@mail.gmail.com>
- <au2vjpu_yqNa83pN@gmail.com> <CAGudoHF3de_55YvdztPs7QiYs25u6nPEV=uMOzfr=bWmwof69g@mail.gmail.com>
- <avMQxhpHhIPM_6HP@gmail.com>
-In-Reply-To: <avMQxhpHhIPM_6HP@gmail.com>
-From: Mateusz Guzik <mjguzik@gmail.com>
-Date: Tue, 10 Nov 2026 15:44:36 +0100
-X-Gm-Features: AclHuK8dFFD73mHOhMvH1NU4_XTmtwUs_i_ldKGW66HJeL7DZokh2ZM31ccn5Lw
-Message-ID: <CAGudoHFe8XgtKZohfn0Q=EH0EeXozTZq+UPJKN0BEmLnEG2s=Q@mail.gmail.com>
-Subject: Re: [linus:master] [fs/pipe] f7f4665dc5: lmbench3.PIPE.bandwidth.MB/sec
- 18.5% regression
-To: Breno Leitao <leitao@debian.org>
-Cc: Christian Brauner <brauner@kernel.org>, kernel test robot <yi1.lai@intel.com>, oe-lkp@lists.linux.dev, 
-	lkp@intel.com, linux-kernel@vger.kernel.org, Oleg Nesterov <oleg@redhat.com>, 
-	linux-fsdevel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAGudoHFe8XgtKZohfn0Q=EH0EeXozTZq+UPJKN0BEmLnEG2s=Q@mail.gmail.com>
+X-Debian-User: leitao
 
-On Tue, Nov 10, 2026 at 1:46=E2=80=AFPM Breno Leitao <leitao@debian.org> wr=
-ote:
->
-> On Fri, Nov 06, 2026 at 02:44:54PM +0100, Mateusz Guzik wrote:
-> > > 6) Any other idea?
+On Tue, Nov 10, 2026 at 03:44:36PM +0100, Mateusz Guzik wrote:
+> On Tue, Nov 10, 2026 at 1:46 PM Breno Leitao <leitao@debian.org> wrote:
 > >
-> > The SMAP stuff is the primary problem right now. To reiterate: every
-> > single buffer read/write takes a SMAP trip, which is very expensive
-> > even on modern uarchs. Refactoring this into i/o under one SMAP round
-> > would provide a visible speed up. It also happens to not pose a
-> > tradeoff in terms of memory usage and would be my first avenue of
-> > attack if I was working on this.
+> > On Fri, Nov 06, 2026 at 02:44:54PM +0100, Mateusz Guzik wrote:
+> > > > 6) Any other idea?
+> > >
+> > > The SMAP stuff is the primary problem right now. To reiterate: every
+> > > single buffer read/write takes a SMAP trip, which is very expensive
+> > > even on modern uarchs. Refactoring this into i/o under one SMAP round
+> > > would provide a visible speed up. It also happens to not pose a
+> > > tradeoff in terms of memory usage and would be my first avenue of
+> > > attack if I was working on this.
+> > >
+> > > All that said, one reader vs one writer scenario definitely makes
+> > > sense to optimize.
 > >
-> > All that said, one reader vs one writer scenario definitely makes
-> > sense to optimize.
->
-> I've spent some tokens on it, and it seems to give ~5% improvement on
-> the pipe bench. Is this what you had in mind (in a single patch format)?
->
+> > I've spent some tokens on it, and it seems to give ~5% improvement on
+> > the pipe bench. Is this what you had in mind (in a single patch format)?
+> >
+> 
+> The resulting behavior matches.
+> 
+> A clean implementation escapes me and that's part of a reason I did
+> not do the work myself.
+> 
+> The proposed patch is on the uglier side, but AFAICS that was never a
+> blocker in Linux.
 
-The resulting behavior matches.
+Agree, the implementation is not beatiful. Another approach is to open
+code and have a single function to do the whole copying, and simplify it
+a bit, but, that makes the code even harder to digest.
 
-A clean implementation escapes me and that's part of a reason I did
-not do the work myself.
+Let me try to come up with something a bit more digestible and see where
+I will end up.
 
-The proposed patch is on the uglier side, but AFAICS that was never a
-blocker in Linux.
-
-Or to put it differently, I'm not happy with the shape of the patch,
-but don't have a better suggestion. The win is probably enough of a
-justification to get this in.
-
-> commit 724fa7def2700d51a7f0427d0de06c123b3bf8e9
-> Author: Breno Leitao <leitao@debian.org>
-> Date:   Mon Nov 9 05:04:45 2026 -0800
->
->     x86/uaccess, fs/pipe: copy a run of pipe buffers in one user access s=
-ection
->
->     Mateusz has been constantly suggesting that The SMAP stuff is the
->     primary problem right now in the pipe code, which summarizes to
->     anon_pipe_read() copying one pipe_buffer per copy_page_to_iter() call=
-.
->
->     On x86 every call opens and closes its own user access section, so a =
-64
->     KiB read that drains a full default pipe executes 16 STAC/CLAC pairs.
->
->     The pipe's pages are not contiguous, so the copies stay separate.
->
->     Move the body of copy_user_generic() into unsafe_copy_user_generic(),
->     which leaves STAC/CLAC to the caller's user access section, and turn
->     copy_user_generic() into a STAC/CLAC wrapper around it. The existing
->     callers get the same code. (This will eventually be a second patch if=
-/once
->     this becomes an non-PoC)
->
->     When the destination is a plain user buffer (ITER_UBUF, which is what
->     read(2) passes), copy up to PIPE_DEF_BUFFERS consecutive anonymous
->     buffers that the read consumes whole inside one scoped user write acc=
-ess
->     with unsafe_copy_user_generic(), then release them. The buffers are
->     looked up before the section starts, so that only the copies run with
->     user access enabled.
->
->     What this buys depends on what SMAP costs the CPU. With the buffer by
->     buffer loop, booting with clearcpuid=3Dsmap speeds pipe_bench up by 4=
--14%
->     on a Sapphire Rapids Xeon Gold 6450C.
->
->     pipe_bench from the pipe selftests runs 1, 2 or 5 writers against 1, =
-5
->     or 10 readers on one 1 MiB pipe, with 64 KiB writes and reads.
->     Throughput change from this patch, median of 2 boots x 5 runs, SMAP o=
-n:
->
->                                    Sapphire Rapids
->       1 writer, 1 reader                  +5.2%
->       5 writers, 10 readers               +8.0%
->       all 9 mixes                    +5% to +15%
->
->     Suggested-by: Mateusz Guzik <mjguzik@gmail.com>
->     Link: https://lore.kernel.org/all/CAGudoHF3de_55YvdztPs7QiYs25u6nPEV=
-=3DuMOzfr=3DbWmwof69g@mail.gmail.com/
->     Signed-off-by: Breno Leitao <leitao@debian.org>
->
-> diff --git a/arch/x86/include/asm/uaccess_64.h b/arch/x86/include/asm/uac=
-cess_64.h
-> index 20de34cc9aa6e7..28208db6132c27 100644
-> --- a/arch/x86/include/asm/uaccess_64.h
-> +++ b/arch/x86/include/asm/uaccess_64.h
-> @@ -115,10 +115,13 @@ static inline bool __access_ok(const void __user *p=
-tr, unsigned long size)
->  __must_check unsigned long
->  rep_movs_alternative(void *to, const void *from, unsigned len);
->
-> +/*
-> + * copy_user_generic() without the STAC/CLAC, for several copies inside =
-one
-> + * user access section. Returns the number of bytes not copied.
-> + */
->  static __always_inline __must_check unsigned long
-> -copy_user_generic(void *to, const void *from, unsigned long len)
-> +unsafe_copy_user_generic(void *to, const void *from, unsigned long len)
->  {
-> -       stac();
->         /*
->          * If CPU has FSRM feature, use 'rep movs'.
->          * Otherwise, use rep_movs_alternative.
-> @@ -131,6 +134,16 @@ copy_user_generic(void *to, const void *from, unsign=
-ed long len)
->                 _ASM_EXTABLE_UA(1b, 2b)
->                 :"+c" (len), "+D" (to), "+S" (from), ASM_CALL_CONSTRAINT
->                 : : "memory", "rax");
-> +       return len;
-> +}
-> +
-> +#define unsafe_copy_user_generic unsafe_copy_user_generic
-> +
-> +static __always_inline __must_check unsigned long
-> +copy_user_generic(void *to, const void *from, unsigned long len)
-> +{
-> +       stac();
-> +       len =3D unsafe_copy_user_generic(to, from, len);
->         clac();
->         return len;
->  }
->
-> diff --git a/fs/pipe.c b/fs/pipe.c
-> index 4fa69192e6fba1..6f6041c94abefa 100644
-> --- a/fs/pipe.c
-> +++ b/fs/pipe.c
-> @@ -340,6 +340,115 @@ static inline unsigned int pipe_update_tail(struct =
-pipe_inode_info *pipe,
->         return tail;
->  }
->
-> +#ifdef unsafe_copy_user_generic
-> +/* One buffer of a batched read, looked up before the user access sectio=
-n. */
-> +struct pipe_copy_src {
-> +       void *kaddr;
-> +       size_t len;
-> +};
-> +
-> +/*
-> + * Fill @run with the anonymous buffers from @tail on that the read cons=
-umes
-> + * whole. Returns how many, with their total length in @lenp.
-> + */
-> +static unsigned int anon_pipe_batch_lookup(struct pipe_inode_info *pipe,
-> +                                          unsigned int head, unsigned in=
-t tail,
-> +                                          size_t total_len,
-> +                                          struct pipe_copy_src *run,
-> +                                          size_t *lenp)
-> +{
-> +       struct pipe_buffer *buf;
-> +       size_t len =3D 0;
-> +       unsigned int n;
-> +
-> +       for (n =3D 0; n < PIPE_DEF_BUFFERS && tail + n !=3D head; n++) {
-> +               buf =3D pipe_buf(pipe, tail + n);
-> +               if (buf->ops !=3D &anon_pipe_buf_ops ||
-> +                   (buf->flags & PIPE_BUF_FLAG_PACKET) ||
-> +                   buf->len > total_len - len)
-> +                       break;
-> +               run[n].kaddr =3D page_address(buf->page) + buf->offset;
-> +               run[n].len =3D buf->len;
-> +               len +=3D buf->len;
-> +       }
-> +       *lenp =3D len;
-> +       return n;
-> +}
-> +
-> +/*
-> + * Copy the @n buffers in @run, @len bytes in all, to @to inside one use=
-r
-> + * access section. All or nothing: @to only advances if no copy faults.
-> + */
-> +static bool anon_pipe_batch_copy(struct iov_iter *to,
-> +                                const struct pipe_copy_src *run,
-> +                                unsigned int n, size_t len)
-> +{
-> +       const struct pipe_copy_src *r, *end =3D run + n;
-> +       char __user *dst =3D to->ubuf + to->iov_offset;
-> +       size_t off;
-> +
-> +       if (should_fail_usercopy())
-> +               return false;
-> +       might_fault();
-> +       for (r =3D run, off =3D 0; r < end; off +=3D r->len, r++)
-> +               instrument_copy_to_user(dst + off, r->kaddr, r->len);
-> +       scoped_user_write_access_size(dst, len, fault) {
-> +               for (r =3D run, off =3D 0; r < end; off +=3D r->len, r++)
-> +                       if (unsafe_copy_user_generic((__force void *)dst =
-+ off,
-> +                                                    r->kaddr, r->len))
-> +                               goto fault;
-> +       }
-> +       iov_iter_advance(to, len);
-> +       return true;
-> +
-> +fault:
-> +       return false;
-> +}
-> +
-> +/* Release the @n buffers from @tail on, which a read consumed whole. */
-> +static unsigned int anon_pipe_batch_release(struct pipe_inode_info *pipe=
-,
-> +                                           unsigned int head,
-> +                                           unsigned int tail, unsigned i=
-nt n,
-> +                                           bool *wake_writer)
-> +{
-> +       *wake_writer |=3D pipe_full(head, tail, pipe->max_usage);
-> +       while (n--)
-> +               tail =3D pipe_update_tail(pipe, pipe_buf(pipe, tail), tai=
-l);
-> +       return tail;
-> +}
-> +
-> +/*
-> + * Copy a run of anonymous buffers that the read consumes whole to a pla=
-in
-> + * user buffer inside one user access section, instead of one STAC/CLAC =
-pair
-> + * per buffer. Returns the bytes consumed, or 0 to go buffer by buffer.
-> + */
-> +static ssize_t anon_pipe_read_batch(struct pipe_inode_info *pipe,
-> +                                   struct iov_iter *to, size_t total_len=
-,
-> +                                   unsigned int head, unsigned int *tail=
-p,
-> +                                   bool *wake_writer)
-> +{
-> +       struct pipe_copy_src run[PIPE_DEF_BUFFERS];
-> +       unsigned int n;
-> +       size_t len;
-> +
-> +       if (!iter_is_ubuf(to))
-> +               return 0;
-> +       n =3D anon_pipe_batch_lookup(pipe, head, *tailp, total_len, run, =
-&len);
-> +       if (n < 2 || !anon_pipe_batch_copy(to, run, n, len))
-> +               return 0;
-> +       *tailp =3D anon_pipe_batch_release(pipe, head, *tailp, n, wake_wr=
-iter);
-> +       return len;
-> +}
-> +#else
-> +static ssize_t anon_pipe_read_batch(struct pipe_inode_info *pipe,
-> +                                   struct iov_iter *to, size_t total_len=
-,
-> +                                   unsigned int head, unsigned int *tail=
-p,
-> +                                   bool *wake_writer)
-> +{
-> +       return 0;
-> +}
-> +#endif
-> +
->  static ssize_t
->  anon_pipe_read(struct kiocb *iocb, struct iov_iter *to)
->  {
-> @@ -347,7 +456,7 @@ anon_pipe_read(struct kiocb *iocb, struct iov_iter *t=
-o)
->         struct file *filp =3D iocb->ki_filp;
->         struct pipe_inode_info *pipe =3D filp->private_data;
->         bool wake_writer =3D false, wake_next_reader =3D false;
-> -       ssize_t ret;
-> +       ssize_t ret, batched;
->
->         /* Null read succeeds. */
->         if (unlikely(total_len =3D=3D 0))
-> @@ -393,7 +502,16 @@ anon_pipe_read(struct kiocb *iocb, struct iov_iter *=
-to)
->                 }
->  #endif
->
-> -               if (!pipe_empty(head, tail)) {
-> +               batched =3D anon_pipe_read_batch(pipe, to, total_len, hea=
-d,
-> +                                              &tail, &wake_writer);
-> +               if (batched) {
-> +                       ret +=3D batched;
-> +                       total_len -=3D batched;
-> +                       if (!total_len)
-> +                               break;  /* common path: read succeeded */
-> +                       if (!pipe_empty(head, tail))    /* More to do? */
-> +                               continue;
-> +               } else if (!pipe_empty(head, tail)) {
->                         struct pipe_buffer *buf =3D pipe_buf(pipe, tail);
->                         size_t chars =3D buf->len;
->                         size_t written;
->
->
->
+thanks,
+--breno
