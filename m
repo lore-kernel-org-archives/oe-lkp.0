@@ -1,64 +1,76 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.17
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794425922;
-	b=YYwkmTkahY6gcu8GBzXL14GCDfatVkk9Ksdy3sJ3OmYOULE9P5E7Hr8cnD2an+qA99Yz
-	 KOACBO+1xD4ugxFGjyAkHW65Pub9ZeYvvmEzKH55/LC9WgwEtcdcYOVbZpxiNkRnkhjL9
-	 NnT/4nOgP/NF8jCjo0WsAar8feyyWM/SGhqPjmFMNIMJddjqPiJ/Ec2oEJXzyXfj6HstZ
-	 RWtK7zq83GWYs7rhMJk5XzJj1WpRxl4gvmLRTYFNx98zvd+VSyyDFkTkpD9j05haEdUQ5
-	 U8CMzR3C6oyVv/5aFI1vlbVQaPgfU30ghQsh7BYq38CyLUneM6ReNW+RijkgRMj/WVA==
+	t=1794744844;
+	b=NsYRc8u0jkYsmrh1wCHy9vUpUeC18+PZizl3ebgFmgn6oMoouQalhYPCxw6KBo+X0V0K
+	 jctgGf7DOj6C/s2Sl2ztrrWEfRXd7e1OICgbQsDpsD498Ok0nv9u2rm391av/klhDd3M7
+	 TYVBkW3pKeAYBD23qKHYNQpjRyA57/+rdyBNM9Lc4cme7gMKFNZ2FyYHRVWmfHJUAbBw9
+	 NIjKWS5Cv3eoyBXTC4wXkztiHgchIH8LnbTy0x9mVdAfuVWXU0bQMTZFj3NZgD3iWySqM
+	 /vdNMPFiFzK66Z2pA0xMm2Ff4KRaoAHTDU/Rqu0e7M/+i6p54KToXBiIMUmu0XTX8vw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794425922;
-	h=DMARC-Filter:DKIM-Signature:Received:Date:From:To:Cc:Subject:
-	 Message-ID:References:MIME-Version:Content-Type:Content-Disposition:
+	a=rsa-sha256; c=relaxed/relaxed; t=1794744844;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition:
 	 In-Reply-To;
-	bh=g92/il0bdnKLCyE4JgR9jwJFFOkgMpsOM/aOg+gnG7M=;
-	b=VJJQzQ82kSety5QamVn0Ft3kEJIzU9ITS7kbuleGWAjIos8gYI4TpphzDRw9GT6Zhc1p
-	 TZI11sWCQobyCJiG714/dqQ5x+Wwije82A4N2r0HlF9NDzFuHYTF2I0fC0/+53gqg2Eex
-	 WdB7LlvlFD1vbrlWEV4Icob1+HSvTaV4sl/7EHEwjFglu7Q2IncCaIv2IiwUt/io27anm
-	 aTPFz9f2BFR1E9KjPH5bIoh8BJVyxiqpYw2UnOsz18/xMvZf3RJjpuzNwnt6QL4Nj1Apt
-	 8vPC9kjOaKx1CyRa3q87P/3PNrWBk7V3QmK2jlrjXNZeHk5dBsc12ky6OarR/HQZPfA==
+	bh=wx4o9KhMMhGe2lC66yefkiagWdJ/G57Jci8LHd80gYc=;
+	b=boZ+LxAXlzpsoHM4s/KHkUXtCjrQPRJeMCgR2YNWNs21gBgq0ane3T8TwosvkT2mO/jh
+	 BLk0jAMEUqd3rSvxFm6RVs487vCcKfLQCidg5L1DhMgeEQ0yK7Jl5GZlulfs2l15UJaLu
+	 RsfYaQqVNTOqoJPTwB6DJk4XzR2+2DSiTCpFvVHnxoGidYF09mDQLnoA1l5VkunfLqUB6
+	 IKSSVxhZnAQiCTxlIOo5Sir5+7CtMqvPyevYTdu+4CFcwSDWM35IT6H/uUNDmcKrrNWFW
+	 sjgdtMB3n1FqjSlN0pMYfgrZoB5r3Ta9coXmkhnzpVmGwZuCnIg4M2JYCsXTlY7/cXw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=infradead.org;
-	spf=pass smtp.mailfrom=infradead.org;
-	dkim=pass header.d=infradead.org header.i=@infradead.org header.a=rsa-sha256 header.s=bombadil.20210309 header.b=jlnPx7Ja;
-	arc=none smtp.remote-ip=198.137.202.133
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=BNpwSmbu;
+	arc=none smtp.remote-ip=192.198.163.17
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCAF7606A31C;
-	Wed, 11 Nov 2026 19:38:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BCAF7606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 013D9606A31E
+	for <oe-lkp@lists.linux.dev>; Sun, 15 Nov 2026 12:14:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 013D9606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.a=rsa-sha256 header.s=bombadil.20210309 header.b=jlnPx7Ja
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=g92/il0bdnKLCyE4JgR9jwJFFOkgMpsOM/aOg+gnG7M=; b=jlnPx7JaZTv+HkxBq4hFzcRKF1
-	FAVbB9IvYoTkS/H/wMxg4Nvwm1VRjtW+9weqlYODR6eU9oa0/Fdq8bNUWXFcv0dk1CDn/ZUE9jFPE
-	3X/uTHKZyngrWeRp0GUMXCUNBP+8Tmy6YRC3O/gGsBH6wjjV4A5vxloGfMZjMB06NanGMyWT/b/Hm
-	WG2aszi2qxEVY3M2rpHxIWKzsBG//vPU482sYIG3wA4VyTyxNtv7gE0YNAf8+fIyvJ6Tb0LmpWPkv
-	RbItdB4qvwJxM/XK4fra6J+MyKAFOP6kVXGuzmsq1dapLieF34ML/JHQ8SZI06fT22RA8CVh5uiBC
-	IRcSMjsw==;
-Received: from [38.23.173.23] (helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.100.1 #2 (Red Hat Linux))
-	id 1xRE9Y-00000007XP5-0ora;
-	Wed, 11 Nov 2026 19:38:40 +0000
-Date: Wed, 11 Nov 2026 14:38:38 -0500
-From: "Liam R. Howlett" <liam@infradead.org>
-To: Suren Baghdasaryan <surenb@google.com>
-Cc: david@kernel.org, akpm@linux-foundation.org, ljs@kernel.org, 
-	jannh@google.com, willy@infradead.org, paulmck@kernel.org, pfalcato@suse.de, 
-	usama.arif@linux.dev, vbabka@kernel.org, linux-fsdevel@vger.kernel.org, 
-	yi1.lai@intel.com, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/1] selftests/proc: use RSS in /proc/pid/smaps_rollup
- tearing tests
-Message-ID: <ltaxnwd2hiirbpsc6r3mj5z7hgjeebnm3e35iobd7algqiqhma@ycpdd427abrq>
-References: <20261104015447.363602-1-surenb@google.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=BNpwSmbu
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794744844; x=1826280844;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   in-reply-to;
+  bh=2tdBK2yIisb0pL/TcklAXTTAVZexaZv+CEL227tiS34=;
+  b=BNpwSmbukYkb54j9+9GfJHOA0YNcSqq2Fb5QZMVEExmmm17CpS55HN3m
+   6/BbjpBKwljXb16fS9kV220pSh3Vnq00EjhRforCns9eZ9BEa48/MEIxj
+   LCorD+BKZ0DJ8iex9DsJTzog5OUlJFISMMVKAbqvGzuAHn9ijDHbjdjjl
+   XKc+TD8fMTeYw17tf7CdS393Dc8k8P43devNiCC2bsvB73pzJV2TXA5On
+   2+7hHCCeO+gigr0pJ9nKNARAbqDUZQ555JKZJP/mZsML5rJ6FOrSZQ5wZ
+   OjQmriw0K4mKCPU7SzJuxBjvySoXjuuGU5G+OSzIy6mctscbCgEll5hn/
+   A==;
+X-CSE-ConnectionGUID: FX485A3gQl+GSedv8f3Whg==
+X-CSE-MsgGUID: NKdLU0icQ6mSihBTVPtcBw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11966"; a="3485750"
+X-IronPort-AV: E=Sophos;i="6.27,214,1787036400"; 
+   d="scan'208";a="3485750"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2026 04:14:03 -0800
+X-CSE-ConnectionGUID: j47z+FVjRkGDKZzr4gnFeg==
+X-CSE-MsgGUID: pwldXXnGST+dX9jqj4dg+Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,214,1787036400"; 
+   d="scan'208";a="9649856"
+Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2026 04:14:01 -0800
+Date: Sun, 15 Nov 2026 20:13:57 +0800
+From: kernel test robot <yi1.lai@intel.com>
+To: Kevin Cheng <chengkev@google.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, kvm@vger.kernel.org,
+	seanjc@google.com, pbonzini@redhat.com,
+	linux-kernel@vger.kernel.org, yosry@kernel.org,
+	Kevin Cheng <chengkev@google.com>, yi1.lai@intel.com
+Subject: Re: [PATCH] KVM: nVMX: Synthesize advanced VM-Exit info for emulated
+ EPT Violations
+Message-ID: <202611151806.4ddbcfeb-lkp@intel.com>
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -70,280 +82,58 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261104015447.363602-1-surenb@google.com>
+In-Reply-To: <20261029024005.575065-1-chengkev@google.com>
 
-On 26/11/03 05:54PM, Suren Baghdasaryan wrote:
-> Pss metrics can be affected by map count even if VMA tree stays unchanged,
-> therefore tests checking VMA tree integrity can't use them. Use Rss instead
-> and pre-populate the VMAs so that Rss changes if a VMA gets skipped or
-> double-counted.
-> 
-> To ensure all test VMAs are populated with anonymous pages, remain
-> mergeable across VMA operations, and do not have their Rss changed by
-> memory reclaim:
-> 
-> - Map and populate VMAs as writable so that MAP_POPULATE faults in
->   anonymous pages rather than the shared zero page, which is not
->   accounted in Rss. After mapping, toggle PROT_WRITE using mprotect()
->   to make odd mappings read-only and prevent adjacent VMAs from merging.
->   This is preferable to toggling PROT_EXEC as it keeps adjacent VMAs
->   distinct regardless of READ_IMPLIES_EXEC. Supporting READ_IMPLIES_EXEC
->   is important since it is set by default on pre-ARMv6 CPUs.
-> 
-> - Use mprotect() instead of mmap(..., MAP_FIXED) in split_vma() and
->   merge_vma() so the first page of the split VMA stays resident.
->   mprotect(..., PROT_NONE) splits the VMA without unmapping the first
->   page (pte_present() remains true for PAGE_NONE PTEs), and
->   mprotect(..., self->mod_info->prot) merges it back. Both parts of the
->   split VMA retain their non-zero Rss.
-> 
-> - Lock all present pages in the child so memory pressure cannot reclaim
->   pages and alter Rss during the test.
-> 
-> Exclude smaps_rollup checks from test_maps_tearing_from_remap since
-> mremap(..., MREMAP_DONTUNMAP) moves the last page of the VMA at
-> next_addr, changing Rss.
-> 
-> Introduce a vma_setup test stage, used by test_maps_tearing_from_remap
-> to munlock() next_addr once before remapping, so that
-> mremap(..., MREMAP_DONTUNMAP) does not split the VMA at next_addr.
-> Use mmap(..., MAP_FIXED) in patch_vma() to restore the whole three-page
-> destination after remapping, rather than replacing only its middle page
-> and relying on the remaining anonymous VMAs to merge.
-> 
-> Handle mlockall() failure and skip the tests in case locking violates
-> locked memory allowance.
-> 
-> Fixes: ca5480fb53fa ("selftests/proc: add /proc/pid/smaps_rollup tearing tests")
-> Reported-by: kernel test robot <yi1.lai@intel.com>
-> Closes: https://lore.kernel.org/oe-lkp/202610271934.fd287c3f-lkp@intel.com
-> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 
-Acked-by: Liam R. Howlett (Google) <liam@infradead.org>
+Hello,
 
-> ---
-> Changes from v2 [1]:
-> - changed the way we populate VMAs to ensure the test works with
->   READ_IMPLIES_EXEC personality, per Andrew Morton
-> - handle possiblity of mlockall() failing, per Andrew Morton
-> - changed patch_vma() to restore the entire three-page destination VMA,
->   per Andrew Morton
-> - added vma_setup test stage to munlock() next_addr VMA only once
-> 
-> [1] https://lore.kernel.org/all/20261101154503.3203036-1-surenb@google.com/
-> 
->  tools/testing/selftests/proc/proc-maps-race.c | 86 +++++++++++++------
->  1 file changed, 58 insertions(+), 28 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/proc/proc-maps-race.c b/tools/testing/selftests/proc/proc-maps-race.c
-> index bf4c5073f6fc..ed048b0ff418 100644
-> --- a/tools/testing/selftests/proc/proc-maps-race.c
-> +++ b/tools/testing/selftests/proc/proc-maps-race.c
-> @@ -174,10 +174,12 @@ typedef bool (*vma_mod_result_check_op)(struct line_content *mod_last_line,
->  					struct line_content *restored_first_line);
->  
->  struct vma_modifier_info {
-> +	int mlock_error;
->  	int vma_count;
->  	void *addr;
->  	int prot;
->  	void *next_addr;
-> +	vma_modifier_op vma_setup;
->  	vma_modifier_op vma_modify;
->  	vma_modifier_op vma_restore;
->  	vma_mod_result_check_op vma_mod_check;
-> @@ -528,13 +530,10 @@ static bool compare_smaps_rollup(FIXTURE_DATA(proc_maps_race) *self,
->  		struct smaps_rollup_stats *actual)
->  {
->  	/*
-> -	 * Clean/dirty metrics might change but Pss-related ones
-> -	 * should stay constant.
-> +	 * Clean/dirty metrics might change. Pss depends on map count and might
-> +	 * change as well. Rss should stay constant.
->  	 */
-> -	if (cmp_smaps_rollup_stat(expected, actual, Pss) &&
-> -	    cmp_smaps_rollup_stat(expected, actual, Pss_Anon) &&
-> -	    cmp_smaps_rollup_stat(expected, actual, Pss_File) &&
-> -	    cmp_smaps_rollup_stat(expected, actual, Pss_Shmem))
-> +	if (cmp_smaps_rollup_stat(expected, actual, Rss))
->  		return true;
->  
->  	print_smaps_rollup_stats("Expected stats:", self, expected);
-> @@ -637,14 +636,13 @@ static bool query_addr_at(int maps_fd, void *addr,
->  static inline bool split_vma(FIXTURE_DATA(proc_maps_race) *self)
->  {
->  	/* PROT_NONE differs from both readable neighbors. */
-> -	return mmap(self->mod_info->addr, self->page_size, PROT_NONE,
-> -		    MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, -1, 0) != MAP_FAILED;
-> +	return mprotect(self->mod_info->addr, self->page_size, PROT_NONE) == 0;
->  }
->  
->  static inline bool merge_vma(FIXTURE_DATA(proc_maps_race) *self)
->  {
-> -	return mmap(self->mod_info->addr, self->page_size, self->mod_info->prot,
-> -		    MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, -1, 0) != MAP_FAILED;
-> +	return mprotect(self->mod_info->addr, self->page_size,
-> +			self->mod_info->prot) == 0;
->  }
->  
->  static inline bool check_split_result(struct line_content *mod_last_line,
-> @@ -679,6 +677,12 @@ static inline bool check_shrink_result(struct line_content *mod_last_line,
->  	       strcmp(mod_first_line->text, restored_first_line->text) == 0;
->  }
->  
-> +static inline bool setup_remap_vma(FIXTURE_DATA(proc_maps_race) *self)
-> +{
-> +	/* Unlock next_addr so MREMAP_DONTUNMAP does not split it. */
-> +	return munlock(self->mod_info->next_addr, self->page_size * 3) == 0;
-> +}
-> +
->  static inline bool remap_vma(FIXTURE_DATA(proc_maps_race) *self)
->  {
->  	/*
-> @@ -694,8 +698,10 @@ static inline bool remap_vma(FIXTURE_DATA(proc_maps_race) *self)
->  
->  static inline bool patch_vma(FIXTURE_DATA(proc_maps_race) *self)
->  {
-> -	return mprotect(self->mod_info->addr + self->page_size, self->page_size,
-> -			self->mod_info->prot) == 0;
-> +	/* Replace all three pieces without relying on anon_vma merging. */
-> +	return mmap(self->mod_info->addr, self->page_size * 3,
-> +		    self->mod_info->prot,
-> +		    MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, -1, 0) != MAP_FAILED;
->  }
->  
->  static inline bool check_remap_result(struct line_content *mod_last_line,
-> @@ -754,15 +760,30 @@ FIXTURE_SETUP(proc_maps_race)
->  	self->pid = fork();
->  	if (!self->pid) {
->  		/* Child process modifying the address space */
-> -		int prot = PROT_READ | PROT_WRITE;
->  		int i;
->  
->  		for (i = 0; i < mod_info->vma_count; i++) {
-> -			mod_info->child_mapped_addr[i] = mmap(NULL, self->page_size * 3, prot,
-> -					MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-> +			mod_info->child_mapped_addr[i] = mmap(NULL, self->page_size * 3,
-> +					PROT_READ | PROT_WRITE,
-> +					MAP_PRIVATE | MAP_ANONYMOUS | MAP_POPULATE, -1, 0);
->  			ASSERT_NE(mod_info->child_mapped_addr[i], MAP_FAILED);
-> -			/* change protection in adjacent maps to prevent merging */
-> -			prot ^= PROT_WRITE;
-> +			/*
-> +			 * Populate writable to get anonymous pages, then alternate
-> +			 * write permission even with READ_IMPLIES_EXEC enabled.
-> +			 */
-> +			if (i % 2)
-> +				ASSERT_EQ(mprotect(mod_info->child_mapped_addr[i],
-> +						   self->page_size * 3, PROT_READ), 0);
-> +		}
-> +		/*
-> +		 * Lock all present pages in memory so memory reclaim cannot
-> +		 * change RSS during the test, and use MCL_ONFAULT so
-> +		 * mremap() expansion does not populate new pages.
-> +		 */
-> +		if (mlockall(MCL_CURRENT | MCL_FUTURE | MCL_ONFAULT)) {
-> +			mod_info->mlock_error = errno;
-> +			signal_state(mod_info, CHILD_READY);
-> +			_exit(0);
->  		}
->  		signal_state(mod_info, CHILD_READY);
->  		wait_for_state(mod_info, PARENT_READY);
-> @@ -772,6 +793,8 @@ FIXTURE_SETUP(proc_maps_race)
->  			if (mod_info->exit)
->  				break;
->  
-> +			if (mod_info->vma_setup)
-> +				ASSERT_TRUE(mod_info->vma_setup(self));
->  			ASSERT_TRUE(mod_info->vma_modify(self));
->  			signal_state(mod_info, SETUP_MAPS_MODIFIED);
->  			wait_for_state(mod_info, SETUP_RESTORE_MAPS);
-> @@ -790,6 +813,21 @@ FIXTURE_SETUP(proc_maps_race)
->  		exit(0);
->  	}
->  
-> +	/* Check setup before opening proc files: the child may have exited. */
-> +	wait_for_state(mod_info, CHILD_READY);
-> +	if (mod_info->mlock_error) {
-> +		int error = mod_info->mlock_error;
-> +		int status;
-> +
-> +		ASSERT_EQ(waitpid(self->pid, &status, 0), self->pid);
-> +		pthread_cond_destroy(&mod_info->sync_cond);
-> +		pthread_mutex_destroy(&mod_info->sync_lock);
-> +		munmap(mod_info, self->shared_mem_size);
-> +		if (error == ENOMEM || error == EPERM || error == EAGAIN)
-> +			SKIP(return, "Cannot lock test mappings: %s", strerror(error));
-> +		ASSERT_EQ(error, 0);
-> +	}
-> +
->  	switch (self->maps_file) {
->  	case MAPS:
->  		sprintf(fname, "/proc/%d/maps", self->pid);
-> @@ -806,9 +844,6 @@ FIXTURE_SETUP(proc_maps_race)
->  	self->maps_fd = open(fname, O_RDONLY);
->  	ASSERT_NE(self->maps_fd, -1);
->  
-> -	/* Wait for the child to map the VMAs */
-> -	wait_for_state(mod_info, CHILD_READY);
-> -
->  	/* Read first two pages */
->  	self->page1.data = malloc(self->page_size);
->  	ASSERT_NE(self->page1.data, NULL);
-> @@ -882,6 +917,7 @@ TEST_F(proc_maps_race, test_maps_tearing_from_split)
->  	/* re-read the file to avoid using stale data from previous test */
->  	ASSERT_TRUE(read_boundary_lines(self, &self->last_line, &self->first_line));
->  
-> +	mod_info->vma_setup = NULL;
->  	mod_info->vma_modify = split_vma;
->  	mod_info->vma_restore = merge_vma;
->  	mod_info->vma_mod_check = check_split_result;
-> @@ -984,6 +1020,7 @@ TEST_F(proc_maps_race, test_maps_tearing_from_resize)
->  	/* re-read the file to avoid using stale data from previous test */
->  	ASSERT_TRUE(read_boundary_lines(self, &self->last_line, &self->first_line));
->  
-> +	mod_info->vma_setup = NULL;
->  	mod_info->vma_modify = shrink_vma;
->  	mod_info->vma_restore = expand_vma;
->  	mod_info->vma_mod_check = check_shrink_result;
-> @@ -1066,13 +1103,13 @@ TEST_F(proc_maps_race, test_maps_tearing_from_remap)
->  	struct line_content remapped_first_line;
->  	struct line_content restored_last_line;
->  	struct line_content restored_first_line;
-> -	struct smaps_rollup_stats orig_stats;
->  
->  	wait_for_state(mod_info, SETUP_READY);
->  
->  	/* re-read the file to avoid using stale data from previous test */
->  	ASSERT_TRUE(read_boundary_lines(self, &self->last_line, &self->first_line));
->  
-> +	mod_info->vma_setup = setup_remap_vma;
->  	mod_info->vma_modify = remap_vma;
->  	mod_info->vma_restore = patch_vma;
->  	mod_info->vma_mod_check = check_remap_result;
-> @@ -1080,8 +1117,6 @@ TEST_F(proc_maps_race, test_maps_tearing_from_remap)
->  	report_test_start("Tearing from remap", self->verbose);
->  	ASSERT_TRUE(capture_mod_pattern(self, &remapped_last_line, &remapped_first_line,
->  					&restored_last_line, &restored_first_line));
-> -	if (self->maps_file == SMAPS)
-> -		ASSERT_TRUE(parse_smaps_rollup(self, &orig_stats));
->  
->  	/* Now start concurrent modifications for self->duration_sec */
->  	signal_state(mod_info, TEST_READY);
-> @@ -1134,11 +1169,6 @@ TEST_F(proc_maps_race, test_maps_tearing_from_remap)
->  				     vma_end - vma_start == self->page_size * 3) ||
->  				    (vma_start == self->last_line.start_addr + self->page_size &&
->  				     vma_end - vma_start == self->page_size));
-> -		} else {
-> -			struct smaps_rollup_stats stats;
-> -
-> -			ASSERT_TRUE(parse_smaps_rollup(self, &stats));
-> -			ASSERT_TRUE(compare_smaps_rollup(self, &orig_stats, &stats));
->  		}
->  		clock_gettime(CLOCK_MONOTONIC_COARSE, &end_ts);
->  		end_test_iteration(&end_ts, self->verbose);
-> 
-> base-commit: 0ea6dc8c4a2192227ec25768625686b8fcd5cb09
-> -- 
-> 2.56.0.385.gac671c819a-goog
-> 
+kernel test robot noticed "kselftests.kvm.nested_tdp_fault_test.fail" on:
+
+commit: 1a01388ba3bd52d1535b10bb5974059f9418cd9e ("[PATCH] KVM: nVMX: Synthesize advanced VM-Exit info for emulated EPT Violations")
+url: https://github.com/intel-lab-lkp/linux/commits/Kevin-Cheng/KVM-nVMX-Synthesize-advanced-VM-Exit-info-for-emulated-EPT-Violations/20261029-024005
+base: https://git.kernel.org/cgit/virt/kvm/kvm.git queue patch link: https://lore.kernel.org/all/20261029024005.575065-1-chengkev@google.com/
+patch subject: [PATCH] KVM: nVMX: Synthesize advanced VM-Exit info for emulated EPT Violations
+
+in testcase: kselftests
+version: kselftests-x86_64-05441d697f7f-1_20261105
+with following parameters:
+
+	group: kvm
+
+config: x86_64-rhel-9.4-kselftests
+compiler: gcc-14
+test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 256G memory
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <yi1.lai@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202611151806.4ddbcfeb-lkp@intel.com
+
+# selftests: kvm: nested_tdp_fault_test
+# Random seed: 0x3ccb3ded
+#
+# ==== Test Assertion Failure ====
+#   x86/nested_tdp_fault_test.c:84: (exit_qual) == (((((1UL))) << (0)) | ((((1UL))) << (7)) | ((((1UL))) << (8)))
+#   pid=10529 tid=10529 errno=4 - Interrupted system call
+#      1        0x0000000000413921: assert_on_unhandled_exception at processor.c:786
+#      2        0x00000000004075e6: _vcpu_run at kvm_util.c:1770
+#      3         (inlined by) vcpu_run at kvm_util.c:1781
+#      4        0x0000000000403902: run_test at nested_tdp_fault_test.c:275
+#      5        0x0000000000402c09: main at nested_tdp_fault_test.c:302
+#      6        0x00007f102953aca7: ?? ??:0
+#      7        0x00007f102953ad64: ?? ??:0
+#      8        0x0000000000402d50: _start at ??:?
+#   Wanted EXIT_QUAL '0x181', got '0x581'
+not ok 40 selftests: kvm: nested_tdp_fault_test # exit=254
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20261115/202611151806.4ddbcfeb-lkp@intel.com
+
+
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
