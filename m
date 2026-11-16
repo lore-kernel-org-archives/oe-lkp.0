@@ -1,76 +1,73 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.15
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794744844;
-	b=NsYRc8u0jkYsmrh1wCHy9vUpUeC18+PZizl3ebgFmgn6oMoouQalhYPCxw6KBo+X0V0K
-	 jctgGf7DOj6C/s2Sl2ztrrWEfRXd7e1OICgbQsDpsD498Ok0nv9u2rm391av/klhDd3M7
-	 TYVBkW3pKeAYBD23qKHYNQpjRyA57/+rdyBNM9Lc4cme7gMKFNZ2FyYHRVWmfHJUAbBw9
-	 NIjKWS5Cv3eoyBXTC4wXkztiHgchIH8LnbTy0x9mVdAfuVWXU0bQMTZFj3NZgD3iWySqM
-	 /vdNMPFiFzK66Z2pA0xMm2Ff4KRaoAHTDU/Rqu0e7M/+i6p54KToXBiIMUmu0XTX8vw==
+	t=1794791455;
+	b=IkWxynaPeE3Xj6HJGGo2nOyZ7Flk53uuIgWE5Vnf56t5fhGsNQqQj18odcBC93u9SyZU
+	 ockv8fYczbw862Wx00pwxZgCSKpuRhSMNU0u4+Q+IT2aEMlUtRNAi2nPHK1YDwa8O9S8j
+	 3+EC+G2zpG5CaO73i153WAxg1nSbs9VW06oeK6/syLzPqN4xD9tSwWoMbX5Gcc9u9OGbg
+	 my+zp9w2OmL1WS/5TAL5CRgjx8+fH0tHEq6Nb0Tb/QxdNiwAepZL3bw7xi5gSbgqXmj3N
+	 VD2pGbLzKBQKpWeWHVFnONtjxnDG9UPbQMPR8436glzgghbuQAWzKTVr7Z2Q2ibYmpg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794744844;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794791455;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition:
-	 In-Reply-To;
-	bh=wx4o9KhMMhGe2lC66yefkiagWdJ/G57Jci8LHd80gYc=;
-	b=boZ+LxAXlzpsoHM4s/KHkUXtCjrQPRJeMCgR2YNWNs21gBgq0ane3T8TwosvkT2mO/jh
-	 BLk0jAMEUqd3rSvxFm6RVs487vCcKfLQCidg5L1DhMgeEQ0yK7Jl5GZlulfs2l15UJaLu
-	 RsfYaQqVNTOqoJPTwB6DJk4XzR2+2DSiTCpFvVHnxoGidYF09mDQLnoA1l5VkunfLqUB6
-	 IKSSVxhZnAQiCTxlIOo5Sir5+7CtMqvPyevYTdu+4CFcwSDWM35IT6H/uUNDmcKrrNWFW
-	 sjgdtMB3n1FqjSlN0pMYfgrZoB5r3Ta9coXmkhnzpVmGwZuCnIg4M2JYCsXTlY7/cXw==
+	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition;
+	bh=lhioPZdrg6ehG82EdncwrlUWsJrKi85IbXPZWP6O8F0=;
+	b=FoBZ/wthOYwMgnvQA9dJyA+UjZYmN0Q4qrjlQPBycvmNxGTjDo6ZTJfsMQR07IebEyg7
+	 szrJ/48zji6XEe+zoMHw4hHTRgH/id9wgnpzpMhjHxRNknhtnckBMX2RLL/5d41tLFufi
+	 P/H+sOcEv0Kr5FtibZFY2A/QQW679sPj9CgvS5dgqi2JI5uzfzoC37oc7e+MJyVFhejWi
+	 HoLPkMSv+WQeJ9uya84upgna2u51jkzsSs3RBNbO6jxX8NrZJiyrnw7OQLVV6CdT/lW1c
+	 cC+JJC8NxMQrg6LHWW1ykUTJIsveeIvqH8BjZIk5vJxsFLaIj/owjFsjtMbWSFm8JMg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=BNpwSmbu;
-	arc=none smtp.remote-ip=192.198.163.17
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Bi8Ksc8N;
+	arc=none smtp.remote-ip=198.175.65.15
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 013D9606A31E
-	for <oe-lkp@lists.linux.dev>; Sun, 15 Nov 2026 12:14:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 013D9606A31E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C992E606A32C;
+	Mon, 16 Nov 2026 01:10:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C992E606A32C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=BNpwSmbu
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Bi8Ksc8N
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794744844; x=1826280844;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   in-reply-to;
-  bh=2tdBK2yIisb0pL/TcklAXTTAVZexaZv+CEL227tiS34=;
-  b=BNpwSmbukYkb54j9+9GfJHOA0YNcSqq2Fb5QZMVEExmmm17CpS55HN3m
-   6/BbjpBKwljXb16fS9kV220pSh3Vnq00EjhRforCns9eZ9BEa48/MEIxj
-   LCorD+BKZ0DJ8iex9DsJTzog5OUlJFISMMVKAbqvGzuAHn9ijDHbjdjjl
-   XKc+TD8fMTeYw17tf7CdS393Dc8k8P43devNiCC2bsvB73pzJV2TXA5On
-   2+7hHCCeO+gigr0pJ9nKNARAbqDUZQ555JKZJP/mZsML5rJ6FOrSZQ5wZ
-   OjQmriw0K4mKCPU7SzJuxBjvySoXjuuGU5G+OSzIy6mctscbCgEll5hn/
-   A==;
-X-CSE-ConnectionGUID: FX485A3gQl+GSedv8f3Whg==
-X-CSE-MsgGUID: NKdLU0icQ6mSihBTVPtcBw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11966"; a="3485750"
-X-IronPort-AV: E=Sophos;i="6.27,214,1787036400"; 
-   d="scan'208";a="3485750"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2026 04:14:03 -0800
-X-CSE-ConnectionGUID: j47z+FVjRkGDKZzr4gnFeg==
-X-CSE-MsgGUID: pwldXXnGST+dX9jqj4dg+Q==
+  t=1794791455; x=1826327455;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=eTvb7GqTwI+2+KPPonfctytUf/DK5YzSaz6s/Ai6e18=;
+  b=Bi8Ksc8NpGQ485ipQ7xYom4L0KZfBJXjyURIgnLWGHS3swtn3j/OGWtj
+   mu1ZdcQLySRxgQPcEdOT0osqndDQ/pJHLqAFnNZxJ13M+rzbZpiYfE7U9
+   tCdGeEY+lO+EOQsQPmFrrUcCUQeQb9hIcDh0AmQKMcjMbTDaITxSnJr3p
+   VPWssvTiNSO+STL4C6Z9IZPXFEbW/ASuOUzOQRQdrMyI/km1ecG2wSW4o
+   1zYiIZbosCGh6hDgY5VpslA3BQ5rFZtsZ6yvlO8U6vXQsqiLL++zg3zyJ
+   f+AUyJ5sEhv9SpVzWjRQmDR2sPG2DLr4/ychJPFsKYxpmjwXoTFXkbU4x
+   g==;
+X-CSE-ConnectionGUID: D122W/xtQBKe0k2jNUUBlA==
+X-CSE-MsgGUID: +7p4iXmmT+uvC4Ubwmp58Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11967"; a="3517633"
+X-IronPort-AV: E=Sophos;i="6.27,215,1787036400"; 
+   d="scan'208";a="3517633"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2026 17:10:55 -0800
+X-CSE-ConnectionGUID: JA6FGKPHQoCiIx866PnL7g==
+X-CSE-MsgGUID: U7+5EfQBRFKzhHjU3f+bCA==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,214,1787036400"; 
-   d="scan'208";a="9649856"
+X-IronPort-AV: E=Sophos;i="6.27,215,1787036400"; 
+   d="scan'208";a="9573936"
 Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2026 04:14:01 -0800
-Date: Sun, 15 Nov 2026 20:13:57 +0800
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2026 17:10:52 -0800
+Date: Mon, 16 Nov 2026 09:10:48 +0800
 From: kernel test robot <yi1.lai@intel.com>
-To: Kevin Cheng <chengkev@google.com>
+To: Nicolas Saenz Julienne <nsaenz@amazon.com>
 Cc: oe-lkp@lists.linux.dev, lkp@intel.com, kvm@vger.kernel.org,
-	seanjc@google.com, pbonzini@redhat.com,
-	linux-kernel@vger.kernel.org, yosry@kernel.org,
-	Kevin Cheng <chengkev@google.com>, yi1.lai@intel.com
-Subject: Re: [PATCH] KVM: nVMX: Synthesize advanced VM-Exit info for emulated
- EPT Violations
-Message-ID: <202611151806.4ddbcfeb-lkp@intel.com>
+	Farrah Chen <farrah.chen@intel.com>,
+	Paolo Bonzini <pbonzini@redhat.com>, loongarch@lists.linux.dev,
+	yi1.lai@intel.com
+Subject: [kvm:kvm-memprot-v4] [KVM]  4764db743f: WARNING:suspicious_RCU_usage
+Message-ID: <202611160117.9e3da157-lkp@intel.com>
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -82,55 +79,126 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261029024005.575065-1-chengkev@google.com>
+
 
 
 Hello,
 
-kernel test robot noticed "kselftests.kvm.nested_tdp_fault_test.fail" on:
+kernel test robot noticed "WARNING:suspicious_RCU_usage" on:
 
-commit: 1a01388ba3bd52d1535b10bb5974059f9418cd9e ("[PATCH] KVM: nVMX: Synthesize advanced VM-Exit info for emulated EPT Violations")
-url: https://github.com/intel-lab-lkp/linux/commits/Kevin-Cheng/KVM-nVMX-Synthesize-advanced-VM-Exit-info-for-emulated-EPT-Violations/20261029-024005
-base: https://git.kernel.org/cgit/virt/kvm/kvm.git queue patch link: https://lore.kernel.org/all/20261029024005.575065-1-chengkev@google.com/
-patch subject: [PATCH] KVM: nVMX: Synthesize advanced VM-Exit info for emulated EPT Violations
+commit: 4764db743fe860556eea711a26ef11c74db647d2 ("KVM: Introduce a generation number for memory attributes") https://git.kernel.org/cgit/virt/kvm/kvm.git kvm-memprot-v4
 
 in testcase: kselftests
-version: kselftests-x86_64-05441d697f7f-1_20261105
+version: kselftests-x86_64-24a19b953e2a-1_20261012
 with following parameters:
 
 	group: kvm
 
+
 config: x86_64-rhel-9.4-kselftests
 compiler: gcc-14
-test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 256G memory
+test machine: 16 threads Intel(R) Core(TM) i7-13620H (Raptor Lake) with 32G memory
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
 
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <yi1.lai@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202611151806.4ddbcfeb-lkp@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202611160117.9e3da157-lkp@intel.com
 
-# selftests: kvm: nested_tdp_fault_test
-# Random seed: 0x3ccb3ded
-#
-# ==== Test Assertion Failure ====
-#   x86/nested_tdp_fault_test.c:84: (exit_qual) == (((((1UL))) << (0)) | ((((1UL))) << (7)) | ((((1UL))) << (8)))
-#   pid=10529 tid=10529 errno=4 - Interrupted system call
-#      1        0x0000000000413921: assert_on_unhandled_exception at processor.c:786
-#      2        0x00000000004075e6: _vcpu_run at kvm_util.c:1770
-#      3         (inlined by) vcpu_run at kvm_util.c:1781
-#      4        0x0000000000403902: run_test at nested_tdp_fault_test.c:275
-#      5        0x0000000000402c09: main at nested_tdp_fault_test.c:302
-#      6        0x00007f102953aca7: ?? ??:0
-#      7        0x00007f102953ad64: ?? ??:0
-#      8        0x0000000000402d50: _start at ??:?
-#   Wanted EXIT_QUAL '0x181', got '0x581'
-not ok 40 selftests: kvm: nested_tdp_fault_test # exit=254
+
+
+kern  :warn  : [  359.591440] [   T5823] WARNING: suspicious RCU usage
+kern  :warn  : [  359.592715] [   T5823] 7.3.0-rc7+ #1 Tainted: G S      W
+kern  :warn  : [  359.594141] [   T5823] -----------------------------
+kern  :warn  : [  359.595825] [   T5823] include/linux/kvm_host.h:2631 Suspicious memory attribute generation usage
+!
+kern  :warn  : [  359.598735] [   T5823]
+other info that might help us debug this:
+
+kern  :warn  : [  359.603182] [   T5823]
+rcu_scheduler_active = 2, debug_locks = 1
+kern  :warn  : [  359.606347] [   T5823] locks held by hyperv_evmcs/5823: 0, last CPU#10
+kern  :warn  : [  359.607343] [   T5823]
+stack backtrace:
+kern  :warn  : [  359.610037] [   T5823] CPU: 10 UID: 0 PID: 5823 Comm: hyperv_evmcs Tainted: G S      W           7.3.0-rc7+ #1 PREEMPTLAZY
+kern  :warn  : [  359.610042] [   T5823] Tainted: [S]=CPU_OUT_OF_SPEC, [W]=WARN
+kern  :warn  : [  359.610043] [   T5823] Hardware name: LENOVO 90XW004HPL/336B, BIOS M5LKT1CA 01/06/2025
+kern  :warn  : [  359.610045] [   T5823] Call Trace:
+kern  :warn  : [  359.610047] [   T5823]  <TASK>
+kern  :warn  : [  359.610048] [   T5823]  dump_stack_lvl (dump_stack.c:94 dump_stack.c:120)
+kern  :warn  : [  359.610057] [   T5823]  lockdep_rcu_suspicious.cold (locking/lockdep.c:6972)
+kern  :warn  : [  359.610062] [   T5823] __kvm_gfn_to_hva_cache_init (linux/kvm_host.h:2631 (discriminator 9) x86/kvm/../../../virt/kvm/kvm_main.c:3675 (discriminator 9)) kvm
+kern  :warn  : [  359.610141] [   T5823]  ? kvm_gpc_deactivate (linux/mutex.h:253 x86/kvm/../../../virt/kvm/pfncache.c:454) kvm
+kern  :warn  : [  359.610208] [   T5823]  ? lock_acquire (trace/events/lock.h:23 (discriminator 21) locking/lockdep.c:5905 (discriminator 21))
+kern  :warn  : [  359.610212] [   T5823]  ? __pfx___kvm_gfn_to_hva_cache_init (x86/kvm/../../../virt/kvm/kvm_main.c:4145) kvm
+kern  :warn  : [  359.610276] [   T5823]  ? vmx_vcpu_load_vmcs (x86/kvm/vmx/vmx.c:1514) kvm_intel
+kern  :warn  : [  359.610291] [   T5823] kvm_read_guest_offset_cached (x86/kvm/../../../virt/kvm/kvm_main.c:3746) kvm
+kern  :warn  : [  359.610389] [   T5823] nested_get_evmptr (x86/kvm/vmx/hyperv.c:21) kvm_intel
+kern  :warn  : [  359.610408] [   T5823] nested_vmx_handle_enlightened_vmptrld (x86/kvm/vmx/nested.c:2196) kvm_intel
+kern  :warn  : [  359.610430] [   T5823] __nested_vmx_vmexit (x86/kvm/vmx/nested.c:3427 x86/kvm/vmx/nested.c:5093) kvm_intel
+kern  :warn  : [  359.610455] [   T5823] nested_vmx_free_vcpu (x86/kvm/vmx/nested.h:46 x86/kvm/vmx/nested.c:6889 x86/kvm/vmx/nested.c:389) kvm_intel
+kern  :warn  : [  359.610473] [   T5823] vmx_vcpu_free (x86/kvm/vmx/vmx.c:7521) kvm_intel
+kern  :warn  : [  359.610492] [   T5823] kvm_arch_vcpu_destroy (x86/kvm/x86.c:9582) kvm
+kern  :warn  : [  359.610598] [   T5823] kvm_destroy_vcpus (x86/kvm/../../../virt/kvm/kvm_main.c:477 x86/kvm/../../../virt/kvm/kvm_main.c:497) kvm
+kern  :warn  : [  359.610698] [   T5823]  ? __pfx_kvm_destroy_vcpus (x86/include/asm/smp.h:90) kvm
+kern  :warn  : [  359.610797] [   T5823]  ? synchronize_srcu (rcu/srcutree.c:1502 rcu/srcutree.c:1558)
+kern  :warn  : [  359.610805] [   T5823] kvm_arch_destroy_vm (x86/kvm/x86.c:10153) kvm
+kern  :warn  : [  359.610906] [   T5823] kvm_destroy_vm (x86/kvm/../../../virt/kvm/kvm_main.c:1314) kvm
+kern  :warn  : [  359.611013] [   T5823] kvm_vm_stats_release (x86/kvm/../../../virt/kvm/kvm_main.c:5394) kvm
+kern  :warn  : [  359.611112] [   T5823]  __fput (file_table.c:512)
+kern  :warn  : [  359.611122] [   T5823]  fput_close_sync (file_table.c:618)
+kern  :warn  : [  359.611126] [   T5823]  ? __pfx_fput_close_sync (file_table.c:479)
+kern  :warn  : [  359.611135] [   T5823]  __x64_sys_close (open.c:1560 open.c:1545 open.c:1545)
+kern  :warn  : [  359.611140] [   T5823]  do_syscall_64 (x86/entry/syscall_64.c:61 x86/entry/syscall_64.c:84)
+kern  :warn  : [  359.611173] [   T5823]  ? do_syscall_64 (linux/irq-entry-common.h:108 x86/entry/syscall_64.c:81)
+kern  :warn  : [  359.611178] [   T5823]  ? do_syscall_64 (x86/entry/syscall_64.c:81 (discriminator 39))
+kern  :warn  : [  359.611184] [   T5823]  entry_SYSCALL_64_after_hwframe (x86/entry/entry_64.S:121)
+kern  :warn  : [  359.611187] [   T5823] RIP: 0033:0x7fcca72733a7
+kern  :warn  : [  359.611191] [   T5823] Code: 48 89 fa 4c 89 df e8 78 b3 00 00 8b 93 08 03 00 00 59 5e 48 83 f8 fc 74 1a 5b c3 0f 1f 84 00 00 00 00 00 48 8b 44 24 10 0f 05 <5b> c3 0f 1f 80 00 00 00 00 83 e2 39 83 fa 08 75 de e8 23 ff ff ff
+All code
+========
+   0:	48 89 fa             	mov    %rdi,%rdx
+   3:	4c 89 df             	mov    %r11,%rdi
+   6:	e8 78 b3 00 00       	call   0xb383
+   b:	8b 93 08 03 00 00    	mov    0x308(%rbx),%edx
+  11:	59                   	pop    %rcx
+  12:	5e                   	pop    %rsi
+  13:	48 83 f8 fc          	cmp    $0xfffffffffffffffc,%rax
+  17:	74 1a                	je     0x33
+  19:	5b                   	pop    %rbx
+  1a:	c3                   	ret
+  1b:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+  22:	00 
+  23:	48 8b 44 24 10       	mov    0x10(%rsp),%rax
+  28:	0f 05                	syscall
+  2a:*	5b                   	pop    %rbx		<-- trapping instruction
+  2b:	c3                   	ret
+  2c:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+  33:	83 e2 39             	and    $0x39,%edx
+  36:	83 fa 08             	cmp    $0x8,%edx
+  39:	75 de                	jne    0x19
+  3b:	e8 23 ff ff ff       	call   0xffffffffffffff63
+
+Code starting with the faulting instruction ===========================================
+   0:	5b                   	pop    %rbx
+   1:	c3                   	ret
+   2:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+   9:	83 e2 39             	and    $0x39,%edx
+   c:	83 fa 08             	cmp    $0x8,%edx
+   f:	75 de                	jne    0xffffffffffffffef
+  11:	e8 23 ff ff ff       	call   0xffffffffffffff39
+kern  :warn  : [  359.611194] [   T5823] RSP: 002b:00007ffecc86c270 EFLAGS: 00000202 ORIG_RAX: 0000000000000003
+kern  :warn  : [  359.611198] [   T5823] RAX: ffffffffffffffda RBX: 00007fcca71e3280 RCX: 00007fcca72733a7
+kern  :warn  : [  359.611201] [   T5823] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000007
+kern  :warn  : [  359.611202] [   T5823] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+kern  :warn  : [  359.611204] [   T5823] R10: 0000000000000000 R11: 0000000000000202 R12: 0000000000000000
+kern  :warn  : [  359.611206] [   T5823] R13: 000000001529f270 R14: 000000001529f240 R15: 000000001529f270
+kern  :warn  : [  359.611219] [   T5823]  </TASK>
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20261115/202611151806.4ddbcfeb-lkp@intel.com
+https://download.01.org/0day-ci/archive/20261116/202611160117.9e3da157-lkp@intel.com
 
 
 --
