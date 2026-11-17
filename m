@@ -1,73 +1,81 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.13
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794791455;
-	b=IkWxynaPeE3Xj6HJGGo2nOyZ7Flk53uuIgWE5Vnf56t5fhGsNQqQj18odcBC93u9SyZU
-	 ockv8fYczbw862Wx00pwxZgCSKpuRhSMNU0u4+Q+IT2aEMlUtRNAi2nPHK1YDwa8O9S8j
-	 3+EC+G2zpG5CaO73i153WAxg1nSbs9VW06oeK6/syLzPqN4xD9tSwWoMbX5Gcc9u9OGbg
-	 my+zp9w2OmL1WS/5TAL5CRgjx8+fH0tHEq6Nb0Tb/QxdNiwAepZL3bw7xi5gSbgqXmj3N
-	 VD2pGbLzKBQKpWeWHVFnONtjxnDG9UPbQMPR8436glzgghbuQAWzKTVr7Z2Q2ibYmpg==
+	t=1794886593;
+	b=lZMzsHrd46Li/s1L7FqoU4QLYmX25TH4lSRPwDVJztRAxOKlUdb7iQ6K6O4h6sufJhDs
+	 ObEVB4qcMBcG/mtJeuXj4m/n3C3ccak2CEPfWtBcQ1+W/VSwJu4378PXoG+gZE05EJ/AE
+	 DpeY0/1HyBT3MhS3MtrS9bsg5o5A0BIWzJ6gv3lpS1mkPQx752+ZZN8DH6pa5V3A1r7eX
+	 Pzfbb+F7KboECW8luk4HHxaYBNuhDpNBiTH0hft/P8bcryLsJNwgK/20p0o4MoDk5mOkZ
+	 xEve68hFZ5pfLYxVDjCz1IJrPSKxr3Gi8rsmgR0SO9K/Ubs4oc7DJ778zxDg2FHjnAw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794791455;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794886593;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition;
-	bh=lhioPZdrg6ehG82EdncwrlUWsJrKi85IbXPZWP6O8F0=;
-	b=FoBZ/wthOYwMgnvQA9dJyA+UjZYmN0Q4qrjlQPBycvmNxGTjDo6ZTJfsMQR07IebEyg7
-	 szrJ/48zji6XEe+zoMHw4hHTRgH/id9wgnpzpMhjHxRNknhtnckBMX2RLL/5d41tLFufi
-	 P/H+sOcEv0Kr5FtibZFY2A/QQW679sPj9CgvS5dgqi2JI5uzfzoC37oc7e+MJyVFhejWi
-	 HoLPkMSv+WQeJ9uya84upgna2u51jkzsSs3RBNbO6jxX8NrZJiyrnw7OQLVV6CdT/lW1c
-	 cC+JJC8NxMQrg6LHWW1ykUTJIsveeIvqH8BjZIk5vJxsFLaIj/owjFsjtMbWSFm8JMg==
+	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition:
+	 Content-Transfer-Encoding:In-Reply-To;
+	bh=dSLf2LTiNtQC3p4vX6VQ3IQVNmBzkisDh8Hpz5xzqNw=;
+	b=WYrR3LRphw0BQ74GWhqcgTt0+AIepDrJ6EeFT9qgSV3y60Az698tHCtejzReTwarJl3t
+	 ZF6ICyLAz+ioy+MS4LRvara4Qa0YddX23M1QOw6bDUKf9/Tptl3Gk5UkMfPdY0YPgcGUC
+	 Mqshx8f/x/skimMYGVRuobefWr1/G0uaWnwu8LBhge3fu1iH9cdZv3rW/1yH7ybJc9YTb
+	 b87pBZgh7AXfG8OjakcHirnt4J+jLMWdaSPjYw6aJcLKYHLKFcVd8vERPz177JurKGWAK
+	 mrMggJ4m/YMde87Yb9vipwaUvF2Yz/LUOSrvBbIrEk7A3Q6pTAlNHHQY0oaljGrQUog==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Bi8Ksc8N;
-	arc=none smtp.remote-ip=198.175.65.15
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=IcYia+4C;
+	arc=none smtp.remote-ip=198.175.65.13
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C992E606A32C;
-	Mon, 16 Nov 2026 01:10:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C992E606A32C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EF2D606A323;
+	Tue, 17 Nov 2026 03:36:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8EF2D606A323
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Bi8Ksc8N
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=IcYia+4C
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794791455; x=1826327455;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=eTvb7GqTwI+2+KPPonfctytUf/DK5YzSaz6s/Ai6e18=;
-  b=Bi8Ksc8NpGQ485ipQ7xYom4L0KZfBJXjyURIgnLWGHS3swtn3j/OGWtj
-   mu1ZdcQLySRxgQPcEdOT0osqndDQ/pJHLqAFnNZxJ13M+rzbZpiYfE7U9
-   tCdGeEY+lO+EOQsQPmFrrUcCUQeQb9hIcDh0AmQKMcjMbTDaITxSnJr3p
-   VPWssvTiNSO+STL4C6Z9IZPXFEbW/ASuOUzOQRQdrMyI/km1ecG2wSW4o
-   1zYiIZbosCGh6hDgY5VpslA3BQ5rFZtsZ6yvlO8U6vXQsqiLL++zg3zyJ
-   f+AUyJ5sEhv9SpVzWjRQmDR2sPG2DLr4/ychJPFsKYxpmjwXoTFXkbU4x
-   g==;
-X-CSE-ConnectionGUID: D122W/xtQBKe0k2jNUUBlA==
-X-CSE-MsgGUID: +7p4iXmmT+uvC4Ubwmp58Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11967"; a="3517633"
-X-IronPort-AV: E=Sophos;i="6.27,215,1787036400"; 
-   d="scan'208";a="3517633"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2026 17:10:55 -0800
-X-CSE-ConnectionGUID: JA6FGKPHQoCiIx866PnL7g==
-X-CSE-MsgGUID: U7+5EfQBRFKzhHjU3f+bCA==
+  t=1794886593; x=1826422593;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding:in-reply-to;
+  bh=4FBjm49gA65DGtEjbVkxm3YsLT31o/1ZsnxQ/paQWrM=;
+  b=IcYia+4Cn3L/o0GehTe5Ap8na3n2rOiqIYh1wCMUsVYk9Hpp0OCwpCuA
+   JIe9d4jSF6g3WMug/yKebd9vAnUi7CG7T5PBj3lgI2rUHUwxy6BJy7pd/
+   NqHI4GECXaszjw/ReTzUpEcCCHxc1MKAc8+l2pFUNMQP9C3RSeJ5ck414
+   Im+iDDbBoeF+DYRKcf7XB/9VUtR3dKgKIi1c6lsc+mtLjMuLM2DjgyVRl
+   N3mXLvv2dXTIcY44qfzMv/OEc4K6xBtpSCirgPaP4sv/lowdlWtoyUF3H
+   pRZSR8bEkS7cuW4TLjD0XKYIFtJckkuAxRIXGh0NF4QOPBk8KPOIlTYRv
+   Q==;
+X-CSE-ConnectionGUID: cupZAVbdRhS5a63e2JMwAQ==
+X-CSE-MsgGUID: MJl3jVG+QaWnnfA8fuy76Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11968"; a="3514824"
+X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
+   d="scan'208";a="3514824"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2026 19:36:32 -0800
+X-CSE-ConnectionGUID: lplMVgfySv+H8oS5TJx3zQ==
+X-CSE-MsgGUID: unj4XYIBRlOQXRoTBztMpQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,215,1787036400"; 
-   d="scan'208";a="9573936"
+X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
+   d="scan'208";a="10235007"
 Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2026 17:10:52 -0800
-Date: Mon, 16 Nov 2026 09:10:48 +0800
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2026 19:36:27 -0800
+Date: Tue, 17 Nov 2026 11:36:24 +0800
 From: kernel test robot <yi1.lai@intel.com>
-To: Nicolas Saenz Julienne <nsaenz@amazon.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, kvm@vger.kernel.org,
-	Farrah Chen <farrah.chen@intel.com>,
-	Paolo Bonzini <pbonzini@redhat.com>, loongarch@lists.linux.dev,
+To: Reinette Chatre <reinette.chatre@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, Chen Yu <yu.c.chen@intel.com>,
+	Tony Luck <tony.luck@intel.com>,
+	Jinjie Ruan <ruanjinjie@huawei.com>, linux-kernel@vger.kernel.org,
+	ben.horgan@arm.com, james.morse@arm.com, Dave.Martin@arm.com,
+	babu.moger@amd.com, bp@alien8.de, tglx@linutronix.de,
+	dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+	fustini@kernel.org, fenghuay@nvidia.com, peternewman@google.com,
+	patches@lists.linux.dev, reinette.chatre@intel.com,
 	yi1.lai@intel.com
-Subject: [kvm:kvm-memprot-v4] [KVM]  4764db743f: WARNING:suspicious_RCU_usage
-Message-ID: <202611160117.9e3da157-lkp@intel.com>
+Subject: Re: [PATCH v3 2/5] x86,fs/resctrl: Remove unnecessary non-linear MBA
+ configuration check
+Message-ID: <202611171056.912725cf-lkp@intel.com>
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -77,131 +85,71 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <7e1aeee81a38a33ca889db68e4c645f935e4e6cd.1793834224.git.reinette.chatre@intel.com>
 
 
 Hello,
 
-kernel test robot noticed "WARNING:suspicious_RCU_usage" on:
+kernel test robot noticed a 4.4% regression of stress-ng.sockfd.ops_per_sec on:
 
-commit: 4764db743fe860556eea711a26ef11c74db647d2 ("KVM: Introduce a generation number for memory attributes") https://git.kernel.org/cgit/virt/kvm/kvm.git kvm-memprot-v4
+commit: 12a0f554b3d62eb1270d6d60e9c6ab2c07dbbe35 ("[PATCH v3 2/5] x86,fs/resctrl: Remove unnecessary non-linear MBA configuration check")
+url: https://github.com/intel-lab-lkp/linux/commits/Reinette-Chatre/x86-fs-resctrl-Remove-unused-non-linear-bandwidth-delay-mapping/20261104-161329
+patch link: https://lore.kernel.org/all/7e1aeee81a38a33ca889db68e4c645f935e4e6cd.1793834224.git.reinette.chatre@intel.com/
+patch subject: [PATCH v3 2/5] x86,fs/resctrl: Remove unnecessary non-linear MBA configuration check
 
-in testcase: kselftests
-version: kselftests-x86_64-24a19b953e2a-1_20261012
-with following parameters:
-
-	group: kvm
-
-
-config: x86_64-rhel-9.4-kselftests
+testcase: stress-ng
+config: x86_64-rhel-9.4
 compiler: gcc-14
-test machine: 16 threads Intel(R) Core(TM) i7-13620H (Raptor Lake) with 32G memory
+test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 256G memory
+parameters:
 
-(please refer to attached dmesg/kmsg for entire log/backtrace)
+	nr_threads: 100%
+	testtime: 60s
+	test: sockfd
+	cpufreq_governor: performance
 
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <yi1.lai@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202611160117.9e3da157-lkp@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202611171056.912725cf-lkp@intel.com
 
 
-
-kern  :warn  : [  359.591440] [   T5823] WARNING: suspicious RCU usage
-kern  :warn  : [  359.592715] [   T5823] 7.3.0-rc7+ #1 Tainted: G S      W
-kern  :warn  : [  359.594141] [   T5823] -----------------------------
-kern  :warn  : [  359.595825] [   T5823] include/linux/kvm_host.h:2631 Suspicious memory attribute generation usage
-!
-kern  :warn  : [  359.598735] [   T5823]
-other info that might help us debug this:
-
-kern  :warn  : [  359.603182] [   T5823]
-rcu_scheduler_active = 2, debug_locks = 1
-kern  :warn  : [  359.606347] [   T5823] locks held by hyperv_evmcs/5823: 0, last CPU#10
-kern  :warn  : [  359.607343] [   T5823]
-stack backtrace:
-kern  :warn  : [  359.610037] [   T5823] CPU: 10 UID: 0 PID: 5823 Comm: hyperv_evmcs Tainted: G S      W           7.3.0-rc7+ #1 PREEMPTLAZY
-kern  :warn  : [  359.610042] [   T5823] Tainted: [S]=CPU_OUT_OF_SPEC, [W]=WARN
-kern  :warn  : [  359.610043] [   T5823] Hardware name: LENOVO 90XW004HPL/336B, BIOS M5LKT1CA 01/06/2025
-kern  :warn  : [  359.610045] [   T5823] Call Trace:
-kern  :warn  : [  359.610047] [   T5823]  <TASK>
-kern  :warn  : [  359.610048] [   T5823]  dump_stack_lvl (dump_stack.c:94 dump_stack.c:120)
-kern  :warn  : [  359.610057] [   T5823]  lockdep_rcu_suspicious.cold (locking/lockdep.c:6972)
-kern  :warn  : [  359.610062] [   T5823] __kvm_gfn_to_hva_cache_init (linux/kvm_host.h:2631 (discriminator 9) x86/kvm/../../../virt/kvm/kvm_main.c:3675 (discriminator 9)) kvm
-kern  :warn  : [  359.610141] [   T5823]  ? kvm_gpc_deactivate (linux/mutex.h:253 x86/kvm/../../../virt/kvm/pfncache.c:454) kvm
-kern  :warn  : [  359.610208] [   T5823]  ? lock_acquire (trace/events/lock.h:23 (discriminator 21) locking/lockdep.c:5905 (discriminator 21))
-kern  :warn  : [  359.610212] [   T5823]  ? __pfx___kvm_gfn_to_hva_cache_init (x86/kvm/../../../virt/kvm/kvm_main.c:4145) kvm
-kern  :warn  : [  359.610276] [   T5823]  ? vmx_vcpu_load_vmcs (x86/kvm/vmx/vmx.c:1514) kvm_intel
-kern  :warn  : [  359.610291] [   T5823] kvm_read_guest_offset_cached (x86/kvm/../../../virt/kvm/kvm_main.c:3746) kvm
-kern  :warn  : [  359.610389] [   T5823] nested_get_evmptr (x86/kvm/vmx/hyperv.c:21) kvm_intel
-kern  :warn  : [  359.610408] [   T5823] nested_vmx_handle_enlightened_vmptrld (x86/kvm/vmx/nested.c:2196) kvm_intel
-kern  :warn  : [  359.610430] [   T5823] __nested_vmx_vmexit (x86/kvm/vmx/nested.c:3427 x86/kvm/vmx/nested.c:5093) kvm_intel
-kern  :warn  : [  359.610455] [   T5823] nested_vmx_free_vcpu (x86/kvm/vmx/nested.h:46 x86/kvm/vmx/nested.c:6889 x86/kvm/vmx/nested.c:389) kvm_intel
-kern  :warn  : [  359.610473] [   T5823] vmx_vcpu_free (x86/kvm/vmx/vmx.c:7521) kvm_intel
-kern  :warn  : [  359.610492] [   T5823] kvm_arch_vcpu_destroy (x86/kvm/x86.c:9582) kvm
-kern  :warn  : [  359.610598] [   T5823] kvm_destroy_vcpus (x86/kvm/../../../virt/kvm/kvm_main.c:477 x86/kvm/../../../virt/kvm/kvm_main.c:497) kvm
-kern  :warn  : [  359.610698] [   T5823]  ? __pfx_kvm_destroy_vcpus (x86/include/asm/smp.h:90) kvm
-kern  :warn  : [  359.610797] [   T5823]  ? synchronize_srcu (rcu/srcutree.c:1502 rcu/srcutree.c:1558)
-kern  :warn  : [  359.610805] [   T5823] kvm_arch_destroy_vm (x86/kvm/x86.c:10153) kvm
-kern  :warn  : [  359.610906] [   T5823] kvm_destroy_vm (x86/kvm/../../../virt/kvm/kvm_main.c:1314) kvm
-kern  :warn  : [  359.611013] [   T5823] kvm_vm_stats_release (x86/kvm/../../../virt/kvm/kvm_main.c:5394) kvm
-kern  :warn  : [  359.611112] [   T5823]  __fput (file_table.c:512)
-kern  :warn  : [  359.611122] [   T5823]  fput_close_sync (file_table.c:618)
-kern  :warn  : [  359.611126] [   T5823]  ? __pfx_fput_close_sync (file_table.c:479)
-kern  :warn  : [  359.611135] [   T5823]  __x64_sys_close (open.c:1560 open.c:1545 open.c:1545)
-kern  :warn  : [  359.611140] [   T5823]  do_syscall_64 (x86/entry/syscall_64.c:61 x86/entry/syscall_64.c:84)
-kern  :warn  : [  359.611173] [   T5823]  ? do_syscall_64 (linux/irq-entry-common.h:108 x86/entry/syscall_64.c:81)
-kern  :warn  : [  359.611178] [   T5823]  ? do_syscall_64 (x86/entry/syscall_64.c:81 (discriminator 39))
-kern  :warn  : [  359.611184] [   T5823]  entry_SYSCALL_64_after_hwframe (x86/entry/entry_64.S:121)
-kern  :warn  : [  359.611187] [   T5823] RIP: 0033:0x7fcca72733a7
-kern  :warn  : [  359.611191] [   T5823] Code: 48 89 fa 4c 89 df e8 78 b3 00 00 8b 93 08 03 00 00 59 5e 48 83 f8 fc 74 1a 5b c3 0f 1f 84 00 00 00 00 00 48 8b 44 24 10 0f 05 <5b> c3 0f 1f 80 00 00 00 00 83 e2 39 83 fa 08 75 de e8 23 ff ff ff
-All code
-========
-   0:	48 89 fa             	mov    %rdi,%rdx
-   3:	4c 89 df             	mov    %r11,%rdi
-   6:	e8 78 b3 00 00       	call   0xb383
-   b:	8b 93 08 03 00 00    	mov    0x308(%rbx),%edx
-  11:	59                   	pop    %rcx
-  12:	5e                   	pop    %rsi
-  13:	48 83 f8 fc          	cmp    $0xfffffffffffffffc,%rax
-  17:	74 1a                	je     0x33
-  19:	5b                   	pop    %rbx
-  1a:	c3                   	ret
-  1b:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
-  22:	00 
-  23:	48 8b 44 24 10       	mov    0x10(%rsp),%rax
-  28:	0f 05                	syscall
-  2a:*	5b                   	pop    %rbx		<-- trapping instruction
-  2b:	c3                   	ret
-  2c:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
-  33:	83 e2 39             	and    $0x39,%edx
-  36:	83 fa 08             	cmp    $0x8,%edx
-  39:	75 de                	jne    0x19
-  3b:	e8 23 ff ff ff       	call   0xffffffffffffff63
-
-Code starting with the faulting instruction ===========================================
-   0:	5b                   	pop    %rbx
-   1:	c3                   	ret
-   2:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
-   9:	83 e2 39             	and    $0x39,%edx
-   c:	83 fa 08             	cmp    $0x8,%edx
-   f:	75 de                	jne    0xffffffffffffffef
-  11:	e8 23 ff ff ff       	call   0xffffffffffffff39
-kern  :warn  : [  359.611194] [   T5823] RSP: 002b:00007ffecc86c270 EFLAGS: 00000202 ORIG_RAX: 0000000000000003
-kern  :warn  : [  359.611198] [   T5823] RAX: ffffffffffffffda RBX: 00007fcca71e3280 RCX: 00007fcca72733a7
-kern  :warn  : [  359.611201] [   T5823] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000007
-kern  :warn  : [  359.611202] [   T5823] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-kern  :warn  : [  359.611204] [   T5823] R10: 0000000000000000 R11: 0000000000000202 R12: 0000000000000000
-kern  :warn  : [  359.611206] [   T5823] R13: 000000001529f270 R14: 000000001529f240 R15: 000000001529f270
-kern  :warn  : [  359.611219] [   T5823]  </TASK>
+Details are as below:
+-------------------------------------------------------------------------------------------------->
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20261116/202611160117.9e3da157-lkp@intel.com
+https://download.01.org/0day-ci/archive/20261117/202611171056.912725cf-lkp@intel.com
+
+=========================================================================================
+compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
+  gcc-14/performance/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/lkp-spr-r02/sockfd/stress-ng/60s
+
+commit: 
+  0d4f0ec1db ("x86,fs/resctrl: Remove unused non-linear bandwidth delay mapping")
+  12a0f554b3 ("[PATCH v3 2/5] x86,fs/resctrl: Remove unnecessary non-linear MBA configuration check")
+
+0d4f0ec1dbca25be 12a0f554b3d62eb1270d6d60e9c
+---------------- --------------------------- 
+         %stddev     %change         %stddev
+             \          |                \  
+  56484401            -4.4%   54013430        stress-ng.sockfd.ops
+    940555            -4.4%     899375        stress-ng.sockfd.ops_per_sec
+   3901263            -1.5%    3841842        stress-ng.time.involuntary_context_switches
+   2386355 ±  6%     -10.4%    2138169 ±  5%  stress-ng.time.voluntary_context_switches
 
 
---
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provided
+for informational purposes only. Any difference in system hardware or software
+design or configuration may affect actual performance.
+
+
+-- 
 0-DAY CI Kernel Test Service
 https://github.com/intel/lkp-tests/wiki
+
 
