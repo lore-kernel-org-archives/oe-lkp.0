@@ -1,76 +1,105 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.15
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795075317;
-	b=nIYMTcQ6y8PcFJZ10s2xJd9Euah8zmTc1s/CE2tVpEdmSJqZO4UsjQWO9TXaxHxc+7QH
-	 YTivuoRCCz600BNbWZKHubg0bH+iWDWQzCCsJxDcXfC6ZtEmLgQeh+NcgZK6BWx4OonKU
-	 yjqsZGUkrE604FJ9q3puhOYN5I011/+JU3OdqF6bgg+30Iu7r3WKi0oHGPZ4hhWGuAov9
-	 s34asMDie8D5J1d5Sa5BLfU1OddF5AXkjklNNa4kOzgAMPZfN/4JvjUP1mqh5vwkOQ9/2
-	 ztP8WLy7riKCb0zJsPjIgItaRmGSYEh7mR7zG1dsraoYLuGJcrn/3oi36Rek9d9mOqw==
+	t=1795097483;
+	b=cYuI3IJEJjNAP0ZJK/4FV+7ckUL62sjIdi8rl5RGUNRW8vIiF85UWaHkWVw3nIPpIE4p
+	 jNhzQZo4cMvnekYKsCOBpRNmWv+C5hn5yrZmTXxTD9voINdRKncDi5kebRu9Vj1F+hKwh
+	 NZfc0BM7YogPOf4miny5eCADQtAT16JPN03KVr0RqNUF/wP0ma6ltiy/NxTUmv6DSn1I2
+	 aE3lq36e99GNfx7ONH4msmXqJJwlY1a+ulhZzVpf/Qj+SxxauYZIXi6nyJ1qXypci9Mua
+	 NcYwGHNFEBslEPAOwa5ZqyZkuZJVOxOzn2EmxLilEM66JdMdSwu0YiaHBMHUkOgV1Lg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795075317;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795097483;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition:
-	 Content-Transfer-Encoding;
-	bh=4p4KggojW3gw+ynucO6keC/RHS48WHwJWTuIPwfR82Q=;
-	b=wFlBzZ5SsoBxrnq8/HseJSo27AaYQvLiP1uhJ9rWkEUJVf31WkezfJtRD/bdaR3btBD8
-	 UVkEySQfxgnMu8A7k535og4u+ZCOlW9ZulzxmUdbqpejAiXsbJKcrFBey0znzbRemCOGt
-	 d6Ta1WbH5KfOIu+3iskNv2NvqFdZ9WEPNP5eqq7SNJs+Y+lNSTolhTC9prrUuUo1FYvjQ
-	 dJEbaysVMpkaOc3QFGOlfppvKI7+iK3/5I5/AbYKTSlaZA8P2w7sO8oYLU6180nGPyWOo
-	 UFFs7Fgp03ffXexyY5bXRwPj9KGOWQeoXuEM/RxlczuuAPrIX90hh/gcjWQenah6+IA==
+	 Content-Transfer-Encoding:In-Reply-To;
+	bh=28OwL7LMN9BNWrZxvtunkM472yJRAdMErQfbeGnmfC8=;
+	b=Zpwh2LSJy7lHdtw+YRwrLP/pQoPcX+3Zrf1LxjJS19EXaNh5TJTQC+Nnru++TABO/tCF
+	 LmJBYCRlZvl42C6xcujbqPrv19vWBKN+sAEPTdY7l1L/BBd+bVRu4QBG8eoGfK5BVXnik
+	 /Kn8xbz9mHoe68mBbGcyLS8740lil1kvWknn2CDvACY2C6j7zCtdKRhHtwD0xRV+n8wBm
+	 uGWc7i+ZSgTZV1TMyT4MSjCTMuaz4jKkjLh86vys3217K4EVbb1VWggSYGc1BiiSDN1ar
+	 tZHLI7eLFlICaf6fvJZZ1BX1oevItmT4GZHC9BS+6hchC/RcykB6WHh9XBoiPm6V9fg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="i/Z5vHeL";
-	arc=none smtp.remote-ip=192.198.163.17
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Vjp9KtHD;
+	arc=none smtp.remote-ip=192.198.163.15
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A372C606A33F
-	for <oe-lkp@lists.linux.dev>; Thu, 19 Nov 2026 08:01:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A372C606A33F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0787606A324
+	for <oe-lkp@lists.linux.dev>; Thu, 19 Nov 2026 14:11:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F0787606A324
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=i/Z5vHeL
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Vjp9KtHD
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795075317; x=1826611317;
+  t=1795097484; x=1826633484;
   h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=SW+nSXupzRSi0LSpp5nU2OtG3gFfZgoM7yD7TC9bB0A=;
-  b=i/Z5vHeLCr9eE78hDyXFoaoWoC0gNuSJ2yWCo4I7M8XCLUXmeW1QtRr4
-   T6TacPcQwQtuW/Luit3pguTy8usgoSpVxvDZSnJ7THCdx1DxGptPepKqg
-   fOVwBHXJCZsalOYCnAEgPDIfdIsoY7AcRvEM7WJY+ua6zpuy6bs32TL/l
-   m/jIb725jnAPomfMYRX1HTOwanO6Qm0mKCU7mBzkmBypTb4wenJNhn9l0
-   kqR7zmn5/8YmgyxdANVGejJlpez3NBRYj5Z+YSgK82JKEhtNXbhkGRjnX
-   L0f36wBAQcsKXk8VEJfXToAFGJJPdUJ2nY4NaLKtCusBG5q8LQ0hooo+N
-   Q==;
-X-CSE-ConnectionGUID: HFfmEfxCQKCj/5kQtRKhyA==
-X-CSE-MsgGUID: AdSmrc5dQPajF2Oui6K4JQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11970"; a="3910758"
-X-IronPort-AV: E=Sophos;i="6.27,220,1787036400"; 
-   d="scan'208";a="3910758"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2026 00:01:56 -0800
-X-CSE-ConnectionGUID: ZRezsXZMSK+nYkHgDWZ6vg==
-X-CSE-MsgGUID: 2gn+ks/LRn+oy04G5k3UDw==
+   content-transfer-encoding:in-reply-to;
+  bh=nw7rQPipSkhtV/UQgw2LJ0rMDn1dGG0TaB4g5lNPeio=;
+  b=Vjp9KtHDrVhrYhO4VOxiY310vKfZD9wSWCSV/BWWmHQC97zeos0+qUHX
+   vLKH7MOy3qIccIEGyh0lnbk7tHaXaTXosTmWsEgLzXIEg4yJ82qYzLiLt
+   UCXL5+YCriXyKtXMHwrDoIw0X65B47VR/Hyl3pTgiQLireNng2coy8WPi
+   MWginHp/5Ppty0fC4KlNnQMhmxNm13g/nOnxQG7iQGPNwZN3hbnP366e7
+   mVSXal12vrkpELzueMTT9+wiXvIvzsyB8Bj9CWGhIUePFYn8koM3ZTaEE
+   p8g7VJtxvMQYWaCY0FJT5r7/Ar5iQnKqdNrUXfqI8ggMgsurNreXymUOa
+   w==;
+X-CSE-ConnectionGUID: QIn/ypdsQtiLs8PfD8HWXg==
+X-CSE-MsgGUID: ngl4ZkGHS2ySA0GXQLN44A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11971"; a="3954942"
+X-IronPort-AV: E=Sophos;i="6.27,221,1787036400"; 
+   d="scan'208";a="3954942"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2026 06:11:23 -0800
+X-CSE-ConnectionGUID: Y7htxKcIQZqpqFq6wYNJhw==
+X-CSE-MsgGUID: FDK0PtvFRbC2gRpIiTQ4jw==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,220,1787036400"; 
-   d="scan'208";a="10701011"
+X-IronPort-AV: E=Sophos;i="6.27,221,1787036400"; 
+   d="scan'208";a="10573856"
 Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2026 00:01:53 -0800
-Date: Thu, 19 Nov 2026 16:01:50 +0800
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2026 06:11:13 -0800
+Date: Thu, 19 Nov 2026 22:11:10 +0800
 From: kernel test robot <yi1.lai@intel.com>
-To: Hengyu Liang <hengyul@cs.unc.edu>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	David Sterba <dsterba@suse.com>, Qu Wenruo <wqu@suse.com>,
-	Filipe Manana <fdmanana@suse.com>, linux-btrfs@vger.kernel.org,
-	yi1.lai@intel.com
-Subject: [linus:master] [btrfs]  16b8f07d1e:
- stress-ng.inode-flags.ops_per_sec 89.3% improvement
-Message-ID: <202611190824.7d8fe82f-lkp@intel.com>
+	aubrey.li@linux.intel.com, yu.c.chen@intel.com, ltp@lists.linux.it,
+	cgroups@vger.kernel.org, rcu@vger.kernel.org,
+	linux-doc@vger.kernel.org,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Juri Lelli <juri.lelli@redhat.com>,
+	Vincent Guittot <vincent.guittot@linaro.org>,
+	Dietmar Eggemann <dietmar.eggemann@arm.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+	Valentin Schneider <vschneid@redhat.com>,
+	K Prateek Nayak <kprateek.nayak@amd.com>,
+	luca abeni <luca.abeni@santannapisa.it>,
+	Yuri Andriaccio <yurand2000@gmail.com>,
+	Yuri Andriaccio <yuri.andriaccio@santannapisa.it>,
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	Frederic Weisbecker <frederic@kernel.org>,
+	Neeraj Upadhyay <neeraj.upadhyay@kernel.org>,
+	Joel Fernandes <joelagnelf@nvidia.com>,
+	Josh Triplett <josh@joshtriplett.org>,
+	Boqun Feng <boqun@kernel.org>, Uladzislau Rezki <urezki@gmail.com>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	Lai Jiangshan <jiangshanlai@gmail.com>,
+	Zqiang <qiang.zhang@linux.dev>, Davidlohr Bueso <dave@stgolabs.net>,
+	Tejun Heo <tj@kernel.org>, Johannes Weiner <hannes@cmpxchg.org>,
+	Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
+	Qais Yousef <qyousef@layalina.io>,
+	John Ogness <john.ogness@linutronix.de>, yi1.lai@intel.com
+Subject: Re: [PATCH v3 6/8] sched: Limit sysctl sched_rt_{period|runtime}_us
+ to RT_GROUP_SCHED
+Message-ID: <202611192004.cca8bf73-lkp@intel.com>
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -80,68 +109,151 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-
+In-Reply-To: <20261113-sched_dl-v3-6-a76ffa1cdeee@linutronix.de>
 
 
 Hello,
 
-kernel test robot noticed a 89.3% improvement of stress-ng.inode-flags.ops_per_sec on:
+kernel test robot noticed "ltp.proc_sched_rt01.fail" on:
 
+commit: 4f1021f29368df79a6e79ec87cafa29d99a4601a ("[PATCH v3 6/8] sched: Limit sysctl sched_rt_{period|runtime}_us to RT_GROUP_SCHED")
+url: https://github.com/intel-lab-lkp/linux/commits/Sebastian-Andrzej-Siewior/sched-deadline-Reject-debugfs-dl_server-writes-for-not-active-CPUs/20261113-115022
+patch link: https://lore.kernel.org/all/20261113-sched_dl-v3-6-a76ffa1cdeee@linutronix.de/
+patch subject: [PATCH v3 6/8] sched: Limit sysctl sched_rt_{period|runtime}_us to RT_GROUP_SCHED
 
-commit: 16b8f07d1ed50d4a8da468b56484873784dd8f4a ("btrfs: fix chattr failing on nodatasum files that have the compress flag")
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+in testcase: ltp
+version: ltp-x86_64-686a331b6-1_20261114 with following parameters:
 
-testcase: stress-ng
-config: x86_64-rhel-9.4
+	test: sched
+
+config: x86_64-rhel-9.4-ltp
 compiler: gcc-14
-test machine: 224 threads 2 sockets Intel(R) Xeon(R) (Sapphire Rapids) with 128G memory
-parameters:
+test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4790T CPU @ 2.70GHz (Haswell) with 16G memory
 
-	nr_threads: 100%
-	disk: 1SSD
-	testtime: 60s
-	fs: btrfs
-	test: inode-flags
-	cpufreq_governor: performance
+(please refer to attached dmesg/kmsg for entire log/backtrace)
 
 
-Details are as below:
--------------------------------------------------------------------------------------------------->
+If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <yi1.lai@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202611192004.cca8bf73-lkp@intel.com
+
+
+PATH=/lkp/benchmarks/ltp:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/lkp/lkp/src/bin
+2026-11-19 03:55:21 cd /lkp/benchmarks/ltp
+2026-11-19 03:55:21 export LTP_RUNTIME_MUL=2
+2026-11-19 03:55:21 export LTPROOT=/lkp/benchmarks/ltp
+2026-11-19 03:55:21 kirk -f sched
+Host information
+	Hostname:   lkp-hsw-d05
+	Python:     3.13.5 (main, Jun 13 2026, 14:18:01) [GCC 14.2.0]
+	Directory:  /tmp/kirk.root/tmpmzwqb43l
+
+Connecting to SUT: default
+
+Suite: sched
+────────────
+ [1;37mpth_str01:  [0m [1;32mpass [0m  (0.016s)
+ [1;37mpth_str02:  [0m [1;32mpass [0m  (0.151s)
+ [1;37mpth_str03:  [0m [1;32mpass [0m  (0.017s)
+ [1;37mtime-schedule01:  [0m [1;32mpass [0m  (0.250s)
+ [1;37mtrace_sched01:  [0m [1;32mpass [0m  (0.021s)
+ [1;37mcfs_bandwidth01:  [0m [1;32mpass [0m  (15.085s)
+ [1;37mhackbench01:  [0m [1;32mpass [0m  (49.279s)
+ [1;37mhackbench02:  [0m [1;32mpass [0m  (19.554s)
+ [1;37mstarvation:  [0m [1;36mskip [0m  (0.076s)
+ [1;37mproc_sched_rt01:  [0m [1;31mfail [0m  (0.015s)
+ [1;37msched_cli_serv:  [0m [1;32mpass [0m  (5.043s)
+ [1;37msched_stress:  [0m [1;32mpass [0m  (1m 12s)
+ [1;37mautogroup01:  [0m [1;32mpass [0m  (0.075s)
+ [1;37msched_football:  [0m [1;32mpass [0m  (5.469s)
+
+Execution time: 2m 47s
+
+Disconnecting from SUT: default
+
+Target information
+──────────────────
+Kernel:   Linux 7.4.0-rc2+ #1 SMP PREEMPT Thu Nov 19 11:18:29 CST 2026
+Cmdline:  ip=::::lkp-hsw-d05::dhcp
+          root=/dev/ram0
+          RESULT_ROOT=/result/ltp/sched/lkp-hsw-d05/debian-13-x86_64-20250902.cgz/x86_64-rhel-9.4-ltp/gcc-14/4f1021f29368df79a6e79ec87cafa29d99a4601a/0
+          BOOT_IMAGE=/pkg/linux/x86_64-rhel-9.4-ltp/gcc-14/4f1021f29368df79a6e79ec87cafa29d99a4601a/vmlinuz-7.4.0-rc2+
+          branch=internal-devel/devel-hourly-20261117-024418
+          job=/lkp/jobs/scheduled/lkp-hsw-d05/ltp-sched-debian-13-x86_64-20250902.cgz-4f1021f29368-20261119-35324-11d62tm-0.yaml
+          user=lkp
+          ARCH=x86_64
+          kconfig=x86_64-rhel-9.4-ltp
+          commit=4f1021f29368df79a6e79ec87cafa29d99a4601a
+          intremap=posted_msi
+          max_uptime=7200
+          LKP_SERVER=internal-lkp-server
+          nokaslr
+          selinux=0
+          debug
+          apic=debug
+          sysrq_always_enabled
+          rcupdate.rcu_cpu_stall_timeout=100
+          net.ifnames=0
+          printk.devkmsg=on
+          panic=-1
+          softlockup_panic=1
+          nmi_watchdog=panic
+          oops=panic
+          load_ramdisk=2
+          prompt_ramdisk=0
+          drbd.minor_count=8
+          systemd.log_level=err
+          ignore_loglevel
+          console=tty0
+          earlyprintk=ttyS0,115200
+          console=ttyS0,115200
+          vga=normal
+          rw
+          keep_initrds=/osimage/pkg/debian-13-x86_64-20250902.cgz/ltp-x86_64-686a331b6-1_20261114.cgz
+          acpi_rsdp=0x000f0490
+Machine:  unknown
+Arch:     x86_64
+RAM:      14033756 kB
+Swap:     0 kB
+Distro:   debian 13
+
+────────────────────────
+      TEST SUMMARY
+────────────────────────
+Suite:   sched
+Runtime: 2m 47s
+Runs:    14
+
+Results:
+    Passed:   22
+    Failed:   3
+    Broken:   1
+    Skipped:  1
+    Warnings: 0
+
+ [1;31mBroken: [0m
+    • proc_sched_rt01
+
+ [1;31mFailures: [0m
+    • proc_sched_rt01
+
+Session stopped
+LTP test details
+----------------
+starvation: starvation.c:115: TCONF: Skip test due to slow kernel configuration
+proc_sched_rt01: proc_sched_rt01.c:45: TFAIL: echo 0 > /proc/sys/kernel/sched_rt_period_us expected EINVAL: EBADF (9)
+proc_sched_rt01: proc_sched_rt01.c:47: TFAIL: echo -1 > /proc/sys/kernel/sched_rt_period_us expected EINVAL: EBADF (9)
+proc_sched_rt01: proc_sched_rt01.c:53: TFAIL: echo -2 > /proc/sys/kernel/sched_rt_runtime_us expected EINVAL: EBADF (9)
+proc_sched_rt01: proc_sched_rt01.c:62: TBROK: Failed to open FILE '/proc/sys/kernel/sched_rt_period_us' for reading: ENOENT (2)
+
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20261119/202611190824.7d8fe82f-lkp@intel.com
+https://download.01.org/0day-ci/archive/20261119/202611192004.cca8bf73-lkp@intel.com
 
-=========================================================================================
-compiler/cpufreq_governor/disk/fs/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
-  gcc-14/performance/1SSD/btrfs/x86_64-rhel-9.4/100%/debian-13-x86_64-20250902.cgz/lkp-spr-2sp3/inode-flags/stress-ng/60s
-
-commit: 
-  58e844c3ba ("btrfs: fix use-after-free on quota enable allocation failure")
-  16b8f07d1e ("btrfs: fix chattr failing on nodatasum files that have the compress flag")
-
-58e844c3ba387ceb 16b8f07d1ed50d4a8da468b5648 
----------------- --------------------------- 
-         %stddev     %change         %stddev
-             \          |                \  
-    204635           +89.2%     387239        stress-ng.inode-flags.ops
-      3409           +89.3%       6454        stress-ng.inode-flags.ops_per_sec
-   4400053 � 12%     -96.0%     175237 �  5%  stress-ng.time.file_system_outputs
-     30530 �  3%   +2174.3%     694344        stress-ng.time.involuntary_context_switches
-    181230 �  2%      +4.4%     189263        stress-ng.time.minor_page_faults
-      1174         +1503.6%      18832        stress-ng.time.percent_of_cpu_this_job_got
-    673.93         +1574.9%      11287        stress-ng.time.system_time
-  23712987           -60.1%    9463627        stress-ng.time.voluntary_context_switches
-
-
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provided
-for informational purposes only. Any difference in system hardware or software
-design or configuration may affect actual performance.
-
--- 
+--
 0-DAY CI Kernel Test Service
 https://github.com/intel/lkp-tests/wiki
 
