@@ -1,100 +1,80 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795188986;
-	b=xDuP20GUOxWioStGGnAz+X9kHT0O5hAbf6CylMd18YPKJHjaO+5rHGJklYP26RF0YYrh
-	 M4MaCzziIYT8JWSOEePQnjw/UerHqvWM1gbaw3XEAngJX9cQ/yd5MzLzk32s0aV7YXGKJ
-	 VVhvyClKhycn7i7mBPlncXLAHyJ1Vmafvjh6NHuiDb8lJPpQ3pPPoHjjX9PeAm0cnh6Hj
-	 B3XyPv0vBIEIwL55xEoyHsmreUR2699qwrYKdO43Gz3vv1EkEv9VUR55FYoZhyTzSVJWh
-	 6RDn/C6rc2abK93vpc5sAOMNAqk3DrakvLh20rTFH3z9FsrlbMJSRWz0Jd2LHe6V4jw==
+	t=1795337177;
+	b=2Co7e/EHRnKoDkOxiXTi1kMv6j2HoRqk4BkoTohJx4Y9cWgZE9kJrkzorWQc+oMZJNhZ
+	 LebtCdlWVD0z5cyJOiDkOMox4Tvx/Y99x3SZ+rgUZvquUCWPxL8EXUWG/xoMJbkmUyoX0
+	 L+LRqyTWr0D6gFAzqwnN2wIrw5aYeolXlF/0wXccNXe1/CgACKrnZWqUXPH1eI+0Z20gs
+	 /gHMBpqKLu4mtQmgyEiOXUnnYWCeBhXccq2RuGfd2CKlr+T5VwlCBROAgpOmaOKbd5mbN
+	 aic+ClmdQXbSwHHA7aq4q7EQ3J5LV7svScHDmpMjzjcaurS7c0BJjfN/ByNESzFdBBQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795188986;
-	h=DMARC-Filter:Date:DKIM-Signature:DKIM-Signature:From:To:Cc:Subject:
-	 Message-ID:References:MIME-Version:Content-Type:Content-Disposition:
+	a=rsa-sha256; c=relaxed/relaxed; t=1795337177;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:MIME-Version:Content-Type:Content-Disposition:
 	 In-Reply-To;
-	bh=0v8j2lBvxHjXaH9n0pHRtDOnUfQzBe+8Nl6XwJcdi84=;
-	b=uWu74EFcnMgvotzSB8cQ2mDRJMtLszDl3eLX2X0jdCjyT4RdA3T85HarRTwjYThv8TWO
-	 FcUnGwZ1Tx291UZHjoILUZDgCWThllacnuh9anPncsn97MuPShpj00UulbNwwZ9n6fv2l
-	 chclQJTRUPAuhe4rR/leeuRL4TjrALJoTtvGheduhI+0YouZT90VXugKwQWlXJBJCYmkS
-	 GCg/qOlYFhwnep5vYj7RAj3BqjHHzMFwvsglrMlWiGh+ng9zT/WO1sKXHAFR4qpPBqCDd
-	 KLW2XhYwnBf3qg3gi4lz47FrIXtB33Wbm59Vj5J1AxoiM7Re6BsvIu0qscnSgX4Df5w==
+	bh=QBaHKNj4jblHhF4v5geYPLLScB23jE/W8QM7XjBR/Vw=;
+	b=j0Z1Dkd4XcrZqTRr4zLsgMj0EebAicX3Ffgz+pKfjDcS/B4rRyS5SPwwSpD62RyCBcxb
+	 CAzcT++FxjX4HTNYA+H+nsgi6vEQ8t5fXQtO4sBGMmF0TgP1NZnPcOc9eVlNKpJhnA/4k
+	 Ta0hn0ONHjE0vrYzn554xTo1YMVIOsv9WQ7PQOCcCY2yqXxT4Vqq3BsKRtOrm9VUNj6gj
+	 h07E7kL+is3ghelCyzQHT2DgqI1JBqMT6EQziNHeSs04Bzz5nWQC3r5JmZrJGsrPYx/yf
+	 HkqluKvgmysUn0ojmQOhkm8xplwUy+tZo4etuOVyrU+gjCFxdQVw/cmqrS3v+P4P/MQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linutronix.de;
-	spf=pass smtp.mailfrom=linutronix.de;
-	dkim=pass header.d=linutronix.de header.i=@linutronix.de header.a=rsa-sha256 header.s=2020 header.b=ocKZwuHr;
-	dkim=pass header.d=linutronix.de header.i=@linutronix.de header.a=ed25519-sha256 header.s=2020e header.b="/3UWy6bd";
-	arc=none smtp.remote-ip=193.142.43.55
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=HTgjMidM;
+	arc=none smtp.remote-ip=192.198.163.18
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90FCB606A338
-	for <oe-lkp@lists.linux.dev>; Fri, 20 Nov 2026 15:36:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 90FCB606A338
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6936606A337
+	for <oe-lkp@lists.linux.dev>; Sun, 22 Nov 2026 08:46:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A6936606A337
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.a=rsa-sha256 header.s=2020 header.b=ocKZwuHr;
-	dkim=pass header.d=linutronix.de header.i=@linutronix.de header.a=ed25519-sha256 header.s=2020e header.b=/3UWy6bd
-Date: Fri, 20 Nov 2026 16:36:19 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1795188982;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=0v8j2lBvxHjXaH9n0pHRtDOnUfQzBe+8Nl6XwJcdi84=;
-	b=ocKZwuHrzuSS5ct2BH9+QHW61CP+dOVKPTj6OnEL5JRcOuENkj0NL0skilIvwRsvY8R/4d
-	CLIEdNZEGWZ2+GWNRnttwKPWCQR99CItKiWt7sPu3FVy6wjwmSwNrGuA4vnLpx8j1aV4KN
-	oucdLvD2xawYd7/siHeOJkUWKmh9rEdf18jCqNzAbDKDhNZxIeRPBGBfXmtckHgfJaDYM3
-	HyHUcuzXU18kwelECl+BVuwFH5XSoHKvLoAwDSqQePK4qcrHGtHd1lh/ALmZSc+ILWYJSt
-	G0R9OpDpF46Mpq0CKPoZ+vSMMP4Bfw80YQ2jR05qhh7pPFKC1Uw9FCHQ11/rLA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1795188982;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=0v8j2lBvxHjXaH9n0pHRtDOnUfQzBe+8Nl6XwJcdi84=;
-	b=/3UWy6bdseM8Bvl3FVKoUU8HTCV8bfiOwegV1SE7IS2/xYsJtTfC9IiB5w7SmqUznWC2HV
-	P5ol4oPM0GV6hXDA==
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: Juri Lelli <juri.lelli@redhat.com>
-Cc: kernel test robot <yi1.lai@intel.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-kernel@vger.kernel.org,
-	aubrey.li@linux.intel.com, yu.c.chen@intel.com, ltp@lists.linux.it,
-	cgroups@vger.kernel.org, rcu@vger.kernel.org,
-	linux-doc@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Ingo Molnar <mingo@redhat.com>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=HTgjMidM
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1795337177; x=1826873177;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   in-reply-to;
+  bh=ui1GA+v5cTSaQ85lo7b0GU51nfczNOxijfJoUkbMx8A=;
+  b=HTgjMidM2HiKU41FM+wfkWuoxqx7ISO/5FaE7zRdTBAP/srxzjUy0N+1
+   2bWtpx3kjxPdKVAsOCEWFNJgg4cSzWBw1Id/UTLamjOCM0NfFzpa03SyH
+   Y4oW3EHoZwZam4PBhITObhdlQNS3g5hHxexMcB+r3hrbD1BWFKWhDQXlI
+   FSZVP8RvRCMwTlInCXrZMzf6VUhGrF/+sHiYsyE1z4oV0Hjtn6YS5tQxN
+   luSFez8V0fKsFVY6qv8D+SwIfEe2HRCPnlLOs6qf/jbASqK7m/OEGYYPe
+   HJ3wEhi37QRCx96ufj8ic++WEhFTISsipehQYiU9QS1MtGSd2cXdaR+E8
+   Q==;
+X-CSE-ConnectionGUID: SKpXrtKPSy+panZUAVCQpQ==
+X-CSE-MsgGUID: UUGQyDICRBi8mh6HMd9/vg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11973"; a="4195507"
+X-IronPort-AV: E=Sophos;i="6.27,226,1787036400"; 
+   d="scan'208";a="4195507"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2026 00:45:03 -0800
+X-CSE-ConnectionGUID: C5YXt7O9QI2uZ/j+/b+5HQ==
+X-CSE-MsgGUID: Ba1drWq6QqmB4aUB3vQaFg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,226,1787036400"; 
+   d="scan'208";a="11338019"
+Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2026 00:44:59 -0800
+Date: Sun, 22 Nov 2026 16:44:56 +0800
+From: kernel test robot <yi1.lai@intel.com>
+To: Namhyung Kim <namhyung@kernel.org>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-perf-users@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Arnaldo Carvalho de Melo <acme@kernel.org>,
+	Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+	Adrian Hunter <adrian.hunter@intel.com>,
+	James Clark <james.clark@linaro.org>,
 	Peter Zijlstra <peterz@infradead.org>,
-	Vincent Guittot <vincent.guittot@linaro.org>,
-	Dietmar Eggemann <dietmar.eggemann@arm.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-	Valentin Schneider <vschneid@redhat.com>,
-	K Prateek Nayak <kprateek.nayak@amd.com>,
-	luca abeni <luca.abeni@santannapisa.it>,
-	Yuri Andriaccio <yurand2000@gmail.com>,
-	Yuri Andriaccio <yuri.andriaccio@santannapisa.it>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Frederic Weisbecker <frederic@kernel.org>,
-	Neeraj Upadhyay <neeraj.upadhyay@kernel.org>,
-	Joel Fernandes <joelagnelf@nvidia.com>,
-	Josh Triplett <josh@joshtriplett.org>,
-	Boqun Feng <boqun@kernel.org>, Uladzislau Rezki <urezki@gmail.com>,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	Lai Jiangshan <jiangshanlai@gmail.com>,
-	Zqiang <qiang.zhang@linux.dev>, Davidlohr Bueso <dave@stgolabs.net>,
-	Tejun Heo <tj@kernel.org>, Johannes Weiner <hannes@cmpxchg.org>,
-	Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>,
-	Qais Yousef <qyousef@layalina.io>,
-	John Ogness <john.ogness@linutronix.de>
-Subject: Re: [PATCH v3 6/8] sched: Limit sysctl sched_rt_{period|runtime}_us
- to RT_GROUP_SCHED
-Message-ID: <20261120153619.gkOojPT4@linutronix.de>
-References: <20261113-sched_dl-v3-6-a76ffa1cdeee@linutronix.de>
- <202611192004.cca8bf73-lkp@intel.com>
- <20261119142348.MkPQ2Fby@linutronix.de>
- <awBiDzEvUch_5ZJn@jlelli-thinkpadt14gen4.remote.csb>
+	Ingo Molnar <mingo@kernel.org>, yi1.lai@intel.com
+Subject: Re: [PATCH v2 11/11] perf tests: Add namespace, nsinfo, and boot ID
+ tests
+Message-ID: <202611221114.fdeef11c-lkp@intel.com>
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -104,45 +84,80 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <awBiDzEvUch_5ZJn@jlelli-thinkpadt14gen4.remote.csb>
+In-Reply-To: <20261116055731.707164-12-namhyung@kernel.org>
 
-On 2026-11-20 16:06:55 [+0100], Juri Lelli wrote:
-> Hello,
-Hi,
 
-> I agree on the RT throttling part. Before this series, writing to them
-> does serve a purpose, though. 5/8 moves that functionality to sysfs,
-> which leaves the files without a purpose, and 6/8 then removes them. So
-> existing users don't lose a useless knob; they lose the working one,
-> which has moved somewhere else. LTP is not the only one that will
-> notice, I'm afraid.
-> 
-> This is what I meant with "yes and no" in the RFC thread: we need an
-> interface for admission control, and I wasn't sure how much breakage
-> moving it would cause. Now we have a first data point. :)
-> 
-> You suggested yourself back then to keep the files and make them apply
-> to DL only. I think that's something like:
-> 
->  - keep sched_rt_{period,runtime}_us for !RT_GROUP_SCHED, backed by the
->    same code as the new dl_{period,runtime}_us (sched_dl_try_boundary()),
->    keeping the current validation semantics (the LTP test checks the
->    EINVAL cases, and 0 is a valid runtime today)
->  - pr_warn_once() on write saying they only control DEADLINE admission
->    control and that RT throttling is handled by the fair_server,
->    pointing to where its knobs are
->  - fix the documentation as you are doing already
-> 
-> That way nobody gets surprised anymore, which was your point, and we
-> don't break anyone? We can still discuss deprecating the procfs names
-> later, once the new interface has been around for a while maybe?
+Hello,
 
-Doesn't sound bad. Let me respin it with these changes.
-Thanks.
+kernel test robot noticed "kmsg.sanitizer.direct_leak" on:
 
-> Thanks,
-> Juri
+commit: b369290e30c535a00527ded3f917c3ad6bb39e5f ("[PATCH v2 11/11] perf tests: Add namespace, nsinfo, and boot ID tests")
+url: https://github.com/intel-lab-lkp/linux/commits/Namhyung-Kim/perf-tools-Add-HEADER_BOOT_ID-feature/20261115-215721
+base: https://git.kernel.org/cgit/linux/kernel/git/perf/perf-tools-next.git perf-tools-next patch link: https://lore.kernel.org/all/20261116055731.707164-12-namhyung@kernel.org/
+patch subject: [PATCH v2 11/11] perf tests: Add namespace, nsinfo, and boot ID tests
 
-Sebastian
+in testcase: perf-sanity-tests
+version: 
+with following parameters:
+
+	perf_compiler: gcc
+	group: group-02
+
+
+config: x86_64-rhel-9.4-bpf
+compiler: gcc-14
+test machine: 16 threads 1 sockets Intel(R) Xeon(R) E-2278G CPU @ 3.40GHz (Coffee Lake-E) with 32G memory
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <yi1.lai@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202611221114.fdeef11c-lkp@intel.com
+
+
+2026-11-20 18:33:36 sudo ASAN_OPTIONS=fast_unwind_on_malloc=0 /usr/src/linux-perf-x86_64-rhel-9.4-bpf-b369290e30c535a00527ded3f917c3ad6bb39e5f/tools/perf/perf test 74 -v
+Not taking turns using the perf mlock budget: nothing can exhaust it
+ 74: Namespace and nsinfo tests                                                                                :
+ 74.1: boot_id                                                                                                 : Running (5 active)
+ 74.1: boot_id                                                                                                 : Ok
+ 74.2: init_and_copy                                                                                           : Ok
+ 74.3: proc_and_recycled_tid                                                                                   : Ok
+ 74.4: thread_liveness                                                                                         : Ok
+ 74.5: dso_needs_ns                                                                                            : Ok
+---- start ----
+test child forked, pid 11783
+perf: util/dso.c:551: dso__list_add: Assertion `dso__dsos(dso)' failed.
+---- unexpected signal (6) ----
+mutex_lock error: 'Resource deadlock avoided'
+...
+=================================================================
+==11783==ERROR: LeakSanitizer: detected memory leaks
+Direct leak of 8 byte(s) in 1 object(s) allocated from:
+...
+Direct leak of 8 byte(s) in 1 object(s) allocated from:
+...
+SUMMARY: AddressSanitizer: 16 byte(s) leaked in 2 allocation(s).
+ 74.6: mountns_and_chroot                                                                                      : FAILED!
+
+=== Test Summary ===
+Passed main tests : 0
+Passed subtests   : 5
+Skipped tests     : 0
+Timed out tests   : 0
+Failed tests      : 1
+List of failed tests:
+   74.6: mountns_and_chroot
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20261122/202611221114.fdeef11c-lkp@intel.com
+
+
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
+
