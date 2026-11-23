@@ -1,78 +1,82 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.158.5
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795412965;
-	b=Iqj5rZFEGhVrPFJ6PQi8QcqWcodLDDGcd/jxoDMqqL3Fj8fYKz0/7alvw1GRkM5uSFNQ
-	 Jwzs3OU/rwkH99kNKFNFAObnXzJlheGHM/S4a7Cm9WvGXQo86Pw8wnzGj4pG6cd+OYaYr
-	 LRU1T540iZSidcP9ozhY2nnR2akSzxspGMVwuQxlB01uN0rakGmJmchehLtajYyWz6Swp
-	 ohU85k57CDiD02VoPUPYkij1Pf4c8Ns4sjPnJfeQZp31g0hJf9TUa5WUqR0tCyHRdzJDW
-	 rnZaY0oZjIHJ/qFkOWF8YfWtEanD7kBxf1d83eW41nlax68I1orWoVY6AqUj1Gj7vnw==
+	t=1795414631;
+	b=uo54ayIeGlfXZTW/LqlsXapQslmjNfOqvqPgd3oMAXN/I07J1MjPrCp9MLt4lMQw0U2H
+	 KTpVeVv1K712lzwdt0EeTfCCFciivxiOE3ZqHyULdyqQrgQc23G/3O7q02YeP31pCuU7e
+	 qQThZXUDvKPEW7VJcTyDAoJlg8pR1A1OQvDm6CKA6KPJFg4/SVi2qU23/BJvRUL1crzU5
+	 mD+lE20S5OganFyh4v0o1D8UXvSSH2tEmcox5SHfUEoqbizaTKyWcjv3Vgc2ph1+rRY3G
+	 GnQeWO0bogZQvTkCtbDp3VLSrhAPaxtjIt1gQH2+KnZV31JF7E07W6jqzLdc8Yi26/A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795412965;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:Content-Transfer-Encoding:In-Reply-To;
-	bh=/6/8HQ5R50JMr7oR46HPDPYLirYvJzoSMSzd0cGOl+4=;
-	b=Ies6kZBDYe/TxIkBxt7Q0yAcn/hUU26lcq5QNuiqeZPtHaM+1YTbkvVCxIUni4PPJOc8
-	 +THA4h2loBu3N+yDQPdNJCDmWDwmAxh7t/YOCaerjfREollL9G+XdygxczAIPXe1K9CuF
-	 BlHljVYbwYPH+KrVVu/sWZOvU7E7ZeBV+pUY3JZqnIjC5CSF7U/jUIISdqpYsENEaik7x
-	 pctWnqufn/zzFiW/1jdRRjmMg4nnwktSOExSVK2fmJX6zn99ecnnBqqFVU/qc/nV13nH+
-	 DX5jNOneCtDJHl2JoWSGYasvCrU10sZWtDeN2eYSR4qgwNvv7NsRwDbi/n25MKLlUeA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795414631;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:Received:
+	 Received:Received:Received:Received:Message-ID:Date:MIME-Version:
+	 User-Agent:Subject:To:Cc:References:From:Content-Language:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding:X-TM-AS-GCONF:
+	 X-Proofpoint-Reinject:X-Proofpoint-Spam-Info:X-Proofpoint-GUID:
+	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-ORIG-GUID:
+	 X-Authority-Analysis:X-Proofpoint-Virus-Version:
+	 X-Proofpoint-Spam-Details;
+	bh=rmfLa4vZ70fQMy+4OlNodmBRiMPp9h2L5WiU2LNv7CE=;
+	b=ApYXmQmD51jIxNsNGAF9tHQDNOpHQs9ffIZHVI5KyXb6QGQw7Xcq1TU6+Y4KJiA7aZ36
+	 4QPsxjS9hg+PeuA/KLtmN+nb93fjxJnRxKg57pyArh1+PeE61tM1iOg45cGu6Jx1QzohC
+	 lp9eGbdAXgFeSTGc9fYgLAjZBqDhn8Bfs0cUHYNYfsAXxAdhq630S5W1M8+xWg5cPJtlT
+	 oe/nFV2WU6P+28xoHcupoYOdt07WHkyUM+JQP9rxFsgisc+YNQWORpZ0gm435AA3RtuV2
+	 BT5sIWWEpIgUB/uvmNUkFL9WXjPPEc8XzJPPkqhxDwqlf7FP8ncoTfC9XqlZ67pBUDg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Z15NVs9b;
-	arc=none smtp.remote-ip=198.175.65.17
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=linux.ibm.com;
+	spf=pass smtp.mailfrom=linux.ibm.com;
+	dkim=pass header.d=ibm.com header.i=@ibm.com header.a=rsa-sha256 header.s=pp1 header.b=n9rkuixj;
+	arc=none smtp.remote-ip=148.163.158.5
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64B90606A31A
-	for <oe-lkp@lists.linux.dev>; Mon, 23 Nov 2026 05:49:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 64B90606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43410606A31E
+	for <oe-lkp@lists.linux.dev>; Mon, 23 Nov 2026 06:17:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 43410606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Z15NVs9b
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795412965; x=1826948965;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=81V36r3kc6Swrx5rN2+ZWM6JnNFZFPEvIaRWKtgSOow=;
-  b=Z15NVs9bmExTEHLY4BxiGhdOAAX/Mo0F3Samtow9uu7ehCGlnaneUuVj
-   hG+n4aMHlPrba40a/07RuhjvKD0UhrjTN5W4s2tWgi1sskMtOgv62q5/V
-   ExcQvUo2XC/Mtp2LnKZ3C6iJCgfBnpMNVyd04knZhRQ1QzFqvWFaCNcjB
-   93tHwxI3W1ys0PMA7CNEypDABBFvQ2bJV1+Oprgrbe6+sAG3nI6+ILcq8
-   dKlObUEAcy2orX3kq+Kg3r2Df/YDHmeygetDi/rMAm/sp0ERbYhiSXRG9
-   VxishhHRYU+vbEd6MoxELNF3nf5d64g2b0oip9KYNTVB5aONTEd2ucwj9
-   g==;
-X-CSE-ConnectionGUID: JxsjOgJnTsOazXDG5S5Fqw==
-X-CSE-MsgGUID: cgWrbxn+SDqD0kAcOhHXbw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11974"; a="4218885"
-X-IronPort-AV: E=Sophos;i="6.27,227,1787036400"; 
-   d="scan'208";a="4218885"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2026 21:49:24 -0800
-X-CSE-ConnectionGUID: 9rvlUUtGRiyF4fOHLsrafg==
-X-CSE-MsgGUID: h5pP2d7NRlayBX4AfPELDQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,227,1787036400"; 
-   d="scan'208";a="11333957"
-Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2026 21:49:21 -0800
-Date: Mon, 23 Nov 2026 13:49:18 +0800
-From: kernel test robot <yi1.lai@intel.com>
-To: Shrikanth Hegde <sshegde@linux.ibm.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	Peter Zijlstra <peterz@infradead.org>,
-	Yury Norov <yury.norov@gmail.com>, Ingo Molnar <mingo@redhat.com>,
-	Vincent Guittot <vincent.guittot@linaro.org>, yi1.lai@intel.com
-Subject: Re: [linus:master] [virt/steal_governor] 1fb28c664a:
- WARNING:at_kernel/sched/core.c:#set_task_cpu
-Message-ID: <awPT3mE4ShWUTw7H@ly-workstation>
-References: <202611230353.1fedceba-lkp@intel.com>
- <7446f558-5cbe-4efc-b6bb-686d0dca9f42@linux.ibm.com>
+	dkim=pass (2048-bit key, unprotected) header.d=ibm.com header.i=@ibm.com header.a=rsa-sha256 header.s=pp1 header.b=n9rkuixj
+Received: from pps.filterd (m0353725.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6AN54q5r1364727;
+	Mon, 23 Nov 2026 06:16:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=rmfLa4
+	vZ70fQMy+4OlNodmBRiMPp9h2L5WiU2LNv7CE=; b=n9rkuixjDPVraOv3mbq3P3
+	Dsb4wpn9mG2GBlQOSBCyZaqg7GiFxeLvSTsdZFpr4pSYfMbk4P65WY1b4cskGG+3
+	xcuc5LvnGyeBviSEnrhV1fkbcaGm6x297GWJu9Vmd+sGiXp5zBpBfJw0gcsXNNK1
+	yyUYpsjRxEjDDpJf5hu2Kc0RETjfxplF9xENMMXQ0euTlAoBxYSmoUdkJDHRuziP
+	K2jXXr6sG8aoe1EBVkaHSreDvjqsAL0IwDhbMaIkLxnFrZG6UtEvPyEjOf7ygS/1
+	EL4gqI6AQLGXZG8LKk6aFirMOcAiN90cK2HynqkqIB9Da/Fk3nE432lbx+SjATLg
+	==
+Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4j34p49dng-1
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+	Mon, 23 Nov 2026 06:16:57 +0000 (GMT)
+Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma13.dal12v.mail.ibm.com (8.18.1.11/8.18.1.11) with ESMTP id 6AN54fZ7264691;
+	Mon, 23 Nov 2026 06:16:56 GMT
+Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
+	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 4j3qufncwa-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 23 Nov 2026 06:16:56 +0000 (GMT)
+Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
+	by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 6AN6Gs2K51511666
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 23 Nov 2026 06:16:54 GMT
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 6E6A420043;
+	Mon, 23 Nov 2026 06:16:54 +0000 (GMT)
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 7B06F2004B;
+	Mon, 23 Nov 2026 06:16:52 +0000 (GMT)
+Received: from [9.124.208.21] (unknown [9.124.208.21])
+	by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Mon, 23 Nov 2026 06:16:52 +0000 (GMT)
+Message-ID: <ad8f4ed1-2b06-4bbf-8c4c-96043071bcf3@linux.ibm.com>
+Date: Mon, 23 Nov 2026 11:46:51 +0530
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Post: <mailto:oe-lkp@lists.linux.dev>
@@ -82,133 +86,66 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:oe-lkp+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <7446f558-5cbe-4efc-b6bb-686d0dca9f42@linux.ibm.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [linus:master] [virt/steal_governor] 1fb28c664a:
+ WARNING:at_kernel/sched/core.c:#set_task_cpu
+To: kernel test robot <yi1.lai@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Yury Norov <yury.norov@gmail.com>, Ingo Molnar <mingo@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>
+References: <202611230353.1fedceba-lkp@intel.com>
+ <7446f558-5cbe-4efc-b6bb-686d0dca9f42@linux.ibm.com>
+ <awPT3mE4ShWUTw7H@ly-workstation>
+From: Shrikanth Hegde <sshegde@linux.ibm.com>
+Content-Language: en-US
+In-Reply-To: <awPT3mE4ShWUTw7H@ly-workstation>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Reinject: loops=2 maxloops=12
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMTIzMDAyNCBTYWx0ZWRfX7HQIqlz9fc0v
+ zq+5KGadhcRhp27rC3GT07ky7YHoGWV07RXimrZJA0R2Uw6+6cKulDP3qtzUfzBc9sPKVe/Hgp7
+ ja/3FXXDGTeibu+GKgYBU/eo+fNK+LE=
+X-Proofpoint-GUID: rtad1lhCOiAkGxFIayfCklYzbBUhHw8R
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTIzMDAyNCBTYWx0ZWRfX9usp7dzG+p38
+ pIAtqfBoHIUq3E/aYFIU96e5ZvKM5I3qkc5eyrcF1zbTsBZbovjbvNOUoMB9Ov6a2EPLe5D8ZQG
+ Jfez620GQ9yjgZ96JRKak/qRuYwy9YAiQ6hkBGz948/CKofl+jkFDU733idEjNmBm8vVL3FN5/6
+ 02G35CrYR5kSVf3/JW6sdzDtA2I92aYWGtwih/Yu39b9hTMtlvLeqqmrVrB9owufA0aROgfsTyf
+ o6v0sy1SMMr6y1MsR+4gkW6ZG2MCnM+mhYDLT7SlUVaVX5Jw0PkkLgiyFHVnSm/JJ0a6LE6iwAW
+ U003Rz9l/AvBTjnNQA5qaG0+hQhs+0nAI2A32Zuccuy4ah2Aw7WkPuKAUt6GLjsnkDKyzIzCMZf
+ X7hOUObJRsz0mCB2YWxKTVADhxXYL8jJJJg7Onv+qviOkMjKKXlsM1WhXc13rMo6qFuzIyGOicI
+ GbJ+CnSEy+qngvXKCUA==
+X-Proofpoint-ORIG-GUID: quDhZ_ErSNfQPsIWqsJBM6KyyT0dfqxO
+X-Authority-Analysis: v=2.4 cv=QabzLcbv c=1 sm=1 tr=0 ts=6b03da59 cx=c_pps
+ a=AfN7/Ok6k8XGzOShvHwTGQ==:117 a=AfN7/Ok6k8XGzOShvHwTGQ==:17
+ a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=RnoormkPH1_aCDwRdu11:22 a=V8glGbnc2Ofi9Qvn3v5h:22 a=NEAV23lmAAAA:8
+ a=VwQbUJbxAAAA:8 a=QED9Jkl4QGb8jGKjosIA:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-11-23_01,2026-11-22_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 phishscore=0 lowpriorityscore=0 suspectscore=0 adultscore=0
+ bulkscore=0 priorityscore=1501 clxscore=1015 malwarescore=0 impostorscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611230024
 
-On Mon, Nov 23, 2026 at 08:25:47AM +0530, Shrikanth Hegde wrote:
-> Hi.
-> 
-> On 11/23/26 8:17 AM, kernel test robot wrote:
-> > 
-> > Hello,
-> > 
-> > kernel test robot noticed "WARNING:at_kernel/sched/core.c:#set_task_cpu" on:
-> > 
-> > commit: 1fb28c664a19df8d45a6afa04d28d102b04ea680 ("virt/steal_governor: Enable the driver") https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> > 
-> > [test failed on linux-next/master 909ef7a9a30fa139e69e555e3606680f5cca7726]
-> > 
-> > in testcase: trinity
-> > version: trinity-i386-abe9de86-1_20230429 with following parameters:
-> > 
-> > 	runtime: 300s
-> > 	group: group-00
-> > 	nr_groups: 5
-> > 
-> > 
-> > config: i386-randconfig-2105-20261109
-> > compiler: gcc-14
-> > test machine: qemu-system-i386 -enable-kvm -cpu Haswell-noTSX,enforce,lm=off -smp 4 -m 4G
-> > 
-> > Additional analysis by LLM: This commit only adds Kconfig/Makefile wiring for the STEAL_GOVERNOR driver. It contains no scheduler logic changes. Its effect is to flip on CONFIG_PREFERRED_CPU for the first time in the series, which activates a block of previously-dead code under #ifdef CONFIG_PREFERRED_CPU in core.c that had been unreachable until now. The commit to be blamed should be 74699f56ebcf — "sched/core: Push current task from non preferred CPU".
-> > 
-> > (please refer to attached dmesg/kmsg for entire log/backtrace)
-> > 
-> > 
-> > If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
-> > | Reported-by: kernel test robot <yi1.lai@intel.com>
-> > | Closes: https://lore.kernel.org/oe-lkp/202611230353.1fedceba-lkp@intel.com
-> > 
-> > 
-> > [   61.829095][   T33] ------------[ cut here ]------------
-> > [   61.830984][   T33] is_migration_disabled(p)
-> > [   61.830988][   T33] WARNING: kernel/sched/core.c:3422 at set_task_cpu+0xb7/0x180, CPU#3: migration/3/33
-> > [   61.834561][   T33] Modules linked in:
-> > [   61.835867][   T33] CPU: 3 UID: 0 PID: 33 Comm: migration/3 Not tainted 7.3.0-rc1-00053-g1fb28c664a19 #1 PREEMPT(full)
-> > [   61.838952][   T33] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-> > [   61.852825][   T33] Stopper: sched_non_preferred_cpu_push_stop+0x0/0x120 <- sched_push_current_non_preferred_cpu (sched/core.c:11340)
-> > [   61.859715][   T33] EIP: set_task_cpu (sched/core.c:3422 (discriminator 2))
-> > [   61.861346][   T33] Code: 6c 08 00 00 83 c0 28 83 c0 10 e8 a4 a9 ff ff 85 c0 75 02 0f 0b 0f a3 35 5c 65 60 b4 72 02 0f 0b 66 83 bb 5c 02 00 00 00 74 02 <0f> 0b 3e 8d 74 26 00 eb 32 64 a1 14 50 7e b4 0f a3 05 5c 65 60 b4
-> > All code
-> > ========
-> >     0:	6c                   	insb   (%dx),%es:(%rdi)
-> >     1:	08 00                	or     %al,(%rax)
-> >     3:	00 83 c0 28 83 c0    	add    %al,-0x3f7cd740(%rbx)
-> >     9:	10 e8                	adc    %ch,%al
-> >     b:	a4                   	movsb  %ds:(%rsi),%es:(%rdi)
-> >     c:	a9 ff ff 85 c0       	test   $0xc085ffff,%eax
-> >    11:	75 02                	jne    0x15
-> >    13:	0f 0b                	ud2
-> >    15:	0f a3 35 5c 65 60 b4 	bt     %esi,-0x4b9f9aa4(%rip)        # 0xffffffffb4606578
-> >    1c:	72 02                	jb     0x20
-> >    1e:	0f 0b                	ud2
-> >    20:	66 83 bb 5c 02 00 00 	cmpw   $0x0,0x25c(%rbx)
-> >    27:	00
-> >    28:	74 02                	je     0x2c
-> >    2a:*	0f 0b                	ud2		<-- trapping instruction
-> >    2c:	3e 8d 74 26 00       	ds lea 0x0(%rsi,%riz,1),%esi
-> >    31:	eb 32                	jmp    0x65
-> >    33:	64 a1 14 50 7e b4 0f 	movabs %fs:0x5c05a30fb47e5014,%eax
-> >    3a:	a3 05 5c
-> >    3d:	65 60                	gs (bad)
-> >    3f:	b4                   	.byte 0xb4
-> > 
-> > Code starting with the faulting instruction ===========================================
-> >     0:	0f 0b                	ud2
-> >     2:	3e 8d 74 26 00       	ds lea 0x0(%rsi,%riz,1),%esi
-> >     7:	eb 32                	jmp    0x3b
-> >     9:	64 a1 14 50 7e b4 0f 	movabs %fs:0x5c05a30fb47e5014,%eax
-> >    10:	a3 05 5c
-> >    13:	65 60                	gs (bad)
-> >    15:	b4                   	.byte 0xb4
-> > [   61.870903][   T33] EAX: 00000002 EBX: f5381300 ECX: 00000000 EDX: 00000003
-> > [   61.873346][   T33] ESI: 00000003 EDI: b614bf00 EBP: b614bebc ESP: b614beac
-> > [   61.875803][   T33] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00010002
-> > [   61.882493][   T33] CR0: 80050033 CR2: a6af0000 CR3: 45267000 CR4: 001506d0
-> > [   61.884849][   T33] Call Trace:
-> > [   61.889217][   T33]  move_queued_task (sched/core.c:2596)
-> > [   61.890818][   T33]  __migrate_task (sched/core.c:2644)
-> > [   61.892297][   T33]  sched_non_preferred_cpu_push_stop (sched/core.c:11292)
-> > [   61.897538][   T33]  ? tracer_preempt_off (trace/trace_irqsoff.c:692 (discriminator 1))
-> > [   61.899325][   T33]  ? trace_preempt_off (trace/trace_preemptirq.c:127)
-> > [   61.901048][   T33]  ? preempt_count_add (sched/core.c:6056)
-> > [   61.906016][   T33]  ? __balance_push_cpu_stop (sched/core.c:8397)
-> > [   61.907819][   T33]  ? preempt_latency_start (sched/core.c:6030 (discriminator 1) sched/core.c:6023 (discriminator 1))
-> > [   61.909635][   T33]  ? __balance_push_cpu_stop (sched/core.c:8397)
-> > [   61.911466][   T33]  cpu_stopper_thread (stop_machine.c:510)
-> > [   61.913093][   T33]  smpboot_thread_fn (smpboot.c:160)
-> > [   61.917838][   T33]  kthread (kthread.c:436)
-> > [   61.919260][   T33]  ? sort_range (??:?)
-> > [   61.920703][   T33]  ? kthread_affine_node (kthread.c:378)
-> > [   61.925663][   T33]  ret_from_fork (x86/kernel/process.c:158)
-> > [   61.927228][   T33]  ? kthread_affine_node (kthread.c:378)
-> > [   61.928980][   T33]  ret_from_fork_asm (x86/entry/entry_32.S:736)
-> > [   61.933831][   T33]  entry_INT80_32 (x86/entry/entry_32.S:940)
-> > [   61.935410][   T33] irq event stamp: 108
-> > [   61.936744][   T33] hardirqs last  enabled at (107): _raw_spin_unlock_irqrestore (linux/spinlock_api_smp.h:210 (discriminator 1) locking/spinlock.c:221 (discriminator 1))
-> > [   61.943224][   T33] hardirqs last disabled at (108): __schedule (sched/core.c:7225 (discriminator 1))
-> > [   61.946108][   T33] softirqs last  enabled at (0): copy_process (fork.c:2239 (discriminator 1))
-> > [   61.948970][   T33] softirqs last disabled at (0): 0x0
-> > [   61.955261][   T33] ---[ end trace 0000000000000000 ]---
-> > 
-> > 
-> > The kernel config and materials to reproduce are available at:
-> > https://download.01.org/0day-ci/archive/20261123/202611230353.1fedceba-lkp@intel.com
-> > 
-> > 
-> > --
-> > 0-DAY CI Kernel Test Service
-> > https://github.com/intel/lkp-tests/wiki
-> > 
-> > 
-> 
-> 
-> Could you please try with below patch included?
-> Symptoms seems to be similar.
-> 
-> https://lore.kernel.org/all/179538776083.92412.4311246927428883759.tip-bot2@tip-bot2/
 
-With this patch applied, issue cannot be reproduced.
+>>>
+>>> --
+>>> 0-DAY CI Kernel Test Service
+>>> https://github.com/intel/lkp-tests/wiki
+>>>
+>>>
+>>
+>>
+>> Could you please try with below patch included?
+>> Symptoms seems to be similar.
+>>
+>> https://lore.kernel.org/all/179538776083.92412.4311246927428883759.tip-bot2@tip-bot2/
+> 
+> With this patch applied, issue cannot be reproduced.
+> 
 
+Thanks for confirming. With the patch in sched/urgent already, all is well!!
